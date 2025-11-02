@@ -38,7 +38,7 @@ See the [examples/] folder for detailed explanations.
 *Fair vs bookmaker odds across multiple lines with edge analysis*
 
 **Data Outputs:**
-- [Complete Odds Sheet (CSV)](examples/example_odds_sheet_lebron_james.csv) - 21 lines with fair and margined odds
+- [Complete Odds Sheet (CSV)](examples/example_odds_sheet.csv) - 21 lines with fair and margined odds
 - [Summary Statistics (CSV)](examples/example_summary_statistics.csv) - Key distribution parameters
 ```
 
