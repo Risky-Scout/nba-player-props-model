@@ -8,9 +8,23 @@
 
 > *This model implements advanced techniques typically reserved for professional syndicates and market makers.*
 
+> ### 📄 Technical White Paper & Deployment Roadmap
+>
+> For a complete technical deep-dive into the architecture, methodology, and business logic of this system, please see the full white paper.
+>
+> ## [View the Full Technical White Paper (PDF)](./documents/NBA_Player_Props_Model_Technical_Documentation_Shackelford.pdf)
+>
+> This document details:
+> * **The 6-Layer Meta-Ensemble Architecture**
+> * **Full PMF Generation** (vs. simple binary prediction)
+> * **4 Sophisticated Margin-Building Methods**
+> * **A 90-Day Deployment & SGP Roadmap**
+>
+> ---
+
 ---
 
-## 🎯 What Makes This Different
+## 🎯 What Makes This model Different?
 
 Most betting models predict **P(X > line)** for a single line.
 
