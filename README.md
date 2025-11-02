@@ -363,7 +363,7 @@ I've built this system independently as a demonstration of my quantitative model
 - Live demonstrations
 - Immediate start
 
-**Contact:** [your.email@example.com](mailto:your.email@example.com) | [LinkedIn](https://linkedin.com/in/yourprofile)
+**Contact:** (mailto:JosephShack@gmail.com) | [LinkedIn](https://linkedin.com/in/joseph-shackelford-8b787533)
 
 ## 📚 Documentation
 
