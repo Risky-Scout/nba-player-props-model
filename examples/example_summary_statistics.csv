@@ -1,0 +1,15 @@
+Statistic,Value
+Player,LeBron James
+Prop Type,Points
+Expected Value,25.49 points
+Median,25 points
+Mode,24 points
+Standard Deviation,6.47 points
+P(X ≤ 20.5),22.8%
+P(X > 20.5),77.2%
+P(X ≤ 25.5),52.4%
+P(X > 25.5),47.6%
+P(X ≤ 30.5),78.7%
+P(X > 30.5),21.3%
+Distribution Type,Negative Binomial
+Based On,2024-25 Season Stats (25.5 PPG avg)
