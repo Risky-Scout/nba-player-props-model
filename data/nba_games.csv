@@ -1,0 +1,301 @@
+game_id,date,season,home_team_id,home_team,away_team_id,away_team,home_score,away_score,status
+1037593,2023-10-24,2023,8,Denver Nuggets,14,Los Angeles Lakers,119,107,Final
+1037594,2023-10-24,2023,10,Golden State Warriors,24,Phoenix Suns,104,108,Final
+1037595,2023-10-25,2023,4,Charlotte Hornets,1,Atlanta Hawks,116,110,Final
+1037596,2023-10-25,2023,12,Indiana Pacers,30,Washington Wizards,143,120,Final
+1037597,2023-10-25,2023,20,New York Knicks,2,Boston Celtics,104,108,Final
+1037598,2023-10-25,2023,22,Orlando Magic,11,Houston Rockets,116,86,Final
+1037599,2023-10-25,2023,3,Brooklyn Nets,6,Cleveland Cavaliers,113,114,Final
+1037600,2023-10-25,2023,16,Miami Heat,9,Detroit Pistons,103,102,Final
+1037601,2023-10-25,2023,28,Toronto Raptors,18,Minnesota Timberwolves,97,94,Final
+1037602,2023-10-25,2023,5,Chicago Bulls,21,Oklahoma City Thunder,104,124,Final
+1037603,2023-10-25,2023,15,Memphis Grizzlies,19,New Orleans Pelicans,104,111,Final
+1037604,2023-10-25,2023,29,Utah Jazz,26,Sacramento Kings,114,130,Final
+1037605,2023-10-25,2023,27,San Antonio Spurs,7,Dallas Mavericks,119,126,Final
+1037606,2023-10-25,2023,13,LA Clippers,25,Portland Trail Blazers,123,111,Final
+1037607,2023-10-26,2023,17,Milwaukee Bucks,23,Philadelphia 76ers,118,117,Final
+1037608,2023-10-26,2023,14,Los Angeles Lakers,24,Phoenix Suns,100,95,Final
+1037609,2023-10-27,2023,4,Charlotte Hornets,9,Detroit Pistons,99,111,Final
+1037610,2023-10-27,2023,15,Memphis Grizzlies,8,Denver Nuggets,104,108,Final
+1037611,2023-10-27,2023,1,Atlanta Hawks,20,New York Knicks,120,126,Final
+1037612,2023-10-27,2023,2,Boston Celtics,16,Miami Heat,119,111,Final
+1037613,2023-10-27,2023,6,Cleveland Cavaliers,21,Oklahoma City Thunder,105,108,Final
+1037614,2023-10-27,2023,5,Chicago Bulls,28,Toronto Raptors,104,103,Final
+1037615,2023-10-27,2023,27,San Antonio Spurs,11,Houston Rockets,126,122,Final
+1037616,2023-10-27,2023,7,Dallas Mavericks,3,Brooklyn Nets,125,120,Final
+1037617,2023-10-27,2023,29,Utah Jazz,13,LA Clippers,120,118,Final
+1037618,2023-10-27,2023,25,Portland Trail Blazers,22,Orlando Magic,97,102,Final
+1037619,2023-10-27,2023,26,Sacramento Kings,10,Golden State Warriors,114,122,Final
+1037620,2023-10-28,2023,9,Detroit Pistons,5,Chicago Bulls,118,102,Final
+1037621,2023-10-28,2023,30,Washington Wizards,15,Memphis Grizzlies,113,106,Final
+1037622,2023-10-28,2023,19,New Orleans Pelicans,20,New York Knicks,96,87,Final
+1037623,2023-10-28,2023,6,Cleveland Cavaliers,12,Indiana Pacers,113,125,Final
+1037624,2023-10-28,2023,28,Toronto Raptors,23,Philadelphia 76ers,107,114,Final
+1037625,2023-10-28,2023,18,Minnesota Timberwolves,16,Miami Heat,106,90,Final
+1037626,2023-10-28,2023,24,Phoenix Suns,29,Utah Jazz,126,104,Final
+1037627,2023-10-29,2023,21,Oklahoma City Thunder,8,Denver Nuggets,95,128,Final
+1037628,2023-10-29,2023,11,Houston Rockets,10,Golden State Warriors,95,106,Final
+1037629,2023-10-29,2023,17,Milwaukee Bucks,1,Atlanta Hawks,110,127,Final
+1037630,2023-10-29,2023,23,Philadelphia 76ers,25,Portland Trail Blazers,126,98,Final
+1037631,2023-10-29,2023,13,LA Clippers,27,San Antonio Spurs,123,83,Final
+1037632,2023-10-29,2023,26,Sacramento Kings,14,Los Angeles Lakers,132,127,Final
+1037633,2023-10-30,2023,4,Charlotte Hornets,3,Brooklyn Nets,121,133,Final
+1037634,2023-10-30,2023,12,Indiana Pacers,5,Chicago Bulls,105,112,Final
+1037635,2023-10-30,2023,30,Washington Wizards,2,Boston Celtics,107,126,Final
+1037636,2023-10-30,2023,1,Atlanta Hawks,18,Minnesota Timberwolves,127,113,Final
+1037637,2023-10-30,2023,28,Toronto Raptors,25,Portland Trail Blazers,91,99,Final
+1037638,2023-10-30,2023,15,Memphis Grizzlies,7,Dallas Mavericks,110,125,Final
+1037639,2023-10-30,2023,17,Milwaukee Bucks,16,Miami Heat,122,114,Final
+1037640,2023-10-30,2023,19,New Orleans Pelicans,10,Golden State Warriors,102,130,Final
+1037641,2023-10-30,2023,21,Oklahoma City Thunder,9,Detroit Pistons,124,112,Final
+1037642,2023-10-30,2023,8,Denver Nuggets,29,Utah Jazz,110,102,Final
+1037643,2023-10-30,2023,14,Los Angeles Lakers,22,Orlando Magic,106,103,Final
+1037644,2023-10-31,2023,6,Cleveland Cavaliers,20,New York Knicks,91,109,Final
+1037645,2023-10-31,2023,24,Phoenix Suns,27,San Antonio Spurs,114,115,Final
+1037646,2023-10-31,2023,13,LA Clippers,22,Orlando Magic,118,102,Final
+1037647,2023-11-01,2023,9,Detroit Pistons,25,Portland Trail Blazers,101,110,Final
+1037648,2023-11-01,2023,28,Toronto Raptors,17,Milwaukee Bucks,130,111,Final
+1037649,2023-11-01,2023,1,Atlanta Hawks,30,Washington Wizards,130,121,Final
+1037650,2023-11-01,2023,2,Boston Celtics,12,Indiana Pacers,155,104,Final
+1037651,2023-11-01,2023,16,Miami Heat,3,Brooklyn Nets,105,109,Final
+1037652,2023-11-01,2023,20,New York Knicks,6,Cleveland Cavaliers,89,95,Final
+1037653,2023-11-01,2023,21,Oklahoma City Thunder,19,New Orleans Pelicans,106,110,Final
+1037654,2023-11-01,2023,11,Houston Rockets,4,Charlotte Hornets,128,119,Final
+1037655,2023-11-01,2023,18,Minnesota Timberwolves,8,Denver Nuggets,110,89,Final
+1037656,2023-11-01,2023,7,Dallas Mavericks,5,Chicago Bulls,114,105,Final
+1037657,2023-11-01,2023,29,Utah Jazz,15,Memphis Grizzlies,133,109,Final
+1037658,2023-11-01,2023,10,Golden State Warriors,26,Sacramento Kings,102,101,Final
+1037659,2023-11-01,2023,14,Los Angeles Lakers,13,LA Clippers,130,125,Final
+1037660,2023-11-02,2023,23,Philadelphia 76ers,28,Toronto Raptors,114,99,Final
+1037661,2023-11-02,2023,19,New Orleans Pelicans,9,Detroit Pistons,125,116,Final
+1037662,2023-11-02,2023,29,Utah Jazz,22,Orlando Magic,113,115,Final
+1037663,2023-11-02,2023,24,Phoenix Suns,27,San Antonio Spurs,121,132,Final
+3277349,2023-11-03,2023,12,Indiana Pacers,6,Cleveland Cavaliers,121,116,Final
+3277350,2023-11-03,2023,17,Milwaukee Bucks,20,New York Knicks,110,105,Final
+3277351,2023-11-03,2023,16,Miami Heat,30,Washington Wizards,121,114,Final
+3277352,2023-11-03,2023,5,Chicago Bulls,3,Brooklyn Nets,107,109,Final
+3277353,2023-11-03,2023,21,Oklahoma City Thunder,10,Golden State Warriors,139,141,Final
+3277354,2023-11-03,2023,8,Denver Nuggets,7,Dallas Mavericks,125,114,Final
+3277355,2023-11-03,2023,25,Portland Trail Blazers,15,Memphis Grizzlies,115,113,Final
+1037671,2023-11-04,2023,23,Philadelphia 76ers,24,Phoenix Suns,112,100,Final
+1037672,2023-11-04,2023,12,Indiana Pacers,4,Charlotte Hornets,124,125,Final
+1037673,2023-11-04,2023,22,Orlando Magic,14,Los Angeles Lakers,120,101,Final
+1037674,2023-11-04,2023,19,New Orleans Pelicans,1,Atlanta Hawks,105,123,Final
+1037675,2023-11-04,2023,3,Brooklyn Nets,2,Boston Celtics,114,124,Final
+1037676,2023-11-04,2023,11,Houston Rockets,26,Sacramento Kings,107,89,Final
+1037677,2023-11-04,2023,18,Minnesota Timberwolves,29,Utah Jazz,123,95,Final
+1037678,2023-11-04,2023,8,Denver Nuggets,5,Chicago Bulls,123,101,Final
+1037679,2023-11-05,2023,9,Detroit Pistons,24,Phoenix Suns,106,120,Final
+1037680,2023-11-05,2023,27,San Antonio Spurs,28,Toronto Raptors,116,123,Final
+1037681,2023-11-05,2023,6,Cleveland Cavaliers,10,Golden State Warriors,115,104,Final
+1037682,2023-11-05,2023,7,Dallas Mavericks,4,Charlotte Hornets,124,118,Final
+1037683,2023-11-05,2023,25,Portland Trail Blazers,15,Memphis Grizzlies,100,112,Final
+1037684,2023-11-06,2023,9,Detroit Pistons,10,Golden State Warriors,109,120,Final
+1037685,2023-11-06,2023,12,Indiana Pacers,27,San Antonio Spurs,152,111,Final
+1037686,2023-11-06,2023,22,Orlando Magic,7,Dallas Mavericks,102,117,Final
+1037687,2023-11-06,2023,23,Philadelphia 76ers,30,Washington Wizards,146,128,Final
+1037688,2023-11-06,2023,3,Brooklyn Nets,17,Milwaukee Bucks,125,129,Final
+1037689,2023-11-06,2023,16,Miami Heat,14,Los Angeles Lakers,108,107,Final
+1037690,2023-11-06,2023,20,New York Knicks,13,LA Clippers,111,97,Final
+1037691,2023-11-06,2023,5,Chicago Bulls,29,Utah Jazz,130,113,Final
+1037692,2023-11-06,2023,11,Houston Rockets,26,Sacramento Kings,122,97,Final
+15907438,2024-10-22,2024,2,Boston Celtics,20,New York Knicks,132,109,Final
+15907439,2024-10-22,2024,14,Los Angeles Lakers,18,Minnesota Timberwolves,110,103,Final
+15907440,2024-10-23,2024,9,Detroit Pistons,12,Indiana Pacers,109,115,Final
+15907441,2024-10-23,2024,1,Atlanta Hawks,3,Brooklyn Nets,120,116,Final
+15907442,2024-10-23,2024,16,Miami Heat,22,Orlando Magic,97,116,Final
+15907443,2024-10-23,2024,23,Philadelphia 76ers,17,Milwaukee Bucks,109,124,Final
+15907444,2024-10-23,2024,28,Toronto Raptors,6,Cleveland Cavaliers,106,136,Final
+15907445,2024-10-23,2024,11,Houston Rockets,4,Charlotte Hornets,105,110,Final
+15907446,2024-10-23,2024,19,New Orleans Pelicans,5,Chicago Bulls,123,111,Final
+15907447,2024-10-23,2024,29,Utah Jazz,15,Memphis Grizzlies,124,126,Final
+15907448,2024-10-23,2024,13,LA Clippers,24,Phoenix Suns,113,116,Final
+15907449,2024-10-23,2024,25,Portland Trail Blazers,10,Golden State Warriors,104,139,Final
+15907450,2024-10-24,2024,30,Washington Wizards,2,Boston Celtics,102,122,Final
+15907451,2024-10-24,2024,7,Dallas Mavericks,27,San Antonio Spurs,120,109,Final
+15907452,2024-10-24,2024,8,Denver Nuggets,21,Oklahoma City Thunder,87,102,Final
+15907453,2024-10-24,2024,26,Sacramento Kings,18,Minnesota Timberwolves,115,117,Final
+15907454,2024-10-25,2024,22,Orlando Magic,3,Brooklyn Nets,116,101,Final
+15907455,2024-10-25,2024,28,Toronto Raptors,23,Philadelphia 76ers,115,107,Final
+15907456,2024-10-25,2024,1,Atlanta Hawks,4,Charlotte Hornets,125,120,Final
+15907457,2024-10-25,2024,6,Cleveland Cavaliers,9,Detroit Pistons,113,101,Final
+15907458,2024-10-25,2024,20,New York Knicks,12,Indiana Pacers,123,98,Final
+15907459,2024-10-25,2024,11,Houston Rockets,15,Memphis Grizzlies,128,108,Final
+15907460,2024-10-25,2024,17,Milwaukee Bucks,5,Chicago Bulls,122,133,Final
+15907461,2024-10-25,2024,29,Utah Jazz,10,Golden State Warriors,86,127,Final
+15907462,2024-10-25,2024,14,Los Angeles Lakers,24,Phoenix Suns,123,116,Final
+15907463,2024-10-25,2024,25,Portland Trail Blazers,19,New Orleans Pelicans,103,105,Final
+15907464,2024-10-26,2024,8,Denver Nuggets,13,LA Clippers,104,109,Final
+15907465,2024-10-26,2024,4,Charlotte Hornets,16,Miami Heat,106,114,Final
+15907466,2024-10-26,2024,9,Detroit Pistons,2,Boston Celtics,118,124,Final
+15907467,2024-10-26,2024,30,Washington Wizards,6,Cleveland Cavaliers,116,135,Final
+15907468,2024-10-26,2024,5,Chicago Bulls,21,Oklahoma City Thunder,95,114,Final
+15907469,2024-10-26,2024,15,Memphis Grizzlies,22,Orlando Magic,124,111,Final
+15907470,2024-10-26,2024,18,Minnesota Timberwolves,28,Toronto Raptors,112,101,Final
+15907471,2024-10-26,2024,27,San Antonio Spurs,11,Houston Rockets,109,106,Final
+15907472,2024-10-26,2024,24,Phoenix Suns,7,Dallas Mavericks,114,102,Final
+15907473,2024-10-26,2024,14,Los Angeles Lakers,26,Sacramento Kings,131,127,Final
+15907474,2024-10-27,2024,12,Indiana Pacers,23,Philadelphia 76ers,114,118,Final
+15907475,2024-10-27,2024,3,Brooklyn Nets,17,Milwaukee Bucks,115,102,Final
+15907476,2024-10-27,2024,25,Portland Trail Blazers,19,New Orleans Pelicans,125,103,Final
+15907477,2024-10-27,2024,21,Oklahoma City Thunder,1,Atlanta Hawks,128,104,Final
+15907478,2024-10-27,2024,10,Golden State Warriors,13,LA Clippers,104,112,Final
+15907479,2024-10-28,2024,22,Orlando Magic,12,Indiana Pacers,119,115,Final
+15907480,2024-10-28,2024,1,Atlanta Hawks,30,Washington Wizards,119,121,Final
+15907481,2024-10-28,2024,2,Boston Celtics,17,Milwaukee Bucks,119,108,Final
+15907482,2024-10-28,2024,16,Miami Heat,9,Detroit Pistons,106,98,Final
+15907483,2024-10-28,2024,20,New York Knicks,6,Cleveland Cavaliers,104,110,Final
+15907484,2024-10-28,2024,28,Toronto Raptors,8,Denver Nuggets,125,127,Final
+15907485,2024-10-28,2024,15,Memphis Grizzlies,5,Chicago Bulls,123,126,Final
+15907486,2024-10-28,2024,27,San Antonio Spurs,11,Houston Rockets,101,106,Final
+15907487,2024-10-28,2024,7,Dallas Mavericks,29,Utah Jazz,110,102,Final
+15907488,2024-10-28,2024,24,Phoenix Suns,14,Los Angeles Lakers,109,105,Final
+15907489,2024-10-28,2024,26,Sacramento Kings,25,Portland Trail Blazers,111,98,Final
+15907490,2024-10-29,2024,3,Brooklyn Nets,8,Denver Nuggets,139,144,Final
+15907491,2024-10-29,2024,18,Minnesota Timberwolves,7,Dallas Mavericks,114,120,Final
+15907492,2024-10-29,2024,29,Utah Jazz,26,Sacramento Kings,96,113,Final
+15907493,2024-10-29,2024,10,Golden State Warriors,19,New Orleans Pelicans,124,106,Final
+15907494,2024-10-30,2024,4,Charlotte Hornets,28,Toronto Raptors,138,133,Final
+15907495,2024-10-30,2024,6,Cleveland Cavaliers,14,Los Angeles Lakers,134,110,Final
+15907496,2024-10-30,2024,12,Indiana Pacers,2,Boston Celtics,135,132,Final
+15907497,2024-10-30,2024,23,Philadelphia 76ers,9,Detroit Pistons,95,105,Final
+15907498,2024-10-30,2024,30,Washington Wizards,1,Atlanta Hawks,133,120,Final
+15907499,2024-10-30,2024,16,Miami Heat,20,New York Knicks,107,116,Final
+15907500,2024-10-30,2024,5,Chicago Bulls,22,Orlando Magic,102,99,Final
+15907501,2024-10-30,2024,15,Memphis Grizzlies,3,Brooklyn Nets,106,119,Final
+15907502,2024-10-30,2024,21,Oklahoma City Thunder,27,San Antonio Spurs,105,93,Final
+15907503,2024-10-30,2024,10,Golden State Warriors,19,New Orleans Pelicans,104,89,Final
+15907504,2024-10-30,2024,13,LA Clippers,25,Portland Trail Blazers,105,106,Final
+15907505,2024-10-31,2024,15,Memphis Grizzlies,17,Milwaukee Bucks,122,99,Final
+15907506,2024-10-31,2024,7,Dallas Mavericks,11,Houston Rockets,102,108,Final
+15907507,2024-10-31,2024,29,Utah Jazz,27,San Antonio Spurs,88,106,Final
+15907508,2024-10-31,2024,13,LA Clippers,24,Phoenix Suns,119,125,Final
+15907509,2024-11-01,2024,4,Charlotte Hornets,2,Boston Celtics,109,124,Final
+15907510,2024-11-01,2024,6,Cleveland Cavaliers,22,Orlando Magic,120,109,Final
+15907511,2024-11-01,2024,9,Detroit Pistons,20,New York Knicks,98,128,Final
+15907512,2024-11-01,2024,1,Atlanta Hawks,26,Sacramento Kings,115,123,Final
+15907513,2024-11-01,2024,3,Brooklyn Nets,5,Chicago Bulls,120,112,Final
+15907514,2024-11-01,2024,28,Toronto Raptors,14,Los Angeles Lakers,125,131,Final
+15907515,2024-11-01,2024,19,New Orleans Pelicans,12,Indiana Pacers,125,118,Final
+15907516,2024-11-01,2024,18,Minnesota Timberwolves,8,Denver Nuggets,119,116,Final
+15907517,2024-11-01,2024,25,Portland Trail Blazers,21,Oklahoma City Thunder,114,137,Final
+15907518,2024-11-02,2024,4,Charlotte Hornets,2,Boston Celtics,103,113,Final
+15907519,2024-11-02,2024,23,Philadelphia 76ers,15,Memphis Grizzlies,107,124,Final
+15907520,2024-11-02,2024,28,Toronto Raptors,26,Sacramento Kings,131,128,Final
+15907521,2024-11-02,2024,11,Houston Rockets,10,Golden State Warriors,121,127,Final
+15907522,2024-11-02,2024,17,Milwaukee Bucks,6,Cleveland Cavaliers,113,114,Final
+15907523,2024-11-02,2024,27,San Antonio Spurs,18,Minnesota Timberwolves,113,103,Final
+15907524,2024-11-02,2024,30,Washington Wizards,16,Miami Heat,98,118,Final
+15907525,2024-11-02,2024,8,Denver Nuggets,29,Utah Jazz,129,103,Final
+15907526,2024-11-02,2024,24,Phoenix Suns,25,Portland Trail Blazers,103,97,Final
+15907527,2024-11-02,2024,13,LA Clippers,21,Oklahoma City Thunder,92,105,Final
+15907528,2024-11-03,2024,3,Brooklyn Nets,9,Detroit Pistons,92,106,Final
+15907529,2024-11-03,2024,19,New Orleans Pelicans,1,Atlanta Hawks,111,126,Final
+15907530,2024-11-03,2024,7,Dallas Mavericks,22,Orlando Magic,108,85,Final
+15907531,2024-11-04,2024,6,Cleveland Cavaliers,17,Milwaukee Bucks,116,114,Final
+15907532,2024-11-04,2024,30,Washington Wizards,10,Golden State Warriors,112,125,Final
+15907533,2024-11-04,2024,9,Detroit Pistons,14,Los Angeles Lakers,115,103,Final
+15907534,2024-11-04,2024,1,Atlanta Hawks,2,Boston Celtics,93,123,Final
+15907535,2024-11-04,2024,3,Brooklyn Nets,15,Memphis Grizzlies,106,104,Final
+15907536,2024-11-04,2024,16,Miami Heat,26,Sacramento Kings,110,111,Final
+15907537,2024-11-04,2024,5,Chicago Bulls,29,Utah Jazz,126,135,Final
+18446819,2025-10-21,2025,21,Oklahoma City Thunder,11,Houston Rockets,125,124,Final
+18446820,2025-10-21,2025,14,Los Angeles Lakers,10,Golden State Warriors,109,119,Final
+18446821,2025-10-22,2025,20,New York Knicks,6,Cleveland Cavaliers,119,111,Final
+18446822,2025-10-22,2025,7,Dallas Mavericks,27,San Antonio Spurs,92,125,Final
+18446823,2025-10-22,2025,4,Charlotte Hornets,3,Brooklyn Nets,136,117,Final
+18446824,2025-10-22,2025,22,Orlando Magic,16,Miami Heat,125,121,Final
+18446825,2025-10-22,2025,1,Atlanta Hawks,28,Toronto Raptors,118,138,Final
+18446826,2025-10-22,2025,2,Boston Celtics,23,Philadelphia 76ers,116,117,Final
+18446827,2025-10-22,2025,5,Chicago Bulls,9,Detroit Pistons,115,111,Final
+18446828,2025-10-22,2025,15,Memphis Grizzlies,19,New Orleans Pelicans,128,122,Final
+18446829,2025-10-22,2025,17,Milwaukee Bucks,30,Washington Wizards,133,120,Final
+18446830,2025-10-22,2025,29,Utah Jazz,13,LA Clippers,129,108,Final
+18446831,2025-10-22,2025,24,Phoenix Suns,26,Sacramento Kings,120,116,Final
+18446832,2025-10-22,2025,25,Portland Trail Blazers,18,Minnesota Timberwolves,114,118,Final
+18446833,2025-10-23,2025,12,Indiana Pacers,21,Oklahoma City Thunder,135,141,Final
+18446834,2025-10-23,2025,10,Golden State Warriors,8,Denver Nuggets,137,131,Final
+18446835,2025-10-24,2025,20,New York Knicks,2,Boston Celtics,105,95,Final
+18446836,2025-10-24,2025,14,Los Angeles Lakers,18,Minnesota Timberwolves,128,110,Final
+18446837,2025-10-24,2025,22,Orlando Magic,1,Atlanta Hawks,107,111,Final
+18446838,2025-10-24,2025,3,Brooklyn Nets,6,Cleveland Cavaliers,124,131,Final
+18446839,2025-10-24,2025,28,Toronto Raptors,17,Milwaukee Bucks,116,122,Final
+18446840,2025-10-24,2025,11,Houston Rockets,9,Detroit Pistons,111,115,Final
+18446841,2025-10-24,2025,15,Memphis Grizzlies,16,Miami Heat,114,146,Final
+18446842,2025-10-24,2025,19,New Orleans Pelicans,27,San Antonio Spurs,116,120,Final
+18446843,2025-10-24,2025,7,Dallas Mavericks,30,Washington Wizards,107,117,Final
+18446844,2025-10-24,2025,25,Portland Trail Blazers,10,Golden State Warriors,139,119,Final
+18446845,2025-10-24,2025,26,Sacramento Kings,29,Utah Jazz,105,104,Final
+18446846,2025-10-24,2025,13,LA Clippers,24,Phoenix Suns,129,102,Final
+18446847,2025-10-25,2025,22,Orlando Magic,5,Chicago Bulls,98,110,Final
+18446848,2025-10-25,2025,1,Atlanta Hawks,21,Oklahoma City Thunder,100,117,Final
+18446849,2025-10-25,2025,23,Philadelphia 76ers,4,Charlotte Hornets,125,121,Final
+18446850,2025-10-25,2025,15,Memphis Grizzlies,12,Indiana Pacers,128,103,Final
+18446851,2025-10-25,2025,8,Denver Nuggets,24,Phoenix Suns,133,111,Final
+18446852,2025-10-26,2025,27,San Antonio Spurs,3,Brooklyn Nets,118,107,Final
+18446853,2025-10-26,2025,9,Detroit Pistons,2,Boston Celtics,119,113,Final
+18446854,2025-10-26,2025,6,Cleveland Cavaliers,17,Milwaukee Bucks,118,113,Final
+18446855,2025-10-26,2025,16,Miami Heat,20,New York Knicks,115,107,Final
+18446856,2025-10-26,2025,30,Washington Wizards,4,Charlotte Hornets,113,139,Final
+18446857,2025-10-26,2025,18,Minnesota Timberwolves,12,Indiana Pacers,114,110,Final
+18446858,2025-10-26,2025,7,Dallas Mavericks,28,Toronto Raptors,139,129,Final
+18446859,2025-10-26,2025,13,LA Clippers,25,Portland Trail Blazers,114,107,Final
+18446860,2025-10-26,2025,26,Sacramento Kings,14,Los Angeles Lakers,120,127,Final
+18446861,2025-10-27,2025,9,Detroit Pistons,6,Cleveland Cavaliers,95,116,Final
+18446862,2025-10-27,2025,18,Minnesota Timberwolves,8,Denver Nuggets,111,124,Final
+18446863,2025-10-27,2025,23,Philadelphia 76ers,22,Orlando Magic,136,124,Final
+18446864,2025-10-27,2025,5,Chicago Bulls,1,Atlanta Hawks,128,123,Final
+18446865,2025-10-27,2025,11,Houston Rockets,3,Brooklyn Nets,137,109,Final
+18446866,2025-10-27,2025,19,New Orleans Pelicans,2,Boston Celtics,90,122,Final
+18446867,2025-10-27,2025,27,San Antonio Spurs,28,Toronto Raptors,121,103,Final
+18446868,2025-10-27,2025,7,Dallas Mavericks,21,Oklahoma City Thunder,94,101,Final
+18446869,2025-10-27,2025,29,Utah Jazz,24,Phoenix Suns,138,134,Final
+18446870,2025-10-27,2025,10,Golden State Warriors,15,Memphis Grizzlies,131,115,Final
+18446871,2025-10-27,2025,14,Los Angeles Lakers,25,Portland Trail Blazers,108,122,Final
+18446872,2025-10-28,2025,30,Washington Wizards,23,Philadelphia 76ers,134,139,Final
+18446873,2025-10-28,2025,16,Miami Heat,4,Charlotte Hornets,144,117,Final
+18446874,2025-10-28,2025,17,Milwaukee Bucks,20,New York Knicks,121,111,Final
+18446875,2025-10-28,2025,21,Oklahoma City Thunder,26,Sacramento Kings,107,101,Final
+18446876,2025-10-28,2025,10,Golden State Warriors,13,LA Clippers,98,79,Final
+18446877,2025-10-29,2025,2,Boston Celtics,6,Cleveland Cavaliers,125,105,Final
+18446878,2025-10-29,2025,9,Detroit Pistons,22,Orlando Magic,135,116,Final
+18446879,2025-10-29,2025,3,Brooklyn Nets,1,Atlanta Hawks,112,117,Final
+18446880,2025-10-29,2025,28,Toronto Raptors,11,Houston Rockets,121,139,Final
+18446881,2025-10-29,2025,5,Chicago Bulls,26,Sacramento Kings,126,113,Final
+18446882,2025-10-29,2025,7,Dallas Mavericks,12,Indiana Pacers,107,105,Final
+18446883,2025-10-29,2025,8,Denver Nuggets,19,New Orleans Pelicans,122,88,Final
+18446884,2025-10-29,2025,29,Utah Jazz,25,Portland Trail Blazers,134,136,Final
+18446885,2025-10-29,2025,18,Minnesota Timberwolves,14,Los Angeles Lakers,115,116,Final
+18446886,2025-10-29,2025,24,Phoenix Suns,15,Memphis Grizzlies,113,114,Final
+18446887,2025-10-30,2025,4,Charlotte Hornets,22,Orlando Magic,107,123,Final
+18446888,2025-10-30,2025,17,Milwaukee Bucks,10,Golden State Warriors,120,110,Final
+18446889,2025-10-30,2025,21,Oklahoma City Thunder,30,Washington Wizards,127,108,Final
+18446890,2025-10-30,2025,27,San Antonio Spurs,16,Miami Heat,107,101,Final
+18446891,2025-10-31,2025,12,Indiana Pacers,1,Atlanta Hawks,108,128,Final
+18446892,2025-10-31,2025,23,Philadelphia 76ers,2,Boston Celtics,108,109,Final
+18446893,2025-10-31,2025,6,Cleveland Cavaliers,28,Toronto Raptors,101,112,Final
+18446894,2025-10-31,2025,5,Chicago Bulls,20,New York Knicks,135,125,Final
+18446895,2025-10-31,2025,15,Memphis Grizzlies,14,Los Angeles Lakers,112,117,Final
+18446896,2025-10-31,2025,24,Phoenix Suns,29,Utah Jazz,118,96,Final
+18446897,2025-10-31,2025,25,Portland Trail Blazers,8,Denver Nuggets,109,107,Final
+18446898,2025-10-31,2025,13,LA Clippers,19,New Orleans Pelicans,126,124,Final
+18446899,2025-11-01,2025,17,Milwaukee Bucks,26,Sacramento Kings,133,135,Final
+18446900,2025-11-01,2025,4,Charlotte Hornets,18,Minnesota Timberwolves,105,122,Final
+18446901,2025-11-01,2025,12,Indiana Pacers,10,Golden State Warriors,114,109,Final
+18446902,2025-11-01,2025,30,Washington Wizards,22,Orlando Magic,94,125,Final
+18446903,2025-11-01,2025,2,Boston Celtics,11,Houston Rockets,101,128,Final
+18446904,2025-11-01,2025,9,Detroit Pistons,7,Dallas Mavericks,122,110,Final
+18446905,2025-11-02,2025,21,Oklahoma City Thunder,19,New Orleans Pelicans,137,106,Final
+18446906,2025-11-02,2025,3,Brooklyn Nets,23,Philadelphia 76ers,105,129,Final
+18446907,2025-11-02,2025,4,Charlotte Hornets,29,Utah Jazz,126,103,Final
+18446908,2025-11-02,2025,6,Cleveland Cavaliers,1,Atlanta Hawks,117,109,Final
+18446909,2025-11-02,2025,28,Toronto Raptors,15,Memphis Grizzlies,117,104,Final
+18446910,2025-11-02,2025,20,New York Knicks,5,Chicago Bulls,128,116,Final
+18446911,2025-11-02,2025,24,Phoenix Suns,27,San Antonio Spurs,130,118,Final
+18446912,2025-11-02,2025,14,Los Angeles Lakers,16,Miami Heat,130,120,Final
+18446913,2025-11-03,2025,3,Brooklyn Nets,18,Minnesota Timberwolves,109,125,Final
+18446914,2025-11-03,2025,12,Indiana Pacers,17,Milwaukee Bucks,115,117,Final
+18446915,2025-11-03,2025,2,Boston Celtics,29,Utah Jazz,103,105,Final
+18446916,2025-11-03,2025,20,New York Knicks,30,Washington Wizards,119,102,Final
+18446917,2025-11-03,2025,11,Houston Rockets,7,Dallas Mavericks,110,102,Final
+18446918,2025-11-03,2025,15,Memphis Grizzlies,9,Detroit Pistons,106,114,Final
