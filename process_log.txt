@@ -1,0 +1,31 @@
+================================================================================
+NBA PLAYER PROPS - COMPLETE PREDICTION PIPELINE
+================================================================================
+Started: 2025-11-08 20:46:39
+================================================================================
+
+[PHASE 1/6] LOADING REAL NBA DATA
+--------------------------------------------------------------------------------
+✓ Loaded 300 games
+✓ Loaded 10391 player-game stats
+✓ Date range: 2023-10-24 00:00:00 to 2025-11-03 00:00:00
+✓ Seasons: [np.int64(2023), np.int64(2024), np.int64(2025)]
+
+Merging player stats with game data...
+✓ Created full dataset: 10391 player-games
+
+[PHASE 2/6] ENGINEERING FEATURES
+--------------------------------------------------------------------------------
+Calculating rolling averages (L3, L5, L7, L10)...
+Calculating rest days...
+✓ Dropped 818 rows with insufficient history
+✓ Final training dataset: 9573 player-games
+✓ Players: 735
+✓ Features engineered: 62
+✓ Saved processed data: data/processed_training_data.csv
+
+================================================================================
+DATA PROCESSING COMPLETE
+================================================================================
+Ready for model training with 9573 real NBA player-games
+================================================================================
