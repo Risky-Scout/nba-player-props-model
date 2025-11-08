@@ -207,13 +207,13 @@ class HistoricalDataCollector:
 
         return df
 
-    def collect_all_seasons(self, top_n_players=100, cutoff_date_2024_25='2025-11-07'):
+    def collect_all_seasons(self, top_n_players=100, cutoff_date='2025-11-07'):
         """
         Collect data across all specified seasons
 
         Args:
             top_n_players: Number of top players to collect
-            cutoff_date_2024_25: Cutoff date for 2024-25 season (for temporal split)
+            cutoff_date: Cutoff date for current season (for temporal split - prevents data leakage)
         """
         print(f"\n{'='*80}")
         print(f"PHASE 1: IDENTIFYING ACTIVE PLAYERS")
@@ -240,12 +240,12 @@ class HistoricalDataCollector:
             for season in self.seasons:
                 print(f"    Collecting {season}...", end=" ")
 
-                # Apply cutoff for 2024-25 season
-                cutoff = None
-                if season == '2024-25':
-                    cutoff = pd.to_datetime(cutoff_date_2024_25)
+                # Apply cutoff for current season (2025-26) to prevent data leakage
+                cutoff_datetime = None
+                if season == '2025-26':
+                    cutoff_datetime = pd.to_datetime(cutoff_date)
 
-                games = self.collect_player_season_data(player_id, player_name, season, cutoff)
+                games = self.collect_player_season_data(player_id, player_name, season, cutoff_datetime)
 
                 if games:
                     all_games.extend(games)
@@ -307,14 +307,16 @@ def main():
     print("NO SYNTHETIC DATA - 100% REAL GAME LOGS FROM NBA API")
     print("="*80)
 
-    # Define training seasons
-    training_seasons = ['2022-23', '2023-24', '2024-25']
+    # Define training seasons (optimized for current season predictions)
+    # Using 2 full recent seasons + current season for maximum relevance
+    training_seasons = ['2023-24', '2024-25', '2025-26']
 
-    # Cutoff date for 2024-25 season (everything before Nov 7, 2025)
+    # Cutoff date for 2025-26 season (everything before Nov 7, 2025)
+    # This ensures NO data leakage - we only train on games that happened before prediction date
     cutoff_date = '2025-11-07'
 
     print(f"\nTraining seasons: {', '.join(training_seasons)}")
-    print(f"2024-25 cutoff: {cutoff_date} (temporal split for testing)")
+    print(f"2025-26 cutoff: {cutoff_date} (temporal split - no data leakage)")
 
     # Initialize collector
     collector = HistoricalDataCollector(seasons=training_seasons)
@@ -322,7 +324,7 @@ def main():
     # Collect data
     df = collector.collect_all_seasons(
         top_n_players=100,  # Collect more players for robust training
-        cutoff_date_2024_25=cutoff_date
+        cutoff_date=cutoff_date
     )
 
     # Save to file
