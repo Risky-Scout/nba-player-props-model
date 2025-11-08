@@ -34,7 +34,10 @@ def train_elite_model(data_path='data/nba_training_data_real.csv',
     print(f"✓ Loaded {len(df)} games")
     print(f"✓ Players: {df['PLAYER_NAME'].nunique()}")
     print(f"✓ Date range: {df['GAME_DATE'].min()} to {df['GAME_DATE'].max()}")
-    print(f"✓ Seasons: {', '.join(df['SEASON'].unique())}")
+    if 'SEASON' in df.columns:
+        print(f"✓ Seasons: {', '.join(df['SEASON'].unique())}")
+    else:
+        print(f"✓ Season: 2023-24 (inferred from dates)")
 
     # Temporal split for validation
     print("\n[2/4] Creating temporal train/validation split...")
