@@ -116,7 +116,7 @@ UTA  = Utah Jazz              WAS  = Washington Wizards
 
 **Command:**
 ```bash
-python run_daily_predictions.py \
+python scripts/prediction/run_daily_predictions.py \
   --date 2025-11-08 \
   --games "DAL@WAS,TOR@PHI,CHI@CLE,LAL@ATL,POR@MIA,NOP@SAS,IND@DEN,PHX@LAC" \
   --injuries data/injuries/injuries_2025-11-08.csv
@@ -180,7 +180,7 @@ TOP 10 PICKS FOR TONIGHT
 
 **Command:**
 ```bash
-python generate_risky_scout_report.py --date 2025-11-08
+python scripts/reports/generate_risky_scout_report.py --date 2025-11-08
 ```
 
 **What This Does:**
@@ -248,7 +248,7 @@ cat predictions/RISKY_SCOUT_FAVORITES_2025-11-08.txt
 **After games complete (next morning):**
 
 ```bash
-python track_accuracy.py --date 2025-11-08 --enter-results
+python scripts/reports/track_accuracy.py --date 2025-11-08 --enter-results
 ```
 
 **Interactive Entry:**
@@ -299,7 +299,7 @@ Format: player,prop,actual_value
 
 **View Accuracy Summary:**
 ```bash
-python track_accuracy.py --summary
+python scripts/reports/track_accuracy.py --summary
 ```
 
 **Public Record:**
@@ -349,13 +349,13 @@ Use this checklist every single day:
 - [ ] **9:00 AM - 5:30 PM:** Download NBA injury report
 - [ ] Create injury CSV in `data/injuries/injuries_YYYY-MM-DD.csv`
 - [ ] Get tonight's NBA schedule (games string)
-- [ ] Run `python run_daily_predictions.py ...` (Step 3)
+- [ ] Run `python scripts/prediction/run_daily_predictions.py ...` (Step 3)
 - [ ] Verify output: `predictions/tonight_INJURY_ADJUSTED_*.csv` exists
-- [ ] Run `python generate_risky_scout_report.py ...` (Step 4)
+- [ ] Run `python scripts/reports/generate_risky_scout_report.py ...` (Step 4)
 - [ ] Review client report: `predictions/RISKY_SCOUT_FAVORITES_*.txt`
 - [ ] Send report to clients (email, Discord, etc.)
 - [ ] Commit and push to GitHub
-- [ ] **Next Morning:** Run `python track_accuracy.py --enter-results`
+- [ ] **Next Morning:** Run `python scripts/reports/track_accuracy.py --enter-results`
 - [ ] Verify accuracy summary updated
 - [ ] Commit accuracy results to GitHub
 

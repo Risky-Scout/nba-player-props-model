@@ -14,7 +14,7 @@ echo ""
 # Check if training data exists
 if [ ! -f "data/nba_training_data_real.csv" ]; then
     echo "❌ ERROR: Training data not found!"
-    echo "Please run: python collect_historical_training_data.py"
+    echo "Please run: python scripts/data_collection/collect_historical_training_data.py"
     exit 1
 fi
 
@@ -25,7 +25,7 @@ echo ""
 echo "================================================================================"
 echo "STEP 1: TRAINING ELITE MODEL"
 echo "================================================================================"
-python train_elite_model.py data/nba_training_data_real.csv
+python scripts/training/train_elite_model.py data/nba_training_data_real.csv
 
 if [ $? -ne 0 ]; then
     echo "❌ Training failed!"
@@ -40,7 +40,7 @@ echo ""
 echo "================================================================================"
 echo "STEP 2: GENERATING ELITE PREDICTIONS"
 echo "================================================================================"
-python elite_prediction_system.py
+python scripts/prediction/elite_prediction_system.py
 
 if [ $? -ne 0 ]; then
     echo "❌ Prediction generation failed!"
