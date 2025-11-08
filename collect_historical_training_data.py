@@ -33,7 +33,7 @@ class HistoricalDataCollector:
         print(f"Total players in database: {len(self.all_players)}")
         print(f"="*80)
 
-    def get_active_players_for_seasons(self, min_total_games=20):
+    def get_active_players_for_seasons(self, min_total_games=20, max_players_to_scan=100):
         """
         Get players who played in any of the target seasons
         Focus on players with significant playing time
@@ -42,10 +42,10 @@ class HistoricalDataCollector:
 
         player_game_counts = []
 
-        # Check a broader set of players
-        for i, player in enumerate(self.all_players[:300]):  # Check top 300 players
-            if i % 30 == 0:
-                print(f"  Scanning player {i+1}/300...")
+        # Check a focused set of players for speed
+        for i, player in enumerate(self.all_players[:max_players_to_scan]):  # Reduced for speed
+            if i % 10 == 0:
+                print(f"  Scanning player {i+1}/{max_players_to_scan}...")
 
             total_games = 0
             season_games = {}
@@ -207,7 +207,7 @@ class HistoricalDataCollector:
 
         return df
 
-    def collect_all_seasons(self, top_n_players=100, cutoff_date='2025-11-07'):
+    def collect_all_seasons(self, top_n_players=30, cutoff_date='2025-11-07', max_players_to_scan=100):
         """
         Collect data across all specified seasons
 
@@ -219,7 +219,7 @@ class HistoricalDataCollector:
         print(f"PHASE 1: IDENTIFYING ACTIVE PLAYERS")
         print(f"{'='*80}")
 
-        active_players = self.get_active_players_for_seasons(min_total_games=20)
+        active_players = self.get_active_players_for_seasons(min_total_games=20, max_players_to_scan=max_players_to_scan)
         selected_players = active_players[:top_n_players]
 
         print(f"\n{'='*80}")
@@ -321,9 +321,10 @@ def main():
     # Initialize collector
     collector = HistoricalDataCollector(seasons=training_seasons)
 
-    # Collect data
+    # Collect data (FAST TRACK: 30 players for speed)
     df = collector.collect_all_seasons(
-        top_n_players=100,  # Collect more players for robust training
+        top_n_players=30,  # Reduced for speed - still robust
+        max_players_to_scan=100,  # Scan fewer players
         cutoff_date=cutoff_date
     )
 
