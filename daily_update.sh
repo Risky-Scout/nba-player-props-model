@@ -18,7 +18,7 @@ echo ""
 # Step 1: Collect current season data
 echo "STEP 1: Collecting current season data..."
 echo "--------------------------------------------------------------------------------"
-python collect_current_season_data.py
+python scripts/data_collection/collect_current_season_data.py
 if [ $? -ne 0 ]; then
     echo "ERROR: Data collection failed"
     exit 1
@@ -28,7 +28,7 @@ echo ""
 # Step 2: Train model on latest data
 echo "STEP 2: Training model on latest data..."
 echo "--------------------------------------------------------------------------------"
-python train_latest_model.py
+python scripts/training/train_latest_model.py
 if [ $? -ne 0 ]; then
     echo "ERROR: Model training failed"
     exit 1
@@ -38,7 +38,7 @@ echo ""
 # Step 3: Generate tonight's predictions
 echo "STEP 3: Generating tonight's predictions..."
 echo "--------------------------------------------------------------------------------"
-python generate_tonight_predictions.py
+python scripts/prediction/generate_tonight_predictions.py
 if [ $? -ne 0 ]; then
     echo "ERROR: Prediction generation failed"
     exit 1
