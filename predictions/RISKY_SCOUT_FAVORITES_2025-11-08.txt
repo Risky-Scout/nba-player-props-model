@@ -1,0 +1,176 @@
+================================================================================
+THE RISKY SCOUT'S NBA PLAYER PROP FAVORITES
+Date: 2025-11-08
+Generated: 2025-11-08 10:02 PM ET
+================================================================================
+
+MODEL PERFORMANCE
+--------------------------------------------------------------------------------
+Points:   MAE 2.31 pts  | 71.6% within 3 points
+Rebounds: MAE 1.05 reb  | 90.4% within 3 rebounds
+Assists:  MAE 0.80 ast  | 95.1% within 3 assists
+
+Trained on 9,573 real NBA games
+Features: Real opponent defensive ratings, usage boosts for injuries
+
+================================================================================
+TOP 15 INDIVIDUAL PROPS (70-80% Confidence)
+================================================================================
+
+# 1.               Evan Mobley (   Cleveland Cavaliers)
+     REB Over   8.0
+     Probability:  80.0%  |  Expected Value: 9.5  |  Fair Odds:  -399
+
+# 2.           Bilal Coulibaly (    Washington Wizards)
+     AST Over   2.0
+     Probability:  80.0%  |  Expected Value: 3.2  |  Fair Odds:  -399
+
+# 3.            Brandon Ingram (       Toronto Raptors)
+     REB Over   4.0
+     Probability:  79.9%  |  Expected Value: 5.5  |  Fair Odds:  -398
+
+# 4.                 Ty Jerome (   Cleveland Cavaliers)
+     REB Over   0.5
+     Probability:  79.9%  |  Expected Value: 2.0  |  Fair Odds:  -396
+
+# 5.                 Dean Wade (   Cleveland Cavaliers)
+     AST Over   0.5
+     Probability:  79.9%  |  Expected Value: 1.7  |  Fair Odds:  -396
+
+# 6.           Christian Braun (        Denver Nuggets)
+     PTS Over  10.5
+     Probability:  79.8%  |  Expected Value: 13.7  |  Fair Odds:  -395
+
+# 7.             Nicolas Batum (           LA Clippers)
+     REB Over   2.0
+     Probability:  79.8%  |  Expected Value: 3.5  |  Fair Odds:  -395
+
+# 8.           Davion Mitchell (            Miami Heat)
+     REB Over   2.0
+     Probability:  79.7%  |  Expected Value: 3.4  |  Fair Odds:  -393
+
+# 9.            Alexandre Sarr (    Washington Wizards)
+     AST Over   2.0
+     Probability:  79.7%  |  Expected Value: 3.2  |  Fair Odds:  -393
+
+#10.            Andre Drummond (    Philadelphia 76ers)
+     REB Over   6.0
+     Probability:  79.7%  |  Expected Value: 7.4  |  Fair Odds:  -392
+
+#11.             Herbert Jones (  New Orleans Pelicans)
+     REB Over   2.0
+     Probability:  79.7%  |  Expected Value: 3.4  |  Fair Odds:  -392
+
+#12.         Immanuel Quickley (       Toronto Raptors)
+     REB Over   2.0
+     Probability:  79.7%  |  Expected Value: 3.4  |  Fair Odds:  -392
+
+#13.         Victor Wembanyama (     San Antonio Spurs)
+     PTS Over  25.0
+     Probability:  79.7%  |  Expected Value: 28.2  |  Fair Odds:  -391
+
+#14.           Anfernee Simons (Portland Trail Blazers)
+     PTS Over  20.5
+     Probability:  79.7%  |  Expected Value: 23.7  |  Fair Odds:  -391
+
+#15.              Clint Capela (         Atlanta Hawks)
+     PTS Over   0.5
+     Probability:  79.6%  |  Expected Value: 3.7  |  Fair Odds:  -391
+
+================================================================================
+TOP 10 SAME GAME PARLAYS (2-LEG)
+================================================================================
+
+SGP #1 - Cleveland Cavaliers
+  Leg 1: De'Andre Hunter PTS Over 14.5 (79.5%)
+  Leg 2: Evan Mobley REB Over 8.0 (80.0%)
+  Correlation: 0.647  |  Combined Probability: 69.7%
+
+SGP #2 - Cleveland Cavaliers
+  Leg 1: De'Andre Hunter PTS Over 14.5 (79.5%)
+  Leg 2: Ty Jerome REB Over 0.5 (79.9%)
+  Correlation: 0.647  |  Combined Probability: 69.6%
+
+SGP #3 - Denver Nuggets
+  Leg 1: Kentavious Caldwell-Pope AST Over 0.5 (79.6%)
+  Leg 2: Christian Braun PTS Over 10.5 (79.8%)
+  Correlation: 0.639  |  Combined Probability: 69.6%
+
+SGP #4 - Cleveland Cavaliers
+  Leg 1: De'Andre Hunter PTS Over 14.5 (79.5%)
+  Leg 2: Dean Wade AST Over 0.5 (79.9%)
+  Correlation: 0.639  |  Combined Probability: 69.6%
+
+SGP #5 - Toronto Raptors
+  Leg 1: Chris Boucher PTS Over 12.5 (79.3%)
+  Leg 2: Brandon Ingram REB Over 4.0 (79.9%)
+  Correlation: 0.647  |  Combined Probability: 69.5%
+
+SGP #6 - Cleveland Cavaliers
+  Leg 1: Evan Mobley PTS Over 20.5 (79.2%)
+  Leg 2: Evan Mobley REB Over 8.0 (80.0%)
+  Correlation: 0.647  |  Combined Probability: 69.5%
+
+SGP #7 - Cleveland Cavaliers
+  Leg 1: Georges Niang PTS Over 5.0 (79.1%)
+  Leg 2: Evan Mobley REB Over 8.0 (80.0%)
+  Correlation: 0.647  |  Combined Probability: 69.4%
+
+SGP #8 - Denver Nuggets
+  Leg 1: Kentavious Caldwell-Pope AST Over 0.5 (79.6%)
+  Leg 2: Aaron Gordon PTS Over 17.5 (79.6%)
+  Correlation: 0.639  |  Combined Probability: 69.4%
+
+SGP #9 - Cleveland Cavaliers
+  Leg 1: Ty Jerome REB Over 0.5 (79.9%)
+  Leg 2: Evan Mobley PTS Over 20.5 (79.2%)
+  Correlation: 0.647  |  Combined Probability: 69.4%
+
+SGP #10 - Cleveland Cavaliers
+  Leg 1: Georges Niang PTS Over 5.0 (79.1%)
+  Leg 2: Ty Jerome REB Over 0.5 (79.9%)
+  Correlation: 0.647  |  Combined Probability: 69.3%
+
+================================================================================
+TOP 5 SAME GAME PARLAYS (3-LEG)
+================================================================================
+
+SGP #1 - Toronto Raptors
+  Leg 1: OG Anunoby AST Over 2.0 (76.3%)
+  Leg 2: Chris Boucher PTS Over 12.5 (79.3%)
+  Leg 3: Chris Boucher REB Over 4.0 (78.7%)
+  Avg Correlation: 0.597  |  Combined Probability: 51.0%
+
+SGP #2 - Phoenix Suns
+  Leg 1: Grayson Allen PTS Over 16.5 (78.6%)
+  Leg 2: Grayson Allen AST Over 3.5 (77.0%)
+  Leg 3: Devin Booker PTS Over 23.5 (79.2%)
+  Avg Correlation: 0.426  |  Combined Probability: 50.3%
+
+SGP #3 - Toronto Raptors
+  Leg 1: OG Anunoby PTS Over 16.5 (75.8%)
+  Leg 2: Chris Boucher PTS Over 12.5 (79.3%)
+  Leg 3: Chris Boucher REB Over 4.0 (78.7%)
+  Avg Correlation: 0.431  |  Combined Probability: 49.7%
+
+SGP #4 - Toronto Raptors
+  Leg 1: Chris Boucher PTS Over 12.5 (79.3%)
+  Leg 2: Chris Boucher REB Over 4.0 (78.7%)
+  Leg 3: Chris Boucher AST Over 0.5 (74.3%)
+  Avg Correlation: 0.597  |  Combined Probability: 49.7%
+
+SGP #5 - Toronto Raptors
+  Leg 1: OG Anunoby REB Over 4.5 (75.2%)
+  Leg 2: Chris Boucher PTS Over 12.5 (79.3%)
+  Leg 3: Chris Boucher REB Over 4.0 (78.7%)
+  Avg Correlation: 0.431  |  Combined Probability: 49.3%
+
+================================================================================
+DISCLAIMER
+--------------------------------------------------------------------------------
+These predictions are for informational purposes only.
+Past performance does not guarantee future results.
+Please gamble responsibly.
+================================================================================
+
+© The Risky Scout - Advanced NBA Analytics
