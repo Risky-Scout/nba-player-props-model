@@ -33,7 +33,7 @@ class HistoricalDataCollector:
         print(f"Total players in database: {len(self.all_players)}")
         print(f"="*80)
 
-    def get_active_players_for_seasons(self, min_total_games=20, max_players_to_scan=100):
+    def get_active_players_for_seasons(self, min_total_games=30, max_players_to_scan=150):
         """
         Get players who played in any of the target seasons
         Focus on players with significant playing time
@@ -240,12 +240,8 @@ class HistoricalDataCollector:
             for season in self.seasons:
                 print(f"    Collecting {season}...", end=" ")
 
-                # Apply cutoff for current season (2025-26) to prevent data leakage
-                cutoff_datetime = None
-                if season == '2025-26':
-                    cutoff_datetime = pd.to_datetime(cutoff_date)
-
-                games = self.collect_player_season_data(player_id, player_name, season, cutoff_datetime)
+                # No cutoff needed for complete seasons
+                games = self.collect_player_season_data(player_id, player_name, season, cutoff_date=None)
 
                 if games:
                     all_games.extend(games)
@@ -260,6 +256,15 @@ class HistoricalDataCollector:
         print(f"PHASE 3: RAW DATA SUMMARY")
         print(f"{'='*80}")
         print(f"Total games collected: {len(df)}")
+
+        if len(df) == 0:
+            print("\n⚠️  ERROR: No games collected!")
+            print("This likely means:")
+            print("  - NBA API has no data for these seasons")
+            print("  - Season strings are incorrect")
+            print("  - API rate limits exceeded")
+            return pd.DataFrame()  # Return empty DataFrame
+
         print(f"Unique players: {df['PLAYER_NAME'].nunique()}")
         print(f"Seasons: {df['SEASON'].unique()}")
         print(f"Date range: {df['GAME_DATE'].min()} to {df['GAME_DATE'].max()}")
@@ -308,15 +313,14 @@ def main():
     print("="*80)
 
     # Define training seasons (optimized for current season predictions)
-    # Using 2 full recent seasons + current season for maximum relevance
-    training_seasons = ['2023-24', '2024-25', '2025-26']
+    # Using 2 complete recent seasons (2025-26 data not yet available in API)
+    training_seasons = ['2023-24', '2024-25']
 
-    # Cutoff date for 2025-26 season (everything before Nov 7, 2025)
-    # This ensures NO data leakage - we only train on games that happened before prediction date
-    cutoff_date = '2025-11-07'
+    # No cutoff needed since both seasons are complete
+    cutoff_date = None
 
     print(f"\nTraining seasons: {', '.join(training_seasons)}")
-    print(f"2025-26 cutoff: {cutoff_date} (temporal split - no data leakage)")
+    print(f"Using complete seasons (2025-26 data will be added via daily updates)")
 
     # Initialize collector
     collector = HistoricalDataCollector(seasons=training_seasons)
@@ -324,9 +328,12 @@ def main():
     # Collect data (FAST TRACK: 30 players for speed)
     df = collector.collect_all_seasons(
         top_n_players=30,  # Reduced for speed - still robust
-        max_players_to_scan=100,  # Scan fewer players
-        cutoff_date=cutoff_date
+        max_players_to_scan=150  # Scan more players to find active ones
     )
+
+    if len(df) == 0:
+        print("\n❌ No data collected. Cannot continue.")
+        return
 
     # Save to file
     output_file = 'data/nba_training_data_real.csv'
