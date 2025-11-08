@@ -34,7 +34,8 @@ feature_cols = [
     'ast_L3', 'ast_L5', 'ast_L7', 'ast_L10',
     'min_decimal_L3', 'min_decimal_L5',
     'fg_pct_L3', 'fg_pct_L5',
-    'games_last_7', 'opp_def_rating', 'opp_pace'
+    'games_last_7',
+    'opp_def_rating', 'opp_off_rating', 'opp_pace'  # REAL opponent stats
 ]
 
 # Focus on top 50 players by minutes played
