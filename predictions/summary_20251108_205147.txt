@@ -1,0 +1,107 @@
+================================================================================
+NBA PLAYER PROPS PREDICTIONS - NOV 8, 2025
+================================================================================
+Generated: 2025-11-08 20:51:47
+Model Accuracy: PTS MAE 3.80 | REB MAE 1.57 | AST MAE 1.09
+================================================================================
+
+TOP 10 INDIVIDUAL PROPS (By Edge)
+--------------------------------------------------------------------------------
+Devin Booker              PTS  O  0.5  EV= 26.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Devin Booker              PTS  O  1.5  EV= 26.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4343
+Devin Booker              PTS  O  2.5  EV= 26.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4342
+Devin Booker              PTS  O  3.5  EV= 26.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4340
+Devin Booker              PTS  O  4.5  EV= 26.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4335
+Steven Adams              REB  O  0.5  EV=  9.4  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4333
+Giannis Antetokounmpo     PTS  O  0.5  EV= 22.4  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4333
+Giannis Antetokounmpo     REB  O  0.5  EV=  9.3  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4332
+Jaylen Brown              PTS  O  0.5  EV= 22.1  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4330
+Bam Adebayo               REB  O  0.5  EV=  9.1  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4328
+
+================================================================================
+TOP 10 TWO-LEG SGPs
+--------------------------------------------------------------------------------
+
+SGP #3383:
+  Mikal Bridges PTS O17.5 (P=70.0%)
+  Wendell Carter Jr. REB O6.5 (P=74.9%)
+  Correlation: 0.647  Combined P: 57.6%
+
+SGP #4267:
+  Wendell Carter Jr. REB O6.5 (P=74.9%)
+  Mike Conley PTS O5.5 (P=69.9%)
+  Correlation: 0.647  Combined P: 57.4%
+
+SGP #3385:
+  Mikal Bridges PTS O17.5 (P=70.0%)
+  Alex Caruso REB O0.5 (P=74.6%)
+  Correlation: 0.647  Combined P: 57.3%
+
+SGP #4309:
+  Alex Caruso REB O0.5 (P=74.6%)
+  Mike Conley PTS O5.5 (P=69.9%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #1047:
+  Giannis Antetokounmpo PTS O19.5 (P=69.6%)
+  Wendell Carter Jr. REB O6.5 (P=74.9%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #3677:
+  Bruce Brown PTS O4.5 (P=69.6%)
+  Wendell Carter Jr. REB O6.5 (P=74.9%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #4272:
+  Wendell Carter Jr. REB O6.5 (P=74.9%)
+  Jae Crowder PTS O7.5 (P=69.6%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #1409:
+  Deandre Ayton PTS O9.5 (P=69.5%)
+  Wendell Carter Jr. REB O6.5 (P=74.9%)
+  Correlation: 0.647  Combined P: 57.1%
+
+SGP #1049:
+  Giannis Antetokounmpo PTS O19.5 (P=69.6%)
+  Alex Caruso REB O0.5 (P=74.6%)
+  Correlation: 0.647  Combined P: 57.0%
+
+SGP #3679:
+  Bruce Brown PTS O4.5 (P=69.6%)
+  Alex Caruso REB O0.5 (P=74.6%)
+  Correlation: 0.647  Combined P: 57.0%
+
+================================================================================
+TOP 5 THREE-LEG SGPs
+--------------------------------------------------------------------------------
+
+SGP #2080:
+  Kyle Anderson REB O0.5 (P=71.9%)
+  Giannis Antetokounmpo PTS O19.5 (P=69.6%)
+  Giannis Antetokounmpo AST O5.5 (P=72.2%)
+  Avg Correlation: 0.216  Combined P: 37.7%
+
+SGP #2083:
+  Kyle Anderson REB O0.5 (P=71.9%)
+  Giannis Antetokounmpo PTS O19.5 (P=69.6%)
+  OG Anunoby REB O2.5 (P=68.8%)
+  Avg Correlation: 0.431  Combined P: 37.4%
+
+SGP #1963:
+  Kyle Anderson PTS O2.5 (P=68.8%)
+  Kyle Anderson REB O0.5 (P=71.9%)
+  Giannis Antetokounmpo PTS O19.5 (P=69.6%)
+  Avg Correlation: 0.431  Combined P: 37.4%
+
+SGP #1967:
+  Kyle Anderson PTS O2.5 (P=68.8%)
+  Kyle Anderson REB O0.5 (P=71.9%)
+  Giannis Antetokounmpo AST O5.5 (P=72.2%)
+  Avg Correlation: 0.216  Combined P: 37.3%
+
+SGP #1386:
+  Grayson Allen PTS O14.5 (P=68.2%)
+  Kyle Anderson REB O0.5 (P=71.9%)
+  Giannis Antetokounmpo PTS O19.5 (P=69.6%)
+  Avg Correlation: 0.431  Combined P: 37.1%
