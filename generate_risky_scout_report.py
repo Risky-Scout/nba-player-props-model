@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 THE RISKY SCOUT - NBA PLAYER PROP FAVORITES
-Beautiful summary report for subscribers
+Enhanced client report with bankroll management, SGP analysis, and injury impact
 
 Usage:
   python generate_risky_scout_report.py --date 2025-11-08
@@ -12,8 +12,57 @@ import argparse
 from datetime import datetime
 import os
 
+def load_injury_impact(prediction_date):
+    """Load injury data and identify high-value opportunities"""
+    injury_file = f'data/injuries/injuries_{prediction_date}.csv'
+
+    if not os.path.exists(injury_file):
+        return None, [], []
+
+    injuries = pd.read_csv(injury_file)
+
+    # Identify star players OUT
+    star_players = {
+        'LeBron James', 'Austin Reaves', 'Paul George', 'Kawhi Leonard',
+        'Damian Lillard', 'Zion Williamson', 'Dejounte Murray', 'Tyrese Haliburton',
+        'Jordan Poole', 'Scoot Henderson'
+    }
+
+    out_stars = injuries[
+        (injuries['out_flag'] == 1) &
+        (injuries['player'].isin(star_players))
+    ]['player'].tolist()
+
+    out_players = injuries[injuries['out_flag'] == 1]['player'].tolist()
+    questionable = injuries[injuries['questionable_flag'] == 1]['player'].tolist()
+
+    return injuries, out_stars, questionable
+
+def categorize_by_bankroll(props_df):
+    """Categorize props by bankroll management strategy"""
+
+    # Conservative: 75-80% confidence (highest probability)
+    conservative = props_df[
+        (props_df['prob_over'] >= 0.75) &
+        (props_df['prob_over'] <= 0.80)
+    ].sort_values('prob_over', ascending=False).head(8)
+
+    # Moderate: 70-75% confidence (good balance)
+    moderate = props_df[
+        (props_df['prob_over'] >= 0.70) &
+        (props_df['prob_over'] < 0.75)
+    ].sort_values('prob_over', ascending=False).head(7)
+
+    # Value plays: 65-70% confidence (higher upside)
+    value = props_df[
+        (props_df['prob_over'] >= 0.65) &
+        (props_df['prob_over'] < 0.70)
+    ].sort_values('prob_over', ascending=False).head(5)
+
+    return conservative, moderate, value
+
 def generate_report(prediction_date, input_file):
-    """Generate clean, beautiful summary report for subscribers"""
+    """Generate enhanced client report with bankroll management and analysis"""
 
     print("="*80)
     print("GENERATING THE RISKY SCOUT'S NBA PLAYER PROP FAVORITES")
@@ -24,6 +73,9 @@ def generate_report(prediction_date, input_file):
 
     print(f"\nLoaded {len(preds)} total predictions")
 
+    # Load injury impact
+    injuries, out_stars, questionable = load_injury_impact(prediction_date)
+
     # Calculate correlations for SGPs
     df = pd.read_csv('data/processed_training_data.csv')
     corr_matrix = df[['pts', 'reb', 'ast']].corr()
@@ -33,13 +85,19 @@ def generate_report(prediction_date, input_file):
     reb_ast_corr = corr_matrix.loc['reb', 'ast']
 
     # ========================================================================
-    # TOP INDIVIDUAL PROPS (70-80% confidence)
+    # CATEGORIZE PROPS BY BANKROLL STRATEGY
     # ========================================================================
 
-    individual_props = preds[
-        (preds['prob_over'] >= 0.70) &
+    # All props 65-80% range
+    all_props = preds[
+        (preds['prob_over'] >= 0.65) &
         (preds['prob_over'] <= 0.80)
-    ].sort_values('prob_over', ascending=False).head(15)
+    ]
+
+    conservative_props, moderate_props, value_props = categorize_by_bankroll(all_props)
+
+    # Top 15 overall
+    individual_props = all_props.sort_values('prob_over', ascending=False).head(15)
 
     # ========================================================================
     # GENERATE SGPs
@@ -53,7 +111,7 @@ def generate_report(prediction_date, input_file):
         (preds['prob_over'] <= 0.80)
     ].copy()
 
-    # 2-leg SGPs
+    # 2-leg SGPs with reasoning
     sgps_2leg = []
 
     for idx1, row1 in sgp_candidates.iterrows():
@@ -69,12 +127,16 @@ def generate_report(prediction_date, input_file):
             props = sorted([row1['prop'], row2['prop']])
             if props == ['AST', 'PTS']:
                 corr = pts_ast_corr
+                reasoning = "Points and assists correlate (ball handlers)"
             elif props == ['PTS', 'REB']:
                 corr = pts_reb_corr
+                reasoning = "Points and rebounds correlate (high usage players)"
             elif props == ['AST', 'REB']:
                 corr = reb_ast_corr
+                reasoning = "Assists and rebounds correlate (floor generals)"
             else:
                 corr = 0.0
+                reasoning = "Independent outcomes"
 
             if corr < 0.15:
                 continue
@@ -87,6 +149,12 @@ def generate_report(prediction_date, input_file):
             if combined_prob < 0.55:
                 continue
 
+            # Add reasoning for same-player SGPs
+            if row1['player'] == row2['player']:
+                reasoning = f"{row1['player']} player prop stack - strong correlation"
+            else:
+                reasoning = f"Same team correlation: {corr:.3f}"
+
             sgps_2leg.append({
                 'player1': row1['player'],
                 'prop1': row1['prop'],
@@ -98,10 +166,11 @@ def generate_report(prediction_date, input_file):
                 'prob2': row2['prob_over'],
                 'correlation': corr,
                 'combined_prob': combined_prob,
-                'team': row1['team']
+                'team': row1['team'],
+                'reasoning': reasoning
             })
 
-    sgps_2leg = pd.DataFrame(sgps_2leg).sort_values('combined_prob', ascending=False).head(10)
+    sgps_2leg = pd.DataFrame(sgps_2leg).sort_values('combined_prob', ascending=False).head(12)
 
     # 3-leg SGPs (simplified - just top combinations)
     sgps_3leg = []
@@ -164,7 +233,7 @@ def generate_report(prediction_date, input_file):
     sgps_3leg = pd.DataFrame(sgps_3leg).sort_values('combined_prob', ascending=False).head(5)
 
     # ========================================================================
-    # CREATE BEAUTIFUL FORMATTED REPORT
+    # CREATE ENHANCED FORMATTED REPORT
     # ========================================================================
 
     report_lines = []
@@ -176,6 +245,17 @@ def generate_report(prediction_date, input_file):
     report_lines.append("="*80)
     report_lines.append("")
 
+    # Injury impact section
+    if out_stars:
+        report_lines.append("KEY INJURY ALERT")
+        report_lines.append("-"*80)
+        report_lines.append("MAJOR STARS OUT TONIGHT - High-value opportunities for teammates:")
+        for star in out_stars:
+            report_lines.append(f"  ❌ {star}")
+        report_lines.append("")
+        report_lines.append("➡️  Look for usage boosts on teammates of these teams")
+        report_lines.append("")
+
     # Model performance
     report_lines.append("MODEL PERFORMANCE")
     report_lines.append("-"*80)
@@ -184,32 +264,73 @@ def generate_report(prediction_date, input_file):
     report_lines.append("Assists:  MAE 0.80 ast  | 95.1% within 3 assists")
     report_lines.append("")
     report_lines.append("Trained on 9,573 real NBA games")
-    report_lines.append("Features: Real opponent defensive ratings, usage boosts for injuries")
+    report_lines.append("Features: Real opponent defensive ratings, injury-adjusted usage")
     report_lines.append("")
 
-    # Top individual props
+    # Bankroll management section
     report_lines.append("="*80)
-    report_lines.append("TOP 15 INDIVIDUAL PROPS (70-80% Confidence)")
+    report_lines.append("BANKROLL MANAGEMENT GUIDE")
     report_lines.append("="*80)
     report_lines.append("")
+    report_lines.append("CONSERVATIVE TIER (75-80% Confidence) - Core bankroll bets")
+    report_lines.append("Recommended: 3-5% of bankroll per play")
+    report_lines.append("-"*80)
 
-    for i, (idx, row) in enumerate(individual_props.iterrows(), 1):
-        report_lines.append(f"#{i:>2}. {row['player']:>25} ({row['team']:>22})")
+    for i, (idx, row) in enumerate(conservative_props.iterrows(), 1):
+        stars = "★★★★★" if row['prob_over'] >= 0.78 else "★★★★☆"
+        report_lines.append(f"{stars} {row['player']:>25} - {row['team']}")
         report_lines.append(f"     {row['prop']} Over {row['line']:>5.1f}")
-        report_lines.append(f"     Probability: {row['prob_over']*100:>5.1f}%  |  Expected Value: {row['expected_value']:.1f}  |  Fair Odds: {row['fair_odds_over']:>5}")
+        report_lines.append(f"     Win Prob: {row['prob_over']*100:.1f}% | EV: {row['expected_value']:.1f} | Fair Odds: {row['fair_odds_over']}")
+        report_lines.append("")
+
+    report_lines.append("")
+    report_lines.append("MODERATE TIER (70-75% Confidence) - Solid value plays")
+    report_lines.append("Recommended: 2-3% of bankroll per play")
+    report_lines.append("-"*80)
+
+    for i, (idx, row) in enumerate(moderate_props.iterrows(), 1):
+        stars = "★★★★"
+        report_lines.append(f"{stars} {row['player']:>25} - {row['team']}")
+        report_lines.append(f"     {row['prop']} Over {row['line']:>5.1f}")
+        report_lines.append(f"     Win Prob: {row['prob_over']*100:.1f}% | EV: {row['expected_value']:.1f} | Fair Odds: {row['fair_odds_over']}")
+        report_lines.append("")
+
+    report_lines.append("")
+    report_lines.append("VALUE TIER (65-70% Confidence) - Higher upside plays")
+    report_lines.append("Recommended: 1-2% of bankroll per play")
+    report_lines.append("-"*80)
+
+    for i, (idx, row) in enumerate(value_props.iterrows(), 1):
+        stars = "★★★"
+        report_lines.append(f"{stars} {row['player']:>25} - {row['team']}")
+        report_lines.append(f"     {row['prop']} Over {row['line']:>5.1f}")
+        report_lines.append(f"     Win Prob: {row['prob_over']*100:.1f}% | EV: {row['expected_value']:.1f} | Fair Odds: {row['fair_odds_over']}")
         report_lines.append("")
 
     # 2-leg SGPs
     report_lines.append("="*80)
-    report_lines.append("TOP 10 SAME GAME PARLAYS (2-LEG)")
+    report_lines.append("TOP 12 SAME GAME PARLAYS (2-LEG)")
     report_lines.append("="*80)
+    report_lines.append("Why these work: Correlated outcomes increase parlay probability")
     report_lines.append("")
 
-    for i, (idx, row) in enumerate(sgps_2leg.iterrows(), 1):
-        report_lines.append(f"SGP #{i} - {row['team']}")
+    for i, (idx, row) in enumerate(sgps_2leg.head(12).iterrows(), 1):
+        # Determine confidence tier
+        if row['combined_prob'] >= 0.65:
+            confidence = "HIGH CONFIDENCE"
+            stars = "★★★★★"
+        elif row['combined_prob'] >= 0.60:
+            confidence = "STRONG"
+            stars = "★★★★"
+        else:
+            confidence = "GOOD VALUE"
+            stars = "★★★"
+
+        report_lines.append(f"{stars} SGP #{i} - {row['team']} | {confidence}")
         report_lines.append(f"  Leg 1: {row['player1']} {row['prop1']} Over {row['line1']} ({row['prob1']*100:.1f}%)")
         report_lines.append(f"  Leg 2: {row['player2']} {row['prop2']} Over {row['line2']} ({row['prob2']*100:.1f}%)")
-        report_lines.append(f"  Correlation: {row['correlation']:.3f}  |  Combined Probability: {row['combined_prob']*100:.1f}%")
+        report_lines.append(f"  📊 {row['reasoning']}")
+        report_lines.append(f"  Combined Win Probability: {row['combined_prob']*100:.1f}%")
         report_lines.append("")
 
     # 3-leg SGPs
@@ -217,14 +338,24 @@ def generate_report(prediction_date, input_file):
         report_lines.append("="*80)
         report_lines.append("TOP 5 SAME GAME PARLAYS (3-LEG)")
         report_lines.append("="*80)
+        report_lines.append("Higher payouts, moderate risk - Recommended 1-2% bankroll stakes")
         report_lines.append("")
 
         for i, (idx, row) in enumerate(sgps_3leg.iterrows(), 1):
-            report_lines.append(f"SGP #{i} - {row['team']}")
+            # Stars based on combined probability
+            if row['combined_prob'] >= 0.48:
+                stars = "★★★★★"
+            elif row['combined_prob'] >= 0.42:
+                stars = "★★★★"
+            else:
+                stars = "★★★"
+
+            report_lines.append(f"{stars} SGP #{i} - {row['team']}")
             report_lines.append(f"  Leg 1: {row['player1']} {row['prop1']} Over {row['line1']} ({row['prob1']*100:.1f}%)")
             report_lines.append(f"  Leg 2: {row['player2']} {row['prop2']} Over {row['line2']} ({row['prob2']*100:.1f}%)")
             report_lines.append(f"  Leg 3: {row['player3']} {row['prop3']} Over {row['line3']} ({row['prob3']*100:.1f}%)")
-            report_lines.append(f"  Avg Correlation: {row['avg_correlation']:.3f}  |  Combined Probability: {row['combined_prob']*100:.1f}%")
+            report_lines.append(f"  Combined Win Probability: {row['combined_prob']*100:.1f}%")
+            report_lines.append(f"  Avg Correlation: {row['avg_correlation']:.3f}")
             report_lines.append("")
 
     # Footer

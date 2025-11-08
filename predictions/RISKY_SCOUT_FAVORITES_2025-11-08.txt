@@ -1,8 +1,24 @@
 ================================================================================
 THE RISKY SCOUT'S NBA PLAYER PROP FAVORITES
 Date: 2025-11-08
-Generated: 2025-11-08 10:02 PM ET
+Generated: 2025-11-08 10:36 PM ET
 ================================================================================
+
+KEY INJURY ALERT
+--------------------------------------------------------------------------------
+MAJOR STARS OUT TONIGHT - High-value opportunities for teammates:
+  ❌ Paul George
+  ❌ LeBron James
+  ❌ Austin Reaves
+  ❌ Dejounte Murray
+  ❌ Jordan Poole
+  ❌ Zion Williamson
+  ❌ Scoot Henderson
+  ❌ Damian Lillard
+  ❌ Tyrese Haliburton
+  ❌ Kawhi Leonard
+
+➡️  Look for usage boosts on teammates of these teams
 
 MODEL PERFORMANCE
 --------------------------------------------------------------------------------
@@ -11,159 +27,219 @@ Rebounds: MAE 1.05 reb  | 90.4% within 3 rebounds
 Assists:  MAE 0.80 ast  | 95.1% within 3 assists
 
 Trained on 9,573 real NBA games
-Features: Real opponent defensive ratings, usage boosts for injuries
+Features: Real opponent defensive ratings, injury-adjusted usage
 
 ================================================================================
-TOP 15 INDIVIDUAL PROPS (70-80% Confidence)
+BANKROLL MANAGEMENT GUIDE
 ================================================================================
 
-# 1.               Evan Mobley (   Cleveland Cavaliers)
+CONSERVATIVE TIER (75-80% Confidence) - Core bankroll bets
+Recommended: 3-5% of bankroll per play
+--------------------------------------------------------------------------------
+★★★★★               Evan Mobley - Cleveland Cavaliers
      REB Over   8.0
-     Probability:  80.0%  |  Expected Value: 9.5  |  Fair Odds:  -399
+     Win Prob: 80.0% | EV: 9.5 | Fair Odds: -399
 
-# 2.           Bilal Coulibaly (    Washington Wizards)
+★★★★★           Bilal Coulibaly - Washington Wizards
      AST Over   2.0
-     Probability:  80.0%  |  Expected Value: 3.2  |  Fair Odds:  -399
+     Win Prob: 80.0% | EV: 3.2 | Fair Odds: -399
 
-# 3.            Brandon Ingram (       Toronto Raptors)
+★★★★★            Brandon Ingram - Toronto Raptors
      REB Over   4.0
-     Probability:  79.9%  |  Expected Value: 5.5  |  Fair Odds:  -398
+     Win Prob: 79.9% | EV: 5.5 | Fair Odds: -398
 
-# 4.                 Ty Jerome (   Cleveland Cavaliers)
+★★★★★                 Ty Jerome - Cleveland Cavaliers
      REB Over   0.5
-     Probability:  79.9%  |  Expected Value: 2.0  |  Fair Odds:  -396
+     Win Prob: 79.9% | EV: 2.0 | Fair Odds: -396
 
-# 5.                 Dean Wade (   Cleveland Cavaliers)
+★★★★★                 Dean Wade - Cleveland Cavaliers
      AST Over   0.5
-     Probability:  79.9%  |  Expected Value: 1.7  |  Fair Odds:  -396
+     Win Prob: 79.9% | EV: 1.7 | Fair Odds: -396
 
-# 6.           Christian Braun (        Denver Nuggets)
+★★★★★           Christian Braun - Denver Nuggets
      PTS Over  10.5
-     Probability:  79.8%  |  Expected Value: 13.7  |  Fair Odds:  -395
+     Win Prob: 79.8% | EV: 13.7 | Fair Odds: -395
 
-# 7.             Nicolas Batum (           LA Clippers)
+★★★★★             Nicolas Batum - LA Clippers
      REB Over   2.0
-     Probability:  79.8%  |  Expected Value: 3.5  |  Fair Odds:  -395
+     Win Prob: 79.8% | EV: 3.5 | Fair Odds: -395
 
-# 8.           Davion Mitchell (            Miami Heat)
+★★★★★           Davion Mitchell - Miami Heat
      REB Over   2.0
-     Probability:  79.7%  |  Expected Value: 3.4  |  Fair Odds:  -393
+     Win Prob: 79.7% | EV: 3.4 | Fair Odds: -393
 
-# 9.            Alexandre Sarr (    Washington Wizards)
-     AST Over   2.0
-     Probability:  79.7%  |  Expected Value: 3.2  |  Fair Odds:  -393
 
-#10.            Andre Drummond (    Philadelphia 76ers)
-     REB Over   6.0
-     Probability:  79.7%  |  Expected Value: 7.4  |  Fair Odds:  -392
+MODERATE TIER (70-75% Confidence) - Solid value plays
+Recommended: 2-3% of bankroll per play
+--------------------------------------------------------------------------------
+★★★★            Keldon Johnson - San Antonio Spurs
+     REB Over   3.5
+     Win Prob: 74.9% | EV: 4.7 | Fair Odds: -298
 
-#11.             Herbert Jones (  New Orleans Pelicans)
-     REB Over   2.0
-     Probability:  79.7%  |  Expected Value: 3.4  |  Fair Odds:  -392
+★★★★              Jake LaRavia - Los Angeles Lakers
+     PTS Over  14.5
+     Win Prob: 74.9% | EV: 17.1 | Fair Odds: -297
 
-#12.         Immanuel Quickley (       Toronto Raptors)
-     REB Over   2.0
-     Probability:  79.7%  |  Expected Value: 3.4  |  Fair Odds:  -392
+★★★★              Craig Porter - Cleveland Cavaliers
+     PTS Over   5.0
+     Win Prob: 74.8% | EV: 7.6 | Fair Odds: -296
 
-#13.         Victor Wembanyama (     San Antonio Spurs)
-     PTS Over  25.0
-     Probability:  79.7%  |  Expected Value: 28.2  |  Fair Odds:  -391
+★★★★        Kristaps Porzingis - Atlanta Hawks
+     PTS Over  13.5
+     Win Prob: 74.7% | EV: 16.1 | Fair Odds: -295
 
-#14.           Anfernee Simons (Portland Trail Blazers)
-     PTS Over  20.5
-     Probability:  79.7%  |  Expected Value: 23.7  |  Fair Odds:  -391
+★★★★             Aaron Nesmith - Indiana Pacers
+     REB Over   4.0
+     Win Prob: 74.7% | EV: 5.2 | Fair Odds: -294
 
-#15.              Clint Capela (         Atlanta Hawks)
-     PTS Over   0.5
-     Probability:  79.6%  |  Expected Value: 3.7  |  Fair Odds:  -391
+★★★★             DeMar DeRozan - Chicago Bulls
+     PTS Over  18.5
+     Win Prob: 74.5% | EV: 21.1 | Fair Odds: -292
+
+★★★★              Daniel Theis - New Orleans Pelicans
+     AST Over   0.5
+     Win Prob: 74.4% | EV: 1.4 | Fair Odds: -291
+
+
+VALUE TIER (65-70% Confidence) - Higher upside plays
+Recommended: 1-2% of bankroll per play
+--------------------------------------------------------------------------------
+★★★           Bilal Coulibaly - Washington Wizards
+     PTS Over  12.5
+     Win Prob: 70.0% | EV: 14.5 | Fair Odds: -232
+
+★★★            Nikola Vucevic - Chicago Bulls
+     AST Over   3.5
+     Win Prob: 69.8% | EV: 4.2 | Fair Odds: -231
+
+★★★          Keita Bates-Diop - Phoenix Suns
+     AST Over   0.5
+     Win Prob: 69.8% | EV: 1.2 | Fair Odds: -230
+
+★★★             Klay Thompson - Dallas Mavericks
+     AST Over   0.5
+     Win Prob: 69.8% | EV: 1.2 | Fair Odds: -230
+
+★★★              Bronny James - Los Angeles Lakers
+     PTS Over   5.0
+     Win Prob: 69.7% | EV: 7.0 | Fair Odds: -230
 
 ================================================================================
-TOP 10 SAME GAME PARLAYS (2-LEG)
+TOP 12 SAME GAME PARLAYS (2-LEG)
 ================================================================================
+Why these work: Correlated outcomes increase parlay probability
 
-SGP #1 - Cleveland Cavaliers
+★★★★★ SGP #1 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: De'Andre Hunter PTS Over 14.5 (79.5%)
   Leg 2: Evan Mobley REB Over 8.0 (80.0%)
-  Correlation: 0.647  |  Combined Probability: 69.7%
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.7%
 
-SGP #2 - Cleveland Cavaliers
+★★★★★ SGP #2 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: De'Andre Hunter PTS Over 14.5 (79.5%)
   Leg 2: Ty Jerome REB Over 0.5 (79.9%)
-  Correlation: 0.647  |  Combined Probability: 69.6%
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.6%
 
-SGP #3 - Denver Nuggets
+★★★★★ SGP #3 - Denver Nuggets | HIGH CONFIDENCE
   Leg 1: Kentavious Caldwell-Pope AST Over 0.5 (79.6%)
   Leg 2: Christian Braun PTS Over 10.5 (79.8%)
-  Correlation: 0.639  |  Combined Probability: 69.6%
+  📊 Same team correlation: 0.639
+  Combined Win Probability: 69.6%
 
-SGP #4 - Cleveland Cavaliers
+★★★★★ SGP #4 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: De'Andre Hunter PTS Over 14.5 (79.5%)
   Leg 2: Dean Wade AST Over 0.5 (79.9%)
-  Correlation: 0.639  |  Combined Probability: 69.6%
+  📊 Same team correlation: 0.639
+  Combined Win Probability: 69.6%
 
-SGP #5 - Toronto Raptors
+★★★★★ SGP #5 - Toronto Raptors | HIGH CONFIDENCE
   Leg 1: Chris Boucher PTS Over 12.5 (79.3%)
   Leg 2: Brandon Ingram REB Over 4.0 (79.9%)
-  Correlation: 0.647  |  Combined Probability: 69.5%
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.5%
 
-SGP #6 - Cleveland Cavaliers
+★★★★★ SGP #6 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: Evan Mobley PTS Over 20.5 (79.2%)
   Leg 2: Evan Mobley REB Over 8.0 (80.0%)
-  Correlation: 0.647  |  Combined Probability: 69.5%
+  📊 Evan Mobley player prop stack - strong correlation
+  Combined Win Probability: 69.5%
 
-SGP #7 - Cleveland Cavaliers
+★★★★★ SGP #7 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: Georges Niang PTS Over 5.0 (79.1%)
   Leg 2: Evan Mobley REB Over 8.0 (80.0%)
-  Correlation: 0.647  |  Combined Probability: 69.4%
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.4%
 
-SGP #8 - Denver Nuggets
+★★★★★ SGP #8 - Denver Nuggets | HIGH CONFIDENCE
   Leg 1: Kentavious Caldwell-Pope AST Over 0.5 (79.6%)
   Leg 2: Aaron Gordon PTS Over 17.5 (79.6%)
-  Correlation: 0.639  |  Combined Probability: 69.4%
+  📊 Same team correlation: 0.639
+  Combined Win Probability: 69.4%
 
-SGP #9 - Cleveland Cavaliers
+★★★★★ SGP #9 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: Ty Jerome REB Over 0.5 (79.9%)
   Leg 2: Evan Mobley PTS Over 20.5 (79.2%)
-  Correlation: 0.647  |  Combined Probability: 69.4%
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.4%
 
-SGP #10 - Cleveland Cavaliers
+★★★★★ SGP #10 - Cleveland Cavaliers | HIGH CONFIDENCE
   Leg 1: Georges Niang PTS Over 5.0 (79.1%)
   Leg 2: Ty Jerome REB Over 0.5 (79.9%)
-  Correlation: 0.647  |  Combined Probability: 69.3%
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.3%
+
+★★★★★ SGP #11 - Cleveland Cavaliers | HIGH CONFIDENCE
+  Leg 1: Dean Wade AST Over 0.5 (79.9%)
+  Leg 2: Evan Mobley PTS Over 20.5 (79.2%)
+  📊 Same team correlation: 0.639
+  Combined Win Probability: 69.3%
+
+★★★★★ SGP #12 - New Orleans Pelicans | HIGH CONFIDENCE
+  Leg 1: Herbert Jones REB Over 2.0 (79.7%)
+  Leg 2: Jeremiah Fears PTS Over 10.5 (79.3%)
+  📊 Same team correlation: 0.647
+  Combined Win Probability: 69.3%
 
 ================================================================================
 TOP 5 SAME GAME PARLAYS (3-LEG)
 ================================================================================
+Higher payouts, moderate risk - Recommended 1-2% bankroll stakes
 
-SGP #1 - Toronto Raptors
+★★★★★ SGP #1 - Toronto Raptors
   Leg 1: OG Anunoby AST Over 2.0 (76.3%)
   Leg 2: Chris Boucher PTS Over 12.5 (79.3%)
   Leg 3: Chris Boucher REB Over 4.0 (78.7%)
-  Avg Correlation: 0.597  |  Combined Probability: 51.0%
+  Combined Win Probability: 51.0%
+  Avg Correlation: 0.597
 
-SGP #2 - Phoenix Suns
+★★★★★ SGP #2 - Phoenix Suns
   Leg 1: Grayson Allen PTS Over 16.5 (78.6%)
   Leg 2: Grayson Allen AST Over 3.5 (77.0%)
   Leg 3: Devin Booker PTS Over 23.5 (79.2%)
-  Avg Correlation: 0.426  |  Combined Probability: 50.3%
+  Combined Win Probability: 50.3%
+  Avg Correlation: 0.426
 
-SGP #3 - Toronto Raptors
+★★★★★ SGP #3 - Toronto Raptors
   Leg 1: OG Anunoby PTS Over 16.5 (75.8%)
   Leg 2: Chris Boucher PTS Over 12.5 (79.3%)
   Leg 3: Chris Boucher REB Over 4.0 (78.7%)
-  Avg Correlation: 0.431  |  Combined Probability: 49.7%
+  Combined Win Probability: 49.7%
+  Avg Correlation: 0.431
 
-SGP #4 - Toronto Raptors
+★★★★★ SGP #4 - Toronto Raptors
   Leg 1: Chris Boucher PTS Over 12.5 (79.3%)
   Leg 2: Chris Boucher REB Over 4.0 (78.7%)
   Leg 3: Chris Boucher AST Over 0.5 (74.3%)
-  Avg Correlation: 0.597  |  Combined Probability: 49.7%
+  Combined Win Probability: 49.7%
+  Avg Correlation: 0.597
 
-SGP #5 - Toronto Raptors
+★★★★★ SGP #5 - Toronto Raptors
   Leg 1: OG Anunoby REB Over 4.5 (75.2%)
   Leg 2: Chris Boucher PTS Over 12.5 (79.3%)
   Leg 3: Chris Boucher REB Over 4.0 (78.7%)
-  Avg Correlation: 0.431  |  Combined Probability: 49.3%
+  Combined Win Probability: 49.3%
+  Avg Correlation: 0.431
 
 ================================================================================
 DISCLAIMER
