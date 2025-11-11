@@ -82,12 +82,18 @@ elif [ "$MODE" == "predict" ]; then
         exit 1
     }
 
+    # Generate premium predictions (Top 100s + Client Deliverable)
+    echo "Generating premium predictions (Top 100s + Client Deliverable)..."
+    python scripts/prediction/generate_premium_predictions.py "$DATE" || {
+        echo "⚠️  Premium predictions failed, continuing..."
+    }
+
     echo ""
     echo "📊 Committing predictions to GitHub..."
     echo "--------------------------------------------------------------------------------"
 
-    # Stage all new prediction files
-    git add predictions/*$DATE* predictions/*$(date +%Y%m%d)* 2>/dev/null || true
+    # Stage all new prediction files (including premium folder)
+    git add predictions/*$DATE* predictions/*$(date +%Y%m%d)* predictions/premium/* 2>/dev/null || true
 
     # Check if there are changes to commit
     if git diff --staged --quiet; then
@@ -99,6 +105,9 @@ elif [ "$MODE" == "predict" ]; then
 - Complete PMF distributions
 - 2-leg and 3-leg SGP recommendations with correlations
 - Top individual props
+- Top 100 same-game parlays (2-leg and 3-leg)
+- Top 100 cross-game parlays (2-leg and 3-leg)
+- Premium client deliverable
 - Generated at $(date +'%I:%M %p')
 
 [Automated Daily Pipeline]"

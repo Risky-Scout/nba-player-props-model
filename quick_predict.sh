@@ -52,12 +52,16 @@ echo "📊 Generating comprehensive predictions..."
 python scripts/prediction/generate_final_predictions.py "$DATE"
 
 echo ""
-echo "✅ Predictions generated!"
+echo "🎰 Generating premium predictions (Top 100s + Client Deliverable)..."
+python scripts/prediction/generate_premium_predictions.py "$DATE"
+
+echo ""
+echo "✅ All predictions generated!"
 echo ""
 
 # Commit and push
 echo "📤 Committing to GitHub..."
-git add predictions/*$(date +%Y%m%d)* scripts/prediction/generate_final_predictions.py 2>/dev/null || true
+git add predictions/*$(date +%Y%m%d)* predictions/premium/* scripts/prediction/*.py 2>/dev/null || true
 
 if ! git diff --staged --quiet; then
     git commit -m "Generate predictions for $DATE
