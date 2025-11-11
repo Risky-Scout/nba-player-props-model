@@ -9,8 +9,14 @@ from scipy.stats import norm
 from datetime import datetime
 import os
 
+import sys
+from datetime import datetime as dt
+
+# Get date from command line or use today
+pred_date = sys.argv[1] if len(sys.argv) > 1 else dt.now().strftime('%Y-%m-%d')
+
 print("="*80)
-print("GENERATING COMPLETE PREDICTIONS FOR NOV 8, 2025")
+print(f"GENERATING COMPLETE PREDICTIONS FOR {pred_date}")
 print("="*80)
 
 # Load trained models
@@ -249,7 +255,8 @@ sgp_3leg_df = pd.DataFrame(sgp_3leg)
 # SAVE OUTPUT FILES
 # ============================================================================
 os.makedirs('predictions', exist_ok=True)
-timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+date_str = pred_date.replace('-', '')
+timestamp = date_str
 
 # Save complete PMF distributions
 pmf_file = f'predictions/complete_pmf_distributions_{timestamp}.csv'
@@ -276,7 +283,7 @@ if len(sgp_3leg_df) > 0:
 summary_file = f'predictions/summary_{timestamp}.txt'
 with open(summary_file, 'w') as f:
     f.write("="*80 + "\n")
-    f.write("NBA PLAYER PROPS PREDICTIONS - NOV 8, 2025\n")
+    f.write(f"NBA PLAYER PROPS PREDICTIONS - {pred_date}\n")
     f.write("="*80 + "\n")
     f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     f.write(f"Model Accuracy: PTS MAE 3.80 | REB MAE 1.57 | AST MAE 1.09\n")
