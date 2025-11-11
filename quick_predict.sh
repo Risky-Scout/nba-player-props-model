@@ -16,7 +16,7 @@ set -e
 
 DATE=$(date +%Y-%m-%d)
 GAMES=${1:-""}
-BRANCH="claude/nba-prop-model-training-011CV1dsbtVTuFpucny19p6F"
+BRANCH="main"  # Or use your preferred branch name
 
 # If no games provided as argument, try to auto-fetch
 if [ -z "$GAMES" ]; then
