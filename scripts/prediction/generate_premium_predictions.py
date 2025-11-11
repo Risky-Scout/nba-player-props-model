@@ -326,13 +326,14 @@ top_100_cross_3leg = cross_3leg_df.nlargest(100, 'combined_prob') if len(cross_3
 print(f"   ✓ Generated {len(cross_3leg_df)} 3-leg cross-game parlays, keeping top 100")
 
 # ============================================================================
-# SAVE TOP 100 FILES
+# SAVE TOP 100 AND TOP 25 FILES
 # ============================================================================
 os.makedirs('predictions/premium', exist_ok=True)
 date_str = pred_date.replace('-', '')
 
 print("\n💾 Saving Top 100 Files...")
 
+# Top 100 Props
 top_100_props.to_csv(f'predictions/premium/top_100_props_{date_str}.csv', index=False)
 print(f"   ✓ top_100_props_{date_str}.csv")
 
@@ -351,6 +352,35 @@ if len(top_100_cross_2leg) > 0:
 if len(top_100_cross_3leg) > 0:
     top_100_cross_3leg.to_csv(f'predictions/premium/top_100_cross_3leg_{date_str}.csv', index=False)
     print(f"   ✓ top_100_cross_3leg_{date_str}.csv")
+
+print("\n💎 Saving Top 25 Files...")
+
+# Top 25 Props
+top_25_props = top_100_props.head(25)
+top_25_props.to_csv(f'predictions/premium/top_25_props_{date_str}.csv', index=False)
+print(f"   ✓ top_25_props_{date_str}.csv")
+
+# Top 25 SGPs
+if len(top_100_sgp_2leg) > 0:
+    top_25_sgp_2leg = top_100_sgp_2leg.head(25)
+    top_25_sgp_2leg.to_csv(f'predictions/premium/top_25_sgp_2leg_{date_str}.csv', index=False)
+    print(f"   ✓ top_25_sgp_2leg_{date_str}.csv")
+
+if len(top_100_sgp_3leg) > 0:
+    top_25_sgp_3leg = top_100_sgp_3leg.head(25)
+    top_25_sgp_3leg.to_csv(f'predictions/premium/top_25_sgp_3leg_{date_str}.csv', index=False)
+    print(f"   ✓ top_25_sgp_3leg_{date_str}.csv")
+
+# Top 25 Cross-Game Parlays
+if len(top_100_cross_2leg) > 0:
+    top_25_cross_2leg = top_100_cross_2leg.head(25)
+    top_25_cross_2leg.to_csv(f'predictions/premium/top_25_cross_2leg_{date_str}.csv', index=False)
+    print(f"   ✓ top_25_cross_2leg_{date_str}.csv")
+
+if len(top_100_cross_3leg) > 0:
+    top_25_cross_3leg = top_100_cross_3leg.head(25)
+    top_25_cross_3leg.to_csv(f'predictions/premium/top_25_cross_3leg_{date_str}.csv', index=False)
+    print(f"   ✓ top_25_cross_3leg_{date_str}.csv")
 
 # ============================================================================
 # CREATE BEAUTIFUL CLIENT DELIVERABLE
@@ -758,10 +788,10 @@ print(f"   ✓ {html_file}")
 print("\n" + "="*80)
 print("✅ PREMIUM PREDICTIONS COMPLETE")
 print("="*80)
-print(f"📊 Top 100 Props: {len(top_100_props)}")
-print(f"🎲 Top 100 2-Leg SGPs: {len(top_100_sgp_2leg)}")
-print(f"🎲 Top 100 3-Leg SGPs: {len(top_100_sgp_3leg)}")
-print(f"🌐 Top 100 2-Leg Cross-Game: {len(top_100_cross_2leg)}")
-print(f"🌐 Top 100 3-Leg Cross-Game: {len(top_100_cross_3leg)}")
+print(f"📊 Top 100 Props: {len(top_100_props)} | Top 25: {len(top_25_props)}")
+print(f"🎲 Top 100 2-Leg SGPs: {len(top_100_sgp_2leg)} | Top 25: {len(top_25_sgp_2leg) if len(top_100_sgp_2leg) > 0 else 0}")
+print(f"🎲 Top 100 3-Leg SGPs: {len(top_100_sgp_3leg)} | Top 25: {len(top_25_sgp_3leg) if len(top_100_sgp_3leg) > 0 else 0}")
+print(f"🌐 Top 100 2-Leg Cross-Game: {len(top_100_cross_2leg)} | Top 25: {len(top_25_cross_2leg) if len(top_100_cross_2leg) > 0 else 0}")
+print(f"🌐 Top 100 3-Leg Cross-Game: {len(top_100_cross_3leg)} | Top 25: {len(top_25_cross_3leg) if len(top_100_cross_3leg) > 0 else 0}")
 print(f"\n📄 Client Deliverable: {html_file}")
 print("="*80)
