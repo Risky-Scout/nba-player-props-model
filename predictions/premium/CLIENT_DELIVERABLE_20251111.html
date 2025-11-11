@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Casino Actuary - NBA Predictions 2025-11-11</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1a202c;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            border-bottom: 4px solid #fbbf24;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .header .date {
+            margin-top: 20px;
+            font-size: 1.1em;
+            background: rgba(255,255,255,0.1);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        .bio-section {
+            background: #f8fafc;
+            padding: 30px 40px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .bio-section h2 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .bio-text {
+            color: #475569;
+            font-size: 1.05em;
+            line-height: 1.8;
+        }
+
+        .contact {
+            margin-top: 15px;
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fbbf24;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title .icon {
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        .parlay-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .parlay-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .parlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .parlay-number {
+            font-size: 0.9em;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .probability-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .odds-badge {
+            background: #fbbf24;
+            color: #1e3a8a;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .leg {
+            background: #f8fafc;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .leg:last-child {
+            margin-bottom: 0;
+        }
+
+        .player-name {
+            font-weight: 700;
+            color: #1e3a8a;
+            font-size: 1.05em;
+        }
+
+        .prop-detail {
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        .game-label {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .correlation-info {
+            background: #eff6ff;
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.9em;
+            color: #1e40af;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .footer {
+            background: #f8fafc;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+
+        .footer-tagline {
+            font-size: 1.1em;
+            color: #1e3a8a;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .disclaimer {
+            max-width: 800px;
+            margin: 20px auto 0;
+            font-size: 0.85em;
+            line-height: 1.6;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎰 THE CASINO ACTUARY</h1>
+            <div class="subtitle">Premium NBA Player Props Analysis</div>
+            <div class="date">📅 2025-11-11</div>
+        </div>
+
+        <div class="bio-section">
+            <h2>About The Casino Actuary</h2>
+            <div class="bio-text">
+                Actuary gone sports quant. Committed to always learning and mastering all mathematics
+                needed for a perpetual edge over the books. Let Go.
+            </div>
+            <div class="contact">
+                📧 Email: JosephShack@gmail.com
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🎲</span>
+                    Top 25 Same-Game Parlays
+                </h2>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#3582 • 2-Leg SGP • IND@UTA</span>
+                        <div>
+                            <span class="probability-badge">69.5%</span>
+                            <span class="odds-badge">-228</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Pascal Siakam</div>
+                        <div class="prop-detail">PTS Over 26.5 (79.9%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Pascal Siakam</div>
+                        <div class="prop-detail">REB Over 6.5 (79.3%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1365 • 2-Leg SGP • BOS@PHI</span>
+                        <div>
+                            <span class="probability-badge">69.4%</span>
+                            <span class="odds-badge">-226</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Sam Hauser</div>
+                        <div class="prop-detail">PTS Over 10.0 (79.4%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1369 • 2-Leg SGP • BOS@PHI</span>
+                        <div>
+                            <span class="probability-badge">69.1%</span>
+                            <span class="odds-badge">-223</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">VJ Edgecombe</div>
+                        <div class="prop-detail">PTS Over 15.5 (79.1%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#717 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">69.0%</span>
+                            <span class="odds-badge">-222</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaren Jackson Jr.</div>
+                        <div class="prop-detail">PTS Over 10.5 (79.1%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">REB Over 8.0 (79.5%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#885 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">68.9%</span>
+                            <span class="odds-badge">-221</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">REB Over 8.0 (79.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Ja Morant</div>
+                        <div class="prop-detail">PTS Over 22.5 (79.1%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#899 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">68.7%</span>
+                            <span class="odds-badge">-219</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">REB Over 8.0 (79.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Cedric Coward</div>
+                        <div class="prop-detail">PTS Over 13.5 (78.8%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#4504 • 2-Leg SGP • DEN@SAC</span>
+                        <div>
+                            <span class="probability-badge">68.7%</span>
+                            <span class="odds-badge">-219</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Nikola Jokic</div>
+                        <div class="prop-detail">REB Over 12.0 (78.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Christian Braun</div>
+                        <div class="prop-detail">PTS Over 10.5 (79.8%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#4476 • 2-Leg SGP • DEN@SAC</span>
+                        <div>
+                            <span class="probability-badge">68.5%</span>
+                            <span class="odds-badge">-217</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Nikola Jokic</div>
+                        <div class="prop-detail">REB Over 12.0 (78.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Zach LaVine</div>
+                        <div class="prop-detail">PTS Over 20.0 (79.6%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1179 • 2-Leg SGP • BOS@PHI</span>
+                        <div>
+                            <span class="probability-badge">68.5%</span>
+                            <span class="odds-badge">-217</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#4138 • 2-Leg SGP • DEN@SAC</span>
+                        <div>
+                            <span class="probability-badge">68.5%</span>
+                            <span class="odds-badge">-217</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Nikola Jokic</div>
+                        <div class="prop-detail">REB Over 12.0 (78.5%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#3237 • 2-Leg SGP • IND@UTA</span>
+                        <div>
+                            <span class="probability-badge">68.1%</span>
+                            <span class="odds-badge">-213</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Lauri Markkanen</div>
+                        <div class="prop-detail">PTS Over 23.5 (78.2%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Pascal Siakam</div>
+                        <div class="prop-detail">REB Over 6.5 (79.3%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#3652 • 2-Leg SGP • IND@UTA</span>
+                        <div>
+                            <span class="probability-badge">68.0%</span>
+                            <span class="odds-badge">-212</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Pascal Siakam</div>
+                        <div class="prop-detail">REB Over 6.5 (79.3%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Nesmith</div>
+                        <div class="prop-detail">PTS Over 15.5 (78.1%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#879 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">67.9%</span>
+                            <span class="odds-badge">-211</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">REB Over 8.0 (79.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Karl-Anthony Towns</div>
+                        <div class="prop-detail">PTS Over 21.5 (77.9%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#4498 • 2-Leg SGP • DEN@SAC</span>
+                        <div>
+                            <span class="probability-badge">67.8%</span>
+                            <span class="odds-badge">-210</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Nikola Jokic</div>
+                        <div class="prop-detail">REB Over 12.0 (78.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Russell Westbrook</div>
+                        <div class="prop-detail">PTS Over 15.5 (78.8%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#2058 • 2-Leg SGP • GSW@OKC</span>
+                        <div>
+                            <span class="probability-badge">67.7%</span>
+                            <span class="odds-badge">-209</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Kevon Looney</div>
+                        <div class="prop-detail">REB Over 7.5 (79.1%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1347 • 2-Leg SGP • BOS@PHI</span>
+                        <div>
+                            <span class="probability-badge">67.7%</span>
+                            <span class="odds-badge">-209</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Derrick White</div>
+                        <div class="prop-detail">PTS Over 15.5 (77.5%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#22 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">67.7%</span>
+                            <span class="odds-badge">-209</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">OG Anunoby</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.7%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">REB Over 8.0 (79.5%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#3659 • 2-Leg SGP • IND@UTA</span>
+                        <div>
+                            <span class="probability-badge">67.5%</span>
+                            <span class="odds-badge">-207</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Pascal Siakam</div>
+                        <div class="prop-detail">REB Over 6.5 (79.3%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jarace Walker</div>
+                        <div class="prop-detail">PTS Over 13.5 (77.6%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#4492 • 2-Leg SGP • DEN@SAC</span>
+                        <div>
+                            <span class="probability-badge">67.4%</span>
+                            <span class="odds-badge">-206</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Nikola Jokic</div>
+                        <div class="prop-detail">REB Over 12.0 (78.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Dennis Schroder</div>
+                        <div class="prop-detail">PTS Over 15.0 (78.3%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#722 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">67.3%</span>
+                            <span class="odds-badge">-205</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaren Jackson Jr.</div>
+                        <div class="prop-detail">PTS Over 10.5 (79.1%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Karl-Anthony Towns</div>
+                        <div class="prop-detail">REB Over 9.5 (77.5%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1350 • 2-Leg SGP • BOS@PHI</span>
+                        <div>
+                            <span class="probability-badge">67.2%</span>
+                            <span class="odds-badge">-205</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Tyrese Maxey</div>
+                        <div class="prop-detail">PTS Over 23.5 (76.9%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#990 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">67.2%</span>
+                            <span class="odds-badge">-204</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Karl-Anthony Towns</div>
+                        <div class="prop-detail">REB Over 9.5 (77.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Ja Morant</div>
+                        <div class="prop-detail">PTS Over 22.5 (79.1%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#801 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">67.2%</span>
+                            <span class="odds-badge">-204</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">PTS Over 20.0 (77.0%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Julius Randle</div>
+                        <div class="prop-detail">REB Over 8.0 (79.5%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#2684 • 2-Leg SGP • GSW@OKC</span>
+                        <div>
+                            <span class="probability-badge">67.0%</span>
+                            <span class="odds-badge">-202</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Kevon Looney</div>
+                        <div class="prop-detail">REB Over 7.5 (79.1%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Brandin Podziemski</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.2%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1004 • 2-Leg SGP • MEM@NYK</span>
+                        <div>
+                            <span class="probability-badge">67.0%</span>
+                            <span class="odds-badge">-202</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Karl-Anthony Towns</div>
+                        <div class="prop-detail">REB Over 9.5 (77.5%)</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Cedric Coward</div>
+                        <div class="prop-detail">PTS Over 13.5 (78.8%)</div>
+                    </div>
+
+                    <div class="correlation-info">
+                        📊 Correlation: 0.647 (Books ignore this edge!)
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🌐</span>
+                    Top 25 Cross-Game Parlays
+                </h2>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#917 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">63.4%</span>
+                            <span class="odds-badge">-173</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#280 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">62.4%</span>
+                            <span class="odds-badge">-165</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#561 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">62.2%</span>
+                            <span class="odds-badge">-164</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#569 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">62.1%</span>
+                            <span class="odds-badge">-163</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#20 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">61.9%</span>
+                            <span class="odds-badge">-162</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">OG Anunoby</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.7%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#33 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">61.8%</span>
+                            <span class="odds-badge">-161</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">OG Anunoby</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.7%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#251 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">61.2%</span>
+                            <span class="odds-badge">-157</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#837 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">61.0%</span>
+                            <span class="odds-badge">-156</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Stephen Curry</div>
+                        <div class="prop-detail">PTS Over 20.0 (76.6%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#409 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">61.0%</span>
+                            <span class="odds-badge">-156</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jalen Brunson</div>
+                        <div class="prop-detail">PTS Over 23.5 (76.6%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#845 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.9%</span>
+                            <span class="odds-badge">-156</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Stephen Curry</div>
+                        <div class="prop-detail">PTS Over 20.0 (76.6%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#708 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.9%</span>
+                            <span class="odds-badge">-155</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">John Collins</div>
+                        <div class="prop-detail">PTS Over 18.5 (76.5%)</div>
+                        <div class="game-label">Game: IND@UTA</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#422 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.9%</span>
+                            <span class="odds-badge">-155</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jalen Brunson</div>
+                        <div class="prop-detail">PTS Over 23.5 (76.6%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#1 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.9%</span>
+                            <span class="odds-badge">-155</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">OG Anunoby</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.7%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#721 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.8%</span>
+                            <span class="odds-badge">-155</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">John Collins</div>
+                        <div class="prop-detail">PTS Over 18.5 (76.5%)</div>
+                        <div class="game-label">Game: IND@UTA</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#5 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.6%</span>
+                            <span class="odds-badge">-154</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">OG Anunoby</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.7%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#906 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.6%</span>
+                            <span class="odds-badge">-153</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Dorian Finney-Smith</div>
+                        <div class="prop-detail">PTS Over 10.0 (76.0%)</div>
+                        <div class="game-label">Game: TOR@BKN</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#942 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.5%</span>
+                            <span class="odds-badge">-152</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Dorian Finney-Smith</div>
+                        <div class="prop-detail">PTS Over 10.0 (76.0%)</div>
+                        <div class="game-label">Game: TOR@BKN</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Aaron Gordon</div>
+                        <div class="prop-detail">PTS Over 17.5 (79.6%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#263 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.1%</span>
+                            <span class="odds-badge">-150</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Stephen Curry</div>
+                        <div class="prop-detail">PTS Over 20.0 (76.6%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#246 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.0%</span>
+                            <span class="odds-badge">-150</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jalen Brunson</div>
+                        <div class="prop-detail">PTS Over 23.5 (76.6%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#909 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">60.0%</span>
+                            <span class="odds-badge">-150</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Andre Drummond</div>
+                        <div class="prop-detail">REB Over 6.0 (79.7%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">De'Aaron Fox</div>
+                        <div class="prop-detail">PTS Over 22.5 (75.3%)</div>
+                        <div class="game-label">Game: DEN@SAC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#257 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">59.9%</span>
+                            <span class="odds-badge">-149</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">John Collins</div>
+                        <div class="prop-detail">PTS Over 18.5 (76.5%)</div>
+                        <div class="game-label">Game: IND@UTA</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#394 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">59.8%</span>
+                            <span class="odds-badge">-148</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jalen Brunson</div>
+                        <div class="prop-detail">PTS Over 23.5 (76.6%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#552 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">59.7%</span>
+                            <span class="odds-badge">-148</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jimmy Butler</div>
+                        <div class="prop-detail">PTS Over 20.5 (78.1%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">John Collins</div>
+                        <div class="prop-detail">PTS Over 18.5 (76.5%)</div>
+                        <div class="game-label">Game: IND@UTA</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#269 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">59.6%</span>
+                            <span class="odds-badge">-147</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Jaylen Brown</div>
+                        <div class="prop-detail">PTS Over 25.5 (78.4%)</div>
+                        <div class="game-label">Game: BOS@PHI</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Dorian Finney-Smith</div>
+                        <div class="prop-detail">PTS Over 10.0 (76.0%)</div>
+                        <div class="game-label">Game: TOR@BKN</div>
+                    </div>
+
+                </div>
+
+                <div class="parlay-card">
+                    <div class="parlay-header">
+                        <span class="parlay-number">#14 • 2-Leg Cross-Game</span>
+                        <div>
+                            <span class="probability-badge">59.5%</span>
+                            <span class="odds-badge">-146</span>
+                        </div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">OG Anunoby</div>
+                        <div class="prop-detail">PTS Over 16.5 (77.7%)</div>
+                        <div class="game-label">Game: MEM@NYK</div>
+                    </div>
+
+                    <div class="leg">
+                        <div class="player-name">Stephen Curry</div>
+                        <div class="prop-detail">PTS Over 20.0 (76.6%)</div>
+                        <div class="game-label">Game: GSW@OKC</div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-tagline">🎯 Mathematical Edge. Quantitative Precision. Perpetual Learning.</div>
+            <div class="disclaimer">
+                This analysis is for informational and educational purposes only. Past performance does not
+                guarantee future results. All probabilities are model-based estimates derived from machine
+                learning ensemble methods (Random Forest + Gradient Boosting) with correlation adjustments.
+                Odds shown are theoretical fair value with 4.5% Shin margin applied. Always gamble responsibly
+                and within your means.
+            </div>
+            <div style="margin-top: 20px; color: #94a3b8;">
+                © 2025 The Casino Actuary • Generated 2025-11-11 20:08:01
+            </div>
+        </div>
+    </div>
+</body>
+</html>

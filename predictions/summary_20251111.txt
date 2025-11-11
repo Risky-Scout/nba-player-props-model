@@ -1,0 +1,107 @@
+================================================================================
+NBA PLAYER PROPS PREDICTIONS - 2025-11-11
+================================================================================
+Generated: 2025-11-11 19:06:14
+Model Accuracy: PTS MAE 3.80 | REB MAE 1.57 | AST MAE 1.09
+================================================================================
+
+TOP 10 INDIVIDUAL PROPS (By Edge)
+--------------------------------------------------------------------------------
+Nikola Jokic              REB  O  0.5  EV= 13.4  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Luka Doncic               PTS  O  0.5  EV= 31.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Tyrese Maxey              AST  O  0.5  EV=  9.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Luka Doncic               PTS  O  1.5  EV= 31.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Cade Cunningham           AST  O  0.5  EV=  9.3  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Nikola Jokic              REB  O  1.5  EV= 13.4  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Luka Doncic               PTS  O  2.5  EV= 31.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Pascal Siakam             PTS  O  0.5  EV= 29.7  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Luka Doncic               PTS  O  3.5  EV= 31.8  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+Pascal Siakam             PTS  O  1.5  EV= 29.7  P(Over)=100.0%  Edge=+2.2%  Fair=-9899  Book=-4344
+
+================================================================================
+TOP 10 TWO-LEG SGPs
+--------------------------------------------------------------------------------
+
+SGP #4837:
+  Bam Adebayo REB O8.5 (P=74.8%)
+  Jimmy Butler PTS O20.5 (P=70.1%)
+  Correlation: 0.647  Combined P: 57.5%
+
+SGP #4866:
+  Bam Adebayo REB O8.5 (P=74.8%)
+  Gordon Hayward PTS O15.5 (P=70.0%)
+  Correlation: 0.647  Combined P: 57.5%
+
+SGP #5844:
+  Jimmy Butler PTS O20.5 (P=70.1%)
+  Mikal Bridges REB O3.5 (P=74.6%)
+  Correlation: 0.647  Combined P: 57.4%
+
+SGP #6834:
+  Mikal Bridges REB O3.5 (P=74.6%)
+  Gordon Hayward PTS O15.5 (P=70.0%)
+  Correlation: 0.647  Combined P: 57.3%
+
+SGP #1642:
+  Cade Cunningham PTS O23.5 (P=69.8%)
+  Bam Adebayo REB O8.5 (P=74.8%)
+  Correlation: 0.647  Combined P: 57.3%
+
+SGP #5839:
+  Jimmy Butler PTS O20.5 (P=70.1%)
+  Jaime Jaquez Jr. REB O6.5 (P=74.5%)
+  Correlation: 0.647  Combined P: 57.3%
+
+SGP #6566:
+  Jaime Jaquez Jr. REB O6.5 (P=74.5%)
+  Gordon Hayward PTS O15.5 (P=70.0%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #3527:
+  Jarace Walker PTS O13.5 (P=69.7%)
+  Bam Adebayo REB O8.5 (P=74.8%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #1664:
+  Cade Cunningham PTS O23.5 (P=69.8%)
+  Mikal Bridges REB O3.5 (P=74.6%)
+  Correlation: 0.647  Combined P: 57.2%
+
+SGP #5849:
+  Jimmy Butler PTS O20.5 (P=70.1%)
+  Julius Randle REB O4.5 (P=74.3%)
+  Correlation: 0.647  Combined P: 57.1%
+
+================================================================================
+TOP 5 THREE-LEG SGPs
+--------------------------------------------------------------------------------
+
+SGP #1909:
+  James Harden REB O5.5 (P=72.8%)
+  Tyrese Maxey REB O4.5 (P=72.3%)
+  Cade Cunningham PTS O23.5 (P=69.8%)
+  Avg Correlation: 0.431  Combined P: 39.9%
+
+SGP #1890:
+  James Harden REB O5.5 (P=72.8%)
+  Tyrese Maxey PTS O23.5 (P=69.1%)
+  Tyrese Maxey REB O4.5 (P=72.3%)
+  Avg Correlation: 0.431  Combined P: 39.5%
+
+SGP #1850:
+  James Harden REB O5.5 (P=72.8%)
+  James Harden AST O7.5 (P=74.5%)
+  Cade Cunningham PTS O23.5 (P=69.8%)
+  Avg Correlation: 0.216  Combined P: 39.5%
+
+SGP #2015:
+  James Harden AST O7.5 (P=74.5%)
+  Tyrese Maxey REB O4.5 (P=72.3%)
+  Cade Cunningham PTS O23.5 (P=69.8%)
+  Avg Correlation: 0.216  Combined P: 39.3%
+
+SGP #1847:
+  James Harden REB O5.5 (P=72.8%)
+  James Harden AST O7.5 (P=74.5%)
+  Tyrese Maxey PTS O23.5 (P=69.1%)
+  Avg Correlation: 0.216  Combined P: 39.1%
