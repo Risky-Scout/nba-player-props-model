@@ -36,7 +36,7 @@ def main(prediction_date, games_str, injury_file):
         'POR': 25, 'MIA': 16, 'NOP': 19, 'SAS': 27,
         'IND': 12, 'DEN': 8, 'PHX': 24, 'LAC': 13,
         'GSW': 10, 'OKC': 21, 'UTA': 29, 'BKN': 3,
-        'SAC': 26, 'BOS': 2
+        'SAC': 26, 'BOS': 2, 'MEM': 15, 'NYK': 20
     }
 
     tonights_teams = set()
