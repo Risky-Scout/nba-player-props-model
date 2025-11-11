@@ -1,0 +1,8 @@
+# Today's NBA Games (Update this file daily)
+# Format: AWAY@HOME (one per line or comma-separated)
+# Example:
+#   TOR@BKN
+#   GSW@OKC
+# Or: TOR@BKN,GSW@OKC,BOS@PHI
+
+TOR@BKN,MEM@NYK,GSW@OKC,BOS@PHI,IND@UTA,DEN@SAC

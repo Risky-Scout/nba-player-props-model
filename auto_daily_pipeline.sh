@@ -49,12 +49,34 @@ elif [ "$MODE" == "predict" ]; then
     echo "🎯 GENERATING PREDICTIONS FOR $DATE..."
     echo "--------------------------------------------------------------------------------"
 
-    # Get today's games (you'll need to provide this as input or fetch from API)
-    echo "⚠️  Please provide today's games in format: GSW@OKC,IND@UTA,TOR@BKN"
-    echo "Or edit this script to fetch games automatically"
+    # Try to fetch games automatically
+    echo "Fetching today's games..."
+    GAMES=$(python scripts/utils/fetch_todays_games.py 2>/dev/null)
 
-    # For now, generate predictions with the comprehensive script
-    echo "Generating comprehensive predictions (PMF, SGPs, props)..."
+    # If auto-fetch fails, try todays_games.txt file
+    if [ -z "$GAMES" ] && [ -f "todays_games.txt" ]; then
+        echo "Auto-fetch failed, using todays_games.txt..."
+        GAMES=$(grep -v "^#" todays_games.txt | grep -v "^$" | tr '\n' ',' | sed 's/,$//' | tr -d ' ')
+    fi
+
+    # If still no games, exit
+    if [ -z "$GAMES" ]; then
+        echo "❌ No games found!"
+        echo "Please update todays_games.txt or provide games manually"
+        exit 1
+    fi
+
+    echo "Games: $GAMES"
+    echo ""
+
+    # Generate daily predictions with injury adjustments
+    echo "Generating daily predictions..."
+    python scripts/prediction/run_daily_predictions.py --date "$DATE" --games "$GAMES" --injuries "data/injuries/injuries_$DATE.csv" || {
+        echo "⚠️  Daily predictions failed, continuing with comprehensive predictions..."
+    }
+
+    # Generate comprehensive predictions (PMF, SGPs, props)
+    echo "Generating comprehensive predictions (PMF, SGPs, correlations)..."
     python scripts/prediction/generate_final_predictions.py "$DATE" || {
         echo "❌ Prediction generation failed"
         exit 1

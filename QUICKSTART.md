@@ -1,15 +1,31 @@
 # 🏀 NBA Props Model - Quick Start Guide
 
-## ⚡ Generate Today's Predictions (One Command!)
+## ⚡ Generate Today's Predictions (Three Ways!)
 
+### Option 1: Just Run It! (Semi-Automatic)
+```bash
+./quick_predict.sh
+```
+
+The script will:
+1. Try to auto-fetch games from NBA API
+2. If that fails, read from `todays_games.txt`
+3. Generate ALL predictions (PMF, SGPs, individual props)
+4. Auto-commit to GitHub as **Risky-Scout**
+5. Display summary on screen
+
+**Note:** Update `todays_games.txt` each day with tonight's games
+
+### Option 2: Provide Games Manually
 ```bash
 ./quick_predict.sh "TOR@BKN,MEM@NYK,GSW@OKC,BOS@PHI,IND@UTA,DEN@SAC"
 ```
 
-That's it! This will:
-- ✅ Generate ALL predictions (PMF, SGPs, individual props)
-- ✅ Auto-commit to GitHub as **Risky-Scout**
-- ✅ Display summary on screen
+### Option 3: Edit todays_games.txt
+```bash
+nano todays_games.txt  # Update with today's games
+./quick_predict.sh     # Run without arguments
+```
 
 ---
 
@@ -50,7 +66,12 @@ Set it and forget it! Add to crontab (`crontab -e`):
 30 16 * * * cd /home/user/nba-player-props-model && ./auto_daily_pipeline.sh predict
 ```
 
-**Note:** You'll need to add today's games to the script or set up automatic game fetching.
+**How it works:**
+1. Script tries to auto-fetch games from NBA API
+2. If auto-fetch fails, reads from `todays_games.txt`
+3. You just need to update `todays_games.txt` once per day (takes 10 seconds)
+
+**Pro tip:** Set a phone reminder at 3 PM to update `todays_games.txt`, then the 4:30 PM cron runs automatically!
 
 ---
 

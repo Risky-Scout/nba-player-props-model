@@ -18,12 +18,27 @@ DATE=$(date +%Y-%m-%d)
 GAMES=${1:-""}
 BRANCH="claude/nba-prop-model-training-011CV1dsbtVTuFpucny19p6F"
 
+# If no games provided as argument, try to auto-fetch
 if [ -z "$GAMES" ]; then
-    echo "❌ Please provide today's games"
-    echo ""
-    echo "Usage: $0 \"AWAY@HOME,AWAY@HOME,...\""
-    echo "Example: $0 \"GSW@OKC,IND@UTA,TOR@BKN\""
-    exit 1
+    echo "No games provided, attempting auto-fetch..."
+    GAMES=$(python scripts/utils/fetch_todays_games.py 2>/dev/null)
+
+    # If auto-fetch fails, try todays_games.txt
+    if [ -z "$GAMES" ] && [ -f "todays_games.txt" ]; then
+        echo "Auto-fetch failed, reading from todays_games.txt..."
+        GAMES=$(grep -v "^#" todays_games.txt | grep -v "^$" | tr '\n' ',' | sed 's/,$//' | tr -d ' ')
+    fi
+
+    # If still no games, show error
+    if [ -z "$GAMES" ]; then
+        echo "❌ No games found!"
+        echo ""
+        echo "Usage: $0 \"AWAY@HOME,AWAY@HOME,...\""
+        echo "Example: $0 \"GSW@OKC,IND@UTA,TOR@BKN\""
+        echo ""
+        echo "Or update todays_games.txt file"
+        exit 1
+    fi
 fi
 
 echo "================================================================================"
