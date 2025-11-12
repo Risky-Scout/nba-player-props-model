@@ -51,7 +51,7 @@ elif [ "$MODE" == "predict" ]; then
 
     # Try to fetch games automatically
     echo "Fetching today's games..."
-    GAMES=$(python scripts/utils/fetch_todays_games.py 2>/dev/null)
+    GAMES=$(timeout 10 python scripts/utils/fetch_todays_games.py 2>/dev/null || true)
 
     # If auto-fetch fails, try todays_games.txt file
     if [ -z "$GAMES" ] && [ -f "todays_games.txt" ]; then

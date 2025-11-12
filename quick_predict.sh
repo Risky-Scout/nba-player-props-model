@@ -21,7 +21,7 @@ BRANCH="claude/zip-nba-dashboard-011CV3ZYXGBaGVj5fC5UyMia"  # Branch for predict
 # If no games provided as argument, try to auto-fetch
 if [ -z "$GAMES" ]; then
     echo "No games provided, attempting auto-fetch..."
-    GAMES=$(python scripts/utils/fetch_todays_games.py 2>/dev/null)
+    GAMES=$(timeout 10 python scripts/utils/fetch_todays_games.py 2>/dev/null || true)
 
     # If auto-fetch fails, try todays_games.txt
     if [ -z "$GAMES" ] && [ -f "todays_games.txt" ]; then
