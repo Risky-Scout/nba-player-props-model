@@ -14,7 +14,7 @@ set -e  # Exit on error
 
 MODE=${1:-predict}  # Default to predict if no argument
 DATE=$(date +%Y-%m-%d)
-BRANCH="claude/nba-prop-model-training-011CV1dsbtVTuFpucny19p6F"  # Branch for production predictions
+BRANCH="claude/zip-nba-dashboard-011CV3ZYXGBaGVj5fC5UyMia"  # Branch for production predictions
 
 echo "================================================================================"
 echo "NBA PREDICTION PIPELINE - $MODE MODE"

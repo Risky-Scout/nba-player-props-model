@@ -16,7 +16,7 @@ set -e
 
 DATE=$(date +%Y-%m-%d)
 GAMES=${1:-""}
-BRANCH="claude/nba-prop-model-training-011CV1dsbtVTuFpucny19p6F"  # Branch for predictions
+BRANCH="claude/zip-nba-dashboard-011CV3ZYXGBaGVj5fC5UyMia"  # Branch for predictions
 
 # If no games provided as argument, try to auto-fetch
 if [ -z "$GAMES" ]; then
