@@ -1,0 +1,138 @@
+name: Daily Model Training & Predictions
+
+on:
+  schedule:
+    # Run at 7:00 AM CST (13:00 UTC) every day
+    - cron: '0 13 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  train-and-predict:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install nba_api pandas numpy scikit-learn scipy requests
+
+      - name: Fetch latest NBA data
+        run: |
+          python3 << 'EOF'
+          from nba_api.stats.endpoints import leaguegamefinder
+          import pandas as pd
+          from datetime import datetime, timedelta
+
+          print("Fetching 2024-25 season data...")
+
+          # Fetch all 2024-25 season games
+          gamefinder = leaguegamefinder.LeagueGameFinder(
+              season_nullable='2024',
+              season_type_nullable='Regular Season',
+              timeout=120
+          )
+
+          all_games = gamefinder.get_data_frames()[0]
+          all_games['GAME_DATE'] = pd.to_datetime(all_games['GAME_DATE'])
+
+          # Get games from last 30 days to ensure we have recent data
+          cutoff = datetime.now() - timedelta(days=30)
+          recent = all_games[all_games['GAME_DATE'] >= cutoff]
+
+          print(f"Fetched {len(recent)} recent team-games")
+          print(f"Date range: {recent['GAME_DATE'].min()} to {recent['GAME_DATE'].max()}")
+
+          # Save for processing
+          recent.to_csv('data/recent_games_raw.csv', index=False)
+          print("Saved to data/recent_games_raw.csv")
+          EOF
+
+      - name: Process and merge new data
+        run: |
+          python3 << 'EOF'
+          import pandas as pd
+          import numpy as np
+          from datetime import datetime
+
+          print("Loading existing training data...")
+          existing = pd.read_csv('data/processed_training_data.csv')
+          existing['date'] = pd.to_datetime(existing['date'])
+
+          latest_date = existing['date'].max()
+          print(f"Current training data through: {latest_date}")
+
+          # Load new raw data
+          new_raw = pd.read_csv('data/recent_games_raw.csv')
+          new_raw['GAME_DATE'] = pd.to_datetime(new_raw['GAME_DATE'])
+
+          # Filter to only games AFTER our current data
+          new_games = new_raw[new_raw['GAME_DATE'] > latest_date]
+
+          if len(new_games) == 0:
+              print("No new games to add - data is current")
+              exit(0)
+
+          print(f"Found {len(new_games)} new team-games to add")
+          print(f"New date range: {new_games['GAME_DATE'].min()} to {new_games['GAME_DATE'].max()}")
+
+          # TODO: Full feature engineering would go here
+          # For now, save indicator that we have new data
+          with open('new_data_available.txt', 'w') as f:
+              f.write(f"{len(new_games)} new games")
+
+          print("New data ready for training")
+          EOF
+
+      - name: Retrain model (if new data available)
+        run: |
+          if [ -f "new_data_available.txt" ]; then
+            echo "New data detected - retraining model..."
+            python3 rebuild_best_compact_model.py
+          else
+            echo "No new data - skipping training"
+          fi
+
+      - name: Generate today's predictions
+        run: |
+          python3 scripts/prediction/generate_today_predictions.py
+
+      - name: Commit and push updates
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+          # Add model and predictions
+          git add model_cache/trained_models.pkl || true
+          git add data/processed_training_data.csv || true
+          git add predictions/*.csv || true
+
+          # Commit if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Daily update: train + predictions $(date +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Summary
+        run: |
+          echo "================================"
+          echo "Daily Update Complete"
+          echo "================================"
+          python3 << 'EOF'
+          import pandas as pd
+          df = pd.read_csv('data/processed_training_data.csv')
+          df['date'] = pd.to_datetime(df['date'])
+          print(f"Training data now through: {df['date'].max()}")
+          EOF
