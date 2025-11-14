@@ -1,0 +1,201 @@
+player,team,prop,line,pred,prob
+Bruce Brown,Denver Nuggets,BLK,-0.1,0.4,84.1
+Cade Cunningham,Detroit Pistons,STL,1.6,2.1,84.1
+Amen Thompson,Houston Rockets,STL,0.5,1.0,84.1
+James Harden,LA Clippers,STL,2.1,2.6,84.1
+Tyrese Maxey,Philadelphia 76ers,STL,0.8,1.3,84.1
+Zach LaVine,Sacramento Kings,STL,0.6,1.1,84.1
+Kevin Durant,Houston Rockets,STL,0.5,1.0,84.1
+Luka Doncic,Los Angeles Lakers,STL,1.0,1.5,84.1
+Austin Reaves,Los Angeles Lakers,STL,0.4,0.9,84.1
+Jaylen Brown,Boston Celtics,STL,1.1,1.6,84.1
+Andrew Wiggins,Miami Heat,STL,1.8,2.3,84.1
+DeMar DeRozan,Sacramento Kings,STL,0.4,0.9,84.1
+Alperen Sengun,Houston Rockets,STL,1.1,1.6,84.1
+Dyson Daniels,Atlanta Hawks,STL,2.4,2.9,84.1
+Donovan Mitchell,Cleveland Cavaliers,STL,0.3,0.8,84.1
+P.J. Washington,Dallas Mavericks,STL,0.2,0.7,84.1
+Kawhi Leonard,LA Clippers,STL,2.7,3.2,84.1
+RJ Barrett,Toronto Raptors,STL,0.9,1.4,84.1
+Pascal Siakam,Indiana Pacers,STL,1.1,1.6,84.1
+Keyonte George,Utah Jazz,STL,0.4,0.9,84.1
+Josh Giddey,Chicago Bulls,STL,0.4,0.9,84.1
+Jaime Jaquez Jr.,Miami Heat,STL,-0.2,0.3,84.1
+Brandin Podziemski,Golden State Warriors,STL,1.1,1.6,84.1
+Jalen Johnson,Atlanta Hawks,STL,1.2,1.7,84.1
+Devin Booker,Phoenix Suns,STL,0.2,0.7,84.1
+Jimmy Butler,Golden State Warriors,STL,1.0,1.5,84.1
+Domantas Sabonis,Sacramento Kings,STL,0.5,1.0,84.1
+Dennis Schroder,Sacramento Kings,STL,1.0,1.5,84.1
+Nikola Jokic,Denver Nuggets,STL,1.3,1.8,84.1
+Shai Gilgeous-Alexander,Oklahoma City Thunder,BLK,1.0,1.5,84.1
+Nicolas Claxton,Brooklyn Nets,BLK,0.7,1.2,84.1
+Alexandre Sarr,Washington Wizards,BLK,1.9,2.4,84.1
+Toumani Camara,Portland Trail Blazers,BLK,0.4,0.9,84.1
+David Roddy,Atlanta Hawks,BLK,-0.3,0.2,84.1
+Cameron Johnson,Denver Nuggets,BLK,-0.1,0.4,84.1
+Jusuf Nurkic,Utah Jazz,BLK,0.3,0.8,84.1
+Matas Buzelis,Chicago Bulls,BLK,0.2,0.7,84.1
+Jaden McDaniels,Minnesota Timberwolves,BLK,-0.2,0.3,84.1
+Isaiah Jackson,Indiana Pacers,BLK,0.3,0.8,84.1
+Kristaps Porzingis,Atlanta Hawks,BLK,0.3,0.8,84.1
+Bilal Coulibaly,Washington Wizards,BLK,0.8,1.3,84.1
+Sam Hauser,Boston Celtics,BLK,0.0,0.5,84.1
+Christian Braun,Denver Nuggets,BLK,0.1,0.6,84.1
+Karl-Anthony Towns,New York Knicks,BLK,0.5,1.0,84.1
+Draymond Green,Golden State Warriors,BLK,-0.2,0.3,84.1
+Ryan Dunn,Phoenix Suns,BLK,-0.2,0.3,84.1
+Cason Wallace,Oklahoma City Thunder,BLK,0.1,0.6,84.1
+Isaiah Hartenstein,Oklahoma City Thunder,BLK,0.6,1.1,84.1
+Anfernee Simons,Boston Celtics,BLK,-0.1,0.4,84.1
+Patrick Williams,Chicago Bulls,BLK,-0.2,0.3,84.1
+Julian Champagnie,San Antonio Spurs,BLK,0.1,0.6,84.1
+Derrick Jones Jr.,LA Clippers,BLK,0.8,1.3,84.1
+Svi Mykhailiuk,Utah Jazz,BLK,-0.1,0.4,84.1
+Paolo Banchero,Orlando Magic,BLK,0.5,1.0,84.1
+Aaron Wiggins,Oklahoma City Thunder,BLK,1.5,2.0,84.1
+Dean Wade,Cleveland Cavaliers,BLK,0.1,0.6,84.1
+Trendon Watford,Philadelphia 76ers,BLK,0.0,0.5,84.1
+Mark Williams,Phoenix Suns,BLK,0.6,1.1,84.1
+Wendell Carter Jr.,Orlando Magic,BLK,0.6,1.1,84.1
+Marcus Smart,Los Angeles Lakers,BLK,-0.1,0.4,84.1
+Ausar Thompson,Detroit Pistons,BLK,0.8,1.3,84.1
+Miles Bridges,Charlotte Hornets,BLK,-0.2,0.3,84.1
+Deni Avdija,Portland Trail Blazers,BLK,0.7,1.2,84.1
+Brandon Ingram,Toronto Raptors,BLK,0.2,0.7,84.1
+Derrick White,Boston Celtics,BLK,0.7,1.2,84.1
+Jrue Holiday,Portland Trail Blazers,BLK,0.2,0.7,84.1
+Killian Hayes,Detroit Pistons,BLK,0.2,0.7,84.1
+Nickeil Alexander-Walker,Atlanta Hawks,BLK,0.7,1.2,84.1
+Gordon Hayward,Charlotte Hornets,BLK,0.2,0.7,84.1
+Jonathan Kuminga,Golden State Warriors,BLK,-0.2,0.3,84.1
+Devin Vassell,San Antonio Spurs,BLK,-0.1,0.4,84.1
+Max Christie,Dallas Mavericks,BLK,-0.2,0.3,84.1
+Scottie Barnes,Toronto Raptors,BLK,1.2,1.7,84.1
+Nikola Vucevic,Chicago Bulls,BLK,-0.2,0.3,84.1
+Mikal Bridges,New York Knicks,BLK,-0.3,0.2,84.1
+Grayson Allen,Phoenix Suns,BLK,-0.2,0.3,84.1
+Rudy Gobert,Minnesota Timberwolves,BLK,1.3,1.8,84.1
+Myles Turner,Milwaukee Bucks,BLK,1.9,2.4,84.1
+Jerami Grant,Portland Trail Blazers,BLK,0.3,0.8,84.1
+KyShawn George,Washington Wizards,BLK,0.3,0.8,84.1
+Jaren Jackson Jr.,Memphis Grizzlies,BLK,0.1,0.6,84.1
+De'Andre Hunter,Cleveland Cavaliers,BLK,-0.2,0.3,84.1
+Kelly Oubre Jr.,Philadelphia 76ers,BLK,0.2,0.7,84.1
+Giannis Antetokounmpo,Milwaukee Bucks,BLK,-0.1,0.4,84.1
+OG Anunoby,New York Knicks,BLK,0.2,0.7,84.1
+Donte DiVincenzo,Minnesota Timberwolves,BLK,-0.2,0.3,84.1
+Franz Wagner,Orlando Magic,BLK,-0.2,0.3,84.1
+Rui Hachimura,Los Angeles Lakers,BLK,-0.2,0.3,84.1
+Tari Eason,Houston Rockets,BLK,0.1,0.6,84.1
+Jae Crowder,Milwaukee Bucks,BLK,-0.3,0.2,84.1
+Luke Kennard,Atlanta Hawks,BLK,-0.2,0.3,84.1
+Quentin Grimes,Philadelphia 76ers,BLK,0.4,0.9,84.1
+Jaxson Hayes,Los Angeles Lakers,BLK,1.0,1.5,84.1
+Tyrese Maxey,Philadelphia 76ers,BLK,0.6,1.1,84.1
+Pascal Siakam,Indiana Pacers,BLK,0.3,0.8,84.1
+Keyonte George,Utah Jazz,BLK,0.3,0.8,84.1
+Kevin Durant,Houston Rockets,BLK,1.1,1.6,84.1
+Jaylen Brown,Boston Celtics,BLK,-0.2,0.3,84.1
+Charles Bassey,Memphis Grizzlies,STL,0.4,0.9,84.1
+Malachi Flynn,Toronto Raptors,STL,0.3,0.8,84.1
+Cam Spencer,Memphis Grizzlies,STL,0.5,1.0,84.1
+Lauri Markkanen,Utah Jazz,BLK,-0.2,0.3,84.1
+Dyson Daniels,Atlanta Hawks,BLK,0.1,0.6,84.1
+Donovan Mitchell,Cleveland Cavaliers,BLK,0.3,0.8,84.1
+P.J. Washington,Dallas Mavericks,BLK,1.3,1.8,84.1
+Bam Adebayo,Miami Heat,BLK,0.2,0.7,84.1
+Alperen Sengun,Houston Rockets,BLK,0.8,1.3,84.1
+Cade Cunningham,Detroit Pistons,BLK,0.7,1.2,84.1
+Amen Thompson,Houston Rockets,BLK,-0.3,0.2,84.1
+Devin Booker,Phoenix Suns,BLK,0.2,0.7,84.1
+Jimmy Butler,Golden State Warriors,BLK,0.5,1.0,84.1
+Evan Mobley,Cleveland Cavaliers,BLK,1.1,1.6,84.1
+Ivica Zubac,LA Clippers,BLK,1.1,1.6,84.1
+Victor Wembanyama,San Antonio Spurs,BLK,3.2,3.7,84.1
+Andrew Wiggins,Miami Heat,BLK,0.2,0.7,84.1
+Domantas Sabonis,Sacramento Kings,BLK,-0.2,0.3,84.1
+Nikola Jokic,Denver Nuggets,BLK,0.5,1.0,84.1
+Jalen Duren,Detroit Pistons,BLK,0.7,1.2,84.1
+Isaiah Stewart,Detroit Pistons,BLK,1.7,2.2,84.1
+Stephon Castle,San Antonio Spurs,BLK,0.3,0.8,84.1
+Cooper Flagg,Dallas Mavericks,BLK,-0.2,0.3,84.1
+Tre Jones,Chicago Bulls,BLK,-0.2,0.3,84.1
+Jake LaRavia,Los Angeles Lakers,BLK,-0.2,0.3,84.1
+Brandin Podziemski,Golden State Warriors,BLK,0.1,0.6,84.1
+Jalen Johnson,Atlanta Hawks,BLK,-0.2,0.3,84.1
+Jordan McLaughlin,San Antonio Spurs,STL,1.5,2.0,84.1
+Cody Martin,Charlotte Hornets,STL,0.3,0.8,84.1
+Kyle Filipowski,Utah Jazz,STL,-0.1,0.4,84.1
+Daniel Theis,New Orleans Pelicans,STL,0.1,0.6,84.1
+Jose Alvarado,New Orleans Pelicans,STL,0.5,1.0,84.1
+Jaylen Clark,Minnesota Timberwolves,STL,0.1,0.6,84.1
+Goga Bitadze,Orlando Magic,STL,-0.2,0.3,84.1
+Caris LeVert,Detroit Pistons,STL,0.4,0.9,84.1
+Brandon Williams,Dallas Mavericks,STL,0.0,0.5,84.1
+K.J. Simpson,Charlotte Hornets,STL,0.4,0.9,84.1
+Nicolas Batum,LA Clippers,STL,0.5,1.0,84.1
+Spencer Dinwiddie,Dallas Mavericks,STL,-0.2,0.3,84.1
+Dru Smith,Miami Heat,STL,0.8,1.3,84.1
+Saddiq Bey,New Orleans Pelicans,STL,0.1,0.6,84.1
+Cedi Osman,San Antonio Spurs,STL,0.2,0.7,84.1
+Jalen Suggs,Orlando Magic,STL,2.3,2.8,84.1
+Keon Ellis,Sacramento Kings,STL,0.3,0.8,84.1
+Ochai Agbaji,Toronto Raptors,STL,-0.1,0.4,84.1
+Kyle Kuzma,Milwaukee Bucks,STL,-0.1,0.4,84.1
+Jonathan Isaac,Orlando Magic,STL,0.0,0.5,84.1
+Trey Lyles,Sacramento Kings,STL,-0.2,0.3,84.1
+Jabari Walker,Philadelphia 76ers,STL,-0.1,0.4,84.1
+Bronny James,Los Angeles Lakers,STL,1.1,1.6,84.1
+Airious Bailey,Utah Jazz,STL,0.1,0.6,84.1
+Josh Minott,Boston Celtics,STL,0.1,0.6,84.1
+Buddy Hield,Golden State Warriors,STL,-0.1,0.4,84.1
+Al Horford,Golden State Warriors,STL,-0.1,0.4,84.1
+Tyus Jones,Orlando Magic,STL,-0.1,0.4,84.1
+Duncan Robinson,Detroit Pistons,BLK,-0.2,0.3,84.1
+Skylar Mays,Portland Trail Blazers,STL,0.9,1.4,84.1
+Jalen Smith,Chicago Bulls,STL,0.0,0.5,84.1
+Moses Moody,Golden State Warriors,STL,-0.1,0.4,84.1
+Collin Gillespie,Phoenix Suns,STL,0.8,1.3,84.1
+Ryan Kalkbrenner,Charlotte Hornets,STL,2.2,2.7,84.1
+Naji Marshall,Dallas Mavericks,STL,0.5,1.0,84.1
+Tristan Da Silva,Orlando Magic,STL,1.0,1.5,84.1
+Tre Johnson,Washington Wizards,STL,0.0,0.5,84.1
+Cole Anthony,Milwaukee Bucks,STL,0.2,0.7,84.1
+Jaylin Williams,Oklahoma City Thunder,STL,1.0,1.5,84.1
+Andre Drummond,Philadelphia 76ers,STL,0.4,0.9,84.1
+Javonte Green,Detroit Pistons,STL,1.1,1.6,84.1
+Taurean Prince,Milwaukee Bucks,STL,-0.1,0.4,84.1
+Craig Porter,Cleveland Cavaliers,STL,0.2,0.7,84.1
+Josh Richardson,Miami Heat,STL,1.1,1.6,84.1
+Keita Bates-Diop,Phoenix Suns,STL,-0.2,0.3,84.1
+Isaac Okoro,Chicago Bulls,STL,0.2,0.7,84.1
+Kevin Huerter,Chicago Bulls,STL,0.4,0.9,84.1
+CJ McCollum,Washington Wizards,STL,0.1,0.6,84.1
+Rob Dillingham,Minnesota Timberwolves,STL,0.5,1.0,84.1
+Kenyon Martin Jr.,Philadelphia 76ers,STL,-0.2,0.3,84.1
+Ronald Holland II,Detroit Pistons,STL,0.9,1.4,84.1
+Desmond Bane,Orlando Magic,STL,0.2,0.7,84.1
+Ben Sheppard,Indiana Pacers,STL,-0.1,0.4,84.1
+Egor Demin,Brooklyn Nets,STL,1.6,2.1,84.1
+Elijah Harkless,Utah Jazz,STL,0.0,0.5,84.1
+Theo Maledon,Charlotte Hornets,STL,-0.1,0.4,84.1
+Day'Ron Sharpe,Brooklyn Nets,STL,0.5,1.0,84.1
+Keon Johnson,Brooklyn Nets,STL,0.1,0.6,84.1
+Jordan Goodwin,Phoenix Suns,STL,1.2,1.7,84.1
+Simone Fontecchio,Miami Heat,STL,-0.1,0.4,84.1
+John Collins,LA Clippers,STL,0.4,0.9,84.1
+Bruce Brown,Denver Nuggets,STL,0.2,0.7,84.1
+Quenton Jackson,Indiana Pacers,STL,0.9,1.4,84.1
+Yuta Watanabe,Phoenix Suns,STL,-0.2,0.3,84.1
+Jeremiah Fears,New Orleans Pelicans,STL,1.4,1.9,84.1
+Paolo Banchero,Orlando Magic,STL,0.5,1.0,84.1
+Aaron Wiggins,Oklahoma City Thunder,STL,-0.2,0.3,84.1
+Carlton Carrington,Washington Wizards,STL,-0.1,0.4,84.1
+Dean Wade,Cleveland Cavaliers,STL,0.5,1.0,84.1
+Harrison Barnes,San Antonio Spurs,STL,0.9,1.4,84.1
+Ryan Dunn,Phoenix Suns,STL,1.0,1.5,84.1
+Isaiah Joe,Oklahoma City Thunder,STL,0.5,1.0,84.1
+Daniel Gafford,Dallas Mavericks,STL,0.7,1.2,84.1
+Jaylon Tyson,Cleveland Cavaliers,STL,0.4,0.9,84.1
+Kentavious Caldwell-Pope,Memphis Grizzlies,STL,-0.2,0.3,84.1

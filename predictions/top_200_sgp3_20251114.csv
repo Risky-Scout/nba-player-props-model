@@ -1,0 +1,121 @@
+team,leg1,leg2,leg3,prob
+Sacramento Kings,DeMar DeRozan O26.2 PTS,Zach LaVine O3.8 REB,Domantas Sabonis O5.2 AST,35.7
+Sacramento Kings,DeMar DeRozan O26.2 PTS,Zach LaVine O3.8 REB,Dennis Schroder O6.3 AST,35.7
+Sacramento Kings,DeMar DeRozan O26.2 PTS,Domantas Sabonis O11.9 REB,Dennis Schroder O6.3 AST,35.7
+Sacramento Kings,Zach LaVine O23.3 PTS,Domantas Sabonis O11.9 REB,Dennis Schroder O6.3 AST,35.7
+Detroit Pistons,Duncan Robinson O9.8 PTS,Cade Cunningham O5.9 REB,Killian Hayes O6.2 AST,35.7
+Detroit Pistons,Duncan Robinson O9.8 PTS,Cade Cunningham O5.9 REB,Jalen Duren O1.1 AST,35.7
+Detroit Pistons,Duncan Robinson O9.8 PTS,Killian Hayes O3.7 REB,Jalen Duren O1.1 AST,35.7
+Detroit Pistons,Cade Cunningham O32.5 PTS,Killian Hayes O3.7 REB,Jalen Duren O1.1 AST,35.7
+Houston Rockets,Alperen Sengun O28.6 PTS,Amen Thompson O6.2 REB,Kevin Durant O2.5 AST,35.7
+Houston Rockets,Alperen Sengun O28.6 PTS,Amen Thompson O6.2 REB,Tari Eason O1.4 AST,35.7
+Houston Rockets,Alperen Sengun O28.6 PTS,Kevin Durant O5.2 REB,Tari Eason O1.4 AST,35.7
+Houston Rockets,Amen Thompson O26.8 PTS,Kevin Durant O5.2 REB,Tari Eason O1.4 AST,35.7
+LA Clippers,James Harden O23.0 PTS,Kawhi Leonard O7.0 REB,Ivica Zubac O1.9 AST,35.7
+LA Clippers,James Harden O23.0 PTS,Kawhi Leonard O7.0 REB,Derrick Jones Jr. O0.6000000000000001 AST,35.7
+LA Clippers,James Harden O23.0 PTS,Ivica Zubac O7.9 REB,Derrick Jones Jr. O0.6000000000000001 AST,35.7
+LA Clippers,Kawhi Leonard O28.5 PTS,Ivica Zubac O7.9 REB,Derrick Jones Jr. O0.6000000000000001 AST,35.7
+Philadelphia 76ers,Tyrese Maxey O25.9 PTS,VJ Edgecombe O2.9 REB,Kelly Oubre Jr. O1.9 AST,35.7
+Philadelphia 76ers,Tyrese Maxey O25.9 PTS,VJ Edgecombe O2.9 REB,Quentin Grimes O3.5 AST,35.7
+Philadelphia 76ers,Tyrese Maxey O25.9 PTS,Kelly Oubre Jr. O5.4 REB,Quentin Grimes O3.5 AST,35.7
+Philadelphia 76ers,VJ Edgecombe O16.8 PTS,Kelly Oubre Jr. O5.4 REB,Quentin Grimes O3.5 AST,35.7
+Indiana Pacers,Pascal Siakam O31.6 PTS,Jarace Walker O5.9 REB,Aaron Nesmith O1.6 AST,35.7
+Indiana Pacers,Pascal Siakam O31.6 PTS,Jarace Walker O5.9 REB,Isaiah Jackson O1.1 AST,35.7
+Indiana Pacers,Pascal Siakam O31.6 PTS,Aaron Nesmith O4.2 REB,Isaiah Jackson O1.1 AST,35.7
+Indiana Pacers,Jarace Walker O18.2 PTS,Aaron Nesmith O4.2 REB,Isaiah Jackson O1.1 AST,35.7
+Utah Jazz,Keyonte George O27.8 PTS,Lauri Markkanen O5.8 REB,Jusuf Nurkic O2.8 AST,35.7
+Utah Jazz,Keyonte George O27.8 PTS,Lauri Markkanen O5.8 REB,Svi Mykhailiuk O1.7999999999999998 AST,35.7
+Utah Jazz,Keyonte George O27.8 PTS,Jusuf Nurkic O9.2 REB,Svi Mykhailiuk O1.7999999999999998 AST,35.7
+Utah Jazz,Lauri Markkanen O22.3 PTS,Jusuf Nurkic O9.2 REB,Svi Mykhailiuk O1.7999999999999998 AST,35.7
+Chicago Bulls,Josh Giddey O27.9 PTS,Tre Jones O2.5 REB,Nikola Vucevic O4.7 AST,35.7
+Chicago Bulls,Josh Giddey O27.9 PTS,Tre Jones O2.5 REB,Matas Buzelis O1.5 AST,35.7
+Chicago Bulls,Josh Giddey O27.9 PTS,Nikola Vucevic O10.0 REB,Matas Buzelis O1.5 AST,35.7
+Chicago Bulls,Tre Jones O15.3 PTS,Nikola Vucevic O10.0 REB,Matas Buzelis O1.5 AST,35.7
+Los Angeles Lakers,Luka Doncic O26.7 PTS,Austin Reaves O5.0 REB,Jake LaRavia O3.2 AST,35.7
+Los Angeles Lakers,Luka Doncic O26.7 PTS,Austin Reaves O5.0 REB,Jaxson Hayes O2.3 AST,35.7
+Los Angeles Lakers,Luka Doncic O26.7 PTS,Jake LaRavia O5.5 REB,Jaxson Hayes O2.3 AST,35.7
+Los Angeles Lakers,Austin Reaves O24.5 PTS,Jake LaRavia O5.5 REB,Jaxson Hayes O2.3 AST,35.7
+Boston Celtics,Jaylen Brown O31.3 PTS,Payton Pritchard O2.7 REB,Derrick White O3.9000000000000004 AST,35.7
+Boston Celtics,Jaylen Brown O31.3 PTS,Payton Pritchard O2.7 REB,Sam Hauser O1.5 AST,35.7
+Boston Celtics,Jaylen Brown O31.3 PTS,Derrick White O3.5999999999999996 REB,Sam Hauser O1.5 AST,35.7
+Boston Celtics,Payton Pritchard O16.4 PTS,Derrick White O3.5999999999999996 REB,Sam Hauser O1.5 AST,35.7
+Miami Heat,Andrew Wiggins O17.2 PTS,Bam Adebayo O7.6 REB,Jaime Jaquez Jr. O3.9000000000000004 AST,35.7
+Miami Heat,Andrew Wiggins O17.2 PTS,Bam Adebayo O7.6 REB,Davion Mitchell O5.3 AST,35.7
+Miami Heat,Andrew Wiggins O17.2 PTS,Jaime Jaquez Jr. O6.7 REB,Davion Mitchell O5.3 AST,35.7
+Miami Heat,Bam Adebayo O16.6 PTS,Jaime Jaquez Jr. O6.7 REB,Davion Mitchell O5.3 AST,35.7
+Denver Nuggets,Nikola Jokic O21.1 PTS,Jamal Murray O3.9000000000000004 REB,Aaron Gordon O2.2 AST,35.7
+Denver Nuggets,Nikola Jokic O21.1 PTS,Jamal Murray O3.9000000000000004 REB,Cameron Johnson O2.0 AST,35.7
+Denver Nuggets,Nikola Jokic O21.1 PTS,Aaron Gordon O5.0 REB,Cameron Johnson O2.0 AST,35.7
+Denver Nuggets,Jamal Murray O23.1 PTS,Aaron Gordon O5.0 REB,Cameron Johnson O2.0 AST,35.7
+Atlanta Hawks,Dyson Daniels O19.6 PTS,Jalen Johnson O8.5 REB,Nickeil Alexander-Walker O3.1 AST,35.7
+Atlanta Hawks,Dyson Daniels O19.6 PTS,Jalen Johnson O8.5 REB,Luke Kennard O1.3 AST,35.7
+Atlanta Hawks,Dyson Daniels O19.6 PTS,Nickeil Alexander-Walker O2.8 REB,Luke Kennard O1.3 AST,35.7
+Atlanta Hawks,Jalen Johnson O27.1 PTS,Nickeil Alexander-Walker O2.8 REB,Luke Kennard O1.3 AST,35.7
+Cleveland Cavaliers,Donovan Mitchell O27.5 PTS,Evan Mobley O8.6 REB,De'Andre Hunter O3.4 AST,35.7
+Cleveland Cavaliers,Donovan Mitchell O27.5 PTS,Evan Mobley O8.6 REB,Lonzo Ball O5.6 AST,35.7
+Cleveland Cavaliers,Donovan Mitchell O27.5 PTS,De'Andre Hunter O4.1 REB,Lonzo Ball O5.6 AST,35.7
+Cleveland Cavaliers,Evan Mobley O17.1 PTS,De'Andre Hunter O4.1 REB,Lonzo Ball O5.6 AST,35.7
+Dallas Mavericks,P.J. Washington O26.5 PTS,Cooper Flagg O6.4 REB,Max Christie O3.9000000000000004 AST,35.7
+Dallas Mavericks,P.J. Washington O26.5 PTS,Cooper Flagg O6.4 REB,D'Angelo Russell O6.7 AST,35.7
+Dallas Mavericks,P.J. Washington O26.5 PTS,Max Christie O4.3 REB,D'Angelo Russell O6.7 AST,35.7
+Dallas Mavericks,Cooper Flagg O14.0 PTS,Max Christie O4.3 REB,D'Angelo Russell O6.7 AST,35.7
+Toronto Raptors,RJ Barrett O25.1 PTS,Brandon Ingram O5.4 REB,Scottie Barnes O4.3 AST,35.7
+Toronto Raptors,RJ Barrett O25.1 PTS,Brandon Ingram O5.4 REB,Immanuel Quickley O5.4 AST,35.7
+Toronto Raptors,RJ Barrett O25.1 PTS,Scottie Barnes O8.9 REB,Immanuel Quickley O5.4 AST,35.7
+Toronto Raptors,Brandon Ingram O26.9 PTS,Scottie Barnes O8.9 REB,Immanuel Quickley O5.4 AST,35.7
+Memphis Grizzlies,Ja Morant O17.3 PTS,Cedric Coward O6.7 REB,Jaren Jackson Jr. O1.7000000000000002 AST,35.7
+Memphis Grizzlies,Ja Morant O17.3 PTS,Cedric Coward O6.7 REB,Jock Landale O1.5 AST,35.7
+Memphis Grizzlies,Ja Morant O17.3 PTS,Jaren Jackson Jr. O4.6 REB,Jock Landale O1.5 AST,35.7
+Memphis Grizzlies,Cedric Coward O17.0 PTS,Jaren Jackson Jr. O4.6 REB,Jock Landale O1.5 AST,35.7
+Golden State Warriors,Brandin Podziemski O14.5 PTS,Jimmy Butler O7.1 REB,Jonathan Kuminga O2.1 AST,35.7
+Golden State Warriors,Brandin Podziemski O14.5 PTS,Jimmy Butler O7.1 REB,Draymond Green O5.2 AST,35.7
+Golden State Warriors,Brandin Podziemski O14.5 PTS,Jonathan Kuminga O4.7 REB,Draymond Green O5.2 AST,35.7
+Golden State Warriors,Jimmy Butler O18.6 PTS,Jonathan Kuminga O4.7 REB,Draymond Green O5.2 AST,35.7
+Phoenix Suns,Devin Booker O30.2 PTS,Grayson Allen O3.5 REB,Royce O'Neale O2.6 AST,35.7
+Phoenix Suns,Devin Booker O30.2 PTS,Grayson Allen O3.5 REB,Ryan Dunn O1.7999999999999998 AST,35.7
+Phoenix Suns,Devin Booker O30.2 PTS,Royce O'Neale O3.5999999999999996 REB,Ryan Dunn O1.7999999999999998 AST,35.7
+Phoenix Suns,Grayson Allen O14.3 PTS,Royce O'Neale O3.5999999999999996 REB,Ryan Dunn O1.7999999999999998 AST,35.7
+Charlotte Hornets,Kon Knueppel O18.0 PTS,Gordon Hayward O4.8 REB,Miles Bridges O3.3 AST,35.7
+Charlotte Hornets,Kon Knueppel O18.0 PTS,Gordon Hayward O4.8 REB,Sion James O1.4 AST,35.7
+Charlotte Hornets,Kon Knueppel O18.0 PTS,Miles Bridges O6.4 REB,Sion James O1.4 AST,35.7
+Charlotte Hornets,Gordon Hayward O20.9 PTS,Miles Bridges O6.4 REB,Sion James O1.4 AST,35.7
+Brooklyn Nets,Cam Thomas O24.9 PTS,Noah Clowney O4.8 REB,Nicolas Claxton O2.9 AST,35.7
+Brooklyn Nets,Cam Thomas O24.9 PTS,Noah Clowney O4.8 REB,Terance Mann O3.2 AST,35.7
+Brooklyn Nets,Cam Thomas O24.9 PTS,Nicolas Claxton O7.5 REB,Terance Mann O3.2 AST,35.7
+Brooklyn Nets,Noah Clowney O13.8 PTS,Nicolas Claxton O7.5 REB,Terance Mann O3.2 AST,35.7
+Milwaukee Bucks,Gary Trent Jr. O7.2 PTS,Giannis Antetokounmpo O9.0 REB,Myles Turner O1.6 AST,35.7
+Milwaukee Bucks,Gary Trent Jr. O7.2 PTS,Giannis Antetokounmpo O9.0 REB,Jae Crowder O0.8999999999999999 AST,35.7
+Milwaukee Bucks,Gary Trent Jr. O7.2 PTS,Myles Turner O4.7 REB,Jae Crowder O0.8999999999999999 AST,35.7
+Milwaukee Bucks,Giannis Antetokounmpo O31.0 PTS,Myles Turner O4.7 REB,Jae Crowder O0.8999999999999999 AST,35.7
+Minnesota Timberwolves,Julius Randle O23.5 PTS,Rudy Gobert O10.9 REB,Donte DiVincenzo O5.4 AST,35.7
+Minnesota Timberwolves,Julius Randle O23.5 PTS,Rudy Gobert O10.9 REB,Jaden McDaniels O1.7000000000000002 AST,35.7
+Minnesota Timberwolves,Julius Randle O23.5 PTS,Donte DiVincenzo O4.9 REB,Jaden McDaniels O1.7000000000000002 AST,35.7
+Minnesota Timberwolves,Rudy Gobert O15.899999999999999 PTS,Donte DiVincenzo O4.9 REB,Jaden McDaniels O1.7000000000000002 AST,35.7
+San Antonio Spurs,Victor Wembanyama O14.9 PTS,Stephon Castle O5.8 REB,Devin Vassell O1.9 AST,35.7
+San Antonio Spurs,Victor Wembanyama O14.9 PTS,Stephon Castle O5.8 REB,Julian Champagnie O1.4 AST,35.7
+San Antonio Spurs,Victor Wembanyama O14.9 PTS,Devin Vassell O4.0 REB,Julian Champagnie O1.4 AST,35.7
+San Antonio Spurs,Stephon Castle O24.1 PTS,Devin Vassell O4.0 REB,Julian Champagnie O1.4 AST,35.7
+New York Knicks,Mikal Bridges O12.2 PTS,Jalen Brunson O3.2 REB,OG Anunoby O2.4 AST,35.7
+New York Knicks,Mikal Bridges O12.2 PTS,Jalen Brunson O3.2 REB,Karl-Anthony Towns O3.5999999999999996 AST,35.7
+New York Knicks,Mikal Bridges O12.2 PTS,OG Anunoby O3.2 REB,Karl-Anthony Towns O3.5999999999999996 AST,35.7
+New York Knicks,Jalen Brunson O19.4 PTS,OG Anunoby O3.2 REB,Karl-Anthony Towns O3.5999999999999996 AST,35.7
+Portland Trail Blazers,Deni Avdija O23.6 PTS,Jrue Holiday O5.4 REB,Jerami Grant O1.3 AST,35.7
+Portland Trail Blazers,Deni Avdija O23.6 PTS,Jrue Holiday O5.4 REB,Toumani Camara O2.6 AST,35.7
+Portland Trail Blazers,Deni Avdija O23.6 PTS,Jerami Grant O2.5 REB,Toumani Camara O2.6 AST,35.7
+Portland Trail Blazers,Jrue Holiday O11.3 PTS,Jerami Grant O2.5 REB,Toumani Camara O2.6 AST,35.7
+New Orleans Pelicans,Trey Murphy III O15.0 PTS,Brandon Boston Jr. O4.4 REB,Zion Williamson O5.0 AST,35.7
+New Orleans Pelicans,Trey Murphy III O15.0 PTS,Brandon Boston Jr. O4.4 REB,Jeremiah Fears O5.5 AST,35.7
+New Orleans Pelicans,Trey Murphy III O15.0 PTS,Zion Williamson O6.8 REB,Jeremiah Fears O5.5 AST,35.7
+New Orleans Pelicans,Brandon Boston Jr. O12.5 PTS,Zion Williamson O6.8 REB,Jeremiah Fears O5.5 AST,35.7
+Washington Wizards,KyShawn George O16.9 PTS,Alexandre Sarr O7.699999999999999 REB,Bilal Coulibaly O3.5 AST,35.7
+Washington Wizards,KyShawn George O16.9 PTS,Alexandre Sarr O7.699999999999999 REB,Carlton Carrington O4.2 AST,35.7
+Washington Wizards,KyShawn George O16.9 PTS,Bilal Coulibaly O5.3 REB,Carlton Carrington O4.2 AST,35.7
+Washington Wizards,Alexandre Sarr O20.1 PTS,Bilal Coulibaly O5.3 REB,Carlton Carrington O4.2 AST,35.7
+Orlando Magic,Franz Wagner O21.3 PTS,Wendell Carter Jr. O6.4 REB,Paolo Banchero O4.8 AST,35.7
+Orlando Magic,Franz Wagner O21.3 PTS,Wendell Carter Jr. O6.4 REB,Anthony Black O1.7999999999999998 AST,35.7
+Orlando Magic,Franz Wagner O21.3 PTS,Paolo Banchero O8.3 REB,Anthony Black O1.7999999999999998 AST,35.7
+Orlando Magic,Wendell Carter Jr. O15.1 PTS,Paolo Banchero O8.3 REB,Anthony Black O1.7999999999999998 AST,35.7
+Oklahoma City Thunder,Shai Gilgeous-Alexander O30.0 PTS,Ajay Mitchell O3.8 REB,Isaiah Joe O1.7999999999999998 AST,35.7
+Oklahoma City Thunder,Shai Gilgeous-Alexander O30.0 PTS,Ajay Mitchell O3.8 REB,Cason Wallace O2.0 AST,35.7
+Oklahoma City Thunder,Shai Gilgeous-Alexander O30.0 PTS,Isaiah Joe O3.5999999999999996 REB,Cason Wallace O2.0 AST,35.7
+Oklahoma City Thunder,Ajay Mitchell O9.2 PTS,Isaiah Joe O3.5999999999999996 REB,Cason Wallace O2.0 AST,35.7
