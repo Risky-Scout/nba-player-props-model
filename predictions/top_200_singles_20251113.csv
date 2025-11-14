@@ -1,0 +1,201 @@
+player,team,prop,line,pred,prob
+DeMar DeRozan,Sacramento Kings,PTS,26.2,26.7,55.0
+Duncan Robinson,Detroit Pistons,PTS,9.8,10.3,55.0
+Alperen Sengun,Houston Rockets,PTS,28.6,29.1,55.0
+Cade Cunningham,Detroit Pistons,PTS,32.5,33.0,55.0
+Amen Thompson,Houston Rockets,PTS,26.8,27.3,55.0
+James Harden,LA Clippers,PTS,23.0,23.5,55.0
+Tyrese Maxey,Philadelphia 76ers,PTS,25.9,26.4,55.0
+Zach LaVine,Sacramento Kings,PTS,23.3,23.8,55.0
+Pascal Siakam,Indiana Pacers,PTS,31.6,32.1,55.0
+Keyonte George,Utah Jazz,PTS,27.8,28.3,55.0
+Jarace Walker,Indiana Pacers,PTS,18.2,18.7,55.0
+Josh Giddey,Chicago Bulls,PTS,27.9,28.4,55.0
+Kevin Durant,Houston Rockets,PTS,20.5,21.0,55.0
+Luka Doncic,Los Angeles Lakers,PTS,26.7,27.2,55.0
+Austin Reaves,Los Angeles Lakers,PTS,24.5,25.0,55.0
+Jaylen Brown,Boston Celtics,PTS,31.3,31.8,55.0
+Andrew Wiggins,Miami Heat,PTS,17.2,17.7,55.0
+Domantas Sabonis,Sacramento Kings,PTS,23.1,23.6,55.0
+Dennis Schroder,Sacramento Kings,PTS,20.7,21.2,55.0
+Nikola Jokic,Denver Nuggets,PTS,21.1,21.6,55.0
+Lauri Markkanen,Utah Jazz,PTS,22.3,22.8,55.0
+Dyson Daniels,Atlanta Hawks,PTS,19.6,20.1,55.0
+Donovan Mitchell,Cleveland Cavaliers,PTS,27.5,28.0,55.0
+P.J. Washington,Dallas Mavericks,PTS,26.5,27.0,55.0
+Kawhi Leonard,LA Clippers,PTS,28.5,29.0,55.0
+RJ Barrett,Toronto Raptors,PTS,25.1,25.6,55.0
+Bam Adebayo,Miami Heat,PTS,16.6,17.1,55.0
+Ja Morant,Memphis Grizzlies,PTS,17.3,17.8,55.0
+Jake LaRavia,Los Angeles Lakers,PTS,21.9,22.4,55.0
+Jaime Jaquez Jr.,Miami Heat,PTS,30.1,30.6,55.0
+Brandin Podziemski,Golden State Warriors,PTS,14.5,15.0,55.0
+Jalen Johnson,Atlanta Hawks,PTS,27.1,27.6,55.0
+Devin Booker,Phoenix Suns,PTS,30.2,30.7,55.0
+Jimmy Butler,Golden State Warriors,PTS,18.6,19.1,55.0
+Kon Knueppel,Charlotte Hornets,PTS,18.0,18.5,55.0
+Cam Thomas,Brooklyn Nets,PTS,24.9,25.4,55.0
+Evan Mobley,Cleveland Cavaliers,PTS,17.1,17.6,55.0
+Payton Pritchard,Boston Celtics,PTS,16.4,16.9,55.0
+Gary Trent Jr.,Milwaukee Bucks,PTS,7.2,7.7,55.0
+Russell Westbrook,Sacramento Kings,PTS,11.1,11.6,55.0
+Ivica Zubac,LA Clippers,PTS,11.7,12.2,55.0
+Julius Randle,Minnesota Timberwolves,PTS,23.5,24.0,55.0
+Jamal Murray,Denver Nuggets,PTS,23.1,23.6,55.0
+Victor Wembanyama,San Antonio Spurs,PTS,14.9,15.4,55.0
+Killian Hayes,Detroit Pistons,PTS,18.5,19.0,55.0
+Nickeil Alexander-Walker,Atlanta Hawks,PTS,14.9,15.4,55.0
+Gordon Hayward,Charlotte Hornets,PTS,20.9,21.4,55.0
+Jalen Duren,Detroit Pistons,PTS,12.4,12.9,55.0
+Aaron Nesmith,Indiana Pacers,PTS,15.5,16.0,55.0
+Isaiah Stewart,Detroit Pistons,PTS,21.0,21.5,55.0
+Stephon Castle,San Antonio Spurs,PTS,24.1,24.6,55.0
+Cooper Flagg,Dallas Mavericks,PTS,14.0,14.5,55.0
+Tre Jones,Chicago Bulls,PTS,15.3,15.8,55.0
+Mikal Bridges,New York Knicks,PTS,12.2,12.7,55.0
+Grayson Allen,Phoenix Suns,PTS,14.3,14.8,55.0
+Rudy Gobert,Minnesota Timberwolves,PTS,15.9,16.4,55.0
+Miles Bridges,Charlotte Hornets,PTS,21.3,21.8,55.0
+Deni Avdija,Portland Trail Blazers,PTS,23.6,24.1,55.0
+VJ Edgecombe,Philadelphia 76ers,PTS,16.8,17.3,55.0
+Brandon Ingram,Toronto Raptors,PTS,26.9,27.4,55.0
+Derrick White,Boston Celtics,PTS,8.2,8.7,55.0
+Jrue Holiday,Portland Trail Blazers,PTS,11.3,11.8,55.0
+Kelly Oubre Jr.,Philadelphia 76ers,PTS,26.5,27.0,55.0
+Giannis Antetokounmpo,Milwaukee Bucks,PTS,31.0,31.5,55.0
+Jalen Brunson,New York Knicks,PTS,19.4,19.9,55.0
+OG Anunoby,New York Knicks,PTS,17.8,18.3,55.0
+Jonathan Kuminga,Golden State Warriors,PTS,16.1,16.6,55.0
+Devin Vassell,San Antonio Spurs,PTS,5.6,6.1,55.0
+Max Christie,Dallas Mavericks,PTS,16.4,16.9,55.0
+Scottie Barnes,Toronto Raptors,PTS,19.9,20.4,55.0
+Trey Murphy III,New Orleans Pelicans,PTS,15.0,15.5,55.0
+Nikola Vucevic,Chicago Bulls,PTS,16.8,17.3,55.0
+Luke Kennard,Atlanta Hawks,PTS,13.9,14.4,55.0
+Noah Clowney,Brooklyn Nets,PTS,13.8,14.3,55.0
+Davion Mitchell,Miami Heat,PTS,9.7,10.2,55.0
+Quentin Grimes,Philadelphia 76ers,PTS,23.7,24.2,55.0
+Jaxson Hayes,Los Angeles Lakers,PTS,11.9,12.4,55.0
+Immanuel Quickley,Toronto Raptors,PTS,7.5,8.0,55.0
+Myles Turner,Milwaukee Bucks,PTS,8.9,9.4,55.0
+Jerami Grant,Portland Trail Blazers,PTS,15.1,15.6,55.0
+Aaron Gordon,Denver Nuggets,PTS,14.7,15.2,55.0
+Cedric Coward,Memphis Grizzlies,PTS,17.0,17.5,55.0
+KyShawn George,Washington Wizards,PTS,16.9,17.4,55.0
+Jaren Jackson Jr.,Memphis Grizzlies,PTS,18.8,19.3,55.0
+De'Andre Hunter,Cleveland Cavaliers,PTS,17.3,17.8,55.0
+Cameron Johnson,Denver Nuggets,PTS,7.5,8.0,55.0
+Jusuf Nurkic,Utah Jazz,PTS,12.9,13.4,55.0
+Matas Buzelis,Chicago Bulls,PTS,12.8,13.3,55.0
+Donte DiVincenzo,Minnesota Timberwolves,PTS,19.0,19.5,55.0
+Franz Wagner,Orlando Magic,PTS,21.3,21.8,55.0
+Rui Hachimura,Los Angeles Lakers,PTS,14.6,15.1,55.0
+Collin Murray-Boyles,Toronto Raptors,PTS,18.0,18.5,55.0
+Jock Landale,Memphis Grizzlies,PTS,14.6,15.1,55.0
+Tari Eason,Houston Rockets,PTS,13.7,14.2,55.0
+Jae Crowder,Milwaukee Bucks,PTS,13.8,14.3,55.0
+Christian Braun,Denver Nuggets,PTS,7.4,7.9,55.0
+Karl-Anthony Towns,New York Knicks,PTS,35.7,36.2,55.0
+Draymond Green,Golden State Warriors,PTS,6.5,7.0,55.0
+Royce O'Neale,Phoenix Suns,PTS,9.9,10.4,55.0
+Shai Gilgeous-Alexander,Oklahoma City Thunder,PTS,30.0,30.5,55.0
+Nicolas Claxton,Brooklyn Nets,PTS,19.1,19.6,55.0
+Alexandre Sarr,Washington Wizards,PTS,20.1,20.6,55.0
+Toumani Camara,Portland Trail Blazers,PTS,13.7,14.2,55.0
+Ajay Mitchell,Oklahoma City Thunder,PTS,9.2,9.7,55.0
+Brandon Boston Jr.,New Orleans Pelicans,PTS,12.5,13.0,55.0
+Sion James,Charlotte Hornets,PTS,11.7,12.2,55.0
+David Roddy,Atlanta Hawks,PTS,11.7,12.2,55.0
+A.J. Green,Milwaukee Bucks,PTS,11.4,11.9,55.0
+Stephen Curry,Golden State Warriors,PTS,21.0,21.5,55.0
+D'Angelo Russell,Dallas Mavericks,PTS,8.0,8.5,55.0
+Julian Champagnie,San Antonio Spurs,PTS,6.9,7.4,55.0
+Santi Aldama,Memphis Grizzlies,PTS,12.5,13.0,55.0
+Derrick Jones Jr.,LA Clippers,PTS,14.8,15.3,55.0
+Kris Murray,Portland Trail Blazers,PTS,11.4,11.9,55.0
+Svi Mykhailiuk,Utah Jazz,PTS,7.9,8.4,55.0
+Jaden McDaniels,Minnesota Timberwolves,PTS,21.6,22.1,55.0
+Collin Sexton,Charlotte Hornets,PTS,14.5,15.0,55.0
+Isaiah Jackson,Indiana Pacers,PTS,19.3,19.8,55.0
+Kristaps Porzingis,Atlanta Hawks,PTS,14.7,15.2,55.0
+Bilal Coulibaly,Washington Wizards,PTS,15.7,16.2,55.0
+Terance Mann,Brooklyn Nets,PTS,7.5,8.0,55.0
+Malik Beasley,Detroit Pistons,PTS,6.1,6.6,55.0
+Ryan Rollins,Milwaukee Bucks,PTS,16.7,17.2,55.0
+Talen Horton-Tucker,Chicago Bulls,PTS,8.1,8.6,55.0
+Sam Hauser,Boston Celtics,PTS,2.9,3.4,55.0
+Nikola Jovic,Miami Heat,PTS,8.9,9.4,55.0
+Wendell Carter Jr.,Orlando Magic,PTS,15.1,15.6,55.0
+Zion Williamson,New Orleans Pelicans,PTS,22.5,23.0,55.0
+Marcus Smart,Los Angeles Lakers,PTS,8.8,9.3,55.0
+Ausar Thompson,Detroit Pistons,PTS,14.2,14.7,55.0
+Harrison Barnes,San Antonio Spurs,PTS,9.6,10.1,55.0
+Ryan Dunn,Phoenix Suns,PTS,14.8,15.3,55.0
+Isaiah Joe,Oklahoma City Thunder,PTS,11.3,11.8,55.0
+Lonzo Ball,Cleveland Cavaliers,PTS,9.0,9.5,55.0
+Cason Wallace,Oklahoma City Thunder,PTS,10.0,10.5,55.0
+Isaiah Hartenstein,Oklahoma City Thunder,PTS,14.5,15.0,55.0
+Josh Hart,New York Knicks,PTS,9.9,10.4,55.0
+Anfernee Simons,Boston Celtics,PTS,12.4,12.9,55.0
+Patrick Williams,Chicago Bulls,PTS,7.7,8.2,55.0
+Pelle Larsson,Miami Heat,PTS,16.6,17.1,55.0
+Neemias Queta,Boston Celtics,PTS,10.0,10.5,55.0
+Garrison Mathews,Atlanta Hawks,PTS,10.1,10.6,55.0
+Jeremiah Fears,New Orleans Pelicans,PTS,16.4,16.9,55.0
+Onyeka Okongwu,Atlanta Hawks,PTS,7.9,8.4,55.0
+Paolo Banchero,Orlando Magic,PTS,26.5,27.0,55.0
+Aaron Wiggins,Oklahoma City Thunder,PTS,14.2,14.7,55.0
+Carlton Carrington,Washington Wizards,PTS,0.2,0.7,55.0
+Dean Wade,Cleveland Cavaliers,PTS,9.4,9.9,55.0
+Trendon Watford,Philadelphia 76ers,PTS,17.0,17.5,55.0
+Mark Williams,Phoenix Suns,PTS,7.9,8.4,55.0
+Josh Okogie,Houston Rockets,PTS,0.9,1.4,55.0
+Landry Shamet,New York Knicks,PTS,8.6,9.1,55.0
+Daniel Gafford,Dallas Mavericks,PTS,13.0,13.5,55.0
+Jaylon Tyson,Cleveland Cavaliers,PTS,14.4,14.9,55.0
+Kentavious Caldwell-Pope,Memphis Grizzlies,PTS,1.2,1.7,55.0
+Mike Conley,Minnesota Timberwolves,PTS,9.8,10.3,55.0
+Donovan Clingan,Portland Trail Blazers,PTS,4.6,5.1,55.0
+Herbert Jones,New Orleans Pelicans,PTS,8.9,9.4,55.0
+Naz Reid,Minnesota Timberwolves,PTS,16.6,17.1,55.0
+Jordan Poole,New Orleans Pelicans,PTS,9.6,10.1,55.0
+Anthony Black,Orlando Magic,PTS,10.1,10.6,55.0
+Shaedon Sharpe,Portland Trail Blazers,PTS,16.6,17.1,55.0
+Keldon Johnson,San Antonio Spurs,PTS,18.3,18.8,55.0
+Kris Dunn,LA Clippers,PTS,7.2,7.7,55.0
+Ziaire Williams,Brooklyn Nets,PTS,11.3,11.8,55.0
+Cole Anthony,Milwaukee Bucks,PTS,10.9,11.4,55.0
+Lonnie Walker IV,Brooklyn Nets,PTS,18.6,19.1,55.0
+Jaylin Williams,Oklahoma City Thunder,PTS,8.9,9.4,55.0
+Andre Drummond,Philadelphia 76ers,PTS,6.1,6.6,55.0
+Zaccharie Risacher,Atlanta Hawks,PTS,11.7,12.2,55.0
+Steven Adams,Houston Rockets,PTS,6.1,6.6,55.0
+Peyton Watson,Denver Nuggets,PTS,10.6,11.1,55.0
+Tim Hardaway Jr.,Denver Nuggets,PTS,7.9,8.4,55.0
+Tre Mann,Charlotte Hornets,PTS,9.4,9.9,55.0
+Isaac Okoro,Chicago Bulls,PTS,14.2,14.7,55.0
+Kevin Huerter,Chicago Bulls,PTS,8.1,8.6,55.0
+CJ McCollum,Washington Wizards,PTS,5.4,5.9,55.0
+Moussa Diabate,Charlotte Hornets,PTS,13.5,14.0,55.0
+Tyrese Martin,Brooklyn Nets,PTS,9.3,9.8,55.0
+Collin Gillespie,Phoenix Suns,PTS,11.8,12.3,55.0
+Ryan Kalkbrenner,Charlotte Hornets,PTS,2.9,3.4,55.0
+Naji Marshall,Dallas Mavericks,PTS,8.6,9.1,55.0
+Tristan Da Silva,Orlando Magic,PTS,3.6,4.1,55.0
+Yves Missi,New Orleans Pelicans,PTS,5.6,6.1,55.0
+Tre Johnson,Washington Wizards,PTS,9.6,10.1,55.0
+Bradley Beal,LA Clippers,PTS,7.7,8.2,55.0
+Jaylen Wells,Memphis Grizzlies,PTS,5.1,5.6,55.0
+Egor Demin,Brooklyn Nets,PTS,2.9,3.4,55.0
+Elijah Harkless,Utah Jazz,PTS,3.7,4.2,55.0
+Theo Maledon,Charlotte Hornets,PTS,8.6,9.1,55.0
+Javonte Green,Detroit Pistons,PTS,2.6,3.1,55.0
+Taurean Prince,Milwaukee Bucks,PTS,3.9,4.4,55.0
+Craig Porter,Cleveland Cavaliers,PTS,5.9,6.4,55.0
+Josh Richardson,Miami Heat,PTS,-0.2,0.3,55.0
+Jordan Clarkson,New York Knicks,PTS,13.7,14.2,55.0
+Keita Bates-Diop,Phoenix Suns,PTS,-0.1,0.4,55.0
+Bruce Brown,Denver Nuggets,PTS,4.5,5.0,55.0
+Quenton Jackson,Indiana Pacers,PTS,5.2,5.7,55.0
+Gradey Dick,Toronto Raptors,PTS,6.1,6.6,55.0
+Yuta Watanabe,Phoenix Suns,PTS,5.4,5.9,55.0
