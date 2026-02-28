@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Old cache directories (all deleted)
+data_cache/
+data_cache_async/
+data_cache_gen3/
+player_cache/
+opponent_cache/
+ngboost_models_gen3/
+models/
+
+# Parquet data files (committed only after initial training)
+# model_cache/ and data/ are tracked intentionally — DO NOT add here
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+data/training_table.parquet
+data/training_table.parquet

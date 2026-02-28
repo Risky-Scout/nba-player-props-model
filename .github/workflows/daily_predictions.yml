@@ -1,0 +1,48 @@
+name: DARKO v4 — Daily Predictions
+
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 8:00 AM EST (UTC-5), 2 hours after training
+  workflow_dispatch:
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo (gets models trained 2 hrs ago)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib
+
+      - name: Grade yesterday's predictions
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: python grade_darko_v4.py
+        continue-on-error: true   # don't block predictions if grading fails
+
+      - name: Generate today's singles + SGPs
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: python predict_darko_v4.py
+
+      - name: Commit predictions + grades
+        run: |
+          git config user.name  "DARKO Bot"
+          git config user.email "darko@wizardofodds.com"
+          git add predictions/ graded/ -f
+          git diff --staged --quiet && echo "Nothing new to commit" || \
+            git commit -m "🎯 Predictions $(date -u +%Y-%m-%d)"
+          git push origin main

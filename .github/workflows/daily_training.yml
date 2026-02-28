@@ -1,0 +1,42 @@
+name: DARKO v4 — Daily Training
+
+on:
+  schedule:
+    - cron: '0 11 * * *'   # 6:00 AM EST (UTC-5)
+  workflow_dispatch:         # manual trigger
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repo (includes committed parquets + models)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib
+
+      - name: Run training (incremental — only fetches new games)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: python train_darko_v4.py
+
+      - name: Commit updated data + models
+        run: |
+          git config user.name  "DARKO Bot"
+          git config user.email "darko@wizardofodds.com"
+          git add data/ model_cache/ -f
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit -m "🤖 Daily training $(date -u +%Y-%m-%d)"
+          git push origin main
