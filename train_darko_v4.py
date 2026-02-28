@@ -393,14 +393,14 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     logger.info(f"  {target}: {n} rows | {len(feat_cols)} features | train={tr_n} holdout={n-tr_n}")
 
-    holdout_preds = {}
+    holdout_preds_raw = {}
     for q in QUANTILES:
         params = {**LGB_BASE, "alpha": q}
 
         # Calibration model on train split
         m_cal = lgb.LGBMRegressor(**params)
         m_cal.fit(X[:tr_n], y[:tr_n])
-        holdout_preds[q] = m_cal.predict(X[tr_n:])
+        holdout_preds_raw[q] = m_cal.predict(X[tr_n:])
 
         # Final model on full dataset
         m_final = lgb.LGBMRegressor(**params)
@@ -409,7 +409,17 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     joblib.dump(feat_cols, MODEL_DIR / f"features_{target}.pkl")
 
-    # Calibration report
+    # ── Apply monotone repair BEFORE calibration (expert requirement) ─────────
+    # For each holdout sample, enforce Q(i) >= Q(i-1) across all quantiles.
+    n_ho = len(y) - tr_n
+    holdout_preds = {q: np.empty(n_ho) for q in QUANTILES}
+    for row_i in range(n_ho):
+        row = {q: holdout_preds_raw[q][row_i] for q in QUANTILES}
+        row = enforce_monotonicity(row)
+        for q in QUANTILES:
+            holdout_preds[q][row_i] = row[q]
+
+    # Calibration report (on monotone-repaired predictions)
     actuals_ho = y[tr_n:]
     cal        = quantile_calibration_report(actuals_ho, holdout_preds)
     max_err    = max(v["error"] for v in cal.values())

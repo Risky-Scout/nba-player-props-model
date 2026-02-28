@@ -455,6 +455,40 @@ def build_player_game_features(
         injury_map  = injury_map,
     ))
 
+    # ── STL / BLK: zero-mass features + blended rate (expert fix) ───────────
+    # p_zero_last10 and p_ge2_last10 help model place low quantiles near 0
+    # and upper quantiles higher when multi-event upside exists.
+    # Blended rate: w*r10 + (1-w)*r_season, w = n/(n+k), k=15
+    BLEND_K = 15.0
+    for sparse_stat, col in [("stl", "stl"), ("blk", "blk")]:
+        if col in df.columns and len(min_arr) > 0:
+            raw      = df[col].values.astype(float)
+            rate     = per_minute_rate(raw, min_arr)
+
+            # Zero-mass features
+            last10_raw = raw[-10:]
+            f[f"{sparse_stat}_p_zero_last10"] = (
+                float(np.mean(last10_raw == 0)) if len(last10_raw) > 0 else np.nan
+            )
+            f[f"{sparse_stat}_p_ge2_last10"]  = (
+                float(np.mean(last10_raw >= 2)) if len(last10_raw) > 0 else np.nan
+            )
+
+            # Blended rate: shrink last-10 rate toward season rate
+            rate_clean = rate[~np.isnan(rate)]
+            n_games    = len(rate_clean)
+            r10        = float(np.nanmean(rate[-10:])) if n_games >= 1 else np.nan
+            rs         = float(np.nanmean(rate))       if n_games >= 1 else np.nan
+            if not np.isnan(r10) and not np.isnan(rs):
+                w = min(n_games, 10) / (min(n_games, 10) + BLEND_K)
+                f[f"{sparse_stat}_per_min_blended"] = w * r10 + (1.0 - w) * rs
+            else:
+                f[f"{sparse_stat}_per_min_blended"] = np.nan
+        else:
+            f[f"{sparse_stat}_p_zero_last10"]    = np.nan
+            f[f"{sparse_stat}_p_ge2_last10"]     = np.nan
+            f[f"{sparse_stat}_per_min_blended"]  = np.nan
+
     # ── Player archetype ──────────────────────────────────────────────────────
     f["games_played"]   = len(df)
     f["is_home"]        = int(is_home)
@@ -563,19 +597,30 @@ def get_feature_cols_for_stat(stat: str, all_cols: list[str]) -> list[str]:
 
     elif stat == "stl":
         wanted |= {
-            "stl_per_min_mean_last10","stl_per_min_vol_last10","stl_per_min_ewma_10",
+            # Blended rate (shrunk toward season average)
+            "stl_per_min_blended",
+            "stl_per_min_vol_last10",
+            "stl_per_min_ewma_10",
+            # Zero-mass features (expert requirement)
+            "stl_p_zero_last10",
+            "stl_p_ge2_last10",
             "adv_pace_mean_last10",
-            # Vacated (optional — only minutes)
+            # Vacated (minutes only — keep tight)
             "vacated_minutes",
         }
-        # Minimal features — high shrinkage via low feature count + LightGBM regularization
 
     elif stat == "blk":
         wanted |= {
-            "blk_per_min_mean_last10","blk_per_min_vol_last10","blk_per_min_ewma_10",
+            # Blended rate (shrunk toward season average)
+            "blk_per_min_blended",
+            "blk_per_min_vol_last10",
+            "blk_per_min_ewma_10",
+            # Zero-mass features (expert requirement)
+            "blk_p_zero_last10",
+            "blk_p_ge2_last10",
             "pf_per_min_mean_last10",  # foul trouble → minutes downside
             "adv_pace_mean_last10",
-            # Vacated
+            # Vacated (keep tight)
             "vacated_minutes","num_teammates_inactive",
         }
 
