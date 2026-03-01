@@ -684,8 +684,12 @@ def get_feature_cols_for_stat(stat: str, all_cols: list[str]) -> list[str]:
 
     elif stat == "stocks":
         wanted |= {
-            "stl_per_min_mean_last10","stl_per_min_vol_last10",
-            "blk_per_min_mean_last10","blk_per_min_vol_last10",
+            # Blended rates (same treatment as individual STL/BLK models)
+            "stl_per_min_blended","stl_per_min_vol_last10","stl_per_min_ewma_10",
+            "blk_per_min_blended","blk_per_min_vol_last10","blk_per_min_ewma_10",
+            # Zero-mass features
+            "stl_p_zero_last10","stl_p_ge2_last10",
+            "blk_p_zero_last10","blk_p_ge2_last10",
             "pf_per_min_mean_last10",
             "adv_pace_mean_last10",
             "vacated_minutes","num_teammates_inactive",

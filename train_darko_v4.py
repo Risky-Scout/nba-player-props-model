@@ -393,14 +393,14 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     logger.info(f"  {target}: {n} rows | {len(feat_cols)} features | train={tr_n} holdout={n-tr_n}")
 
-    holdout_preds_raw = {}
+    holdout_preds = {}
     for q in QUANTILES:
         params = {**LGB_BASE, "alpha": q}
 
         # Calibration model on train split
         m_cal = lgb.LGBMRegressor(**params)
         m_cal.fit(X[:tr_n], y[:tr_n])
-        holdout_preds_raw[q] = m_cal.predict(X[tr_n:])
+        holdout_preds[q] = m_cal.predict(X[tr_n:])
 
         # Final model on full dataset
         m_final = lgb.LGBMRegressor(**params)
@@ -409,17 +409,11 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     joblib.dump(feat_cols, MODEL_DIR / f"features_{target}.pkl")
 
-    # ── Apply monotone repair BEFORE calibration (expert requirement) ─────────
-    # For each holdout sample, enforce Q(i) >= Q(i-1) across all quantiles.
-    n_ho = len(y) - tr_n
-    holdout_preds = {q: np.empty(n_ho) for q in QUANTILES}
-    for row_i in range(n_ho):
-        row = {q: holdout_preds_raw[q][row_i] for q in QUANTILES}
-        row = enforce_monotonicity(row)
-        for q in QUANTILES:
-            holdout_preds[q][row_i] = row[q]
-
-    # Calibration report (on monotone-repaired predictions)
+    # Calibration report — raw per-quantile coverage (no monotone repair here).
+    # Monotone repair is applied at INFERENCE TIME only. Applying it here
+    # introduces systematic upward bias: cummax raises high quantiles beyond
+    # their natural predictions, inflating P(y<=ŷ_q) for previously
+    # well-calibrated stats and making them appear miscalibrated.
     actuals_ho = y[tr_n:]
     cal        = quantile_calibration_report(actuals_ho, holdout_preds)
     max_err    = max(v["error"] for v in cal.values())
@@ -428,6 +422,21 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
     for q, row in cal.items():
         flag = "⚠" if row["error"] > 0.05 else "✓"
         logger.info(f"    {flag} Q{int(q*100):02d}: empirical={row['empirical_q']:.3f}  err={row['error']:.3f}")
+
+    # ── Per-quantile diagnostic for zero-inflated stats ───────────────────────
+    if target in ("stl", "blk", "stocks"):
+        logger.info(f"  [{target.upper()} zero-inflation diagnostic]")
+        zero_frac = float(np.mean(actuals_ho == 0))
+        logger.info(f"    Holdout zero fraction: {zero_frac:.3f}")
+        for q, row in cal.items():
+            err_sign = "HIGH" if row["empirical_q"] > q else "LOW"
+            logger.info(
+                f"    Q{int(q*100):02d}: predicted_coverage={row['empirical_q']:.3f}  "
+                f"target={q:.2f}  bias={err_sign}  err={row['error']:.4f}"
+            )
+        # Confirm zero-mass features are present
+        zm_feats = [c for c in feat_cols if "p_zero" in c or "p_ge2" in c or "blended" in c]
+        logger.info(f"    Zero-mass/blended features in model: {zm_feats}")
 
     mae = float(np.mean(np.abs(holdout_preds[0.50] - actuals_ho)))
     logger.info(f"  Holdout MAE (Q50): {mae:.3f}")
