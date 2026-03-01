@@ -409,19 +409,23 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     joblib.dump(feat_cols, MODEL_DIR / f"features_{target}.pkl")
 
-    # Calibration report — raw per-quantile coverage (no monotone repair here).
-    # Monotone repair is applied at INFERENCE TIME only. Applying it here
-    # introduces systematic upward bias: cummax raises high quantiles beyond
-    # their natural predictions, inflating P(y<=ŷ_q) for previously
-    # well-calibrated stats and making them appear miscalibrated.
-    actuals_ho = y[tr_n:]
-    cal        = quantile_calibration_report(actuals_ho, holdout_preds)
-    max_err    = max(v["error"] for v in cal.values())
+    # Calibration report — zero_inflated=True skips q <= p0 for discrete stats
+    zero_inflated = target in ("stl", "blk", "stocks")
+    actuals_ho    = y[tr_n:]
+    cal           = quantile_calibration_report(actuals_ho, holdout_preds,
+                                                zero_inflated=zero_inflated)
+
+    # max_cal_error uses only graded quantiles (skipped ones are metric artifacts)
+    graded_errors = [v["error"] for v in cal.values() if not v.get("skipped", False)]
+    max_err       = max(graded_errors) if graded_errors else 0.0
 
     logger.info(f"  Calibration:")
     for q, row in cal.items():
-        flag = "⚠" if row["error"] > 0.05 else "✓"
-        logger.info(f"    {flag} Q{int(q*100):02d}: empirical={row['empirical_q']:.3f}  err={row['error']:.3f}")
+        if row.get("skipped"):
+            logger.info(f"    — Q{int(q*100):02d}: SKIPPED (below zero-mass p0)  empirical={row['empirical_q']:.3f}")
+        else:
+            flag = "⚠" if row["error"] > 0.05 else "✓"
+            logger.info(f"    {flag} Q{int(q*100):02d}: empirical={row['empirical_q']:.3f}  err={row['error']:.3f}")
 
     # ── Per-quantile diagnostic for zero-inflated stats ───────────────────────
     if target in ("stl", "blk", "stocks"):

@@ -707,21 +707,45 @@ def _leg_summary(s: dict) -> dict:
 # ── Calibration report ─────────────────────────────────────────────────────────
 
 def quantile_calibration_report(actuals: np.ndarray,
-                                 holdout_preds: dict) -> dict:
+                                 holdout_preds: dict,
+                                 zero_inflated: bool = False) -> dict:
     """
     For each quantile q, compute empirical coverage on holdout.
     Well-calibrated: P(actual <= Q_q) ≈ q.
+
+    zero_inflated=True (use for STL/BLK/Stocks):
+      Skips coverage checks for quantiles q <= p0 where p0 = P(Y=0).
+      Rationale: if P(Y=0)=0.68, then Q10/Q20/Q25 are all structurally 0
+      and coverage will always be 0.68 even for a perfect model.
+      Grading those quantiles as errors is a metric artifact, not a model flaw.
+      Only quantiles above the zero mass are meaningful to evaluate.
+      This is "Option B" from the expert review.
     """
+    p0 = float(np.mean(actuals <= 0)) if zero_inflated else 0.0
+
     report = {}
     for q, preds in holdout_preds.items():
-        preds    = np.array(preds)
+        preds     = np.array(preds)
         empirical = float(np.mean(actuals <= preds))
-        report[q] = {
-            "predicted_q":  q,
-            "empirical_q":  round(empirical, 4),
-            "error":        round(abs(empirical - q), 4),
-            "n":            len(actuals),
-        }
+
+        if zero_inflated and q <= p0:
+            # Quantile is below the zero-mass spike — metric is not meaningful here
+            report[q] = {
+                "predicted_q":  q,
+                "empirical_q":  round(empirical, 4),
+                "error":        0.0,          # not graded
+                "n":            len(actuals),
+                "skipped":      True,
+                "reason":       f"q={q:.2f} <= p0={p0:.3f} (zero mass)",
+            }
+        else:
+            report[q] = {
+                "predicted_q":  q,
+                "empirical_q":  round(empirical, 4),
+                "error":        round(abs(empirical - q), 4),
+                "n":            len(actuals),
+                "skipped":      False,
+            }
     return report
 
 

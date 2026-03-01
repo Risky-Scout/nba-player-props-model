@@ -418,8 +418,11 @@ def build_player_game_features(
             (fg3m_sum + PRIOR_3P * SHRINK_3P) / (fg3a_sum + SHRINK_3P)
             if (fg3a_sum + SHRINK_3P) > 0 else PRIOR_3P
         )
+        # Reliability: total 3PA in last 10 games — tells model when to trust the %
+        f["fg3a_count_last10"] = float(np.sum(df["fg3a"].values[-10:]))
     else:
-        f["fg3_pct_shrunk"] = np.nan
+        f["fg3_pct_shrunk"]    = np.nan
+        f["fg3a_count_last10"] = np.nan
 
     # ── Variance drivers ──────────────────────────────────────────────────────
     f["blowout_risk_x_mp_vol"] = (
@@ -590,6 +593,9 @@ def get_feature_cols_for_stat(stat: str, all_cols: list[str]) -> list[str]:
             "fg3a_per_min_mean_last5","fg3a_per_min_mean_last10",
             "fg3a_per_min_vol_last10","fg3a_per_min_ewma_10",
             "fg3_pct_shrunk",
+            # Reliability feature: how many 3PA attempts in last 10 games
+            # tells the model when to trust fg3_pct_shrunk vs fg3a volume
+            "fg3a_count_last10",
             "adv_pace_mean_last10",
             # Vacated
             "vacated_fg3a","vacated_usage_proxy","vacated_top2_fg3a","num_teammates_inactive",

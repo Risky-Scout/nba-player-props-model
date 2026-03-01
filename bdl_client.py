@@ -184,7 +184,9 @@ def get_game_odds(
     """
     params: dict[str, Any] = {}
     if game_ids: params["game_ids[]"] = game_ids
-    if dates:    params["dates[]"]    = dates
+    # API spec: 'date' (singular string) not 'dates[]'
+    # Error response confirmed: {"param":"date / game_id","error":"..."}
+    if dates:    params["date"] = dates[0] if len(dates) == 1 else dates[0]
     try:
         records = bdl_get_all(f"{BASE_V1}/odds", params)
         if not records:
@@ -295,7 +297,7 @@ def get_advanced_stats_v2(
     if player_ids:
         params["player_ids[]"] = player_ids
     try:
-        return bdl_get_all(f"{BASE_V2}/advanced_stats", params)
+        return bdl_get_all(f"{BASE_V2}/stats/advanced", params)
     except Exception as exc:
         logger.warning(f"get_advanced_stats_v2: {exc}")
         return []
