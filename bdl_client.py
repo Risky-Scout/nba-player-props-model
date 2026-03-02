@@ -205,7 +205,7 @@ def get_injuries() -> list[dict]:
     NOTE: path is 'player_injuries' not 'injuries' (confirmed from API 404).
     """
     try:
-        result = bdl_get(f"{BASE_V1}/player_injuries")
+        result = bdl_get("https://api.balldontlie.io/v1/player_injuries")
         return result.get("data", [])
     except Exception as exc:
         logger.warning(f"get_injuries: {exc}")
