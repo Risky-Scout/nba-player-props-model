@@ -375,7 +375,7 @@ def main():
                         "ev":          round(ev, 4),
                         "kelly_units": round(kelly, 3),
                         "q50":         round(q50, 2),
-                        "q_preds":     {str(k): round(v,2) for k,v in q_preds.items()},
+                        "q_preds":     {float(k): round(v,2) for k,v in q_preds.items()},
                         "usage_bucket": ub,
                         "mp_bucket":   mb,
                     })
