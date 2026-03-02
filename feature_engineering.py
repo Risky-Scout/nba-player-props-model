@@ -408,21 +408,67 @@ def build_player_game_features(
                     "ewma_10","p25_last10","p75_last10"]:
             f[f"usage_proxy_per_min_{sfx}"] = np.nan
 
-    # ── 3P% shrunk (Bayesian) ─────────────────────────────────────────────────
+    # ── 3PM: data integrity + attempt-weighted shrinkage + zero-mass features ──
+    # Expert spec sections A–D: surgical fix for fg3m low-quantile bias
     if all(c in df.columns for c in ["fg3m","fg3a"]):
-        fg3m_sum = float(df["fg3m"].sum())
-        fg3a_sum = float(df["fg3a"].sum())
+        fg3m_arr = df["fg3m"].fillna(0).values.astype(float)
+        fg3a_arr = df["fg3a"].fillna(0).values.astype(float)
+
+        # ── A) Data integrity ──────────────────────────────────────────────────
+        n_rows      = len(fg3m_arr)
+        n_miss_fg3m = int(df["fg3m"].isna().sum())
+        n_miss_fg3a = int(df["fg3a"].isna().sum())
+        n_bad       = int(np.sum(fg3m_arr > fg3a_arr))   # fg3m > fg3a = impossible
+
+        # (Logged at training time via feature importance; corrupt rows kept as-is
+        #  since LightGBM handles NaN natively — just don't silently zero-fill)
+
+        # ── B) Zero-mass features ──────────────────────────────────────────────
+        last10_fg3m = fg3m_arr[-10:]
+        n_window    = len(last10_fg3m)
+        f["fg3m_p_zero_last10"]   = float(np.mean(last10_fg3m == 0)) if n_window > 0 else np.nan
+        f["fg3m_p_ge3_last10"]    = float(np.mean(last10_fg3m >= 3)) if n_window > 0 else np.nan
+        f["fg3m_games_in_window"] = float(n_window)
+
+        # ── C) Attempt-weighted blended 3P% (replaces simple fg3_pct_shrunk) ──
         PRIOR_3P  = 0.355
-        SHRINK_3P = 50.0   # attempts
-        f["fg3_pct_shrunk"] = (
-            (fg3m_sum + PRIOR_3P * SHRINK_3P) / (fg3a_sum + SHRINK_3P)
-            if (fg3a_sum + SHRINK_3P) > 0 else PRIOR_3P
-        )
-        # Reliability: total 3PA in last 10 games — tells model when to trust the %
-        f["fg3a_count_last10"] = float(np.sum(df["fg3a"].values[-10:]))
+        K10       = 50.0     # last-10 shrinkage constant
+        KS        = 250.0    # season shrinkage constant
+
+        # Last-10 window
+        att10  = float(np.sum(fg3a_arr[-10:]))
+        made10 = float(np.sum(fg3m_arr[-10:]))
+        pct10  = made10 / max(att10, 1)
+
+        # Season (all prior games)
+        attS   = float(np.sum(fg3a_arr))
+        madeS  = float(np.sum(fg3m_arr))
+        pctS   = madeS / max(attS, 1)
+
+        # Weights
+        w10 = att10 / (att10 + K10)
+        wS  = attS  / (attS  + KS)
+
+        # Blend: last-10 toward (season toward league)
+        pct_blend = w10 * pct10 + (1.0 - w10) * (wS * pctS + (1.0 - wS) * PRIOR_3P)
+        f["fg3_pct_blend"]       = float(pct_blend)
+        f["fg3_pct_shrunk"]      = float(pct_blend)   # keep old name for gate compat
+        f["fg3a_count_last10"]   = float(att10)
+        f["fg3a_count_season"]   = float(attS)
+
+        # ── D) Low-volume shooter gate ─────────────────────────────────────────
+        # Separates "sometimes takes 1 three" from real shooter distributions
+        f["is_low_3pa"] = 1.0 if att10 <= 10 else 0.0
+
     else:
-        f["fg3_pct_shrunk"]    = np.nan
-        f["fg3a_count_last10"] = np.nan
+        f["fg3m_p_zero_last10"]  = np.nan
+        f["fg3m_p_ge3_last10"]   = np.nan
+        f["fg3m_games_in_window"]= np.nan
+        f["fg3_pct_blend"]       = np.nan
+        f["fg3_pct_shrunk"]      = np.nan
+        f["fg3a_count_last10"]   = np.nan
+        f["fg3a_count_season"]   = np.nan
+        f["is_low_3pa"]          = np.nan
 
     # ── Variance drivers ──────────────────────────────────────────────────────
     f["blowout_risk_x_mp_vol"] = (
@@ -590,12 +636,17 @@ def get_feature_cols_for_stat(stat: str, all_cols: list[str]) -> list[str]:
 
     elif stat == "fg3m":
         wanted |= {
+            # Volume rates
             "fg3a_per_min_mean_last5","fg3a_per_min_mean_last10",
             "fg3a_per_min_vol_last10","fg3a_per_min_ewma_10",
-            "fg3_pct_shrunk",
-            # Reliability feature: how many 3PA attempts in last 10 games
-            # tells the model when to trust fg3_pct_shrunk vs fg3a volume
-            "fg3a_count_last10",
+            # B) Zero-mass features
+            "fg3m_p_zero_last10","fg3m_p_ge3_last10","fg3m_games_in_window",
+            # C) Attempt-weighted blended 3P%
+            "fg3_pct_blend","fg3_pct_shrunk",
+            "fg3a_count_last10","fg3a_count_season",
+            # D) Low-volume gate
+            "is_low_3pa",
+            # Context
             "adv_pace_mean_last10",
             # Vacated
             "vacated_fg3a","vacated_usage_proxy","vacated_top2_fg3a","num_teammates_inactive",

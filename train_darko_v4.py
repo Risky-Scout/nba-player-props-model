@@ -442,6 +442,22 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
         zm_feats = [c for c in feat_cols if "p_zero" in c or "p_ge2" in c or "blended" in c]
         logger.info(f"    Zero-mass/blended features in model: {zm_feats}")
 
+    # ── fg3m-specific diagnostic (section F of expert spec) ───────────────────
+    if target == "fg3m":
+        logger.info(f"  [3PM diagnostic]")
+        zero_frac_3pm = float(np.mean(actuals_ho == 0))
+        logger.info(f"    Holdout zero fraction (3PM): {zero_frac_3pm:.3f}")
+        for q, row in cal.items():
+            err_sign = "HIGH" if row["empirical_q"] > q else "LOW"
+            skip_str = " SKIPPED" if row.get("skipped") else ""
+            logger.info(
+                f"    Q{int(q*100):02d}: cov={row['empirical_q']:.3f}  "
+                f"target={q:.2f}  bias={err_sign}  err={row['error']:.4f}{skip_str}"
+            )
+        zm_feats_3pm = [c for c in feat_cols if "p_zero" in c or "p_ge3" in c
+                        or "blend" in c or "is_low" in c or "count_season" in c]
+        logger.info(f"    Expert-spec features in model: {zm_feats_3pm}")
+
     mae = float(np.mean(np.abs(holdout_preds[0.50] - actuals_ho)))
     logger.info(f"  Holdout MAE (Q50): {mae:.3f}")
 
