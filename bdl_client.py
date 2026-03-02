@@ -199,12 +199,13 @@ def get_game_odds(
 
 def get_injuries() -> list[dict]:
     """
-    GET /nba/v1/injuries — current injury report.
+    GET /nba/v1/player_injuries — current injury report.
     Fields: player, status, return_date, description.
     No pagination needed — returns current snapshot. GOAT tier.
+    NOTE: path is 'player_injuries' not 'injuries' (confirmed from API 404).
     """
     try:
-        result = bdl_get(f"{BASE_V1}/injuries")
+        result = bdl_get(f"{BASE_V1}/player_injuries")
         return result.get("data", [])
     except Exception as exc:
         logger.warning(f"get_injuries: {exc}")
@@ -254,17 +255,21 @@ def get_team_season_stats(season: int, season_type: str = "regular") -> list[dic
 
 def get_player_prop_odds(game_id: int) -> list[dict]:
     """
-    GET /nba/v2/player_props?game_id=<id>
-    
-    SPEC: PlayerPropMeta has NO next_cursor. All results in ONE response.
+    GET https://api.balldontlie.io/v2/odds/player_props?game_id=<id>
+    Confirmed from official docs: base is /v2/odds/ not /nba/v1/ or /nba/v2/
+
+    SPEC: meta has NO next_cursor — all results in ONE response.
     Do NOT call bdl_get_all() — single bdl_get() only.
-    
-    Prop types: points, rebounds, assists, threes, steals, blocks (+ quarter/minute variants)
+
+    Prop types: points, rebounds, assists, threes, steals, blocks
+                + quarter variants: points_1q, rebounds_1q, assists_1q
+                + first3min variants (ignore these for main props)
     Market: over_under {over_odds, under_odds} | milestone {odds}
     Vendors: draftkings, betway, betrivers, ballybet
     """
+    BASE_PROPS = "https://api.balldontlie.io/v2/odds"
     try:
-        result = bdl_get(f"{BASE_V2}/player_props", {"game_id": game_id})
+        result = bdl_get(f"{BASE_PROPS}/player_props", {"game_id": game_id})
         records = result.get("data", [])
         if not records:
             logger.info(f"get_player_prop_odds: no props for game_id={game_id}")
