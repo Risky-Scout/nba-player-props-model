@@ -432,8 +432,8 @@ def build_player_game_features(
 
         # ── C) Attempt-weighted blended 3P% (replaces simple fg3_pct_shrunk) ──
         PRIOR_3P  = 0.355
-        K10       = 50.0     # last-10 shrinkage constant
-        KS        = 250.0    # season shrinkage constant
+        K10       = 100.0    # raised from 50 — stronger shrinkage at low attempts
+        KS        = 500.0    # raised from 250 — stronger shrinkage vs season rate
 
         # Last-10 window
         att10  = float(np.sum(fg3a_arr[-10:]))
@@ -451,14 +451,16 @@ def build_player_game_features(
 
         # Blend: last-10 toward (season toward league)
         pct_blend = w10 * pct10 + (1.0 - w10) * (wS * pctS + (1.0 - wS) * PRIOR_3P)
-        f["fg3_pct_blend"]       = float(pct_blend)
-        f["fg3_pct_shrunk"]      = float(pct_blend)   # keep old name for gate compat
+        # Cap to sane range — prevents tiny-sample spikes driving quantiles
+        pct_blend = float(np.clip(pct_blend, 0.20, 0.55))
+        f["fg3_pct_blend"]       = pct_blend
+        f["fg3_pct_shrunk"]      = pct_blend   # keep old name for gate compat
         f["fg3a_count_last10"]   = float(att10)
         f["fg3a_count_season"]   = float(attS)
 
-        # ── D) Low-volume shooter gate ─────────────────────────────────────────
-        # Separates "sometimes takes 1 three" from real shooter distributions
-        f["is_low_3pa"] = 1.0 if att10 <= 10 else 0.0
+        # ── D) Low-volume shooter gates ────────────────────────────────────────
+        f["is_low_3pa"]             = 1.0 if att10 <= 10 else 0.0
+        f["fg3a_low_volume_flag"]   = 1.0 if att10 <= 5  else 0.0  # stronger gate
 
     else:
         f["fg3m_p_zero_last10"]  = np.nan
@@ -469,6 +471,7 @@ def build_player_game_features(
         f["fg3a_count_last10"]   = np.nan
         f["fg3a_count_season"]   = np.nan
         f["is_low_3pa"]          = np.nan
+        f["fg3a_low_volume_flag"]= np.nan
 
     # ── Variance drivers ──────────────────────────────────────────────────────
     f["blowout_risk_x_mp_vol"] = (
@@ -645,7 +648,7 @@ def get_feature_cols_for_stat(stat: str, all_cols: list[str]) -> list[str]:
             "fg3_pct_blend","fg3_pct_shrunk",
             "fg3a_count_last10","fg3a_count_season",
             # D) Low-volume gate
-            "is_low_3pa",
+            "is_low_3pa","fg3a_low_volume_flag",
             # Context
             "adv_pace_mean_last10",
             # Vacated
