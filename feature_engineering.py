@@ -408,70 +408,49 @@ def build_player_game_features(
                     "ewma_10","p25_last10","p75_last10"]:
             f[f"usage_proxy_per_min_{sfx}"] = np.nan
 
-    # ── 3PM: data integrity + attempt-weighted shrinkage + zero-mass features ──
-    # Expert spec sections A–D: surgical fix for fg3m low-quantile bias
+    # ── 3PM FINAL: expert spec — fg3_pct_safe only, K10=120, KS=600 ─────────────
     if all(c in df.columns for c in ["fg3m","fg3a"]):
-        fg3m_arr = df["fg3m"].fillna(0).values.astype(float)
-        fg3a_arr = df["fg3a"].fillna(0).values.astype(float)
+        fg3m_raw = df["fg3m"].values.astype(float)
+        fg3a_raw = df["fg3a"].values.astype(float)
+        fg3m_arr = np.where(np.isnan(fg3m_raw), 0.0, fg3m_raw)
+        fg3a_arr = np.where(np.isnan(fg3a_raw), 0.0, fg3a_raw)
 
-        # ── A) Data integrity ──────────────────────────────────────────────────
-        n_rows      = len(fg3m_arr)
-        n_miss_fg3m = int(df["fg3m"].isna().sum())
-        n_miss_fg3a = int(df["fg3a"].isna().sum())
-        n_bad       = int(np.sum(fg3m_arr > fg3a_arr))   # fg3m > fg3a = impossible
+        # A) Integrity flags (read + logged in train_darko_v4.py)
+        f["_fg3m_integrity_miss_fg3m"] = float(np.sum(np.isnan(fg3m_raw)))
+        f["_fg3m_integrity_miss_fg3a"] = float(np.sum(np.isnan(fg3a_raw)))
+        f["_fg3m_integrity_bad_rows"]  = float(np.sum(fg3m_arr > fg3a_arr))
 
-        # (Logged at training time via feature importance; corrupt rows kept as-is
-        #  since LightGBM handles NaN natively — just don't silently zero-fill)
-
-        # ── B) Zero-mass features ──────────────────────────────────────────────
+        # B) Zero-mass features (prior games only)
         last10_fg3m = fg3m_arr[-10:]
         n_window    = len(last10_fg3m)
-        f["fg3m_p_zero_last10"]   = float(np.mean(last10_fg3m == 0)) if n_window > 0 else np.nan
-        f["fg3m_p_ge3_last10"]    = float(np.mean(last10_fg3m >= 3)) if n_window > 0 else np.nan
-        f["fg3m_games_in_window"] = float(n_window)
+        f["fg3m_p_zero_last10"]          = float(np.mean(last10_fg3m == 0)) if n_window > 0 else np.nan
+        f["fg3m_p_ge3_last10"]           = float(np.mean(last10_fg3m >= 3)) if n_window > 0 else np.nan
+        f["fg3m_games_in_window_last10"] = float(n_window)
 
-        # ── C) Attempt-weighted blended 3P% (replaces simple fg3_pct_shrunk) ──
-        PRIOR_3P  = 0.355
-        K10       = 100.0    # raised from 50 — stronger shrinkage at low attempts
-        KS        = 500.0    # raised from 250 — stronger shrinkage vs season rate
-
-        # Last-10 window
+        # C) fg3_pct_safe — K10=120, KS=600, clipped [0.20, 0.50]
+        PRIOR_3P = 0.36
+        K10, KS  = 120.0, 600.0
         att10  = float(np.sum(fg3a_arr[-10:]))
         made10 = float(np.sum(fg3m_arr[-10:]))
-        pct10  = made10 / max(att10, 1)
-
-        # Season (all prior games)
         attS   = float(np.sum(fg3a_arr))
         madeS  = float(np.sum(fg3m_arr))
-        pctS   = madeS / max(attS, 1)
+        pct10  = made10 / max(att10, 1)
+        pctS   = madeS  / max(attS,  1)
+        w10    = att10  / (att10 + K10)
+        wS     = attS   / (attS  + KS)
+        pct_base = wS * pctS + (1.0 - wS) * PRIOR_3P
+        f["fg3_pct_safe"]      = float(np.clip(w10*pct10 + (1.0-w10)*pct_base, 0.20, 0.50))
+        f["fg3a_count_last10"] = float(att10)
+        f["fg3a_count_season"] = float(attS)
 
-        # Weights
-        w10 = att10 / (att10 + K10)
-        wS  = attS  / (attS  + KS)
-
-        # Blend: last-10 toward (season toward league)
-        pct_blend = w10 * pct10 + (1.0 - w10) * (wS * pctS + (1.0 - wS) * PRIOR_3P)
-        # Cap to sane range — prevents tiny-sample spikes driving quantiles
-        pct_blend = float(np.clip(pct_blend, 0.20, 0.55))
-        f["fg3_pct_blend"]       = pct_blend
-        f["fg3_pct_shrunk"]      = pct_blend   # keep old name for gate compat
-        f["fg3a_count_last10"]   = float(att10)
-        f["fg3a_count_season"]   = float(attS)
-
-        # ── D) Low-volume shooter gates ────────────────────────────────────────
-        f["is_low_3pa"]             = 1.0 if att10 <= 10 else 0.0
-        f["fg3a_low_volume_flag"]   = 1.0 if att10 <= 5  else 0.0  # stronger gate
+        # D) Low-volume gate — threshold 6 per spec
+        f["is_low_3pa_last10"] = 1.0 if att10 <= 6 else 0.0
 
     else:
-        f["fg3m_p_zero_last10"]  = np.nan
-        f["fg3m_p_ge3_last10"]   = np.nan
-        f["fg3m_games_in_window"]= np.nan
-        f["fg3_pct_blend"]       = np.nan
-        f["fg3_pct_shrunk"]      = np.nan
-        f["fg3a_count_last10"]   = np.nan
-        f["fg3a_count_season"]   = np.nan
-        f["is_low_3pa"]          = np.nan
-        f["fg3a_low_volume_flag"]= np.nan
+        for _k in ["fg3m_p_zero_last10","fg3m_p_ge3_last10","fg3m_games_in_window_last10",
+                   "fg3_pct_safe","fg3a_count_last10","fg3a_count_season","is_low_3pa_last10",
+                   "_fg3m_integrity_miss_fg3m","_fg3m_integrity_miss_fg3a","_fg3m_integrity_bad_rows"]:
+            f[_k] = np.nan
 
     # ── Variance drivers ──────────────────────────────────────────────────────
     f["blowout_risk_x_mp_vol"] = (
@@ -638,21 +617,21 @@ def get_feature_cols_for_stat(stat: str, all_cols: list[str]) -> list[str]:
         }
 
     elif stat == "fg3m":
+        # Expert spec FINAL: minimal set only — do not expand
         wanted |= {
-            # Volume rates
-            "fg3a_per_min_mean_last5","fg3a_per_min_mean_last10",
-            "fg3a_per_min_vol_last10","fg3a_per_min_ewma_10",
-            # B) Zero-mass features
-            "fg3m_p_zero_last10","fg3m_p_ge3_last10","fg3m_games_in_window",
-            # C) Attempt-weighted blended 3P%
-            "fg3_pct_blend","fg3_pct_shrunk",
+            # Minutes
+            "mp_mean_last5","mp_mean_last10","mp_vol_last10","mp_ewma_10",
+            # 3PA volume / rate
+            "fg3a_per_min_mean_last10",
             "fg3a_count_last10","fg3a_count_season",
-            # D) Low-volume gate
-            "is_low_3pa","fg3a_low_volume_flag",
-            # Context
-            "adv_pace_mean_last10",
-            # Vacated
-            "vacated_fg3a","vacated_usage_proxy","vacated_top2_fg3a","num_teammates_inactive",
+            # Accuracy — safe shrink only, no old aliases
+            "fg3_pct_safe",
+            # Zero-mass
+            "fg3m_p_zero_last10","fg3m_p_ge3_last10","fg3m_games_in_window_last10",
+            # Low-volume gate
+            "is_low_3pa_last10",
+            # Context (pipeline globals only)
+            "game_total","implied_team_total","spread","has_odds",
         }
 
     elif stat == "stl":

@@ -393,6 +393,24 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     logger.info(f"  {target}: {n} rows | {len(feat_cols)} features | train={tr_n} holdout={n-tr_n}")
 
+    # ── 3PM integrity check (expert spec section 1.2) ─────────────────────────
+    if target == "fg3m":
+        miss_fg3m = int(df["_fg3m_integrity_miss_fg3m"].sum()) if "_fg3m_integrity_miss_fg3m" in df.columns else 0
+        miss_fg3a = int(df["_fg3m_integrity_miss_fg3a"].sum()) if "_fg3m_integrity_miss_fg3a" in df.columns else 0
+        bad_rows  = int(df["_fg3m_integrity_bad_rows"].sum())  if "_fg3m_integrity_bad_rows"  in df.columns else 0
+        logger.info(f"  [3PM integrity] total={n} | "
+                    f"miss_fg3m={miss_fg3m} ({100*miss_fg3m/max(n,1):.1f}%) | "
+                    f"miss_fg3a={miss_fg3a} ({100*miss_fg3a/max(n,1):.1f}%) | "
+                    f"bad_rows(fg3m>fg3a)={bad_rows}")
+        if bad_rows > 0:
+            raise ValueError(f"STOP: {bad_rows} rows have fg3m > fg3a — data integrity failure")
+        # Drop rows where fg3m target is truly missing (3PM only, per spec)
+        valid_mask = ~np.isnan(y)
+        X, y = X[valid_mask], y[valid_mask]
+        n    = len(X)
+        tr_n = int(n * (1.0 - HOLDOUT_FRAC))
+        logger.info(f"  [3PM integrity] after dropping missing target: {n} rows")
+
     holdout_preds = {}
     for q in QUANTILES:
         params = {**LGB_BASE, "alpha": q}
