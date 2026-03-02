@@ -616,6 +616,8 @@ def build_sgp_candidates(
                 american_to_decimal(a["odds"]) *
                 american_to_decimal(b["odds"])
             )
+            if dec_combined <= 1.0:
+                continue   # degenerate odds — skip this pair
             if dec_combined >= 2.0:
                 combined_am = int(round((dec_combined - 1) * 100))
             else:
@@ -661,6 +663,8 @@ def build_sgp_candidates(
                     american_to_decimal(b["odds"]) *
                     american_to_decimal(c["odds"])
                 )
+                if dec_combined <= 1.0:
+                    continue   # degenerate odds — skip this combo
                 if dec_combined >= 2.0:
                     combined_am = int(round((dec_combined - 1) * 100))
                 else:
