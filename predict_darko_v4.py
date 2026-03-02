@@ -257,7 +257,10 @@ def main():
             continue
         try:
             gprops = parse_props_for_game(int(gid), price_shop=True)
-            prop_map.update(gprops)
+            # parse_props_for_game returns (player_id, stat) 2-tuple keys
+            # — expand to (player_id, game_id, stat) so lookups match
+            for (pid, stat), val in gprops.items():
+                prop_map[(pid, int(gid), stat)] = val
         except Exception as e:
             logger.warning(f"  Props failed game {gid}: {e}")
     logger.info(f"  {len(prop_map)} prop lines")
