@@ -1,0 +1,161 @@
+{
+  "date": "2026-03-03",
+  "generated_at": "2026-03-03T14:26:41.631843",
+  "version": "2026-02-28-v10",
+  "min_ev": 0.025,
+  "total_sgps": 5,
+  "two_leg": 5,
+  "three_leg": 0,
+  "sgps": [
+    {
+      "legs": 2,
+      "game": "Phoenix Suns @ Sacramento Kings",
+      "game_id": 18447710,
+      "combined_odds": 775,
+      "correlated_prob": 0.1266,
+      "naive_prob": 0.1254,
+      "ev": 0.1079,
+      "kelly_units": 0.003,
+      "leg_details": [
+        {
+          "player": "Russell Westbrook",
+          "player_id": 472,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 500,
+          "model_prob": 0.2488
+        },
+        {
+          "player": "Precious Achiuwa",
+          "player_id": 3547249,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 175,
+          "model_prob": 0.5041
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "New Orleans Pelicans @ Los Angeles Lakers",
+      "game_id": 18447709,
+      "combined_odds": 238,
+      "correlated_prob": 0.311,
+      "naive_prob": 0.3088,
+      "ev": 0.051,
+      "kelly_units": 0.005,
+      "leg_details": [
+        {
+          "player": "Derik Queen",
+          "player_id": 1057274415,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 260,
+          "model_prob": 0.4563
+        },
+        {
+          "player": "Rui Hachimura",
+          "player_id": 666609,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 130,
+          "model_prob": 0.6768
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "New Orleans Pelicans @ Los Angeles Lakers",
+      "game_id": 18447709,
+      "combined_odds": 615,
+      "correlated_prob": 0.1453,
+      "naive_prob": 0.145,
+      "ev": 0.0389,
+      "kelly_units": 0.002,
+      "leg_details": [
+        {
+          "player": "Derik Queen",
+          "player_id": 1057274415,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 260,
+          "model_prob": 0.4563
+        },
+        {
+          "player": "Trey Murphy III",
+          "player_id": 18677986,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3178
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Phoenix Suns @ Sacramento Kings",
+      "game_id": 18447710,
+      "combined_odds": 635,
+      "correlated_prob": 0.1398,
+      "naive_prob": 0.1403,
+      "ev": 0.0277,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Russell Westbrook",
+          "player_id": 472,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 500,
+          "model_prob": 0.2488
+        },
+        {
+          "player": "Mark Williams",
+          "player_id": 38017698,
+          "stat": "blk",
+          "side": "UNDER",
+          "line": 0.5,
+          "odds": 147,
+          "model_prob": 0.564
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "New Orleans Pelicans @ Los Angeles Lakers",
+      "game_id": 18447709,
+      "combined_odds": 155,
+      "correlated_prob": 0.403,
+      "naive_prob": 0.2978,
+      "ev": 0.0275,
+      "kelly_units": 0.004,
+      "leg_details": [
+        {
+          "player": "Derik Queen",
+          "player_id": 1057274415,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 260,
+          "model_prob": 0.4563
+        },
+        {
+          "player": "Derik Queen",
+          "player_id": 1057274415,
+          "stat": "pts",
+          "side": "OVER",
+          "line": 8.5,
+          "odds": -102,
+          "model_prob": 0.6526
+        }
+      ]
+    }
+  ]
+}
