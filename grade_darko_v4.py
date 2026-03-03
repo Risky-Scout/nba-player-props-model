@@ -90,9 +90,9 @@ def grade_single(pred: dict, actual_stat: float | None) -> dict:
 
     line      = float(p.get("line", 0))
     side      = p.get("side", "OVER")
-    bet_odds  = int(p.get("bet_odds", -110))
+    bet_odds  = int(p.get("odds", p.get("bet_odds", -110)))
     model_p   = float(p.get("model_prob", 0.5))
-    imp_over  = float(p.get("implied_prob_over", 0.5))
+    imp_over  = float(p.get("market_prob", p.get("implied_prob_over", 0.5)))
 
     actual = float(actual_stat)
     p["actual"] = actual
@@ -165,7 +165,7 @@ def fetch_actual_stats(target_date: str) -> dict[tuple, float]:
 # ── Grade all predictions for a date ─────────────────────────────────────────
 
 def grade_date(target_date: str) -> pd.DataFrame:
-    pred_path = PRED_DIR / f"nba_props_{target_date}.json"
+    pred_path = PRED_DIR / f"singles_{target_date}.json"
 
     if not pred_path.exists():
         logger.error(f"No predictions found: {pred_path}")
@@ -269,7 +269,7 @@ def print_report(df: pd.DataFrame, date_label: str = ""):
     n_push      = (active["result"] == "PUSH").sum()
 
     print(f"\n{'='*72}")
-    print(f"DARKO v4 GRADING REPORT — {date_label}")
+    print(f"NBA Props Model GRADING REPORT — {date_label}")
     print(f"{'='*72}")
     print(f"  Predictions:  {len(df):4d}  |  Graded:  {len(active):4d}  |  NO_ACTION: {n_no_action}  |  PUSH: {n_push}")
     print(f"  {'─'*68}")
@@ -429,7 +429,7 @@ def print_cumulative_report():
     bet = log[log["result"].isin(["HIT", "MISS"])].copy()
 
     print(f"\n{'='*72}")
-    print(f"DARKO v4 CUMULATIVE PERFORMANCE REPORT")
+    print(f"NBA Props Model CUMULATIVE PERFORMANCE REPORT")
     print(f"Generated: {report.get('generated_at','?')}  |  Dates: {report.get('total_dates',0)}")
     print(f"{'='*72}")
 
@@ -492,7 +492,7 @@ def print_cumulative_report():
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="DARKO v4 Grading Script")
+    parser = argparse.ArgumentParser(description="NBA Props Model Grading Script")
     parser.add_argument("--date", type=str, default=None,
                         help="Date to grade (YYYY-MM-DD, default: yesterday)")
     parser.add_argument("--report", action="store_true",
@@ -504,7 +504,7 @@ def main():
         return
 
     target = args.date or (date.today() - timedelta(days=1)).strftime("%Y-%m-%d")
-    logger.info(f"{'='*72}\nDARKO v4 GRADING — {target}\n{'='*72}")
+    logger.info(f"{'='*72}\nNBA Props Model GRADING — {target}\n{'='*72}")
 
     graded_df = grade_date(target)
 

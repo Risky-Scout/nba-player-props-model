@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-predict_darko_v4.py — DARKO v4 Prediction Engine
+predict_darko_v4.py — NBA Props Model Prediction Engine
 VERSION: 2026-02-28-v10
 
 Outputs (SEPARATE FILES):
@@ -180,7 +180,7 @@ def log_paper_trade(singles: list, sgps: list, target_date: str):
 
 def print_singles_summary(picks: list):
     print(f"\n{'='*70}")
-    print(f"  DARKO v4 — SINGLES ({len(picks)} picks above {MIN_EV:.1%} EV)")
+    print(f"  NBA Props Model — SINGLES ({len(picks)} picks above {MIN_EV:.1%} EV)")
     print(f"{'='*70}")
     for p in picks[:25]:
         tier = "⭐ ELITE" if p["ev"] >= 0.10 else "🔥 HIGH" if p["ev"] >= 0.06 else "📊 EDGE"
@@ -192,7 +192,7 @@ def print_singles_summary(picks: list):
 
 def print_sgp_summary(sgps: list):
     print(f"\n{'='*70}")
-    print(f"  DARKO v4 — SGPs ({len(sgps)} candidates above {MIN_EV:.1%} EV)")
+    print(f"  NBA Props Model — SGPs ({len(sgps)} candidates above {MIN_EV:.1%} EV)")
     print(f"{'='*70}")
     for s in sgps[:10]:
         print(f"\n  {s['legs']}-LEG SGP | {s['game']}")
@@ -206,7 +206,7 @@ def print_sgp_summary(sgps: list):
 
 def main():
     logger.info("=" * 60)
-    logger.info("DARKO v4 PREDICTIONS — VERSION 2026-02-28-v10")
+    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-02-28-v10")
     logger.info("=" * 60)
 
     if not _get_api_key():

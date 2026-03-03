@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-train_darko_v4.py — DARKO v4 Training Pipeline
+train_darko_v4.py — NBA Props Model Training Pipeline
 VERSION: 2026-02-28-v10
 
 Architecture:
@@ -566,7 +566,7 @@ def fit_correlation_engine(training_df: pd.DataFrame):
 
 def main():
     logger.info("=" * 60)
-    logger.info("DARKO v4 TRAINING — VERSION 2026-02-28-v10")
+    logger.info("NBA Props Model TRAINING — VERSION 2026-02-28-v10")
     logger.info("Quantile Regression | Expert-reviewed features | Pinball loss")
     logger.info("=" * 60)
 
