@@ -1,0 +1,230 @@
+{
+  "date": "2026-03-04",
+  "generated_at": "2026-03-04T14:19:13.404976",
+  "version": "2026-02-28-v10",
+  "min_ev": 0.025,
+  "total_sgps": 7,
+  "two_leg": 6,
+  "three_leg": 1,
+  "sgps": [
+    {
+      "legs": 2,
+      "game": "Indiana Pacers @ LA Clippers",
+      "game_id": 18447716,
+      "combined_odds": 2900,
+      "correlated_prob": 0.0367,
+      "naive_prob": 0.0369,
+      "ev": 0.1004,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 500,
+          "model_prob": 0.2511
+        },
+        {
+          "player": "Darius Garland",
+          "player_id": 666581,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 600,
+          "model_prob": 0.1468
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Indiana Pacers @ LA Clippers",
+      "game_id": 18447716,
+      "combined_odds": 2650,
+      "correlated_prob": 0.0395,
+      "naive_prob": 0.0401,
+      "ev": 0.0863,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 500,
+          "model_prob": 0.2511
+        },
+        {
+          "player": "Andrew Nembhard",
+          "player_id": 38017507,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 550,
+          "model_prob": 0.1597
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Oklahoma City Thunder @ New York Knicks",
+      "game_id": 18447711,
+      "combined_odds": 539,
+      "correlated_prob": 0.167,
+      "naive_prob": 0.162,
+      "ev": 0.0671,
+      "kelly_units": 0.003,
+      "leg_details": [
+        {
+          "player": "Cason Wallace",
+          "player_id": 56677833,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 3.5,
+          "odds": 142,
+          "model_prob": 0.7451
+        },
+        {
+          "player": "Luguentz Dort",
+          "player_id": 666541,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 180,
+          "model_prob": 0.5535
+        },
+        {
+          "player": "Cason Wallace",
+          "player_id": 56677833,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 250,
+          "model_prob": 0.3927
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Oklahoma City Thunder @ New York Knicks",
+      "game_id": 18447711,
+      "combined_odds": 255,
+      "correlated_prob": 0.3001,
+      "naive_prob": 0.2926,
+      "ev": 0.0653,
+      "kelly_units": 0.006,
+      "leg_details": [
+        {
+          "player": "Cason Wallace",
+          "player_id": 56677833,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 3.5,
+          "odds": 142,
+          "model_prob": 0.7451
+        },
+        {
+          "player": "Cason Wallace",
+          "player_id": 56677833,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 250,
+          "model_prob": 0.3927
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Oklahoma City Thunder @ New York Knicks",
+      "game_id": 18447711,
+      "combined_odds": 156,
+      "correlated_prob": 0.4117,
+      "naive_prob": 0.4124,
+      "ev": 0.054,
+      "kelly_units": 0.009,
+      "leg_details": [
+        {
+          "player": "Cason Wallace",
+          "player_id": 56677833,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 3.5,
+          "odds": 142,
+          "model_prob": 0.7451
+        },
+        {
+          "player": "Luguentz Dort",
+          "player_id": 666541,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 180,
+          "model_prob": 0.5535
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Utah Jazz @ Philadelphia 76ers",
+      "game_id": 18447713,
+      "combined_odds": -293,
+      "correlated_prob": 0.7847,
+      "naive_prob": 0.7115,
+      "ev": 0.0525,
+      "kelly_units": 0.038,
+      "leg_details": [
+        {
+          "player": "Andre Drummond",
+          "player_id": 137,
+          "stat": "reb",
+          "side": "UNDER",
+          "line": 10.5,
+          "odds": 104,
+          "model_prob": 0.9046
+        },
+        {
+          "player": "Quentin Grimes",
+          "player_id": 17895858,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 3.5,
+          "odds": 129,
+          "model_prob": 0.7865
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Indiana Pacers @ LA Clippers",
+      "game_id": 18447716,
+      "combined_odds": 475,
+      "correlated_prob": 0.1783,
+      "naive_prob": 0.1758,
+      "ev": 0.0255,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 500,
+          "model_prob": 0.2511
+        },
+        {
+          "player": "Bennedict Mathurin",
+          "player_id": 38017686,
+          "stat": "reb",
+          "side": "UNDER",
+          "line": 5.5,
+          "odds": 115,
+          "model_prob": 0.7001
+        }
+      ]
+    }
+  ]
+}
