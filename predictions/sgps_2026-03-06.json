@@ -1,0 +1,464 @@
+{
+  "date": "2026-03-06",
+  "generated_at": "2026-03-06T14:22:21.966074",
+  "version": "2026-02-28-v10",
+  "min_ev": 0.025,
+  "total_sgps": 13,
+  "two_leg": 6,
+  "three_leg": 7,
+  "sgps": [
+    {
+      "legs": 2,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 1925,
+      "correlated_prob": 0.065,
+      "naive_prob": 0.0633,
+      "ev": 0.3162,
+      "kelly_units": 0.004,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2204
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 1138,
+      "correlated_prob": 0.1051,
+      "naive_prob": 0.1068,
+      "ev": 0.3011,
+      "kelly_units": 0.007,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Julian Champagnie",
+          "player_id": 38017649,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3716
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 5469,
+      "correlated_prob": 0.0234,
+      "naive_prob": 0.0235,
+      "ev": 0.3009,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Julian Champagnie",
+          "player_id": 38017649,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3716
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2204
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 3303,
+      "correlated_prob": 0.0338,
+      "naive_prob": 0.033,
+      "ev": 0.1516,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Julian Champagnie",
+          "player_id": 38017649,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3716
+        },
+        {
+          "player": "Stephon Castle",
+          "player_id": 1028025261,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3091
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 5469,
+      "correlated_prob": 0.0202,
+      "naive_prob": 0.0196,
+      "ev": 0.1261,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2204
+        },
+        {
+          "player": "Stephon Castle",
+          "player_id": 1028025261,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3091
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 1880,
+      "correlated_prob": 0.0565,
+      "naive_prob": 0.0526,
+      "ev": 0.1195,
+      "kelly_units": 0.002,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Julian Champagnie",
+          "player_id": 38017649,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3716
+        },
+        {
+          "player": "Julian Champagnie",
+          "player_id": 38017649,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 160,
+          "model_prob": 0.4928
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 1138,
+      "correlated_prob": 0.0888,
+      "naive_prob": 0.0888,
+      "ev": 0.0988,
+      "kelly_units": 0.002,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Stephon Castle",
+          "player_id": 1028025261,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3091
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 4231,
+      "correlated_prob": 0.0251,
+      "naive_prob": 0.0244,
+      "ev": 0.0888,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Julian Champagnie",
+          "player_id": 38017649,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3716
+        },
+        {
+          "player": "Kobe Sanders",
+          "player_id": 1057396055,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 350,
+          "model_prob": 0.2286
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 6988,
+      "correlated_prob": 0.0148,
+      "naive_prob": 0.0145,
+      "ev": 0.049,
+      "kelly_units": 0.0,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2204
+        },
+        {
+          "player": "Kobe Sanders",
+          "player_id": 1057396055,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 350,
+          "model_prob": 0.2286
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Miami Heat @ Charlotte Hornets",
+      "game_id": 18447727,
+      "combined_odds": 1069,
+      "correlated_prob": 0.0888,
+      "naive_prob": 0.0878,
+      "ev": 0.0385,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Davion Mitchell",
+          "player_id": 17553994,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 425,
+          "model_prob": 0.2532
+        },
+        {
+          "player": "Jaime Jaquez Jr.",
+          "player_id": 56677785,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 275,
+          "model_prob": 0.3467
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Miami Heat @ Charlotte Hornets",
+      "game_id": 18447727,
+      "combined_odds": 4486,
+      "correlated_prob": 0.0225,
+      "naive_prob": 0.0234,
+      "ev": 0.0328,
+      "kelly_units": 0.0,
+      "leg_details": [
+        {
+          "player": "Davion Mitchell",
+          "player_id": 17553994,
+          "stat": "fg3m",
+          "side": "UNDER",
+          "line": 1.0,
+          "odds": 166,
+          "model_prob": 0.6117
+        },
+        {
+          "player": "Davion Mitchell",
+          "player_id": 17553994,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 425,
+          "model_prob": 0.2532
+        },
+        {
+          "player": "Coby White",
+          "player_id": 666956,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 650,
+          "model_prob": 0.1508
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "LA Clippers @ San Antonio Spurs",
+      "game_id": 18447731,
+      "combined_odds": 1475,
+      "correlated_prob": 0.0652,
+      "naive_prob": 0.0657,
+      "ev": 0.0275,
+      "kelly_units": 0.0,
+      "leg_details": [
+        {
+          "player": "De'Aaron Fox",
+          "player_id": 161,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 450,
+          "model_prob": 0.2874
+        },
+        {
+          "player": "Kobe Sanders",
+          "player_id": 1057396055,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 350,
+          "model_prob": 0.2286
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Miami Heat @ Charlotte Hornets",
+      "game_id": 18447727,
+      "combined_odds": 606,
+      "correlated_prob": 0.1454,
+      "naive_prob": 0.1549,
+      "ev": 0.0267,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Davion Mitchell",
+          "player_id": 17553994,
+          "stat": "fg3m",
+          "side": "UNDER",
+          "line": 1.0,
+          "odds": 166,
+          "model_prob": 0.6117
+        },
+        {
+          "player": "Davion Mitchell",
+          "player_id": 17553994,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 425,
+          "model_prob": 0.2532
+        }
+      ]
+    }
+  ]
+}
