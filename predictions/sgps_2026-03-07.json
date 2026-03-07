@@ -1,0 +1,80 @@
+{
+  "date": "2026-03-07",
+  "generated_at": "2026-03-07T14:02:20.277698",
+  "version": "2026-02-28-v10",
+  "min_ev": 0.025,
+  "total_sgps": 2,
+  "two_leg": 1,
+  "three_leg": 1,
+  "sgps": [
+    {
+      "legs": 2,
+      "game": "Philadelphia 76ers @ Atlanta Hawks",
+      "game_id": 18447735,
+      "combined_odds": -109,
+      "correlated_prob": 0.5538,
+      "naive_prob": 0.5538,
+      "ev": 0.062,
+      "kelly_units": 0.017,
+      "leg_details": [
+        {
+          "player": "Quentin Grimes",
+          "player_id": 17895858,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 3.5,
+          "odds": 123,
+          "model_prob": 0.824
+        },
+        {
+          "player": "Jalen Johnson",
+          "player_id": 17896040,
+          "stat": "stl",
+          "side": "OVER",
+          "line": 1.0,
+          "odds": 156,
+          "model_prob": 0.6721
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Philadelphia 76ers @ Atlanta Hawks",
+      "game_id": 18447735,
+      "combined_odds": 309,
+      "correlated_prob": 0.2513,
+      "naive_prob": 0.2534,
+      "ev": 0.0277,
+      "kelly_units": 0.002,
+      "leg_details": [
+        {
+          "player": "Quentin Grimes",
+          "player_id": 17895858,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 3.5,
+          "odds": 123,
+          "model_prob": 0.824
+        },
+        {
+          "player": "Jalen Johnson",
+          "player_id": 17896040,
+          "stat": "stl",
+          "side": "OVER",
+          "line": 1.0,
+          "odds": 156,
+          "model_prob": 0.6721
+        },
+        {
+          "player": "Dyson Daniels",
+          "player_id": 38017677,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 213,
+          "model_prob": 0.4576
+        }
+      ]
+    }
+  ]
+}
