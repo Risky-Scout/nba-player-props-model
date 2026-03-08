@@ -1,17 +1,17 @@
-name: DARKO v4 — Daily Predictions
+name: NBA Props Model — Daily Predictions
 
 on:
   schedule:
-    - cron: '0 13 * * *'   # 8:00 AM EST (UTC-5), 2 hours after training
+    - cron: '0 13 * * *'   # 8:00 AM EST (UTC-5)
   workflow_dispatch:
 
 jobs:
   predict:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
-      - name: Checkout repo (gets models trained 2 hrs ago)
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -25,24 +25,54 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib
+          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib scipy
 
       - name: Grade yesterday's predictions
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: python grade_darko_v4.py
-        continue-on-error: true   # don't block predictions if grading fails
+        continue-on-error: true
 
-      - name: Generate today's singles + SGPs
+      - name: Generate today's predictions
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: python predict_darko_v4.py
 
-      - name: Commit predictions + grades
+      - name: Commit predictions + grades to repo
         run: |
-          git config user.name  "DARKO Bot"
-          git config user.email "darko@wizardofodds.com"
+          git config user.name  "Props Bot"
+          git config user.email "props-bot@wizardofodds.com"
           git add predictions/ graded/ -f
-          git diff --staged --quiet && echo "Nothing new to commit" || \
-            git commit -m "🎯 Predictions $(date -u +%Y-%m-%d)"
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit -m "Predictions $(date -u +%Y-%m-%d)"
           git push origin main
+
+      - name: Deploy predictions to WizardOfOdds server
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+          SFTP_PATH: ${{ secrets.SFTP_PATH }}
+        run: |
+          sudo apt-get install -y lftp
+          
+          DATE=$(date -u +%Y-%m-%d)
+          SINGLES="predictions/singles_${DATE}.json"
+          SGPS="predictions/sgps_${DATE}.json"
+          
+          echo "Deploying $SINGLES and $SGPS to ${SFTP_PATH}/predictions/"
+          
+          lftp -c "
+            set ssl:verify-certificate no;
+            set net:timeout 30;
+            set net:max-retries 3;
+            open -u ${SFTP_USER},${SFTP_PASS} sftp://${SFTP_HOST};
+            
+            # Singles + SGPs go directly into predictions/ (same level as nba-props.html)
+            put ${SINGLES} -o ${SFTP_PATH}/singles_${DATE}.json;
+            put ${SGPS}    -o ${SFTP_PATH}/sgps_${DATE}.json;
+            
+            # Legacy fallback
+            put ${SINGLES} -o ${SFTP_PATH}/nba_props_today.json;
+          "
+          echo "✓ Deployed to WizardOfOdds"
