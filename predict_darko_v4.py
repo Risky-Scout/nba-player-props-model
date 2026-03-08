@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 predict_darko_v4.py — NBA Props Model Prediction Engine
-VERSION: 2026-02-28-v10
+VERSION: 2026-02-28-v11
 
 Outputs (SEPARATE FILES):
   predictions/singles_{date}.json   — individual prop bets (EV > 2.5%)
@@ -15,6 +15,11 @@ Architecture:
   - SGPs via Gaussian copula simulation (50k samples)
   - Quarter-Kelly sizing, 2-unit cap singles, 1-unit cap SGPs
   - Supports: pts, reb, ast, fg3m, stl, blk, tov + combo props
+
+v11 changes:
+  - Singles written to disk BEFORE SGP generation (guarantees data on timeout)
+  - SGP candidate pool capped to top 6 per game by EV before copula
+  - Workflow timeout raised to 60 min
 """
 
 import csv
@@ -76,11 +81,14 @@ STAT_DISPLAY = {
     "ra":"Reb+Ast","stocks":"Stl+Blk",
 }
 
-MIN_EV           = 0.025
-MIN_GAMES_SEASON = 15
-KELLY_FRAC       = 0.25
-MAX_UNITS_SINGLE = 2.0
-MAX_UNITS_SGP    = 1.0
+MIN_EV              = 0.025
+MIN_GAMES_SEASON    = 15
+KELLY_FRAC          = 0.25
+MAX_UNITS_SINGLE    = 2.0
+MAX_UNITS_SGP       = 1.0
+SGP_MAX_PER_GAME    = 6      # cap: top N singles per game fed into copula
+SGP_ABSOLUTE_CAP    = 60     # hard ceiling on total SGP candidate pool
+
 
 ADV_FIELDS = [
     "usage_percentage","pace",
@@ -91,7 +99,7 @@ ADV_FIELDS = [
 
 # ── Model loading ──────────────────────────────────────────────────────────────
 
-def load_models() -> tuple[dict, dict]:
+def load_models() -> tuple:
     """Load all quantile models and feature lists."""
     models = {}
     for target in ALL_TARGETS:
@@ -108,7 +116,6 @@ def load_models() -> tuple[dict, dict]:
             models[target] = {"quantile_models": qmods, "features": fcols}
             logger.info(f"  {target}: {len(qmods)} quantile models")
 
-    # Load correlation engines
     within_engine   = None
     teammate_engine = TeammateCorrelationEngine(MODEL_DIR)
 
@@ -118,21 +125,59 @@ def load_models() -> tuple[dict, dict]:
         logger.info("  Within-player correlation engine loaded")
     else:
         logger.warning("  No correlation engine found — SGPs will use identity matrix")
-        within_engine = None
 
     return models, within_engine, teammate_engine
 
 
 # ── Quantile prediction ────────────────────────────────────────────────────────
 
-def predict_quantiles(models: dict, target: str, features: dict) -> dict | None:
+def predict_quantiles(models: dict, target: str, features: dict):
     if target not in models:
         return None
     m     = models[target]
     fcols = m["features"]
     X     = np.array([[features.get(c, np.nan) for c in fcols]], dtype=float)
     raw   = {q: float(mod.predict(X)[0]) for q, mod in m["quantile_models"].items()}
-    return enforce_monotonicity(raw)   # MANDATORY before any probability use
+    return enforce_monotonicity(raw)
+
+
+# ── SGP candidate filtering ────────────────────────────────────────────────────
+
+def filter_sgp_candidates(singles: list) -> list:
+    """
+    Reduce the singles pool before passing to the Gaussian copula.
+
+    Without this, 473 singles → 111k pairs → copula times out every time.
+    Strategy: keep top SGP_MAX_PER_GAME picks per game by EV, then hard-cap
+    at SGP_ABSOLUTE_CAP total. This gives the copula a tractable ~1-2k pairs.
+
+    We only keep stats the copula models well (pts, reb, ast, fg3m, stl, blk).
+    Combo stats (pra, pr, pa, ra, stocks, tov) are excluded from SGPs because
+    their within-game correlations are trivially high and produce misleading CLV.
+    """
+    SGP_ELIGIBLE_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk"}
+
+    # Filter to eligible stats only
+    eligible = [s for s in singles if s["stat"] in SGP_ELIGIBLE_STATS]
+
+    # Group by game, keep top N by EV per game
+    by_game: dict = {}
+    for s in eligible:
+        gid = s["game_id"]
+        by_game.setdefault(gid, []).append(s)
+
+    pool = []
+    for gid, picks in by_game.items():
+        top = sorted(picks, key=lambda x: x["ev"], reverse=True)[:SGP_MAX_PER_GAME]
+        pool.extend(top)
+
+    # Hard ceiling
+    pool = sorted(pool, key=lambda x: x["ev"], reverse=True)[:SGP_ABSOLUTE_CAP]
+
+    logger.info(f"  SGP candidate pool: {len(pool)} singles "
+                f"({len(eligible)} eligible → capped at {SGP_MAX_PER_GAME}/game, "
+                f"max {SGP_ABSOLUTE_CAP} total)")
+    return pool
 
 
 # ── Paper trade logger ─────────────────────────────────────────────────────────
@@ -183,8 +228,8 @@ def print_singles_summary(picks: list):
     print(f"  NBA Props Model — SINGLES ({len(picks)} picks above {MIN_EV:.1%} EV)")
     print(f"{'='*70}")
     for p in picks[:25]:
-        tier = "⭐ ELITE" if p["ev"] >= 0.10 else "🔥 HIGH" if p["ev"] >= 0.06 else "📊 EDGE"
-        print(f"\n{tier}  {p['player_name']} — {STAT_DISPLAY.get(p['stat'],p['stat'])} {p['side']} {p['line']}")
+        tier = "ELITE" if p["ev"] >= 0.10 else "HIGH" if p["ev"] >= 0.06 else "EDGE"
+        print(f"\n[{tier}]  {p['player_name']} — {STAT_DISPLAY.get(p['stat'],p['stat'])} {p['side']} {p['line']}")
         print(f"  Game:    {p['game']}")
         print(f"  Model P: {p['model_prob']:.1%}  |  EV: {p['ev']:+.2%}  |  Odds: {p['odds']:+d}")
         print(f"  Kelly:   {p['kelly_units']:.3f} units  |  Q50 proj: {p['q50']:.1f}")
@@ -206,7 +251,7 @@ def print_sgp_summary(sgps: list):
 
 def main():
     logger.info("=" * 60)
-    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-02-28-v10")
+    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-02-28-v11")
     logger.info("=" * 60)
 
     if not _get_api_key():
@@ -218,12 +263,12 @@ def main():
     logger.info("Loading models...")
     models, within_engine, teammate_engine = load_models()
     if not models:
-        sys.exit("No models in model_cache/. Run train_darko_v4.py first.")
+        sys.exit("No models in model_cache/. Run training script first.")
 
     stats_path = DATA_DIR / "player_game_stats.parquet"
     adv_path   = DATA_DIR / "advanced_stats.parquet"
     if not stats_path.exists():
-        sys.exit("No stats data. Run train_darko_v4.py first.")
+        sys.exit("No stats data. Run training script first.")
 
     logger.info("Loading historical data...")
     stats_df = pd.read_parquet(stats_path)
@@ -257,8 +302,6 @@ def main():
             continue
         try:
             gprops = parse_props_for_game(int(gid), price_shop=True)
-            # parse_props_for_game returns (player_id, stat) 2-tuple keys
-            # — expand to (player_id, game_id, stat) so lookups match
             for (pid, stat), val in gprops.items():
                 prop_map[(pid, int(gid), stat)] = val
         except Exception as e:
@@ -277,10 +320,7 @@ def main():
         glabel   = f"{vis_nm} @ {home_nm}"
         ctx      = ctx_map.get(gid, {})
 
-        # Players with props in this game
-        player_ids = list(set(
-            pid for (pid, pg, _) in prop_map if pg == gid
-        ))
+        player_ids = list(set(pid for (pid, pg, _) in prop_map if pg == gid))
 
         for player_id in player_ids:
             pdata = stats_df[stats_df["player_id"] == player_id]
@@ -299,7 +339,6 @@ def main():
                 adv_by_player.get(player_id, []),
                 key=lambda x: x.get("game_date", pd.Timestamp("2000")),
             )
-            # Prior adv only
             padv_prior = [
                 r for r in padv
                 if pd.Timestamp(r.get("game_date", pd.Timestamp("2000"))) < pd.Timestamp(target_date)
@@ -358,93 +397,92 @@ def main():
                         continue
 
                     all_singles.append({
-                        "player_id":   player_id,
-                        "player_name": player_name,
-                        "game_id":     gid,
-                        "game":        glabel,
-                        "team_id":     team_id,
-                        "stat":        target,
-                        "side":        side,
-                        "line":        line,
-                        "odds":        odds,
-                        "bet_vendor":  vendor,
-                        "model_prob":  round(prob, 4),
-                        "market_prob": round(prop.get("implied_prob_over", 0.5)
-                                             if side == "OVER"
-                                             else 1 - prop.get("implied_prob_over", 0.5), 4),
-                        "ev":          round(ev, 4),
-                        "kelly_units": round(kelly, 3),
-                        "q50":         round(q50, 2),
-                        "q_preds":     {float(k): round(v,2) for k,v in q_preds.items()},
+                        "player_id":    player_id,
+                        "player_name":  player_name,
+                        "game_id":      gid,
+                        "game":         glabel,
+                        "team_id":      team_id,
+                        "stat":         target,
+                        "side":         side,
+                        "line":         line,
+                        "odds":         odds,
+                        "bet_vendor":   vendor,
+                        "model_prob":   round(prob, 4),
+                        "market_prob":  round(prop.get("implied_prob_over", 0.5)
+                                              if side == "OVER"
+                                              else 1 - prop.get("implied_prob_over", 0.5), 4),
+                        "ev":           round(ev, 4),
+                        "kelly_units":  round(kelly, 3),
+                        "q50":          round(q50, 2),
+                        "q_preds":      {float(k): round(v,2) for k,v in q_preds.items()},
                         "usage_bucket": ub,
-                        "mp_bucket":   mb,
+                        "mp_bucket":    mb,
                     })
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
     logger.info(f"Singles above EV threshold: {len(all_singles)}")
 
-    # ── SGP generation ────────────────────────────────────────────────────────
+    today = target_date
+
+    # ── Write singles FIRST — guarantees data even if SGP step times out ──────
+    singles_out = {
+        "date":         today,
+        "generated_at": datetime.utcnow().isoformat(),
+        "version":      "2026-02-28-v11",
+        "min_ev":       MIN_EV,
+        "total_picks":  len(all_singles),
+        "picks":        all_singles,
+    }
+    singles_path = PRED_DIR / f"singles_{today}.json"
+    with open(singles_path, "w") as f:
+        json.dump(singles_out, f, indent=2, default=str)
+    logger.info(f"Singles written → {singles_path}  (safe before SGP step)")
+
+    # ── SGP generation ─────────────────────────────────────────────────────────
     logger.info("Generating SGP candidates (Gaussian copula)...")
+    sgp_results = {"two_leg": [], "three_leg": []}
 
     if within_engine is not None:
-        sgp_results = build_sgp_candidates(
-            singles         = all_singles,
-            within_engine   = within_engine,
-            teammate_engine = teammate_engine,
-            min_ev          = MIN_EV,
-        )
-    else:
-        # No correlation engine — skip SGPs rather than produce junk
-        logger.warning("  Skipping SGPs — correlation engine not available")
-        sgp_results = {"two_leg": [], "three_leg": []}
+        # ── CRITICAL: cap candidates before copula to prevent timeout ─────────
+        sgp_pool = filter_sgp_candidates(all_singles)
 
-    two_leg   = sgp_results["two_leg"]
-    three_leg = sgp_results["three_leg"]
+        if sgp_pool:
+            sgp_results = build_sgp_candidates(
+                singles         = sgp_pool,
+                within_engine   = within_engine,
+                teammate_engine = teammate_engine,
+                min_ev          = MIN_EV,
+            )
+        else:
+            logger.warning("  SGP pool empty after filtering")
+    else:
+        logger.warning("  Skipping SGPs — correlation engine not available")
+
+    two_leg   = sgp_results.get("two_leg",   [])
+    three_leg = sgp_results.get("three_leg", [])
     all_sgps  = sorted(two_leg + three_leg, key=lambda x: x["ev"], reverse=True)
     logger.info(f"  2-leg: {len(two_leg)} | 3-leg: {len(three_leg)}")
 
-    # ── Write SEPARATE output files ───────────────────────────────────────────
-    today = target_date
-
-    singles_out = {
-        "date":          today,
-        "generated_at":  datetime.utcnow().isoformat(),
-        "version":       "2026-02-28-v10",
-        "min_ev":        MIN_EV,
-        "total_picks":   len(all_singles),
-        "picks":         all_singles,
-    }
+    # ── Write SGPs ─────────────────────────────────────────────────────────────
     sgps_out = {
-        "date":          today,
-        "generated_at":  datetime.utcnow().isoformat(),
-        "version":       "2026-02-28-v10",
-        "min_ev":        MIN_EV,
-        "total_sgps":    len(all_sgps),
-        "two_leg":       len(two_leg),
-        "three_leg":     len(three_leg),
-        "sgps":          all_sgps,
+        "date":         today,
+        "generated_at": datetime.utcnow().isoformat(),
+        "version":      "2026-02-28-v11",
+        "min_ev":       MIN_EV,
+        "total_sgps":   len(all_sgps),
+        "two_leg":      len(two_leg),
+        "three_leg":    len(three_leg),
+        "sgps":         all_sgps,
     }
-
-    singles_path = PRED_DIR / f"singles_{today}.json"
-    sgps_path    = PRED_DIR / f"sgps_{today}.json"
-
-    with open(singles_path,"w") as f: json.dump(singles_out, f, indent=2, default=str)
-    with open(sgps_path,   "w") as f: json.dump(sgps_out,    f, indent=2, default=str)
-
-    logger.info(f"Singles → {singles_path}")
+    sgps_path = PRED_DIR / f"sgps_{today}.json"
+    with open(sgps_path, "w") as f:
+        json.dump(sgps_out, f, indent=2, default=str)
     logger.info(f"SGPs    → {sgps_path}")
 
     log_paper_trade(all_singles, all_sgps, today)
 
-    if all_singles:
-        print_singles_summary(all_singles)
-    else:
-        print("\nNo singles above EV threshold today.")
-
-    if all_sgps:
-        print_sgp_summary(all_sgps)
-    else:
-        print("\nNo SGPs above EV threshold today.")
+    print_singles_summary(all_singles) if all_singles else print("\nNo singles above EV threshold.")
+    print_sgp_summary(all_sgps)        if all_sgps    else print("\nNo SGPs above EV threshold.")
 
     print(f"\nFiles written:")
     print(f"  {singles_path}")
