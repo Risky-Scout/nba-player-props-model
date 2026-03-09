@@ -424,7 +424,7 @@ def main():
 
     today = target_date
 
-    # ── Write singles FIRST — guarantees data even if SGP step times out ──────
+    # ── Write singles FIRST — always, unconditionally ───────────────────────
     singles_out = {
         "date":         today,
         "generated_at": datetime.utcnow().isoformat(),
@@ -438,14 +438,15 @@ def main():
         json.dump(singles_out, f, indent=2, default=str)
     logger.info(f"Singles written → {singles_path}  (safe before SGP step)")
 
-    # ── SGP generation ─────────────────────────────────────────────────────────
-    logger.info("Generating SGP candidates (Gaussian copula)...")
+    # ── SGP generation — skipped if SKIP_SGPS=1 env var is set ──────────────
+    import os as _os
     sgp_results = {"two_leg": [], "three_leg": []}
 
-    if within_engine is not None:
-        # ── CRITICAL: cap candidates before copula to prevent timeout ─────────
+    if _os.environ.get("SKIP_SGPS") == "1":
+        logger.info("SGP generation skipped (SKIP_SGPS=1)")
+    elif within_engine is not None:
+        logger.info("Generating SGP candidates (Gaussian copula)...")
         sgp_pool = filter_sgp_candidates(all_singles)
-
         if sgp_pool:
             sgp_results = build_sgp_candidates(
                 singles         = sgp_pool,
