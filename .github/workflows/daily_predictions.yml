@@ -2,7 +2,7 @@ name: NBA Props Model — Daily Predictions
 
 on:
   schedule:
-    - cron: '0 13 * * *'   # 8:00 AM EST (UTC-5)
+    - cron: '0 13 * * *'   # 8:00 AM EST daily
   workflow_dispatch:
 
 jobs:
@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -33,12 +31,13 @@ jobs:
         run: python grade_darko_v4.py
         continue-on-error: true
 
-      - name: Generate today's predictions
+      - name: Generate today's predictions (SGPs disabled for stability)
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          SKIP_SGPS: "1"
         run: python predict_darko_v4.py
 
-      - name: Commit predictions + grades to repo
+      - name: Commit predictions to repo
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
@@ -46,33 +45,3 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
           git push origin main
-
-      - name: Deploy predictions to WizardOfOdds server
-        env:
-          SFTP_HOST: ${{ secrets.SFTP_HOST }}
-          SFTP_USER: ${{ secrets.SFTP_USER }}
-          SFTP_PASS: ${{ secrets.SFTP_PASS }}
-          SFTP_PATH: ${{ secrets.SFTP_PATH }}
-        run: |
-          sudo apt-get install -y lftp
-          
-          DATE=$(date -u +%Y-%m-%d)
-          SINGLES="predictions/singles_${DATE}.json"
-          SGPS="predictions/sgps_${DATE}.json"
-          
-          echo "Deploying $SINGLES and $SGPS to ${SFTP_PATH}/predictions/"
-          
-          lftp -c "
-            set ssl:verify-certificate no;
-            set net:timeout 30;
-            set net:max-retries 3;
-            open -u ${SFTP_USER},${SFTP_PASS} sftp://${SFTP_HOST};
-            
-            # Singles + SGPs go directly into predictions/ (same level as nba-props.html)
-            put ${SINGLES} -o ${SFTP_PATH}/singles_${DATE}.json;
-            put ${SGPS}    -o ${SFTP_PATH}/sgps_${DATE}.json;
-            
-            # Legacy fallback
-            put ${SINGLES} -o ${SFTP_PATH}/nba_props_today.json;
-          "
-          echo "✓ Deployed to WizardOfOdds"
