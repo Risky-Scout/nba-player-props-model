@@ -31,7 +31,7 @@ jobs:
         run: python grade_darko_v4.py
         continue-on-error: true
 
-      - name: Generate today's predictions (SGPs disabled for stability)
+      - name: Generate today's predictions
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           SKIP_SGPS: "1"
@@ -44,4 +44,5 @@ jobs:
           git add predictions/ graded/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
           git push origin main
