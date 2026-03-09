@@ -45,4 +45,5 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
+          git pull --rebase origin main
           git push origin main
