@@ -29,3 +29,4 @@ Thumbs.db
 .idea/
 data/training_table.parquet
 data/training_table.parquet
+config.php
