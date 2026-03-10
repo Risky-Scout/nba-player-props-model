@@ -43,6 +43,35 @@ def american_to_decimal(american: int) -> float:
         return 1.0 + 100.0 / abs(american)
 
 
+def normalize_name(name: str) -> str:
+    """Matches normalization in snapshot_closing_lines.py."""
+    import re
+    name = name.lower().strip()
+    name = re.sub(r"[''`]", "", name)
+    name = re.sub(r"[^a-z0-9 ]", " ", name)
+    return re.sub(r"\s+", " ", name).strip()
+
+
+def load_closing_lines(target_date: str) -> dict:
+    """
+    Load closing line snapshot for target_date.
+    Returns dict keyed by '{player_norm}|{stat}|{line}'.
+    Falls back to empty dict if file not found.
+    """
+    path = GRADED_DIR / f"closing_lines_{target_date}.json"
+    if not path.exists():
+        logger.warning(f"No closing lines file found: {path}. CLV will use pick-time market prob as fallback.")
+        return {}
+    try:
+        with open(path) as f:
+            lines = json.load(f)
+        logger.info(f"Loaded {len(lines)} closing line entries for {target_date}.")
+        return lines
+    except Exception as e:
+        logger.error(f"Failed to load closing lines: {e}")
+        return {}
+
+
 def compute_profit(result: str, bet_odds: int) -> float:
     if result == "HIT":
         return american_to_decimal(bet_odds) - 1.0
@@ -52,7 +81,7 @@ def compute_profit(result: str, bet_odds: int) -> float:
         return 0.0
 
 
-def grade_single(pred: dict, actual_stat) -> dict:
+def grade_single(pred: dict, actual_stat, closing_line: dict | None = None) -> dict:
     p = dict(pred)
 
     if actual_stat is None:
@@ -60,13 +89,13 @@ def grade_single(pred: dict, actual_stat) -> dict:
         p["profit"]    = 0.0
         p["actual"]    = None
         p["clv_proxy"] = None
+        p["clv_source"] = "none"
         return p
 
     line     = float(p.get("line", 0))
     side     = p.get("side", "OVER")
     bet_odds = int(p.get("odds", p.get("bet_odds", -110)))
     model_p  = float(p.get("model_prob", 0.5))
-    imp_over = float(p.get("market_prob", p.get("implied_prob_over", 0.5)))
 
     actual = float(actual_stat)
     p["actual"] = actual
@@ -87,10 +116,24 @@ def grade_single(pred: dict, actual_stat) -> dict:
 
     p["profit"] = compute_profit(p["result"], bet_odds)
 
-    if side == "OVER":
-        p["clv_proxy"] = round(model_p - imp_over, 4)
+    # ── True CLV using closing line snapshot ─────────────────────────────────
+    if closing_line is not None:
+        # closing_line has fair_over_prob / fair_under_prob (vig removed)
+        close_over_p = float(closing_line.get("fair_over_prob", 0.5))
+        if side == "OVER":
+            p["clv_proxy"]  = round(model_p - close_over_p, 4)
+        else:
+            close_under_p   = float(closing_line.get("fair_under_prob", 0.5))
+            p["clv_proxy"]  = round((1.0 - model_p) - close_under_p, 4)
+        p["clv_source"] = "closing_line"
     else:
-        p["clv_proxy"] = round((1.0 - model_p) - (1.0 - imp_over), 4)
+        # Fallback: pick-time market_prob (not true CLV — flagged clearly)
+        imp_over = float(p.get("market_prob", p.get("implied_prob_over", 0.5)))
+        if side == "OVER":
+            p["clv_proxy"] = round(model_p - imp_over, 4)
+        else:
+            p["clv_proxy"] = round((1.0 - model_p) - (1.0 - imp_over), 4)
+        p["clv_source"] = "pick_time_fallback"
 
     return p
 
@@ -158,12 +201,30 @@ def grade_date(target_date: str) -> pd.DataFrame:
     if not actuals:
         logger.warning("No actuals fetched — grading will mark all as NO_ACTION.")
 
+    # Load closing lines for true CLV (falls back to pick-time if unavailable)
+    closing_lines = load_closing_lines(target_date)
+    clv_hit_count = 0
+
     graded = []
     for pred in preds:
         pid  = int(pred.get("player_id", 0))
         stat = pred.get("stat", "")
         actual_val = actuals.get((pid, stat))
-        graded.append(grade_single(pred, actual_val))
+
+        # Match to closing line by normalized name + stat + line
+        cl_entry = None
+        if closing_lines:
+            pname = pred.get("player_name", "")
+            line  = pred.get("line", 0)
+            cl_key = f"{normalize_name(pname)}|{stat}|{float(line)}"
+            cl_entry = closing_lines.get(cl_key)
+            if cl_entry:
+                clv_hit_count += 1
+
+        graded.append(grade_single(pred, actual_val, closing_line=cl_entry))
+
+    if closing_lines:
+        logger.info(f"Closing line match rate: {clv_hit_count}/{len(preds)} picks ({100*clv_hit_count/max(len(preds),1):.1f}%)")
 
     df = pd.DataFrame(graded)
     df["grade_date"] = target_date

@@ -2,13 +2,52 @@ name: NBA Props Model — Daily Predictions
 
 on:
   schedule:
-    - cron: '0 13 * * *'   # 8:00 AM EST daily
+    - cron: '0 13 * * *'   # 8:00 AM ET — predictions + grading
+    - cron: '0 0 * * *'    # 7:00 PM ET — closing line snapshot (before tipoffs)
   workflow_dispatch:
 
 jobs:
+
+  # ── Job 1: Closing line snapshot — runs at 7 PM ET (midnight UTC) ──────────
+  snapshot_closing_lines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only run the snapshot at midnight UTC; skip at 8 AM UTC run
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 0 * * *'
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Snapshot closing lines
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python snapshot_closing_lines.py
+
+      - name: Commit closing lines
+        run: |
+          git config user.name  "Props Bot"
+          git config user.email "props-bot@wizardofodds.com"
+          git add graded/closing_lines_*.json -f
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit -m "Closing lines $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
+          git push origin main
+
+  # ── Job 2: Grade + Predict — runs at 8 AM ET ───────────────────────────────
   predict:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 13 * * *'
 
     steps:
       - name: Checkout repo
