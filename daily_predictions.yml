@@ -1,0 +1,48 @@
+name: NBA Props Model — Daily Predictions
+
+on:
+  schedule:
+    - cron: '0 13 * * *'   # 8:00 AM EST daily
+  workflow_dispatch:
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib scipy
+
+      - name: Grade yesterday's predictions
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: python grade_darko_v4.py
+        continue-on-error: true
+
+      - name: Generate today's predictions
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          SKIP_SGPS: "1"
+        run: python predict_darko_v4.py
+
+      - name: Commit predictions to repo
+        run: |
+          git config user.name  "Props Bot"
+          git config user.email "props-bot@wizardofodds.com"
+          git add predictions/ graded/ -f
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit -m "Predictions $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
+          git push origin main
