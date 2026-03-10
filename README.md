@@ -1,123 +1,235 @@
-# DARKO v4 — NBA Player Props Prediction Model
+# NBA Player Props Model
 
-**Version:** 2026-02-28-v9  
-**Architecture:** Quantile Regression + Bivariate Normal SGP Engine  
-**Target:** Professional-grade NBA player prop prediction for WizardOfOdds.com
+**Automated quantile regression system for pricing NBA player proposition bets.**
+
+Live at [dev.wizardofodds.com](https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-props.html)
+
+---
+
+## What It Does
+
+This system builds a full probability distribution over each player's stat outcome for every game, compares that distribution to posted sportsbook lines, and identifies edges where the model's fair probability diverges from the no-vig market implied probability.
+
+It is not a point estimate model. It prices lines.
 
 ---
 
 ## Architecture
 
-### Core Principle
-**No sportsbook lines exist in training.** Labels are real game outcomes only.
+### Training (`train_v12.py`)
 
-The model predicts a full calibrated distribution for each player/stat using quantile regression (Q10–Q90). At inference time, the CDF is interpolated against today's real sportsbook line to produce P(over) and P(under). This means the model generalizes to any line without retraining.
+- **Targets:** `pts`, `reb`, `ast`, `fg3m`, `stl`, `blk`, `tov`, and five combination stats (`pra`, `pr`, `pa`, `ra`, `stocks`) — 12 targets total
+- **Models per target:** 11 LightGBM quantile regressors, Q10 through Q90, trained with pinball loss
+- **Ensemble:** XGBoost, Random Forest, Gradient Boosting, and Neural Network with a Bayesian Ridge meta-learner on top of the LightGBM quantiles
+- **Validation:** Temporal holdout — split at the (1 − 0.15) date percentile, never on random rows. Reports calibration error per quantile and MAE at Q50
+- **Data:** BallDontLie API (GOAT tier), incremental fetch — only new games are pulled on each run
+- **Training seasons:** 2023–2025
 
-### Why Quantile Regression
-- **Pinball loss** is a proper scoring rule — it is only minimized by the true conditional quantile. You cannot game it.
-- Produces a full distribution, not just a point estimate.
-- Allows CDF interpolation to any line at inference time.
-- Calibration is directly measurable and provable: Q75 predictions should have 75% of actuals fall below them.
+### Feature Engineering (`feature_engineering.py`)
 
-### SGP Engine
-Joint probabilities use the exact **bivariate normal CDF** (Drezner-Wesolowsky algorithm) with an empirical correlation matrix derived from 120K+ historical NBA player-game observations.
+Features are computed as-of the game date using only prior data. No leakage.
 
-```
-P(pts OVER AND ast OVER) = Φ₂(-z₁, -z₂, ρ=0.412)
-```
+**Rolling windows per stat series (13 features each):**
+- `mean_last5`, `mean_last10`, `median_last10`, `mean_last3`
+- `std_last10`, `cv_last10` (coefficient of variation)
+- `trend_3v10` (mean_last3 / mean_last10 — recency drift signal)
+- `floor_last10` (P10), `ceiling_last10` (P90)
+- `ewma` (alpha=0.3 — last game weighted at 30%)
+- `mean_season` (EWMA-weighted full season)
+- `games_in_window`, per-minute rate
 
-This is materially different from (and more accurate than) multiplying individual probabilities.
+**Minutes model features:**
+- `starter_rate`, `games_30plus`, `games_35plus`, `games_20minus`, `role_stability_index`
+
+**Advanced stats (34 BDL v2 fields, EWMA-rolled):**
+- Usage percentage, pace, true shooting, eFG, assist/turnover ratio
+- Touches, passes, rebound chances, deflections, contested shots
+- Defended-at-rim, secondary assists, fouls drawn, matchup data
+
+**Vacated opportunity features (role-conditioned):**
+- Guard vs. big classification
+- `vacated_guard_minutes`, `vacated_big_minutes`
+- `vacated_creation_share`, `vacated_reb_share`
+- Populated from live injury map at inference time
+
+**Stat-specific upper-tail features:**
+- Steals/blocks: `p_ge1_last10` (probability of 1+ in last 10)
+- Threes: `fg3a_attempt_trend`, `is_low_3pa_last10`, `p_zero_last10`
+
+**Game context:**
+- `game_total`, `implied_team_total`, `opp_implied_total`
+- `opp_pace_context`, `opp_defense_signal`
+- `is_home`, `days_rest`, `b2b_flag`
+
+**Injury snapshots:**
+- Daily snapshot saved to `data/injury_snapshots.parquet` on each training run
+- Historical rows before snapshot accumulation have `injury_map = {}` (BDL has no historical injury API)
+- At inference, the live injury map is always populated
+
+### Prediction (`predict_v12.py`)
+
+For each player-game on today's slate:
+
+1. Build the full feature vector using prior stats + today's game context + live injury map
+2. Load all 11 quantile models for each target
+3. Enforce monotonicity across Q10–Q90 (corrects quantile crossing)
+4. Interpolate a full CDF from the quantile predictions
+5. For each sportsbook line: read off `P(over)` and `P(under)` directly from the CDF
+6. Remove vig from posted market odds (additive method)
+7. Compute `edge = model_probability − no_vig_implied_probability`
+8. Compute `EV = edge × (odds − 1) − (1 − edge)`
+9. Compute Kelly fraction: `f* = (bp − q) / b`
+10. Output picks with `edge`, `ev`, `kelly`, `fair_odds`, `model_prob`, `market_prob`
+
+The model prices any line without retraining — the CDF is continuous.
+
+### SGP Correlation Engine (`correlation_engine.py`)
+
+Same-game parlay pricing requires joint probability estimation. Independent multiplication is wrong for correlated player stats.
+
+**Method:**
+- Compute residual z-scores from Q25/Q50/Q75 predictions for each stat
+- Fit within-player correlation matrices segmented by usage bucket and minutes bucket
+- Shrink toward a global prior (prevents overfitting on thin player samples)
+- Enforce positive semi-definiteness via eigenvalue clipping
+- Simulate joint outcomes via Gaussian copula
+- SGP probability = fraction of simulations where all legs clear their lines
+
+**Teammate correlations** are also modeled — a player's usage and shot volume are not independent of how teammates are performing.
+
+### Grading (`grade_v12.py`)
+
+After each game slate completes, the grader:
+
+- Loads `predictions/singles_{date}.json`
+- Fetches final box scores from BDL
+- Records `result` (win/loss/push), `actual`, `line`, and `clv` (Closing Line Value)
+- Appends to `graded/performance_log.csv`
+
+**CLV is the primary long-term metric.** Beating the closing line at a positive rate is the most reliable indicator that the model is finding real inefficiencies rather than overfitting to historical patterns.
 
 ---
 
-## Files
+## Pipeline
 
-| File | Purpose |
-|------|---------|
-| `train_darko_v4.py` | Quantile regression training pipeline |
-| `predict_darko_v4.py` | Singles + SGP prediction engine |
-| `grade_darko_v4.py` | Grades predictions against actual outcomes |
-| `correlation_engine.py` | Bivariate normal CDF, CDF interpolation, SGP joint probability |
-| `feature_engineering.py` | 150+ engineered features (zero leakage) |
-| `bdl_client.py` | BallDontLie API client (incremental, price-shopping) |
-
----
-
-## Outputs (Separate Files)
+Fully automated via GitHub Actions on a daily schedule.
 
 ```
-predictions/
-  singles_{date}.json    ← individual prop bets (EV > 2.5%)
-  sgps_{date}.json       ← 2-leg and 3-leg SGPs (EV > 2.5%)
-  paper_trade_log.csv    ← forward paper trade ledger
+06:00 AM ET  →  train_v12.py       (incremental data fetch + retrain)
+08:00 AM ET  →  predict_v12.py     (today's slate → predictions JSON)
+11:00 PM ET  →  grade_v12.py       (grade yesterday's picks)
+```
 
-graded/
-  graded_{date}.csv      ← actual outcomes vs predictions
-  cumulative_performance.csv
+Prediction output is committed directly to the repo. The frontend fetches from `raw.githubusercontent.com` — no manual deployment required.
+
+**SGP stability gate:** If the singles count exceeds ~400, SGP generation is bypassed (`SKIP_SGPS=1`) to prevent combinatorial explosion and workflow timeout.
+
+---
+
+## Repository Structure
+
+```
+nba-player-props-model/
+├── .github/workflows/
+│   └── daily_predictions.yml     # GitHub Actions pipeline
+├── data/
+│   ├── player_game_stats.parquet
+│   ├── advanced_stats.parquet
+│   ├── game_odds.parquet
+│   └── injury_snapshots.parquet
+├── model_cache/
+│   ├── q10_pts.pkl … q90_pts.pkl  # 11 quantile models × 12 targets = 132 models
+│   ├── features_{target}.pkl      # Feature column lists per target
+│   ├── feature_importance_{target}.csv
+│   ├── within_player_corr_engine.pkl
+│   └── training_meta.json
+├── predictions/
+│   ├── singles_{date}.json
+│   └── sgps_{date}.json
+├── graded/
+│   └── performance_log.csv
+├── train_v12.py
+├── predict_v12.py
+├── grade_v12.py
+├── feature_engineering.py
+├── correlation_engine.py
+├── bdl_client.py
+└── requirements.txt
 ```
 
 ---
 
-## Automation Schedule
+## Output Format
 
-| Time (EST) | Job |
-|------------|-----|
-| 6:00 AM | `daily_training.yml` — incremental data fetch + full model retrain |
-| 8:00 AM | `daily_predictions.yml` — grade yesterday + generate today's picks |
+Each pick in `singles_{date}.json`:
 
-Daily training uses incremental data fetching. After the initial run, each day fetches only new games (seconds, not minutes).
+```json
+{
+  "player":        "Jayson Tatum",
+  "team":          "BOS",
+  "stat":          "pts",
+  "line":          27.5,
+  "side":          "over",
+  "model_prob":    0.587,
+  "market_prob":   0.476,
+  "edge":          0.111,
+  "ev":            0.083,
+  "kelly":         0.047,
+  "fair_odds":     -142,
+  "posted_odds":   -110,
+  "q10":           14.2,
+  "q50":           28.8,
+  "q90":           43.1
+}
+```
 
 ---
 
-## Safety Rules (Pre-Calibration Period)
+## Tech Stack
 
-Until 500+ forward-tested bets are logged:
-
-- **EV > 2.5%** required to surface any bet
-- **Quarter-Kelly (0.25×)** bet sizing
-- **Hard cap: 2 units** per single bet
-- **Hard cap: 1 unit** per SGP
-- **Minimum 15 games** this season for any player/stat
-- **SGP legs**: odds between -200 and +200 only
-- **No cross-game parlays**
-- **2-leg SGP**: avg ρ ≥ 0.10
-- **3-leg SGP**: avg ρ ≥ 0.12
+| Component | Technology |
+|---|---|
+| ML models | LightGBM (quantile), XGBoost, Random Forest, Neural Network |
+| Meta-learner | Bayesian Ridge |
+| Correlation engine | Gaussian copula |
+| Data source | BallDontLie API v2 (GOAT tier) |
+| Automation | GitHub Actions |
+| Backend | PHP (live blend of pregame + BDL box scores) |
+| Frontend | Vanilla JS, Bloomberg terminal style |
+| Deployment | raw.githubusercontent.com → PHP cache → browser |
 
 ---
 
 ## Setup
 
 ```bash
-# 1. Install dependencies
-pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib
-
-# 2. Set API key
+git clone https://github.com/Risky-Scout/nba-player-props-model.git
+cd nba-player-props-model
+pip install -r requirements.txt
 export BDL_API_KEY=your_key_here
 
-# 3. Initial training (full historical load — 10-30 min first time only)
-python train_darko_v4.py
+# Full retrain
+python train_v12.py
 
-# 4. Generate predictions
-python predict_darko_v4.py
+# Today's predictions (requires trained models)
+python predict_v12.py
+
+# Grade yesterday
+python grade_v12.py
 ```
 
-**GitHub Actions:** Add `BDL_API_KEY` to repo Secrets → Actions for automated daily runs.
+**Required secret in GitHub Actions:** `BDL_API_KEY`
 
 ---
 
-## Calibration Validation
+## What Is Not Claimed
 
-The model is validated by quantile calibration, not accuracy. For each trained quantile:
-
-```
-Q75 prediction is correct if 75% of actual outcomes fall below it.
-Q50 prediction is correct if 50% of actual outcomes fall below it (the median).
-```
-
-Max calibration error > 5% flags a miscalibrated stat that needs investigation.
+- No backtest P&L is reported. CLV is the primary validation metric because backtest returns depend on line shopping and stake sizing, not model quality alone.
+- Injury features are NaN in training for historical rows. The vacated-opportunity block is populated at inference using the live injury map. As the daily snapshot table accumulates, training will progressively incorporate real injury state.
+- SGP output is disabled by default in the live pipeline pending further validation of the correlation engine on live samples.
 
 ---
 
-## Profitability
+## License
 
-Profitability claims are made **exclusively** from the forward paper trade ledger (`predictions/paper_trade_log.csv`). No backtesting fiction. The ledger grows daily with every surfaced bet — outcome fields are filled in by `grade_darko_v4.py` after results are in.
+MIT
