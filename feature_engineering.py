@@ -558,8 +558,30 @@ def build_player_game_features(
 
     min_arr = df["min"].values.astype(float) if "min" in df.columns else np.array([])
 
-    # ── Minutes model block ───────────────────────────────────────────────────
+    # ── Minutes model block (historical rolling features) ─────────────────────
     f.update(minutes_model_features(df))
+
+    # ── Standalone minutes model predictions (first-class features) ───────────
+    # Loads trained quantile models from model_cache/ and outputs exp_mp,
+    # mp_q25, mp_q75, mp_vol etc. as input features for all downstream models.
+    # Falls back to rolling-mean approximation if models not yet trained.
+    try:
+        from minutes_model import predict_minutes
+        mp_preds = predict_minutes(
+            prior_stats  = prior_stats,
+            game_context = game_context,
+            is_home      = is_home,
+            target_date  = target_date,
+            team_id      = team_id,
+            all_stats_df = all_stats_df,
+            injury_map   = injury_map,
+        )
+        f.update(mp_preds)
+    except Exception:
+        # Silently NaN if minutes model unavailable — LightGBM handles natively
+        for k in ("exp_mp","mp_q10","mp_q25","mp_q75","mp_q90",
+                  "mp_vol","mp_pred_floor","mp_pred_ceiling"):
+            f[k] = np.nan
 
     # ── Per-minute rates + full rolling (13 features) ─────────────────────────
     RATE_STATS = {
@@ -732,22 +754,31 @@ def build_player_game_features(
 
 def _shared_cols() -> list:
     return [
-        # Minutes — full block
+        # ── Standalone minutes model predictions (first-class) ─────────────
+        # These are the output of the dedicated minutes quantile model.
+        # exp_mp is the single most important predictor for all counting stats.
+        "exp_mp",           # expected minutes (Q50 from minutes model)
+        "mp_q25",           # lower bound — blowout / rest scenario
+        "mp_q75",           # upper bound — close game / extra minutes
+        "mp_vol",           # IQR/median — role consistency signal
+        "mp_pred_floor",    # Q10 — extreme low scenario
+        "mp_pred_ceiling",  # Q90 — extreme high scenario
+        # ── Rolling minutes history ────────────────────────────────────────
         "mp_mean_last3","mp_mean_last5","mp_mean_last10","mp_mean_season",
         "mp_vol_last10","mp_cv_last10","mp_ewma_10",
         "mp_p25_last10","mp_p75_last10",
         "mp_floor_last10","mp_ceiling_last10","mp_trend_3v10",
-        # Role
+        # ── Role ──────────────────────────────────────────────────────────
         "starter_rate_last10","games_30plus_last10","games_20minus_last10",
         "role_stability_index",
-        # Variance drivers
+        # ── Variance drivers ──────────────────────────────────────────────
         "blowout_risk_x_mp_vol","pf_per_min_mean_last10",
         "missed_last_game","missed_2_of_last5",
-        # Schedule
+        # ── Schedule ──────────────────────────────────────────────────────
         "rest_days","back_to_back","three_in_4","four_in_6","games_last_7",
-        # Context
+        # ── Context ───────────────────────────────────────────────────────
         "is_home","games_played",
-        # Flags
+        # ── Flags ─────────────────────────────────────────────────────────
         "has_odds","has_advanced_stats","has_injury_data",
     ]
 

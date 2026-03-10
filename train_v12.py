@@ -764,6 +764,24 @@ def main():
     if training_df.empty:
         sys.exit("Training table empty.")
 
+    # ── Train minutes model FIRST ─────────────────────────────────────────────
+    # Must run before stat models so that exp_mp, mp_q25, mp_q75, mp_vol
+    # are available as features in the stat model training table.
+    logger.info("Training standalone minutes model...")
+    try:
+        from minutes_model import train_minutes_model
+        minutes_result = train_minutes_model(stats_df, odds_df)
+        if minutes_result:
+            logger.info(
+                f"Minutes model: MAE={minutes_result['mae_q50']:.3f}min  "
+                f"cal_err={minutes_result['max_cal_error']:.3f}  "
+                f"50%_coverage={minutes_result['coverage_50pct']:.1%}"
+            )
+        else:
+            logger.warning("Minutes model training returned no results — continuing without it")
+    except Exception as e:
+        logger.warning(f"Minutes model training failed: {e} — continuing without it")
+
     results = {}
     for target in ALL_TARGETS:
         r = train_target_model(training_df, target)
@@ -782,6 +800,7 @@ def main():
         "architecture":  "quantile_regression_v12",
         "adv_fields":    len(ALL_ADV_FIELDS),
         "injury_snapshots": INJURY_SNAPSHOT_PATH.exists(),
+        "minutes_model": minutes_result if 'minutes_result' in dir() else None,
         "targets":       results,
         "n_players":     int(training_df["player_id"].nunique()),
     }
