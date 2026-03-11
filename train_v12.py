@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 train_darko_v4.py — NBA Props Model Training Pipeline
 VERSION: 2026-03-09-v12
@@ -432,7 +433,10 @@ def build_training_table(stats_df, adv_df, odds_df):
             gid     = int(cur["game_id"])
             tid     = int(cur["team_id"] or 0)
             hid     = int(cur["home_team_id"] or 0)
+            vid     = int(cur.get("visitor_team_id") or 0)
             is_home = int(tid == hid)
+            # Opponent is whichever of home/visitor is NOT the player's team
+            opp_tid = vid if tid == hid else hid
             td      = str(cur["game_date"])[:10]
             ctx     = ctx_map.get(gid, {})
 
@@ -461,6 +465,7 @@ def build_training_table(stats_df, adv_df, odds_df):
                     team_id      = tid,
                     all_stats_df = stats_df,
                     injury_map   = injury_map,
+                    opp_team_id  = opp_tid,
                 )
             except Exception as e:
                 logger.debug(f"Feature error p={player_id} g={gid}: {e}")
@@ -536,7 +541,7 @@ def _temporal_split_idx(game_dates: np.ndarray, holdout_frac: float) -> int:
     This respects time ordering — never trains on future data.
     """
     dates = pd.to_datetime(game_dates)
-    cutoff = dates.quantile(1.0 - holdout_frac)
+    cutoff = pd.Series(dates).quantile(1.0 - holdout_frac)
     return int(np.searchsorted(dates, cutoff))
 
 

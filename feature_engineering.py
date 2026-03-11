@@ -272,8 +272,15 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
     total  = float(game_context.get("consensus_total") or LEAGUE_TOTAL)
     spread = float(game_context.get("consensus_spread_home") or 0.0)
 
+    # consensus_spread_home is negative for home favorites (standard sportsbook convention).
+    # team_spread preserves that sign from the perspective of the player's team.
+    # Correct implied total derivation:
+    #   home + away = total
+    #   home - away = -spread  (e.g. spread=-6.5 → home wins by 6.5)
+    #   → implied_home = (total - spread) / 2 = total/2 - spread/2
+    # Therefore: implied_team = total/2 - team_spread/2  (NOT + team_spread/2)
     team_spread      = spread if is_home else -spread
-    implied_team     = (total / 2.0) + (team_spread / 2.0)
+    implied_team     = (total / 2.0) - (team_spread / 2.0)
     opp_implied      = total - implied_team
 
     f["game_total"]         = total
@@ -291,6 +298,146 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
     f["opp_defense_signal"]  = float(abs(spread))       # spread magnitude = defense quality
 
     return f
+
+
+# ── Opponent environment features ────────────────────────────────────────────
+
+def opponent_environment_features(
+    opp_team_id: int,
+    all_stats_df: pd.DataFrame,
+    target_date: str,
+) -> dict:
+    """
+    Rolling 10-game opponent team defensive environment.
+    Computes what the OPPONENT has allowed over their last 10 games,
+    giving each stat model a true matchup signal beyond odds proxies.
+
+    Features built:
+      opp_reb_chances_allowed   — opponent's avg rebound chances conceded per game
+      opp_oreb_chances_allowed  — offensive reb chances conceded (oreb opportunity)
+      opp_dreb_chances_allowed  — defensive reb chances conceded (dreb opportunity)
+      opp_ast_opportunities     — opponent's avg assists allowed (proxy for open looks)
+      opp_pts_allowed           — opponent's avg pts allowed (overall defensive quality)
+      opp_3pa_allowed           — opponent's avg 3PA allowed per game
+      opp_3pm_allowed           — opponent's avg 3PM allowed per game
+      opp_3p_rate_allowed       — opp_3pa / opp_fga allowed (3pt tendency they invite)
+      opp_pace_true             — opponent's avg possessions proxy (fga+tov+0.44*fta)
+      opp_has_env_data          — 1 if we found ≥3 opponent games, else 0
+
+    All NaN when opp_team_id is unknown or <3 games of data available.
+    Zero leakage: strictly filters to games BEFORE target_date.
+    """
+    null = {
+        "opp_reb_chances_allowed":  np.nan,
+        "opp_oreb_chances_allowed": np.nan,
+        "opp_dreb_chances_allowed": np.nan,
+        "opp_ast_opportunities":    np.nan,
+        "opp_pts_allowed":          np.nan,
+        "opp_3pa_allowed":          np.nan,
+        "opp_3pm_allowed":          np.nan,
+        "opp_3p_rate_allowed":      np.nan,
+        "opp_pace_true":            np.nan,
+        "opp_has_env_data":         0,
+    }
+
+    if not opp_team_id or all_stats_df is None or all_stats_df.empty:
+        return null
+
+    tdt = pd.Timestamp(target_date)
+
+    # Get all players on the opponent team in games strictly before target_date
+    if "team_id" not in all_stats_df.columns or "game_date" not in all_stats_df.columns:
+        return null
+
+    opp_df = all_stats_df[
+        (all_stats_df["team_id"] == opp_team_id) &
+        (pd.to_datetime(all_stats_df["game_date"]) < tdt)
+    ].copy()
+
+    if opp_df.empty:
+        return null
+
+    # Group by game to get team totals per game
+    # Required columns — gracefully skip missing ones
+    agg_cols = {}
+    col_map = {
+        "reb":      "opp_reb_allowed_raw",
+        "oreb":     "opp_oreb_allowed_raw",
+        "dreb":     "opp_dreb_allowed_raw",
+        "ast":      "opp_ast_allowed_raw",
+        "pts":      "opp_pts_allowed_raw",
+        "fg3a":     "opp_3pa_allowed_raw",
+        "fg3m":     "opp_3pm_allowed_raw",
+        "fga":      "opp_fga_allowed_raw",
+        "turnover": "opp_tov_allowed_raw",
+        "fta":      "opp_fta_allowed_raw",
+    }
+    for col in col_map:
+        if col in opp_df.columns:
+            agg_cols[col] = "sum"
+
+    if not agg_cols:
+        return null
+
+    try:
+        team_games = (
+            opp_df.groupby("game_id")
+            .agg({**agg_cols, "game_date": "first"})
+            .sort_values("game_date")
+            .reset_index(drop=True)
+        )
+    except Exception:
+        return null
+
+    # Take last 10 games only
+    last10 = team_games.tail(10)
+    n = len(last10)
+
+    if n < 3:
+        return null
+
+    def _mean(col_raw: str) -> float:
+        src = col_map.get(col_raw.replace("_allowed_raw", "").replace("opp_", ""))
+        if src and src in last10.columns:
+            return float(last10[src].mean())
+        return np.nan
+
+    # Direct means
+    reb_allowed  = float(last10["reb"].mean())   if "reb"  in last10.columns else np.nan
+    oreb_allowed = float(last10["oreb"].mean())  if "oreb" in last10.columns else np.nan
+    dreb_allowed = float(last10["dreb"].mean())  if "dreb" in last10.columns else np.nan
+    ast_allowed  = float(last10["ast"].mean())   if "ast"  in last10.columns else np.nan
+    pts_allowed  = float(last10["pts"].mean())   if "pts"  in last10.columns else np.nan
+    fg3a_allowed = float(last10["fg3a"].mean())  if "fg3a" in last10.columns else np.nan
+    fg3m_allowed = float(last10["fg3m"].mean())  if "fg3m" in last10.columns else np.nan
+    fga_allowed  = float(last10["fga"].mean())   if "fga"  in last10.columns else np.nan
+    tov_allowed  = float(last10["turnover"].mean()) if "turnover" in last10.columns else np.nan
+    fta_allowed  = float(last10["fta"].mean())   if "fta"  in last10.columns else np.nan
+
+    # 3P rate: 3PA / FGA allowed — how often opponent invites 3s
+    if not np.isnan(fg3a_allowed) and not np.isnan(fga_allowed) and fga_allowed > 0:
+        opp_3p_rate = fg3a_allowed / fga_allowed
+    else:
+        opp_3p_rate = np.nan
+
+    # True pace proxy: FGA + TOV + 0.44*FTA (per-team possessions)
+    if not any(np.isnan(v) for v in [fga_allowed, tov_allowed, fta_allowed]):
+        opp_pace = fga_allowed + tov_allowed + 0.44 * fta_allowed
+    else:
+        opp_pace = np.nan
+
+    return {
+        "opp_reb_chances_allowed":  round(reb_allowed,  3) if not np.isnan(reb_allowed)  else np.nan,
+        "opp_oreb_chances_allowed": round(oreb_allowed, 3) if not np.isnan(oreb_allowed) else np.nan,
+        "opp_dreb_chances_allowed": round(dreb_allowed, 3) if not np.isnan(dreb_allowed) else np.nan,
+        "opp_ast_opportunities":    round(ast_allowed,  3) if not np.isnan(ast_allowed)  else np.nan,
+        "opp_pts_allowed":          round(pts_allowed,  3) if not np.isnan(pts_allowed)  else np.nan,
+        "opp_3pa_allowed":          round(fg3a_allowed, 3) if not np.isnan(fg3a_allowed) else np.nan,
+        "opp_3pm_allowed":          round(fg3m_allowed, 3) if not np.isnan(fg3m_allowed) else np.nan,
+        "opp_3p_rate_allowed":      round(opp_3p_rate,  4) if not np.isnan(opp_3p_rate)  else np.nan,
+        "opp_pace_true":            round(opp_pace,     2) if not np.isnan(opp_pace)      else np.nan,
+        "opp_has_env_data":         1,
+    }
 
 
 # ── Advanced stats block ──────────────────────────────────────────────────────
@@ -546,6 +693,7 @@ def build_player_game_features(
     team_id: int,
     all_stats_df: pd.DataFrame,
     injury_map: dict,
+    opp_team_id: int = 0,
 ) -> dict:
     """
     Build complete pregame feature vector for one player.
@@ -743,6 +891,15 @@ def build_player_game_features(
         injury_map=injury_map,
     ))
 
+    # ── Opponent environment (true matchup context) ───────────────────────────
+    # Rolling 10-game defensive stats for the opponent team.
+    # opp_team_id=0 produces all-NaN gracefully (LightGBM handles natively).
+    f.update(opponent_environment_features(
+        opp_team_id  = opp_team_id,
+        all_stats_df = all_stats_df,
+        target_date  = target_date,
+    ))
+
     # ── Player metadata ───────────────────────────────────────────────────────
     f["games_played"] = len(df)
     f["is_home"]      = int(is_home)
@@ -834,6 +991,12 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
             "vacated_reb","vacated_reb_share","vacated_big_minutes",
             "vacated_minutes","num_teammates_inactive",
             "reb_x_mp",
+            # ── Opponent environment ─────────────────────────────────────────
+            "opp_reb_chances_allowed",   # total reb chances opp concedes per game
+            "opp_oreb_chances_allowed",  # offensive reb chances (oreb opportunity)
+            "opp_dreb_chances_allowed",  # defensive reb chances (dreb opportunity)
+            "opp_pace_true",             # true possessions proxy
+            "opp_has_env_data",
         }
 
     elif stat == "ast":
@@ -853,6 +1016,11 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
             "vacated_usage_proxy","vacated_minutes","vacated_top2_usage_proxy",
             "num_teammates_inactive",
             "ast_pct_x_itt","usage_x_itt",
+            # ── Opponent environment ─────────────────────────────────────────
+            "opp_ast_opportunities",  # assists opp allows — open creation environment
+            "opp_pts_allowed",        # overall defensive permissiveness
+            "opp_pace_true",          # possessions = more opportunities
+            "opp_has_env_data",
         }
 
     elif stat == "fg3m":
@@ -865,6 +1033,12 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
             "is_low_3pa_last10",
             "adv_pct_3pa_mean_last10","adv_contested_shots_3pt_mean_last10",
             "game_total","implied_team_total","opp_implied_total","has_odds",
+            # ── Opponent environment ─────────────────────────────────────────
+            "opp_3pa_allowed",       # 3PA opponent concedes per game
+            "opp_3pm_allowed",       # 3PM opponent concedes per game
+            "opp_3p_rate_allowed",   # 3PA/FGA — how much opp invites 3s
+            "opp_pace_true",         # more possessions = more 3PA opportunities
+            "opp_has_env_data",
         }
 
     elif stat == "stl":

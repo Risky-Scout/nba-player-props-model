@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 minutes_model.py — NBA Player Props Model: Standalone Minutes Engine
 VERSION: 2026-03-09-v12
