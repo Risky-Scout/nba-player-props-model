@@ -273,7 +273,7 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
     spread = float(game_context.get("consensus_spread_home") or 0.0)
 
     team_spread      = spread if is_home else -spread
-    implied_team     = (total / 2.0) - (team_spread / 2.0)
+    implied_team     = (total / 2.0) + (team_spread / 2.0)
     opp_implied      = total - implied_team
 
     f["game_total"]         = total
