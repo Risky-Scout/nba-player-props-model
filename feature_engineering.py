@@ -258,27 +258,35 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
     LEAGUE_TOTAL = 220.0
     f = {}
 
+    # Line movement null defaults — always present in feature vector
+    line_movement_nulls = {
+        "total_open": np.nan, "spread_open": np.nan,
+        "total_move": np.nan, "spread_move": np.nan,
+        "total_move_abs": np.nan, "spread_move_abs": np.nan,
+        "total_move_dir": np.nan,    # +1 steam up, -1 steam down, 0 none
+        "spread_move_dir": np.nan,   # negative = home steamed
+        "sharp_action_flag": 0,      # 1 if |total_move| > 1.5 or |spread_move| > 1.0
+        "has_line_movement": 0,
+    }
+
     if not game_context or not game_context.get("odds_available"):
         f.update({
             "game_total": np.nan, "spread_for_team": np.nan,
             "implied_team_total": np.nan, "blowout_risk": np.nan,
             "has_odds": 0, "is_home": int(is_home),
-            # Opponent matchup — null when no odds
             "opp_pace_context": np.nan,
             "opp_implied_total": np.nan,
+            "opp_defense_signal": np.nan,
         })
+        f.update(line_movement_nulls)
         return f
 
     total  = float(game_context.get("consensus_total") or LEAGUE_TOTAL)
     spread = float(game_context.get("consensus_spread_home") or 0.0)
 
     # consensus_spread_home is negative for home favorites (standard sportsbook convention).
-    # team_spread preserves that sign from the perspective of the player's team.
     # Correct implied total derivation:
-    #   home + away = total
-    #   home - away = -spread  (e.g. spread=-6.5 → home wins by 6.5)
-    #   → implied_home = (total - spread) / 2 = total/2 - spread/2
-    # Therefore: implied_team = total/2 - team_spread/2  (NOT + team_spread/2)
+    #   implied_team = total/2 - team_spread/2
     team_spread      = spread if is_home else -spread
     implied_team     = (total / 2.0) - (team_spread / 2.0)
     opp_implied      = total - implied_team
@@ -286,16 +294,42 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
     f["game_total"]         = total
     f["spread_for_team"]    = team_spread
     f["implied_team_total"] = implied_team
-    f["opp_implied_total"]  = opp_implied   # NEW: opponent implied total
+    f["opp_implied_total"]  = opp_implied
     f["blowout_risk"]       = abs(spread)
     f["has_odds"]           = 1
     f["is_home"]            = int(is_home)
+    f["opp_pace_context"]   = total
+    f["opp_defense_signal"] = float(abs(spread))
 
-    # ── Opponent context features from game context ───────────────────────────
-    # These come from odds data (pace proxy via game total, spread as defense signal)
-    # A high game total signals fast pace; large spread signals dominant defense
-    f["opp_pace_context"]    = total                     # pace proxy
-    f["opp_defense_signal"]  = float(abs(spread))       # spread magnitude = defense quality
+    # ── Line movement features (sharp money signal) ───────────────────────────
+    # Opening lines from The Odds API historical snapshots.
+    # Open→close delta is one of the strongest market signals available:
+    # sharp bettors move lines; magnitude and direction reveal market respect.
+    total_open  = game_context.get("opening_total")
+    spread_open = game_context.get("opening_spread_home")
+
+    if total_open is not None and spread_open is not None:
+        try:
+            total_open  = float(total_open)
+            spread_open = float(spread_open)
+            total_move  = total  - total_open    # positive = steamed up (more scoring expected)
+            spread_move = spread - spread_open   # negative = home side steamed
+
+            f["total_open"]        = total_open
+            f["spread_open"]       = spread_open
+            f["total_move"]        = total_move
+            f["spread_move"]       = spread_move
+            f["total_move_abs"]    = abs(total_move)
+            f["spread_move_abs"]   = abs(spread_move)
+            f["total_move_dir"]    = float(np.sign(total_move))
+            f["spread_move_dir"]   = float(np.sign(spread_move))
+            # Sharp action flag: total moved > 1.5 or spread moved > 1.0
+            f["sharp_action_flag"] = int(abs(total_move) > 1.5 or abs(spread_move) > 1.0)
+            f["has_line_movement"] = 1
+        except (TypeError, ValueError):
+            f.update(line_movement_nulls)
+    else:
+        f.update(line_movement_nulls)
 
     return f
 
@@ -943,6 +977,9 @@ def _odds_cols() -> list:
     return [
         "game_total","spread_for_team","implied_team_total",
         "blowout_risk","opp_implied_total","opp_pace_context","opp_defense_signal",
+        # Line movement — sharp money signal
+        "total_move","spread_move","total_move_abs","spread_move_abs",
+        "total_move_dir","spread_move_dir","sharp_action_flag","has_line_movement",
     ]
 
 def _adv_core_cols() -> list:

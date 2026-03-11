@@ -59,22 +59,64 @@ $WEBHOOK_SECRET = defined('BDL_WEBHOOK_SECRET') ? BDL_WEBHOOK_SECRET : '';
 $CACHE_DIR      = __DIR__ . '/cache';
 $LIVE_STATE     = $CACHE_DIR . '/live_state.json';
 $PROPS_CACHE    = $CACHE_DIR . '/live_props_cache.json';
+$RATE_LOG       = $CACHE_DIR . '/.rate_log.json';
+
+// Rate limit: max events per window from a single IP
+const RATE_LIMIT_MAX    = 120;   // max events
+const RATE_LIMIT_WINDOW = 60;    // seconds
+// Staleness: reject events with timestamps older than this
+const STALENESS_LIMIT   = 300;   // 5 minutes
 
 if (!is_dir($CACHE_DIR)) mkdir($CACHE_DIR, 0755, true);
 
-// ── Signature verification ─────────────────────────────────────────────────
+// ── Mandatory signature enforcement ───────────────────────────────────────
+// If BDL_WEBHOOK_SECRET is configured, signature is REQUIRED.
+// An empty or missing signature always fails when secret is set.
+// This prevents replay attacks and spoofed payloads.
 $rawBody = file_get_contents('php://input');
 
 if ($WEBHOOK_SECRET) {
     $sig      = $_SERVER['HTTP_X_BDL_SIGNATURE'] ?? '';
     $expected = 'sha256=' . hash_hmac('sha256', $rawBody, $WEBHOOK_SECRET);
-    if (!hash_equals($expected, $sig)) {
+    if (!$sig || !hash_equals($expected, $sig)) {
         http_response_code(401);
-        echo json_encode(['error' => 'Invalid signature']);
+        echo json_encode(['error' => 'Invalid or missing signature']);
         exit;
     }
 }
 
+// ── IP-based rate limiting ─────────────────────────────────────────────────
+$ip  = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$ip  = trim(explode(',', $ip)[0]);  // first IP if forwarded chain
+$now = time();
+
+$rateData = [];
+if (file_exists($RATE_LOG)) {
+    $rd = json_decode(file_get_contents($RATE_LOG), true);
+    if (is_array($rd)) $rateData = $rd;
+}
+
+// Prune stale windows
+foreach ($rateData as $k => $v) {
+    if (($v['window_start'] ?? 0) < $now - RATE_LIMIT_WINDOW) {
+        unset($rateData[$k]);
+    }
+}
+
+if (!isset($rateData[$ip])) {
+    $rateData[$ip] = ['window_start' => $now, 'count' => 0];
+}
+$rateData[$ip]['count']++;
+
+if ($rateData[$ip]['count'] > RATE_LIMIT_MAX) {
+    file_put_contents($RATE_LOG, json_encode($rateData));
+    http_response_code(429);
+    echo json_encode(['error' => 'Rate limit exceeded', 'retry_after' => RATE_LIMIT_WINDOW]);
+    exit;
+}
+file_put_contents($RATE_LOG, json_encode($rateData));
+
+// ── Parse and validate payload ─────────────────────────────────────────────
 $payload = json_decode($rawBody, true);
 if (!$payload) {
     http_response_code(400);
@@ -83,6 +125,52 @@ if (!$payload) {
 }
 
 $eventType = $payload['event'] ?? $payload['type'] ?? '';
+
+// ── Staleness detection ────────────────────────────────────────────────────
+// Reject events with a payload timestamp more than STALENESS_LIMIT seconds old.
+// BDL includes 'created_at' or 'timestamp' in payload. If present, validate it.
+// This prevents delayed or replayed events from corrupting live state.
+$eventTs = null;
+if (isset($payload['created_at'])) {
+    $eventTs = strtotime($payload['created_at']);
+} elseif (isset($payload['timestamp'])) {
+    $eventTs = is_numeric($payload['timestamp'])
+        ? (int)$payload['timestamp']
+        : strtotime($payload['timestamp']);
+}
+
+if ($eventTs !== null && $eventTs !== false) {
+    $age = $now - $eventTs;
+    if ($age > STALENESS_LIMIT) {
+        http_response_code(200);  // ACK to prevent BDL retry storm
+        echo json_encode([
+            'status'  => 'stale',
+            'message' => "Event age {$age}s exceeds limit " . STALENESS_LIMIT . "s — discarded",
+        ]);
+        exit;
+    }
+}
+
+// Duplicate event detection: reject if same event_id processed within last 5 min
+$eventId = $payload['id'] ?? $payload['event_id'] ?? null;
+if ($eventId) {
+    $dedupeFile = $CACHE_DIR . '/.dedup.json';
+    $dedup = [];
+    if (file_exists($dedupeFile)) {
+        $dd = json_decode(file_get_contents($dedupeFile), true);
+        if (is_array($dd)) $dedup = $dd;
+    }
+    // Prune old entries
+    foreach ($dedup as $k => $ts) {
+        if ($ts < $now - 300) unset($dedup[$k]);
+    }
+    if (isset($dedup[$eventId])) {
+        echo json_encode(['status' => 'duplicate', 'event_id' => $eventId]);
+        exit;
+    }
+    $dedup[$eventId] = $now;
+    file_put_contents($dedupeFile, json_encode($dedup));
+}
 
 // ── Load state (with file lock to prevent race conditions) ─────────────────
 $lockFile = $CACHE_DIR . '/.state.lock';
