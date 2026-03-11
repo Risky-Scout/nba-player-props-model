@@ -1,21 +1,21 @@
 {
   "date": "2026-03-11",
-  "generated_at": "2026-03-11T14:30:24.451347",
+  "generated_at": "2026-03-11T20:04:56.008974",
   "version": "2026-02-28-v10",
   "min_ev": 0.025,
-  "total_sgps": 8,
+  "total_sgps": 13,
   "two_leg": 8,
-  "three_leg": 0,
+  "three_leg": 5,
   "sgps": [
     {
       "legs": 2,
       "game": "Minnesota Timberwolves @ LA Clippers",
       "game_id": 18447770,
-      "combined_odds": 1738,
-      "correlated_prob": 0.0639,
-      "naive_prob": 0.0641,
-      "ev": 0.1748,
-      "kelly_units": 0.003,
+      "combined_odds": 1869,
+      "correlated_prob": 0.0703,
+      "naive_prob": 0.0701,
+      "ev": 0.3842,
+      "kelly_units": 0.005,
       "leg_details": [
         {
           "player": "Kris Dunn",
@@ -24,7 +24,7 @@
           "side": "OVER",
           "line": 0.5,
           "odds": 525,
-          "model_prob": 0.2574
+          "model_prob": 0.2652
         },
         {
           "player": "Ayo Dosunmu",
@@ -32,8 +32,8 @@
           "stat": "blk",
           "side": "OVER",
           "line": 0.5,
-          "odds": 350,
-          "model_prob": 0.2489
+          "odds": 375,
+          "model_prob": 0.2642
         }
       ]
     },
@@ -41,11 +41,11 @@
       "legs": 2,
       "game": "Minnesota Timberwolves @ LA Clippers",
       "game_id": 18447770,
-      "combined_odds": 714,
-      "correlated_prob": 0.1434,
-      "naive_prob": 0.1425,
-      "ev": 0.1674,
-      "kelly_units": 0.006,
+      "combined_odds": 661,
+      "correlated_prob": 0.1642,
+      "naive_prob": 0.1631,
+      "ev": 0.2497,
+      "kelly_units": 0.009,
       "leg_details": [
         {
           "player": "Kris Dunn",
@@ -54,16 +54,16 @@
           "side": "OVER",
           "line": 0.5,
           "odds": 525,
-          "model_prob": 0.2574
+          "model_prob": 0.2652
         },
         {
-          "player": "Brook Lopez",
-          "player_id": 283,
-          "stat": "stl",
+          "player": "Bennedict Mathurin",
+          "player_id": 38017686,
+          "stat": "ast",
           "side": "UNDER",
-          "line": 0.5,
-          "odds": 155,
-          "model_prob": 0.5535
+          "line": 2.0,
+          "odds": 145,
+          "model_prob": 0.615
         }
       ]
     },
@@ -72,70 +72,79 @@
       "game": "Minnesota Timberwolves @ LA Clippers",
       "game_id": 18447770,
       "combined_odds": 451,
-      "correlated_prob": 0.209,
-      "naive_prob": 0.2059,
-      "ev": 0.1516,
-      "kelly_units": 0.008,
+      "correlated_prob": 0.2258,
+      "naive_prob": 0.2172,
+      "ev": 0.2442,
+      "kelly_units": 0.014,
       "leg_details": [
-        {
-          "player": "Kawhi Leonard",
-          "player_id": 274,
-          "stat": "pts",
-          "side": "UNDER",
-          "line": 27.5,
-          "odds": 105,
-          "model_prob": 0.8001
-        },
-        {
-          "player": "Kris Dunn",
-          "player_id": 139,
-          "stat": "blk",
-          "side": "OVER",
-          "line": 0.5,
-          "odds": 525,
-          "model_prob": 0.2574
-        }
-      ]
-    },
-    {
-      "legs": 2,
-      "game": "Minnesota Timberwolves @ LA Clippers",
-      "game_id": 18447770,
-      "combined_odds": 457,
-      "correlated_prob": 0.2001,
-      "naive_prob": 0.1853,
-      "ev": 0.1146,
-      "kelly_units": 0.006,
-      "leg_details": [
-        {
-          "player": "Kris Dunn",
-          "player_id": 139,
-          "stat": "blk",
-          "side": "OVER",
-          "line": 0.5,
-          "odds": 525,
-          "model_prob": 0.2574
-        },
         {
           "player": "Kris Dunn",
           "player_id": 139,
           "stat": "reb",
           "side": "OVER",
           "line": 3.5,
-          "odds": 106,
-          "model_prob": 0.7197
+          "odds": 105,
+          "model_prob": 0.8191
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
         }
       ]
     },
     {
-      "legs": 2,
+      "legs": 3,
       "game": "Minnesota Timberwolves @ LA Clippers",
       "game_id": 18447770,
-      "combined_odds": 530,
-      "correlated_prob": 0.1683,
-      "naive_prob": 0.1692,
-      "ev": 0.0602,
+      "combined_odds": 1967,
+      "correlated_prob": 0.06,
+      "naive_prob": 0.0574,
+      "ev": 0.2402,
       "kelly_units": 0.003,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 3.5,
+          "odds": 105,
+          "model_prob": 0.8191
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Ayo Dosunmu",
+          "player_id": 17895983,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 375,
+          "model_prob": 0.2642
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 2755,
+      "correlated_prob": 0.0433,
+      "naive_prob": 0.0431,
+      "ev": 0.2351,
+      "kelly_units": 0.002,
       "leg_details": [
         {
           "player": "Kris Dunn",
@@ -144,46 +153,25 @@
           "side": "OVER",
           "line": 0.5,
           "odds": 525,
-          "model_prob": 0.2574
+          "model_prob": 0.2652
         },
         {
-          "player": "Brook Lopez",
-          "player_id": 283,
-          "stat": "fg3m",
+          "player": "Bennedict Mathurin",
+          "player_id": 38017686,
+          "stat": "ast",
           "side": "UNDER",
-          "line": 1.5,
-          "odds": 120,
-          "model_prob": 0.6572
-        }
-      ]
-    },
-    {
-      "legs": 2,
-      "game": "Cleveland Cavaliers @ Orlando Magic",
-      "game_id": 18447765,
-      "combined_odds": 305,
-      "correlated_prob": 0.257,
-      "naive_prob": 0.2579,
-      "ev": 0.0409,
-      "kelly_units": 0.003,
-      "leg_details": [
-        {
-          "player": "Evan Mobley",
-          "player_id": 17896076,
-          "stat": "fg3m",
-          "side": "UNDER",
-          "line": 1.0,
-          "odds": 180,
-          "model_prob": 0.6013
+          "line": 2.0,
+          "odds": 145,
+          "model_prob": 0.615
         },
         {
-          "player": "James Harden",
-          "player_id": 192,
+          "player": "Ayo Dosunmu",
+          "player_id": 17895983,
           "stat": "blk",
           "side": "OVER",
           "line": 0.5,
-          "odds": 225,
-          "model_prob": 0.4289
+          "odds": 375,
+          "model_prob": 0.2642
         }
       ]
     },
@@ -191,20 +179,20 @@
       "legs": 2,
       "game": "Charlotte Hornets @ Sacramento Kings",
       "game_id": 18447769,
-      "combined_odds": 453,
-      "correlated_prob": 0.1866,
-      "naive_prob": 0.187,
-      "ev": 0.0318,
-      "kelly_units": 0.002,
+      "combined_odds": 644,
+      "correlated_prob": 0.1592,
+      "naive_prob": 0.1625,
+      "ev": 0.1846,
+      "kelly_units": 0.007,
       "leg_details": [
         {
-          "player": "Miles Bridges",
-          "player_id": 62,
-          "stat": "ast",
+          "player": "LaMelo Ball",
+          "player_id": 3547239,
+          "stat": "stl",
           "side": "UNDER",
-          "line": 2.5,
-          "odds": 130,
-          "model_prob": 0.6892
+          "line": 1.0,
+          "odds": 175,
+          "model_prob": 0.5885
         },
         {
           "player": "Russell Westbrook",
@@ -213,37 +201,244 @@
           "side": "OVER",
           "line": 0.5,
           "odds": 425,
-          "model_prob": 0.2714
+          "model_prob": 0.2762
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 699,
+      "correlated_prob": 0.1383,
+      "naive_prob": 0.1336,
+      "ev": 0.1053,
+      "kelly_units": 0.004,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 3.5,
+          "odds": 105,
+          "model_prob": 0.8191
+        },
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Bennedict Mathurin",
+          "player_id": 38017686,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 2.0,
+          "odds": 145,
+          "model_prob": 0.615
         }
       ]
     },
     {
       "legs": 2,
-      "game": "Cleveland Cavaliers @ Orlando Magic",
-      "game_id": 18447765,
-      "combined_odds": 305,
-      "correlated_prob": 0.2537,
-      "naive_prob": 0.2528,
-      "ev": 0.0273,
-      "kelly_units": 0.002,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 766,
+      "correlated_prob": 0.1263,
+      "naive_prob": 0.1262,
+      "ev": 0.0939,
+      "kelly_units": 0.003,
       "leg_details": [
         {
-          "player": "Evan Mobley",
-          "player_id": 17896076,
-          "stat": "fg3m",
-          "side": "UNDER",
-          "line": 1.0,
-          "odds": 180,
-          "model_prob": 0.6013
-        },
-        {
-          "player": "Donovan Mitchell",
-          "player_id": 322,
+          "player": "Kris Dunn",
+          "player_id": 139,
           "stat": "blk",
           "side": "OVER",
           "line": 0.5,
-          "odds": 225,
-          "model_prob": 0.4205
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Brook Lopez",
+          "player_id": 283,
+          "stat": "stl",
+          "side": "UNDER",
+          "line": 0.5,
+          "odds": 165,
+          "model_prob": 0.476
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 1475,
+      "correlated_prob": 0.0691,
+      "naive_prob": 0.0688,
+      "ev": 0.088,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Donte DiVincenzo",
+          "player_id": 131,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 300,
+          "model_prob": 0.2594
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 504,
+      "correlated_prob": 0.1784,
+      "naive_prob": 0.1779,
+      "ev": 0.0777,
+      "kelly_units": 0.004,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Naz Reid",
+          "player_id": 667378,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 1.5,
+          "odds": 115,
+          "model_prob": 0.671
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 3148,
+      "correlated_prob": 0.0327,
+      "naive_prob": 0.0334,
+      "ev": 0.0634,
+      "kelly_units": 0.001,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Brook Lopez",
+          "player_id": 283,
+          "stat": "stl",
+          "side": "UNDER",
+          "line": 0.5,
+          "odds": 165,
+          "model_prob": 0.476
+        },
+        {
+          "player": "Ayo Dosunmu",
+          "player_id": 17895983,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 375,
+          "model_prob": 0.2642
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 530,
+      "correlated_prob": 0.1659,
+      "naive_prob": 0.167,
+      "ev": 0.0454,
+      "kelly_units": 0.002,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Brook Lopez",
+          "player_id": 283,
+          "stat": "fg3m",
+          "side": "UNDER",
+          "line": 1.5,
+          "odds": 120,
+          "model_prob": 0.6296
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Minnesota Timberwolves @ LA Clippers",
+      "game_id": 18447770,
+      "combined_odds": 2262,
+      "correlated_prob": 0.0435,
+      "naive_prob": 0.0441,
+      "ev": 0.027,
+      "kelly_units": 0.0,
+      "leg_details": [
+        {
+          "player": "Kris Dunn",
+          "player_id": 139,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 525,
+          "model_prob": 0.2652
+        },
+        {
+          "player": "Brook Lopez",
+          "player_id": 283,
+          "stat": "fg3m",
+          "side": "UNDER",
+          "line": 1.5,
+          "odds": 120,
+          "model_prob": 0.6296
+        },
+        {
+          "player": "Ayo Dosunmu",
+          "player_id": 17895983,
+          "stat": "blk",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 375,
+          "model_prob": 0.2642
         }
       ]
     }
