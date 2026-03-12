@@ -262,6 +262,11 @@ function loadFromSingles($path, $date) {
                 'stat'             => $stat,
                 'fair_line'        => floatval($pick['q50']),  // model's P50
                 'q_preds'          => $pick['q_preds'] ?? [],
+                // Analytics pass-through — computed in predict_darko_v4.py
+                'line_ladder'      => $pick['line_ladder']  ?? null,
+                'drivers'          => $pick['drivers']      ?? null,
+                'uncertainty'      => $pick['uncertainty']  ?? null,
+                'sensitivity'      => $pick['sensitivity']  ?? null,
             ];
         }
         // Store side-specific probs into the base entry
@@ -603,9 +608,10 @@ foreach ($events as $event) {
 
             if ($minPlayed > 0.5) {
                 $minRem = estimateMinRemainingV2($period, $clock, $isOT);
-                $result = calcLiveProbabilityV2(
+                $result = calcLiveProbabilityV3(
                     $fairLine, 36.0, $actual, $minPlayed, $minRem,
-                    $line, $statKey, $liveData, $gameCtx
+                    $line, $statKey, $liveData, $gameCtx,
+                    is_array($qPreds) ? $qPreds : []   // pass pregame dist to V3
                 );
                 $probOver  = $result['prob'];
                 $probUnder = 1.0 - $probOver;
@@ -616,6 +622,31 @@ foreach ($events as $event) {
                 $fairOddsUnder = toAmerican($probUnder);
                 $edgeO = round($probOver  - (1.0 / $decO), 4);
                 $edgeU = round($probUnder - (1.0 / $decU), 4);
+
+                // ── Live line ladder ─────────────────────────────────────────
+                // Query the live-adjusted probabilities at neighboring lines.
+                // Uses the shifted quantile distribution from V3 if available,
+                // otherwise falls back to normal approximation per line.
+                $liveLadder = buildLiveLadder(
+                    $liveProj, $line, $statKey, $qPreds, $fairLine
+                );
+
+                // ── Pace-to-line ─────────────────────────────────────────────
+                // The per-minute rate this player needs from here to hit the line.
+                // A trader reads this as: 'is the player on pace?' in one number.
+                $paceToLine = null;
+                if ($minRem > 0.5) {
+                    $needed = $line - $actual;
+                    $paceToLine = [
+                        'stat_needed'     => round(max(0, $needed), 1),
+                        'min_remaining'   => round($minRem, 1),
+                        'rate_needed'     => $minRem > 0 ? round($needed / $minRem, 3) : null,
+                        'current_rate'    => $minPlayed > 0 ? round($actual / $minPlayed, 3) : null,
+                        'on_pace'         => ($minPlayed > 0 && $minRem > 0)
+                            ? ($actual / $minPlayed) >= ($needed / $minRem)
+                            : null,
+                    ];
+                }
             }
         }
 
@@ -646,6 +677,14 @@ foreach ($events as $event) {
             'score_margin'   => $scoreMargin,
             'is_overtime'    => $isOT,
             'live_adjustments' => !empty($liveAdj) ? $liveAdj : null,
+            // ── Pregame analytics (from singles JSON, passed through) ──────
+            'line_ladder'    => $model['line_ladder']  ?? null,
+            'drivers'        => $model['drivers']      ?? null,
+            'uncertainty'    => $model['uncertainty']  ?? null,
+            'sensitivity'    => $model['sensitivity']  ?? null,
+            // ── Live analytics (computed in real time) ─────────────────────
+            'live_ladder'    => $liveLadder  ?? null,   // live-adjusted alt-line probs
+            'pace_to_line'   => $paceToLine  ?? null,   // on-pace metric for traders
         ];
 
         // OVER row
@@ -1017,4 +1056,52 @@ function isOnLosingTeam(array $playerState, array $gameState): bool {
     $myScore  = $isHome ? $homeScore : $awayScore;
     $oppScore = $isHome ? $awayScore : $homeScore;
     return $myScore < $oppScore;
+}
+
+/**
+ * buildLiveLadder — live-adjusted alt-line probability table
+ *
+ * Constructs an 11-rung ladder of P(over) at neighboring lines,
+ * using the live projection to shift the pregame quantile distribution.
+ * When qPreds are available this uses the same piecewise linear CDF
+ * interpolation as the Python inference engine.
+ *
+ * @param float  $liveProj   Current live projection (actual + projected remaining)
+ * @param float  $postedLine Sportsbook line
+ * @param string $stat       Stat key (pts, reb, ast, fg3m, stl, blk, tov)
+ * @param array  $qPreds     Pregame quantile distribution {tau: value}
+ * @param float  $pregameProj Pregame Q50 projection
+ */
+function buildLiveLadder(float $liveProj, float $postedLine, string $stat,
+                          array $qPreds, float $pregameProj): array {
+    $step = in_array($stat, ['pts', 'pra', 'pr', 'pa']) ? 1.0 : 0.5;
+    $ladder = [];
+
+    for ($i = 0; $i <= 10; $i++) {
+        $l = round($postedLine + ($i - 5) * $step, 1);
+        if ($l < 0) continue;
+
+        if (!empty($qPreds) && $pregameProj > 0) {
+            // Shift the pregame distribution by the live/pregame ratio
+            $ratio    = $liveProj / max($pregameProj, 0.1);
+            $shifted  = [];
+            foreach ($qPreds as $tau => $val) {
+                $shifted[$tau] = max(0.0, floatval($val) * $ratio);
+            }
+            $po = queryQuantileDistribution($shifted, $l);
+        } else {
+            $po = calcStatProbFromCV($liveProj, $l, $stat);
+        }
+
+        $pu = 1.0 - $po;
+        $ladder[] = [
+            'line'       => $l,
+            'prob_over'  => round($po, 4),
+            'prob_under' => round($pu, 4),
+            'fair_over'  => toAmerican($po),
+            'fair_under' => toAmerican($pu),
+            'posted'     => abs($l - $postedLine) < 0.01,
+        ];
+    }
+    return $ladder;
 }
