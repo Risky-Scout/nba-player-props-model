@@ -203,9 +203,14 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 ├── correlation_engine.py         # Gaussian copula SGP correlation modeling
 ├── live_props.php                # Live in-play Bayesian distribution update engine
 ├── webhook_receiver.php          # BDL play-by-play event processor (hardened)
+├── METHODOLOGY.md                # Mathematical framework — pricing, calibration, copula
+├── PERFORMANCE.md                # Live graded results with CLV breakdown
+├── requirements.txt              # Pinned Python dependencies
 ├── .github/workflows/
-│   └── daily_predictions.yml     # Two-job automation: 8 AM predict + 7 PM snapshot
+│   ├── daily_predictions.yml     # Two-job automation: 8 AM predict + 7 PM snapshot
+│   └── retrain.yml               # Manual retrain dispatch
 ├── predictions/
+│   ├── nba-props.html            # Bloomberg terminal frontend
 │   ├── singles_{date}.json       # Daily prop picks with full quantile distribution
 │   └── sgps_{date}.json          # Same-game parlay correlations
 ├── graded/
