@@ -10,8 +10,6 @@ Live predictions served at [dev.wizardofodds.com](https://dev.wizardofodds.com/t
 
 ## Architecture Overview
 
-The pipeline consists of four stages running on a daily automated schedule:
-
 ```
 BallDontLie API  ──►  feature_engineering.py  ──►  train_v12.py
                                                          │
@@ -26,6 +24,9 @@ BallDontLie API  ──►  feature_engineering.py  ──►  train_v12.py
                                                          │
                                                          ▼
                                               graded/performance_log.csv
+                                                         │
+                                                         ▼
+                                              calibrate_models.py  (weekly)
 ```
 
 **Automation:** Two GitHub Actions jobs run daily — a prediction job at 8 AM ET and a closing line snapshot at 7 PM ET before NBA tipoffs. All outputs commit directly to the repo and are served to the frontend via GitHub raw URLs.
@@ -46,13 +47,17 @@ Minutes played is the dominant multiplier for all counting stats. Rather than tr
 
 This separation means the stat models learn conditional on an expected minutes distribution, not just a historical rolling mean.
 
+### Post-Hoc Isotonic Calibration
+
+Raw quantile model outputs are systematically overconfident at the tails for right-skewed distributions (fg3m, stl, blk). `calibrate_models.py` fits an **isotonic regression calibrator** per stat on graded results from `performance_log.csv`, mapping raw model probabilities to empirically calibrated probabilities. Calibrators are only saved when they improve Brier score on held-out picks — otherwise the raw model is used. This runs as a post-processing step and never requires retraining.
+
 ### Holdout and Leakage Prevention
 
 Training uses a **strict temporal split**: the most recent 15% of dates form the holdout set. No shuffling. Every feature is computed using only games prior to the target game date. Advanced stats, injury snapshots, and opponent context are all filtered to pre-game data before feature construction.
 
 ### Stat-Specific Feature Gates
 
-Each of the 12 stat targets (pts, reb, ast, fg3m, stl, blk, tov, pra, pr, pa, ra, stocks) uses a curated feature subset defined in `get_feature_cols_for_stat()`. Features are gated by relevance — the rebounds model does not receive three-point shooting history; the assists model does not receive rim-protection features. This prevents spurious correlations and reduces overfitting on the smaller sparse-stat samples.
+Each of the 12 stat targets (pts, reb, ast, fg3m, stl, blk, tov, pra, pr, pa, ra, stocks) uses a curated feature subset defined in `get_feature_cols_for_stat()`. Features are gated by relevance — the rebounds model does not receive three-point shooting history; the assists model does not receive rim-protection features. This prevents spurious correlations and reduces overfitting on smaller sparse-stat samples.
 
 ---
 
@@ -73,7 +78,23 @@ All counting stats are converted to per-minute rates before rolling aggregation,
 ### Advanced Stats Block (34 BDL fields)
 Rolling last-10 mean and EWMA for: usage percentage, assist percentage, pace, true shooting, effective FG%, touches, passes, secondary assists, deflections, rebound chances (total/offensive/defensive), contested shots, matchup turnovers, and 20+ additional tracking fields.
 
-### Opponent Environment (v12)
+### Line Movement (Sharp Money Signal)
+Open-to-close line movement is one of the strongest predictors available to a market maker. When sharp money hits a side, the market moves. The magnitude and direction of that movement reveals which side the market respects. Ten line movement features are computed per game:
+
+| Feature | Signal |
+|---|---|
+| `total_move` | Game total open → close delta |
+| `spread_move` | Spread open → close delta |
+| `total_move_abs` | Magnitude of total movement |
+| `spread_move_abs` | Magnitude of spread movement |
+| `total_move_dir` | +1 steamed up, −1 steamed down |
+| `spread_move_dir` | Direction of spread steam |
+| `sharp_action_flag` | 1 if total moved >1.5 or spread moved >1.0 |
+| `has_line_movement` | Data availability flag |
+
+All features are NaN-safe — LightGBM handles missing data natively for games without opening line history.
+
+### Opponent Environment
 Rolling 10-game defensive profile of the opponent team, computed from opponent box scores with strict no-leakage date filtering:
 
 | Feature | Used by |
@@ -122,22 +143,47 @@ Positive CLV means the model assigned higher probability to the outcome than whe
 
 ---
 
+## Live In-Play Engine
+
+`live_props.php` blends pregame model output with real-time BDL box scores using a **Bayesian quantile distribution update** — not linear pace extrapolation.
+
+### How It Works
+
+The pregame model outputs a full Q10–Q90 distribution per player. At any point during a live game, rather than projecting a final number and running a normal CDF around it, the live engine:
+
+1. Computes a Bayesian blended rate: `trust = minutes_played / (minutes_played + 15)`, blending the pregame per-minute rate with the observed in-game rate
+2. Applies context factors: foul trouble (minutes reduction), live pace (possession rate vs. league average), blowout garbage time (minutes distribution shift)
+3. Scales the entire pregame quantile distribution by `live_projection / pregame_projection`
+4. Queries `P(stat > line)` from the shifted distribution using piecewise linear CDF interpolation
+
+This preserves the shape of the pregame distribution — its variance, skewness, and tail behavior — while updating the location parameter based on live evidence. A player's shifted Q10–Q90 in a blowout is narrower and lower than the pregame distribution, not just a truncated normal approximation.
+
+### Webhook Infrastructure
+
+`webhook_receiver.php` processes BDL play-by-play events (scores, rebounds, assists, fouls, injuries) in real time. The receiver includes:
+- **Signature validation** — HMAC-SHA256 verification of all incoming payloads
+- **Rate limiting** — 120 events per 60-second window per IP, with 429 responses and retry-after headers
+- **Staleness detection** — rejects events with timestamps older than 5 minutes to prevent delayed replay
+- **Duplicate deduplication** — event ID tracking prevents double-processing within a 5-minute window
+
+---
+
 ## Performance (Holdout Metrics)
 
 Training data: 2023–2025 NBA seasons · 56,438 training rows · 9,960 holdout rows · Temporal split
 
-| Stat | Holdout MAE | Max Calibration Error |
-|------|-------------|----------------------|
-| Points | 4.54 | 0.032 |
-| Rebounds | 1.92 | 0.030 |
-| Assists | 1.34 | 0.040 |
-| 3-Pointers Made | 0.85 | 0.062 |
-| Steals | 0.68 | 0.019 |
-| Blocks | 0.43 | 0.021 |
-| Turnovers | 0.87 | 0.032 |
-| PRA | 5.96 | 0.025 |
+| Stat | Features | Holdout MAE | Max Calibration Error |
+|------|----------|-------------|----------------------|
+| Points | 79 | 4.53 | 0.033 |
+| Rebounds | 80 | 1.92 | 0.036 |
+| Assists | 79 | 1.34 | 0.040 |
+| 3-Pointers Made | 65 | 0.86 | 0.075 |
+| Steals | 60 | 0.68 | 0.022 |
+| Blocks | 61 | 0.43 | 0.021 |
+| Turnovers | 61 | 0.87 | 0.032 |
+| PRA | 70 | 5.97 | 0.029 |
 
-Calibration error is the maximum absolute deviation between predicted quantile and empirical quantile on the holdout set across all 11 quantile levels. A perfectly calibrated Q67 model would have exactly 67% of holdout actuals fall below the Q67 prediction.
+Calibration error is the maximum absolute deviation between predicted quantile and empirical quantile on the holdout set across all 11 quantile levels. Post-hoc isotonic calibration (`calibrate_models.py`) reduces this further as live performance data accumulates.
 
 Live CLV tracking began March 10, 2026. Full results accumulate in `graded/performance_log.csv`.
 
@@ -149,11 +195,14 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 ├── train_v12.py                  # Training — minutes model first, then 12 stat models
 ├── predict_darko_v4.py           # Daily inference — generates singles_{date}.json
 ├── grade_darko_v4.py             # Grader — CLV, ROI, calibration tracking
+├── calibrate_models.py           # Post-hoc isotonic calibration per stat
 ├── snapshot_closing_lines.py     # 7 PM ET closing line snapshot for true CLV
 ├── feature_engineering.py        # All feature construction (zero leakage)
 ├── minutes_model.py              # Standalone quantile minutes engine
 ├── bdl_client.py                 # BallDontLie API v2 client
 ├── correlation_engine.py         # Gaussian copula SGP correlation modeling
+├── live_props.php                # Live in-play Bayesian distribution update engine
+├── webhook_receiver.php          # BDL play-by-play event processor (hardened)
 ├── .github/workflows/
 │   └── daily_predictions.yml     # Two-job automation: 8 AM predict + 7 PM snapshot
 ├── predictions/
@@ -166,6 +215,7 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 └── model_cache/
     ├── q{τ}_{stat}.pkl           # 11 quantile models × 12 stat targets = 132 models
     ├── minutes_q{τ}.pkl          # 11 quantile models for the minutes engine
+    ├── calibration_{stat}.pkl    # Isotonic calibration maps per stat
     ├── training_meta.json        # Holdout metrics, calibration, feature counts
     └── feature_importance_{stat}.csv
 ```
@@ -182,10 +232,16 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 
 ### Inference (`predict_darko_v4.py`)
 1. Fetch today's games, injury report, and prop odds
-2. Build full feature vector per player including live injury map and opponent environment
-3. Load trained quantile models, generate Q10–Q90 distribution
+2. Build full feature vector per player including live injury map, opponent environment, and line movement
+3. Load trained quantile models and isotonic calibrators, generate calibrated Q10–Q90 distribution
 4. Compare model probability at sportsbook line to market implied probability
 5. Output positive-EV picks above Kelly threshold to `singles_{date}.json`
+
+### Calibration (`calibrate_models.py`)
+1. Load `performance_log.csv` — all graded picks with model probabilities and outcomes
+2. Per stat: fit isotonic regression on raw model prob → empirical hit rate
+3. Save calibrator only if Brier score improves — otherwise keep raw model
+4. Evaluate reliability diagrams per stat (`--mode eval`)
 
 ### Grading (`grade_darko_v4.py`)
 1. Load previous day's picks and closing line snapshot
@@ -199,11 +255,11 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 
 | Component | Technology |
 |---|---|
-| Modeling | LightGBM (quantile regression), scikit-learn |
+| Modeling | LightGBM (quantile regression), scikit-learn (isotonic calibration) |
 | Data | BallDontLie API v2 (GOAT tier), The Odds API |
 | Automation | GitHub Actions (two-job daily schedule) |
-| Language | Python 3.11 |
-| Storage | Parquet (training data), JSON (predictions), CSV (performance log) |
+| Language | Python 3.11 / PHP 8 |
+| Storage | Parquet (training data), JSON (predictions/closing lines), CSV (performance log) |
 | Frontend | PHP + vanilla JS, Bloomberg terminal aesthetic |
 
 ---
@@ -213,6 +269,10 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 **Why quantile regression instead of classification?** Sportsbook lines move. A model that outputs a full distribution can price any line — not just the one posted at pick time. This matches how a market maker thinks: the distribution is the product, the line is a query against it.
 
 **Why a separate minutes model?** Minutes are the highest-variance input to every counting stat. A player projected at 34 minutes who plays 22 due to foul trouble or a blowout completely invalidates a point projection. Modeling minutes as an upstream distribution allows downstream models to learn conditional on minutes uncertainty rather than absorbing it as unexplained noise.
+
+**Why isotonic calibration instead of temperature scaling?** Temperature scaling applies a single global scalar to all predictions. Isotonic regression learns a non-parametric monotone mapping that can correct systematic biases at any point in the probability range — critical for sparse-event stats like blocks and steals where the raw model is poorly calibrated at the tails but well-calibrated in the middle.
+
+**Why Bayesian distribution shift for live updates instead of linear projection?** Linear extrapolation — `projected = (current / minutes_played) * 36` — assumes the per-minute rate is perfectly stationary and that the variance around the final outcome is symmetric. Neither is true. The Bayesian approach starts from the pregame distribution (which already encodes the player's variance, skewness, and tail behavior) and shifts it proportionally based on live evidence. A blowout that halves projected remaining minutes produces a narrower, lower distribution — not just a lower point estimate.
 
 **Why CLV over win rate?** A 57% win rate on -110 lines is uninformative without knowing where those lines were when the bet was placed versus where they closed. CLV measures whether the model found edges that the sharpest market participants subsequently confirmed — the only signal that separates skill from variance over short samples.
 
