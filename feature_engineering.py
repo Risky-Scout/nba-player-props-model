@@ -962,10 +962,29 @@ def build_player_game_features(
     f["games_played"] = len(df)
     f["is_home"]      = int(is_home)
 
+    # ── [v19] Compute advanced matchup + archetype + shrinkage features ────────
+    # Import and call build_v19_features if available
+    try:
+        from feature_engineering_v19_final import build_v19_features
+        f = build_v19_features(
+            f                    = f,
+            game_context         = game_context,
+            player_id            = player_id,
+            opp_team_id          = opp_team_id,
+            player_playtype      = getattr(build_player_game_features, '_player_playtype', {}),
+            opp_playtype_defense = getattr(build_player_game_features, '_opp_playtype', {}),
+            player_tracking      = getattr(build_player_game_features, '_player_tracking', {}),
+            player_shot_dashboard= getattr(build_player_game_features, '_player_shot_dashboard', {}),
+            opp_shot_zone_defense= getattr(build_player_game_features, '_opp_shot_zone', {}),
+            opp_env_map          = getattr(build_player_game_features, '_opp_env_map', {}),
+            prior_stats          = prior_stats,
+            injury_map           = injury_map,
+        )
+    except Exception as _v19_err:
+        import logging
+        logging.getLogger(__name__).warning(f"[v19] build_v19_features skipped: {_v19_err}")
+
     return f
-
-
-# ── Interaction features ──────────────────────────────────────────────────────
 
 def add_interaction_features(f: dict, stat: str) -> dict:
     """
@@ -1041,177 +1060,525 @@ def _shared_cols() -> list:
     ]
 
 
+
+# =============================================================================
+# LAYER 1
+# =============================================================================
+
+LAYER_1_CORE = [
+    "mp_ewma_10",
+    "mp_vol_last10",
+    "mp_trend_3v10",
+    "exp_mp",
+]
+
+LAYER_1_COMBO_EXTENSION = [
+    "mp_q25",
+    "mp_q75",
+    "mp_pred_floor",
+    "mp_pred_ceiling",
+]
+
+
+# =============================================================================
+# LAYER 2: STAT-SPECIFIC POSSESSION ENVIRONMENT
+# =============================================================================
+
+LAYER_2_PTS = [
+    "implied_team_total",
+    "game_total",
+    "opp_pace_true",
+    "opp_pace_context",
+    "spread_for_team",
+    "is_home",
+]
+
+LAYER_2_AST = [
+    "implied_team_total",
+    "game_total",
+    "opp_pace_true",
+    "opp_pace_context",
+    "spread_for_team",
+    "is_home",
+    # opp_implied_total excluded — ablation Q4 will confirm
+]
+
+LAYER_2_REB = [
+    "game_total",
+    "opp_pace_true",
+    "opp_pace_context",
+    "spread_for_team",
+    "is_home",
+    "opp_implied_total",
+]
+
+LAYER_2_FG3M = [
+    "implied_team_total",
+    "game_total",
+    "opp_pace_true",
+    "spread_for_team",
+    "is_home",
+]
+
+LAYER_2_BLK = [
+    "opp_pace_true",
+    "spread_for_team",
+    "is_home",
+]
+
+LAYER_2_STL = [
+    "opp_pace_true",
+    "spread_for_team",
+    "is_home",
+]
+
+LAYER_2_COMBO = [
+    "implied_team_total",
+    "opp_implied_total",
+    "game_total",
+    "opp_pace_true",
+    "opp_pace_context",
+    "spread_for_team",
+    "is_home",
+]
+
+LAYER_2_MAP = {
+    "pts":  LAYER_2_PTS,
+    "ast":  LAYER_2_AST,
+    "reb":  LAYER_2_REB,
+    "fg3m": LAYER_2_FG3M,
+    "blk":  LAYER_2_BLK,
+    "stl":  LAYER_2_STL,
+    "pra":  LAYER_2_COMBO,
+    "pr":   LAYER_2_COMBO,
+    "pa":   LAYER_2_COMBO,
+    "ra":   LAYER_2_COMBO,
+}
+
+
+# =============================================================================
+# LAYER 3: ROLE / OPPORTUNITY
+# =============================================================================
+
+LAYER_3_ROLE = [
+    "starter_rate_last10",
+    "role_stability_index",
+
+    # ── TRUE PARTICIPATION FEATURES ───────────────────────────────────────────
+    "did_not_play_last_team_game",  # any DNP last game
+    "dnp_coach_decision",           # NEW: 0 min, NOT on injury report
+    "dnp_injury",                   # NEW: 0 min + on injury report
+    "dnp_rest",                     # NEW: 0 min + rest designation
+    "limited_return_game",          # NEW: < 20 min after absence (rust game)
+    "returned_from_absence",        # binary: returned after DNP streak
+    "games_since_return",           # tightened: actual absence-based count
+
+    # ── ROLE-STATE FLAGS ──────────────────────────────────────────────────────
+    "is_stable_role_player",
+    "is_recent_starter_change",
+    "is_recent_rotation_change",
+    "is_injury_elevated_role",
+    "is_high_minutes_uncertainty",
+    "is_bench_fragile_minutes",
+
+    # ── ARCHETYPE FLAGS (TIGHTENED TAXONOMY) ──────────────────────────────────
+    # PRIMARY TIER — mutually exclusive
+    "is_primary_creator",
+    "is_rim_big",
+    "is_high_usage_star",
+    # SECONDARY TIER — gated by primary
+    "is_secondary_creator",
+    "is_spotup_wing",
+    "is_stretch_big",           # DECOUPLED from is_rim_big in v19
+    # OVERLAY FLAGS
+    "is_transition_scorer",
+    "is_low_usage_connector",
+    "is_foul_risk_big",
+
+    # ── ARCHETYPE CONFIDENCE (NEW) ────────────────────────────────────────────
+    # Continuous 0-1: how clearly does this player fit their archetype?
+    # High = model can trust archetype-conditioned features
+    # Low = player sits between buckets, uncertainty should widen predictions
+    "archetype_confidence",
+
+    # ── FOUL-RISK BLOCK ───────────────────────────────────────────────────────
+    "pf_per_min_ewma_10",
+    "pf_per_min_trend_3v10",
+
+    # ── TEAMMATE ABSENCE SEVERITY (NEW) ──────────────────────────────────────
+    # Not a replacement for transfer scores — a stabilizer
+    # Captures overall absence burden regardless of who transfers
+    "inactive_teammate_minutes_weighted",   # sum(absent_player_minutes × usage_weight)
+    "inactive_teammate_usage_weighted",     # sum(absent_player_usage × usage_weight)
+
+    # ── GLOBAL SAMPLE QUALITY FLAGS (NEW) ────────────────────────────────────
+    # Fires when multiple thin-sample mechanics are unreliable simultaneously
+    "low_sample_playtype_flag",     # iso + pnr + spotup + transition all thin
+    "low_sample_tracking_flag",     # cs_3pa + potential_ast + rim_defended all thin
+
+    # ── PRECISE INJURY TRANSFER SCORES ───────────────────────────────────────
+    "creator_out_transfer_score",
+    "big_out_transfer_score",
+    "wing_out_transfer_score",
+    "starter_out_transfer_score",
+    "same_position_minutes_vacated",
+    "same_archetype_usage_vacated",
+    "injury_opportunity_score",
+
+    # ── SCHEDULE ──────────────────────────────────────────────────────────────
+    "back_to_back",
+    "four_in_6",
+    "three_in_4",
+    "rest_days",
+]
+
+
+# =============================================================================
+# SHRINKAGE PARAMETERS
+# =============================================================================
+
+SHRINKAGE_PARAMS = {
+    "iso_ppp":               (1.00, 30.0),
+    "pnr_bh_ppp":            (0.90, 25.0),
+    "spotup_ppp":            (0.98, 25.0),
+    "transition_ppp":        (1.05, 20.0),
+    "cs_open_3p_pct":        (0.38, 50.0),
+    "cs_covered_3p_pct":     (0.31, 40.0),
+    "spotup_matchup_edge":   (0.00, 20.0),
+    "iso_matchup_edge":      (0.00, 30.0),
+    "pnr_matchup_edge":      (0.00, 25.0),
+    "rim_fg_pct_allowed":    (0.62, 40.0),
+    "potential_ast_per_game":(7.0,  15.0),
+}
+
+# Sample-size thresholds for low-sample flags
+LOW_SAMPLE_THRESHOLDS = {
+    "iso_possessions":        15.0,
+    "pnr_bh_possessions":     15.0,
+    "spotup_possessions":     20.0,
+    "transition_possessions": 12.0,
+    "cs_3pa_sample":          30.0,
+    "potential_ast_sample":   8.0,
+    "rim_defended_sample":    15.0,
+    "reb_chances_sample":     8.0,
+}
+
+def shrink_to_prior(
+    observed: float,
+    n_obs: float,
+    prior: float,
+    k: float,
+) -> float:
+    """Empirical Bayes shrinkage. weight = n / (n + k)."""
+    if np.isnan(observed) or np.isnan(n_obs) or n_obs <= 0:
+        return prior
+    w = n_obs / (n_obs + k)
+    return w * observed + (1.0 - w) * prior
+
+
+# =============================================================================
+# LAYER 4: STAT-SPECIFIC MECHANICS
+# =============================================================================
+
 def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
     """
-    Stat-specific feature gate — v13.
-
-    Philosophy:
-      - Minutes + rolling player stats remain dominant (correct hierarchy)
-      - Opponent environment is now real (not a proxy)
-      - Market features: total_move/steam in gates; game_total etc. in MONITOR
-      - Injury continuous: in MONITOR; binary flags in gates
-      - Dead interactions: removed entirely
-      - Dead advanced stats (28 fields): removed entirely
-      - Causal advanced stats only: 6 universal + 3 reb-specific
-
-    MONITOR (computed but NOT in gates):
-      game_total, implied_team_total, spread_for_team, blowout_risk,
-      opp_implied_total, has_odds, missed_last_game, missed_2_of_last5,
-      all vacated_* continuous features, num_teammates_inactive, has_injury_data
+    v19 final feature set. Stat map: pts, ast, reb, fg3m, blk, stl, pra, pr, pa, ra.
+    Every feature has a direct causal mechanism.
+    Noise blacklist enforced via audit_features_for_noise().
     """
-    wanted = set(_shared_cols())
 
-    if stat == "pts":
-        wanted |= {
-            "fga_per_min_mean_last3","fga_per_min_mean_last5","fga_per_min_mean_last10",
-            "fga_per_min_vol_last10","fga_per_min_cv_last10","fga_per_min_ewma_10","fga_per_min_ewma_5",
-            "fga_per_min_trend_3v10",
-            "fga_raw_mean_last10",
-            "fta_per_min_mean_last10",
-            "pts_per_min_mean_last10","pts_per_min_vol_last10","pts_per_min_cv_last10",
-            "usage_proxy_per_min_mean_last10","usage_proxy_per_min_vol_last10",
-            "usage_proxy_per_min_cv_last10","usage_proxy_per_min_trend_3v10",
-            # Scoring-specific causal advanced (v14)
-            "adv_free_throw_attempt_rate_mean_last10","adv_free_throw_attempt_rate_ewma",
-            "adv_pct_fga_mean_last10",
-            "adv_pct_fta_mean_last10",
-            "adv_pct_points_mean_last10",
-        }
+    # ── PTS Layer 4 ───────────────────────────────────────────────────────────
+    # standalone blowout_risk REMOVED (was in v18, removed in v19)
+    PTS_L4 = [
+        "pts_per_min_ewma_10",
+        "pts_per_min_mean_last5",
+        "pts_per_min_mean_last10",
+        "pts_per_min_trend_3v10",
+        "pts_per_poss_adj",
+        "fga_per_min_ewma_10",
+        "fga_per_min_trend_3v10",
+        "fta_per_min_mean_last10",
+        "drives_per_game",
+        "drive_fta_per_game",
+        "drive_pts_per_game",
+        "touches_per_min_ewma",         # normalized (ablation Q1 vs raw)
+        "adv_usage_percentage_mean_last10",
+        "adv_true_shooting_percentage_mean_last10",
+        "opp_pts_allowed_last10",
+        "opp_pts_def_weakness",
+        "opp_paint_pts_allowed",
+        "opp_fg_miss_volume",
+        "opp_midrange_rate_allowed",
+        "iso_matchup_edge_shrunk",
+        "pnr_matchup_edge_shrunk",
+        "transition_ppp_shrunk",
+        "iso_possessions_last10",
+        "pnr_bh_possessions_last10",
+        "transition_possessions_last10",
+        "pts_regime_shift_gated",
+        "vacated_fga",
+        "vacated_minutes",
+        # standalone blowout_risk REMOVED — keep only:
+        "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "reb":
-        wanted |= {
-            "reb_per_min_mean_last3","reb_per_min_mean_last5","reb_per_min_mean_last10",
-            "reb_per_min_median_last10",
-            "reb_per_min_vol_last10","reb_per_min_cv_last10",
-            "reb_per_min_ewma_10","reb_per_min_ewma_5",
-            "reb_per_min_p25_last10","reb_per_min_p75_last10","reb_per_min_trend_3v10",
-            "reb_raw_mean_last10","reb_raw_cv_last10",
-            "oreb_per_min_mean_last10","dreb_per_min_mean_last10",
-            # Opponent reb environment
-            "opp_reb_allowed_last10","opp_oreb_allowed_last10",
-            # Only surviving interaction
-            "reb_x_mp",
-            # Causal advanced: player's own rebound chances + rate (v14 adds pct)
-            "adv_rebound_chances_total_mean_last10",
-            "adv_rebound_chances_def_mean_last10",
-            "adv_rebound_chances_off_mean_last10",
-            "adv_rebound_percentage_mean_last10",
-            "adv_offensive_rebound_percentage_mean_last10",
-            "adv_defensive_rebound_percentage_mean_last10",
-        }
+    # ── AST Layer 4 ───────────────────────────────────────────────────────────
+    AST_L4 = [
+        "ast_per_min_ewma_10",
+        "ast_per_min_mean_last5",
+        "ast_per_min_mean_last10",
+        "ast_per_min_trend_3v10",
+        "ast_per_poss_adj",
+        "potential_ast_per_game_shrunk",
+        "ast_opp_per_game",
+        "passes_per_game",              # explicitly guaranteed in compute block
+        "passes_per_min_ewma",
+        "adv_assist_percentage_mean_last10",
+        "adv_secondary_assists_mean_last10",
+        "pnr_bh_freq",
+        "pnr_bh_ppp_shrunk",
+        "touches_per_min_ewma",
+        "potential_ast_sample_last10",
+        "pnr_bh_possessions_last10",
+        "opp_ast_opportunities",
+        "opp_pace_true",
+        "tov_per_min_mean_last10_gated",
+        "vacated_ast",
+        "vacated_guard_minutes_gated",
+        "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "ast":
-        wanted |= {
-            "ast_per_min_mean_last3","ast_per_min_mean_last5","ast_per_min_mean_last10",
-            "ast_per_min_vol_last10","ast_per_min_cv_last10",
-            "ast_per_min_ewma_10","ast_per_min_ewma_5",
-            "ast_per_min_p25_last10","ast_per_min_p75_last10","ast_per_min_trend_3v10",
-            "ast_raw_mean_last10","ast_raw_cv_last10",
-            "usage_proxy_per_min_mean_last10",
-            "tov_per_min_mean_last10",
-            # Causal advanced: creation quality (v14 adds assist_ratio)
-            "adv_assist_percentage_mean_last10","adv_assist_percentage_ewma",
-            "adv_assist_to_turnover_mean_last10",
-            "adv_assist_ratio_mean_last10","adv_assist_ratio_ewma",
-            # Opponent assist environment
-            "opp_ast_allowed_last10",
-        }
+    # ── REB Layer 4 ───────────────────────────────────────────────────────────
+    REB_L4 = [
+        "reb_per_min_ewma_10",
+        "reb_per_min_mean_last5",
+        "reb_per_min_mean_last10",
+        "reb_per_min_trend_3v10",
+        "reb_per_min_vol_last10",
+        "oreb_per_min_mean_last10",
+        "dreb_per_min_mean_last10",
+        "reb_chances_per_game",
+        "reb_chances_def_per_game",
+        "reb_chances_off_per_game",
+        "contested_reb_per_game",
+        "reb_chances_sample_last10",    # explicitly surfaced
+        "adv_rebound_chances_total_mean_last10",
+        "adv_rebound_chances_off_mean_last10",
+        "adv_rebound_chances_def_mean_last10",
+        "opp_reb_chances_allowed",
+        "opp_oreb_chances_allowed",
+        "opp_rim_fga_rate",
+        "opp_rim_fga_allowed",
+        "opp_fg_miss_volume",
+        "opp_rim_miss_volume",
+        "opp_reb_def_weakness",
+        "vacated_reb",
+        "vacated_big_minutes",
+        "reb_regime_shift_gated",
+        "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "fg3m":
-        wanted |= {
-            "mp_mean_last5","mp_mean_last10","mp_vol_last10","mp_ewma_10","mp_ewma_5","mp_trend_3v10",
-            "fg3a_per_min_mean_last10","fg3a_per_min_trend_3v10",
-            "fg3a_count_last10","fg3a_count_season","fg3a_attempt_trend",
-            "fg3_pct_safe","fg3m_p_zero_last10","fg3m_p_ge3_last10","is_low_3pa_last10",
-            # Share of shots that are 3s (v14)
-            "adv_pct_3pa_mean_last10",
-            # Opponent 3P environment
-            "opp_3pa_allowed_last10","opp_3pm_allowed_last10","opp_3p_rate_allowed_last10",
-        }
+    # ── FG3M Layer 4 ──────────────────────────────────────────────────────────
+    # vacated_minutes REMOVED (too blunt; wing transfer in Layer 3 covers it)
+    FG3M_L4 = [
+        "fg3a_per_min_mean_last10",
+        "fg3a_per_min_trend_3v10",
+        "cs_3pa_per_game",
+        "cs_open_3p_pct_shrunk",
+        "cs_covered_3p_pct_shrunk",
+        "fg3_pct_safe",
+        "spotup_freq",
+        "spotup_ppp_shrunk",
+        "adv_pct_3pa_mean_last10",
+        "is_low_3pa_last10",
+        "fg3m_p_zero_last10",
+        "fg3m_p_ge3_last10",
+        "cs_3pa_sample_last10",
+        "spotup_possessions_last10",
+        "opp_corner3_rate_allowed",
+        "opp_atb3_rate_allowed",
+        "opp_3pa_allowed",
+        "opp_3pm_allowed",
+        "opp_3p_rate_allowed",
+        "opp_3pt_miss_volume",
+        "adv_contested_shots_3pt_mean_last10",
+        "spotup_matchup_edge_shrunk",
+        # vacated_minutes REMOVED
+        "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "stl":
-        wanted |= {
-            "stl_per_min_blended","stl_per_min_vol_last10","stl_per_min_ewma_10",
-            "stl_p_zero_last10","stl_p_ge2_last10","stl_p_ge1_last10",
-            "adv_pct_steals_mean_last10",     # player's steal share while on court (v14)
-            "opp_pace_proxy_last10",
-        }
+    # ── BLK Layer 4 ───────────────────────────────────────────────────────────
+    BLK_L4 = [
+        "blk_per_min_ewma_10",
+        "blk_per_min_blended",
+        "blk_per_min_vol_last10",
+        "blk_p_zero_last10",
+        "blk_p_ge1_last10",
+        "blk_p_ge2_last10",
+        "rim_fga_defended_per_game",
+        "rim_fg_pct_allowed_shrunk",
+        "adv_defended_at_rim_fga_mean_last10",
+        "adv_defended_at_rim_fg_pct_mean_last10",
+        "adv_contested_shots_2pt_mean_last10",
+        "rim_defended_sample_last10",
+        "opp_rim_fga_rate",
+        "opp_rim_miss_volume",
+        "opp_paint_touches",
+        "vacated_big_minutes",
+        "vacated_minutes",
+        "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "blk":
-        wanted |= {
-            "blk_per_min_blended","blk_per_min_vol_last10","blk_per_min_ewma_10",
-            "blk_p_zero_last10","blk_p_ge2_last10","blk_p_ge1_last10",
-            "adv_pct_blocks_mean_last10",      # player's block share while on court (v14)
-            "center_out_flag",
-            "opp_fga_allowed_last10",
-        }
+    # ── STL Layer 4 ───────────────────────────────────────────────────────────
+    # blowout_risk REMOVED (cleanest sparse model)
+    # opp_tov_per_game REMOVED from model (fallback in compute block only)
+    STL_L4 = [
+        "stl_per_min_ewma_10",
+        "stl_per_min_blended",
+        "stl_per_min_vol_last10",
+        "stl_p_zero_last10",
+        "stl_p_ge1_last10",
+        "stl_p_ge2_last10",
+        "adv_deflections_mean_last10",
+        "adv_deflections_ewma",
+        "adv_matchup_turnovers_mean_last10",
+        "adv_partial_possessions_mean_last10",
+        "opp_live_ball_tov",            # primary (fallback to opp_tov in compute)
+        "adv_switches_on_mean_last10",
+        "vacated_minutes",
+        # blowout_risk REMOVED
+    ]
 
-    elif stat == "tov":
-        wanted |= {
-            "tov_per_min_mean_last10","tov_per_min_vol_last10","tov_per_min_trend_3v10",
-            "tov_raw_mean_last10","tov_raw_cv_last10",
-            "usage_proxy_per_min_mean_last10",
-            "adv_usage_percentage_mean_last10",
-            "adv_assist_to_turnover_mean_last10",
-            "opp_pace_proxy_last10",
-        }
+    # ── COMBO PROPS Layer 4 ───────────────────────────────────────────────────
 
-    elif stat == "pra":
-        wanted |= {
-            "pts_per_min_mean_last10","reb_per_min_mean_last10","ast_per_min_mean_last10",
-            "pts_per_min_vol_last10","reb_per_min_vol_last10","ast_per_min_vol_last10",
-            "pts_per_min_cv_last10","reb_per_min_cv_last10","ast_per_min_cv_last10",
-            "reb_per_min_median_last10","usage_proxy_per_min_mean_last10",
-            "E_pts_proxy","E_reb_proxy","E_ast_proxy",
-            "opp_pts_allowed_last10","opp_reb_allowed_last10","opp_ast_allowed_last10",
-            "adv_assist_percentage_mean_last10","adv_assist_to_turnover_mean_last10",
-            "adv_assist_ratio_mean_last10",
-            "adv_rebound_chances_total_mean_last10",
-            "adv_rebound_percentage_mean_last10",
-        }
+    PRA_L4 = [
+        "pts_per_min_ewma_10", "pts_per_min_trend_3v10",
+        "fga_per_min_ewma_10", "drives_per_game",
+        "iso_matchup_edge_shrunk", "opp_pts_allowed_last10",
+        "reb_per_min_ewma_10", "reb_chances_per_game", "opp_rim_fga_rate",
+        "ast_per_min_ewma_10", "potential_ast_per_game_shrunk", "pnr_bh_freq",
+        "adv_usage_percentage_mean_last10",
+        "touches_per_min_ewma", "passes_per_min_ewma",
+        "vacated_minutes",
+        "pts_regime_shift_gated", "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "pr":
-        wanted |= {
-            "pts_per_min_mean_last10","reb_per_min_mean_last10",
-            "pts_per_min_vol_last10","reb_per_min_vol_last10",
-            "reb_per_min_median_last10","reb_per_min_cv_last10",
-            "usage_proxy_per_min_mean_last10",
-            "E_pts_proxy","E_reb_proxy",
-            "opp_pts_allowed_last10","opp_reb_allowed_last10",
-            "adv_rebound_chances_total_mean_last10",
-            "adv_rebound_percentage_mean_last10",
-        }
+    PR_L4 = [
+        "pts_per_min_ewma_10", "pts_per_min_trend_3v10",
+        "fga_per_min_ewma_10", "opp_pts_allowed_last10",
+        "iso_matchup_edge_shrunk",
+        "reb_per_min_ewma_10", "reb_chances_per_game",
+        "opp_rim_fga_rate", "opp_fg_miss_volume",
+        "adv_usage_percentage_mean_last10",
+        "touches_per_min_ewma",
+        "vacated_minutes", "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "pa":
-        wanted |= {
-            "pts_per_min_mean_last10","ast_per_min_mean_last10",
-            "pts_per_min_vol_last10","ast_per_min_vol_last10","ast_per_min_cv_last10",
-            "usage_proxy_per_min_mean_last10",
-            "E_pts_proxy","E_ast_proxy",
-            "opp_pts_allowed_last10","opp_ast_allowed_last10",
-            "adv_assist_percentage_mean_last10","adv_assist_to_turnover_mean_last10",
-            "adv_assist_ratio_mean_last10",
-        }
+    PA_L4 = [
+        "pts_per_min_ewma_10", "pts_per_min_trend_3v10",
+        "fga_per_min_ewma_10", "opp_pts_allowed_last10",
+        "iso_matchup_edge_shrunk", "pnr_matchup_edge_shrunk",
+        "ast_per_min_ewma_10", "potential_ast_per_game_shrunk",
+        "pnr_bh_freq", "opp_ast_opportunities",
+        "adv_usage_percentage_mean_last10",
+        "touches_per_min_ewma", "passes_per_min_ewma",
+        "vacated_minutes", "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "ra":
-        wanted |= {
-            "reb_per_min_mean_last10","ast_per_min_mean_last10",
-            "reb_per_min_vol_last10","ast_per_min_vol_last10",
-            "reb_per_min_median_last10","reb_per_min_cv_last10",
-            "E_reb_proxy","E_ast_proxy",
-            "opp_reb_allowed_last10","opp_ast_allowed_last10",
-            "adv_rebound_chances_total_mean_last10","adv_rebound_percentage_mean_last10",
-            "adv_assist_percentage_mean_last10","adv_assist_ratio_mean_last10",
-        }
+    RA_L4 = [
+        "reb_per_min_ewma_10", "reb_chances_per_game",
+        "opp_rim_fga_rate", "opp_fg_miss_volume",
+        "ast_per_min_ewma_10", "potential_ast_per_game_shrunk",
+        "pnr_bh_freq", "opp_ast_opportunities",
+        "adv_usage_percentage_mean_last10",
+        "touches_per_min_ewma",
+        "vacated_minutes", "blowout_risk_x_mp_vol_gated",
+    ]
 
-    elif stat == "stocks":
-        wanted |= {
-            "stl_per_min_blended","stl_per_min_vol_last10","stl_per_min_ewma_10",
-            "blk_per_min_blended","blk_per_min_vol_last10","blk_per_min_ewma_10",
-            "stl_p_zero_last10","stl_p_ge2_last10","stl_p_ge1_last10",
-            "blk_p_zero_last10","blk_p_ge2_last10","blk_p_ge1_last10",
-            "adv_pct_steals_mean_last10","adv_pct_blocks_mean_last10",
-            "opp_pace_proxy_last10",
-        }
+    STAT_L4 = {
+        "pts": PTS_L4, "ast": AST_L4, "reb": REB_L4,
+        "fg3m": FG3M_L4, "blk": BLK_L4, "stl": STL_L4,
+        "pra": PRA_L4, "pr": PR_L4, "pa": PA_L4, "ra": RA_L4,
+    }
 
-    return [c for c in all_cols if c in wanted]
+    is_combo = stat in ("pra", "pr", "pa", "ra")
+    l1 = LAYER_1_CORE + (LAYER_1_COMBO_EXTENSION if is_combo else [])
+    l2 = LAYER_2_MAP.get(stat, LAYER_2_PTS)
+    l3 = LAYER_3_ROLE
+    l4 = STAT_L4.get(stat, [])
+    full = l1 + l2 + l3 + l4
+
+    seen, deduped = set(), []
+    for feat in full:
+        if feat not in seen:
+            seen.add(feat)
+            deduped.append(feat)
+
+    all_cols_set = set(all_cols)
+    available = [f for f in deduped if f in all_cols_set]
+    missing   = [f for f in deduped if f not in all_cols_set]
+
+    if missing:
+        import logging
+        logging.getLogger(__name__).warning(
+            f"[v19] {stat}: {len(missing)} absent: {missing[:15]}"
+        )
+
+    return available
+
+
+# =============================================================================
+# NOISE BLACKLIST
+# =============================================================================
+
+NOISE_FEATURES_BLACKLIST = {
+    "revenge_game", "is_revenge",
+    "pts_vs_opp_mean", "ast_vs_opp_mean", "reb_vs_opp_mean", "fg3m_vs_opp_mean",
+    "pts_vs_opp_n",    "ast_vs_opp_n",    "reb_vs_opp_n",    "fg3m_vs_opp_n",
+    "usage_proxy_per_min_mean_last10", "usage_proxy_per_min_cv_last10",
+    "usage_proxy_per_min_vol_last10",  "usage_proxy_per_min_trend_3v10",
+    "mp_mean_last3", "mp_mean_last5", "mp_mean_last10", "mp_mean_season",
+    "mp_ceiling_last10", "mp_floor_last10", "mp_p25_last10", "mp_p75_last10",
+    "mp_cv_last10",
+    "iso_matchup_edge", "pnr_matchup_edge", "spotup_matchup_edge",
+    "cs_open_3p_pct", "cs_covered_3p_pct",
+    "spotup_ppp", "pnr_bh_ppp", "transition_ppp", "rim_fg_pct_allowed",
+    "potential_ast_per_game",
+    "clv_proxy", "line_movement", "opening_line_vs_close",
+    "missed_last_game", "num_teammates_inactive",
+    "blowout_risk_x_mp_vol", "pts_regime_shift", "reb_regime_shift",
+    "tov_per_min_mean_last10", "vacated_guard_minutes",
+}
+
+STAT_SPECIFIC_NOISE = {
+    "blk": {"adv_assist_percentage_mean_last10", "adv_assist_to_turnover_mean_last10",
+             "adv_effective_field_goal_percentage_mean_last10",
+             "adv_usage_percentage_mean_last10", "opp_implied_total",
+             "game_total", "implied_team_total"},
+    "stl": {"adv_assist_percentage_mean_last10", "adv_assist_to_turnover_mean_last10",
+             "opp_tov_per_game", "implied_team_total", "opp_implied_total",
+             "game_total", "blowout_risk"},
+    "pts": {"blowout_risk"},    # standalone removed in v19; gated version only
+    "fg3m":{"blowout_risk", "vacated_minutes"},  # removed in v19
+    "ast": {"blowout_risk"},    # standalone removed; gated version only
+}
+
+
+def audit_features_for_noise(feature_list: list, stat: str) -> dict:
+    """Run after get_feature_cols_for_stat(). Hard fail on any noise."""
+    universal  = [f for f in feature_list if f in NOISE_FEATURES_BLACKLIST]
+    stat_noise = STAT_SPECIFIC_NOISE.get(stat, set())
+    specific   = [f for f in feature_list if f in stat_noise]
+    all_viol   = list(set(universal + specific))
+    clean      = [f for f in feature_list if f not in set(all_viol)]
+
+    import logging
+    log = logging.getLogger(__name__)
+    if all_viol:
+        log.error(f"[v19 NOISE AUDIT FAIL] {stat}: {all_viol}")
+    else:
+        log.info(f"[v19 NOISE AUDIT PASS] {stat}: {len(clean)} features")
+
+    return {"clean": clean, "violations": all_viol,
+            "passed": len(all_viol) == 0, "n_features": len(clean)}
+

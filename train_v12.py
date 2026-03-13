@@ -384,7 +384,8 @@ def build_training_table(stats_df, adv_df, odds_df):
     logger.info("Building training table...")
 
     ctx_map = build_game_context_map(
-        odds_df.to_dict("records")
+        odds_df.to_dict("records",
+                    opp_env_map=opp_env_map)
     ) if not odds_df.empty else {}
 
     # ── Load opening-line snapshots index for line movement features ──────────
@@ -445,6 +446,34 @@ def build_training_table(stats_df, adv_df, odds_df):
     snap_dates_available = len(injury_snapshots_index)
     snap_dates_used = 0
 
+
+    # ── [v19] Build opponent environment map ─────────────────────────────────
+    try:
+        from bdl_client import get_team_season_averages, build_opponent_env_map
+        _opp_records = get_team_season_averages(
+            season=target_season,
+            stat_type="opponent",
+        )
+        opp_env_map = build_opponent_env_map(_opp_records, stat_type="opponent")
+        logger.info(f"[v19] opp_env_map built for {len(opp_env_map)} teams")
+    except Exception as _e:
+        logger.warning(f"[v19] opp_env_map failed: {_e} — opponent features = NaN")
+        opp_env_map = {}
+    build_player_game_features._opp_env_map = opp_env_map
+
+    # ── [v19] Build opponent environment map ─────────────────────────────────
+    try:
+        from bdl_client import get_team_season_averages, build_opponent_env_map
+        _opp_records = get_team_season_averages(
+            season=target_season,
+            stat_type="opponent",
+        )
+        opp_env_map = build_opponent_env_map(_opp_records, stat_type="opponent")
+        logger.info(f"[v19] opp_env_map built for {len(opp_env_map)} teams")
+    except Exception as _e:
+        logger.warning(f"[v19] opp_env_map failed: {_e} — opponent features = NaN")
+        opp_env_map = {}
+    build_player_game_features._opp_env_map = opp_env_map
     all_rows = []; skipped = 0
     players  = list(stats_df.groupby("player_id"))
 
@@ -521,6 +550,7 @@ def build_training_table(stats_df, adv_df, odds_df):
                     team_id      = tid,
                     all_stats_df = stats_df,
                     injury_map   = injury_map,
+                    opp_team_id  = int(ctx.get("opp_team_id", 0) or 0) or None,
                 )
             except Exception as e:
                 logger.debug(f"Feature error p={player_id} g={gid}: {e}")
