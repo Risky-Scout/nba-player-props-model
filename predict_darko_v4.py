@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 predict_darko_v4.py — NBA Props Model Prediction Engine
-VERSION: 2026-03-11-v12
+VERSION: 2026-02-28-v11
 
 Outputs (SEPARATE FILES):
   predictions/singles_{date}.json   — individual prop bets (EV > 2.5%)
@@ -16,11 +16,7 @@ Architecture:
   - Quarter-Kelly sizing, 2-unit cap singles, 1-unit cap SGPs
   - Supports: pts, reb, ast, fg3m, stl, blk, tov + combo props
 
-v12 changes:
-  - line_ladder: alt-line probability table (5 below / 5 above posted line)
-  - drivers: top-5 human-readable 'why the model likes this' narratives
-  - uncertainty: regime flag (STABLE/MODERATE/UNCERTAIN) + flag list
-  - sensitivity: minutes ±2/±5 probability shift table (market-maker risk view)
+v11 changes:
   - Singles written to disk BEFORE SGP generation (guarantees data on timeout)
   - SGP candidate pool capped to top 6 per game by EV before copula
   - Workflow timeout raised to 60 min
@@ -104,7 +100,7 @@ ADV_FIELDS = [
 # ── Model loading ──────────────────────────────────────────────────────────────
 
 def load_models() -> tuple:
-    """Load all quantile models and feature lists."""
+    """Load all quantile models, feature lists, and Platt calibrators."""
     models = {}
     for target in ALL_TARGETS:
         fcols_path = MODEL_DIR / f"features_{target}.pkl"
@@ -130,7 +126,17 @@ def load_models() -> tuple:
     else:
         logger.warning("  No correlation engine found — SGPs will use identity matrix")
 
-    return models, within_engine, teammate_engine
+    # Load Platt calibrators (Stage 1 calibration — per side)
+    platt_calibrators = {}
+    for side in ["over", "under"]:
+        ppath = MODEL_DIR / f"platt_{side}.pkl"
+        if ppath.exists():
+            platt_calibrators[side.upper()] = joblib.load(ppath)
+            logger.info(f"  Platt calibrator loaded: {side.upper()}")
+    if not platt_calibrators:
+        logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
+
+    return models, within_engine, teammate_engine, platt_calibrators
 
 
 # ── Quantile prediction ────────────────────────────────────────────────────────
@@ -143,281 +149,6 @@ def predict_quantiles(models: dict, target: str, features: dict):
     X     = np.array([[features.get(c, np.nan) for c in fcols]], dtype=float)
     raw   = {q: float(mod.predict(X)[0]) for q, mod in m["quantile_models"].items()}
     return enforce_monotonicity(raw)
-
-
-# ── Analytics helpers ─────────────────────────────────────────────────────────
-
-def prob_to_american(prob: float) -> int:
-    """Convert probability to American fair odds."""
-    prob = float(np.clip(prob, 0.01, 0.99))
-    if prob >= 0.5:
-        return int(-round(prob / (1.0 - prob) * 100))
-    return int(round((1.0 - prob) / prob * 100))
-
-
-def build_line_ladder(q_preds: dict, posted_line: float, stat: str) -> list:
-    """
-    Alt-line probability ladder — 5 lines below and 5 above the posted line.
-    This is the core market-maker output: P(over) at every neighboring line.
-    Step size: 1.0 for pts/combo stats, 0.5 for all others.
-    """
-    step = 1.0 if stat in ("pts", "pra", "pr", "pa") else 0.5
-    ladder = []
-    for i in range(11):
-        l = round(posted_line + (i - 5) * step, 1)
-        if l < 0:
-            continue
-        po = p_over(q_preds, l)
-        pu = 1.0 - po
-        ladder.append({
-            "line":       l,
-            "prob_over":  round(po, 4),
-            "prob_under": round(pu, 4),
-            "fair_over":  prob_to_american(po),
-            "fair_under": prob_to_american(pu),
-            "posted":     abs(l - posted_line) < 0.01,
-        })
-    return ladder
-
-
-# League-average benchmarks for opponent environment driver generation
-_LEAGUE_AVG = {
-    "opp_reb_chances_allowed": 43.0,
-    "opp_ast_opportunities":   26.0,
-    "opp_3pa_allowed":         32.0,
-}
-
-
-def generate_drivers(features: dict, stat: str,
-                     q50: float, line: float) -> list:
-    """
-    Generate top-5 human-readable driver narratives per pick.
-    Rule-based — no SHAP needed. Designed to surface the 'why' behind
-    the model's edge, not just repeat the probability number.
-
-    Returns list of {label, signal, detail} sorted by priority.
-    signal: 'positive' | 'negative' | 'neutral'
-    """
-    def _fv(key, default=np.nan):
-        v = features.get(key, default)
-        try:
-            fv = float(v)
-            return default if np.isnan(fv) else fv
-        except (TypeError, ValueError):
-            return default
-
-    scored = []  # (priority, label, signal, detail)
-
-    # 1. Minutes projection vs rolling avg — single most important signal
-    exp_mp  = _fv("exp_mp")
-    mp_mean = _fv("mp_mean_last10")
-    if not np.isnan(exp_mp) and not np.isnan(mp_mean) and mp_mean > 0:
-        delta = exp_mp - mp_mean
-        if delta > 2.0:
-            scored.append((10, "Minutes elevated", "positive",
-                f"Projected {exp_mp:.0f} min vs {mp_mean:.0f} L10 avg (+{delta:.1f})"))
-        elif delta < -2.0:
-            scored.append((10, "Minutes reduced", "negative",
-                f"Projected {exp_mp:.0f} min vs {mp_mean:.0f} L10 avg ({delta:.1f})"))
-
-    # 2. Vacated opportunity (teammate out)
-    vacated = _fv("vacated_minutes", 0)
-    n_out   = int(_fv("num_teammates_inactive", 0))
-    if vacated > 5:
-        scored.append((9, "Teammate vacancy", "positive",
-            f"{vacated:.0f} min vacated by {n_out} inactive teammate(s)"))
-
-    # 3. Opponent environment — stat-specific
-    if stat == "reb":
-        opp_val = _fv("opp_reb_chances_allowed")
-        avg     = _LEAGUE_AVG["opp_reb_chances_allowed"]
-        if not np.isnan(opp_val):
-            diff = opp_val - avg
-            if diff > 3:
-                scored.append((8, "Favorable rebound matchup", "positive",
-                    f"Opp allows {opp_val:.1f} reb chances/g (avg {avg:.0f}, +{diff:.1f})"))
-            elif diff < -3:
-                scored.append((8, "Tough rebound matchup", "negative",
-                    f"Opp allows {opp_val:.1f} reb chances/g (avg {avg:.0f}, {diff:.1f})"))
-    elif stat == "ast":
-        opp_val = _fv("opp_ast_opportunities")
-        avg     = _LEAGUE_AVG["opp_ast_opportunities"]
-        if not np.isnan(opp_val):
-            diff = opp_val - avg
-            if diff > 2:
-                scored.append((8, "Favorable assist matchup", "positive",
-                    f"Opp allows {opp_val:.1f} ast opps/g (avg {avg:.0f}, +{diff:.1f})"))
-            elif diff < -2:
-                scored.append((8, "Tough assist matchup", "negative",
-                    f"Opp allows {opp_val:.1f} ast opps/g (avg {avg:.0f}, {diff:.1f})"))
-    elif stat == "fg3m":
-        opp_val = _fv("opp_3pa_allowed")
-        avg     = _LEAGUE_AVG["opp_3pa_allowed"]
-        if not np.isnan(opp_val):
-            diff = opp_val - avg
-            if diff > 3:
-                scored.append((8, "Favorable 3PT environment", "positive",
-                    f"Opp allows {opp_val:.1f} 3PA/g (avg {avg:.0f}, +{diff:.1f})"))
-            elif diff < -3:
-                scored.append((8, "Suppressed 3PT environment", "negative",
-                    f"Opp allows {opp_val:.1f} 3PA/g (avg {avg:.0f}, {diff:.1f})"))
-
-    # 4. Recent trend (hot/cold streak)
-    base_stat = stat if stat in STATS else None
-    if base_stat:
-        trend = _fv(f"{base_stat}_per_min_trend_3v10")
-        if not np.isnan(trend):
-            if trend > 1.15:
-                scored.append((7, "Hot streak", "positive",
-                    f"{base_stat.upper()} rate L3 is {(trend-1)*100:.0f}% above L10 avg"))
-            elif trend < 0.85:
-                scored.append((7, "Cold streak", "negative",
-                    f"{base_stat.upper()} rate L3 is {(1-trend)*100:.0f}% below L10 avg"))
-
-    # 5. Sharp line movement
-    if int(_fv("sharp_action_flag", 0)):
-        total_move = _fv("total_move")
-        if not np.isnan(total_move):
-            direction = "up" if total_move > 0 else "down"
-            scored.append((6, "Sharp line movement", "neutral",
-                f"Total steamed {direction} {abs(total_move):.1f} pts open→close"))
-
-    # 6. Model vs line gap (large distributional edge)
-    gap     = q50 - line
-    pct_gap = abs(gap) / max(line, 1.0)
-    if pct_gap > 0.15:
-        if gap > 0:
-            scored.append((5, "Model well above line", "positive",
-                f"Q50 {q50:.1f} vs line {line} (+{gap:.1f})"))
-        else:
-            scored.append((5, "Model well below line", "negative",
-                f"Q50 {q50:.1f} vs line {line} ({gap:.1f})"))
-
-    # 7. Rest / schedule
-    if int(_fv("back_to_back", 0)):
-        scored.append((4, "Back-to-back game", "negative", "0 days rest"))
-    else:
-        rest = _fv("rest_days")
-        if not np.isnan(rest) and rest >= 3:
-            scored.append((4, "Well rested", "positive", f"{int(rest)} days rest"))
-
-    # 8. Usage elevation (pts only)
-    if stat == "pts":
-        usage = _fv("adv_usage_percentage_mean_last10")
-        if not np.isnan(usage) and usage > 28:
-            scored.append((3, "High usage role", "positive",
-                f"{usage:.1f}% usage L10"))
-
-    scored.sort(key=lambda x: -x[0])
-    return [{"label": d[1], "signal": d[2], "detail": d[3]} for d in scored[:5]]
-
-
-def build_uncertainty_flag(features: dict) -> dict:
-    """
-    Rule-based uncertainty regime from existing features.
-    No new model — flags are derived from role stability, minutes
-    variance, injury dependency, and schedule context.
-
-    regime: 'STABLE' | 'MODERATE' | 'UNCERTAIN'
-    """
-    def _fv(k, default=np.nan):
-        v = features.get(k, default)
-        try:
-            fv = float(v)
-            return default if np.isnan(fv) else fv
-        except (TypeError, ValueError):
-            return default
-
-    flags          = []
-    role_stability = _fv("role_stability_index")
-    mp_vol         = _fv("mp_vol_last10")
-    num_inactive   = int(_fv("num_teammates_inactive", 0))
-    blowout_risk   = _fv("blowout_risk", 0)
-    games_played   = int(_fv("games_played", 99))
-    back_to_back   = int(_fv("back_to_back", 0))
-    missed_last    = int(_fv("missed_last_game", 0))
-
-    if not np.isnan(role_stability) and role_stability < 0.60:
-        flags.append("VOLATILE_ROLE")
-    if not np.isnan(mp_vol) and mp_vol > 6.0:
-        flags.append("HIGH_MIN_VARIANCE")
-    if num_inactive > 1:
-        flags.append("INJURY_DEPENDENT")
-    if not np.isnan(blowout_risk) and blowout_risk > 8.0:
-        flags.append("BLOWOUT_SENSITIVE")
-    if games_played < 20:
-        flags.append("SMALL_SAMPLE")
-    if back_to_back:
-        flags.append("BACK_TO_BACK")
-    if missed_last:
-        flags.append("MISSED_RECENT_GAMES")
-
-    minor_only = {"BACK_TO_BACK", "BLOWOUT_SENSITIVE"}
-    n = len(flags)
-    if n == 0:
-        regime = "STABLE"
-    elif n == 1 and flags[0] in minor_only:
-        regime = "MODERATE"
-    elif n >= 2:
-        regime = "UNCERTAIN"
-    else:
-        regime = "MODERATE"
-
-    return {"regime": regime, "flags": flags}
-
-
-def build_sensitivity_table(models: dict, target: str,
-                             base_features: dict, base_ix: dict,
-                             line: float) -> list:
-    """
-    Minutes sensitivity table: how does fair probability shift if
-    expected minutes moves ±2 or ±5 from the current projection?
-
-    This is the key risk-management output for a market maker:
-    'How much does this edge depend on minutes holding?'
-    A pick that holds its edge across the full ±5 range is structurally
-    sound. One that collapses at mp-2 is a minutes bet in disguise.
-    """
-    base_mp = float(base_features.get("exp_mp", np.nan))
-    rows    = []
-
-    for delta in (-5, -2, 0, 2, 5):
-        label = "baseline" if delta == 0 else f"mp{'+' if delta >= 0 else ''}{delta}"
-
-        if delta == 0:
-            q = predict_quantiles(models, target, base_ix)
-        else:
-            if np.isnan(base_mp):
-                continue
-            f_pert = dict(base_features)
-            new_mp = max(0.0, base_mp + delta)
-            f_pert["exp_mp"] = new_mp
-            ratio = new_mp / max(base_mp, 1.0)
-            for k in ("mp_q10", "mp_q25", "mp_q75", "mp_q90",
-                      "mp_pred_floor", "mp_pred_ceiling"):
-                v = base_features.get(k)
-                if v is not None:
-                    try:
-                        fv = float(v)
-                        if not np.isnan(fv):
-                            f_pert[k] = max(0.0, fv * ratio)
-                    except (TypeError, ValueError):
-                        pass
-            f_pert_ix = add_interaction_features(f_pert, target)
-            q = predict_quantiles(models, target, f_pert_ix)
-
-        if q is None:
-            continue
-        po = p_over(q, line)
-        rows.append({
-            "scenario":   label,
-            "mp_delta":   delta,
-            "exp_mp":     round(base_mp + delta, 1) if not np.isnan(base_mp) else None,
-            "prob_over":  round(po, 4),
-            "prob_under": round(1.0 - po, 4),
-            "q50":        round(q.get(0.50, line), 2),
-        })
-    return rows
 
 
 # ── SGP candidate filtering ────────────────────────────────────────────────────
@@ -540,7 +271,7 @@ def main():
     logger.info(f"Target date: {target_date}")
 
     logger.info("Loading models...")
-    models, within_engine, teammate_engine = load_models()
+    models, within_engine, teammate_engine, platt_calibrators = load_models()
     if not models:
         sys.exit("No models in model_cache/. Run training script first.")
 
@@ -634,7 +365,6 @@ def main():
                     team_id      = team_id,
                     all_stats_df = stats_df,
                     injury_map   = injury_map,
-                    opp_team_id  = int(opp_id or 0),
                 )
             except Exception as e:
                 logger.debug(f"Feature error player={player_id}: {e}")
@@ -663,14 +393,21 @@ def main():
 
                 prob_over  = p_over(q_preds, line)
                 prob_under = p_under(q_preds, line)
+
+                # Apply Platt calibration (Stage 1) before EV computation.
+                # Corrects systematic UNDER overconfidence in 0.60-0.75 range.
+                # Falsely-confident picks fail MIN_EV and are filtered out.
+                if platt_calibrators.get("OVER"):
+                    cal = platt_calibrators["OVER"]
+                    prob_over = float(np.clip(
+                        cal.predict_proba([[prob_over]])[0][1], 0.01, 0.99))
+                if platt_calibrators.get("UNDER"):
+                    cal = platt_calibrators["UNDER"]
+                    prob_under = float(np.clip(
+                        cal.predict_proba([[prob_under]])[0][1], 0.01, 0.99))
+
                 ev_over    = ev_from_prob(prob_over,  over_odds)
                 ev_under   = ev_from_prob(prob_under, under_odds)
-
-                # ── Analytics (computed once per player+stat+line) ────────────
-                line_ladder  = build_line_ladder(q_preds, line, target)
-                drivers      = generate_drivers(base_ix, target, q50, line)
-                uncertainty  = build_uncertainty_flag(base_ix)
-                sensitivity  = build_sensitivity_table(models, target, base, base_ix, line)
 
                 for side, prob, odds, ev in [
                     ("OVER",  prob_over,  over_odds,  ev_over),
@@ -703,11 +440,6 @@ def main():
                         "q_preds":      {float(k): round(v,2) for k,v in q_preds.items()},
                         "usage_bucket": ub,
                         "mp_bucket":    mb,
-                        # ── Analytics ─────────────────────────────────────────
-                        "line_ladder":  line_ladder,   # alt-line probability table
-                        "drivers":      drivers,        # top-5 'why the model likes this'
-                        "uncertainty":  uncertainty,    # regime + flags
-                        "sensitivity":  sensitivity,    # minutes ±2/±5 prob shift
                     })
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)

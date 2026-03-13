@@ -1,0 +1,26 @@
+{
+  "platt_calibration": {
+    "OVER": {
+      "n": 346,
+      "brier_before": 0.25527,
+      "brier_after": 0.24335,
+      "ece_before": 0.11168,
+      "ece_after": 0.0384,
+      "slope": 1.4354,
+      "intercept": -0.9936,
+      "improved": true,
+      "skipped": false
+    },
+    "UNDER": {
+      "n": 680,
+      "brier_before": 0.25524,
+      "brier_after": 0.24239,
+      "ece_before": 0.11761,
+      "ece_after": 0.02742,
+      "slope": 2.161,
+      "intercept": -1.2789,
+      "improved": true,
+      "skipped": false
+    }
+  }
+}
