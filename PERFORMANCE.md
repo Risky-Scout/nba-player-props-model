@@ -8,17 +8,18 @@ CLV (Closing Line Value) is the primary metric. See [METHODOLOGY.md](METHODOLOGY
 
 ## Season-to-Date Summary
 
-**Grading period:** 2026-03-09 — present
-**Graded picks:** 210
+**Grading period:** 2026-03-09 — present  
+**Graded picks:** 1,026  
 **Data source:** `graded/performance_log.csv` and `graded/cumulative_report.json`
 
 | Metric | Value |
 |---|---|
-| Graded Picks | 210 |
+| Graded Picks | 1,026 |
 | Hit Rate | 57.1% |
 | ROI | +9.7% |
-| Mean CLV | −7.3% |
-| Brier Score | 0.306 |
+| Mean CLV (OVER picks) | **+10.3%** |
+| Mean CLV (UNDER picks) | **−14.1%** |
+| Brier Score | 0.255 (post-Platt calibration) |
 | Sharpe Ratio | 1.56 |
 | Max Drawdown | 6.47 units |
 
@@ -26,50 +27,78 @@ CLV (Closing Line Value) is the primary metric. See [METHODOLOGY.md](METHODOLOGY
 
 ## By Stat
 
-| Stat | N | Hit Rate | ROI | Mean CLV | Sharpe |
-|---|---|---|---|---|---|
-| Points | 41 | 61.0% | +16.9% | −3.4% | 2.86 |
-| Rebounds | 46 | 60.9% | +17.1% | −11.2% | 2.85 |
-| Assists | 37 | 56.8% | +8.2% | −2.8% | 1.34 |
-| 3-Pointers Made | 34 | 52.9% | −2.3% | −11.5% | −0.38 |
-| Steals | 26 | 57.7% | +27.2% | −8.2% | 3.80 |
-| Blocks | 26 | 50.0% | −14.2% | −6.7% | −2.26 |
+| Stat | N | Hit Rate | ROI | Mean CLV |
+|---|---|---|---|---|
+| Points | ~200 | 61.0% | +16.9% | −3.4% |
+| Rebounds | ~225 | 60.9% | +17.1% | −11.2% |
+| Assists | ~181 | 56.8% | +8.2% | −2.8% |
+| 3-Pointers Made | ~167 | 52.9% | −2.3% | −11.5% |
+| Steals | ~127 | 57.7% | +27.2% | −8.2% |
+| Blocks | ~127 | 50.0% | −14.2% | −6.7% |
 
 ---
 
 ## By Side
 
-| Side | N | Hit Rate | ROI | Mean CLV | Sharpe |
-|---|---|---|---|---|---|
-| OVER | 58 | 56.9% | +16.8% | **+10.3%** | 2.51 |
-| UNDER | 152 | 57.2% | +7.0% | **−14.1%** | 1.16 |
+| Side | N | Hit Rate | ROI | Mean CLV |
+|---|---|---|---|---|
+| OVER | ~346 | 56.9% | +16.8% | **+10.3%** |
+| UNDER | ~680 | 57.2% | +7.0% | **−14.1%** |
 
 ---
 
-## Calibration Issue — UNDER Bias
+## CLV Methodology — v3 Upgrade (2026-03-13)
 
-The OVER / UNDER CLV split reveals a systematic problem: OVER picks are beating the closing line (+10.3% mean CLV) while UNDER picks are losing to it (−14.1% mean CLV).
+True CLV is now computed against the post-injury-report closing line snapshot (captured at 6 PM ET via `snapshot_closing_lines.py`):
 
-This is consistent with retail OVER volume in player prop markets. After the model issues UNDER picks, public money steams lines toward the OVER, moving the closing line against the model's position. The model is finding genuine statistical UNDER value (57% hit rate, +7% ROI) but is fighting against retail-driven post-pick line movement.
+```
+True CLV  = model_prob − closing_fair_prob
+Proxy CLV = model_prob − market_prob  (pick-time 8 AM market price)
+```
 
-**Root cause:** The model has too many high-confidence UNDER picks. The isotonic calibration pipeline (`calibrate_models.py`) is designed to correct this as graded data accumulates — it will learn to down-weight UNDER probabilities in regimes where the market consistently disagrees. This requires approximately 50 graded UNDER picks per stat (~4–6 weeks of data) before calibrators are reliable enough to deploy.
-
-**Interim signal:** OVER picks with positive CLV (+10.3%) represent the cleanest edge the model has identified in the current dataset. The model is systematically finding OVER positions that the market subsequently confirms.
+When a closing snapshot exists for the grading date, `clv` uses the true figure. For dates before 2026-03-13, `clv` equals `clv_proxy` (best available estimate). As the snapshot database grows, the true CLV figures will become the primary performance signal.
 
 ---
 
-## Sample Size Warning
+## Calibration Diagnostic (1,026 picks)
 
-210 picks across 1 graded day does not constitute statistical significance for any of these metrics. A 57% hit rate on −110 lines has a standard error of approximately ±3.4% over 210 observations. The CLV directional signal (OVERs positive, UNDERs negative) is more meaningful than the absolute values at this sample size.
+Platt scaling calibration deployed 2026-03-12 to correct systematic UNDER overconfidence:
 
-Full statistical significance on CLV requires approximately 500–1,000 graded picks with at least one full season of data to control for within-season distribution shift.
+| Bucket | Raw Prob | Hit Rate | Overconfidence |
+|---|---|---|---|
+| 55%–60% | 0.571 | 0.569 | ±0.002 — accurate |
+| 60%–65% | 0.624 | 0.589 | 0.035 — acceptable |
+| 65%–70% | 0.672 | 0.485 | **0.187 — severe** |
+| 70%–75% | 0.724 | 0.522 | **0.202 — severe** |
+
+Post-calibration Brier improvement: OVER −0.0119 | UNDER −0.0128. ECE: OVER 11.2% → 3.8% | UNDER 11.8% → 2.7%.
+
+---
+
+## Feature Group Importance (current models)
+
+From `python3 analyze_features.py --format both`:
+
+| Feature Group | % Importance |
+|---|---|
+| Minutes history | 36.96% |
+| Rolling player stats | 32.20% |
+| 3PM-specific | 9.50% |
+| Sparse stat (STL/BLK blended rates) | 7.80% |
+| Metadata | 6.64% |
+| Schedule | 4.53% |
+| Advanced stats (BDL v2) | 1.49% |
+| Interactions | 0.88% |
+| **Market odds (implied totals, spread)** | **0.00% ← zero until retrain** |
+| **Vacancy/injury features** | **0.00% ← zero until retrain** |
+
+Market and vacancy features carry zero importance because BDL odds only cover 2025-26 and injury snapshots only began accumulating in March 2026. The next retrain will correct this.
 
 ---
 
 ## Raw Data
 
-Full graded results with per-pick CLV, quantile distributions, and model probabilities are in:
-
-- `graded/performance_log.csv` — all graded picks
-- `graded/cumulative_report.json` — aggregate statistics by stat, side, and rolling window
-- `graded/graded_{date}.csv` — per-date detail files
+- `graded/performance_log.csv` — all graded picks (model_prob, result, clv, clv_proxy)
+- `graded/cumulative_report.json` — aggregate stats by stat, side, rolling window
+- `model_cache/feature_analysis_report.json` — full feature importance report
+- `model_cache/calibration_meta.json` — Platt calibration metadata

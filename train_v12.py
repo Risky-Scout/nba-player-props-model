@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import annotations
 """
 train_darko_v4.py — NBA Props Model Training Pipeline
 VERSION: 2026-03-09-v12
@@ -63,6 +62,7 @@ try:
         get_player_game_stats, get_game_odds,
         get_advanced_stats_v2, get_injuries,
         build_game_context_map,
+        load_line_movement_snapshot,
     )
     from feature_engineering import (
         build_player_game_features,
@@ -387,6 +387,38 @@ def build_training_table(stats_df, adv_df, odds_df):
         odds_df.to_dict("records")
     ) if not odds_df.empty else {}
 
+    # ── Load opening-line snapshots index for line movement features ──────────
+    # For each game date that has a snapshot, enrich ctx_map with total_move and
+    # spread_move. These features have zero importance in v10 because BDL odds
+    # only cover 2025-26. Snapshots go forward from 2026-03-13 — at retrain
+    # all snapshot-covered dates will have non-zero line movement features.
+    #
+    # Implementation note: training processes ALL game dates at once. We build
+    # a per-date snapshot index and patch ctx_map entries at feature-build time.
+    opening_snap_index: dict[str, dict] = {}  # date → {game_label → {total_move, ...}}
+    _opening_dir = Path("data")
+    for snap_file in sorted(_opening_dir.glob("opening_lines_*.json")):
+        snap_date = snap_file.stem.replace("opening_lines_", "")
+        try:
+            import json as _json
+            with open(snap_file) as _f:
+                snap_data = _json.load(_f)
+            # Key by game label (same format as prediction script)
+            snap_games = {}
+            for eid, rec in snap_data.items():
+                home  = rec.get("home_team", "")
+                away  = rec.get("away_team", "")
+                label = f"{away} @ {home}"
+                snap_games[label] = rec
+            opening_snap_index[snap_date] = snap_games
+        except Exception as _e:
+            pass
+    if opening_snap_index:
+        logger.info(
+            f"Opening line snapshots indexed: {len(opening_snap_index)} dates "
+            f"({min(opening_snap_index)} → {max(opening_snap_index)})"
+        )
+
     adv_by_player = defaultdict(list)
     if not adv_df.empty:
         for _, r in adv_df.iterrows():
@@ -433,12 +465,36 @@ def build_training_table(stats_df, adv_df, odds_df):
             gid     = int(cur["game_id"])
             tid     = int(cur["team_id"] or 0)
             hid     = int(cur["home_team_id"] or 0)
-            vid     = int(cur.get("visitor_team_id") or 0)
             is_home = int(tid == hid)
-            # Opponent is whichever of home/visitor is NOT the player's team
-            opp_tid = vid if tid == hid else hid
             td      = str(cur["game_date"])[:10]
-            ctx     = ctx_map.get(gid, {})
+            ctx     = dict(ctx_map.get(gid, {}))   # copy — don't mutate shared dict
+
+            # Enrich ctx with snapshot-derived line movement for this date.
+            # opening_snap_index[td] contains game labels → opening prices.
+            # cross-source total_move = BDL consensus total - snapshot opening total
+            if td in opening_snap_index:
+                game_snap = opening_snap_index[td]
+                # Build game label consistent with prediction script format
+                home_nm = ""
+                vis_nm  = ""
+                # Determine team names from stats_df if available
+                for _g in games if 'games' in dir() else []:
+                    if _g.get("id") == gid:
+                        home_nm = (_g.get("home_team") or {}).get("full_name", "")
+                        vis_nm  = (_g.get("visitor_team") or {}).get("full_name", "")
+                        break
+                if home_nm and vis_nm:
+                    label = f"{vis_nm} @ {home_nm}"
+                    snap_rec = game_snap.get(label)
+                    if snap_rec:
+                        open_total  = snap_rec.get("consensus_total")
+                        open_spread = snap_rec.get("consensus_spread")
+                        bdl_total   = ctx.get("consensus_total")
+                        bdl_spread  = ctx.get("consensus_spread_home")
+                        if open_total and bdl_total:
+                            ctx["total_move"]  = round(float(bdl_total) - float(open_total), 2)
+                        if open_spread is not None and bdl_spread is not None:
+                            ctx["spread_move"] = round(float(bdl_spread) - float(open_spread), 2)
 
             # Advanced stats: prior games only — no leakage
             padv_i = [
@@ -465,7 +521,6 @@ def build_training_table(stats_df, adv_df, odds_df):
                     team_id      = tid,
                     all_stats_df = stats_df,
                     injury_map   = injury_map,
-                    opp_team_id  = opp_tid,
                 )
             except Exception as e:
                 logger.debug(f"Feature error p={player_id} g={gid}: {e}")
@@ -541,7 +596,7 @@ def _temporal_split_idx(game_dates: np.ndarray, holdout_frac: float) -> int:
     This respects time ordering — never trains on future data.
     """
     dates = pd.to_datetime(game_dates)
-    cutoff = pd.Series(dates).quantile(1.0 - holdout_frac)
+    cutoff = dates.quantile(1.0 - holdout_frac)
     return int(np.searchsorted(dates, cutoff))
 
 

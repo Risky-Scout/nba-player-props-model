@@ -1,8 +1,23 @@
 #!/usr/bin/env python3
 """
-grade_darko_v4.py  VERSION: 2026-02-28-v2
+grade_darko_v4.py  VERSION: 2026-03-13-v3
 ===========================================
-Syndicate-grade grading: CLV tracking, ROI, calibration, drawdown analysis.
+Syndicate-grade grading: TRUE CLV tracking, ROI, calibration, drawdown analysis.
+
+CLV computation (v3 upgrade):
+  True CLV = model_prob - closing_fair_prob
+  where closing_fair_prob is loaded from graded/closing_lines_{date}.json
+  (captured at 6 PM ET via snapshot_closing_lines.py, post-injury-report).
+
+  If no closing snapshot exists for a date, falls back to:
+    clv = model_prob - market_prob  (pick-time 8 AM market price)
+  and marks the column "clv_proxy=True" to distinguish.
+
+  True CLV is the gold-standard performance metric used by professional
+  bettors and market makers. A sustained positive CLV means the model
+  is consistently finding edges that the closing market validates.
+  Positive CLV with negative ROI = variance; fix sizing.
+  Positive CLV + positive ROI   = edge; scale up.
 """
 
 import argparse
@@ -24,6 +39,83 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+# ── Closing line loader for true CLV ──────────────────────────────────────────
+
+def load_closing_lines(target_date: str) -> dict:
+    """
+    Load graded/closing_lines_{date}.json produced by snapshot_closing_lines.py.
+    Returns dict: {(player_norm, stat, line): fair_over_prob}
+    Returns {} if file doesn't exist (falls back to pick-time market_prob).
+
+    The closing file is keyed by "{player_norm}|{stat}|{line}".
+    We join to predictions by normalizing player names the same way.
+    """
+    import re
+    closing_path = GRADED_DIR / f"closing_lines_{target_date}.json"
+    if not closing_path.exists():
+        return {}
+    try:
+        with open(closing_path) as f:
+            raw = json.load(f)
+        result = {}
+        for key, rec in raw.items():
+            parts = key.split("|")
+            if len(parts) != 3:
+                continue
+            player_norm, stat, line_str = parts
+            try:
+                line = float(line_str)
+            except ValueError:
+                continue
+            result[(player_norm, stat, line)] = {
+                "fair_over_prob":  rec.get("fair_over_prob", 0.5),
+                "fair_under_prob": rec.get("fair_under_prob", 0.5),
+            }
+        logger.info(f"Closing lines loaded: {len(result)} player-stat entries for {target_date}")
+        return result
+    except Exception as e:
+        logger.warning(f"Could not load closing lines for {target_date}: {e}")
+        return {}
+
+
+def normalize_player_name(name: str) -> str:
+    """Mirror the normalization in snapshot_closing_lines.py."""
+    import re
+    name = name.lower().strip()
+    name = re.sub(r"[''`]", "", name)
+    name = re.sub(r"[^a-z0-9 ]", " ", name)
+    return re.sub(r"\s+", " ", name).strip()
+
+
+def lookup_closing_prob(
+    closing_lines: dict,
+    player_name: str,
+    stat: str,
+    line: float,
+    side: str,
+) -> tuple[float | None, bool]:
+    """
+    Look up fair probability from closing lines for a given pick.
+    Returns (fair_prob_for_bet_side, is_true_clv).
+    is_true_clv=True  → matched closing snapshot (true CLV)
+    is_true_clv=False → no closing data (falls back to market_prob)
+    """
+    player_norm = normalize_player_name(player_name)
+    # Try exact line match first, then ±0.5 tolerance
+    for tolerance in [0.0, 0.5]:
+        for try_line in [line, line + 0.5, line - 0.5]:
+            if abs(try_line - line) > tolerance + 0.01:
+                continue
+            rec = closing_lines.get((player_norm, stat, try_line))
+            if rec:
+                if side == "OVER":
+                    return float(rec["fair_over_prob"]), True
+                else:
+                    return float(rec["fair_under_prob"]), True
+    return None, False
+
+
 GRADED_DIR = Path("graded"); GRADED_DIR.mkdir(exist_ok=True)
 PRED_DIR   = Path("predictions")
 PERF_LOG   = GRADED_DIR / "performance_log.csv"
@@ -43,35 +135,6 @@ def american_to_decimal(american: int) -> float:
         return 1.0 + 100.0 / abs(american)
 
 
-def normalize_name(name: str) -> str:
-    """Matches normalization in snapshot_closing_lines.py."""
-    import re
-    name = name.lower().strip()
-    name = re.sub(r"[''`]", "", name)
-    name = re.sub(r"[^a-z0-9 ]", " ", name)
-    return re.sub(r"\s+", " ", name).strip()
-
-
-def load_closing_lines(target_date: str) -> dict:
-    """
-    Load closing line snapshot for target_date.
-    Returns dict keyed by '{player_norm}|{stat}|{line}'.
-    Falls back to empty dict if file not found.
-    """
-    path = GRADED_DIR / f"closing_lines_{target_date}.json"
-    if not path.exists():
-        logger.warning(f"No closing lines file found: {path}. CLV will use pick-time market prob as fallback.")
-        return {}
-    try:
-        with open(path) as f:
-            lines = json.load(f)
-        logger.info(f"Loaded {len(lines)} closing line entries for {target_date}.")
-        return lines
-    except Exception as e:
-        logger.error(f"Failed to load closing lines: {e}")
-        return {}
-
-
 def compute_profit(result: str, bet_odds: int) -> float:
     if result == "HIT":
         return american_to_decimal(bet_odds) - 1.0
@@ -81,21 +144,35 @@ def compute_profit(result: str, bet_odds: int) -> float:
         return 0.0
 
 
-def grade_single(pred: dict, actual_stat, closing_line: dict | None = None) -> dict:
+def grade_single(pred: dict, actual_stat, closing_lines: dict = None) -> dict:
+    """
+    Grade a single prediction.
+
+    CLV computation (priority order):
+      1. True CLV  = model_prob - closing_fair_prob (from closing_lines snapshot)
+      2. Proxy CLV = model_prob - market_prob        (pick-time 8 AM price)
+      3. None      = no market reference available
+
+    Column names:
+      clv       — true CLV (closing snapshot available)
+      clv_proxy — pick-time proxy CLV (fallback, less reliable)
+    """
     p = dict(pred)
 
     if actual_stat is None:
         p["result"]    = "NO_ACTION"
         p["profit"]    = 0.0
         p["actual"]    = None
+        p["clv"]       = None
         p["clv_proxy"] = None
-        p["clv_source"] = "none"
+        p["clv_is_true"] = False
         return p
 
     line     = float(p.get("line", 0))
     side     = p.get("side", "OVER")
     bet_odds = int(p.get("odds", p.get("bet_odds", -110)))
     model_p  = float(p.get("model_prob", 0.5))
+    imp_over = float(p.get("market_prob", p.get("implied_prob_over", 0.5)))
 
     actual = float(actual_stat)
     p["actual"] = actual
@@ -116,24 +193,29 @@ def grade_single(pred: dict, actual_stat, closing_line: dict | None = None) -> d
 
     p["profit"] = compute_profit(p["result"], bet_odds)
 
-    # ── True CLV using closing line snapshot ─────────────────────────────────
-    if closing_line is not None:
-        # closing_line has fair_over_prob / fair_under_prob (vig removed)
-        close_over_p = float(closing_line.get("fair_over_prob", 0.5))
-        if side == "OVER":
-            p["clv_proxy"]  = round(model_p - close_over_p, 4)
-        else:
-            close_under_p   = float(closing_line.get("fair_under_prob", 0.5))
-            p["clv_proxy"]  = round((1.0 - model_p) - close_under_p, 4)
-        p["clv_source"] = "closing_line"
+    # ── CLV: attempt true CLV from closing snapshot, fallback to proxy ────────
+    closing_fair_prob = None
+    is_true_clv       = False
+
+    if closing_lines:
+        player_name = p.get("player_name", "")
+        closing_fair_prob, is_true_clv = lookup_closing_prob(
+            closing_lines, player_name, p.get("stat", ""), line, side
+        )
+
+    if is_true_clv and closing_fair_prob is not None:
+        # True CLV: model vs post-injury-report closing market
+        p["clv"]         = round(model_p - closing_fair_prob, 4)
+        p["clv_proxy"]   = round(model_p - imp_over, 4)    # keep proxy too for comparison
+        p["clv_is_true"] = True
     else:
-        # Fallback: pick-time market_prob (not true CLV — flagged clearly)
-        imp_over = float(p.get("market_prob", p.get("implied_prob_over", 0.5)))
+        # Proxy CLV: model vs pick-time market (less reliable — books shade lines)
         if side == "OVER":
             p["clv_proxy"] = round(model_p - imp_over, 4)
         else:
             p["clv_proxy"] = round((1.0 - model_p) - (1.0 - imp_over), 4)
-        p["clv_source"] = "pick_time_fallback"
+        p["clv"]         = p["clv_proxy"]   # best available
+        p["clv_is_true"] = False
 
     return p
 
@@ -201,30 +283,24 @@ def grade_date(target_date: str) -> pd.DataFrame:
     if not actuals:
         logger.warning("No actuals fetched — grading will mark all as NO_ACTION.")
 
-    # Load closing lines for true CLV (falls back to pick-time if unavailable)
+    # Load closing lines for true CLV computation
     closing_lines = load_closing_lines(target_date)
-    clv_hit_count = 0
+    n_true_clv = 0
 
     graded = []
     for pred in preds:
         pid  = int(pred.get("player_id", 0))
         stat = pred.get("stat", "")
         actual_val = actuals.get((pid, stat))
-
-        # Match to closing line by normalized name + stat + line
-        cl_entry = None
-        if closing_lines:
-            pname = pred.get("player_name", "")
-            line  = pred.get("line", 0)
-            cl_key = f"{normalize_name(pname)}|{stat}|{float(line)}"
-            cl_entry = closing_lines.get(cl_key)
-            if cl_entry:
-                clv_hit_count += 1
-
-        graded.append(grade_single(pred, actual_val, closing_line=cl_entry))
+        g = grade_single(pred, actual_val, closing_lines=closing_lines)
+        if g.get("clv_is_true"):
+            n_true_clv += 1
+        graded.append(g)
 
     if closing_lines:
-        logger.info(f"Closing line match rate: {clv_hit_count}/{len(preds)} picks ({100*clv_hit_count/max(len(preds),1):.1f}%)")
+        logger.info(f"CLV: {n_true_clv}/{len(graded)} picks matched closing lines (true CLV)")
+    else:
+        logger.info(f"CLV: No closing snapshot for {target_date} — using pick-time proxy CLV")
 
     df = pd.DataFrame(graded)
     df["grade_date"] = target_date
@@ -248,8 +324,11 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
     profit   = float(bet["profit"].sum())
     roi      = profit / n
 
-    clv_vals = bet["clv_proxy"].dropna()
+    # Prefer true CLV column; fallback to proxy
+    clv_col  = "clv" if "clv" in bet.columns else "clv_proxy"
+    clv_vals = bet[clv_col].dropna()
     mean_clv = float(clv_vals.mean()) if len(clv_vals) > 0 else 0.0
+    pct_true_clv = float((bet.get("clv_is_true", pd.Series(False)).sum() / len(bet))) if "clv_is_true" in bet.columns else 0.0
 
     if "model_prob" in bet.columns and "side" in bet.columns:
         actual_p = (bet["result"] == "HIT").astype(float).where(
@@ -277,6 +356,7 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
         "profit":   round(profit, 2),
         "roi":      round(roi, 4),
         "mean_clv": round(mean_clv, 4),
+        "pct_true_clv": round(pct_true_clv, 3),
         "brier":    round(brier, 4) if brier is not None else None,
         "max_dd":   round(max_dd, 2),
         "sharpe":   round(sharpe, 3),

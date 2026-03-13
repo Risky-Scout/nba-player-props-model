@@ -29,7 +29,7 @@ BallDontLie API  ──►  feature_engineering.py  ──►  train_v12.py
                                               calibrate_models.py  (weekly)
 ```
 
-**Automation:** Two GitHub Actions jobs run daily — a prediction job at 8 AM ET and a closing line snapshot at 7 PM ET before NBA tipoffs. All outputs commit directly to the repo and are served to the frontend via GitHub raw URLs.
+**Automation:** Three GitHub Actions jobs run daily — an opening line snapshot at 9 AM ET (sharp money baseline), a prediction + grading job at 8 AM ET, and a closing line snapshot at 6 PM ET (post-injury-report, sharpest pre-tip price). All outputs commit directly to the repo and served to the frontend via GitHub raw URLs.
 
 ---
 
@@ -130,7 +130,7 @@ When teammates are ruled out, their statistical production redistributes. The sy
 
 CLV is the primary long-term performance metric — more informative than win rate because it measures edge against the sharpest available price rather than against a binary outcome.
 
-Each evening at 7 PM ET, `snapshot_closing_lines.py` fetches player prop markets across DraftKings, FanDuel, BetMGM, BetRivers, and others. Vig is removed using the standard multiplicative method to produce fair implied probabilities, stored in `graded/closing_lines_{date}.json`.
+Each evening at 6 PM ET (post-NBA injury report deadline), `snapshot_closing_lines.py` fetches player prop markets across DraftKings, FanDuel, BetMGM, BetRivers, and others. Vig is removed using the standard multiplicative method to produce fair implied probabilities, stored in `graded/closing_lines_{date}.json`.
 
 The following morning, `grade_darko_v4.py` computes true CLV for each graded pick:
 
@@ -196,7 +196,9 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 ├── predict_darko_v4.py           # Daily inference — generates singles_{date}.json
 ├── grade_darko_v4.py             # Grader — CLV, ROI, calibration tracking
 ├── calibrate_models.py           # Post-hoc isotonic calibration per stat
-├── snapshot_closing_lines.py     # 7 PM ET closing line snapshot for true CLV
+├── snapshot_opening_lines.py     # 9 AM ET opening line snapshot (sharp money baseline)
+├── snapshot_closing_lines.py     # 6 PM ET closing line snapshot (post-injury-report, true CLV)
+├── analyze_features.py            # Feature importance analysis: per-stat, groups, interactions
 ├── feature_engineering.py        # All feature construction (zero leakage)
 ├── minutes_model.py              # Standalone quantile minutes engine
 ├── bdl_client.py                 # BallDontLie API v2 client
@@ -207,7 +209,7 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 ├── PERFORMANCE.md                # Live graded results with CLV breakdown
 ├── requirements.txt              # Pinned Python dependencies
 ├── .github/workflows/
-│   ├── daily_predictions.yml     # Two-job automation: 8 AM predict + 7 PM snapshot
+│   ├── daily_predictions.yml     # Three-job automation: 9 AM open, 8 AM predict, 6 PM close
 │   └── retrain.yml               # Manual retrain dispatch
 ├── predictions/
 │   ├── nba-props.html            # Bloomberg terminal frontend
@@ -215,7 +217,8 @@ Live CLV tracking began March 10, 2026. Full results accumulate in `graded/perfo
 │   └── sgps_{date}.json          # Same-game parlay correlations
 ├── graded/
 │   ├── performance_log.csv       # Cumulative graded results with CLV
-│   ├── closing_lines_{date}.json # Vig-removed closing line snapshots
+│   ├── closing_lines_{date}.json # Vig-removed closing line snapshots (6 PM ET)
+│   ├── opening_lines_{date}.json # Opening line snapshots for line movement signal
 │   └── graded_{date}.csv         # Per-date graded detail
 └── model_cache/
     ├── q{τ}_{stat}.pkl           # 11 quantile models × 12 stat targets = 132 models

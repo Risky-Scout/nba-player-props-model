@@ -283,15 +283,36 @@ def fit_isotonic_calibrator(probs: np.ndarray,
 
 def fit_all(df: pd.DataFrame) -> dict:
     """
-    Fit one isotonic calibrator per stat.
-    Returns dict: {stat: {'calibrator': ir, 'n': int,
-                           'brier_before': float, 'brier_after': float,
-                           'ece_before': float, 'ece_after': float}}
+    Fit one isotonic calibrator per stat using a TIME-BASED train/test split.
+
+    CRITICAL — why time split (not random split):
+      Isotonic regression is fit and evaluated on the SAME data when using
+      random splits with cross_val_predict — this causes ECE → 0 (perfect in-sample
+      fit, meaningless out-of-sample). We must evaluate on held-out FUTURE data
+      that the calibrator was not trained on. Temporal ordering is required:
+        Train: first 70% of graded picks by date
+        Test:  last 30% of graded picks by date
+
+      This is the only statistically valid approach for time-series data.
+
+    Returns dict: {stat: {'calibrator': ir, 'n_train': int, 'n_test': int,
+                           'brier_train_before': float, 'brier_test_before': float,
+                           'brier_test_after': float,
+                           'ece_test_before': float, 'ece_test_after': float,
+                           'saved': bool, 'skipped': bool}}
     """
+    TRAIN_FRAC = 0.70   # first 70% of picks (chronological) → fit calibrator
+    TEST_FRAC  = 0.30   # last 30% → evaluate calibrator generalization
+
     results = {}
 
     for stat in STATS:
         stat_df = df[df["stat"] == stat].copy()
+
+        # Sort by grade_date if available, else by row order
+        if "grade_date" in stat_df.columns:
+            stat_df = stat_df.sort_values("grade_date").reset_index(drop=True)
+
         n = len(stat_df)
 
         if n < MIN_SAMPLES_PER_STAT:
@@ -299,60 +320,100 @@ def fit_all(df: pd.DataFrame) -> dict:
                 f"{stat}: only {n} samples (need {MIN_SAMPLES_PER_STAT}) "
                 f"— skipping calibration, using identity"
             )
-            results[stat] = {"calibrator": None, "n": n,
-                             "brier_before": None, "brier_after": None,
-                             "ece_before": None, "ece_after": None,
-                             "skipped": True}
+            results[stat] = {"calibrator": None, "n_train": 0, "n_test": 0,
+                             "brier_test_before": None, "brier_test_after": None,
+                             "ece_test_before": None, "ece_test_after": None,
+                             "skipped": True, "saved": False}
             continue
 
-        # model_prob is always P(OVER). For UNDER picks, invert.
-        probs = stat_df["model_prob"].values.astype(float)
-        under_mask = stat_df["side"] == "UNDER"
-        probs[under_mask] = 1.0 - probs[under_mask]
-        # Clip to valid probability range
-        probs = np.clip(probs, 0.01, 0.99)
-        actuals = stat_df["hit"].values.astype(float)
+        # Time split
+        split_idx = int(n * TRAIN_FRAC)
+        if split_idx < 30:
+            logger.warning(f"{stat}: train split too small ({split_idx} rows) — skipping")
+            results[stat] = {"calibrator": None, "n_train": split_idx, "n_test": n - split_idx,
+                             "brier_test_before": None, "brier_test_after": None,
+                             "ece_test_before": None, "ece_test_after": None,
+                             "skipped": True, "saved": False}
+            continue
 
-        brier_before = compute_brier_score(probs, actuals)
-        ece_before   = compute_calibration_error(probs, actuals)
+        train_df = stat_df.iloc[:split_idx].copy()
+        test_df  = stat_df.iloc[split_idx:].copy()
 
-        calibrator = fit_isotonic_calibrator(probs, actuals)
-        cal_probs  = calibrator.predict(probs)
+        def _get_probs_actuals(sub_df):
+            probs = sub_df["model_prob"].values.astype(float)
+            mask  = sub_df["side"].values == "UNDER"
+            probs[mask] = 1.0 - probs[mask]
+            return np.clip(probs, 0.01, 0.99), sub_df["hit"].values.astype(float)
 
-        brier_after = compute_brier_score(cal_probs, actuals)
-        ece_after   = compute_calibration_error(cal_probs, actuals)
+        train_probs, train_actuals = _get_probs_actuals(train_df)
+        test_probs,  test_actuals  = _get_probs_actuals(test_df)
 
-        improvement_brier = brier_before - brier_after
-        improvement_ece   = ece_before   - ece_after
+        # Baseline (uncalibrated) scores on TEST set
+        brier_test_before = compute_brier_score(test_probs, test_actuals)
+        ece_test_before   = compute_calibration_error(test_probs, test_actuals)
+
+        # Fit calibrator on TRAIN set only
+        calibrator = fit_isotonic_calibrator(train_probs, train_actuals)
+
+        # Evaluate on TEST set
+        cal_test_probs = calibrator.predict(test_probs)
+        brier_test_after = compute_brier_score(cal_test_probs, test_actuals)
+        ece_test_after   = compute_calibration_error(cal_test_probs, test_actuals)
+
+        # Diagnose in-sample to warn about overfitting
+        cal_train_probs  = calibrator.predict(train_probs)
+        brier_train_after = compute_brier_score(cal_train_probs, train_actuals)
+
+        improvement = brier_test_before - brier_test_after
+        ece_improvement = ece_test_before - ece_test_after
+        in_sample_drop  = compute_brier_score(train_probs, train_actuals) - brier_train_after
+        overfit_signal  = in_sample_drop > improvement * 2
 
         logger.info(
-            f"{stat:6s} n={n:4d} | "
-            f"Brier: {brier_before:.4f} → {brier_after:.4f} "
-            f"({'↓' if improvement_brier > 0 else '↑'}{abs(improvement_brier):.4f}) | "
-            f"ECE: {ece_before:.4f} → {ece_after:.4f} "
-            f"({'↓' if improvement_ece > 0 else '↑'}{abs(improvement_ece):.4f})"
+            f"{stat:6s} n_train={split_idx:3d} n_test={n-split_idx:3d} | "
+            f"Brier test: {brier_test_before:.4f} → {brier_test_after:.4f} "
+            f"({'↓' if improvement > 0 else '↑'}{abs(improvement):.4f}) | "
+            f"ECE test: {ece_test_before:.4f} → {ece_test_after:.4f} "
+            f"({'↓' if ece_improvement > 0 else '↑'}{abs(ece_improvement):.4f})"
+            + (" ⚠ OVERFIT" if overfit_signal else "")
         )
 
-        # Only save calibrator if it actually improves Brier score
-        if brier_after < brier_before:
+        # Save only if out-of-sample Brier score improves
+        saved = False
+        if brier_test_after < brier_test_before:
+            # Refit on ALL data before saving (to maximize calibration information)
+            all_probs, all_actuals = _get_probs_actuals(stat_df)
+            final_calibrator = fit_isotonic_calibrator(all_probs, all_actuals)
             save_path = MODEL_DIR / f"calibration_{stat}.pkl"
-            joblib.dump(calibrator, save_path)
-            logger.info(f"  ✓ Saved {save_path}")
+            joblib.dump(final_calibrator, save_path)
+            calibrator = final_calibrator
+            saved = True
+            logger.info(f"  ✓ Saved {save_path} (refit on all {n} samples)")
+            if overfit_signal:
+                logger.warning(
+                    f"  ⚠ {stat}: in-sample improvement ({in_sample_drop:.4f}) >> "
+                    f"out-of-sample ({improvement:.4f}) — calibrator may overfit "
+                    f"as sample size grows. Monitor ECE on next grading cycle."
+                )
         else:
             logger.warning(
-                f"  ⚠ {stat}: calibration did not improve Brier score — "
+                f"  ⚠ {stat}: calibration did not improve out-of-sample Brier "
+                f"({brier_test_before:.4f} → {brier_test_after:.4f}) — "
                 f"using identity (raw model probs)"
             )
             calibrator = None
 
         results[stat] = {
-            "calibrator": calibrator,
-            "n": n,
-            "brier_before": round(brier_before, 5),
-            "brier_after":  round(brier_after, 5),
-            "ece_before":   round(ece_before, 5),
-            "ece_after":    round(ece_after, 5),
+            "calibrator":        calibrator,
+            "n_train":           split_idx,
+            "n_test":            n - split_idx,
+            "brier_train_before": round(compute_brier_score(train_probs, train_actuals), 5),
+            "brier_test_before": round(brier_test_before, 5),
+            "brier_test_after":  round(brier_test_after, 5),
+            "ece_test_before":   round(ece_test_before, 5),
+            "ece_test_after":    round(ece_test_after, 5),
             "skipped": False,
+            "saved":   saved,
         }
 
     return results

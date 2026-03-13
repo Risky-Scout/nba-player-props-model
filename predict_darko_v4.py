@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 predict_darko_v4.py — NBA Props Model Prediction Engine
-VERSION: 2026-02-28-v11
+VERSION: 2026-03-12-v12
 
 Outputs (SEPARATE FILES):
   predictions/singles_{date}.json   — individual prop bets (EV > 2.5%)
@@ -49,6 +49,7 @@ try:
         get_injuries, get_advanced_stats_v2,
         build_game_context_map, build_injury_map,
         parse_props_for_game,
+        enrich_game_context_with_snapshots,
     )
     from feature_engineering import (
         build_player_game_features,
@@ -261,7 +262,7 @@ def print_sgp_summary(sgps: list):
 
 def main():
     logger.info("=" * 60)
-    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-02-28-v11")
+    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-03-12-v12")
     logger.info("=" * 60)
 
     if not _get_api_key():
@@ -298,6 +299,12 @@ def main():
 
     today_odds_raw = get_game_odds(dates=[target_date])
     ctx_map = build_game_context_map(today_odds_raw) if today_odds_raw else {}
+
+    # Enrich with opening/closing snapshot line movement signals.
+    # Provides total_move and spread_move (sharp money signal) for today's games.
+    # Snapshots accumulate daily — missing files degrade gracefully (NaN features).
+    logger.info("Enriching game context with line movement snapshots...")
+    ctx_map = enrich_game_context_with_snapshots(ctx_map, games, target_date)
 
     logger.info("Fetching injuries...")
     injury_raw = get_injuries()
@@ -451,7 +458,7 @@ def main():
     singles_out = {
         "date":         today,
         "generated_at": datetime.utcnow().isoformat(),
-        "version":      "2026-02-28-v11",
+        "version":      "2026-03-12-v12",
         "min_ev":       MIN_EV,
         "total_picks":  len(all_singles),
         "picks":        all_singles,
@@ -491,7 +498,7 @@ def main():
     sgps_out = {
         "date":         today,
         "generated_at": datetime.utcnow().isoformat(),
-        "version":      "2026-02-28-v11",
+        "version":      "2026-03-12-v12",
         "min_ev":       MIN_EV,
         "total_sgps":   len(all_sgps),
         "two_leg":      len(two_leg),
