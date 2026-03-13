@@ -2,7 +2,15 @@
 """
 snapshot_closing_lines.py
 =========================
-Runs at 7 PM ET (midnight UTC) — before NBA tipoffs.
+Runs at 6 PM ET (23:00 UTC) — after the NBA injury report deadline.
+
+Why 6 PM ET:
+  The NBA official injury report deadline is 5:30 PM ET. By 6 PM the
+  market has had 30 minutes to fully digest official designations and
+  reprice. This is the sharpest point in the market cycle before tipoff
+  noise begins. Running at 7 PM risks capturing lines mid-movement as
+  books respond to last-minute lineup scratches.
+
 Fetches The Odds API player props, removes vig, stores fair implied
 probabilities as the closing line baseline for true CLV calculation.
 
