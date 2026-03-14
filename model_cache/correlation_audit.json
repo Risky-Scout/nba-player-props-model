@@ -1,45 +1,29 @@
 {
   "global": {
-    "n": 66635,
+    "n": 1584,
     "n_negative": 0,
     "frac_negative": 0.0,
     "max_neg_magnitude": 0.0,
     "correction_large": false
   },
   "seg_0_0": {
-    "n": 256,
-    "fallback": false,
-    "n_negative": 0,
-    "frac_negative": 0.0,
-    "max_neg_magnitude": 0.0,
-    "correction_large": false
+    "n": 55,
+    "fallback": true
   },
   "seg_0_1": {
-    "n": 236,
-    "fallback": false,
-    "n_negative": 0,
-    "frac_negative": 0.0,
-    "max_neg_magnitude": 0.0,
-    "correction_large": false
+    "n": 51,
+    "fallback": true
   },
   "seg_0_2": {
-    "n": 431,
-    "fallback": false,
-    "n_negative": 0,
-    "frac_negative": 0.0,
-    "max_neg_magnitude": 0.0,
-    "correction_large": false
+    "n": 51,
+    "fallback": true
   },
   "seg_0_3": {
-    "n": 228,
-    "fallback": false,
-    "n_negative": 0,
-    "frac_negative": 0.0,
-    "max_neg_magnitude": 0.0,
-    "correction_large": false
+    "n": 18,
+    "fallback": true
   },
   "seg_1_0": {
-    "n": 13238,
+    "n": 401,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -47,7 +31,7 @@
     "correction_large": false
   },
   "seg_1_1": {
-    "n": 14368,
+    "n": 420,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -55,7 +39,7 @@
     "correction_large": false
   },
   "seg_1_2": {
-    "n": 19352,
+    "n": 439,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -63,7 +47,7 @@
     "correction_large": false
   },
   "seg_1_3": {
-    "n": 18526,
+    "n": 149,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
