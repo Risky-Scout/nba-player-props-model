@@ -452,7 +452,7 @@ def build_training_table(stats_df, adv_df, odds_df):
     try:
         from bdl_client import get_team_season_averages, build_opponent_env_map
         _opp_records = get_team_season_averages(
-            season=int(stats_df['season'].max()) if 'season' in stats_df.columns else 2024,
+            season=int(stats_df['season'].max()) + 1 if 'season' in stats_df.columns else 2025,
             stat_type="opponent",
         )
         opp_env_map = build_opponent_env_map(_opp_records, stat_type="opponent")
