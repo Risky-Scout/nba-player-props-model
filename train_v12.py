@@ -447,13 +447,11 @@ def build_training_table(stats_df, adv_df, odds_df):
     snap_dates_used = 0
 
 
-    build_player_game_features._opp_env_map = opp_env_map
-
     # ── [v19] Build opponent environment map ─────────────────────────────────
     try:
         from bdl_client import get_team_season_averages, build_opponent_env_map
         _opp_records = get_team_season_averages(
-            season=target_season,
+            season=int(stats_df['season'].max()) if 'season' in stats_df.columns else 2024,
             stat_type="opponent",
         )
         opp_env_map = build_opponent_env_map(_opp_records, stat_type="opponent")
