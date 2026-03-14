@@ -461,7 +461,7 @@ def build_training_table(stats_df, adv_df, odds_df):
         logger.warning(f"[v19] opp_env_map failed: {_e} — opponent features = NaN")
         opp_env_map = {}
     build_player_game_features._opp_env_map = opp_env_map
-    all_rows = []; skipped = 0
+    all_rows = []; skipped = 0; _chunk_idx = 0; _chunk_files = []
     players  = list(stats_df.groupby("player_id"))
 
     for idx, (player_id, pdata) in enumerate(players):
@@ -580,6 +580,16 @@ def build_training_table(stats_df, adv_df, odds_df):
                         float(base.get("mp_mean_last10") or 0)
                     ),
                 })
+        # ── Chunk flush every 100 players to prevent OOM ─────────────
+        if (idx + 1) % 100 == 0 and all_rows:
+            import tempfile, os
+            _chunk_path = f'/tmp/train_chunk_{_chunk_idx}.parquet'
+            import pandas as _pd
+            _pd.DataFrame(all_rows).to_parquet(_chunk_path, index=False)
+            _chunk_files.append(_chunk_path)
+            all_rows.clear()
+            _chunk_idx += 1
+            import gc as _gc; _gc.collect()
 
         if (idx + 1) % 100 == 0:
             logger.info(
