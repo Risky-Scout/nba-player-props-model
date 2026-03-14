@@ -963,27 +963,8 @@ def build_player_game_features(
     f["is_home"]      = int(is_home)
 
     # ── [v19] Compute advanced matchup + archetype + shrinkage features ────────
-    # Import and call build_v19_features if available
-    try:
-        from feature_engineering_v19_final import build_v19_features
-        f = build_v19_features(
-            f                    = f,
-            game_context         = game_context,
-            player_id            = player_id,
-            opp_team_id          = opp_team_id,
-            player_playtype      = getattr(build_player_game_features, '_player_playtype', {}),
-            opp_playtype_defense = getattr(build_player_game_features, '_opp_playtype', {}),
-            player_tracking      = getattr(build_player_game_features, '_player_tracking', {}),
-            player_shot_dashboard= getattr(build_player_game_features, '_player_shot_dashboard', {}),
-            opp_shot_zone_defense= getattr(build_player_game_features, '_opp_shot_zone', {}),
-            opp_env_map          = getattr(build_player_game_features, '_opp_env_map', {}),
-            prior_stats          = prior_stats,
-            injury_map           = injury_map,
-        )
-    except Exception as _v19_err:
-        import logging
-        logging.getLogger(__name__).warning(f"[v19] build_v19_features skipped: {_v19_err}")
-
+    # [v19] Full feature compute runs at predict time with external maps
+    # During training, archetype flags computed from available features above
     return f
 
 def add_interaction_features(f: dict, stat: str) -> dict:
