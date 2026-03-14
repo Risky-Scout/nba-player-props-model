@@ -45,6 +45,7 @@ from pathlib import Path
 
 import joblib
 import lightgbm as lgb
+import gc
 import numpy as np
 import pandas as pd
 
@@ -464,6 +465,9 @@ def build_training_table(stats_df, adv_df, odds_df):
     players  = list(stats_df.groupby("player_id"))
 
     for idx, (player_id, pdata) in enumerate(players):
+        if idx % 50 == 0 and idx > 0:
+            gc.collect()
+            logger.info(f"  GC at player {idx}/{len(players)}")
         pdata = pdata.sort_values("game_date").reset_index(drop=True)
         if len(pdata) < MIN_GAMES:
             continue
