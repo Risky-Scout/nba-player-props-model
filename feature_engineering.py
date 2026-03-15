@@ -1067,6 +1067,9 @@ LAYER_1_COMBO_EXTENSION = [
 
 LAYER_2_PTS = [
     "implied_team_total",
+    "opp_allowed_pts_ewma",
+    "opp_allowed_pts_factor",
+    "opp_allowed_pts_mean",
     "consensus_total",
     "market_pace_proxy",
     "opp_pace_context",
@@ -1076,6 +1079,9 @@ LAYER_2_PTS = [
 
 LAYER_2_AST = [
     "implied_team_total",
+    "opp_allowed_ast_ewma",
+    "opp_allowed_ast_factor",
+    "opp_allowed_ast_mean",
     "consensus_total",
     "market_pace_proxy",
     "opp_pace_context",
@@ -1086,6 +1092,9 @@ LAYER_2_AST = [
 
 LAYER_2_REB = [
     "consensus_total",
+    "opp_allowed_reb_ewma",
+    "opp_allowed_reb_factor",
+    "opp_allowed_reb_mean",
     "market_pace_proxy",
     "opp_pace_context",
     "spread_for_team",
@@ -1095,6 +1104,9 @@ LAYER_2_REB = [
 
 LAYER_2_FG3M = [
     "implied_team_total",
+    "opp_allowed_fg3m_ewma",
+    "opp_allowed_fg3m_factor",
+    "opp_allowed_fg3m_mean",
     "consensus_total",
     "market_pace_proxy",
     "spread_for_team",
@@ -1103,12 +1115,18 @@ LAYER_2_FG3M = [
 
 LAYER_2_BLK = [
     "market_pace_proxy",
+    "opp_allowed_blk_ewma",
+    "opp_allowed_blk_factor",
+    "opp_allowed_blk_mean",
     "spread_for_team",
     "is_home",
 ]
 
 LAYER_2_STL = [
     "market_pace_proxy",
+    "opp_allowed_stl_ewma",
+    "opp_allowed_stl_factor",
+    "opp_allowed_stl_mean",
     "spread_for_team",
     "is_home",
 ]
