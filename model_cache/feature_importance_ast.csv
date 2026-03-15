@@ -10,7 +10,8 @@ is_home,184
 three_in_4,96
 four_in_6,87
 back_to_back,84
-consensus_total,0
-implied_team_total,0
 spread_for_team,0
+implied_team_total,0
+opp_allowed_ast_ewma,0
+consensus_total,0
 vacated_ast,0

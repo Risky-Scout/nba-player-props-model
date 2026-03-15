@@ -11,9 +11,9 @@ is_home,161
 three_in_4,125
 back_to_back,121
 four_in_6,85
-consensus_total,0
+opp_allowed_pts_ewma,0
 implied_team_total,0
 spread_for_team,0
-opp_allowed_pts_ewma,0
+consensus_total,0
 vacated_fga,0
 vacated_minutes,0

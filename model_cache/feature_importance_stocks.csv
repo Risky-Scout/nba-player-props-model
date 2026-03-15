@@ -6,6 +6,7 @@ is_home,396
 four_in_6,249
 three_in_4,234
 back_to_back,164
-implied_team_total,0
 consensus_total,0
+opp_allowed_pts_ewma,0
+implied_team_total,0
 spread_for_team,0
