@@ -1080,10 +1080,10 @@ def _shared_cols() -> list:
 # =============================================================================
 
 LAYER_1_CORE = [
-    "ewma10_min",
-    "std_min_last10",
-    "trend_min",
-    "mean_min_last10",
+    "mp_ewma_10",
+    "mp_vol_last10",
+    "mp_trend_3v10",
+    "mp_mean_last10",
 ]
 
 LAYER_1_COMBO_EXTENSION = [
