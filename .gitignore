@@ -31,3 +31,14 @@ data/training_table.parquet
 data/training_table.parquet
 config.php
 data/training_table.parquet
+*.bak
+feature_engineering_v1*.py
+feature_engineering_v17*.py
+feature_engineering_v18*.py
+get_feature_cols_replacement.py
+patch_marketmaker_workbooks_WORKING.py
+train_v12_patch.py
+balldontlie.gs
+bdl_api_feature_blueprint.py
+bdl_client_new_functions.py
+model_cache/feature_analysis_report.json
