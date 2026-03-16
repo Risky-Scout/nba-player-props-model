@@ -521,6 +521,9 @@ def build_training_table(stats_df, adv_df, odds_df):
             is_home = int(tid == hid)
             td      = str(cur["game_date"])[:10]
             ctx     = dict(ctx_map.get(gid, {}))   # copy — don't mutate shared dict
+            # Derive opp_team_id from home/visitor — critical for opponent features
+            vis_id  = int(cur.get("visitor_team_id") or 0)
+            ctx["opp_team_id"] = vis_id if tid == hid else hid
 
             # Enrich ctx with snapshot-derived line movement for this date.
             # opening_snap_index[td] contains game labels → opening prices.
