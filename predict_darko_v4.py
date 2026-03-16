@@ -398,6 +398,28 @@ def main():
 
                 q50 = q_preds.get(0.50, line)
 
+                # ── Per-stat bias correction (empirical from performance_log) ──
+                # Model q50 is systematically below actual due to selection bias
+                # (trained on all players, predicted only for starters/key players)
+                BIAS_CORRECTION = {
+                    "pts":   2.34,
+                    "ast":   0.82,
+                    "fg3m":  0.52,
+                    "reb":   0.50,
+                    "blk":   0.32,
+                    "stl":   0.30,
+                    "stocks": 0.62,
+                    "pra":   3.66,
+                    "pr":    2.84,
+                    "pa":    3.16,
+                    "ra":    1.32,
+                    "tov":   0.20,
+                }
+                q50 = q50 + BIAS_CORRECTION.get(target, 0.0)
+                # Also shift all quantiles to maintain distribution shape
+                bias = BIAS_CORRECTION.get(target, 0.0)
+                q_preds = {q: v + bias for q, v in q_preds.items()}
+
                 prob_over  = p_over(q_preds, line)
                 prob_under = p_under(q_preds, line)
 
