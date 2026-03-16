@@ -1,11 +1,11 @@
 feature,importance
-cv_min,6716
-above_mean_pct_min,2027
-rest_days,1058
-is_home,396
+cv_min,6652
+above_mean_pct_min,2092
+rest_days,1088
+is_home,420
 four_in_6,249
-three_in_4,234
-back_to_back,164
+three_in_4,246
+back_to_back,189
 consensus_total,0
 opp_allowed_pts_ewma,0
 implied_team_total,0
