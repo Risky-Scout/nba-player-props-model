@@ -436,14 +436,47 @@ def opponent_defensive_features(
         fta  = _game_avg("fta")
         tov  = _game_avg("turnover")
 
+        # League averages for factor computation
+        _lg_pts  = float(all_stats_df["pts"].mean())  if "pts"  in all_stats_df.columns else 25.0
+        _lg_reb  = float(all_stats_df["reb"].mean())  if "reb"  in all_stats_df.columns else 4.5
+        _lg_ast  = float(all_stats_df["ast"].mean())  if "ast"  in all_stats_df.columns else 2.5
+        _lg_fg3m = float(all_stats_df["fg3m"].mean()) if "fg3m" in all_stats_df.columns else 1.5
+        _lg_blk  = float(all_stats_df["blk"].mean())  if "blk"  in all_stats_df.columns else 0.4
+        _lg_stl  = float(all_stats_df["stl"].mean())  if "stl"  in all_stats_df.columns else 0.7
+
+        blk  = _game_avg("blk")
+        stl  = _game_avg("stl")
+
         result = {
-            "opp_allowed_pts_ewma":  pts  if pts  is not None else np.nan,
-            "opp_allowed_reb_ewma":  reb  if reb  is not None else np.nan,
-            "opp_oreb_allowed_last10": oreb if oreb is not None else np.nan,
-            "opp_allowed_ast_ewma":  ast  if ast  is not None else np.nan,
-            "opp_3pa_allowed_last10":  fg3a if fg3a is not None else np.nan,
-            "opp_3pm_allowed_last10":  fg3m if fg3m is not None else np.nan,
-            "opp_fga_allowed_last10":  fga  if fga  is not None else np.nan,
+            # pts
+            "opp_allowed_pts_ewma":   pts  if pts  is not None else np.nan,
+            "opp_allowed_pts_mean":   pts  if pts  is not None else np.nan,
+            "opp_allowed_pts_factor": (pts / max(_lg_pts, 1)) if pts is not None else np.nan,
+            # reb
+            "opp_allowed_reb_ewma":   reb  if reb  is not None else np.nan,
+            "opp_allowed_reb_mean":   reb  if reb  is not None else np.nan,
+            "opp_allowed_reb_factor": (reb / max(_lg_reb, 1)) if reb is not None else np.nan,
+            # ast
+            "opp_allowed_ast_ewma":   ast  if ast  is not None else np.nan,
+            "opp_allowed_ast_mean":   ast  if ast  is not None else np.nan,
+            "opp_allowed_ast_factor": (ast / max(_lg_ast, 1)) if ast is not None else np.nan,
+            # fg3m
+            "opp_allowed_fg3m_ewma":   fg3m if fg3m is not None else np.nan,
+            "opp_allowed_fg3m_mean":   fg3m if fg3m is not None else np.nan,
+            "opp_allowed_fg3m_factor": (fg3m / max(_lg_fg3m, 1)) if fg3m is not None else np.nan,
+            # blk
+            "opp_allowed_blk_ewma":   blk  if blk  is not None else np.nan,
+            "opp_allowed_blk_mean":   blk  if blk  is not None else np.nan,
+            "opp_allowed_blk_factor": (blk / max(_lg_blk, 1)) if blk is not None else np.nan,
+            # stl
+            "opp_allowed_stl_ewma":   stl  if stl  is not None else np.nan,
+            "opp_allowed_stl_mean":   stl  if stl  is not None else np.nan,
+            "opp_allowed_stl_factor": (stl / max(_lg_stl, 1)) if stl is not None else np.nan,
+            # existing
+            "opp_oreb_allowed_last10":    oreb if oreb is not None else np.nan,
+            "opp_3pa_allowed_last10":     fg3a if fg3a is not None else np.nan,
+            "opp_3pm_allowed_last10":     fg3m if fg3m is not None else np.nan,
+            "opp_fga_allowed_last10":     fga  if fga  is not None else np.nan,
         }
 
         # 3P rate allowed
