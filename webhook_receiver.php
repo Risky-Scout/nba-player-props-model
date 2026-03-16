@@ -240,6 +240,7 @@ function ensurePlayer(&$state, $norm, $gameId = null) {
             'shot_events' => [],   // last 5 scoring timestamps
             'last_event_ts' => time(),
             'on_court_flag' => true,
+            'on_court'      => true,
         ];
     }
 }
@@ -310,6 +311,7 @@ switch ($eventType) {
             if (($pData['game_id'] ?? null) == $gameId) {
                 $pData['status']       = 'Final';
                 $pData['on_court_flag'] = false;
+                $pData['on_court']      = false;
             }
         }
         unset($pData);
@@ -370,6 +372,7 @@ switch ($eventType) {
             $p['clock']         = $game['time'] ?? $game['clock'] ?? $p['clock'];
             $p['status']        = 'in-progress';
             $p['on_court_flag'] = true;
+            $p['on_court']      = true;
             $p['last_event_ts'] = $now;
 
             // Heat detection: track last 5 scoring timestamps
@@ -424,6 +427,7 @@ switch ($eventType) {
             $p['clock']         = $game['time'] ?? $game['clock'] ?? $p['clock'];
             $p['status']        = 'in-progress';
             $p['on_court_flag'] = true;
+            $p['on_court']      = true;
             $p['last_event_ts'] = $now;
         }
         break;
@@ -444,6 +448,7 @@ switch ($eventType) {
             $p['clock']         = $game['time'] ?? $game['clock'] ?? $p['clock'];
             $p['status']        = 'in-progress';
             $p['on_court_flag'] = true;
+            $p['on_court']      = true;
             $p['last_event_ts'] = $now;
         }
         break;
@@ -461,6 +466,7 @@ switch ($eventType) {
             $p = &$state['players'][$norm];
             $p['stl']  += 1;
             $p['on_court_flag'] = true;
+            $p['on_court']      = true;
             $p['last_event_ts'] = $now;
         }
         break;
@@ -478,6 +484,7 @@ switch ($eventType) {
             $p = &$state['players'][$norm];
             $p['blk']  += 1;
             $p['on_court_flag'] = true;
+            $p['on_court']      = true;
             $p['last_event_ts'] = $now;
         }
         break;
@@ -495,6 +502,7 @@ switch ($eventType) {
             $p = &$state['players'][$norm];
             $p['tov']  += 1;
             $p['on_court_flag'] = true;
+            $p['on_court']      = true;
             $p['last_event_ts'] = $now;
         }
         break;
@@ -553,6 +561,7 @@ switch ($eventType) {
             $state['players'][$norm]['injured']        = true;
             $state['players'][$norm]['injury_status']  = 'out';
             $state['players'][$norm]['on_court_flag']  = false;
+            $state['players'][$norm]['on_court']       = false;
 
             // Log to injuries registry for dashboard display
             $state['injuries'][$norm] = [
@@ -594,6 +603,7 @@ switch ($eventType) {
                 $state['players'][$norm]['injured']        = false;
                 $state['players'][$norm]['injury_status']  = 'cleared';
                 $state['players'][$norm]['on_court_flag']  = true;
+                $state['players'][$norm]['on_court']       = true;
             }
             if (isset($state['injuries'][$norm])) {
                 $state['injuries'][$norm]['status']     = 'cleared';
