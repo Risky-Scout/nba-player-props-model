@@ -448,17 +448,51 @@ def build_training_table(stats_df, adv_df, odds_df):
     snap_dates_used = 0
 
 
-    # ── [v19] Build opponent environment map ─────────────────────────────────
+    # ── [v19] Build opponent environment map from stats_df ──────────────────
+    # BDL has no opponent season averages endpoint — compute from stats_df directly
     try:
-        from bdl_client import get_team_season_averages, build_opponent_env_map
-        _opp_records = get_team_season_averages(
-            season=int(stats_df['season'].max()) + 1 if 'season' in stats_df.columns else 2025,
-            stat_type="opponent",
-        )
-        opp_env_map = build_opponent_env_map(_opp_records, stat_type="opponent")
-        logger.info(f"[v19] opp_env_map built for {len(opp_env_map)} teams")
+        opp_env_map = {}
+        needed = ['home_team_id','visitor_team_id','team_id','pts','reb','ast','fg3m','blk','stl','game_date']
+        if all(c in stats_df.columns for c in needed):
+            stats_sorted = stats_df.copy()
+            stats_sorted['opp_team_id'] = np.where(
+                stats_sorted['team_id'] == stats_sorted['home_team_id'],
+                stats_sorted['visitor_team_id'],
+                stats_sorted['home_team_id']
+            )
+            stats_sorted = stats_sorted.sort_values('game_date')
+            def _ewma_last10(arr):
+                weights = np.array([0.85**(len(arr)-1-i) for i in range(len(arr))])
+                return float(np.average(arr, weights=weights)) if len(arr) > 0 else np.nan
+            for opp_id, grp in stats_sorted.groupby('opp_team_id'):
+                last10 = grp.tail(10)
+                opp_env_map[int(opp_id)] = {
+                    'opp_allowed_pts_ewma':  _ewma_last10(last10['pts'].values),
+                    'opp_allowed_pts_mean':  float(last10['pts'].mean()),
+                    'opp_allowed_pts_factor': float(last10['pts'].mean() / max(stats_df['pts'].mean(), 1)),
+                    'opp_allowed_reb_ewma':  _ewma_last10(last10['reb'].values),
+                    'opp_allowed_reb_mean':  float(last10['reb'].mean()),
+                    'opp_allowed_reb_factor': float(last10['reb'].mean() / max(stats_df['reb'].mean(), 1)),
+                    'opp_allowed_ast_ewma':  _ewma_last10(last10['ast'].values),
+                    'opp_allowed_ast_mean':  float(last10['ast'].mean()),
+                    'opp_allowed_ast_factor': float(last10['ast'].mean() / max(stats_df['ast'].mean(), 1)),
+                    'opp_allowed_fg3m_ewma': _ewma_last10(last10['fg3m'].values),
+                    'opp_allowed_fg3m_mean': float(last10['fg3m'].mean()),
+                    'opp_allowed_fg3m_factor': float(last10['fg3m'].mean() / max(stats_df['fg3m'].mean(), 1)),
+                    'opp_allowed_blk_ewma':  _ewma_last10(last10['blk'].values),
+                    'opp_allowed_blk_mean':  float(last10['blk'].mean()),
+                    'opp_allowed_blk_factor': float(last10['blk'].mean() / max(stats_df['blk'].mean(), 1)),
+                    'opp_allowed_stl_ewma':  _ewma_last10(last10['stl'].values),
+                    'opp_allowed_stl_mean':  float(last10['stl'].mean()),
+                    'opp_allowed_stl_factor': float(last10['stl'].mean() / max(stats_df['stl'].mean(), 1)),
+                }
+            logger.info(f"[v19] opp_env_map built for {len(opp_env_map)} teams from stats_df")
+        else:
+            missing = [c for c in needed if c not in stats_df.columns]
+            logger.warning(f"[v19] opp_env_map skipped — missing: {missing}")
+            opp_env_map = {}
     except Exception as _e:
-        logger.warning(f"[v19] opp_env_map failed: {_e} — opponent features = NaN")
+        logger.warning(f"[v19] opp_env_map failed: {_e}")
         opp_env_map = {}
     build_player_game_features._opp_env_map = opp_env_map
     all_rows = []; skipped = 0; _chunk_idx = 0; _chunk_files = []
