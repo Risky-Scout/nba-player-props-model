@@ -1,0 +1,94 @@
+{
+  "97559ed79c99e86d90fc2f9d2059e761": {
+    "home_team": "Charlotte Hornets",
+    "away_team": "Miami Heat",
+    "commence_time": "2026-03-17T23:10:00Z",
+    "consensus_total": 233.5,
+    "consensus_spread": -3.8,
+    "implied_home_total": 118.65,
+    "implied_away_total": 114.85,
+    "books_total": {
+      "fanduel": 233.5,
+      "draftkings": 233.5,
+      "betrivers": 234.0,
+      "betmgm": 233.5
+    },
+    "books_spread": {
+      "fanduel": -4.0,
+      "draftkings": -3.5,
+      "betrivers": -4.0,
+      "betmgm": -3.5
+    },
+    "snapshot_time": "2026-03-17T14:56:05Z",
+    "snapshot_type": "opening"
+  },
+  "ef96df74a063b75de7971612d1c1b18a": {
+    "home_team": "Washington Wizards",
+    "away_team": "Detroit Pistons",
+    "commence_time": "2026-03-17T23:10:00Z",
+    "consensus_total": 233.5,
+    "consensus_spread": 18.0,
+    "implied_home_total": 107.75,
+    "implied_away_total": 125.75,
+    "books_total": {
+      "fanduel": 233.5,
+      "draftkings": 232.5,
+      "betmgm": 233.5,
+      "betrivers": 234.0
+    },
+    "books_spread": {
+      "fanduel": 17.5,
+      "draftkings": 17.5,
+      "betmgm": 18.5,
+      "betrivers": 18.5
+    },
+    "snapshot_time": "2026-03-17T14:56:05Z",
+    "snapshot_type": "opening"
+  },
+  "1071bc9088322a8c42c7cd80db4c8c6f": {
+    "home_team": "Orlando Magic",
+    "away_team": "Oklahoma City Thunder",
+    "commence_time": "2026-03-17T23:10:00Z",
+    "consensus_total": 223.5,
+    "consensus_spread": 9.5,
+    "implied_home_total": 107.0,
+    "implied_away_total": 116.5,
+    "books_total": {
+      "fanduel": 223.5,
+      "draftkings": 222.5,
+      "betrivers": 223.5,
+      "betmgm": 223.5
+    },
+    "books_spread": {
+      "fanduel": 10.0,
+      "draftkings": 9.5,
+      "betrivers": 9.5,
+      "betmgm": 9.5
+    },
+    "snapshot_time": "2026-03-17T14:56:05Z",
+    "snapshot_type": "opening"
+  },
+  "9eba01d4cfa06caacc9d62a166b5a632": {
+    "home_team": "New York Knicks",
+    "away_team": "Indiana Pacers",
+    "commence_time": "2026-03-17T23:40:00Z",
+    "consensus_total": 223.5,
+    "consensus_spread": -15.5,
+    "implied_home_total": 119.5,
+    "implied_away_total": 104.0,
+    "books_total": {
+      "fanduel": 223.5,
+      "draftkings": 223.5,
+      "betrivers": 224.0,
+      "betmgm": 223.5
+    },
+    "books_spread": {
+      "fanduel": -15.5,
+      "draftkings": -15.5,
+      "betrivers": -15.5,
+      "betmgm": -15.5
+    },
+    "snapshot_time": "2026-03-17T14:56:05Z",
+    "snapshot_type": "opening"
+  }
+}
