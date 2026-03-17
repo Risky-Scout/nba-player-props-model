@@ -104,6 +104,19 @@ if ($MODE !== 'live' && file_exists($CACHE_FILE) &&
 }
 
 // ============================================================================
+// LINEUP POLLER — auto-trigger if data is stale (>60s)
+// Polls BDL /v1/lineups so we know who is actually on court
+// ============================================================================
+$lineupPollLog = __DIR__ . '/cache/lineup_poll.log';
+$lastPoll      = file_exists($lineupPollLog) ? filemtime($lineupPollLog) : 0;
+if (time() - $lastPoll > 60) {
+    $pollerPath = __DIR__ . '/lineup_poller.php';
+    if (file_exists($pollerPath)) {
+        exec('php ' . escapeshellarg($pollerPath) . ' > /dev/null 2>&1 &');
+    }
+}
+
+// ============================================================================
 // HTTP HELPERS
 // ============================================================================
 
@@ -262,11 +275,6 @@ function loadFromSingles($path, $date) {
                 'stat'             => $stat,
                 'fair_line'        => floatval($pick['q50']),  // model's P50
                 'q_preds'          => $pick['q_preds'] ?? [],
-                // Analytics pass-through — computed in predict_darko_v4.py
-                'line_ladder'      => $pick['line_ladder']  ?? null,
-                'drivers'          => $pick['drivers']      ?? null,
-                'uncertainty'      => $pick['uncertainty']  ?? null,
-                'sensitivity'      => $pick['sensitivity']  ?? null,
             ];
         }
         // Store side-specific probs into the base entry
@@ -364,6 +372,8 @@ $liveStateGames    = [];
 $liveStateInjuries = [];
 $webhookEventCount = 0;
 
+$lineupPlayers = [];  // player_id → on_court, starter, position
+
 if (file_exists($LIVE_STATE)) {
     $ls = json_decode(file_get_contents($LIVE_STATE), true);
     if ($ls) {
@@ -371,6 +381,8 @@ if (file_exists($LIVE_STATE)) {
         $liveStateGames    = $ls['games']    ?? [];
         $liveStateInjuries = $ls['injuries'] ?? [];
         $webhookEventCount = $ls['event_count'] ?? 0;
+        // Lineup poller writes lineup_players: player_id → on_court/starter/position
+        $lineupPlayers     = $ls['lineup_players'] ?? [];
     }
 }
 
@@ -602,16 +614,38 @@ foreach ($events as $event) {
             $isOT        = (bool)($gameCtx['is_overtime'] ?? false);
             $scoreMargin = intval($gameCtx['score_margin'] ?? 0);
 
+            // ── On-court state from lineup poller (BDL /v1/lineups) ──────
+            $playerId    = intval($model['player_id'] ?? 0);
+            $lineupEntry = $playerId ? ($lineupPlayers[$playerId] ?? null) : null;
+            $onCourt     = true; // default optimistic
+            $isStarter   = false;
+            if ($lineupEntry !== null) {
+                $lineupAge = time() - intval($lineupEntry['last_seen'] ?? 0);
+                if ($lineupAge < 600) { // only trust if <10 min old
+                    $onCourt   = boolval($lineupEntry['on_court'] ?? true);
+                    $isStarter = boolval($lineupEntry['starter']  ?? false);
+                }
+            }
+            // Also check webhook on_court flag (play-by-play sub events)
+            $webhookOnCourt = boolval($liveData['on_court'] ?? $liveData['on_court_flag'] ?? true);
+            // Webhook overrides lineup if more recent
+            $onCourt = $webhookOnCourt && $onCourt;
+
+            // If player is confirmed off court, suppress projection
+            if (!$onCourt && $minPlayed < 1.0) {
+                // DNP — hasn't played yet and not in lineup
+                continue; // skip this prop entirely
+            }
+
             if ($isInjured) {
                 $injuryAlert = 'INJURED: ' . ($liveStateInjuries[$norm]['detail'] ?? 'Injury reported');
             }
 
             if ($minPlayed > 0.5) {
                 $minRem = estimateMinRemainingV2($period, $clock, $isOT);
-                $result = calcLiveProbabilityV3(
+                $result = calcLiveProbabilityV2(
                     $fairLine, 36.0, $actual, $minPlayed, $minRem,
-                    $line, $statKey, $liveData, $gameCtx,
-                    is_array($qPreds) ? $qPreds : []   // pass pregame dist to V3
+                    $line, $statKey, $liveData, $gameCtx
                 );
                 $probOver  = $result['prob'];
                 $probUnder = 1.0 - $probOver;
@@ -622,31 +656,6 @@ foreach ($events as $event) {
                 $fairOddsUnder = toAmerican($probUnder);
                 $edgeO = round($probOver  - (1.0 / $decO), 4);
                 $edgeU = round($probUnder - (1.0 / $decU), 4);
-
-                // ── Live line ladder ─────────────────────────────────────────
-                // Query the live-adjusted probabilities at neighboring lines.
-                // Uses the shifted quantile distribution from V3 if available,
-                // otherwise falls back to normal approximation per line.
-                $liveLadder = buildLiveLadder(
-                    $liveProj, $line, $statKey, $qPreds, $fairLine
-                );
-
-                // ── Pace-to-line ─────────────────────────────────────────────
-                // The per-minute rate this player needs from here to hit the line.
-                // A trader reads this as: 'is the player on pace?' in one number.
-                $paceToLine = null;
-                if ($minRem > 0.5) {
-                    $needed = $line - $actual;
-                    $paceToLine = [
-                        'stat_needed'     => round(max(0, $needed), 1),
-                        'min_remaining'   => round($minRem, 1),
-                        'rate_needed'     => $minRem > 0 ? round($needed / $minRem, 3) : null,
-                        'current_rate'    => $minPlayed > 0 ? round($actual / $minPlayed, 3) : null,
-                        'on_pace'         => ($minPlayed > 0 && $minRem > 0)
-                            ? ($actual / $minPlayed) >= ($needed / $minRem)
-                            : null,
-                    ];
-                }
             }
         }
 
@@ -677,14 +686,6 @@ foreach ($events as $event) {
             'score_margin'   => $scoreMargin,
             'is_overtime'    => $isOT,
             'live_adjustments' => !empty($liveAdj) ? $liveAdj : null,
-            // ── Pregame analytics (from singles JSON, passed through) ──────
-            'line_ladder'    => $model['line_ladder']  ?? null,
-            'drivers'        => $model['drivers']      ?? null,
-            'uncertainty'    => $model['uncertainty']  ?? null,
-            'sensitivity'    => $model['sensitivity']  ?? null,
-            // ── Live analytics (computed in real time) ─────────────────────
-            'live_ladder'    => $liveLadder  ?? null,   // live-adjusted alt-line probs
-            'pace_to_line'   => $paceToLine  ?? null,   // on-pace metric for traders
         ];
 
         // OVER row
@@ -826,82 +827,45 @@ const HEAT_WINDOW_SEC  = 240;
 const HEAT_MIN_SHOTS   = 3;
 const HEAT_BOOST_PTS   = 1.12;
 const HEAT_BOOST_3PT   = 1.18;
-
-// Bayesian prior weight: equivalent "prior game minutes" of trust in pregame model.
-// At 15 min played, trust = 15/(15+15) = 50/50. At 30 min played, trust = 67% in-game.
-// This is materially slower than linear extrapolation — correct for stat variance.
 const BAYES_PRIOR_WEIGHT = 15.0;
 
-/**
- * calcLiveProbabilityV3 — Bayesian Quantile Distribution Update
- * ==============================================================
- * Core principle: the pregame model outputs a full Q10–Q90 distribution,
- * not a point estimate. Live updating should shift the ENTIRE distribution
- * based on observed evidence, then re-query P(stat > line) from that
- * updated distribution. This is fundamentally different from projecting
- * a final number and computing a normal CDF around it.
- *
- * Algorithm:
- * 1. Parse pregame Q10–Q90 into a piecewise linear CDF
- * 2. Compute Bayesian trust weight from minutes played
- * 3. Shift the distribution mean by the rate evidence (in-game vs pregame rate)
- * 4. Apply context factors (foul trouble, blowout, pace, heat)
- * 5. Query the shifted distribution at the sportsbook line
- *
- * This correctly handles:
- * - Blowout shrinkage: shifts distribution DOWN, doesn't just truncate
- * - Hot hand: shifts distribution UP proportionally across all quantiles
- * - Minutes uncertainty: wide distribution → less confident update
- */
-function calcLiveProbabilityV3(float $pregameProj, float $pregameMin, float $actual,
+function calcLiveProbabilityV2(float $pregameProj, float $pregameMin, float $actual,
     float $minPlayed, float $minRemBase, float $line, string $stat,
-    array $playerState=[], array $gameState=[], array $qPreds=[]): array {
+    array $playerState=[], array $gameState=[]): array {
 
     $adj = [];
-
-    // ── Terminal states ────────────────────────────────────────────────────────
     if ($actual > $line)
-        return ['prob'=>0.97,'live_proj'=>$actual,'method'=>'terminal_over','adjustments'=>['already_over'=>true]];
+        return ['prob'=>0.97,'live_proj'=>$actual,'adjustments'=>['already_over'=>true]];
     if (($playerState['foul_trouble_level']??'') === 'fouled_out')
-        return ['prob'=>0.03,'live_proj'=>$actual,'method'=>'terminal_fouledout','adjustments'=>['fouled_out'=>true]];
+        return ['prob'=>0.03,'live_proj'=>$actual,'adjustments'=>['fouled_out'=>true]];
     if ($playerState['injured']??false)
-        return ['prob'=>0.03,'live_proj'=>$actual,'method'=>'terminal_injured','adjustments'=>['injured'=>true]];
+        return ['prob'=>0.03,'live_proj'=>$actual,'adjustments'=>['injured'=>true]];
     if ($minRemBase < 0.5)
-        return ['prob'=>($actual>$line)?0.97:0.03,'live_proj'=>$actual,'method'=>'terminal_gameover','adjustments'=>['game_over'=>true]];
+        return ['prob'=>($actual>$line)?0.97:0.03,'live_proj'=>$actual,'adjustments'=>['game_over'=>true]];
     if ($minPlayed < 0.5) {
-        // Pre-tip: use pregame distribution directly
-        if (!empty($qPreds)) {
-            $prob = queryQuantileDistribution($qPreds, $line);
-        } else {
-            $adjProj = $pregameProj * ($minRemBase / max($pregameMin, 1.0));
-            $prob = calcStatProbFromCV($adjProj, $line, $stat);
-        }
-        return ['prob'=>$prob,'live_proj'=>round($pregameProj,1),'method'=>'pregame_dist','adjustments'=>['pre_game'=>true]];
+        $adjProj = $pregameProj * ($minRemBase / max($pregameMin,1.0));
+        return ['prob'=>calcStatProb($adjProj,$line,$stat),'live_proj'=>round($adjProj,1),'adjustments'=>['pre_game'=>true]];
     }
-
-    // ── Context factors ────────────────────────────────────────────────────────
-    // 1. Foul trouble → projected minutes reduction
+    // 1. Foul trouble
     $foulFactor = FOUL_MIN_FACTORS[$playerState['foul_trouble_level']??'none'] ?? 1.0;
     $minRem = $minRemBase * $foulFactor;
     if ($foulFactor < 1.0) $adj['foul_trouble'] = ['level'=>$playerState['foul_trouble_level'],'factor'=>$foulFactor];
-
-    // 2. Live pace adjustment
+    // 2. Live pace
     $paceFactor = 1.0;
     $paceEvents = $gameState['pace_events'] ?? [];
     if (count($paceEvents) >= 4) {
-        $recent  = array_slice($paceEvents, -8);
-        $first   = $recent[0]; $last = end($recent);
+        $recent = array_slice($paceEvents,-8);
+        $first  = $recent[0]; $last = end($recent);
         $elapsed = $last['ts'] - $first['ts'];
         $scored  = $last['score'] - $first['score'];
         if ($elapsed > 45 && $scored > 0) {
             $livePossMin = ($scored / $elapsed * 60) / 2.2;
             $paceFactor  = min(1.40, max(0.70, $livePossMin / (100.0/48.0)));
-            if (abs($paceFactor - 1.0) > 0.05)
+            if (abs($paceFactor-1.0) > 0.05)
                 $adj['live_pace'] = ['factor'=>round($paceFactor,3)];
         }
     }
-
-    // 3. Blowout garbage time
+    // 3. Blowout
     $blowoutFactor = 1.0;
     $margin = $gameState['score_margin'] ?? 0;
     $period = $playerState['period'] ?? 1;
@@ -917,26 +881,17 @@ function calcLiveProbabilityV3(float $pregameProj, float $pregameMin, float $act
         }
     }
     $minRem *= $blowoutFactor;
-
-    // ── Bayesian update of distribution mean ───────────────────────────────────
-    // trust = fraction of evidence weight given to observed in-game rate.
-    // At minPlayed=0: trust=0 (pure prior). At minPlayed=BAYES_PRIOR_WEIGHT: trust=0.5.
-    $pregameRate = $pregameProj / max($pregameMin, 1.0);
-    $inGameRate  = $actual / max($minPlayed, 0.1);
+    // 4. Bayesian update
+    $pregameRate = $pregameProj / max($pregameMin,1.0);
+    $inGameRate  = $actual / max($minPlayed,0.1);
     $trust       = $minPlayed / ($minPlayed + BAYES_PRIOR_WEIGHT);
-    $blendedRate = ((1 - $trust) * $pregameRate + $trust * $inGameRate) * $paceFactor;
-
-    $projRem  = $blendedRate * $minRem;
-    $liveProj = $actual + $projRem;
-    $adj['bayesian'] = [
-        'trust'         => round($trust, 3),
-        'blended_rate'  => round($blendedRate, 3),
-        'proj_remaining'=> round($projRem, 2),
-    ];
-
-    // 5. Heat detection (pts, fg3m only)
+    $blendedRate = (1-$trust)*$pregameRate + $trust*$inGameRate;
+    $projRem     = $blendedRate * $paceFactor * $minRem;
+    $liveProj    = $actual + $projRem;
+    $adj['bayesian'] = ['trust'=>round($trust,3),'blended_rate'=>round($blendedRate,3)];
+    // 5. Heat detection
     $heatBoost = 1.0;
-    if (in_array($stat, ['pts','fg3m'])) {
+    if (in_array($stat,['pts','fg3m'])) {
         $now      = time();
         $shots    = $playerState['shot_events'] ?? [];
         $hotShots = array_filter($shots, fn($e) => ($e['ts']??0) > ($now - HEAT_WINDOW_SEC));
@@ -946,77 +901,8 @@ function calcLiveProbabilityV3(float $pregameProj, float $pregameMin, float $act
         }
     }
     $liveProj *= $heatBoost;
-
-    // ── Probability from shifted distribution ──────────────────────────────────
-    // If we have the pregame quantile distribution, shift it by the ratio of
-    // liveProj / pregameProj and query P(total > line) from the shifted CDF.
-    // This preserves the shape of the distribution (variance, skew) while
-    // updating the location parameter — far superior to a fixed-CV normal CDF.
-    if (!empty($qPreds) && $pregameProj > 0) {
-        $distRatio = $liveProj / max($pregameProj, 0.1);
-        // Build shifted quantile distribution
-        $shiftedQ = [];
-        foreach ($qPreds as $tau => $qVal) {
-            $shiftedQ[$tau] = max(0.0, $qVal * $distRatio);
-        }
-        $prob = queryQuantileDistribution($shiftedQ, $line - $actual);
-        $adj['method'] = 'quantile_shift';
-    } else {
-        // Fallback: normal approximation with stat-specific CV
-        $prob = calcStatProbFromCV($liveProj, $line, $stat);
-        $adj['method'] = 'normal_approx';
-    }
-
-    $prob = max(0.02, min(0.98, $prob));
-    return ['prob'=>$prob,'live_proj'=>round($liveProj,1),'method'=>'bayesian_v3','adjustments'=>$adj];
-}
-
-/**
- * queryQuantileDistribution — piecewise linear CDF interpolation
- * Queries P(X > threshold) from a quantile distribution.
- * Identical algorithm to the Python inference engine.
- */
-function queryQuantileDistribution(array $qPreds, float $threshold): float {
-    if (empty($qPreds)) return 0.5;
-
-    // Sort by quantile value
-    asort($qPreds);
-    $taus = array_keys($qPreds);
-    $vals = array_values($qPreds);
-    $n    = count($vals);
-
-    // Below all quantiles: probability ≈ 1.0 (certain to exceed)
-    if ($threshold <= $vals[0]) return min(0.98, 1.0 - (float)$taus[0]);
-    // Above all quantiles: probability ≈ 0.0
-    if ($threshold >= $vals[$n-1]) return max(0.02, 1.0 - (float)$taus[$n-1]);
-
-    // Linear interpolation between bracketing quantiles
-    for ($i = 0; $i < $n - 1; $i++) {
-        if ($vals[$i] <= $threshold && $threshold < $vals[$i+1]) {
-            $frac = ($threshold - $vals[$i]) / max($vals[$i+1] - $vals[$i], 1e-9);
-            $tau  = (float)$taus[$i] + $frac * ((float)$taus[$i+1] - (float)$taus[$i]);
-            return max(0.02, min(0.98, 1.0 - $tau));
-        }
-    }
-    return 0.5;
-}
-
-/**
- * calcStatProbFromCV — fallback normal approximation
- * Used when quantile distribution is unavailable.
- */
-function calcStatProbFromCV(float $proj, float $line, string $stat): float {
-    $cv = ['pts'=>0.35,'reb'=>0.45,'ast'=>0.50,'fg3m'=>0.65,'stl'=>0.80,'blk'=>0.90,'tov'=>0.60][$stat] ?? 0.45;
-    $sd = max(0.5, $proj * $cv);
-    return max(0.01, min(0.99, 1.0 - normalCDF(($line - $proj) / $sd)));
-}
-
-// Legacy alias — keeps existing call sites working
-function calcLiveProbabilityV2(float $pregameProj, float $pregameMin, float $actual,
-    float $minPlayed, float $minRemBase, float $line, string $stat,
-    array $playerState=[], array $gameState=[]): array {
-    return calcLiveProbabilityV3($pregameProj, $pregameMin, $actual,
-        $minPlayed, $minRemBase, $line, $stat, $playerState, $gameState, []);
+    $prob = max(0.02, min(0.98, calcStatProb($liveProj, $line, $stat)));
+    return ['prob'=>$prob,'live_proj'=>round($liveProj,1),'adjustments'=>$adj];
 }
 
 function estimateMinRemainingV2(int $period, string $clock, bool $isOT=false): float {
@@ -1033,7 +919,9 @@ function estimateMinRemainingV2(int $period, string $clock, bool $isOT=false): f
 }
 
 function calcStatProb(float $proj, float $line, string $stat): float {
-    return calcStatProbFromCV($proj, $line, $stat);
+    $cv = ['pts'=>0.35,'reb'=>0.45,'ast'=>0.50,'fg3m'=>0.65,'stl'=>0.80,'blk'=>0.90,'tov'=>0.60][$stat] ?? 0.45;
+    $sd = max(0.5, $proj * $cv);
+    return max(0.01, min(0.99, 1.0 - normalCDF(($line-$proj)/$sd)));
 }
 
 function normalCDF(float $z): float {
@@ -1056,52 +944,4 @@ function isOnLosingTeam(array $playerState, array $gameState): bool {
     $myScore  = $isHome ? $homeScore : $awayScore;
     $oppScore = $isHome ? $awayScore : $homeScore;
     return $myScore < $oppScore;
-}
-
-/**
- * buildLiveLadder — live-adjusted alt-line probability table
- *
- * Constructs an 11-rung ladder of P(over) at neighboring lines,
- * using the live projection to shift the pregame quantile distribution.
- * When qPreds are available this uses the same piecewise linear CDF
- * interpolation as the Python inference engine.
- *
- * @param float  $liveProj   Current live projection (actual + projected remaining)
- * @param float  $postedLine Sportsbook line
- * @param string $stat       Stat key (pts, reb, ast, fg3m, stl, blk, tov)
- * @param array  $qPreds     Pregame quantile distribution {tau: value}
- * @param float  $pregameProj Pregame Q50 projection
- */
-function buildLiveLadder(float $liveProj, float $postedLine, string $stat,
-                          array $qPreds, float $pregameProj): array {
-    $step = in_array($stat, ['pts', 'pra', 'pr', 'pa']) ? 1.0 : 0.5;
-    $ladder = [];
-
-    for ($i = 0; $i <= 10; $i++) {
-        $l = round($postedLine + ($i - 5) * $step, 1);
-        if ($l < 0) continue;
-
-        if (!empty($qPreds) && $pregameProj > 0) {
-            // Shift the pregame distribution by the live/pregame ratio
-            $ratio    = $liveProj / max($pregameProj, 0.1);
-            $shifted  = [];
-            foreach ($qPreds as $tau => $val) {
-                $shifted[$tau] = max(0.0, floatval($val) * $ratio);
-            }
-            $po = queryQuantileDistribution($shifted, $l);
-        } else {
-            $po = calcStatProbFromCV($liveProj, $l, $stat);
-        }
-
-        $pu = 1.0 - $po;
-        $ladder[] = [
-            'line'       => $l,
-            'prob_over'  => round($po, 4),
-            'prob_under' => round($pu, 4),
-            'fair_over'  => toAmerican($po),
-            'fair_under' => toAmerican($pu),
-            'posted'     => abs($l - $postedLine) < 0.01,
-        ];
-    }
-    return $ladder;
 }
