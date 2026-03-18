@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 predict_darko_v4.py — NBA Props Model Prediction Engine
-VERSION: 2026-03-12-v12
+VERSION: 2026-03-17-v13
 
 Outputs (SEPARATE FILES):
   predictions/singles_{date}.json   — individual prop bets (EV > 2.5%)
@@ -16,15 +16,16 @@ Architecture:
   - Quarter-Kelly sizing, 2-unit cap singles, 1-unit cap SGPs
   - Supports: pts, reb, ast, fg3m, stl, blk, tov + combo props
 
-v11 changes:
-  - Singles written to disk BEFORE SGP generation (guarantees data on timeout)
-  - SGP candidate pool capped to top 6 per game by EV before copula
-  - Workflow timeout raised to 60 min
+v13 changes:
+  - Bias correction rolled back to 50% magnitude (fix OVER hit rate)
+  - BIAS_CORRECTION moved to module-level constant (out of inner loop)
+  - Version bump and cleanup
 """
 
 import csv
 import json
 import logging
+import os
 import sys
 import warnings
 from datetime import date, datetime
@@ -71,31 +72,64 @@ try:
 except ImportError as e:
     sys.exit(f"Import error: {e}")
 
+# ── Paths ──────────────────────────────────────────────────────────────────────
+
 DATA_DIR  = Path("data")
 MODEL_DIR = Path("model_cache")
-PRED_DIR  = Path("predictions"); PRED_DIR.mkdir(exist_ok=True)
+PRED_DIR  = Path("predictions")
+PRED_DIR.mkdir(exist_ok=True)
+
+# ── Constants ──────────────────────────────────────────────────────────────────
 
 STAT_DISPLAY = {
-    "pts":"Points","reb":"Rebounds","ast":"Assists","fg3m":"Threes",
-    "stl":"Steals","blk":"Blocks","tov":"Turnovers",
-    "pra":"Pts+Reb+Ast","pr":"Pts+Reb","pa":"Pts+Ast",
-    "ra":"Reb+Ast","stocks":"Stl+Blk",
+    "pts":    "Points",
+    "reb":    "Rebounds",
+    "ast":    "Assists",
+    "fg3m":   "Threes",
+    "stl":    "Steals",
+    "blk":    "Blocks",
+    "tov":    "Turnovers",
+    "pra":    "Pts+Reb+Ast",
+    "pr":     "Pts+Reb",
+    "pa":     "Pts+Ast",
+    "ra":     "Reb+Ast",
+    "stocks": "Stl+Blk",
 }
 
-MIN_EV              = 0.025
-MIN_GAMES_SEASON    = 15
-KELLY_FRAC          = 0.25
-MAX_UNITS_SINGLE    = 2.0
-MAX_UNITS_SGP       = 1.0
-SGP_MAX_PER_GAME    = 6      # cap: top N singles per game fed into copula
-SGP_ABSOLUTE_CAP    = 60     # hard ceiling on total SGP candidate pool
-
+MIN_EV           = 0.025
+MIN_GAMES_SEASON = 15
+KELLY_FRAC       = 0.25
+MAX_UNITS_SINGLE = 2.0
+MAX_UNITS_SGP    = 1.0
+SGP_MAX_PER_GAME = 6       # top N singles per game fed into copula
+SGP_ABSOLUTE_CAP = 60      # hard ceiling on total SGP candidate pool
 
 ADV_FIELDS = [
-    "usage_percentage","pace",
-    "true_shooting_percentage","effective_field_goal_percentage",
-    "assist_percentage","assist_to_turnover",
+    "usage_percentage",
+    "pace",
+    "true_shooting_percentage",
+    "effective_field_goal_percentage",
+    "assist_percentage",
+    "assist_to_turnover",
 ]
+
+# ── Bias correction ────────────────────────────────────────────────────────────
+# Empirical correction for systematic under-projection on starter/key-player pool.
+# v13: rolled back to 50% of original values to fix OVER hit rate (was 33%).
+BIAS_CORRECTION = {
+    "pts":    1.17,
+    "ast":    0.41,
+    "fg3m":   0.26,
+    "reb":    0.25,
+    "blk":    0.16,
+    "stl":    0.15,
+    "stocks": 0.31,
+    "pra":    1.83,
+    "pr":     1.42,
+    "pa":     1.58,
+    "ra":     0.66,
+    "tov":    0.10,
+}
 
 
 # ── Model loading ──────────────────────────────────────────────────────────────
@@ -127,7 +161,6 @@ def load_models() -> tuple:
     else:
         logger.warning("  No correlation engine found — SGPs will use identity matrix")
 
-    # Load Platt calibrators (Stage 1 calibration — per side)
     platt_calibrators = {}
     for side in ["over", "under"]:
         ppath = MODEL_DIR / f"platt_{side}.pkl"
@@ -162,16 +195,14 @@ def filter_sgp_candidates(singles: list) -> list:
     Strategy: keep top SGP_MAX_PER_GAME picks per game by EV, then hard-cap
     at SGP_ABSOLUTE_CAP total. This gives the copula a tractable ~1-2k pairs.
 
-    We only keep stats the copula models well (pts, reb, ast, fg3m, stl, blk).
-    Combo stats (pra, pr, pa, ra, stocks, tov) are excluded from SGPs because
-    their within-game correlations are trivially high and produce misleading CLV.
+    Only pts, reb, ast, fg3m, stl, blk are SGP-eligible. Combo stats
+    (pra, pr, pa, ra, stocks, tov) are excluded — their within-game
+    correlations are trivially high and produce misleading CLV.
     """
     SGP_ELIGIBLE_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk"}
 
-    # Filter to eligible stats only
     eligible = [s for s in singles if s["stat"] in SGP_ELIGIBLE_STATS]
 
-    # Group by game, keep top N by EV per game
     by_game: dict = {}
     for s in eligible:
         gid = s["game_id"]
@@ -182,12 +213,13 @@ def filter_sgp_candidates(singles: list) -> list:
         top = sorted(picks, key=lambda x: x["ev"], reverse=True)[:SGP_MAX_PER_GAME]
         pool.extend(top)
 
-    # Hard ceiling
     pool = sorted(pool, key=lambda x: x["ev"], reverse=True)[:SGP_ABSOLUTE_CAP]
 
-    logger.info(f"  SGP candidate pool: {len(pool)} singles "
-                f"({len(eligible)} eligible → capped at {SGP_MAX_PER_GAME}/game, "
-                f"max {SGP_ABSOLUTE_CAP} total)")
+    logger.info(
+        f"  SGP candidate pool: {len(pool)} singles "
+        f"({len(eligible)} eligible → capped at {SGP_MAX_PER_GAME}/game, "
+        f"max {SGP_ABSOLUTE_CAP} total)"
+    )
     return pool
 
 
@@ -196,8 +228,8 @@ def filter_sgp_candidates(singles: list) -> list:
 def log_paper_trade(singles: list, sgps: list, target_date: str):
     log_path = PRED_DIR / "paper_trade_log.csv"
     fieldnames = [
-        "date","type","player","game","stat","side","line",
-        "odds","model_prob","ev","kelly_units","outcome","profit",
+        "date", "type", "player", "game", "stat", "side", "line",
+        "odds", "model_prob", "ev", "kelly_units", "outcome", "profit",
     ]
     write_header = not log_path.exists()
     with open(log_path, "a", newline="") as f:
@@ -206,29 +238,35 @@ def log_paper_trade(singles: list, sgps: list, target_date: str):
             w.writeheader()
         for p in singles:
             w.writerow({
-                "date": target_date, "type": "single",
-                "player": p["player_name"], "game": p["game"],
-                "stat": p["stat"], "side": p["side"],
-                "line": p["line"], "odds": p["odds"],
-                "model_prob": round(p["model_prob"],4),
-                "ev": round(p["ev"],4),
-                "kelly_units": round(p["kelly_units"],3),
-                "outcome": "", "profit": "",
+                "date":         target_date,
+                "type":         "single",
+                "player":       p["player_name"],
+                "game":         p["game"],
+                "stat":         p["stat"],
+                "side":         p["side"],
+                "line":         p["line"],
+                "odds":         p["odds"],
+                "model_prob":   round(p["model_prob"], 4),
+                "ev":           round(p["ev"], 4),
+                "kelly_units":  round(p["kelly_units"], 3),
+                "outcome":      "",
+                "profit":       "",
             })
         for s in sgps:
             w.writerow({
-                "date": target_date,
-                "type": f"sgp_{s['legs']}leg",
-                "player": "|".join(l["player"] for l in s["leg_details"]),
-                "game": s["game"],
-                "stat": "|".join(l["stat"] for l in s["leg_details"]),
-                "side": "|".join(l["side"] for l in s["leg_details"]),
-                "line": "|".join(str(l["line"]) for l in s["leg_details"]),
-                "odds": s["combined_odds"],
-                "model_prob": round(s["correlated_prob"],4),
-                "ev": round(s["ev"],4),
-                "kelly_units": round(s["kelly_units"],3),
-                "outcome": "", "profit": "",
+                "date":         target_date,
+                "type":         f"sgp_{s['legs']}leg",
+                "player":       "|".join(l["player"] for l in s["leg_details"]),
+                "game":         s["game"],
+                "stat":         "|".join(l["stat"] for l in s["leg_details"]),
+                "side":         "|".join(l["side"] for l in s["leg_details"]),
+                "line":         "|".join(str(l["line"]) for l in s["leg_details"]),
+                "odds":         s["combined_odds"],
+                "model_prob":   round(s["correlated_prob"], 4),
+                "ev":           round(s["ev"], 4),
+                "kelly_units":  round(s["kelly_units"], 3),
+                "outcome":      "",
+                "profit":       "",
             })
 
 
@@ -240,7 +278,7 @@ def print_singles_summary(picks: list):
     print(f"{'='*70}")
     for p in picks[:25]:
         tier = "ELITE" if p["ev"] >= 0.10 else "HIGH" if p["ev"] >= 0.06 else "EDGE"
-        print(f"\n[{tier}]  {p['player_name']} — {STAT_DISPLAY.get(p['stat'],p['stat'])} {p['side']} {p['line']}")
+        print(f"\n[{tier}]  {p['player_name']} — {STAT_DISPLAY.get(p['stat'], p['stat'])} {p['side']} {p['line']}")
         print(f"  Game:    {p['game']}")
         print(f"  Model P: {p['model_prob']:.1%}  |  EV: {p['ev']:+.2%}  |  Odds: {p['odds']:+d}")
         print(f"  Kelly:   {p['kelly_units']:.3f} units  |  Q50 proj: {p['q50']:.1f}")
@@ -254,15 +292,17 @@ def print_sgp_summary(sgps: list):
         print(f"\n  {s['legs']}-LEG SGP | {s['game']}")
         for l in s["leg_details"]:
             print(f"    {l['player']} — {l['stat'].upper()} {l['side']} {l['line']}  ({l['odds']:+d})  P={l['model_prob']:.1%}")
-        print(f"  Copula P: {s['correlated_prob']:.1%}  Naive: {s['naive_prob']:.1%}  "
-              f"Combined: {s['combined_odds']:+d}  EV: {s['ev']:+.2%}")
+        print(
+            f"  Copula P: {s['correlated_prob']:.1%}  Naive: {s['naive_prob']:.1%}  "
+            f"Combined: {s['combined_odds']:+d}  EV: {s['ev']:+.2%}"
+        )
 
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def main():
     logger.info("=" * 60)
-    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-03-12-v12")
+    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-03-17-v13")
     logger.info("=" * 60)
 
     if not _get_api_key():
@@ -300,9 +340,6 @@ def main():
     today_odds_raw = get_game_odds(dates=[target_date])
     ctx_map = build_game_context_map(today_odds_raw) if today_odds_raw else {}
 
-    # Enrich with opening/closing snapshot line movement signals.
-    # Provides total_move and spread_move (sharp money signal) for today's games.
-    # Snapshots accumulate daily — missing files degrade gracefully (NaN features).
     logger.info("Enriching game context with line movement snapshots...")
     ctx_map = enrich_game_context_with_snapshots(ctx_map, games, target_date)
 
@@ -325,17 +362,17 @@ def main():
             logger.warning(f"  Props failed game {gid}: {e}")
     logger.info(f"  {len(prop_map)} prop lines")
 
-    # ── Build predictions ─────────────────────────────────────────────────────
+    # ── Build predictions ──────────────────────────────────────────────────────
     all_singles = []
 
     for game in games:
-        gid      = game.get("id")
-        home_id  = (game.get("home_team") or {}).get("id")
-        vis_id   = (game.get("visitor_team") or {}).get("id")
-        home_nm  = (game.get("home_team") or {}).get("full_name","")
-        vis_nm   = (game.get("visitor_team") or {}).get("full_name","")
-        glabel   = f"{vis_nm} @ {home_nm}"
-        ctx      = ctx_map.get(gid, {})
+        gid     = game.get("id")
+        home_id = (game.get("home_team") or {}).get("id")
+        vis_id  = (game.get("visitor_team") or {}).get("id")
+        home_nm = (game.get("home_team") or {}).get("full_name", "")
+        vis_nm  = (game.get("visitor_team") or {}).get("full_name", "")
+        glabel  = f"{vis_nm} @ {home_nm}"
+        ctx     = ctx_map.get(gid, {})
 
         player_ids = list(set(pid for (pid, pg, _) in prop_map if pg == gid))
 
@@ -389,43 +426,22 @@ def main():
                 line       = prop["line"]
                 over_odds  = prop.get("over_odds", -110)
                 under_odds = prop.get("under_odds", -110)
-                vendor     = prop.get("best_over_vendor", prop.get("vendor",""))
+                vendor     = prop.get("best_over_vendor", prop.get("vendor", ""))
 
                 base_ix = add_interaction_features(dict(base), target)
                 q_preds = predict_quantiles(models, target, base_ix)
                 if q_preds is None:
                     continue
 
-                q50 = q_preds.get(0.50, line)
-
-                # ── Per-stat bias correction (empirical from performance_log) ──
-                # Model q50 is systematically below actual due to selection bias
-                # (trained on all players, predicted only for starters/key players)
-                BIAS_CORRECTION = {
-                    "pts":   2.34,
-                    "ast":   0.82,
-                    "fg3m":  0.52,
-                    "reb":   0.50,
-                    "blk":   0.32,
-                    "stl":   0.30,
-                    "stocks": 0.62,
-                    "pra":   3.66,
-                    "pr":    2.84,
-                    "pa":    3.16,
-                    "ra":    1.32,
-                    "tov":   0.20,
-                }
-                q50 = q50 + BIAS_CORRECTION.get(target, 0.0)
-                # Also shift all quantiles to maintain distribution shape
-                bias = BIAS_CORRECTION.get(target, 0.0)
+                # Apply bias correction — shift entire quantile distribution
+                bias    = BIAS_CORRECTION.get(target, 0.0)
                 q_preds = {q: v + bias for q, v in q_preds.items()}
+                q50     = q_preds.get(0.50, line)
 
                 prob_over  = p_over(q_preds, line)
                 prob_under = p_under(q_preds, line)
 
-                # Apply Platt calibration (Stage 1) before EV computation.
-                # Corrects systematic UNDER overconfidence in 0.60-0.75 range.
-                # Falsely-confident picks fail MIN_EV and are filtered out.
+                # Apply Platt calibration — corrects systematic overconfidence
                 if platt_calibrators.get("OVER"):
                     cal = platt_calibrators["OVER"]
                     prob_over = float(np.clip(
@@ -435,8 +451,8 @@ def main():
                     prob_under = float(np.clip(
                         cal.predict_proba([[prob_under]])[0][1], 0.01, 0.99))
 
-                ev_over    = ev_from_prob(prob_over,  over_odds)
-                ev_under   = ev_from_prob(prob_under, under_odds)
+                ev_over  = ev_from_prob(prob_over,  over_odds)
+                ev_under = ev_from_prob(prob_under, under_odds)
 
                 for side, prob, odds, ev in [
                     ("OVER",  prob_over,  over_odds,  ev_over),
@@ -460,13 +476,16 @@ def main():
                         "odds":         odds,
                         "bet_vendor":   vendor,
                         "model_prob":   round(prob, 4),
-                        "market_prob":  round(prop.get("implied_prob_over", 0.5)
-                                              if side == "OVER"
-                                              else 1 - prop.get("implied_prob_over", 0.5), 4),
+                        "market_prob":  round(
+                            prop.get("implied_prob_over", 0.5)
+                            if side == "OVER"
+                            else 1 - prop.get("implied_prob_over", 0.5),
+                            4
+                        ),
                         "ev":           round(ev, 4),
                         "kelly_units":  round(kelly, 3),
                         "q50":          round(q50, 2),
-                        "q_preds":      {float(k): round(v,2) for k,v in q_preds.items()},
+                        "q_preds":      {float(k): round(v, 2) for k, v in q_preds.items()},
                         "usage_bucket": ub,
                         "mp_bucket":    mb,
                     })
@@ -476,11 +495,11 @@ def main():
 
     today = target_date
 
-    # ── Write singles FIRST — always, unconditionally ───────────────────────
+    # ── Write singles FIRST — always, unconditionally ─────────────────────────
     singles_out = {
         "date":         today,
         "generated_at": datetime.utcnow().isoformat(),
-        "version":      "2026-03-12-v12",
+        "version":      "2026-03-17-v13",
         "min_ev":       MIN_EV,
         "total_picks":  len(all_singles),
         "picks":        all_singles,
@@ -490,11 +509,10 @@ def main():
         json.dump(singles_out, f, indent=2, default=str)
     logger.info(f"Singles written → {singles_path}  (safe before SGP step)")
 
-    # ── SGP generation — skipped if SKIP_SGPS=1 env var is set ──────────────
-    import os as _os
+    # ── SGP generation — skipped if SKIP_SGPS=1 ───────────────────────────────
     sgp_results = {"two_leg": [], "three_leg": []}
 
-    if _os.environ.get("SKIP_SGPS") == "1":
+    if os.environ.get("SKIP_SGPS") == "1":
         logger.info("SGP generation skipped (SKIP_SGPS=1)")
     elif within_engine is not None:
         logger.info("Generating SGP candidates (Gaussian copula)...")
@@ -520,7 +538,7 @@ def main():
     sgps_out = {
         "date":         today,
         "generated_at": datetime.utcnow().isoformat(),
-        "version":      "2026-03-12-v12",
+        "version":      "2026-03-17-v13",
         "min_ev":       MIN_EV,
         "total_sgps":   len(all_sgps),
         "two_leg":      len(two_leg),
