@@ -96,11 +96,56 @@ STAT_DISPLAY = {
     "stocks": "Stl+Blk",
 }
 
-MIN_EV           = 0.025
+MIN_EV           = 0.025   # global floor — per-stat overrides below
 MIN_GAMES_SEASON = 15
 KELLY_FRAC       = 0.25
-MAX_UNITS_SINGLE = 2.0
+MAX_UNITS_SINGLE = 1.5     # doc 7 §5: reduced from 2.0 — too much vol for current cal quality
 MAX_UNITS_SGP    = 1.0
+
+# ── Per-stat per-side deployment gates (doc 7 §3,5,7) ────────────────────────
+# UNDER side: restricted until centering repair is confirmed (doc 7 §1 biggest blocker)
+# Sparse stats: harder gate (doc 7 §7 sparse props different standard)
+STAT_SIDE_MIN_EV = {
+    # OVER thresholds (doc 7 §5 — calibration-aware)
+    ("pts",  "OVER"):  0.025,
+    ("reb",  "OVER"):  0.025,
+    ("ast",  "OVER"):  0.025,
+    ("fg3m", "OVER"):  0.030,
+    ("stl",  "OVER"):  0.045,   # doc 7 §7 sparse
+    ("blk",  "OVER"):  0.050,   # doc 7 §7 sparse — highest bar
+    ("tov",  "OVER"):  0.035,
+    ("pra",  "OVER"):  0.025,
+    ("pr",   "OVER"):  0.025,
+    ("pa",   "OVER"):  0.025,
+    ("ra",   "OVER"):  0.030,
+    ("stocks","OVER"): 0.045,   # doc 7 §7 sparse
+    # UNDER thresholds — structurally restricted (doc 7 §1,5 — under side broken)
+    # Only deploy unders for pts/reb/ast until calibration repair confirmed
+    ("pts",  "UNDER"): 0.040,   # higher bar due to centering issues
+    ("reb",  "UNDER"): 0.040,
+    ("ast",  "UNDER"): 0.040,
+    # All other UNDER sides: gate until CLV positive for that stat×side bucket
+    ("fg3m", "UNDER"): 0.999,   # effectively disabled
+    ("stl",  "UNDER"): 0.999,
+    ("blk",  "UNDER"): 0.999,
+    ("tov",  "UNDER"): 0.050,
+    ("pra",  "UNDER"): 0.040,
+    ("pr",   "UNDER"): 0.040,
+    ("pa",   "UNDER"): 0.040,
+    ("ra",   "UNDER"): 0.040,
+    ("stocks","UNDER"):0.999,   # disabled — sparse + under = double liability
+}
+
+# Per-stat max probability bounds (doc 7 §2 — deployment filter)
+# A pick with model_prob outside these bounds is likely miscalibrated
+STAT_SIDE_PROB_BOUNDS = {
+    "OVER":  (0.53, 0.74),   # spec §D.2 exactly
+    "UNDER": (0.53, 0.72),   # tighter for under until centering fixed
+}
+
+# Sparse stats that need independent calibration sign-off (doc 7 §7)
+SPARSE_STATS = {"stl", "blk", "stocks"}
+SPARSE_MIN_PROB = 0.57      # must clear higher probability bar than pts/reb
 SGP_MAX_PER_GAME = 6       # top N singles per game fed into copula
 SGP_ABSOLUTE_CAP = 60      # hard ceiling on total SGP candidate pool
 
@@ -162,11 +207,21 @@ def load_models() -> tuple:
         logger.warning("  No correlation engine found — SGPs will use identity matrix")
 
     platt_calibrators = {}
+    # Load stat×side calibrators (doc 7 §2 — move beyond global side calibration)
+    # Priority: stat_side specific → side global → none
+    for stat in ALL_TARGETS:
+        for side in ["over", "under"]:
+            # Try stat-specific calibrator first
+            stat_path = MODEL_DIR / f"platt_{stat}_{side}.pkl"
+            if stat_path.exists():
+                platt_calibrators[f"{stat.upper()}_{side.upper()}"] = joblib.load(stat_path)
+                logger.info(f"  Stat×side calibrator: {stat.upper()}_{side.upper()}")
+    # Fall back to global side calibrators
     for side in ["over", "under"]:
         ppath = MODEL_DIR / f"platt_{side}.pkl"
         if ppath.exists():
             platt_calibrators[side.upper()] = joblib.load(ppath)
-            logger.info(f"  Platt calibrator loaded: {side.upper()}")
+            logger.info(f"  Global calibrator loaded: {side.upper()}")
     if not platt_calibrators:
         logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
 
@@ -441,15 +496,16 @@ def main():
                 prob_over  = p_over(q_preds, line)
                 prob_under = p_under(q_preds, line)
 
-                # Apply Platt calibration — corrects systematic overconfidence
-                if platt_calibrators.get("OVER"):
-                    cal = platt_calibrators["OVER"]
-                    prob_over = float(np.clip(
-                        cal.predict_proba([[prob_over]])[0][1], 0.01, 0.99))
-                if platt_calibrators.get("UNDER"):
-                    cal = platt_calibrators["UNDER"]
-                    prob_under = float(np.clip(
-                        cal.predict_proba([[prob_under]])[0][1], 0.01, 0.99))
+                # Apply Platt calibration — stat×side specific if available (doc 7 §2)
+                # Priority: stat_SIDE → global SIDE → raw
+                def _apply_cal(prob, stat_key, side_key):
+                    stat_side_key = f"{stat_key.upper()}_{side_key.upper()}"
+                    cal = platt_calibrators.get(stat_side_key) or platt_calibrators.get(side_key.upper())
+                    if cal:
+                        return float(np.clip(cal.predict_proba([[prob]])[0][1], 0.01, 0.99))
+                    return prob
+                prob_over  = _apply_cal(prob_over,  target, "OVER")
+                prob_under = _apply_cal(prob_under, target, "UNDER")
 
                 ev_over  = ev_from_prob(prob_over,  over_odds)
                 ev_under = ev_from_prob(prob_under, under_odds)
@@ -458,11 +514,31 @@ def main():
                     ("OVER",  prob_over,  over_odds,  ev_over),
                     ("UNDER", prob_under, under_odds, ev_under),
                 ]:
-                    if ev < MIN_EV:
+                    # Stat×side deployment gate (doc 7 §3,5,7 — replaces global MIN_EV)
+                    min_ev_req = STAT_SIDE_MIN_EV.get((target, side), MIN_EV)
+                    if ev < min_ev_req:
                         continue
+
+                    # Probability bounds check (doc 7 §5 — doc spec §D.2)
+                    prob_lo, prob_hi = STAT_SIDE_PROB_BOUNDS.get(side, (0.53, 0.74))
+                    if not (prob_lo <= prob <= prob_hi):
+                        continue
+
+                    # Sparse stat: harder probability floor (doc 7 §7)
+                    if target in SPARSE_STATS and prob < SPARSE_MIN_PROB:
+                        continue
+
                     kelly = kelly_fraction(prob, odds, KELLY_FRAC, MAX_UNITS_SINGLE)
                     if kelly <= 0:
                         continue
+
+                    # Compute vig-free market prob and raw edge (spec §1.1-1.2)
+                    dec_over_val  = (over_odds/100+1) if over_odds>0 else (1+100/abs(over_odds))
+                    dec_under_val = (under_odds/100+1) if under_odds>0 else (1+100/abs(under_odds))
+                    imp_o = 1.0/dec_over_val; imp_u = 1.0/dec_under_val
+                    novig_over  = imp_o/(imp_o+imp_u)
+                    novig_under = imp_u/(imp_o+imp_u)
+                    raw_edge_val= (prob - novig_over) if side=="OVER" else (prob - novig_under)
 
                     all_singles.append({
                         "player_id":    player_id,
@@ -474,20 +550,22 @@ def main():
                         "side":         side,
                         "line":         line,
                         "odds":         odds,
+                        "over_odds":    over_odds,
+                        "under_odds":   under_odds,
                         "bet_vendor":   vendor,
                         "model_prob":   round(prob, 4),
-                        "market_prob":  round(
-                            prop.get("implied_prob_over", 0.5)
-                            if side == "OVER"
-                            else 1 - prop.get("implied_prob_over", 0.5),
-                            4
-                        ),
+                        "market_prob":  round(novig_over if side=="OVER" else novig_under, 4),
+                        "raw_edge":     round(raw_edge_val, 4),
                         "ev":           round(ev, 4),
                         "kelly_units":  round(kelly, 3),
                         "q50":          round(q50, 2),
                         "q_preds":      {float(k): round(v, 2) for k, v in q_preds.items()},
                         "usage_bucket": ub,
                         "mp_bucket":    mb,
+                        # Deployment metadata for CLV tracing (doc 7 traceability)
+                        "min_ev_applied": round(min_ev_req, 4),
+                        "cal_type":      f"{target}_{'OVER' if side=='OVER' else 'UNDER'}" if f"{target.upper()}_{'OVER' if side=='OVER' else 'UNDER'}" in platt_calibrators else "global",
+                        "is_sparse":     target in SPARSE_STATS,
                     })
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
