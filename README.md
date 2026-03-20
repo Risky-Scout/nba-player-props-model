@@ -1,288 +1,180 @@
 # NBA Props Model
 
-**Research-grade probabilistic NBA player prop pricing system** with automated daily retraining, stat×side calibration, self-grading via Closing Line Value, and a live in-play model.
+Automated NBA player props prediction system built for market-maker portfolio development. Identifies positive expected value betting opportunities by comparing model probabilities to sportsbook odds.
 
-Built as a market-maker portfolio project targeting Sportradar / Pinnacle / FanDuel quant roles.
+**Live dashboard:** [dev.wizardofodds.com/tools/odds-scanner/predictions/nba-live-props.html](https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-live-props.html)
 
-Live predictions: [dev.wizardofodds.com/tools/odds-scanner/predictions/nba-props.html](https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-props.html)
-
----
-
-## Current Performance (Mar 9–15, 2026 — 1,978 graded picks)
-
-| Metric | Value |
-|--------|-------|
-| OVER CLV | +9.8% |
-| UNDER CLV | −11.5% |
-| OVER Hit Rate | 43.1% |
-| UNDER Hit Rate | 49.1% |
-
-**Status:** The OVER side shows consistent positive CLV — a real pricing edge. The UNDER side remains structurally broken due to systematic q50 under-centering (pts −2.34, ast −0.82 below actual). This is the active repair priority.
-
-**Line delta by stat (book line − model q50, lower = better):**
-
-| Stat | Line Delta |
-|------|-----------|
-| pts | +1.015 |
-| ast | +0.610 |
-| blk | +0.377 |
-| fg3m | +0.316 |
-| reb | +0.313 |
-| stl | +0.158 |
+**API endpoint:** [dev.wizardofodds.com/tools/odds-scanner/predictions/api/live_props.php?mode=pregame](https://dev.wizardofodds.com/tools/odds-scanner/predictions/api/live_props.php?mode=pregame)
 
 ---
 
 ## Architecture
 
+Four-layer pipeline:
+
+**1. Projection layer** — LightGBM quantile regression ensemble (11 quantile models per stat) producing a full P10→P90 distribution per player/stat/game.
+
+**2. Residual centering layer** — Per-stat bias correction trained on `median(actual - q50)` from graded outcomes. Shifts the entire quantile ladder consistently. `residual_centering.py` is the permanent learned replacement for hardcoded corrections.
+
+**3. Probability layer** — Converts projected distribution to fair probability at the posted line using vig-free market math and stat×side Platt calibration.
+
+**4. Deployment layer** — Side-specific EV thresholds, probability bounds, line-gap filters, bad-line sanity checks (skip if `line > q50 × 2.5`), portfolio caps (max 25 total, max 2/player, max 4/game, max 1/player/stat).
+
+---
+
+## Repository Structure
+
 ```
-BallDontLie API (GOAT tier)
-        │
-        ▼
-feature_engineering.py          ← 4-layer feature stack per stat
-        │
-        ▼
-train_v12.py                    ← LightGBM quantile ensemble (11 quantiles × 13 targets)
-        │                          opp_env_map built from stats_df (30 teams)
-        ▼
+.github/workflows/
+    daily_predictions.yml     Pipeline: 8AM predict, 9AM/6PM snapshots
+    retrain.yml               Weekly retrain
+
+data/
+    opening_lines_*.json      Opening line snapshots
+
+graded/
+    graded_2026-*.csv         Daily graded results
+    closing_lines_*.json      Closing lines for CLV measurement
+    performance_log.csv       Aggregated performance metrics
+    cumulative_report.json    Running portfolio summary
+
 model_cache/
-  q10_{stat}.pkl  …  q90_{stat}.pkl   ← quantile models
-  features_{stat}.pkl                  ← feature manifests
-  calibration_{stat}.pkl               ← isotonic calibration per stat
-  platt_over.pkl / platt_under.pkl     ← Platt scaling per side
-        │
-        ▼
-predict_darko_v4.py             ← daily prediction engine
-        │
-        ├── predictions/singles_{date}.json     ← full pricing universe
-        └── predictions/high_conviction_{date}.json  ← deployment subset
-                │
-                ▼ (grade_darko_v4.py — next morning)
-        graded/performance_log.csv              ← CLV, HR, ROI by stat/side
-        graded/retrain_report_{date}.json       ← red-flag audit artifact
-```
+    *.pkl                     Trained LightGBM quantile models
+    platt_OVER.pkl            Global OVER Platt calibrator
+    platt_UNDER.pkl           Global UNDER Platt calibrator
 
-**GitHub Actions (daily):**
-- `09:00 ET` — opening line snapshot (sharp money baseline)
-- `08:00 ET` — predict + grade + red-flag report
-- `18:00 ET` — closing line snapshot (post-injury-report)
-- Weekly — retrain on full history
+predictions/
+    singles_YYYY-MM-DD.json   Daily picks with full quantile distributions
+    sgps_YYYY-MM-DD.json      Same-game parlay candidates (Gaussian copula)
+    paper_trade_log.csv       Paper trade log
 
----
-
-## Feature Engineering — 4-Layer Stack
-
-All six stat targets (pts, reb, ast, fg3m, blk, stl) share the same 4-layer architecture. Features are built by `build_player_game_features()` per player-game row.
-
-### Layer 1 — Minutes / Availability
-*Minutes played is the dominant multiplier for all counting stats.*
-
-| Feature | Formula | Notes |
-|---------|---------|-------|
-| `mp_ewma_10` | EWMA(min, α=0.85, n=10) | Recency-weighted minutes estimate |
-| `mp_mean_last10` | mean(min, last 10) | Rolling average |
-| `mp_vol_last10` | std(min, last 10) | Rotation instability signal |
-| `mp_trend_3v10` | mean(min[-3:]) / mean(min[-10:]) | Coach usage trend |
-| `cv_min` | std/mean over season | Long-run consistency |
-| `above_mean_pct_min` | % games above season avg min | Role signal |
-| `games_20minus_last10` | Count of <20 min games in last 10 | DNP/bench risk |
-
-### Layer 2 — Possession Environment
-*Game-level context + stat-specific opponent defensive features.*
-
-**Game context (all stats):**
-- `implied_team_total` — team's expected score from spread + total
-- `consensus_total` — market game total
-- `market_pace_proxy` — possession proxy from odds
-- `spread_for_team` — team spread
-- `is_home` — home court flag
-
-**Opponent defensive context (stat-specific, EWMA last 10 games):**
-
-| Stat | Opponent Features | Causal Logic |
-|------|------------------|--------------|
-| pts | `opp_allowed_pts_ewma`, `opp_allowed_pts_mean`, `opp_allowed_pts_factor` | Weak defense → scoring opportunity |
-| reb | `opp_allowed_reb_ewma`, `opp_allowed_reb_mean`, `opp_allowed_reb_factor` | Miss volume → rebound chances |
-| ast | `opp_allowed_ast_ewma`, `opp_allowed_ast_mean`, `opp_allowed_ast_factor` | Creation environment |
-| fg3m | `opp_allowed_fg3m_ewma`, `opp_allowed_fg3m_mean`, `opp_allowed_fg3m_factor` | 3P defense weakness |
-| blk | `opp_allowed_blk_ewma`, `opp_allowed_blk_mean`, `opp_allowed_blk_factor` | Rim attack volume |
-| stl | `opp_allowed_stl_ewma`, `opp_allowed_stl_mean`, `opp_allowed_stl_factor` | Turnover tendency |
-
-*Opponent context is computed from `stats_df` grouped by `opp_team_id` (derived from `home_team_id`/`visitor_team_id`). No broken API endpoint.*
-
-### Layer 3 — Role / Opportunity
-
-| Feature | Notes |
-|---------|-------|
-| `adv_mean_usage_percentage_last10` | Possession usage rate (EWMA) |
-| `rest_days` | Recovery / fatigue |
-| `back_to_back` | B2B flag |
-| `n_teammates_injured` | Team injury context |
-| `top_scorer_injured` | Targeted injury transfer (pts/ast) |
-| `top_rebounder_injured` | Targeted injury transfer (reb) |
-| `blowout_risk` | Garbage time suppression |
-| `blowout_x_min_vol` | Interaction: blowout × minutes instability |
-
-### Layer 4 — Stat-Specific Mechanics
-
-**Points:**
-- `pts_per_min_mean_last10`, `pts_per_min_trend_3v10` — scoring rate + trend
-- `fga_per_min_trend_3v10` — shot volume trend
-- `fta_per_min_mean_last10` — free throw opportunity rate
-
-**Rebounds:**
-- `reb_per_min_mean_last5`, `reb_per_min_trend_3v10` — rebound rate + trend
-- `reb_per_min_vol_last10` — variance (rebounds are noisy)
-- `oreb_per_min_mean_last10`, `dreb_per_min_mean_last10` — offensive/defensive split
-
-**Assists:**
-- `ast_per_min_trend_3v10`, `ast_per_min_mean_last5/last10` — creation rate
-- `adv_mean_passes_last10` — ball movement volume
-
-**3-Pointers Made:**
-- `per_min_fg3a_last10` — attempt rate (opportunity driver)
-- `fg3a_per_min_trend_3v10` — attempt trend
-- `fg3_pct_safe` — Bayesian-shrunk 3P% (k=50 toward 36% prior)
-- `fg3m_p_zero_last10`, `fg3m_p_ge3_last10` — zero/multi-make probability
-
-**Blocks:**
-- `blk_per_min_vol_last10` — high variance → sparse stat treatment
-- `blk_p_zero_last10`, `blk_p_ge2_last10` — zero/multi-block probability
-- `adv_mean_defended_at_rim_fga_last10` — rim protection opportunities
-
-**Steals:**
-- `stl_per_min_vol_last10` — high variance → sparse stat treatment
-- `stl_p_zero_last10`, `stl_p_ge2_last10` — zero/multi-steal probability
-- `adv_mean_deflections_last10` — steal opportunity proxy
-
----
-
-## Top Features by Stat (Current Model — Mar 16, 2026)
-
-| Rank | pts | reb | ast | fg3m | blk | stl |
-|------|-----|-----|-----|------|-----|-----|
-| 1 | opp_allowed_pts_ewma | mp_trend_3v10 | ast_per_min_trend_3v10 | per_min_fg3a_last10 | blk_per_min_vol | stl_per_min_vol |
-| 2 | pts_per_min_trend_3v10 | reb_per_min_trend_3v10 | mp_ewma_10 | fg3a_per_min_trend_3v10 | cv_min | mp_mean_last10 |
-| 3 | pts_per_min_mean_last10 | reb_per_min_vol_last10 | mp_trend_3v10 | mp_trend_3v10 | mp_trend_3v10 | mp_trend_3v10 |
-| 4 | fga_per_min_trend_3v10 | reb_per_min_mean_last5 | ast_per_min_mean_last5 | fg3_pct_safe | mp_ewma_10 | mp_ewma_10 |
-| 5 | mp_trend_3v10 | opp_allowed_reb_ewma | ast_per_min_mean_last10 | mp_ewma_10 | mp_mean_last10 | cv_min |
-| 6 | pts_per_min_mean_last5 | oreb_per_min_mean | cv_min | mp_mean_last10 | mp_vol_last10 | opp_allowed_stl_ewma |
-| 7 | mp_ewma_10 | dreb_per_min_mean | opp_allowed_ast_ewma | opp_allowed_fg3m_ewma | opp_allowed_blk_ewma | mp_vol_last10 |
-
----
-
-## Modeling Approach
-
-### Quantile Regression Ensemble
-
-Each stat target is modeled with **11 independent LightGBM quantile regressors** at τ ∈ {0.10, 0.20, 0.25, 0.33, 0.40, 0.50, 0.60, 0.67, 0.75, 0.80, 0.90}, minimizing pinball loss. This produces a full predicted distribution per player-game rather than a point estimate.
-
-The Q50 prediction is the model's median projection. Implied probability that a player exceeds a sportsbook line is derived by interpolating across the quantile CDF:
-
-```
-P(X > line) = 1 - interpolated_CDF(line | q_preds)
-```
-
-### Two-Stage Calibration
-
-**Stage 1 — Isotonic regression per stat** (`calibration_{stat}.pkl`): corrects quantile ordering violations and systematic bias within each stat family.
-
-**Stage 2 — Platt scaling per side** (`platt_over.pkl`, `platt_under.pkl`): corrects asymmetric overconfidence on the UNDER side — the primary observed failure mode.
-
-**Active development — stat×side calibration** (`pts_over.pkl`, `pts_under.pkl`, etc.): the next calibration upgrade targeting the remaining stat-level CLV asymmetry.
-
-### Empirical Bias Correction
-
-The model trains on all players but predicts only for players with sportsbook lines (starters/key players who produce more). This causes systematic q50 under-centering corrected by empirically-derived per-stat offsets:
-
-| Stat | Bias Correction Applied |
-|------|------------------------|
-| pts | +2.34 |
-| ast | +0.82 |
-| fg3m | +0.52 |
-| reb | +0.50 |
-| blk | +0.32 |
-| stl | +0.30 |
-
-### Sparse Stat Treatment (blk, stl)
-
-Blocks and steals are modeled as zero-inflated distributions. Zero-game probability (`blk_p_zero_last10`) and multi-event probability (`blk_p_ge2_last10`) are explicit features, not derived. BLK OVER and STL OVER picks are currently suppressed in the deployment layer pending calibration evidence.
-
----
-
-## Deployment Policy
-
-The system produces two output tiers:
-
-**Full pricing universe** (`predictions/singles_{date}.json`): all model prices against available lines — the scanner output.
-
-**High-conviction subset** (`predictions/high_conviction_{date}.json`): filtered by:
-- Calibrated probability ≥ 0.60 (OVER) or ≥ 0.68 (UNDER)
-- EV ≥ 2.5% at standard juice
-- BLK OVER / STL OVER: suppressed
-- Portfolio caps: max 2 picks/player, 4/game, 15/stat, 60 total
-
----
-
-## Retrain Red-Flag Report
-
-After every retrain, `retrain_report_{date}.json` is committed to `graded/` with:
-- Feature count and opponent feature count per stat
-- MAE and calibration error per stat
-- Top 10 features by gain per stat
-- Non-null rate by feature family
-- Missing feature audit vs expected feature list
-
----
-
-## Repo Structure
-
-```
-├── .github/workflows/
-│   ├── daily_predictions.yml    # Daily pipeline (snapshot → predict → grade)
-│   └── retrain.yml              # Weekly full retrain
-├── data/                        # Parquet caches (stats, advanced, odds)
-├── graded/
-│   ├── performance_log.csv      # All graded picks with CLV
-│   └── retrain_report_*.json    # Red-flag audit per retrain
-├── model_cache/                 # Trained models + feature manifests
-├── predictions/                 # Daily prediction outputs
-├── feature_engineering.py       # 4-layer feature builder
-├── train_v12.py                 # Training pipeline
-├── predict_darko_v4.py          # Prediction engine
-├── grade_darko_v4.py            # CLV grader
-├── calibrate_models.py          # Calibration workflow
-└── bdl_client.py                # BallDontLie API client
+bdl_client.py                 BallDontLie API client
+calibrate_models.py           Global Platt calibration
+calibrate_stat_side.py        Stat×side calibration file generator
+calibrate_statside.py         Legacy calibration script
+correlation_engine.py         Within-player correlation for SGP generation
+feature_engineering.py        Feature construction pipeline
+grade.py                      Daily grader
+live_pricing.py               Python live pricing engine
+minutes_model.py              Minutes projection model
+predict.py                    Workflow target (copy of predict_darko_v4.py)
+predict_darko_v4.py           Main prediction script
+replay_live.py                Live CLV backtest tool
+residual_centering.py         Learned residual corrector (permanent bias fix)
+snapshot_closing_lines.py     Closing line snapshots
+snapshot_opening_lines.py     Opening line snapshots
+state_bucket_calibration.py   Live state-bucket calibration
+train.py                      Training script
 ```
 
 ---
 
-## Data Source
+## Daily Pipeline
 
-**BallDontLie API (GOAT tier)** — box scores, advanced stats, injuries, betting odds, player props.
+| Time (ET) | Job | Purpose |
+|---|---|---|
+| 8:00 AM | `predict` | Grade yesterday, generate today's predictions |
+| 9:00 AM | `snapshot_opening` | Capture opening lines |
+| 6:00 PM | `snapshot_closing` | Capture closing lines post-injury-report |
 
-Opponent defensive context is computed from player stats grouped by opposing team — not from a team season averages endpoint (which does not exist in BDL). Per-team, per-stat rolling EWMA over the last 10 games played.
+The `predict` job is independent — snapshot failures never cause predictions to skip. The workflow hard-fails with a visible red Action if `singles_YYYY-MM-DD.json` is not written.
 
----
-
-## Known Limitations & Active Work
-
-| Issue | Status |
-|-------|--------|
-| pts q50 under-centered by ~1.0 | Bias correction applied; monitoring |
-| ast q50 under-centered by ~0.6 | Bias correction applied; monitoring |
-| UNDER CLV consistently negative | Stat×side calibration in development |
-| BLK/STL OVER hit rate <25% | Picks suppressed; sparse model treatment |
-| 1,978 picks/week too broad | High-conviction deployment filter added |
-| Calibration: stat-only + global-side | Upgrading to stat×side |
+**Required GitHub Secrets:**
+- `BDL_API_KEY` — BallDontLie GOAT tier key
+- `ODDS_API_KEY` — The Odds API key
 
 ---
 
-## CLV as Primary Metric
+## Model Details
 
-Closing Line Value measures whether the model's probability estimates were sharper than the closing sportsbook line — the same standard used internally at sharp books. A positive CLV confirms the model identified edges that the market subsequently moved to price out.
+**Stats:** PTS, REB, AST, FG3M, STL, BLK, TOV, PRA, PR, PA, RA, STL+BLK
 
+**Ensemble:** LightGBM quantile regression (11 quantile levels per stat) + XGBoost, Random Forest, Gradient Boosting, Neural Network with Bayesian Ridge meta-learner.
+
+**SGPs:** Gaussian copula with within-player correlation engine. Capped at 6 singles/game, 60 total candidates.
+
+**Kelly sizing:** Quarter-Kelly pregame (0.25), eighth-Kelly live (0.125).
+
+---
+
+## Bias Corrections
+
+Fitted from `median(actual - q50)` on 2,624 graded rows. Applied to the full quantile ladder (all quantiles shift equally). `blk` and `stl` are not corrected — their two targets disagree directionally.
+
+| Stat | Correction |
+|---|---|
+| pts | +1.50 |
+| ast | +0.57 |
+| reb | +0.29 |
+| fg3m | +0.50 |
+| blk | 0.00 |
+| stl | 0.00 |
+
+Run `python3 residual_centering.py --train` after each retrain to replace these hardcoded values with learned per-stat models.
+
+---
+
+## Deployment Gates
+
+**OVER:** probability ≥ 0.60, EV ≥ 2.5%
+
+**UNDER:**
+
+| Stat | Min prob | Min line-q50 gap | Min EV |
+|---|---|---|---|
+| pts | 0.72 | 1.25 | 6.0% |
+| ast | 0.70 | 0.75 | 5.0% |
+| reb | 0.67 | 0.60 | 5.0% |
+| fg3m | 0.66 | 0.50 | 5.0% |
+| blk | 0.74 | — | 7.0% |
+
+**Permanently banned:** STL OVER (HR 0.216), BLK OVER (HR 0.260), STL UNDER (CLV -0.073)
+
+---
+
+## Performance (2026-03-09 to 2026-03-17, 2,624 graded rows)
+
+| Stat | Side | n | Hit Rate | CLV |
+|---|---|---|---|---|
+| pts | OVER | 190 | 0.489 | +0.086 |
+| pts | UNDER | 306 | 0.438 | -0.102 |
+| ast | OVER | 147 | 0.408 | +0.093 |
+| reb | OVER | 210 | 0.452 | +0.103 |
+| reb | UNDER | 306 | 0.464 | -0.112 |
+| blk | OVER | 269 | 0.260 | +0.094 |
+
+OVER CLV is positive across all major stats. UNDER CLV is negative — under deployment is restricted until residual centering and stat×side calibration are fully deployed.
+
+---
+
+## Remaining Build Items
+
+1. Run `python3 residual_centering.py --train` after each retrain — replaces hardcoded bias corrections with learned GBR models per stat
+2. Run `python3 calibrate_stat_side.py` — generates `platt_pts_OVER.pkl` etc.; currently falls back to global calibrators
+3. Affiliate sub-IDs — placeholder `WOO` in all links; real IDs needed from affiliate partner
+4. Cron job for `quote_archive.php` — needs server-side cron every minute during games for live CLV tracking
+5. Separate sparse models for BLK/STL — these stats need zero-inflated discrete treatment
+
+---
+
+## Setup
+
+```bash
+git clone https://github.com/Risky-Scout/nba-player-props-model
+cd nba-player-props-model
+pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib scipy
+
+export BDL_API_KEY=your_key
+python3 predict_darko_v4.py
+
+# After retrain:
+python3 residual_centering.py --train
+python3 calibrate_stat_side.py
 ```
-CLV = (model_prob - implied_closing_prob) / implied_closing_prob
-```
 
-This is more informative than hit rate or ROI on small samples because it measures pricing quality against the sharpest available signal rather than realized outcomes.
+---
+
+## Data Sources
+
+- **BallDontLie API** (GOAT tier) — stats, box scores, live data, injuries, lineups, webhooks
+- **The Odds API** — sportsbook odds for line snapshots and CLV measurement
