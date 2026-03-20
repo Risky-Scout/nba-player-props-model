@@ -5104,3 +5104,5 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-03-18,single,Michael Porter Jr.,Oklahoma City Thunder @ Brooklyn Nets,reb,UNDER,6.5,-125,0.5698,0.0257,0.008,,
 2026-03-18,single,Isaiah Collier,Utah Jazz @ Minnesota Timberwolves,reb,UNDER,3.5,-157,0.6265,0.0255,0.01,,
 2026-03-18,single,Kristaps Porzingis,Golden State Warriors @ Boston Celtics,blk,UNDER,0.5,155,0.4021,0.0252,0.004,,
+2026-03-20,single,Deni Avdija,Portland Trail Blazers @ Minnesota Timberwolves,reb,UNDER,6.5,-140,0.672,0.1519,0.053,,
+2026-03-20,single,Gui Santos,Golden State Warriors @ Detroit Pistons,ast,OVER,2.5,-143,0.6386,0.0851,0.03,,
