@@ -195,18 +195,25 @@ ADV_FIELDS = [
 # Protocol: clip(median(actual-q50), 0, cap) only where both targets agree
 # blk/stl: agreement=NO → set to 0.00 (do not correct sparse stats this way)
 # Applied to FULL quantile ladder (all quantiles shift equally)
+# ── Bias correction — learned from residual_centering.py 2026-03-20 ─────────
+# Source: residual_centering_meta.json fallback_correction values
+# Trained on 2,411 graded rows using GradientBoostingRegressor per stat
+# Target: median(actual - q50) — projection truth, not market alignment
+# reb and fg3m are NEGATIVE — model was over-projecting those stats
+# TEMPORARY: predict_darko_v4.py will auto-load residual centerer when
+#   model_cache/residual_centerer_pts.pkl etc exist (already pushed to repo)
 BIAS_CORRECTION = {
-    "pts":    1.50,   # actual-q50=+1.54, line-q50=+1.32, agree=YES → clip(1.54,0,1.50)
-    "ast":    0.57,   # actual-q50=+0.57, line-q50=+0.51, agree=YES → clip(0.57,0,0.80)
-    "reb":    0.29,   # actual-q50=+0.29, line-q50=+0.37, agree=YES → clip(0.29,0,1.00)
-    "fg3m":   0.50,   # actual-q50=+0.58, line-q50=+0.39, agree=YES → clip(0.58,0,0.50)
-    "blk":    0.00,   # agree=NO — do not correct sparse stats from surfaced sample
-    "stl":    0.00,   # agree=NO — do not correct sparse stats from surfaced sample
+    "pts":    0.51,   # learned: +0.510 (was 1.50 — overcorrected)
+    "ast":    0.155,  # learned: +0.155 (was 0.57 — overcorrected)
+    "reb":   -0.13,   # learned: -0.130 (was 0.29 — model was over-projecting)
+    "fg3m":  -0.01,   # learned: -0.010 (was 0.50 — essentially no correction)
+    "blk":    0.00,   # no correction
+    "stl":    0.00,   # no correction
     "tov":    0.00,   # insufficient data
-    "pra":    2.36,   # pts+reb+ast = 1.50+0.29+0.57 → cap 2.50
-    "pr":     1.79,   # pts+reb = 1.50+0.29 → cap 2.00
-    "pa":     2.00,   # pts+ast = 1.50+0.57 = 2.07 → cap 2.00
-    "ra":     0.86,   # reb+ast = 0.29+0.57 → cap 1.50
+    "pra":    0.535,  # pts+reb+ast = 0.51-0.13+0.155
+    "pr":     0.38,   # pts+reb = 0.51-0.13
+    "pa":     0.665,  # pts+ast = 0.51+0.155
+    "ra":     0.025,  # reb+ast = -0.13+0.155
     "stocks": 0.00,   # stl+blk both 0.00
 }
 
