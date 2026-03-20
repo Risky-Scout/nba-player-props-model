@@ -102,52 +102,84 @@ KELLY_FRAC       = 0.25
 MAX_UNITS_SINGLE = 1.5     # doc 7 §5: reduced from 2.0 — too much vol for current cal quality
 MAX_UNITS_SGP    = 1.0
 
-# ── Per-stat per-side deployment gates (doc 7 §3,5,7) ────────────────────────
-# UNDER side: restricted until centering repair is confirmed (doc 7 §1 biggest blocker)
-# Sparse stats: harder gate (doc 7 §7 sparse props different standard)
+# ── Deployment gates — calibrated from diagnostic 2026-03-19 ─────────────────
+# OVER: require prob >= 0.60 (tighter than before)
+# UNDER: reintroduced selectively with strict prob + line-gap + edge gates
+# Portfolio limits: max 25 total, max 2/player, max 4/game, max 1/player/stat
+MAX_PORTFOLIO     = 25
+MAX_PER_PLAYER    = 2
+MAX_PER_GAME      = 4
+MAX_PER_PLAYER_STAT = 1
+
 STAT_SIDE_MIN_EV = {
-    # OVER thresholds (doc 7 §5 — calibration-aware)
+    # OVER thresholds — major stats
     ("pts",  "OVER"):  0.025,
     ("reb",  "OVER"):  0.025,
     ("ast",  "OVER"):  0.025,
     ("fg3m", "OVER"):  0.030,
-    ("stl",  "OVER"):  0.045,   # doc 7 §7 sparse
-    ("blk",  "OVER"):  0.050,   # doc 7 §7 sparse — highest bar
+    # OVER thresholds — sparse (still tightly controlled)
+    ("stl",  "OVER"):  0.999,   # banned per diagnostic: HR=0.216 CLV=+0.037 too noisy
+    ("blk",  "OVER"):  0.999,   # banned per diagnostic: HR=0.260 not enough signal
     ("tov",  "OVER"):  0.035,
     ("pra",  "OVER"):  0.025,
     ("pr",   "OVER"):  0.025,
     ("pa",   "OVER"):  0.025,
     ("ra",   "OVER"):  0.030,
-    ("stocks","OVER"): 0.045,   # doc 7 §7 sparse
-    # UNDER thresholds — structurally restricted (doc 7 §1,5 — under side broken)
-    # Only deploy unders for pts/reb/ast until calibration repair confirmed
-    ("pts",  "UNDER"): 0.040,   # higher bar due to centering issues
-    ("reb",  "UNDER"): 0.040,
-    ("ast",  "UNDER"): 0.040,
-    # All other UNDER sides: gate until CLV positive for that stat×side bucket
-    ("fg3m", "UNDER"): 0.999,   # effectively disabled
-    ("stl",  "UNDER"): 0.999,
-    ("blk",  "UNDER"): 0.999,
+    ("stocks","OVER"): 0.999,   # banned
+    # UNDER thresholds — controlled reintroduction per diagnostic
+    # pts UNDER: CLV=-0.102 — require strong gates
+    ("pts",  "UNDER"): 0.060,
+    # ast UNDER: CLV=-0.104 — require strong gates
+    ("ast",  "UNDER"): 0.050,
+    # reb UNDER: CLV=-0.112 — require strong gates
+    ("reb",  "UNDER"): 0.050,
+    # fg3m UNDER: CLV=-0.092 — reintroduce with strict gate
+    ("fg3m", "UNDER"): 0.050,
+    # blk/stl UNDER: still allowed if very tight
+    ("blk",  "UNDER"): 0.070,
+    ("stl",  "UNDER"): 0.999,   # CLV=-0.073 stl under too noisy
     ("tov",  "UNDER"): 0.050,
-    ("pra",  "UNDER"): 0.040,
-    ("pr",   "UNDER"): 0.040,
-    ("pa",   "UNDER"): 0.040,
-    ("ra",   "UNDER"): 0.040,
-    ("stocks","UNDER"):0.999,   # disabled — sparse + under = double liability
+    ("pra",  "UNDER"): 0.060,
+    ("pr",   "UNDER"): 0.060,
+    ("pa",   "UNDER"): 0.060,
+    ("ra",   "UNDER"): 0.050,
+    ("stocks","UNDER"):0.999,
 }
 
-# Per-stat max probability bounds (doc 7 §2 — deployment filter)
-# A pick with model_prob outside these bounds is likely miscalibrated
+# Per-stat per-side probability bounds
+# OVER: require >= 0.60 (diagnostic shows overs need tighter prob floor)
+# UNDER: require >= 0.67–0.72 depending on stat (per instructions)
 STAT_SIDE_PROB_BOUNDS = {
-    "OVER":  (0.53, 0.74),   # spec §D.2 exactly
-    "UNDER": (0.53, 0.72),   # tighter for under until centering fixed
+    "OVER":  (0.60, 0.74),
+    "UNDER": (0.67, 0.80),
 }
 
-# Sparse stats that need independent calibration sign-off (doc 7 §7)
+# Per-stat UNDER minimum probability floors (stricter per instructions)
+UNDER_MIN_PROB = {
+    "pts":  0.72,
+    "ast":  0.70,
+    "reb":  0.67,
+    "fg3m": 0.66,
+    "blk":  0.74,
+    "stl":  0.99,   # effectively banned
+}
+
+# Per-stat UNDER minimum line-gap (line - q50 must exceed this)
+# Prevents betting unders when model is only marginally below the line
+UNDER_MIN_LINE_GAP = {
+    "pts":  1.25,
+    "ast":  0.75,
+    "reb":  0.60,
+    "fg3m": 0.50,
+    "blk":  0.20,
+    "stl":  0.99,   # effectively banned
+}
+
+# Sparse stats that need independent calibration sign-off
 SPARSE_STATS = {"stl", "blk", "stocks"}
-SPARSE_MIN_PROB = 0.57      # must clear higher probability bar than pts/reb
-SGP_MAX_PER_GAME = 6       # top N singles per game fed into copula
-SGP_ABSOLUTE_CAP = 60      # hard ceiling on total SGP candidate pool
+SPARSE_MIN_PROB = 0.60
+SGP_MAX_PER_GAME = 6
+SGP_ABSOLUTE_CAP = 60
 
 ADV_FIELDS = [
     "usage_percentage",
@@ -158,22 +190,24 @@ ADV_FIELDS = [
     "assist_to_turnover",
 ]
 
-# ── Bias correction ────────────────────────────────────────────────────────────
-# Empirical correction for systematic under-projection on starter/key-player pool.
-# v13: rolled back to 50% of original values to fix OVER hit rate (was 33%).
+# ── Bias correction — full-universe holdout fitted 2026-03-19 ────────────────
+# Source: 2624 graded rows, diag2.py — median(actual - q50) full universe
+# Protocol: clip(median(actual-q50), 0, cap) only where both targets agree
+# blk/stl: agreement=NO → set to 0.00 (do not correct sparse stats this way)
+# Applied to FULL quantile ladder (all quantiles shift equally)
 BIAS_CORRECTION = {
-    "pts":    1.17,
-    "ast":    0.41,
-    "fg3m":   0.26,
-    "reb":    0.25,
-    "blk":    0.16,
-    "stl":    0.15,
-    "stocks": 0.31,
-    "pra":    1.83,
-    "pr":     1.42,
-    "pa":     1.58,
-    "ra":     0.66,
-    "tov":    0.10,
+    "pts":    1.50,   # actual-q50=+1.54, line-q50=+1.32, agree=YES → clip(1.54,0,1.50)
+    "ast":    0.57,   # actual-q50=+0.57, line-q50=+0.51, agree=YES → clip(0.57,0,0.80)
+    "reb":    0.29,   # actual-q50=+0.29, line-q50=+0.37, agree=YES → clip(0.29,0,1.00)
+    "fg3m":   0.50,   # actual-q50=+0.58, line-q50=+0.39, agree=YES → clip(0.58,0,0.50)
+    "blk":    0.00,   # agree=NO — do not correct sparse stats from surfaced sample
+    "stl":    0.00,   # agree=NO — do not correct sparse stats from surfaced sample
+    "tov":    0.00,   # insufficient data
+    "pra":    2.36,   # pts+reb+ast = 1.50+0.29+0.57 → cap 2.50
+    "pr":     1.79,   # pts+reb = 1.50+0.29 → cap 2.00
+    "pa":     2.00,   # pts+ast = 1.50+0.57 = 2.07 → cap 2.00
+    "ra":     0.86,   # reb+ast = 0.29+0.57 → cap 1.50
+    "stocks": 0.00,   # stl+blk both 0.00
 }
 
 
@@ -493,6 +527,15 @@ def main():
                 q_preds = {q: v + bias for q, v in q_preds.items()}
                 q50     = q_preds.get(0.50, line)
 
+                # Bad-line sanity filter (permanent architecture — deployment layer)
+                # Skip if market line is more than 2.5x the model projection
+                # This catches stale/garbage lines that create fake edge
+                if q50 > 0 and line > q50 * 2.5:
+                    continue
+                # Skip if line is negative (impossible stat value)
+                if line <= 0:
+                    continue
+
                 prob_over  = p_over(q_preds, line)
                 prob_under = p_under(q_preds, line)
 
@@ -514,17 +557,29 @@ def main():
                     ("OVER",  prob_over,  over_odds,  ev_over),
                     ("UNDER", prob_under, under_odds, ev_under),
                 ]:
-                    # Stat×side deployment gate (doc 7 §3,5,7 — replaces global MIN_EV)
+                    # Stat×side EV gate
                     min_ev_req = STAT_SIDE_MIN_EV.get((target, side), MIN_EV)
                     if ev < min_ev_req:
                         continue
 
-                    # Probability bounds check (doc 7 §5 — doc spec §D.2)
-                    prob_lo, prob_hi = STAT_SIDE_PROB_BOUNDS.get(side, (0.53, 0.74))
+                    # Probability bounds check
+                    prob_lo, prob_hi = STAT_SIDE_PROB_BOUNDS.get(side, (0.60, 0.74))
                     if not (prob_lo <= prob <= prob_hi):
                         continue
 
-                    # Sparse stat: harder probability floor (doc 7 §7)
+                    # UNDER-specific gates (instructions 2026-03-19)
+                    if side == "UNDER":
+                        # Per-stat minimum probability for unders
+                        under_prob_min = UNDER_MIN_PROB.get(target, 0.67)
+                        if prob < under_prob_min:
+                            continue
+                        # Per-stat minimum line gap: line - q50 must exceed threshold
+                        line_gap = line - q_preds.get(0.50, line)
+                        under_gap_min = UNDER_MIN_LINE_GAP.get(target, 0.50)
+                        if line_gap < under_gap_min:
+                            continue
+
+                    # Sparse stat: harder probability floor
                     if target in SPARSE_STATS and prob < SPARSE_MIN_PROB:
                         continue
 
@@ -569,7 +624,32 @@ def main():
                     })
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
-    logger.info(f"Singles above EV threshold: {len(all_singles)}")
+    logger.info(f"Singles before portfolio limits: {len(all_singles)}")
+
+    # ── Portfolio limits (instructions 2026-03-19) ────────────────────────────
+    # max 25 total, max 2/player, max 4/game, max 1/player/stat
+    filtered = []
+    player_count: dict = {}
+    game_count:   dict = {}
+    player_stat:  set  = set()
+    for s in all_singles:
+        pid  = str(s["player_id"])   # str() fixes int/str type mismatch
+        gid2 = str(s["game_id"])
+        pstat= (pid, s["stat"])
+        if len(filtered) >= MAX_PORTFOLIO:
+            break
+        if player_count.get(pid, 0) >= MAX_PER_PLAYER:
+            continue
+        if game_count.get(gid2, 0) >= MAX_PER_GAME:
+            continue
+        if pstat in player_stat:
+            continue
+        filtered.append(s)
+        player_count[pid]  = player_count.get(pid, 0) + 1
+        game_count[gid2]   = game_count.get(gid2, 0) + 1
+        player_stat.add(pstat)
+    all_singles = filtered
+    logger.info(f"Singles after portfolio limits: {len(all_singles)}")
 
     today = target_date
 

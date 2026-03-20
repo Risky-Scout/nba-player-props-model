@@ -1,0 +1,58 @@
+{
+  "fallback": {
+    "pts": 0.5099999999999998,
+    "ast": 0.15499999999999992,
+    "reb": -0.1299999999999999,
+    "fg3m": -0.01
+  },
+  "meta": {
+    "pts": {
+      "n": 496,
+      "cv_mae_mean": 6.650108136622916,
+      "cv_mae_std": 0.4180939897589487,
+      "target_median": 0.5099999999999998,
+      "target_mean": 1.0681048387096774,
+      "fallback_correction": 0.5099999999999998,
+      "model_type": "GradientBoostingRegressor"
+    },
+    "ast": {
+      "n": 452,
+      "cv_mae_mean": 1.8812381425782623,
+      "cv_mae_std": 0.18897028917904504,
+      "target_median": 0.15499999999999992,
+      "target_mean": 0.4162610619469026,
+      "fallback_correction": 0.15499999999999992,
+      "model_type": "GradientBoostingRegressor"
+    },
+    "reb": {
+      "n": 516,
+      "cv_mae_mean": 2.3644523641139368,
+      "cv_mae_std": 0.25745701930333004,
+      "target_median": -0.1299999999999999,
+      "target_mean": 0.21674418604651163,
+      "fallback_correction": -0.1299999999999999,
+      "model_type": "GradientBoostingRegressor"
+    },
+    "fg3m": {
+      "n": 382,
+      "cv_mae_mean": 1.2079297258859412,
+      "cv_mae_std": 0.10320724330489628,
+      "target_median": -0.01,
+      "target_mean": 0.2517801047120419,
+      "fallback_correction": -0.01,
+      "model_type": "GradientBoostingRegressor"
+    }
+  },
+  "correctable_stats": [
+    "pts",
+    "ast",
+    "reb",
+    "fg3m"
+  ],
+  "correction_caps": {
+    "pts": 2.0,
+    "ast": 1.0,
+    "reb": 1.2,
+    "fg3m": 0.6
+  }
+}

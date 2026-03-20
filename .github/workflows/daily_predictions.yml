@@ -4,13 +4,6 @@ name: NBA Props Model — Daily Pipeline
 #   14:00 UTC = 9:00 AM ET  — opening lines snapshot (before sharp action)
 #   13:00 UTC = 8:00 AM ET  — predictions + grading
 #   23:00 UTC = 6:00 PM ET  — closing lines snapshot (post-injury-report)
-#
-# Timeline:
-#   9 AM ET  → snapshot game totals/spreads (opening reference)
-#   8 AM ET  → grade yesterday, predict today (uses yesterday's closing lines)
-#   5:30 PM  → NBA official injury report deadline
-#   6 PM ET  → snapshot player prop closing lines (sharpest pre-tip price)
-#   ~7 PM ET → tipoffs begin
 
 on:
   schedule:
@@ -59,10 +52,13 @@ jobs:
 
 
 # ── Job 2: Grade + Predict (8 AM ET) ─────────────────────────────────────────
+# CRITICAL: This job is INDEPENDENT — it does NOT depend on snapshot_opening.
+# snapshot_opening failing must never cause predictions to be skipped.
 
   predict:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # FIXED: removed 'needs: snapshot_opening' — that was causing silent skips
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event.schedule == '0 13 * * *'
@@ -86,7 +82,7 @@ jobs:
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: python grade_darko_v4.py
+        run: python grade.py
         continue-on-error: true
 
       - name: Generate today's predictions
@@ -95,6 +91,21 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SKIP_SGPS: "1"
         run: python predict_darko_v4.py
+
+      # HARD FAIL: predictions file must exist or the whole job fails visibly
+      - name: Verify predictions were written
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          FILE="predictions/singles_${DATE}.json"
+          if [ ! -f "$FILE" ]; then
+            echo "FATAL: $FILE was not written — predictions failed"
+            exit 1
+          fi
+          COUNT=$(python3 -c "import json; d=json.load(open('$FILE')); print(len(d.get('picks',d.get('singles',[]))))")
+          echo "✓ Predictions written: $COUNT picks in $FILE"
+          if [ "$COUNT" -eq "0" ]; then
+            echo "WARNING: 0 picks written — check API keys and model files"
+          fi
 
       - name: Commit predictions and graded results
         run: |

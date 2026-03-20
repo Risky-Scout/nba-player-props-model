@@ -1,0 +1,3963 @@
+{
+  "generated_at": "2026-03-13T08:51:51.119253",
+  "model_version": "see model_cache/training_meta.json",
+  "targets": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "stl",
+    "blk",
+    "pra",
+    "pr",
+    "pa",
+    "ra",
+    "stocks"
+  ],
+  "per_stat": {
+    "pts": {
+      "top_features": [
+        {
+          "feature": "fta_per_min_mean_last10",
+          "pct": 5.457,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 4.114,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "fg3a_per_min_mean_last10",
+          "pct": 4.114,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 4.074,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "games_played",
+          "pct": 3.99,
+          "group": "metadata"
+        },
+        {
+          "feature": "usage_proxy_per_min_trend_3v10",
+          "pct": 3.775,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "usage_proxy_per_min_mean_last10",
+          "pct": 3.419,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fga_raw_mean_last10",
+          "pct": 3.365,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fga_per_min_cv_last10",
+          "pct": 3.231,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fga_per_min_vol_last10",
+          "pct": 3.153,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fga_per_min_trend_3v10",
+          "pct": 3.12,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.059,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 3.029,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "usage_proxy_per_min_cv_last10",
+          "pct": 2.996,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "usage_proxy_per_min_vol_last10",
+          "pct": 2.771,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fga_per_min_ewma_10",
+          "pct": 2.744,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fga_per_min_mean_last3",
+          "pct": 2.66,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 2.623,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.572,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 2.542,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "fga_per_min_mean_last5",
+          "pct": 2.502,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 2.485,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 2.415,
+          "group": "schedule"
+        },
+        {
+          "feature": "fga_per_min_mean_last10",
+          "pct": 2.401,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.321,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.106,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 1.918,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 1.864,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.857,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 1.646,
+          "group": "minutes_model_output"
+        }
+      ],
+      "group_breakdown": {
+        "rolling_player_stats": {
+          "total": 13598.0,
+          "pct": 45.67
+        },
+        "minutes_history": {
+          "total": 9615.0,
+          "pct": 32.29
+        },
+        "minutes_model_output": {
+          "total": 2459.0,
+          "pct": 8.26
+        },
+        "metadata": {
+          "total": 1358.0,
+          "pct": 4.56
+        },
+        "fg3_specific": {
+          "total": 1225.0,
+          "pct": 4.11
+        },
+        "schedule": {
+          "total": 1141.0,
+          "pct": 3.83
+        },
+        "advanced_stats": {
+          "total": 381.0,
+          "pct": 1.28
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "interaction": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 79,
+      "n_zero": 27
+    },
+    "reb": {
+      "top_features": [
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 4.19,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "opp_pace_true",
+          "pct": 4.099,
+          "group": "market_odds"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 3.852,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "games_played",
+          "pct": 3.633,
+          "group": "metadata"
+        },
+        {
+          "feature": "reb_per_min_trend_3v10",
+          "pct": 3.327,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_raw_mean_last10",
+          "pct": 3.233,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "oreb_per_min_mean_last10",
+          "pct": 2.961,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "opp_oreb_chances_allowed",
+          "pct": 2.923,
+          "group": "other"
+        },
+        {
+          "feature": "opp_reb_chances_allowed",
+          "pct": 2.906,
+          "group": "other"
+        },
+        {
+          "feature": "opp_dreb_chances_allowed",
+          "pct": 2.871,
+          "group": "other"
+        },
+        {
+          "feature": "reb_per_min_cv_last10",
+          "pct": 2.839,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 2.787,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 2.638,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "reb_raw_cv_last10",
+          "pct": 2.592,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 2.533,
+          "group": "schedule"
+        },
+        {
+          "feature": "reb_per_min_vol_last10",
+          "pct": 2.38,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_mean_last3",
+          "pct": 2.321,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "dreb_per_min_mean_last10",
+          "pct": 2.227,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.213,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "reb_per_min_p75_last10",
+          "pct": 2.199,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_x_mp",
+          "pct": 2.199,
+          "group": "interaction"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 2.192,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 2.161,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "reb_per_min_mean_last5",
+          "pct": 2.046,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_ewma_10",
+          "pct": 1.963,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 1.949,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 1.942,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "reb_per_min_median_last10",
+          "pct": 1.896,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_ceiling_last10",
+          "pct": 1.869,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 1.802,
+          "group": "minutes_history"
+        }
+      ],
+      "group_breakdown": {
+        "rolling_player_stats": {
+          "total": 11665.0,
+          "pct": 40.59
+        },
+        "minutes_history": {
+          "total": 7962.0,
+          "pct": 27.71
+        },
+        "other": {
+          "total": 2500.0,
+          "pct": 8.7
+        },
+        "minutes_model_output": {
+          "total": 2052.0,
+          "pct": 7.14
+        },
+        "market_odds": {
+          "total": 1178.0,
+          "pct": 4.1
+        },
+        "metadata": {
+          "total": 1130.0,
+          "pct": 3.93
+        },
+        "schedule": {
+          "total": 1053.0,
+          "pct": 3.66
+        },
+        "interaction": {
+          "total": 632.0,
+          "pct": 2.2
+        },
+        "advanced_stats": {
+          "total": 566.0,
+          "pct": 1.97
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 80,
+      "n_zero": 20
+    },
+    "ast": {
+      "top_features": [
+        {
+          "feature": "opp_pace_true",
+          "pct": 4.05,
+          "group": "market_odds"
+        },
+        {
+          "feature": "tov_per_min_mean_last10",
+          "pct": 4.011,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 4.011,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "usage_proxy_per_min_mean_last10",
+          "pct": 3.985,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 3.953,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "ast_raw_cv_last10",
+          "pct": 3.914,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_raw_mean_last10",
+          "pct": 3.872,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "opp_pts_allowed",
+          "pct": 3.438,
+          "group": "other"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 3.435,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "opp_ast_opportunities",
+          "pct": 3.435,
+          "group": "other"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 3.257,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "games_played",
+          "pct": 3.222,
+          "group": "metadata"
+        },
+        {
+          "feature": "ast_per_min_ewma_10",
+          "pct": 3.028,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_trend_3v10",
+          "pct": 2.914,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.727,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.617,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 2.614,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "ast_per_min_p75_last10",
+          "pct": 2.533,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 2.471,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 2.407,
+          "group": "schedule"
+        },
+        {
+          "feature": "ast_per_min_mean_last5",
+          "pct": 2.287,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_vol_last10",
+          "pct": 2.248,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_mean_last10",
+          "pct": 2.203,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.138,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 2.077,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 2.048,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "ast_per_min_mean_last3",
+          "pct": 1.902,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.841,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 1.711,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.643,
+          "group": "minutes_history"
+        }
+      ],
+      "group_breakdown": {
+        "rolling_player_stats": {
+          "total": 12024.0,
+          "pct": 38.89
+        },
+        "minutes_history": {
+          "total": 10295.0,
+          "pct": 33.3
+        },
+        "minutes_model_output": {
+          "total": 2596.0,
+          "pct": 8.4
+        },
+        "other": {
+          "total": 2125.0,
+          "pct": 6.87
+        },
+        "market_odds": {
+          "total": 1252.0,
+          "pct": 4.05
+        },
+        "schedule": {
+          "total": 1158.0,
+          "pct": 3.75
+        },
+        "metadata": {
+          "total": 1141.0,
+          "pct": 3.69
+        },
+        "advanced_stats": {
+          "total": 324.0,
+          "pct": 1.05
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "interaction": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 79,
+      "n_zero": 25
+    },
+    "fg3m": {
+      "top_features": [
+        {
+          "feature": "fg3a_count_last10",
+          "pct": 10.856,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "fg3a_count_season",
+          "pct": 8.297,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "fg3a_per_min_mean_last10",
+          "pct": 7.535,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 6.586,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "fg3_pct_safe",
+          "pct": 5.813,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "fg3a_per_min_trend_3v10",
+          "pct": 3.462,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "games_played",
+          "pct": 3.392,
+          "group": "metadata"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 3.131,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 3.003,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "fg3m_p_zero_last10",
+          "pct": 2.94,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "fg3a_attempt_trend",
+          "pct": 2.795,
+          "group": "fg3_specific"
+        },
+        {
+          "feature": "opp_pace_true",
+          "pct": 2.658,
+          "group": "market_odds"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 2.643,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "opp_3pa_allowed",
+          "pct": 2.389,
+          "group": "other"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.379,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.368,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "opp_3p_rate_allowed",
+          "pct": 2.213,
+          "group": "other"
+        },
+        {
+          "feature": "opp_3pm_allowed",
+          "pct": 2.043,
+          "group": "other"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 1.892,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 1.842,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 1.832,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 1.814,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 1.786,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 1.567,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 1.56,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.472,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.323,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 1.32,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 1.288,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 1.271,
+          "group": "minutes_model_output"
+        }
+      ],
+      "group_breakdown": {
+        "fg3_specific": {
+          "total": 12169.0,
+          "pct": 42.95
+        },
+        "minutes_history": {
+          "total": 8741.0,
+          "pct": 30.85
+        },
+        "minutes_model_output": {
+          "total": 1981.0,
+          "pct": 6.99
+        },
+        "other": {
+          "total": 1883.0,
+          "pct": 6.65
+        },
+        "metadata": {
+          "total": 1071.0,
+          "pct": 3.78
+        },
+        "rolling_player_stats": {
+          "total": 851.0,
+          "pct": 3.0
+        },
+        "market_odds": {
+          "total": 753.0,
+          "pct": 2.66
+        },
+        "schedule": {
+          "total": 694.0,
+          "pct": 2.45
+        },
+        "advanced_stats": {
+          "total": 191.0,
+          "pct": 0.67
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 65,
+      "n_zero": 14
+    },
+    "stl": {
+      "top_features": [
+        {
+          "feature": "stl_per_min_blended",
+          "pct": 12.94,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 7.186,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "stl_per_min_vol_last10",
+          "pct": 5.468,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "games_played",
+          "pct": 5.0,
+          "group": "metadata"
+        },
+        {
+          "feature": "stl_per_min_ewma_10",
+          "pct": 4.993,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 4.841,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 4.392,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 4.383,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 4.08,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.996,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 3.307,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 3.213,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.937,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 2.888,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 2.609,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "stl_p_ge2_last10",
+          "pct": 2.589,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "mp_mean_last10",
+          "pct": 2.56,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 2.437,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 2.404,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.274,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 2.264,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 2.183,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "exp_mp",
+          "pct": 2.147,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "stl_p_zero_last10",
+          "pct": 1.719,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.689,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 1.618,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_floor_last10",
+          "pct": 0.702,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "games_last_7",
+          "pct": 0.523,
+          "group": "schedule"
+        },
+        {
+          "feature": "stl_p_ge1_last10",
+          "pct": 0.481,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "starter_rate_last10",
+          "pct": 0.289,
+          "group": "minutes_history"
+        }
+      ],
+      "group_breakdown": {
+        "minutes_history": {
+          "total": 14467.0,
+          "pct": 47.0
+        },
+        "sparse_stat": {
+          "total": 5457.0,
+          "pct": 17.73
+        },
+        "rolling_player_stats": {
+          "total": 4476.0,
+          "pct": 14.54
+        },
+        "minutes_model_output": {
+          "total": 3722.0,
+          "pct": 12.09
+        },
+        "metadata": {
+          "total": 1616.0,
+          "pct": 5.25
+        },
+        "schedule": {
+          "total": 738.0,
+          "pct": 2.4
+        },
+        "advanced_stats": {
+          "total": 305.0,
+          "pct": 0.99
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 60,
+      "n_zero": 16
+    },
+    "blk": {
+      "top_features": [
+        {
+          "feature": "blk_per_min_blended",
+          "pct": 18.036,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "blk_per_min_vol_last10",
+          "pct": 9.748,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "blk_per_min_ewma_10",
+          "pct": 5.409,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 4.964,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 4.207,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "games_played",
+          "pct": 4.188,
+          "group": "metadata"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 4.011,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 3.723,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "blk_p_zero_last10",
+          "pct": 3.582,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 3.466,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 3.431,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 3.126,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_mean_last10",
+          "pct": 2.626,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 2.491,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 2.459,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.338,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "exp_mp",
+          "pct": 2.254,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 2.155,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 2.087,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 2.081,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.039,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 1.94,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.911,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "blk_p_ge2_last10",
+          "pct": 1.828,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 1.754,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_floor_last10",
+          "pct": 0.936,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "blk_p_ge1_last10",
+          "pct": 0.85,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 0.635,
+          "group": "schedule"
+        },
+        {
+          "feature": "games_30plus_last10",
+          "pct": 0.295,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "games_20minus_last10",
+          "pct": 0.26,
+          "group": "minutes_history"
+        }
+      ],
+      "group_breakdown": {
+        "minutes_history": {
+          "total": 11750.0,
+          "pct": 37.68
+        },
+        "sparse_stat": {
+          "total": 7577.0,
+          "pct": 24.3
+        },
+        "rolling_player_stats": {
+          "total": 5808.0,
+          "pct": 18.62
+        },
+        "minutes_model_output": {
+          "total": 4252.0,
+          "pct": 13.63
+        },
+        "metadata": {
+          "total": 1335.0,
+          "pct": 4.28
+        },
+        "schedule": {
+          "total": 335.0,
+          "pct": 1.07
+        },
+        "advanced_stats": {
+          "total": 130.0,
+          "pct": 0.42
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 61,
+      "n_zero": 17
+    },
+    "pra": {
+      "top_features": [
+        {
+          "feature": "usage_proxy_per_min_mean_last10",
+          "pct": 5.379,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_cv_last10",
+          "pct": 4.212,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "games_played",
+          "pct": 4.093,
+          "group": "metadata"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 3.863,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 3.683,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_mean_last10",
+          "pct": 3.493,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_vol_last10",
+          "pct": 3.439,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pts_per_min_cv_last10",
+          "pct": 3.405,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 3.293,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "E_reb_proxy",
+          "pct": 3.273,
+          "group": "interaction"
+        },
+        {
+          "feature": "pts_per_min_vol_last10",
+          "pct": 3.252,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_mean_last10",
+          "pct": 3.208,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.174,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "reb_per_min_median_last10",
+          "pct": 3.103,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "E_ast_proxy",
+          "pct": 3.042,
+          "group": "interaction"
+        },
+        {
+          "feature": "ast_per_min_vol_last10",
+          "pct": 3.039,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_cv_last10",
+          "pct": 3.035,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pts_per_min_mean_last10",
+          "pct": 3.015,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "E_pts_proxy",
+          "pct": 2.832,
+          "group": "interaction"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 2.571,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 2.52,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.435,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 2.367,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 2.231,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.096,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.001,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 1.957,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.519,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 1.468,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 1.455,
+          "group": "minutes_model_output"
+        }
+      ],
+      "group_breakdown": {
+        "rolling_player_stats": {
+          "total": 12462.0,
+          "pct": 42.26
+        },
+        "minutes_history": {
+          "total": 9165.0,
+          "pct": 31.08
+        },
+        "interaction": {
+          "total": 2697.0,
+          "pct": 9.15
+        },
+        "minutes_model_output": {
+          "total": 2193.0,
+          "pct": 7.44
+        },
+        "metadata": {
+          "total": 1380.0,
+          "pct": 4.68
+        },
+        "schedule": {
+          "total": 1166.0,
+          "pct": 3.95
+        },
+        "advanced_stats": {
+          "total": 424.0,
+          "pct": 1.44
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 70,
+      "n_zero": 18
+    },
+    "pr": {
+      "top_features": [
+        {
+          "feature": "usage_proxy_per_min_mean_last10",
+          "pct": 5.724,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_cv_last10",
+          "pct": 5.079,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 5.007,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "games_played",
+          "pct": 4.914,
+          "group": "metadata"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 4.536,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pts_per_min_vol_last10",
+          "pct": 4.313,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_vol_last10",
+          "pct": 4.276,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pts_per_min_mean_last10",
+          "pct": 4.035,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "E_reb_proxy",
+          "pct": 3.819,
+          "group": "interaction"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.778,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "reb_per_min_median_last10",
+          "pct": 3.565,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_mean_last10",
+          "pct": 3.514,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 3.414,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "E_pts_proxy",
+          "pct": 3.329,
+          "group": "interaction"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 3.109,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 2.903,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 2.893,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.889,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 2.828,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.529,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 2.351,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.103,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.908,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last10",
+          "pct": 1.846,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 1.826,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 1.788,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 1.764,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 1.602,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.349,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "exp_mp",
+          "pct": 1.277,
+          "group": "minutes_model_output"
+        }
+      ],
+      "group_breakdown": {
+        "minutes_history": {
+          "total": 10783.0,
+          "pct": 37.0
+        },
+        "rolling_player_stats": {
+          "total": 10212.0,
+          "pct": 35.04
+        },
+        "minutes_model_output": {
+          "total": 2577.0,
+          "pct": 8.84
+        },
+        "interaction": {
+          "total": 2083.0,
+          "pct": 7.15
+        },
+        "metadata": {
+          "total": 1634.0,
+          "pct": 5.61
+        },
+        "schedule": {
+          "total": 1355.0,
+          "pct": 4.65
+        },
+        "advanced_stats": {
+          "total": 498.0,
+          "pct": 1.71
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 61,
+      "n_zero": 14
+    },
+    "pa": {
+      "top_features": [
+        {
+          "feature": "usage_proxy_per_min_mean_last10",
+          "pct": 6.526,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 5.019,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "games_played",
+          "pct": 4.951,
+          "group": "metadata"
+        },
+        {
+          "feature": "pts_per_min_vol_last10",
+          "pct": 4.664,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 4.627,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_vol_last10",
+          "pct": 4.163,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pts_per_min_mean_last10",
+          "pct": 4.098,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_mean_last10",
+          "pct": 4.075,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "E_ast_proxy",
+          "pct": 4.013,
+          "group": "interaction"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 3.925,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "E_pts_proxy",
+          "pct": 3.897,
+          "group": "interaction"
+        },
+        {
+          "feature": "ast_per_min_cv_last10",
+          "pct": 3.744,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.717,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 3.202,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 3.147,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 2.864,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 2.793,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 2.673,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.625,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 2.472,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.431,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 2.077,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 2.046,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.923,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 1.889,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.828,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 1.797,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last10",
+          "pct": 1.582,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "exp_mp",
+          "pct": 1.378,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_floor_last10",
+          "pct": 1.149,
+          "group": "minutes_history"
+        }
+      ],
+      "group_breakdown": {
+        "minutes_history": {
+          "total": 11193.0,
+          "pct": 38.16
+        },
+        "rolling_player_stats": {
+          "total": 9355.0,
+          "pct": 31.9
+        },
+        "minutes_model_output": {
+          "total": 2892.0,
+          "pct": 9.86
+        },
+        "interaction": {
+          "total": 2320.0,
+          "pct": 7.91
+        },
+        "metadata": {
+          "total": 1650.0,
+          "pct": 5.63
+        },
+        "schedule": {
+          "total": 1438.0,
+          "pct": 4.9
+        },
+        "advanced_stats": {
+          "total": 480.0,
+          "pct": 1.64
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 62,
+      "n_zero": 16
+    },
+    "ra": {
+      "top_features": [
+        {
+          "feature": "reb_per_min_cv_last10",
+          "pct": 5.309,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 5.102,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 5.032,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "ast_per_min_mean_last10",
+          "pct": 4.67,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "E_ast_proxy",
+          "pct": 4.666,
+          "group": "interaction"
+        },
+        {
+          "feature": "E_reb_proxy",
+          "pct": 4.586,
+          "group": "interaction"
+        },
+        {
+          "feature": "games_played",
+          "pct": 4.297,
+          "group": "metadata"
+        },
+        {
+          "feature": "reb_per_min_mean_last10",
+          "pct": 4.231,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "ast_per_min_vol_last10",
+          "pct": 3.95,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_median_last10",
+          "pct": 3.932,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "reb_per_min_vol_last10",
+          "pct": 3.872,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.57,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 3.437,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 3.054,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 3.029,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 3.029,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.881,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 2.853,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 2.843,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.555,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 2.449,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 1.922,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 1.869,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.866,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 1.862,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 1.848,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 1.834,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last10",
+          "pct": 1.56,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "exp_mp",
+          "pct": 1.342,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_floor_last10",
+          "pct": 1.131,
+          "group": "minutes_history"
+        }
+      ],
+      "group_breakdown": {
+        "minutes_history": {
+          "total": 10941.0,
+          "pct": 38.44
+        },
+        "rolling_player_stats": {
+          "total": 8841.0,
+          "pct": 31.07
+        },
+        "minutes_model_output": {
+          "total": 2667.0,
+          "pct": 9.37
+        },
+        "interaction": {
+          "total": 2633.0,
+          "pct": 9.25
+        },
+        "metadata": {
+          "total": 1389.0,
+          "pct": 4.88
+        },
+        "schedule": {
+          "total": 1268.0,
+          "pct": 4.46
+        },
+        "advanced_stats": {
+          "total": 720.0,
+          "pct": 2.53
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 60,
+      "n_zero": 14
+    },
+    "stocks": {
+      "top_features": [
+        {
+          "feature": "blk_per_min_blended",
+          "pct": 7.632,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "stl_per_min_blended",
+          "pct": 7.012,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "mp_ewma_10",
+          "pct": 4.97,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "stl_per_min_ewma_10",
+          "pct": 4.928,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "pf_per_min_mean_last10",
+          "pct": 4.723,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "stl_per_min_vol_last10",
+          "pct": 4.541,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "games_played",
+          "pct": 4.356,
+          "group": "metadata"
+        },
+        {
+          "feature": "mp_trend_3v10",
+          "pct": 4.067,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "blk_per_min_ewma_10",
+          "pct": 4.061,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "blk_per_min_vol_last10",
+          "pct": 3.941,
+          "group": "rolling_player_stats"
+        },
+        {
+          "feature": "mp_mean_last5",
+          "pct": 3.785,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_season",
+          "pct": 3.21,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_mean_last3",
+          "pct": 3.077,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "role_stability_index",
+          "pct": 2.548,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_vol",
+          "pct": 2.512,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_ceiling",
+          "pct": 2.477,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_vol_last10",
+          "pct": 2.308,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_pred_floor",
+          "pct": 2.298,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_cv_last10",
+          "pct": 2.227,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_q25",
+          "pct": 2.178,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_p25_last10",
+          "pct": 2.149,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "mp_p75_last10",
+          "pct": 2.12,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "rest_days",
+          "pct": 1.99,
+          "group": "schedule"
+        },
+        {
+          "feature": "mp_q75",
+          "pct": 1.987,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_ceiling_last10",
+          "pct": 1.792,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "exp_mp",
+          "pct": 1.63,
+          "group": "minutes_model_output"
+        },
+        {
+          "feature": "mp_mean_last10",
+          "pct": 1.597,
+          "group": "minutes_history"
+        },
+        {
+          "feature": "stl_p_zero_last10",
+          "pct": 1.318,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "blk_p_zero_last10",
+          "pct": 1.279,
+          "group": "sparse_stat"
+        },
+        {
+          "feature": "stl_p_ge2_last10",
+          "pct": 1.276,
+          "group": "sparse_stat"
+        }
+      ],
+      "group_breakdown": {
+        "minutes_history": {
+          "total": 11718.0,
+          "pct": 38.04
+        },
+        "rolling_player_stats": {
+          "total": 6837.0,
+          "pct": 22.19
+        },
+        "sparse_stat": {
+          "total": 6166.0,
+          "pct": 20.02
+        },
+        "minutes_model_output": {
+          "total": 3256.0,
+          "pct": 10.57
+        },
+        "metadata": {
+          "total": 1451.0,
+          "pct": 4.71
+        },
+        "schedule": {
+          "total": 1015.0,
+          "pct": 3.29
+        },
+        "advanced_stats": {
+          "total": 363.0,
+          "pct": 1.18
+        },
+        "vacancy_injury": {
+          "total": 0.0,
+          "pct": 0.0
+        },
+        "market_odds": {
+          "total": 0.0,
+          "pct": 0.0
+        }
+      },
+      "n_features": 65,
+      "n_zero": 15
+    }
+  },
+  "cross_stat": {
+    "three_in_4": {
+      "mean_rank": 44.83,
+      "min_rank": 39,
+      "max_rank": 51,
+      "n_zero_stats": 1,
+      "n_top10": 0
+    },
+    "is_home": {
+      "mean_rank": 38.33,
+      "min_rank": 32,
+      "max_rank": 49,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "reb_per_min_ceiling_last10": {
+      "mean_rank": 63.0,
+      "min_rank": 29,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "fga_per_min_mean_last10": {
+      "mean_rank": 62.33,
+      "min_rank": 24,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_q75": {
+      "mean_rank": 26.5,
+      "min_rank": 7,
+      "max_rank": 39,
+      "n_zero_stats": 0,
+      "n_top10": 1
+    },
+    "adv_usage_percentage_mean_last10": {
+      "mean_rank": 38.33,
+      "min_rank": 31,
+      "max_rank": 45,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "fg3a_per_min_trend_3v10": {
+      "mean_rank": 61.67,
+      "min_rank": 6,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "four_in_6": {
+      "mean_rank": 46.5,
+      "min_rank": 33,
+      "max_rank": 59,
+      "n_zero_stats": 2,
+      "n_top10": 0
+    },
+    "opp_dreb_chances_allowed": {
+      "mean_rank": 59.83,
+      "min_rank": 10,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "fg3_pct_safe": {
+      "mean_rank": 61.5,
+      "min_rank": 5,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "stl_p_ge1_last10": {
+      "mean_rank": 66.33,
+      "min_rank": 29,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "fga_x_itt": {
+      "mean_rank": 71.5,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "ast_per_min_trend_3v10": {
+      "mean_rank": 60.67,
+      "min_rank": 14,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "ast_per_min_mean_last3": {
+      "mean_rank": 62.83,
+      "min_rank": 27,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_pct_fga_mean_last10": {
+      "mean_rank": 70.0,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_rebound_chances_total_ewma": {
+      "mean_rank": 69.83,
+      "min_rank": 61,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "blowout_risk_x_mp_vol": {
+      "mean_rank": 59.83,
+      "min_rank": 53,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_matchup_turnovers_mean_last10": {
+      "mean_rank": 69.17,
+      "min_rank": 46,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_mean_season": {
+      "mean_rank": 12.67,
+      "min_rank": 5,
+      "max_rank": 20,
+      "n_zero_stats": 0,
+      "n_top10": 2
+    },
+    "fg3m_p_ge3_last10": {
+      "mean_rank": 66.17,
+      "min_rank": 33,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "back_to_back": {
+      "mean_rank": 49.17,
+      "min_rank": 44,
+      "max_rank": 60,
+      "n_zero_stats": 2,
+      "n_top10": 0
+    },
+    "blk_p_ge2_last10": {
+      "mean_rank": 65.33,
+      "min_rank": 24,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "stl_per_min_vol_last10": {
+      "mean_rank": 62.0,
+      "min_rank": 3,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "blk_per_min_blended": {
+      "mean_rank": 61.5,
+      "min_rank": 1,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "fg3a_count_last10": {
+      "mean_rank": 60.83,
+      "min_rank": 1,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "adv_defended_at_rim_fg_pct_mean_last10": {
+      "mean_rank": 69.0,
+      "min_rank": 46,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "missed_last_game": {
+      "mean_rank": 48.17,
+      "min_rank": 42,
+      "max_rank": 57,
+      "n_zero_stats": 1,
+      "n_top10": 0
+    },
+    "adv_switches_on_mean_last10": {
+      "mean_rank": 68.5,
+      "min_rank": 52,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "vacated_usage_proxy": {
+      "mean_rank": 66.0,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "usage_proxy_per_min_cv_last10": {
+      "mean_rank": 60.67,
+      "min_rank": 14,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "stl_p_ge2_last10": {
+      "mean_rank": 64.17,
+      "min_rank": 16,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "games_played": {
+      "mean_rank": 6.33,
+      "min_rank": 4,
+      "max_rank": 12,
+      "n_zero_stats": 0,
+      "n_top10": 5
+    },
+    "num_teammates_inactive": {
+      "mean_rank": 59.33,
+      "min_rank": 48,
+      "max_rank": 66,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_pace_mean_last10": {
+      "mean_rank": 40.5,
+      "min_rank": 34,
+      "max_rank": 48,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "mp_pred_floor": {
+      "mean_rank": 24.33,
+      "min_rank": 15,
+      "max_rank": 37,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_estimated_usage_percentage_mean_last10": {
+      "mean_rank": 70.5,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_pct_3pa_mean_last10": {
+      "mean_rank": 70.17,
+      "min_rank": 57,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_pct_points_mean_last10": {
+      "mean_rank": 69.83,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "blk_per_min_ewma_10": {
+      "mean_rank": 61.83,
+      "min_rank": 3,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "fga_per_min_trend_3v10": {
+      "mean_rank": 60.17,
+      "min_rank": 11,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "vacated_top2_fga": {
+      "mean_rank": 68.33,
+      "min_rank": 60,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_secondary_assists_mean_last10": {
+      "mean_rank": 70.17,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_deflections_ewma": {
+      "mean_rank": 69.83,
+      "min_rank": 50,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_vol": {
+      "mean_rank": 19.33,
+      "min_rank": 11,
+      "max_rank": 27,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "opp_pace_true": {
+      "mean_rank": 36.33,
+      "min_rank": 1,
+      "max_rank": 80,
+      "n_zero_stats": 3,
+      "n_top10": 2
+    },
+    "has_advanced_stats": {
+      "mean_rank": 59.17,
+      "min_rank": 49,
+      "max_rank": 69,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "reb_per_min_vol_last10": {
+      "mean_rank": 60.83,
+      "min_rank": 16,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "implied_team_total": {
+      "mean_rank": 63.83,
+      "min_rank": 58,
+      "max_rank": 76,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "vacated_ast": {
+      "mean_rank": 68.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fg3m_p_zero_last10": {
+      "mean_rank": 62.33,
+      "min_rank": 10,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "mp_trend_3v10": {
+      "mean_rank": 5.17,
+      "min_rank": 1,
+      "max_rank": 14,
+      "n_zero_stats": 0,
+      "n_top10": 5
+    },
+    "stl_per_min_ewma_10": {
+      "mean_rank": 62.33,
+      "min_rank": 5,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "opp_ast_opportunities": {
+      "mean_rank": 60.0,
+      "min_rank": 10,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "has_odds": {
+      "mean_rank": 64.83,
+      "min_rank": 53,
+      "max_rank": 78,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fga_per_min_mean_last5": {
+      "mean_rank": 61.83,
+      "min_rank": 21,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_cv_last10": {
+      "mean_rank": 24.33,
+      "min_rank": 20,
+      "max_rank": 33,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "mp_p25_last10": {
+      "mean_rank": 27.67,
+      "min_rank": 18,
+      "max_rank": 34,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "opp_pace_context": {
+      "mean_rank": 66.33,
+      "min_rank": 45,
+      "max_rank": 78,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "reb_per_min_p75_last10": {
+      "mean_rank": 61.5,
+      "min_rank": 20,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "starter_rate_last10": {
+      "mean_rank": 42.17,
+      "min_rank": 30,
+      "max_rank": 55,
+      "n_zero_stats": 2,
+      "n_top10": 0
+    },
+    "oreb_per_min_mean_last10": {
+      "mean_rank": 59.33,
+      "min_rank": 7,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "adv_rebound_chances_off_mean_last10": {
+      "mean_rank": 70.0,
+      "min_rank": 61,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "vacated_creation_share": {
+      "mean_rank": 68.0,
+      "min_rank": 58,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "ast_per_min_p25_last10": {
+      "mean_rank": 64.5,
+      "min_rank": 37,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_deflections_mean_last10": {
+      "mean_rank": 70.5,
+      "min_rank": 54,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "mp_floor_last10": {
+      "mean_rank": 34.17,
+      "min_rank": 26,
+      "max_rank": 44,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "vacated_top2_usage_proxy": {
+      "mean_rank": 67.67,
+      "min_rank": 56,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "usage_proxy_per_min_vol_last10": {
+      "mean_rank": 60.83,
+      "min_rank": 15,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "opp_pts_allowed": {
+      "mean_rank": 59.67,
+      "min_rank": 8,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "games_30plus_last10": {
+      "mean_rank": 42.33,
+      "min_rank": 29,
+      "max_rank": 56,
+      "n_zero_stats": 1,
+      "n_top10": 0
+    },
+    "E_reb_proxy": {
+      "mean_rank": 71.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "vacated_reb_share": {
+      "mean_rank": 69.0,
+      "min_rank": 61,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_x_mp": {
+      "mean_rank": 61.67,
+      "min_rank": 21,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "exp_mp": {
+      "mean_rank": 30.0,
+      "min_rank": 17,
+      "max_rank": 40,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "games_20minus_last10": {
+      "mean_rank": 42.17,
+      "min_rank": 30,
+      "max_rank": 52,
+      "n_zero_stats": 2,
+      "n_top10": 0
+    },
+    "blk_per_min_vol_last10": {
+      "mean_rank": 61.67,
+      "min_rank": 2,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "is_low_3pa_last10": {
+      "mean_rank": 66.83,
+      "min_rank": 37,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_fouls_drawn_ewma": {
+      "mean_rank": 67.33,
+      "min_rank": 54,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "vacated_big_minutes": {
+      "mean_rank": 67.0,
+      "min_rank": 49,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "ast_raw_mean_last10": {
+      "mean_rank": 59.5,
+      "min_rank": 7,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "ast_per_min_cv_last10": {
+      "mean_rank": 64.17,
+      "min_rank": 35,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "pts_per_min_vol_last10": {
+      "mean_rank": 71.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fg3a_per_min_mean_last10": {
+      "mean_rank": 48.33,
+      "min_rank": 3,
+      "max_rank": 81,
+      "n_zero_stats": 4,
+      "n_top10": 2
+    },
+    "reb_per_min_mean_last3": {
+      "mean_rank": 61.0,
+      "min_rank": 17,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "usage_proxy_per_min_mean_last10": {
+      "mean_rank": 46.83,
+      "min_rank": 4,
+      "max_rank": 81,
+      "n_zero_stats": 4,
+      "n_top10": 2
+    },
+    "stl_p_zero_last10": {
+      "mean_rank": 65.5,
+      "min_rank": 24,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "missed_2_of_last5": {
+      "mean_rank": 47.33,
+      "min_rank": 41,
+      "max_rank": 54,
+      "n_zero_stats": 2,
+      "n_top10": 0
+    },
+    "adv_contested_shots_3pt_mean_last10": {
+      "mean_rank": 70.33,
+      "min_rank": 58,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_points_paint_mean_last10": {
+      "mean_rank": 69.33,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_per_min_floor_last10": {
+      "mean_rank": 65.17,
+      "min_rank": 42,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "E_pts_proxy": {
+      "mean_rank": 71.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_per_min_median_last10": {
+      "mean_rank": 62.83,
+      "min_rank": 28,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "reb_raw_cv_last10": {
+      "mean_rank": 60.5,
+      "min_rank": 14,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_mean_last5": {
+      "mean_rank": 16.0,
+      "min_rank": 6,
+      "max_rank": 23,
+      "n_zero_stats": 0,
+      "n_top10": 2
+    },
+    "adv_touches_mean_last10": {
+      "mean_rank": 69.17,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_per_min_p25_last10": {
+      "mean_rank": 63.5,
+      "min_rank": 32,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "game_total": {
+      "mean_rank": 64.67,
+      "min_rank": 45,
+      "max_rank": 79,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "has_injury_data": {
+      "mean_rank": 54.17,
+      "min_rank": 47,
+      "max_rank": 63,
+      "n_zero_stats": 4,
+      "n_top10": 0
+    },
+    "adv_rebound_chances_total_mean_last10": {
+      "mean_rank": 70.33,
+      "min_rank": 61,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "pts_per_min_mean_last10": {
+      "mean_rank": 71.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "opp_implied_total": {
+      "mean_rank": 67.67,
+      "min_rank": 56,
+      "max_rank": 77,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fga_per_min_mean_last3": {
+      "mean_rank": 61.17,
+      "min_rank": 17,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_ewma_10": {
+      "mean_rank": 10.0,
+      "min_rank": 2,
+      "max_rank": 23,
+      "n_zero_stats": 0,
+      "n_top10": 3
+    },
+    "adv_passes_ewma": {
+      "mean_rank": 69.33,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "role_stability_index": {
+      "mean_rank": 16.17,
+      "min_rank": 13,
+      "max_rank": 19,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "E_ast_proxy": {
+      "mean_rank": 71.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_per_min_cv_last10": {
+      "mean_rank": 60.0,
+      "min_rank": 11,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "reb_raw_median_last10": {
+      "mean_rank": 65.33,
+      "min_rank": 43,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "spread_for_team": {
+      "mean_rank": 67.17,
+      "min_rank": 55,
+      "max_rank": 78,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "ast_per_min_mean_last5": {
+      "mean_rank": 61.83,
+      "min_rank": 21,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "vacated_minutes": {
+      "mean_rank": 59.5,
+      "min_rank": 48,
+      "max_rank": 67,
+      "n_zero_stats": 4,
+      "n_top10": 0
+    },
+    "blk_p_zero_last10": {
+      "mean_rank": 62.83,
+      "min_rank": 9,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "dreb_per_min_mean_last10": {
+      "mean_rank": 61.17,
+      "min_rank": 18,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "reb_per_min_ewma_10": {
+      "mean_rank": 62.33,
+      "min_rank": 25,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_passes_mean_last10": {
+      "mean_rank": 70.33,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "mp_mean_last3": {
+      "mean_rank": 11.83,
+      "min_rank": 8,
+      "max_rank": 20,
+      "n_zero_stats": 0,
+      "n_top10": 2
+    },
+    "ast_per_min_p75_last10": {
+      "mean_rank": 61.33,
+      "min_rank": 18,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "usage_x_itt": {
+      "mean_rank": 71.5,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "ast_per_min_mean_last10": {
+      "mean_rank": 62.17,
+      "min_rank": 23,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_ceiling_last10": {
+      "mean_rank": 29.83,
+      "min_rank": 23,
+      "max_rank": 41,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_free_throw_assists_mean_last10": {
+      "mean_rank": 70.0,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_per_min_mean_last5": {
+      "mean_rank": 62.17,
+      "min_rank": 24,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "reb_per_min_mean_last10": {
+      "mean_rank": 63.33,
+      "min_rank": 31,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "mp_pred_ceiling": {
+      "mean_rank": 23.17,
+      "min_rank": 12,
+      "max_rank": 29,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_touches_ewma": {
+      "mean_rank": 69.5,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "usage_proxy_x_itt": {
+      "mean_rank": 67.5,
+      "min_rank": 55,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "rest_days": {
+      "mean_rank": 22.83,
+      "min_rank": 15,
+      "max_rank": 28,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_assist_to_turnover_mean_last10": {
+      "mean_rank": 49.5,
+      "min_rank": 41,
+      "max_rank": 58,
+      "n_zero_stats": 3,
+      "n_top10": 0
+    },
+    "adv_effective_field_goal_percentage_mean_last10": {
+      "mean_rank": 42.33,
+      "min_rank": 36,
+      "max_rank": 50,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_assist_percentage_mean_last10": {
+      "mean_rank": 43.0,
+      "min_rank": 38,
+      "max_rank": 47,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "opp_3pm_allowed": {
+      "mean_rank": 63.67,
+      "min_rank": 18,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "tov_per_min_mean_last10": {
+      "mean_rank": 58.67,
+      "min_rank": 2,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "ast_per_min_vol_last10": {
+      "mean_rank": 62.0,
+      "min_rank": 22,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "stl_per_min_blended": {
+      "mean_rank": 61.67,
+      "min_rank": 1,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "vacated_guard_minutes": {
+      "mean_rank": 64.33,
+      "min_rank": 57,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_contested_shots_2pt_mean_last10": {
+      "mean_rank": 70.5,
+      "min_rank": 55,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fga_raw_mean_last10": {
+      "mean_rank": 59.67,
+      "min_rank": 8,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "mp_mean_last10": {
+      "mean_rank": 27.67,
+      "min_rank": 13,
+      "max_rank": 36,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_rebound_chances_def_mean_last10": {
+      "mean_rank": 70.17,
+      "min_rank": 61,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "ast_pct_x_itt": {
+      "mean_rank": 69.0,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "opp_3p_rate_allowed": {
+      "mean_rank": 63.5,
+      "min_rank": 17,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "vacated_reb": {
+      "mean_rank": 69.33,
+      "min_rank": 61,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "reb_per_min_trend_3v10": {
+      "mean_rank": 59.0,
+      "min_rank": 5,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "mp_q25": {
+      "mean_rank": 26.5,
+      "min_rank": 14,
+      "max_rank": 35,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "adv_partial_possessions_mean_last10": {
+      "mean_rank": 70.0,
+      "min_rank": 51,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "adv_fouls_drawn_mean_last10": {
+      "mean_rank": 70.17,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fga_per_min_cv_last10": {
+      "mean_rank": 59.83,
+      "min_rank": 9,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "opp_has_env_data": {
+      "mean_rank": 63.5,
+      "min_rank": 54,
+      "max_rank": 80,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "blk_p_ge1_last10": {
+      "mean_rank": 65.83,
+      "min_rank": 27,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "fga_per_min_vol_last10": {
+      "mean_rank": 60.0,
+      "min_rank": 10,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "games_last_7": {
+      "mean_rank": 36.0,
+      "min_rank": 28,
+      "max_rank": 46,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "vacated_fta": {
+      "mean_rank": 68.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "ast_raw_cv_last10": {
+      "mean_rank": 59.33,
+      "min_rank": 6,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "reb_raw_mean_last10": {
+      "mean_rank": 59.17,
+      "min_rank": 6,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "fg3a_attempt_trend": {
+      "mean_rank": 62.5,
+      "min_rank": 11,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_defended_at_rim_fga_mean_last10": {
+      "mean_rank": 70.17,
+      "min_rank": 53,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fga_per_min_ewma_10": {
+      "mean_rank": 61.0,
+      "min_rank": 16,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "adv_true_shooting_percentage_mean_last10": {
+      "mean_rank": 42.17,
+      "min_rank": 35,
+      "max_rank": 53,
+      "n_zero_stats": 1,
+      "n_top10": 0
+    },
+    "opp_reb_chances_allowed": {
+      "mean_rank": 59.67,
+      "min_rank": 9,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "mp_vol_last10": {
+      "mean_rank": 22.17,
+      "min_rank": 12,
+      "max_rank": 30,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "blowout_risk": {
+      "mean_rank": 65.0,
+      "min_rank": 58,
+      "max_rank": 77,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "usage_proxy_per_min_trend_3v10": {
+      "mean_rank": 59.33,
+      "min_rank": 6,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "mp_p75_last10": {
+      "mean_rank": 26.17,
+      "min_rank": 15,
+      "max_rank": 38,
+      "n_zero_stats": 0,
+      "n_top10": 0
+    },
+    "ast_per_min_ewma_10": {
+      "mean_rank": 60.5,
+      "min_rank": 13,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    },
+    "fg3a_count_season": {
+      "mean_rank": 61.0,
+      "min_rank": 2,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "fta_per_min_mean_last10": {
+      "mean_rank": 58.5,
+      "min_rank": 1,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "pts_per_min_cv_last10": {
+      "mean_rank": 71.67,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "vacated_fga": {
+      "mean_rank": 68.83,
+      "min_rank": 61,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "fg3m_games_in_window_last10": {
+      "mean_rank": 69.33,
+      "min_rank": 52,
+      "max_rank": 81,
+      "n_zero_stats": 6,
+      "n_top10": 0
+    },
+    "pf_per_min_mean_last10": {
+      "mean_rank": 7.33,
+      "min_rank": 3,
+      "max_rank": 10,
+      "n_zero_stats": 0,
+      "n_top10": 6
+    },
+    "opp_oreb_chances_allowed": {
+      "mean_rank": 59.5,
+      "min_rank": 8,
+      "max_rank": 80,
+      "n_zero_stats": 5,
+      "n_top10": 1
+    },
+    "opp_3pa_allowed": {
+      "mean_rank": 63.0,
+      "min_rank": 14,
+      "max_rank": 81,
+      "n_zero_stats": 5,
+      "n_top10": 0
+    }
+  },
+  "dead_features": [
+    "adv_contested_shots_2pt_mean_last10",
+    "adv_contested_shots_3pt_mean_last10",
+    "adv_defended_at_rim_fg_pct_mean_last10",
+    "adv_defended_at_rim_fga_mean_last10",
+    "adv_deflections_ewma",
+    "adv_deflections_mean_last10",
+    "adv_estimated_usage_percentage_mean_last10",
+    "adv_fouls_drawn_ewma",
+    "adv_fouls_drawn_mean_last10",
+    "adv_free_throw_assists_mean_last10",
+    "adv_matchup_turnovers_mean_last10",
+    "adv_partial_possessions_mean_last10",
+    "adv_passes_ewma",
+    "adv_passes_mean_last10",
+    "adv_pct_3pa_mean_last10",
+    "adv_pct_fga_mean_last10",
+    "adv_pct_points_mean_last10",
+    "adv_points_paint_mean_last10",
+    "adv_rebound_chances_def_mean_last10",
+    "adv_rebound_chances_off_mean_last10",
+    "adv_rebound_chances_total_ewma",
+    "adv_rebound_chances_total_mean_last10",
+    "adv_secondary_assists_mean_last10",
+    "adv_switches_on_mean_last10",
+    "adv_touches_ewma",
+    "adv_touches_mean_last10",
+    "ast_pct_x_itt",
+    "blowout_risk",
+    "blowout_risk_x_mp_vol",
+    "fg3m_games_in_window_last10",
+    "fga_x_itt",
+    "game_total",
+    "has_advanced_stats",
+    "has_injury_data",
+    "has_odds",
+    "implied_team_total",
+    "num_teammates_inactive",
+    "opp_has_env_data",
+    "opp_implied_total",
+    "opp_pace_context",
+    "spread_for_team",
+    "usage_proxy_x_itt",
+    "usage_x_itt",
+    "vacated_ast",
+    "vacated_big_minutes",
+    "vacated_creation_share",
+    "vacated_fga",
+    "vacated_fta",
+    "vacated_guard_minutes",
+    "vacated_minutes",
+    "vacated_reb",
+    "vacated_reb_share",
+    "vacated_top2_fga",
+    "vacated_top2_usage_proxy",
+    "vacated_usage_proxy"
+  ],
+  "interactions": {
+    "usage_proxy_x_itt": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 55,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 1018,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 1232,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      }
+    },
+    "fga_x_itt": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 79,
+        "constituent_importance": {
+          "fga_per_min_mean_last10": 715,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      }
+    },
+    "reb_x_mp": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 410
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 632,
+        "interaction_rank": 21,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 450,
+          "mp_mean_last10": 381
+        },
+        "adds_value": true
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 394
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 320
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 788
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 819
+        },
+        "adds_value": false
+      }
+    },
+    "ast_pct_x_itt": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "adv_assist_percentage_mean_last10": 50,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 81,
+        "constituent_importance": {
+          "adv_assist_percentage_mean_last10": 136,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 64,
+        "constituent_importance": {
+          "adv_assist_percentage_mean_last10": 44,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "adv_assist_percentage_mean_last10": 37,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "adv_assist_percentage_mean_last10": 37,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "adv_assist_percentage_mean_last10": 17,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      }
+    },
+    "usage_x_itt": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "adv_usage_percentage_mean_last10": 84,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 81,
+        "constituent_importance": {
+          "adv_usage_percentage_mean_last10": 175,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 79,
+        "constituent_importance": {
+          "adv_usage_percentage_mean_last10": 85,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "adv_usage_percentage_mean_last10": 47,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "adv_usage_percentage_mean_last10": 82,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "adv_usage_percentage_mean_last10": 30,
+          "implied_team_total": 0
+        },
+        "adds_value": false
+      }
+    },
+    "usage_x_pace": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 1018,
+          "adv_pace_mean_last10": 103
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 81,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 0,
+          "adv_pace_mean_last10": 105
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 1232,
+          "adv_pace_mean_last10": 46
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 0,
+          "adv_pace_mean_last10": 42
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 0,
+          "adv_pace_mean_last10": 65
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "usage_proxy_per_min_mean_last10": 0,
+          "adv_pace_mean_last10": 20
+        },
+        "adds_value": false
+      }
+    },
+    "blowout_risk_x_mp_vol": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 56,
+        "constituent_importance": {
+          "blowout_risk": 0,
+          "mp_vol_last10": 740
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "blowout_risk": 0,
+          "mp_vol_last10": 518
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "blowout_risk": 0,
+          "mp_vol_last10": 642
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 55,
+        "constituent_importance": {
+          "blowout_risk": 0,
+          "mp_vol_last10": 536
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 53,
+        "constituent_importance": {
+          "blowout_risk": 0,
+          "mp_vol_last10": 989
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 54,
+        "constituent_importance": {
+          "blowout_risk": 0,
+          "mp_vol_last10": 547
+        },
+        "adds_value": false
+      }
+    },
+    "e_pts_proxy": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "pts_per_min_mean_last10": 0,
+          "mp_mean_last10": 410
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 81,
+        "constituent_importance": {
+          "pts_per_min_mean_last10": 0,
+          "mp_mean_last10": 381
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "pts_per_min_mean_last10": 0,
+          "mp_mean_last10": 394
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "pts_per_min_mean_last10": 0,
+          "mp_mean_last10": 320
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "pts_per_min_mean_last10": 0,
+          "mp_mean_last10": 788
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "pts_per_min_mean_last10": 0,
+          "mp_mean_last10": 819
+        },
+        "adds_value": false
+      }
+    },
+    "e_reb_proxy": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 410
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 81,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 450,
+          "mp_mean_last10": 381
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 394
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 320
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 788
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "reb_per_min_mean_last10": 0,
+          "mp_mean_last10": 819
+        },
+        "adds_value": false
+      }
+    },
+    "e_ast_proxy": {
+      "pts": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "ast_per_min_mean_last10": 0,
+          "mp_mean_last10": 410
+        },
+        "adds_value": false
+      },
+      "reb": {
+        "interaction_importance": 0,
+        "interaction_rank": 81,
+        "constituent_importance": {
+          "ast_per_min_mean_last10": 0,
+          "mp_mean_last10": 381
+        },
+        "adds_value": false
+      },
+      "ast": {
+        "interaction_importance": 0,
+        "interaction_rank": 80,
+        "constituent_importance": {
+          "ast_per_min_mean_last10": 681,
+          "mp_mean_last10": 394
+        },
+        "adds_value": false
+      },
+      "fg3m": {
+        "interaction_importance": 0,
+        "interaction_rank": 66,
+        "constituent_importance": {
+          "ast_per_min_mean_last10": 0,
+          "mp_mean_last10": 320
+        },
+        "adds_value": false
+      },
+      "stl": {
+        "interaction_importance": 0,
+        "interaction_rank": 61,
+        "constituent_importance": {
+          "ast_per_min_mean_last10": 0,
+          "mp_mean_last10": 788
+        },
+        "adds_value": false
+      },
+      "blk": {
+        "interaction_importance": 0,
+        "interaction_rank": 62,
+        "constituent_importance": {
+          "ast_per_min_mean_last10": 0,
+          "mp_mean_last10": 819
+        },
+        "adds_value": false
+      }
+    }
+  },
+  "group_summary": {
+    "minutes_history": {
+      "total": 62830.0,
+      "pct": 34.96
+    },
+    "rolling_player_stats": {
+      "total": 48422.0,
+      "pct": 26.94
+    },
+    "minutes_model_output": {
+      "total": 17062.0,
+      "pct": 9.49
+    },
+    "fg3_specific": {
+      "total": 13394.0,
+      "pct": 7.45
+    },
+    "sparse_stat": {
+      "total": 13034.0,
+      "pct": 7.25
+    },
+    "metadata": {
+      "total": 7651.0,
+      "pct": 4.26
+    },
+    "other": {
+      "total": 6508.0,
+      "pct": 3.62
+    },
+    "schedule": {
+      "total": 5119.0,
+      "pct": 2.85
+    },
+    "market_odds": {
+      "total": 3183.0,
+      "pct": 1.77
+    },
+    "advanced_stats": {
+      "total": 1897.0,
+      "pct": 1.06
+    },
+    "interaction": {
+      "total": 632.0,
+      "pct": 0.35
+    },
+    "vacancy_injury": {
+      "total": 0.0,
+      "pct": 0.0
+    }
+  }
+}
