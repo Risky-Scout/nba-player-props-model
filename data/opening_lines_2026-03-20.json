@@ -1,0 +1,48 @@
+{
+  "9dec9fb17fd32b89e42c5060a469312a": {
+    "home_team": "Brooklyn Nets",
+    "away_team": "New York Knicks",
+    "commence_time": "2026-03-20T23:40:00Z",
+    "consensus_total": 214.5,
+    "consensus_spread": 17.5,
+    "implied_home_total": 98.5,
+    "implied_away_total": 116.0,
+    "books_total": {
+      "fanduel": 214.5,
+      "draftkings": 214.5,
+      "betmgm": 214.5,
+      "betrivers": 214.5
+    },
+    "books_spread": {
+      "fanduel": 17.5,
+      "draftkings": 17.5,
+      "betmgm": 17.5,
+      "betrivers": 17.5
+    },
+    "snapshot_time": "2026-03-20T14:41:31Z",
+    "snapshot_type": "opening"
+  },
+  "f381a9f3443b5155e9e74cbdb8c0c849": {
+    "home_team": "Detroit Pistons",
+    "away_team": "Golden State Warriors",
+    "commence_time": "2026-03-20T23:40:00Z",
+    "consensus_total": 217.5,
+    "consensus_spread": -5.5,
+    "implied_home_total": 111.5,
+    "implied_away_total": 106.0,
+    "books_total": {
+      "draftkings": 217.5,
+      "betmgm": 216.5,
+      "fanduel": 217.5,
+      "betrivers": 218.0
+    },
+    "books_spread": {
+      "draftkings": -5.5,
+      "betmgm": -5.5,
+      "fanduel": -5.0,
+      "betrivers": -5.5
+    },
+    "snapshot_time": "2026-03-20T14:41:31Z",
+    "snapshot_type": "opening"
+  }
+}
