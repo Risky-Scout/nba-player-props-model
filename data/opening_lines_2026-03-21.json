@@ -1,0 +1,93 @@
+{
+  "a1158df1a3a21def58491807df167c6a": {
+    "home_team": "Washington Wizards",
+    "away_team": "Oklahoma City Thunder",
+    "commence_time": "2026-03-21T21:10:00Z",
+    "consensus_total": 231.5,
+    "consensus_spread": 21.5,
+    "implied_home_total": 105.0,
+    "implied_away_total": 126.5,
+    "books_total": {
+      "fanduel": 231.5,
+      "betrivers": 231.0,
+      "draftkings": 231.5,
+      "betmgm": 231.5
+    },
+    "books_spread": {
+      "fanduel": 21.5,
+      "betrivers": 21.5,
+      "draftkings": 20.5,
+      "betmgm": 21.5
+    },
+    "snapshot_time": "2026-03-21T14:26:48Z",
+    "snapshot_type": "opening"
+  },
+  "caa8acf3be841cea790d25a4082d4817": {
+    "home_team": "Charlotte Hornets",
+    "away_team": "Memphis Grizzlies",
+    "commence_time": "2026-03-21T23:10:00Z",
+    "consensus_total": 235.0,
+    "consensus_spread": -17.5,
+    "implied_home_total": 126.25,
+    "implied_away_total": 108.75,
+    "books_total": {
+      "fanduel": 235.5,
+      "betrivers": 234.5,
+      "draftkings": 234.5,
+      "betmgm": 235.5
+    },
+    "books_spread": {
+      "fanduel": -17.5,
+      "betrivers": -17.0,
+      "draftkings": -17.5,
+      "betmgm": -17.5
+    },
+    "snapshot_time": "2026-03-21T14:26:48Z",
+    "snapshot_type": "opening"
+  },
+  "87e5b0e532472d1e7a6815746302dd10": {
+    "home_team": "New Orleans Pelicans",
+    "away_team": "Cleveland Cavaliers",
+    "commence_time": "2026-03-21T23:10:00Z",
+    "consensus_total": 236.5,
+    "consensus_spread": 4.5,
+    "implied_home_total": 116.0,
+    "implied_away_total": 120.5,
+    "books_total": {
+      "fanduel": 236.5,
+      "betrivers": 236.0,
+      "draftkings": 236.5,
+      "betmgm": 236.5
+    },
+    "books_spread": {
+      "fanduel": 4.5,
+      "betrivers": 4.0,
+      "draftkings": 4.5,
+      "betmgm": 4.5
+    },
+    "snapshot_time": "2026-03-21T14:26:48Z",
+    "snapshot_type": "opening"
+  },
+  "041a208c3a53186e8bc0983045ab66f7": {
+    "home_team": "Orlando Magic",
+    "away_team": "Los Angeles Lakers",
+    "commence_time": "2026-03-21T23:11:00Z",
+    "consensus_total": 233.5,
+    "consensus_spread": 3.0,
+    "implied_home_total": 115.25,
+    "implied_away_total": 118.25,
+    "books_total": {
+      "fanduel": 233.5,
+      "draftkings": 233.5,
+      "betrivers": 233.5,
+      "betmgm": 232.5
+    },
+    "books_spread": {
+      "fanduel": 3.0,
+      "draftkings": 3.5,
+      "betrivers": 3.0
+    },
+    "snapshot_time": "2026-03-21T14:26:48Z",
+    "snapshot_type": "opening"
+  }
+}
