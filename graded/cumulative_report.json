@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-03-20T14:01:13.864222",
-  "total_dates": 10,
+  "generated_at": "2026-03-21T13:41:37.551470",
+  "total_dates": 11,
   "overall": {
     "label": "ALL_TIME",
-    "n_bets": 2492,
-    "n_hits": 1178,
+    "n_bets": 2494,
+    "n_hits": 1179,
     "hit_rate": 0.4727,
-    "profit": -59.81,
-    "roi": -0.024,
-    "mean_clv": 0.0034,
+    "profit": -60.11,
+    "roi": -0.0241,
+    "mean_clv": 0.0033,
     "pct_true_clv": 0.102,
-    "brier": 0.2725,
+    "brier": 0.2723,
     "max_dd": 130.93,
-    "sharpe": -0.349
+    "sharpe": -0.351
   },
   "by_tier": {},
   "by_stat": {
@@ -31,29 +31,29 @@
     },
     "reb": {
       "label": "Rebounds",
-      "n_bets": 506,
+      "n_bets": 507,
       "n_hits": 253,
-      "hit_rate": 0.5,
-      "profit": -12.98,
-      "roi": -0.0256,
-      "mean_clv": -0.0051,
+      "hit_rate": 0.499,
+      "profit": -13.98,
+      "roi": -0.0276,
+      "mean_clv": -0.0055,
       "pct_true_clv": 0.105,
-      "brier": 0.2789,
+      "brier": 0.2786,
       "max_dd": 38.81,
-      "sharpe": -0.413
+      "sharpe": -0.444
     },
     "ast": {
       "label": "Assists",
-      "n_bets": 434,
-      "n_hits": 206,
-      "hit_rate": 0.4747,
-      "profit": -27.48,
-      "roi": -0.0633,
-      "mean_clv": -0.0236,
-      "pct_true_clv": 0.085,
-      "brier": 0.2786,
+      "n_bets": 435,
+      "n_hits": 207,
+      "hit_rate": 0.4759,
+      "profit": -26.78,
+      "roi": -0.0616,
+      "mean_clv": -0.0233,
+      "pct_true_clv": 0.087,
+      "brier": 0.2783,
       "max_dd": 43.4,
-      "sharpe": -1.006
+      "sharpe": -0.978
     },
     "fg3m": {
       "label": "Threes",
@@ -98,55 +98,55 @@
   "by_side": {
     "OVER": {
       "label": "OVER",
-      "n_bets": 903,
-      "n_hits": 375,
-      "hit_rate": 0.4153,
-      "profit": -37.83,
-      "roi": -0.0419,
-      "mean_clv": 0.0921,
+      "n_bets": 904,
+      "n_hits": 376,
+      "hit_rate": 0.4159,
+      "profit": -37.13,
+      "roi": -0.0411,
+      "mean_clv": 0.0919,
       "pct_true_clv": 0.15,
-      "brier": 0.2451,
+      "brier": 0.245,
       "max_dd": 64.84,
-      "sharpe": -0.538
+      "sharpe": -0.528
     },
     "UNDER": {
       "label": "UNDER",
-      "n_bets": 1589,
+      "n_bets": 1590,
       "n_hits": 803,
-      "hit_rate": 0.5053,
-      "profit": -21.98,
-      "roi": -0.0138,
-      "mean_clv": -0.0646,
+      "hit_rate": 0.505,
+      "profit": -22.98,
+      "roi": -0.0145,
+      "mean_clv": -0.0647,
       "pct_true_clv": 0.074,
-      "brier": 0.288,
+      "brier": 0.2879,
       "max_dd": 85.33,
-      "sharpe": -0.219
+      "sharpe": -0.229
     }
   },
   "rolling_30": {
     "label": "last_30d",
-    "n_bets": 2492,
-    "n_hits": 1178,
+    "n_bets": 2494,
+    "n_hits": 1179,
     "hit_rate": 0.4727,
-    "profit": -59.81,
-    "roi": -0.024,
-    "mean_clv": 0.0034,
+    "profit": -60.11,
+    "roi": -0.0241,
+    "mean_clv": 0.0033,
     "pct_true_clv": 0.102,
-    "brier": 0.2725,
+    "brier": 0.2723,
     "max_dd": 130.93,
-    "sharpe": -0.349
+    "sharpe": -0.351
   },
   "rolling_60": {
     "label": "last_60d",
-    "n_bets": 2492,
-    "n_hits": 1178,
+    "n_bets": 2494,
+    "n_hits": 1179,
     "hit_rate": 0.4727,
-    "profit": -59.81,
-    "roi": -0.024,
-    "mean_clv": 0.0034,
+    "profit": -60.11,
+    "roi": -0.0241,
+    "mean_clv": 0.0033,
     "pct_true_clv": 0.102,
-    "brier": 0.2725,
+    "brier": 0.2723,
     "max_dd": 130.93,
-    "sharpe": -0.349
+    "sharpe": -0.351
   }
 }
