@@ -1,0 +1,71 @@
+{
+  "2a8d0098f2f9618a48da74e1db566ffd": {
+    "home_team": "Denver Nuggets",
+    "away_team": "Portland Trail Blazers",
+    "commence_time": "2026-03-22T21:10:00Z",
+    "consensus_total": 240.8,
+    "consensus_spread": -8.8,
+    "implied_home_total": 124.8,
+    "implied_away_total": 116.0,
+    "books_total": {
+      "fanduel": 241.5,
+      "draftkings": 240.5,
+      "betrivers": 241.0,
+      "betmgm": 240.5
+    },
+    "books_spread": {
+      "fanduel": -9.0,
+      "draftkings": -8.5,
+      "betrivers": -9.0,
+      "betmgm": -8.5
+    },
+    "snapshot_time": "2026-03-22T14:27:30Z",
+    "snapshot_type": "opening"
+  },
+  "d59068d1012b6bf912e2b6824b39bf51": {
+    "home_team": "Sacramento Kings",
+    "away_team": "Brooklyn Nets",
+    "commence_time": "2026-03-22T22:10:00Z",
+    "consensus_total": 218.5,
+    "consensus_spread": -6.5,
+    "implied_home_total": 112.5,
+    "implied_away_total": 106.0,
+    "books_total": {
+      "fanduel": 218.5,
+      "draftkings": 218.5,
+      "betmgm": 219.5,
+      "betrivers": 218.5
+    },
+    "books_spread": {
+      "fanduel": -6.5,
+      "draftkings": -6.5,
+      "betmgm": -6.5,
+      "betrivers": -6.0
+    },
+    "snapshot_time": "2026-03-22T14:27:30Z",
+    "snapshot_type": "opening"
+  },
+  "4dd372ed75728dd87afb1727ae355dc3": {
+    "home_team": "New York Knicks",
+    "away_team": "Washington Wizards",
+    "commence_time": "2026-03-22T23:40:00Z",
+    "consensus_total": 227.5,
+    "consensus_spread": -20.5,
+    "implied_home_total": 124.0,
+    "implied_away_total": 103.5,
+    "books_total": {
+      "fanduel": 227.5,
+      "draftkings": 227.5,
+      "betrivers": 227.5,
+      "betmgm": 226.5
+    },
+    "books_spread": {
+      "fanduel": -20.5,
+      "draftkings": -20.5,
+      "betrivers": -20.5,
+      "betmgm": -19.5
+    },
+    "snapshot_time": "2026-03-22T14:27:30Z",
+    "snapshot_type": "opening"
+  }
+}
