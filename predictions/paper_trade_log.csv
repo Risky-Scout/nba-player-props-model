@@ -5113,3 +5113,7 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-03-21,single,Onyeka Okongwu,Golden State Warriors @ Atlanta Hawks,ast,OVER,2.5,-110,0.6084,0.1614,0.044,,
 2026-03-21,single,CJ McCollum,Golden State Warriors @ Atlanta Hawks,reb,OVER,2.5,-131,0.6161,0.0865,0.028,,
 2026-03-21,single,Bam Adebayo,Miami Heat @ Houston Rockets,ast,OVER,2.5,-130,0.6124,0.0835,0.027,,
+2026-03-22,single,Deni Avdija,Portland Trail Blazers @ Denver Nuggets,reb,UNDER,6.5,102,0.672,0.3574,0.088,,
+2026-03-22,single,Peyton Watson,Portland Trail Blazers @ Denver Nuggets,pts,OVER,8.5,-112,0.656,0.2417,0.068,,
+2026-03-22,single,Precious Achiuwa,Brooklyn Nets @ Sacramento Kings,ast,OVER,1.5,-130,0.638,0.1288,0.042,,
+2026-03-22,single,Oso Ighodaro,Toronto Raptors @ Phoenix Suns,reb,UNDER,7.5,-150,0.672,0.1199,0.045,,
