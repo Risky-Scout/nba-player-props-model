@@ -1,0 +1,117 @@
+{
+  "b542245530e737dbd0703796ab0c1257": {
+    "home_team": "Detroit Pistons",
+    "away_team": "Los Angeles Lakers",
+    "commence_time": "2026-03-23T23:10:00Z",
+    "consensus_total": 226.5,
+    "consensus_spread": 2.0,
+    "implied_home_total": 112.25,
+    "implied_away_total": 114.25,
+    "books_total": {
+      "fanduel": 226.5,
+      "draftkings": 226.5,
+      "betmgm": 226.5,
+      "betrivers": 227.0
+    },
+    "books_spread": {
+      "fanduel": 2.0,
+      "draftkings": 2.5,
+      "betmgm": 1.5,
+      "betrivers": 2.0
+    },
+    "snapshot_time": "2026-03-23T14:54:51Z",
+    "snapshot_type": "opening"
+  },
+  "ee838160ed85754aa11218f7ec3708b0": {
+    "home_team": "Orlando Magic",
+    "away_team": "Indiana Pacers",
+    "commence_time": "2026-03-23T23:10:00Z",
+    "consensus_total": 231.8,
+    "consensus_spread": -13.2,
+    "implied_home_total": 122.5,
+    "implied_away_total": 109.3,
+    "books_total": {
+      "fanduel": 232.5,
+      "draftkings": 231.5,
+      "betrivers": 232.0,
+      "betmgm": 231.5
+    },
+    "books_spread": {
+      "fanduel": -13.0,
+      "draftkings": -13.5,
+      "betrivers": -13.0,
+      "betmgm": -13.5
+    },
+    "snapshot_time": "2026-03-23T14:54:51Z",
+    "snapshot_type": "opening"
+  },
+  "c61d2594de00eb4d12ba96127dc437e5": {
+    "home_team": "Miami Heat",
+    "away_team": "San Antonio Spurs",
+    "commence_time": "2026-03-23T23:10:00Z",
+    "consensus_total": 240.5,
+    "consensus_spread": 4.8,
+    "implied_home_total": 117.85,
+    "implied_away_total": 122.65,
+    "books_total": {
+      "fanduel": 240.5,
+      "draftkings": 240.5,
+      "betrivers": 241.0,
+      "betmgm": 240.5
+    },
+    "books_spread": {
+      "fanduel": 5.0,
+      "draftkings": 4.5,
+      "betrivers": 5.0,
+      "betmgm": 4.5
+    },
+    "snapshot_time": "2026-03-23T14:54:51Z",
+    "snapshot_type": "opening"
+  },
+  "49b50074de17e9d2082babc6b09b0d97": {
+    "home_team": "Philadelphia 76ers",
+    "away_team": "Oklahoma City Thunder",
+    "commence_time": "2026-03-23T23:10:00Z",
+    "consensus_total": 224.5,
+    "consensus_spread": 15.2,
+    "implied_home_total": 104.65,
+    "implied_away_total": 119.85,
+    "books_total": {
+      "fanduel": 224.5,
+      "draftkings": 224.5,
+      "betmgm": 225.5,
+      "betrivers": 224.5
+    },
+    "books_spread": {
+      "fanduel": 15.0,
+      "draftkings": 15.5,
+      "betmgm": 15.5,
+      "betrivers": 15.0
+    },
+    "snapshot_time": "2026-03-23T14:54:51Z",
+    "snapshot_type": "opening"
+  },
+  "9693d8c4274c9eabbcb9ab22fcf44936": {
+    "home_team": "Atlanta Hawks",
+    "away_team": "Memphis Grizzlies",
+    "commence_time": "2026-03-23T23:40:00Z",
+    "consensus_total": 240.5,
+    "consensus_spread": -14.2,
+    "implied_home_total": 127.35,
+    "implied_away_total": 113.15,
+    "books_total": {
+      "fanduel": 240.5,
+      "draftkings": 240.5,
+      "betmgm": 240.5,
+      "betrivers": 240.5
+    },
+    "books_spread": {
+      "fanduel": -14.0,
+      "draftkings": -13.5,
+      "betmgm": -14.5,
+      "betrivers": -14.5
+    },
+    "snapshot_time": "2026-03-23T14:54:51Z",
+    "snapshot_type": "opening"
+  }
+}
