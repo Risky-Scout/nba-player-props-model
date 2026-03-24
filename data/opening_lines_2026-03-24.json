@@ -1,0 +1,48 @@
+{
+  "c4901bf9c9ebf81236d22ca4626b5a31": {
+    "home_team": "Charlotte Hornets",
+    "away_team": "Sacramento Kings",
+    "commence_time": "2026-03-24T23:10:00Z",
+    "consensus_total": 230.2,
+    "consensus_spread": -17.5,
+    "implied_home_total": 123.85,
+    "implied_away_total": 106.35,
+    "books_total": {
+      "fanduel": 229.5,
+      "draftkings": 230.5,
+      "betrivers": 230.0,
+      "betmgm": 230.5
+    },
+    "books_spread": {
+      "fanduel": -17.0,
+      "draftkings": -17.5,
+      "betrivers": -17.5,
+      "betmgm": -17.5
+    },
+    "snapshot_time": "2026-03-24T14:57:51Z",
+    "snapshot_type": "opening"
+  },
+  "3ffbb865981907829bb58d7f86351ba0": {
+    "home_team": "New York Knicks",
+    "away_team": "New Orleans Pelicans",
+    "commence_time": "2026-03-24T23:40:00Z",
+    "consensus_total": 231.5,
+    "consensus_spread": -8.5,
+    "implied_home_total": 120.0,
+    "implied_away_total": 111.5,
+    "books_total": {
+      "fanduel": 231.5,
+      "draftkings": 231.5,
+      "betrivers": 231.5,
+      "betmgm": 231.5
+    },
+    "books_spread": {
+      "fanduel": -8.5,
+      "draftkings": -8.5,
+      "betrivers": -8.5,
+      "betmgm": -8.5
+    },
+    "snapshot_time": "2026-03-24T14:57:51Z",
+    "snapshot_type": "opening"
+  }
+}
