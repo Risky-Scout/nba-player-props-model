@@ -5124,3 +5124,7 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-03-23,single,Tristan Da Silva,Indiana Pacers @ Orlando Magic,ast,OVER,1.5,-145,0.6375,0.0772,0.028,,
 2026-03-23,single,Kristaps Porzingis,Golden State Warriors @ Dallas Mavericks,ast,OVER,1.5,-137,0.6002,0.0384,0.013,,
 2026-03-23,single,Bam Adebayo,San Antonio Spurs @ Miami Heat,ast,OVER,2.5,-150,0.616,0.0266,0.01,,
+2026-03-24,single,Oso Ighodaro,Denver Nuggets @ Phoenix Suns,reb,UNDER,6.5,-107,0.672,0.3,0.08,,
+2026-03-24,single,Precious Achiuwa,Sacramento Kings @ Charlotte Hornets,ast,OVER,1.5,-110,0.6376,0.2173,0.06,,
+2026-03-24,single,Kon Knueppel,Sacramento Kings @ Charlotte Hornets,ast,OVER,2.5,-130,0.6072,0.0742,0.024,,
+2026-03-24,single,Tristan Da Silva,Orlando Magic @ Cleveland Cavaliers,ast,OVER,1.5,-155,0.6384,0.0502,0.019,,
