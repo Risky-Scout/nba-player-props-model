@@ -1,3 +1,4 @@
+from typing import Optional, Tuple
 #!/usr/bin/env python3
 """
 grade_darko_v4.py  VERSION: 2026-03-13-v3
@@ -94,7 +95,7 @@ def lookup_closing_prob(
     stat: str,
     line: float,
     side: str,
-) -> tuple[float | None, bool]:
+) -> Tuple[Optional[float], bool]:
     """
     Look up fair probability from closing lines for a given pick.
     Returns (fair_prob_for_bet_side, is_true_clv).
