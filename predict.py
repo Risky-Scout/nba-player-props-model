@@ -134,7 +134,7 @@ STAT_SIDE_MIN_EV = {
     # reb UNDER: CLV=-0.112 — require strong gates
     ("reb",  "UNDER"): 0.999,   # suppressed: CLV=-0.112 consistently negative
     # fg3m UNDER: CLV=-0.092 — reintroduce with strict gate
-    ("fg3m", "UNDER"): 0.050,
+    ("fg3m", "UNDER"): 0.999,   # BANNED: CLV=-0.099 noise
     # blk/stl UNDER: still allowed if very tight
     ("blk",  "UNDER"): 0.070,
     ("stl",  "UNDER"): 0.999,   # CLV=-0.073 stl under too noisy
@@ -582,7 +582,7 @@ def main():
                 # Hard cap: never shift pts more than +1.5 from minutes correction alone
                 mp_b = str(mb)
                 min_corr_raw = MINUTES_CORRECTIONS.get((target, mp_b), 0.0)
-                min_corr = min_corr_raw * 0.50  # 50% application
+                min_corr = min_corr_raw * (0.75 if target == "pts" else 0.50)  # 75% pts, 50% others
                 if target == "pts":
                     min_corr = float(np.clip(min_corr, -1.0, 1.5))
                 elif target in ("reb","ast"):
@@ -721,6 +721,15 @@ def main():
                     })
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
+
+    # HARD PRE-EXPORT ASSERTION — banned markets never reach output
+    BANNED_MARKETS = {("blk","OVER"),("stl","OVER"),("reb","UNDER"),("fg3m","UNDER"),("stl","UNDER")}
+    violations = [s for s in all_singles if (s["stat"],s["side"]) in BANNED_MARKETS]
+    if violations:
+        for v in violations:
+            logger.error(f"ASSERTION FAILED — banned market blocked: {v['player_name']} {v['stat']} {v['side']}")
+        all_singles = [s for s in all_singles if (s["stat"],s["side"]) not in BANNED_MARKETS]
+
     logger.info(f"Singles before portfolio limits: {len(all_singles)}")
 
     # ── Portfolio limits (instructions 2026-03-19) ────────────────────────────
