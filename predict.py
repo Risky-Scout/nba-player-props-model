@@ -132,7 +132,7 @@ STAT_SIDE_MIN_EV = {
     # ast UNDER: CLV=-0.104 — require strong gates
     ("ast",  "UNDER"): 0.050,
     # reb UNDER: CLV=-0.112 — require strong gates
-    ("reb",  "UNDER"): 0.050,
+    ("reb",  "UNDER"): 0.999,   # suppressed: CLV=-0.112 consistently negative
     # fg3m UNDER: CLV=-0.092 — reintroduce with strict gate
     ("fg3m", "UNDER"): 0.050,
     # blk/stl UNDER: still allowed if very tight
@@ -210,28 +210,48 @@ ADV_FIELDS = [
 # Protocol: clip(median(actual-q50), 0, cap) only where both targets agree
 # blk/stl: agreement=NO → set to 0.00 (do not correct sparse stats this way)
 # Applied to FULL quantile ladder (all quantiles shift equally)
-# ── Bias correction — learned from residual_centering.py 2026-03-20 ─────────
+# ── Bias correction — learned from residual_centering.py 2026-03-26 ─────────
 # Source: residual_centering_meta.json fallback_correction values
-# Trained on 2,411 graded rows using GradientBoostingRegressor per stat
+# Trained on 2,737 graded rows using GradientBoostingRegressor per stat
 # Target: median(actual - q50) — projection truth, not market alignment
-# reb and fg3m are NEGATIVE — model was over-projecting those stats
-# TEMPORARY: predict_darko_v4.py will auto-load residual centerer when
-#   model_cache/residual_centerer_pts.pkl etc exist (already pushed to repo)
 BIAS_CORRECTION = {
-    "pts":    0.51,   # learned: +0.510 (was 1.50 — overcorrected)
-    "ast":    0.155,  # learned: +0.155 (was 0.57 — overcorrected)
-    "reb":    0.00,   # reset to 0: learned -0.13 was selection-biased from under-heavy sample
-    "fg3m":  -0.01,   # learned: -0.010 (was 0.50 — essentially no correction)
+    "pts":    1.135,  # learned: +1.135 (2737 rows, updated from +0.51)
+    "ast":    0.190,  # learned: +0.190 (updated from +0.155)
+    "reb":    0.010,  # learned: +0.010 (confirms near-zero — reset was correct)
+    "fg3m":  -0.010,  # learned: -0.010 (unchanged)
     "blk":    0.00,   # no correction
     "stl":    0.00,   # no correction
     "tov":    0.00,   # insufficient data
-    "pra":    0.665,  # pts+reb+ast = 0.51+0.00+0.155
-    "pr":     0.51,   # pts+reb = 0.51+0.00
-    "pa":     0.665,  # pts+ast = 0.51+0.155
-    "ra":     0.155,  # reb+ast = 0.00+0.155
+    "pra":    1.335,  # pts+reb+ast = 1.135+0.010+0.190
+    "pr":     1.145,  # pts+reb = 1.135+0.010
+    "pa":     1.325,  # pts+ast = 1.135+0.190
+    "ra":     0.200,  # reb+ast = 0.010+0.190
     "stocks": 0.00,   # stl+blk both 0.00
 }
 
+
+# ── Minutes bucket corrections (Phase 2 fix) ───────────────────────────────
+def load_minutes_corrections() -> dict:
+    """Load per-stat × minutes-bucket bias corrections from diagnostic."""
+    import json
+    path = Path("model_cache/minutes_bucket_corrections.json")
+    if not path.exists():
+        return {}
+    raw = json.loads(path.read_text())
+    # Parse string keys back to tuples, but only for buckets 1 and 2
+    # Buckets 0 and 3 were overcorrected — zero them out
+    SKIP_BUCKETS = {"0", "3"}  # already near-zero, correction made them worse
+    corrections = {}
+    for k, v in raw.items():
+        try:
+            tup = eval(k)  # ('pts', '1') etc
+            if tup[1] in SKIP_BUCKETS:
+                continue
+            corrections[tup] = v
+        except: pass
+    return corrections
+
+MINUTES_CORRECTIONS = {}  # loaded at startup
 
 # ── Model loading ──────────────────────────────────────────────────────────────
 
@@ -424,6 +444,14 @@ def main():
 
     logger.info("Loading models...")
     models, within_engine, teammate_engine, platt_calibrators = load_models()
+
+    # Load minutes bucket corrections (Phase 2 fix)
+    global MINUTES_CORRECTIONS
+    MINUTES_CORRECTIONS = load_minutes_corrections()
+    if MINUTES_CORRECTIONS:
+        logger.info(f"  Minutes bucket corrections loaded: {len(MINUTES_CORRECTIONS)} entries")
+    else:
+        logger.info("  No minutes bucket corrections found (run minutes_bias_fix.py)")
     if not models:
         sys.exit("No models in model_cache/. Run training script first.")
 
@@ -547,12 +575,31 @@ def main():
                 # Apply bias correction — shift entire quantile distribution
                 bias    = BIAS_CORRECTION.get(target, 0.0)
                 q_preds = {q: v + bias for q, v in q_preds.items()}
+
+                # Apply minutes-bucket correction (Phase 2 fix)
+                # Use 50% of correction per rebuild doc:
+                # "use 50-75% of the holdout correction initially, then recheck"
+                # Hard cap: never shift pts more than +1.5 from minutes correction alone
+                mp_b = str(mb)
+                min_corr_raw = MINUTES_CORRECTIONS.get((target, mp_b), 0.0)
+                min_corr = min_corr_raw * 0.50  # 50% application
+                if target == "pts":
+                    min_corr = float(np.clip(min_corr, -1.0, 1.5))
+                elif target in ("reb","ast"):
+                    min_corr = float(np.clip(min_corr, -0.5, 0.8))
+                if min_corr != 0.0:
+                    q_preds = {q: v + min_corr for q, v in q_preds.items()}
+
                 q50     = q_preds.get(0.50, line)
 
                 # Bad-line sanity filter (permanent architecture — deployment layer)
                 # Skip if market line is more than 1.75x the model projection
                 # Tightened from 2.5x — REB/AST unders were slipping through at 1.8x
                 if q50 > 0 and line > q50 * 1.75:
+                    continue
+                # Alt-line guard: if line > 1.5x q50 AND q50 < 15 for pts,
+                # this is almost certainly an alt/inflated line (Jalen Duren pattern)
+                if target == "pts" and q50 < 17.0 and line > q50 * 1.5:
                     continue
                 # Skip if line is negative (impossible stat value)
                 if line <= 0:
@@ -682,6 +729,7 @@ def main():
     player_count: dict = {}
     game_count:   dict = {}
     player_stat:  set  = set()
+    stat_total: dict = {}   # total picks per stat across all games
     for s in all_singles:
         pid  = str(s["player_id"])   # str() fixes int/str type mismatch
         gid2 = str(s["game_id"])
@@ -694,10 +742,16 @@ def main():
             continue
         if pstat in player_stat:
             continue
+        # Cap AST OVER at 4/day — too concentrated otherwise
+        stat_side_key = f"{s['stat']}_{s['side']}"
+        STAT_SIDE_MAX = {"ast_OVER": 4, "pts_OVER": 8, "reb_OVER": 4}
+        if stat_total.get(stat_side_key, 0) >= STAT_SIDE_MAX.get(stat_side_key, 25):
+            continue
         filtered.append(s)
         player_count[pid]  = player_count.get(pid, 0) + 1
         game_count[gid2]   = game_count.get(gid2, 0) + 1
         player_stat.add(pstat)
+        stat_total[stat_side_key] = stat_total.get(stat_side_key, 0) + 1
     all_singles = filtered
     logger.info(f"Singles after portfolio limits: {len(all_singles)}")
 
