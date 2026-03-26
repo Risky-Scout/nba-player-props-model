@@ -5136,3 +5136,7 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-03-25,single,Matas Buzelis,Chicago Bulls @ Philadelphia 76ers,ast,OVER,1.5,-125,0.6291,0.1324,0.041,,
 2026-03-25,single,Bam Adebayo,Miami Heat @ Cleveland Cavaliers,ast,OVER,2.5,-130,0.6124,0.0835,0.027,,
 2026-03-25,single,Onyeka Okongwu,Atlanta Hawks @ Detroit Pistons,ast,OVER,2.5,-140,0.6041,0.0355,0.012,,
+2026-03-26,single,Tristan Da Silva,Sacramento Kings @ Orlando Magic,reb,OVER,4.5,134,0.5681,0.3295,0.061,,
+2026-03-26,single,Karl-Anthony Towns,New York Knicks @ Charlotte Hornets,ast,OVER,2.5,120,0.5956,0.3104,0.065,,
+2026-03-26,single,Miles Bridges,New York Knicks @ Charlotte Hornets,ast,OVER,2.5,112,0.5665,0.2011,0.045,,
+2026-03-26,single,Brandon Miller,New York Knicks @ Charlotte Hornets,reb,OVER,4.5,-120,0.6149,0.1273,0.038,,
