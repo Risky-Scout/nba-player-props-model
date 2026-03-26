@@ -433,7 +433,7 @@ def print_sgp_summary(sgps: list):
 
 def main():
     logger.info("=" * 60)
-    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-03-26-v14")
+    logger.info("NBA Props Model PREDICTIONS — VERSION 2026-03-17-v13")
     logger.info("=" * 60)
 
     if not _get_api_key():
