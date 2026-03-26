@@ -97,7 +97,7 @@ STAT_DISPLAY = {
 }
 
 MIN_EV           = 0.025   # global floor — per-stat overrides below
-MIN_GAMES_SEASON = 15
+MIN_GAMES_SEASON = 20  # raised from 15 — filter fringe rotation players
 KELLY_FRAC       = 0.25
 MAX_UNITS_SINGLE = 1.5     # doc 7 §5: reduced from 2.0 — too much vol for current cal quality
 MAX_UNITS_SGP    = 1.0
@@ -149,9 +149,24 @@ STAT_SIDE_MIN_EV = {
 # Per-stat per-side probability bounds
 # OVER: require >= 0.60 (diagnostic shows overs need tighter prob floor)
 # UNDER: require >= 0.67–0.72 depending on stat (per instructions)
+# Per-stat OVER probability floors
+# pts: 0.60 (most graded data, most calibrated)
+# reb/ast: 0.56 (less data, reb correction reset — allow more plays through)
+# fg3m: 0.57 (sparse but reasonable)
 STAT_SIDE_PROB_BOUNDS = {
-    "OVER":  (0.60, 0.74),
+    "OVER":  (0.56, 0.74),   # global floor — per-stat override below
     "UNDER": (0.67, 0.80),
+}
+# Per-stat OVER minimum probability (overrides global floor)
+OVER_MIN_PROB_BY_STAT = {
+    "pts":  0.60,
+    "reb":  0.56,
+    "ast":  0.56,
+    "fg3m": 0.57,
+    "pra":  0.58,
+    "pr":   0.57,
+    "pa":   0.57,
+    "ra":   0.56,
 }
 
 # Per-stat UNDER minimum probability floors (stricter per instructions)
@@ -205,15 +220,15 @@ ADV_FIELDS = [
 BIAS_CORRECTION = {
     "pts":    0.51,   # learned: +0.510 (was 1.50 — overcorrected)
     "ast":    0.155,  # learned: +0.155 (was 0.57 — overcorrected)
-    "reb":   -0.13,   # learned: -0.130 (was 0.29 — model was over-projecting)
+    "reb":    0.00,   # reset to 0: learned -0.13 was selection-biased from under-heavy sample
     "fg3m":  -0.01,   # learned: -0.010 (was 0.50 — essentially no correction)
     "blk":    0.00,   # no correction
     "stl":    0.00,   # no correction
     "tov":    0.00,   # insufficient data
-    "pra":    0.535,  # pts+reb+ast = 0.51-0.13+0.155
-    "pr":     0.38,   # pts+reb = 0.51-0.13
+    "pra":    0.665,  # pts+reb+ast = 0.51+0.00+0.155
+    "pr":     0.51,   # pts+reb = 0.51+0.00
     "pa":     0.665,  # pts+ast = 0.51+0.155
-    "ra":     0.025,  # reb+ast = -0.13+0.155
+    "ra":     0.155,  # reb+ast = 0.00+0.155
     "stocks": 0.00,   # stl+blk both 0.00
 }
 
@@ -583,8 +598,10 @@ def main():
                     if ev < min_ev_req:
                         continue
 
-                    # Probability bounds check
-                    prob_lo, prob_hi = STAT_SIDE_PROB_BOUNDS.get(side, (0.60, 0.74))
+                    # Probability bounds check — stat-specific OVER floor
+                    prob_lo, prob_hi = STAT_SIDE_PROB_BOUNDS.get(side, (0.56, 0.74))
+                    if side == "OVER":
+                        prob_lo = OVER_MIN_PROB_BY_STAT.get(target, prob_lo)
                     if not (prob_lo <= prob <= prob_hi):
                         continue
 
