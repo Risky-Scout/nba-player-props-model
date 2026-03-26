@@ -1,180 +1,211 @@
-# NBA Props Model
+# Excel & Python NCAAB Predictive & Pricing Model
+## Phase 1 — Pregame Market Pricing Engine
 
-Automated NBA player props prediction system built for market-maker portfolio development. Identifies positive expected value betting opportunities by comparing model probabilities to sportsbook odds.
-
-**Live dashboard:** [dev.wizardofodds.com/tools/odds-scanner/predictions/nba-live-props.html](https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-live-props.html)
-
-**API endpoint:** [dev.wizardofodds.com/tools/odds-scanner/predictions/api/live_props.php?mode=pregame](https://dev.wizardofodds.com/tools/odds-scanner/predictions/api/live_props.php?mode=pregame)
-
----
-
-## Architecture
-
-Four-layer pipeline:
-
-**1. Projection layer** — LightGBM quantile regression ensemble (11 quantile models per stat) producing a full P10→P90 distribution per player/stat/game.
-
-**2. Residual centering layer** — Per-stat bias correction trained on `median(actual - q50)` from graded outcomes. Shifts the entire quantile ladder consistently. `residual_centering.py` is the permanent learned replacement for hardcoded corrections.
-
-**3. Probability layer** — Converts projected distribution to fair probability at the posted line using vig-free market math and stat×side Platt calibration.
-
-**4. Deployment layer** — Side-specific EV thresholds, probability bounds, line-gap filters, bad-line sanity checks (skip if `line > q50 × 2.5`), portfolio caps (max 25 total, max 2/player, max 4/game, max 1/player/stat).
+**Author:** Joseph Shackelford, ASA MAAA  
+**Stack:** Python 3.9 · KenPom API · BigDataBall · openpyxl · scikit-learn · Excel/VBA  
+**Status:** Phase 1 complete — research pricing workbook / provisional production candidate  
+**Phase 2:** Market-relative residual model (in development)
 
 ---
 
-## Repository Structure
+## What this is
 
-```
-.github/workflows/
-    daily_predictions.yml     Pipeline: 8AM predict, 9AM/6PM snapshots
-    retrain.yml               Weekly retrain
+A structured pregame pricing engine for NCAA men's basketball that generates fair spreads, fair totals, and moneyline probabilities from a joint Negative Binomial PMF framework. The model integrates rolling BigDataBall team baselines with date-stamped KenPom efficiency priors, applies walk-forward Platt and isotonic calibration, and delivers trader-facing output through a live Excel workbook with full formulas.
 
-data/
-    opening_lines_*.json      Opening line snapshots
+The goal was not just to build a model — it was to build something auditable: a system where every number on the dashboard can be traced back to a specific formula, a specific data source, and a specific design decision.
 
-graded/
-    graded_2026-*.csv         Daily graded results
-    closing_lines_*.json      Closing lines for CLV measurement
-    performance_log.csv       Aggregated performance metrics
-    cumulative_report.json    Running portfolio summary
+---
 
-model_cache/
-    *.pkl                     Trained LightGBM quantile models
-    platt_OVER.pkl            Global OVER Platt calibrator
-    platt_UNDER.pkl           Global UNDER Platt calibrator
+## Pipeline
 
-predictions/
-    singles_YYYY-MM-DD.json   Daily picks with full quantile distributions
-    sgps_YYYY-MM-DD.json      Same-game parlay candidates (Gaussian copula)
-    paper_trade_log.csv       Paper trade log
+```mermaid
+flowchart TD
+    A1["Odds API\nspread + total lines\nOdds_from_Odds_Api_Spread/Total"] --> B1["GameInputs sheet\ngame + market line entry"]
+    A2["KenPom API\nadj OE · adj DE · tempo · SOS\nKenPomRaw sheet"] --> C1["fetch_kenpom.py\ndaily archive snapshot"]
+    A3["BigDataBall team feed\nrolling game-level baselines\n03-20-2026-cbb-season-team-feed.xlsx"] --> C2["build_team_baselines.py\nrolling blend per team"]
+    C1 --> D1["BlendedRatings sheet\n365 teams · BLEND_ADJ_OE · BLEND_ADJ_DE · BLEND_TEMPO"]
+    C2 --> D1
+    B1 --> E1["Inputs engine\nINDEX/MATCH lookup · harmonic tempo blend\nadj ORtg formula · site adjustment"]
+    D1 --> E1
+    E1 --> F1["Joint NB PMF — SpreadTotal sheet\n131×131 score grid\n9-pt Gauss-Hermite quadrature\nphi=0.004 · sigma=0.085"]
+    F1 --> G1["Fair prices\nFairSp · FairTt · ML"]
+    F1 --> G2["Probabilities\nP win · P cover · P over"]
+    F1 --> G3["Edge vs market\nFairSp − MktSp · FairTt − MktTt"]
+    G1 --> H1["MarketMaker_Board + Dashboard\nall games · selector · confidence"]
+    G2 --> H1
+    G3 --> H1
 
-bdl_client.py                 BallDontLie API client
-calibrate_models.py           Global Platt calibration
-calibrate_stat_side.py        Stat×side calibration file generator
-calibrate_statside.py         Legacy calibration script
-correlation_engine.py         Within-player correlation for SGP generation
-feature_engineering.py        Feature construction pipeline
-grade.py                      Daily grader
-live_pricing.py               Python live pricing engine
-minutes_model.py              Minutes projection model
-predict.py                    Workflow target (copy of predict_darko_v4.py)
-predict_darko_v4.py           Main prediction script
-replay_live.py                Live CLV backtest tool
-residual_centering.py         Learned residual corrector (permanent bias fix)
-snapshot_closing_lines.py     Closing line snapshots
-snapshot_opening_lines.py     Opening line snapshots
-state_bucket_calibration.py   Live state-bucket calibration
-train.py                      Training script
+    style A1 fill:#E1F5EE,stroke:#0F6E56
+    style A2 fill:#E1F5EE,stroke:#0F6E56
+    style A3 fill:#E1F5EE,stroke:#0F6E56
+    style F1 fill:#EEEDFE,stroke:#534AB7
+    style G1 fill:#FAECE7,stroke:#993C1D
+    style G2 fill:#FAECE7,stroke:#993C1D
+    style G3 fill:#FAECE7,stroke:#993C1D
 ```
 
 ---
 
-## Daily Pipeline
+## Blend formula (P2_30)
 
-| Time (ET) | Job | Purpose |
-|---|---|---|
-| 8:00 AM | `predict` | Grade yesterday, generate today's predictions |
-| 9:00 AM | `snapshot_opening` | Capture opening lines |
-| 6:00 PM | `snapshot_closing` | Capture closing lines post-injury-report |
+The `BlendedRatings` sheet holds one row per team. The Python pipeline writes pre-computed blend values that the Excel formulas then consume via `INDEX/MATCH`.
 
-The `predict` job is independent — snapshot failures never cause predictions to skip. The workflow hard-fails with a visible red Action if `singles_YYYY-MM-DD.json` is not written.
+```
+BLEND_ADJ_OE  = KP_AdjOE  × 0.70  +  BDB_rolling_OE    × 0.30
+BLEND_ADJ_DE  = KP_AdjDE  × 0.70  +  BDB_rolling_DE    × 0.30
+BLEND_TEMPO   = KP_Tempo  × 0.80  +  BDB_rolling_Tempo × 0.20
+```
 
-**Required GitHub Secrets:**
-- `BDL_API_KEY` — BallDontLie GOAT tier key
-- `ODDS_API_KEY` — The Odds API key
+The `Inputs` sheet then computes expected scoring efficiency per matchup:
 
----
+```
+Exp_Home_ORtg = LeagueAvg_OE
+              + 0.55 × (Home_BLEND_ADJ_OE − LeagueAvg_OE)
+              + 0.45 × (LeagueAvg_DE      − Away_BLEND_ADJ_DE)
 
-## Model Details
-
-**Stats:** PTS, REB, AST, FG3M, STL, BLK, TOV, PRA, PR, PA, RA, STL+BLK
-
-**Ensemble:** LightGBM quantile regression (11 quantile levels per stat) + XGBoost, Random Forest, Gradient Boosting, Neural Network with Bayesian Ridge meta-learner.
-
-**SGPs:** Gaussian copula with within-player correlation engine. Capped at 6 singles/game, 60 total candidates.
-
-**Kelly sizing:** Quarter-Kelly pregame (0.25), eighth-Kelly live (0.125).
+Pace = 0.85 × harmonic_mean(Home_Tempo, Away_Tempo)
+     + 0.15 × KP_league_avg_tempo
+```
 
 ---
 
-## Bias Corrections
+## File manifest
 
-Fitted from `median(actual - q50)` on 2,624 graded rows. Applied to the full quantile ladder (all quantiles shift equally). `blk` and `stl` are not corrected — their two targets disagree directionally.
-
-| Stat | Correction |
+### Excel workbooks
+| File | Purpose |
 |---|---|
-| pts | +1.50 |
-| ast | +0.57 |
-| reb | +0.29 |
-| fg3m | +0.50 |
-| blk | 0.00 |
-| stl | 0.00 |
+| `ncaab_marketmaker_PMF_pricing_model_2026-03-19_WORKING.xlsm` | Live model — all formulas, PMF engine, dashboard, game selector |
+| `ncaab_market_maker_2026-03-23_PRODUCTION.xlsx` | Audited calibrated output — 2026-03-23 Sweet 16 slate |
 
-Run `python3 residual_centering.py --train` after each retrain to replace these hardcoded values with learned per-stat models.
+### Python scripts — core pipeline
+| Script | Purpose |
+|---|---|
+| `fetch_kenpom.py` | Pulls KenPom ratings + four factors via API, saves daily archive |
+| `build_team_baselines.py` | Builds rolling BDB pregame baselines per team from season feed |
+| `extract_schedule_from_workbook_two_tabs.py` | Extracts game slate from `.xlsm` into `GameInputs.csv` |
+| `run_phase3a1_production.py` | Prices all slate games — team-only P2_30 model |
+| `build_historical_predictions.py` | Walk-forward historical calibration — Platt ML, isotonic ATS/TOT |
+| `build_calibrated_workbook_final.py` | Builds the audited production `.xlsx` workbook |
 
----
+### Python scripts — validation
+| Script | Purpose |
+|---|---|
+| `run_full_audit.py` | Verifies Model_Info fields and column presence in production workbook |
+| `run_subset_diagnostics.py` | ATS/TOT subset signal analysis + totals edge-bucket table |
+| `run_min_games_ablation.py` | Tests `min_games` parameter across 0/3/5/10 settings |
 
-## Deployment Gates
+### Experimental (not in production)
+| Script | Purpose |
+|---|---|
+| `build_player_adjustments.py` | Player residual layer — failed holdout, stays experimental |
+| `build_historical_player_predictions.py` | Historical backtest of player layer — produced the failure diagnosis |
 
-**OVER:** probability ≥ 0.60, EV ≥ 2.5%
-
-**UNDER:**
-
-| Stat | Min prob | Min line-q50 gap | Min EV |
-|---|---|---|---|
-| pts | 0.72 | 1.25 | 6.0% |
-| ast | 0.70 | 0.75 | 5.0% |
-| reb | 0.67 | 0.60 | 5.0% |
-| fg3m | 0.66 | 0.50 | 5.0% |
-| blk | 0.74 | — | 7.0% |
-
-**Permanently banned:** STL OVER (HR 0.216), BLK OVER (HR 0.260), STL UNDER (CLV -0.073)
-
----
-
-## Performance (2026-03-09 to 2026-03-17, 2,624 graded rows)
-
-| Stat | Side | n | Hit Rate | CLV |
-|---|---|---|---|---|
-| pts | OVER | 190 | 0.489 | +0.086 |
-| pts | UNDER | 306 | 0.438 | -0.102 |
-| ast | OVER | 147 | 0.408 | +0.093 |
-| reb | OVER | 210 | 0.452 | +0.103 |
-| reb | UNDER | 306 | 0.464 | -0.112 |
-| blk | OVER | 269 | 0.260 | +0.094 |
-
-OVER CLV is positive across all major stats. UNDER CLV is negative — under deployment is restricted until residual centering and stat×side calibration are fully deployed.
+### Cache and data (not committed — too large)
+| Path | Contents |
+|---|---|
+| `cbb_cache/KenPom_Archive_YYYY-MM-DD.csv` | 136 daily KenPom snapshots, Nov 2025 – Mar 2026 |
+| `cbb_cache/TeamBaselines.csv` | 11,946 rows of rolling BDB pregame baselines |
+| `cbb_cache/historical_p230_predictions.csv` | 906-game holdout prediction set |
+| `feeds_daily/` | BDB season team and player feeds |
 
 ---
 
-## Remaining Build Items
+## Validation results (Phase 1 holdout)
 
-1. Run `python3 residual_centering.py --train` after each retrain — replaces hardcoded bias corrections with learned GBR models per stat
-2. Run `python3 calibrate_stat_side.py` — generates `platt_pts_OVER.pkl` etc.; currently falls back to global calibrators
-3. Affiliate sub-IDs — placeholder `WOO` in all links; real IDs needed from affiliate partner
-4. Cron job for `quote_archive.php` — needs server-side cron every minute during games for live CLV tracking
-5. Separate sparse models for BLK/STL — these stats need zero-inflated discrete treatment
+906 games · 728 H/R · 178 neutral · KenPom coverage 99.8% · BDB fallback 0.2%
+
+| Market | N | AUC raw | AUC cal | Brier raw | Brier cal | Method |
+|---|---|---|---|---|---|---|
+| ML | 728 | 0.7785 | 0.7799 | 0.1950 | 0.1866 | Platt logistic |
+| ATS | 728 | 0.5127 | 0.4967 | 0.2572 | 0.2532 | Isotonic OOF |
+| TOT | 728 | 0.5157 | 0.4960 | 0.2550 | 0.2528 | Isotonic OOF |
+
+**ATS edge buckets (H/R, side-aware, breakeven 52.38%):**
+
+| Bucket | N | Cover% | EV@−110 | Beats vig | N≥150 |
+|---|---|---|---|---|---|
+| 0–1.5 | 192 | 49.0% | −0.065 | No | Yes |
+| 1.5–3 | 197 | 46.2% | −0.118 | No | Yes |
+| 3–5 | 207 | 52.7% | +0.005 | **Yes** | **Yes** |
+| >5 | 132 | 56.1% | +0.070 | **Yes** | No |
+
+**Totals edge buckets (|FairTt − MktTt|):**
+
+| Bucket | N | Over% | EV@−110 | Beats vig | N≥150 |
+|---|---|---|---|---|---|
+| 0–2 | 272 | 43.8% | −0.165 | No | Yes |
+| 2–4 | 225 | 53.3% | +0.018 | **Yes** | **Yes** |
+| 4–6 | 116 | 55.2% | +0.053 | Yes | No |
+| >6 | 115 | 52.2% | −0.004 | No | No |
 
 ---
 
-## Setup
+## What worked
+
+- Full PMF architecture with exact joint grid — internally consistent fair prices across spread, total, and ML from a single probability mass
+- KenPom + BDB blend with 136 date-stamped archives, 99.8% historical KenPom-at-date coverage, zero BDB fallback on final run
+- Platt calibration reduced ML log-loss from 0.5755 → 0.5511 and slope from 1.581 → 1.029
+- Hard production/experimental separation with filename safeguard — player-adjusted latents cannot be written to a file labeled PRODUCTION
+- ATS 3–5 edge bucket shows positive EV at N=207, the only N≥150 bucket beating vig
+
+## What failed
+
+- **Player residual layer:** Too aggressive — 53% of historical games moved ≥2 points. All holdout ATS buckets went negative EV. Root cause: 5-game recent window vs. season baseline is too noisy for a production-grade residual. Kept in experimental workbook only.
+- **ATS/TOT overall signal weak:** AUC ~0.51 across all H/R subsets. Not concentrated in higher-quality data subsets — all cuts returned identical results, meaning data quality is not the bottleneck.
+- **Sample size:** 906 games is too small for stable bucket-level conclusions. Phase 2 will expand to multiple prior seasons.
+
+## What I would build next (Phase 2)
+
+1. **Market-relative residual model** — target `actual_margin − market_spread` directly, not `P(cover)`. Features: FairSp−MktSp, FairTt−MktTt, KenPom O/D gaps, pace mismatch, neutral flag, rest days
+2. **Separate totals track** — dedicated possessions model with its own calibration
+3. **Larger historical sample** — 2–3 prior seasons of BDB + KenPom
+4. **Rearchitected player layer** — position-weighted PPP, minimum 7-game window, injury flags, ±2pt clip maximum
+5. **Recalibration** — only after raw signal improves, not before
+
+---
+
+## Product classification
+
+**Research pricing workbook / provisional production candidate**
+
+This is not a proven market-beating model. It is an auditable pregame pricing engine that prices games correctly from real inputs, separates experimental from production layers, and reports validation results honestly. The ATS and totals signal is weak in aggregate. Two ATS buckets show positive EV but sample sizes are not sufficient for confident live application.
+
+Appropriate uses: line comparison, market intuition, pricing research, trader-facing reference.  
+Not appropriate for: live wagering or any claim of proven edge.
+
+---
+
+## Daily workflow
 
 ```bash
-git clone https://github.com/Risky-Scout/nba-player-props-model
-cd nba-player-props-model
-pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib scipy
+# 1. Fetch fresh KenPom ratings
+python3 fetch_kenpom.py --key YOUR_KEY
 
-export BDL_API_KEY=your_key
-python3 predict_darko_v4.py
+# 2. Enter today's games into the .xlsm, save it
 
-# After retrain:
-python3 residual_centering.py --train
-python3 calibrate_stat_side.py
+# 3. Extract the slate
+python3 extract_schedule_from_workbook_two_tabs.py \
+    --workbook "./ncaab_marketmaker_PMF_pricing_model_2026-03-19_WORKING.xlsm" \
+    --date "YYYY-MM-DD"
+
+# 4. Set neutral site for tournament games
+python3 -c "import pandas as pd; df=pd.read_csv('cbb_cache/GameInputs.csv'); df['Site']='N'; df.to_csv('cbb_cache/GameInputs.csv',index=False)"
+
+# 5. Price the slate
+python3 run_phase3a1_production.py \
+    --slate cbb_cache/GameInputs.csv \
+    --baselines cbb_cache/TeamBaselines.csv \
+    --kenpom cbb_cache/KenPom_Ratings_2026.csv \
+    --kenpom-ff cbb_cache/KenPom_FourFactors_2026.csv \
+    --output cbb_cache/MatchupLatents_today_teamonly.csv \
+    --date YYYY-MM-DD
+
+# 6. Build the production workbook
+python3 build_calibrated_workbook_final.py \
+    --latents cbb_cache/MatchupLatents_today_teamonly.csv \
+    --cal-report cbb_cache/model_calibration_report.csv \
+    --edge cbb_cache/edge_bucket_table.csv \
+    --pred cbb_cache/historical_p230_predictions.csv \
+    --out "outputs/ncaab_market_maker_YYYY-MM-DD_PRODUCTION.xlsx" \
+    --date YYYY-MM-DD
 ```
-
----
-
-## Data Sources
-
-- **BallDontLie API** (GOAT tier) — stats, box scores, live data, injuries, lineups, webhooks
-- **The Odds API** — sportsbook odds for line snapshots and CLV measurement
