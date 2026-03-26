@@ -535,13 +535,27 @@ def main():
                 q50     = q_preds.get(0.50, line)
 
                 # Bad-line sanity filter (permanent architecture — deployment layer)
-                # Skip if market line is more than 2.5x the model projection
-                # This catches stale/garbage lines that create fake edge
-                if q50 > 0 and line > q50 * 2.5:
+                # Skip if market line is more than 1.75x the model projection
+                # Tightened from 2.5x — REB/AST unders were slipping through at 1.8x
+                if q50 > 0 and line > q50 * 1.75:
                     continue
                 # Skip if line is negative (impossible stat value)
                 if line <= 0:
                     continue
+                # Minimum line filters — prevent structural low-line picks
+                MIN_LINE = {
+                    "ast":  2.0,
+                    "fg3m": 0.5,
+                    "reb":  2.0,
+                    "pts":  8.0,   # raised: avoid bench padding
+                    "stl":  0.5,
+                    "blk":  0.5,
+                }
+                min_line = MIN_LINE.get(target, 0)
+                if line < min_line:
+                    continue
+
+
 
                 prob_over  = p_over(q_preds, line)
                 prob_under = p_under(q_preds, line)
@@ -588,6 +602,18 @@ def main():
 
                     # Sparse stat: harder probability floor
                     if target in SPARSE_STATS and prob < SPARSE_MIN_PROB:
+                        continue
+
+                    # Minimum Q50 projection filter (OVER only)
+                    # Don't surface OVER if model projects player as non-contributor
+                    # Catches bench players with high market lines but low real role
+                    _MIN_Q50 = {"pts": 12.0, "reb": 3.5, "ast": 2.5, "fg3m": 0.5}
+                    if side == "OVER" and q50 < _MIN_Q50.get(target, 0):
+                        continue
+
+                    # Bad line ratio check (OVER): line should not exceed 1.75x q50
+                    # Jamal Murray 42.5 vs q50=17.4 is fake edge — stale line
+                    if side == "OVER" and q50 > 0 and line > q50 * 1.75:
                         continue
 
                     kelly = kelly_fraction(prob, odds, KELLY_FRAC, MAX_UNITS_SINGLE)
