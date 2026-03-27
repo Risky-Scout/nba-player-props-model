@@ -1,0 +1,71 @@
+{
+  "cfb595cba37696e470059102db23fca9": {
+    "home_team": "Indiana Pacers",
+    "away_team": "Los Angeles Clippers",
+    "commence_time": "2026-03-27T23:10:00Z",
+    "consensus_total": 239.0,
+    "consensus_spread": 8.8,
+    "implied_home_total": 115.1,
+    "implied_away_total": 123.9,
+    "books_total": {
+      "fanduel": 238.5,
+      "betrivers": 238.5,
+      "draftkings": 239.5,
+      "betmgm": 239.5
+    },
+    "books_spread": {
+      "fanduel": 9.5,
+      "betrivers": 9.0,
+      "draftkings": 8.5,
+      "betmgm": 8.5
+    },
+    "snapshot_time": "2026-03-27T14:49:39Z",
+    "snapshot_type": "opening"
+  },
+  "9443e4a245659d7362366345b5a91b39": {
+    "home_team": "Boston Celtics",
+    "away_team": "Atlanta Hawks",
+    "commence_time": "2026-03-27T23:40:00Z",
+    "consensus_total": 226.5,
+    "consensus_spread": -5.0,
+    "implied_home_total": 115.75,
+    "implied_away_total": 110.75,
+    "books_total": {
+      "fanduel": 226.5,
+      "draftkings": 226.5,
+      "betrivers": 227.0,
+      "betmgm": 226.5
+    },
+    "books_spread": {
+      "fanduel": -5.0,
+      "draftkings": -5.5,
+      "betrivers": -5.0,
+      "betmgm": -4.5
+    },
+    "snapshot_time": "2026-03-27T14:49:39Z",
+    "snapshot_type": "opening"
+  },
+  "5ce07242b2ab7c9c82700854c237a77a": {
+    "home_team": "Cleveland Cavaliers",
+    "away_team": "Miami Heat",
+    "commence_time": "2026-03-27T23:40:00Z",
+    "consensus_total": 242.5,
+    "consensus_spread": -5.5,
+    "implied_home_total": 124.0,
+    "implied_away_total": 118.5,
+    "books_total": {
+      "fanduel": 242.5,
+      "draftkings": 242.5,
+      "betrivers": 243.0,
+      "betmgm": 242.5
+    },
+    "books_spread": {
+      "fanduel": -5.5,
+      "draftkings": -5.5,
+      "betrivers": -5.5,
+      "betmgm": -5.5
+    },
+    "snapshot_time": "2026-03-27T14:49:39Z",
+    "snapshot_type": "opening"
+  }
+}
