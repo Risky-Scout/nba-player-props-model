@@ -1,0 +1,94 @@
+{
+  "61b1ef0450e08478d708e8ab8a384647": {
+    "home_team": "Milwaukee Bucks",
+    "away_team": "San Antonio Spurs",
+    "commence_time": "2026-03-28T19:10:00Z",
+    "consensus_total": 226.5,
+    "consensus_spread": 18.2,
+    "implied_home_total": 104.15,
+    "implied_away_total": 122.35,
+    "books_total": {
+      "fanduel": 226.5,
+      "draftkings": 226.5,
+      "betrivers": 226.0,
+      "betmgm": 226.5
+    },
+    "books_spread": {
+      "fanduel": 17.5,
+      "draftkings": 18.5,
+      "betrivers": 18.0,
+      "betmgm": 18.5
+    },
+    "snapshot_time": "2026-03-28T14:31:20Z",
+    "snapshot_type": "opening"
+  },
+  "2f64bcd6f06f9cb1132a6be530d6848c": {
+    "home_team": "Minnesota Timberwolves",
+    "away_team": "Detroit Pistons",
+    "commence_time": "2026-03-28T21:40:00Z",
+    "consensus_total": 222.5,
+    "consensus_spread": -2.5,
+    "implied_home_total": 112.5,
+    "implied_away_total": 110.0,
+    "books_total": {
+      "fanduel": 222.5,
+      "draftkings": 222.5,
+      "betmgm": 222.5,
+      "betrivers": 222.0
+    },
+    "books_spread": {
+      "fanduel": -2.5,
+      "draftkings": -2.5,
+      "betmgm": -2.5,
+      "betrivers": -2.5
+    },
+    "snapshot_time": "2026-03-28T14:31:20Z",
+    "snapshot_type": "opening"
+  },
+  "def835f85134dff31d0e29a14591d960": {
+    "home_team": "Charlotte Hornets",
+    "away_team": "Philadelphia 76ers",
+    "commence_time": "2026-03-28T22:10:00Z",
+    "consensus_total": 232.5,
+    "consensus_spread": -6.5,
+    "implied_home_total": 119.5,
+    "implied_away_total": 113.0,
+    "books_total": {
+      "fanduel": 232.5,
+      "draftkings": 232.5,
+      "betmgm": 232.5,
+      "betrivers": 232.5
+    },
+    "books_spread": {
+      "fanduel": -5.5,
+      "draftkings": -6.5,
+      "betmgm": -6.5,
+      "betrivers": -6.5
+    },
+    "snapshot_time": "2026-03-28T14:31:20Z",
+    "snapshot_type": "opening"
+  },
+  "d7a3bd092d17e72cfe007b92fc74dd1f": {
+    "home_team": "Atlanta Hawks",
+    "away_team": "Sacramento Kings",
+    "commence_time": "2026-03-28T23:40:00Z",
+    "consensus_total": 236.5,
+    "consensus_spread": -14.8,
+    "implied_home_total": 125.65,
+    "implied_away_total": 110.85,
+    "books_total": {
+      "fanduel": 236.5,
+      "draftkings": 236.5,
+      "betmgm": 236.5,
+      "betrivers": 236.5
+    },
+    "books_spread": {
+      "fanduel": -15.0,
+      "draftkings": -14.5,
+      "betmgm": -14.5,
+      "betrivers": -15.0
+    },
+    "snapshot_time": "2026-03-28T14:31:20Z",
+    "snapshot_type": "opening"
+  }
+}
