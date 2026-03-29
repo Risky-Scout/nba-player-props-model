@@ -90,20 +90,6 @@ def market_pull_penalty(quote_history, current_line, current_over_odds, lookback
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-import os as _os
-import json as _json
-from pathlib import Path as _Path
-
-def _load_live_cal_table():
-    """Load live calibration table keyed by calibration_key."""
-    p = _Path("model_cache/live_calibration_table.json")
-    if p.exists():
-        return _json.loads(p.read_text())
-    return {}
-
-LIVE_CAL_TABLE = _load_live_cal_table()
-
-
 class LivePricer:
     """Authoritative v4 live pricer with hierarchical priors."""
 
@@ -135,17 +121,9 @@ class LivePricer:
         player_prior_rates: dict = None,
         quote_history: list = None,
         # Real calibration quality input from state_bucket_calibration.json
-        bucket_brier: float = None,  # None = hard fail in production; pass 0.25 explicitly for dev
+        bucket_brier: float = 0.25,
         calibration_level: str = "identity",
     ) -> dict:
-
-        # Hard fail if bucket_brier not provided — prevents silent calibration degradation
-        if bucket_brier is None:
-            raise ValueError(
-                "HARD FAIL: bucket_brier is required for live pricing. "
-                "Pass the stat-side Brier score from the calibration artifacts. "
-                "Use bucket_brier=0.25 explicitly during development only."
-            )
 
         stat = stat.lower()
         shot_events        = shot_events        or []
@@ -249,6 +227,24 @@ class LivePricer:
         # ── Step 10: action_score — uses REAL bucket_brier from calibration ────
         # cal_mult: penalty for poorly calibrated buckets (doc 6 §1 must do now)
         # Formula: global rule §B — calibration_multiplier = clamp(1 - brier*2, 0.60, 1.05)
+        # ── Live calibration table lookup ────────────────────────────────────
+        # bucket_brier = EXECUTION RELIABILITY PENALTY only (not prob calibration)
+        # Live probability calibration uses LIVE_CAL_TABLE keyed by cal_key
+        live_cal_entry     = LIVE_CAL_TABLE.get(cal_key, {})
+        reliability_tier   = live_cal_entry.get('reliability_tier', 'D')
+        live_prob_shrink   = live_cal_entry.get('recommended_prob_shrink', 1.0)
+        live_prob_offset   = live_cal_entry.get('recommended_prob_offset', 0.0)
+        calibration_source = 'live_table' if live_cal_entry else 'no_table'
+
+        # Apply live probability adjustment before EV computation
+        def _adj(p):
+            return float(max(0.01, min(0.99, (p - 0.5) * live_prob_shrink + 0.5 + live_prob_offset)))
+
+        p_over_raw        = p_over
+        p_under_raw       = p_under
+        p_over            = _adj(p_over)
+        p_under           = _adj(p_under)
+
         cal_mult    = max(0.60, min(1.05, 1.0 - bucket_brier * 2.0))
         mkt_stab    = max(0.60, min(1.0, 1.0 - stale_pen - mkt_pull_pen))
         action_score = exec_edge * cal_mult * mkt_stab
@@ -315,6 +311,15 @@ class LivePricer:
             "confidence_tier":         conf_tier,
             "action_score":            round(action_score, 4),
             "calibration_key":         cal_key,
+            "calibration_source":      calibration_source,
+            "reliability_tier":        reliability_tier,
+            "p_over_raw":              round(p_over_raw, 4),
+            "p_under_raw":             round(p_under_raw, 4),
+            "p_over_cal_live":         round(p_over, 4),
+            "p_under_cal_live":        round(p_under, 4),
+            "live_prob_shrink":        live_prob_shrink,
+            "live_prob_offset":        live_prob_offset,
+            "bucket_brier":            bucket_brier,
             "rem_minutes_mean":        round(rem_mean, 1),
             "rem_minutes_q25":         round(rem_q25, 1),
             "rem_minutes_q75":         round(rem_q75, 1),

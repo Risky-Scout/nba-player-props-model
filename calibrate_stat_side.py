@@ -264,7 +264,8 @@ def main():
 
             # Metrics
             if n_oof >= 10:
-                metrics = compute_metrics(probs, oof_probs[valid], outcomes[valid])
+                # Must filter probs_raw to same indices as oof_probs to avoid length mismatch
+                metrics = compute_metrics(probs[valid], oof_probs[valid], outcomes[valid])
             else:
                 metrics = compute_metrics(probs, None, outcomes)
 

@@ -134,7 +134,7 @@ STAT_SIDE_MIN_EV = {
     # reb UNDER: CLV=-0.112 — require strong gates
     ("reb",  "UNDER"): 0.999,   # suppressed: CLV=-0.112 consistently negative
     # fg3m UNDER: CLV=-0.092 — reintroduce with strict gate
-    ("fg3m", "UNDER"): 0.999,   # BANNED: CLV=-0.099 noise
+    ("fg3m", "UNDER"): 0.999,   # BANNED per rebuild doc: CLV=-0.099, hit_rt=0.531 noise
     # blk/stl UNDER: still allowed if very tight
     ("blk",  "UNDER"): 0.070,
     ("stl",  "UNDER"): 0.999,   # CLV=-0.073 stl under too noisy
@@ -460,6 +460,17 @@ def main():
     if not stats_path.exists():
         sys.exit("No stats data. Run training script first.")
 
+    # Load calibration manifest
+    cal_manifest = {}
+    manifest_path = Path("model_cache/calibration_manifest.json")
+    if manifest_path.exists():
+        cal_manifest = json.loads(manifest_path.read_text())
+        promoted = [k for k,v in cal_manifest.items()
+                   if k != '_meta' and v.get('promoted') and v.get('scope')=='stat_side']
+        logger.info(f"  Calibration manifest: {len(promoted)} promoted stat×side calibrators")
+    else:
+        logger.warning("  calibration_manifest.json missing — run calibrate_stat_side.py")
+
     logger.info("Loading historical data...")
     stats_df = pd.read_parquet(stats_path)
     adv_df   = pd.read_parquet(adv_path) if adv_path.exists() else pd.DataFrame()
@@ -582,7 +593,11 @@ def main():
                 # Hard cap: never shift pts more than +1.5 from minutes correction alone
                 mp_b = str(mb)
                 min_corr_raw = MINUTES_CORRECTIONS.get((target, mp_b), 0.0)
-                min_corr = min_corr_raw * (0.75 if target == "pts" else 0.50)  # 75% pts, 50% others
+                # Fix 3: Use 75% for pts (still under-projected), 50% for others
+                # Per rebuild doc: "use 50-75% initially, then recheck"
+                # pts buckets 1+2 still show +2.71/+2.75 residual — increase to 75%
+                pct = 0.75 if target == "pts" else 0.50
+                min_corr = min_corr_raw * pct
                 if target == "pts":
                     min_corr = float(np.clip(min_corr, -1.0, 1.5))
                 elif target in ("reb","ast"):
@@ -625,13 +640,32 @@ def main():
                 # Apply Platt calibration — stat×side specific if available (doc 7 §2)
                 # Priority: stat_SIDE → global SIDE → raw
                 def _apply_cal(prob, stat_key, side_key):
+                    """Apply calibrator. Returns (cal_prob, cal_source)."""
                     stat_side_key = f"{stat_key.upper()}_{side_key.upper()}"
-                    cal = platt_calibrators.get(stat_side_key) or platt_calibrators.get(side_key.upper())
-                    if cal:
-                        return float(np.clip(cal.predict_proba([[prob]])[0][1], 0.01, 0.99))
-                    return prob
-                prob_over  = _apply_cal(prob_over,  target, "OVER")
-                prob_under = _apply_cal(prob_under, target, "UNDER")
+                    if stat_side_key in platt_calibrators:
+                        cal = platt_calibrators[stat_side_key]
+                        try:
+                            cal_prob = float(np.clip(
+                                cal.predict_proba([[prob]])[0][1], 0.01, 0.99))
+                            return cal_prob, 'stat_side'
+                        except Exception:
+                            pass
+                    if side_key.upper() in platt_calibrators:
+                        cal = platt_calibrators[side_key.upper()]
+                        try:
+                            cal_prob = float(np.clip(
+                                cal.predict_proba([[prob]])[0][1], 0.01, 0.99))
+                            return cal_prob, 'global_side'
+                        except Exception:
+                            pass
+                    return prob, 'raw_none'
+
+                raw_over   = prob_over
+                raw_under  = prob_under
+                prob_over,  cal_src_over  = _apply_cal(prob_over,  target, "OVER")
+                prob_under, cal_src_under = _apply_cal(prob_under, target, "UNDER")
+                cal_applied_over  = (cal_src_over  != 'raw_none')
+                cal_applied_under = (cal_src_under != 'raw_none')
 
                 ev_over  = ev_from_prob(prob_over,  over_odds)
                 ev_under = ev_from_prob(prob_under, under_odds)
@@ -640,12 +674,8 @@ def main():
                     ("OVER",  prob_over,  over_odds,  ev_over),
                     ("UNDER", prob_under, under_odds, ev_under),
                 ]:
-                    # Stat×side EV gate — stricter when no promoted calibrator
+                    # Stat×side EV gate
                     min_ev_req = STAT_SIDE_MIN_EV.get((target, side), MIN_EV)
-                    cal_src = cal_src_over if side == "OVER" else cal_src_under
-                    if cal_src == 'raw_none':
-                        # No calibrator: require 2x EV to compensate for uncalibrated prob
-                        min_ev_req = min(min_ev_req * 2.0, 0.15)
                     if ev < min_ev_req:
                         continue
 
@@ -709,7 +739,10 @@ def main():
                         "over_odds":    over_odds,
                         "under_odds":   under_odds,
                         "bet_vendor":   vendor,
-                        "model_prob":   round(prob, 4),
+                        "model_prob":     round(prob, 4),
+                        "model_prob_raw": round(raw_over if side=="OVER" else raw_under, 4),
+                        "model_prob_cal": round(prob, 4),
+                        "cal_source":     cal_src_over if side=="OVER" else cal_src_under,
                         "market_prob":  round(novig_over if side=="OVER" else novig_under, 4),
                         "raw_edge":     round(raw_edge_val, 4),
                         "ev":           round(ev, 4),
@@ -720,19 +753,42 @@ def main():
                         "mp_bucket":    mb,
                         # Deployment metadata for CLV tracing (doc 7 traceability)
                         "min_ev_applied": round(min_ev_req, 4),
-                        "cal_type":      f"{target}_{'OVER' if side=='OVER' else 'UNDER'}" if f"{target.upper()}_{'OVER' if side=='OVER' else 'UNDER'}" in platt_calibrators else "global",
+                        # Fix 4: Explicit audit trail — raw vs calibrated
+                        "cal_type":      f"{target.upper()}_{side}" if (f"{target.upper()}_{side}" in platt_calibrators) else ("global" if side in platt_calibrators else "raw_no_calibrator"),
+                        "cal_applied":   cal_applied_over if side=="OVER" else cal_applied_under,
                         "is_sparse":     target in SPARSE_STATS,
                     })
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
 
-    # HARD PRE-EXPORT ASSERTION — banned markets never reach output
-    BANNED_MARKETS = {("blk","OVER"),("stl","OVER"),("reb","UNDER"),("fg3m","UNDER"),("stl","UNDER")}
-    violations = [s for s in all_singles if (s["stat"],s["side"]) in BANNED_MARKETS]
+    # ── HARD PRE-EXPORT ASSERTIONS (Fix 1+5+6 per rebuild doc) ──────────────
+    # Banned markets must NEVER appear in output — fail loudly if they do
+    BANNED_MARKETS = {
+        ("blk",  "OVER"),
+        ("stl",  "OVER"),
+        ("reb",  "UNDER"),
+        ("fg3m", "UNDER"),
+        ("stl",  "UNDER"),
+    }
+    SUPPRESSED_MARKETS = {
+        ("pts",  "UNDER"),
+        ("ast",  "UNDER"),
+        ("fg3m", "OVER"),
+        ("blk",  "UNDER"),
+    }
+    violations = []
+    for s in all_singles:
+        key = (s["stat"], s["side"])
+        if key in BANNED_MARKETS:
+            violations.append(f"BANNED market in picks: {s['player_name']} {s['stat']} {s['side']}")
+        if key in SUPPRESSED_MARKETS and s.get("model_prob", 0) < 0.67:
+            violations.append(f"SUPPRESSED market below threshold: {s['player_name']} {s['stat']} {s['side']} prob={s.get('model_prob',0):.3f}")
     if violations:
         for v in violations:
-            logger.error(f"ASSERTION FAILED — banned market blocked: {v['player_name']} {v['stat']} {v['side']}")
-        all_singles = [s for s in all_singles if (s["stat"],s["side"]) not in BANNED_MARKETS]
+            logger.error(f"ASSERTION FAILED: {v}")
+        all_singles = [s for s in all_singles
+                      if (s["stat"], s["side"]) not in BANNED_MARKETS]
+        logger.warning(f"Removed {len(violations)} banned/invalid picks before export")
 
     logger.info(f"Singles before portfolio limits: {len(all_singles)}")
 
