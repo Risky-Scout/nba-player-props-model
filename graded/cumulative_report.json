@@ -1,33 +1,33 @@
 {
-  "generated_at": "2026-03-28T13:51:06.811798",
-  "total_dates": 18,
+  "generated_at": "2026-03-29T00:29:39.951737",
+  "total_dates": 19,
   "overall": {
     "label": "ALL_TIME",
-    "n_bets": 2534,
+    "n_bets": 2535,
     "n_hits": 1205,
-    "hit_rate": 0.4755,
-    "profit": -50.43,
-    "roi": -0.0199,
-    "mean_clv": 0.0062,
+    "hit_rate": 0.4753,
+    "profit": -51.43,
+    "roi": -0.0203,
+    "mean_clv": 0.0063,
     "pct_true_clv": 0.103,
     "brier": 0.272,
     "max_dd": 130.93,
-    "sharpe": -0.29
+    "sharpe": -0.296
   },
   "by_tier": {},
   "by_stat": {
     "pts": {
       "label": "Points",
-      "n_bets": 497,
+      "n_bets": 498,
       "n_hits": 252,
-      "hit_rate": 0.507,
-      "profit": -9.49,
-      "roi": -0.0191,
-      "mean_clv": -0.0343,
-      "pct_true_clv": 0.091,
-      "brier": 0.2662,
+      "hit_rate": 0.506,
+      "profit": -10.49,
+      "roi": -0.0211,
+      "mean_clv": -0.0336,
+      "pct_true_clv": 0.09,
+      "brier": 0.2664,
       "max_dd": 40.35,
-      "sharpe": -0.313
+      "sharpe": -0.345
     },
     "reb": {
       "label": "Rebounds",
@@ -98,16 +98,16 @@
   "by_side": {
     "OVER": {
       "label": "OVER",
-      "n_bets": 939,
+      "n_bets": 940,
       "n_hits": 398,
-      "hit_rate": 0.4239,
-      "profit": -29.98,
-      "roi": -0.0319,
-      "mean_clv": 0.0936,
+      "hit_rate": 0.4234,
+      "profit": -30.98,
+      "roi": -0.033,
+      "mean_clv": 0.0937,
       "pct_true_clv": 0.153,
-      "brier": 0.2445,
+      "brier": 0.2446,
       "max_dd": 64.84,
-      "sharpe": -0.414
+      "sharpe": -0.427
     },
     "UNDER": {
       "label": "UNDER",
@@ -125,28 +125,28 @@
   },
   "rolling_30": {
     "label": "last_30d",
-    "n_bets": 2534,
+    "n_bets": 2535,
     "n_hits": 1205,
-    "hit_rate": 0.4755,
-    "profit": -50.43,
-    "roi": -0.0199,
-    "mean_clv": 0.0062,
+    "hit_rate": 0.4753,
+    "profit": -51.43,
+    "roi": -0.0203,
+    "mean_clv": 0.0063,
     "pct_true_clv": 0.103,
     "brier": 0.272,
-    "max_dd": 130.93,
-    "sharpe": -0.29
+    "max_dd": 124.7,
+    "sharpe": -0.296
   },
   "rolling_60": {
     "label": "last_60d",
-    "n_bets": 2534,
+    "n_bets": 2535,
     "n_hits": 1205,
-    "hit_rate": 0.4755,
-    "profit": -50.43,
-    "roi": -0.0199,
-    "mean_clv": 0.0062,
+    "hit_rate": 0.4753,
+    "profit": -51.43,
+    "roi": -0.0203,
+    "mean_clv": 0.0063,
     "pct_true_clv": 0.103,
     "brier": 0.272,
-    "max_dd": 130.93,
-    "sharpe": -0.29
+    "max_dd": 124.7,
+    "sharpe": -0.296
   }
 }
