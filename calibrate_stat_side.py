@@ -1,275 +1,399 @@
 #!/usr/bin/env python3
 """
-calibrate_stat_side.py — Stat×Side Calibration File Generator
-==============================================================
-Generates platt_{stat}_{side}.pkl for each stat/side combination
-with sufficient sample size.
+calibrate_stat_side.py — Stat×Side Platt Calibration with Walk-Forward OOF
+============================================================================
+Replaces in-sample fitting with true time-ordered OOF calibration.
 
-Per the permanent architecture document:
-  "stat × side calibration, so unders are fixed in the probability
-   layer instead of by blunt suppression forever"
+Architecture:
+  1. Load all graded rows sorted by date (temporal ordering)
+  2. For each stat×side: TimeSeriesSplit(n_splits=5) walk-forward OOF
+  3. Report OOF metrics (Brier, LogLoss, AUC, slope, intercept)
+  4. Promote calibrator only if hard gate passes
+  5. Fit final calibrator on ALL data for deployment
+  6. Save .pkl + calibration_manifest.json + calibration_report_oof.csv
 
-Usage:
-    python3 calibrate_stat_side.py
+Calibrator: logit(p) → LogisticRegression (simpler, more stable than CalibratedClassifierCV)
 
-Output files (in model_cache/):
-    platt_pts_OVER.pkl
-    platt_pts_UNDER.pkl
-    platt_ast_OVER.pkl
-    platt_ast_UNDER.pkl
-    platt_reb_OVER.pkl
-    platt_reb_UNDER.pkl
-    platt_fg3m_OVER.pkl
-    platt_fg3m_UNDER.pkl
-    platt_OVER.pkl    (global fallback)
-    platt_UNDER.pkl   (global fallback)
-    calibration_report.json
+Promotion gates:
+  n_total >= 80
+  n_oof >= 60
+  brier_cal_oof < brier_raw
+  logloss_cal_oof <= logloss_raw + 0.01
+  0.8 <= slope_cal <= 1.2
 """
 
-import csv
-import glob
-import json
-import logging
-import warnings
+import csv, glob, json, logging, warnings
+import numpy as np
 from pathlib import Path
 from collections import defaultdict
 
-import joblib
-import numpy as np
-from sklearn.calibration import CalibratedClassifierCV
-from sklearn.linear_model import LogisticRegression
-from sklearn.isotonic import IsotonicRegression
-from sklearn.metrics import brier_score_loss, log_loss
-
-warnings.filterwarnings("ignore")
-logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+warnings.filterwarnings('ignore')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
-GRADED_DIR   = Path("graded")
-MODEL_DIR    = Path("model_cache")
-MIN_SAMPLES  = 40    # minimum samples to fit a stat×side calibrator
-MIN_SAMPLES_GLOBAL = 100
+try:
+    import joblib
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import TimeSeriesSplit
+    from sklearn.metrics import brier_score_loss, log_loss, roc_auc_score
+except ImportError as e:
+    raise SystemExit(f"Missing dependency: {e}. Run: pip install scikit-learn joblib")
 
-CALIBRATE_STATS = ["pts", "ast", "reb", "fg3m", "pra", "pr", "pa", "ra"]
-SIDES = ["OVER", "UNDER"]
+GRADED_DIR  = Path("graded")
+MODEL_DIR   = Path("model_cache")
+MODEL_DIR.mkdir(exist_ok=True)
+
+STATS = ['pts', 'reb', 'ast', 'fg3m', 'blk', 'stl']
+SIDES = ['OVER', 'UNDER']
+
+# ── Promotion gates ────────────────────────────────────────────────────────────
+GATE_N_TOTAL        = 80
+GATE_N_OOF          = 60
+GATE_SLOPE_LO       = 0.8
+GATE_SLOPE_HI       = 1.2
+GATE_LOGLOSS_TOL    = 0.01   # cal logloss must be <= raw + this
 
 
-class StatSideCalibrator:
+# ── Calibrator class ───────────────────────────────────────────────────────────
+class PlattCalibrator:
     """
-    Platt (logistic) calibrator per stat×side combination.
-    Falls back to global side calibrator when sample is insufficient.
+    Platt scaling via logit transform → LogisticRegression.
+    Simpler and more stable than CalibratedClassifierCV passthrough.
     """
+    def __init__(self, C=1.0):
+        self.C   = C
+        self.lr  = LogisticRegression(C=C, solver='lbfgs', max_iter=1000)
+        self.fitted = False
 
-    def __init__(self):
-        self.calibrators = {}   # key: "pts_OVER", "pts_UNDER", "OVER", "UNDER"
-        self.metadata    = {}
+    def _logit(self, p):
+        p = np.clip(np.array(p, dtype=float), 1e-4, 1 - 1e-4)
+        return np.log(p / (1 - p))
 
-    def fit(self, graded_dir: Path = GRADED_DIR):
-        rows = self._load_graded(graded_dir)
-        logger.info(f"Loaded {len(rows)} graded rows")
+    def fit(self, probs, outcomes):
+        X = self._logit(probs).reshape(-1, 1)
+        y = np.array(outcomes, dtype=int)
+        if len(np.unique(y)) < 2:
+            raise ValueError("Need both classes to fit calibrator")
+        self.lr.fit(X, y)
+        self.fitted = True
+        self.slope_     = float(self.lr.coef_[0][0])
+        self.intercept_ = float(self.lr.intercept_[0])
+        return self
 
-        # Group by stat×side
-        buckets = defaultdict(lambda: {"probs": [], "outcomes": []})
-        global_buckets = defaultdict(lambda: {"probs": [], "outcomes": []})
+    def predict_proba(self, probs):
+        if not self.fitted:
+            raise RuntimeError("Calibrator not fitted")
+        X = self._logit(np.array(probs)).reshape(-1, 1)
+        return self.lr.predict_proba(X)[:, 1]
 
-        for r in rows:
-            stat    = r["stat"]
-            side    = r["side"]
-            prob    = r["model_prob"]
-            outcome = r["outcome"]
-            if prob <= 0 or prob >= 1: continue
-            if outcome not in (0, 1): continue
+    def predict_proba_2d(self, X):
+        """sklearn-compatible interface: X is (n,1) raw probs."""
+        cal = self.predict_proba(X[:, 0])
+        return np.column_stack([1 - cal, cal])
 
-            key = f"{stat}_{side}"
-            buckets[key]["probs"].append(prob)
-            buckets[key]["outcomes"].append(outcome)
-            global_buckets[side]["probs"].append(prob)
-            global_buckets[side]["outcomes"].append(outcome)
 
-        report = {}
+def _compute_ece(probs, outcomes, n_bins=8):
+    probs    = np.array(probs)
+    outcomes = np.array(outcomes)
+    bins     = np.linspace(0.4, 0.9, n_bins + 1)
+    ece      = 0.0
+    for i in range(len(bins) - 1):
+        mask = (probs >= bins[i]) & (probs < bins[i + 1])
+        if mask.sum() < 3:
+            continue
+        ece += (mask.sum() / len(probs)) * abs(probs[mask].mean() - outcomes[mask].mean())
+    return float(ece)
 
-        # Fit stat×side calibrators
-        for stat in CALIBRATE_STATS:
-            for side in SIDES:
-                key = f"{stat}_{side}"
-                d   = buckets[key]
-                n   = len(d["probs"])
-                if n < MIN_SAMPLES:
-                    logger.info(f"  {key}: n={n} < {MIN_SAMPLES} — skipping (will use global)")
+
+def _calibration_slope(probs, outcomes):
+    """Fit logit(p) ~ a + b*logit(raw) and return slope b."""
+    lr = LogisticRegression(C=1.0, solver='lbfgs', max_iter=500)
+    X  = np.clip(probs, 1e-4, 1 - 1e-4)
+    X  = np.log(X / (1 - X)).reshape(-1, 1)
+    y  = np.array(outcomes, dtype=int)
+    if len(np.unique(y)) < 2:
+        return 1.0, 0.0
+    lr.fit(X, y)
+    return float(lr.coef_[0][0]), float(lr.intercept_[0])
+
+
+# ── Data loading ───────────────────────────────────────────────────────────────
+def load_graded():
+    rows = []
+    for f in sorted(glob.glob(str(GRADED_DIR / 'graded_2026-*.csv'))):
+        date = Path(f).stem.replace('graded_', '')
+        for r in csv.DictReader(open(f)):
+            try:
+                result  = str(r.get('result', '')).strip().upper()
+                outcome = 1 if result in ('HIT', 'WIN') else (
+                          0 if result in ('MISS', 'LOSS') else None)
+                if outcome is None:
                     continue
+                prob = float(r.get('model_prob') or 0)
+                if not (0.01 < prob < 0.99):
+                    continue
+                rows.append({
+                    'date':    date,
+                    'stat':    r.get('stat', '').lower(),
+                    'side':    r.get('side', '').upper(),
+                    'prob':    prob,
+                    'outcome': outcome,
+                })
+            except Exception:
+                pass
+    rows.sort(key=lambda x: x['date'])   # temporal ordering — critical
+    return rows
 
-                X = np.array(d["probs"]).reshape(-1, 1)
-                y = np.array(d["outcomes"])
 
-                cal = self._fit_platt(X, y)
-                raw_brier = brier_score_loss(y, d["probs"])
-                cal_brier = brier_score_loss(y, cal.predict_proba(X)[:, 1])
+# ── OOF walk-forward evaluation ────────────────────────────────────────────────
+def oof_evaluate(probs, outcomes, n_splits=5):
+    """
+    TimeSeriesSplit walk-forward: fit on past, predict on future.
+    Returns oof_probs array aligned with input arrays.
+    """
+    probs    = np.array(probs)
+    outcomes = np.array(outcomes)
+    n        = len(probs)
+    oof      = np.full(n, np.nan)
 
-                self.calibrators[key] = cal
-                self.metadata[key] = {
-                    "n":          n,
-                    "raw_brier":  round(raw_brier, 4),
-                    "cal_brier":  round(cal_brier, 4),
-                    "improvement": round(raw_brier - cal_brier, 4),
-                    "hit_rate":   round(float(y.mean()), 4),
-                    "mean_prob":  round(float(np.mean(d["probs"])), 4),
-                }
-                logger.info(f"  {key}: n={n}  brier {raw_brier:.4f} → {cal_brier:.4f}"
-                            f"  hit_rt={y.mean():.3f}  mean_prob={np.mean(d['probs']):.3f}")
-                report[key] = self.metadata[key]
+    tscv = TimeSeriesSplit(n_splits=n_splits)
+    for train_idx, val_idx in tscv.split(probs):
+        if len(train_idx) < 10:
+            continue
+        y_tr = outcomes[train_idx]
+        if len(np.unique(y_tr)) < 2:
+            continue
+        try:
+            cal = PlattCalibrator()
+            cal.fit(probs[train_idx], y_tr)
+            oof[val_idx] = cal.predict_proba(probs[val_idx])
+        except Exception:
+            pass
 
-        # Fit global fallback calibrators
+    valid = ~np.isnan(oof)
+    return oof, valid
+
+
+# ── Metrics ────────────────────────────────────────────────────────────────────
+def compute_metrics(probs_raw, probs_cal, outcomes):
+    """Compute full metric suite for raw and calibrated probabilities."""
+    probs_raw = np.array(probs_raw)
+    outcomes  = np.array(outcomes)
+
+    def safe_auc(p, y):
+        try:
+            return float(roc_auc_score(y, p)) if len(np.unique(y)) > 1 else 0.5
+        except Exception:
+            return 0.5
+
+    slope_raw, int_raw = _calibration_slope(probs_raw, outcomes)
+    metrics = {
+        'brier_raw':      round(float(brier_score_loss(outcomes, probs_raw)), 5),
+        'logloss_raw':    round(float(log_loss(outcomes, probs_raw)), 5),
+        'auc_raw':        round(safe_auc(probs_raw, outcomes), 4),
+        'ece_raw':        round(_compute_ece(probs_raw, outcomes), 5),
+        'slope_raw':      round(slope_raw, 4),
+        'intercept_raw':  round(int_raw, 4),
+    }
+    if probs_cal is not None:
+        probs_cal = np.array(probs_cal)
+        slope_cal, int_cal = _calibration_slope(probs_cal, outcomes)
+        metrics.update({
+            'brier_cal_oof':    round(float(brier_score_loss(outcomes, probs_cal)), 5),
+            'logloss_cal_oof':  round(float(log_loss(outcomes, probs_cal)), 5),
+            'auc_cal_oof':      round(safe_auc(probs_cal, outcomes), 4),
+            'ece_cal_oof':      round(_compute_ece(probs_cal, outcomes), 5),
+            'slope_cal':        round(slope_cal, 4),
+            'intercept_cal':    round(int_cal, 4),
+        })
+    return metrics
+
+
+# ── Promotion gate ─────────────────────────────────────────────────────────────
+def check_promotion(metrics, n_total, n_oof):
+    reasons = []
+    if n_total < GATE_N_TOTAL:
+        reasons.append(f"n_total={n_total} < {GATE_N_TOTAL}")
+    if n_oof < GATE_N_OOF:
+        reasons.append(f"n_oof={n_oof} < {GATE_N_OOF}")
+    if metrics.get('brier_cal_oof', 1) >= metrics.get('brier_raw', 1):
+        reasons.append("brier_cal_oof >= brier_raw")
+    if metrics.get('logloss_cal_oof', 1) > metrics.get('logloss_raw', 0) + GATE_LOGLOSS_TOL:
+        reasons.append("logloss_cal_oof too high")
+    slope = metrics.get('slope_cal', 1.0)
+    if not (GATE_SLOPE_LO <= slope <= GATE_SLOPE_HI):
+        reasons.append(f"slope_cal={slope:.3f} outside [{GATE_SLOPE_LO},{GATE_SLOPE_HI}]")
+    return len(reasons) == 0, reasons
+
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+def main():
+    logger.info("="*60)
+    logger.info("CALIBRATE STAT×SIDE — Walk-Forward OOF Rebuild")
+    logger.info("="*60)
+
+    rows = load_graded()
+    logger.info(f"Loaded {len(rows)} graded rows (sorted by date)")
+    logger.info(f"Date range: {rows[0]['date']} → {rows[-1]['date']}")
+
+    manifest    = {}
+    report_rows = []
+
+    # ── Stat×side calibrators ──────────────────────────────────────────────────
+    logger.info("\n--- Stat×Side Calibrators ---")
+    for stat in STATS:
         for side in SIDES:
-            d = global_buckets[side]
-            n = len(d["probs"])
-            if n < MIN_SAMPLES_GLOBAL:
-                logger.warning(f"  Global {side}: only {n} samples")
+            key    = f"{stat.upper()}_{side}"
+            subset = [r for r in rows if r['stat'] == stat and r['side'] == side]
+            n_total = len(subset)
+
+            if n_total < 20:
+                logger.info(f"  {key:<15} n={n_total:>4} — SKIP (too few rows)")
                 continue
 
-            X = np.array(d["probs"]).reshape(-1, 1)
-            y = np.array(d["outcomes"])
+            probs    = np.array([r['prob']    for r in subset])
+            outcomes = np.array([r['outcome'] for r in subset])
 
-            cal = self._fit_platt(X, y)
-            raw_brier = brier_score_loss(y, d["probs"])
-            cal_brier = brier_score_loss(y, cal.predict_proba(X)[:, 1])
+            # OOF evaluation
+            oof_probs, valid = oof_evaluate(probs, outcomes)
+            n_oof = int(valid.sum())
 
-            self.calibrators[side] = cal
-            key_g = f"global_{side}"
-            self.metadata[key_g] = {
-                "n": n,
-                "raw_brier":  round(raw_brier, 4),
-                "cal_brier":  round(cal_brier, 4),
-                "improvement": round(raw_brier - cal_brier, 4),
-                "hit_rate":   round(float(y.mean()), 4),
-                "mean_prob":  round(float(np.mean(d["probs"])), 4),
-            }
-            logger.info(f"  Global {side}: n={n}  brier {raw_brier:.4f} → {cal_brier:.4f}")
-            report[key_g] = self.metadata[key_g]
+            # Metrics
+            if n_oof >= 10:
+                metrics = compute_metrics(probs, oof_probs[valid], outcomes[valid])
+            else:
+                metrics = compute_metrics(probs, None, outcomes)
 
-        return report
+            metrics['n_total'] = n_total
+            metrics['n_oof']   = n_oof
 
-    def save(self, model_dir: Path = MODEL_DIR):
-        model_dir.mkdir(exist_ok=True)
-        for key, cal in self.calibrators.items():
-            # key is either "pts_OVER" or "OVER" (global)
-            fname = f"platt_{key}.pkl"
-            joblib.dump(cal, model_dir / fname)
+            # Promotion check
+            promoted, reasons = check_promotion(metrics, n_total, n_oof)
 
-        (model_dir / "calibration_report.json").write_text(
-            json.dumps(self.metadata, indent=2))
-        logger.info(f"Saved {len(self.calibrators)} calibrators to {model_dir}/")
-        return list(self.calibrators.keys())
-
-    def _fit_platt(self, X, y):
-        """Fit Platt scaling (logistic regression on probabilities)."""
-        lr = LogisticRegression(C=1.0, solver="lbfgs", max_iter=1000)
-        # Wrap in CalibratedClassifierCV for proper probability output
-        # Use sigmoid (Platt) method
-        from sklearn.base import BaseEstimator, ClassifierMixin
-        class ProbaPassthrough(BaseEstimator, ClassifierMixin):
-            """Dummy classifier that passes through probabilities."""
-            def fit(self, X, y): self.classes_ = np.array([0,1]); return self
-            def predict_proba(self, X): return np.column_stack([1-X[:,0], X[:,0]])
-            def predict(self, X): return (X[:,0] > 0.5).astype(int)
-
-        cal = CalibratedClassifierCV(
-            ProbaPassthrough(), method="sigmoid", cv="prefit"
-        )
-        cal.fit(X, y)
-        return cal
-
-    def _load_graded(self, graded_dir: Path) -> list:
-        rows = []
-        for f in sorted(graded_dir.glob("graded_2026-*.csv")):
+            # Fit final calibrator on ALL data
             try:
-                for r in csv.DictReader(open(f)):
-                    try:
-                        stat = r.get("stat","").lower()
-                        side = r.get("side","").upper()
-                        prob = float(r.get("model_prob") or 0)
-                        res  = str(r.get("result","")).strip().upper()
-                        outcome = 1 if res in ("HIT","WIN") else 0 if res in ("MISS","LOSS","NO") else -1
-                        if outcome == -1: continue
-                        if not stat or side not in SIDES: continue
-                        if prob <= 0 or prob >= 1: continue
-                        rows.append({
-                            "stat":       stat,
-                            "side":       side,
-                            "model_prob": prob,
-                            "outcome":    outcome,
-                            "line":       float(r.get("line") or 0),
-                            "q50":        float(r.get("q50") or 0),
-                        })
-                    except: continue
-            except: continue
-        return rows
+                final_cal = PlattCalibrator()
+                final_cal.fit(probs, outcomes)
+                metrics['slope_final']     = round(final_cal.slope_, 4)
+                metrics['intercept_final'] = round(final_cal.intercept_, 4)
+            except Exception as e:
+                logger.warning(f"  {key} final fit failed: {e}")
+                promoted = False
+                reasons.append(f"final fit failed: {e}")
 
+            gate_str = "✓ PROMOTED" if promoted else f"✗ NOT PROMOTED ({'; '.join(reasons)})"
+            logger.info(
+                f"  {key:<15} n={n_total:>4} oof={n_oof:>4} "
+                f"Brier {metrics.get('brier_raw',0):.4f}→{metrics.get('brier_cal_oof',0):.4f} "
+                f"ECE {metrics.get('ece_raw',0):.4f}→{metrics.get('ece_cal_oof',0):.4f} "
+                f"slope={metrics.get('slope_cal',0):.3f} {gate_str}"
+            )
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# Calibration evaluation helpers
-# ═══════════════════════════════════════════════════════════════════════════════
+            if promoted:
+                path = MODEL_DIR / f"platt_{key}.pkl"
+                joblib.dump(final_cal, path)
 
-def evaluate_calibration(rows: list, calibrators: dict) -> dict:
-    """
-    Compare raw vs calibrated Brier scores per stat×side.
-    Use to confirm calibration actually helps before deploying.
-    """
-    results = {}
-    buckets = defaultdict(lambda: {"probs":[],"cal_probs":[],"outcomes":[]})
+            manifest[key] = {
+                'key':            key,
+                'stat':           stat,
+                'side':           side,
+                'scope':          'stat_side',
+                'n_total':        n_total,
+                'n_oof':          n_oof,
+                'promoted':       promoted,
+                'promotion_reasons': reasons if not promoted else [],
+                **metrics,
+            }
 
-    for r in rows:
-        key = f"{r['stat']}_{r['side']}"
-        cal = calibrators.get(key) or calibrators.get(r["side"])
-        if cal is None: continue
-        raw_prob = r["model_prob"]
-        cal_prob = float(cal.predict_proba([[raw_prob]])[0][1])
-        buckets[key]["probs"].append(raw_prob)
-        buckets[key]["cal_probs"].append(cal_prob)
-        buckets[key]["outcomes"].append(r["outcome"])
+            report_rows.append({
+                'key': key, 'scope': 'stat_side',
+                'n_total': n_total, 'n_oof': n_oof,
+                'promoted': promoted,
+                **metrics,
+            })
 
-    for key, d in sorted(buckets.items()):
-        if len(d["probs"]) < 10: continue
-        raw_b = brier_score_loss(d["outcomes"], d["probs"])
-        cal_b = brier_score_loss(d["outcomes"], d["cal_probs"])
-        results[key] = {
-            "n":          len(d["probs"]),
-            "raw_brier":  round(raw_b, 4),
-            "cal_brier":  round(cal_b, 4),
-            "improvement": round(raw_b - cal_b, 4),
-            "better":     cal_b < raw_b,
-        }
+    # ── Global side calibrators ────────────────────────────────────────────────
+    logger.info("\n--- Global Side Calibrators ---")
+    for side in SIDES:
+        key     = f"global_{side}"
+        subset  = [r for r in rows if r['side'] == side]
+        n_total = len(subset)
 
-    return results
+        probs    = np.array([r['prob']    for r in subset])
+        outcomes = np.array([r['outcome'] for r in subset])
 
+        oof_probs, valid = oof_evaluate(probs, outcomes, n_splits=5)
+        n_oof = int(valid.sum())
+        metrics = compute_metrics(probs, oof_probs[valid] if n_oof >= 10 else None, outcomes[valid] if n_oof >= 10 else outcomes)
+        metrics['n_total'] = n_total
+        metrics['n_oof']   = n_oof
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# CLI
-# ═══════════════════════════════════════════════════════════════════════════════
+        final_cal = PlattCalibrator()
+        final_cal.fit(probs, outcomes)
+        joblib.dump(final_cal, MODEL_DIR / f"platt_{side}.pkl")
 
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--graded-dir", default="graded")
-    parser.add_argument("--model-dir",  default="model_cache")
-    parser.add_argument("--min-samples", type=int, default=MIN_SAMPLES)
-    args = parser.parse_args()
+        promoted = True  # always save global fallback
+        logger.info(
+            f"  {key:<15} n={n_total:>4} oof={n_oof:>4} "
+            f"Brier {metrics.get('brier_raw',0):.4f}→{metrics.get('brier_cal_oof',0):.4f} "
+            f"✓ SAVED (global fallback always saved)"
+        )
 
-    MIN_SAMPLES = args.min_samples
+        manifest[key] = {'key': key, 'scope': 'global', 'promoted': True,
+                         'n_total': n_total, 'n_oof': n_oof, **metrics}
+        report_rows.append({'key': key, 'scope': 'global', 'promoted': True,
+                            'n_total': n_total, 'n_oof': n_oof, **metrics})
 
-    cal = StatSideCalibrator()
-    report = cal.fit(Path(args.graded_dir))
-    saved  = cal.save(Path(args.model_dir))
+    # ── Save manifest and report ───────────────────────────────────────────────
+    import datetime
+    manifest['_meta'] = {
+        'generated_at': datetime.datetime.now().isoformat(),
+        'n_rows_total':  len(rows),
+        'gate_n_total':  GATE_N_TOTAL,
+        'gate_n_oof':    GATE_N_OOF,
+        'gate_slope_lo': GATE_SLOPE_LO,
+        'gate_slope_hi': GATE_SLOPE_HI,
+    }
+
+    manifest_path = MODEL_DIR / 'calibration_manifest.json'
+    manifest_path.write_text(json.dumps(manifest, indent=2))
+    logger.info(f"\nSaved calibration_manifest.json → {manifest_path}")
+
+    report_path = MODEL_DIR / 'calibration_report_oof.csv'
+    if report_rows:
+        fieldnames = sorted(set(k for r in report_rows for k in r))
+        with open(report_path, 'w', newline='') as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames)
+            w.writeheader()
+            for r in report_rows:
+                w.writerow({k: r.get(k, '') for k in fieldnames})
+    logger.info(f"Saved calibration_report_oof.csv → {report_path}")
+
+    # ── Summary ────────────────────────────────────────────────────────────────
+    promoted_keys = [k for k,v in manifest.items()
+                     if k != '_meta' and v.get('promoted') and v.get('scope') == 'stat_side']
+    skipped_keys  = [k for k,v in manifest.items()
+                     if k != '_meta' and not v.get('promoted') and v.get('scope') == 'stat_side']
 
     print("\n" + "="*60)
-    print("CALIBRATION RESULTS")
+    print("CALIBRATION REBUILD COMPLETE")
     print("="*60)
-    print(f"{'key':<18} {'n':>6} {'raw_brier':>10} {'cal_brier':>10} {'improvement':>12} {'hit_rt':>8}")
-    print("-"*66)
-    for key, m in sorted(report.items()):
-        better = "✓" if m.get("improvement",0) > 0 else "✗"
-        print(f"{key:<18} {m['n']:>6} {m['raw_brier']:>10.4f} {m['cal_brier']:>10.4f}"
-              f" {m['improvement']:>+12.4f} {m['hit_rate']:>8.3f}  {better}")
+    print(f"  Promoted stat×side: {len(promoted_keys)}")
+    for k in promoted_keys:
+        m = manifest[k]
+        print(f"    ✓ {k:<15} Brier {m.get('brier_raw',0):.4f}→{m.get('brier_cal_oof',0):.4f}")
+    print(f"\n  Not promoted (falling back to global): {len(skipped_keys)}")
+    for k in skipped_keys:
+        reasons = manifest[k].get('promotion_reasons', [])
+        print(f"    ✗ {k:<15} {'; '.join(reasons)}")
+    print(f"\n  Global fallbacks saved: platt_OVER.pkl, platt_UNDER.pkl")
+    print(f"  Manifest: {manifest_path}")
+    print(f"  Report:   {report_path}")
 
-    print(f"\nSaved {len(saved)} calibrators: {saved}")
-    print("\nNext: run predict_darko_v4.py — it will auto-load stat×side calibrators")
-    print("  Priority: platt_pts_OVER.pkl > platt_OVER.pkl > raw probability")
+
+if __name__ == '__main__':
+    main()
