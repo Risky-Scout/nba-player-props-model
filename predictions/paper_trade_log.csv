@@ -5168,3 +5168,4 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-03-28,single,Brandon Miller,Philadelphia 76ers @ Charlotte Hornets,reb,OVER,5.5,105,0.564,0.1563,0.037,,
 2026-03-28,single,Kelly Oubre Jr.,Philadelphia 76ers @ Charlotte Hornets,reb,OVER,4.5,-114,0.5761,0.0815,0.023,,
 2026-03-28,single,Cody Williams,Utah Jazz @ Phoenix Suns,ast,OVER,2.5,-125,0.5836,0.0505,0.016,,
+2026-03-28,single,Devin Booker,Utah Jazz @ Phoenix Suns,pts,OVER,26.5,-110,0.6126,0.1696,0.047,,

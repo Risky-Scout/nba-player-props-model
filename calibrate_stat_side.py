@@ -329,7 +329,10 @@ def main():
 
         oof_probs, valid = oof_evaluate(probs, outcomes, n_splits=5)
         n_oof = int(valid.sum())
-        metrics = compute_metrics(probs, oof_probs[valid] if n_oof >= 10 else None, outcomes[valid] if n_oof >= 10 else outcomes)
+        if n_oof >= 10:
+            metrics = compute_metrics(probs[valid], oof_probs[valid], outcomes[valid])
+        else:
+            metrics = compute_metrics(probs, None, outcomes)
         metrics['n_total'] = n_total
         metrics['n_oof']   = n_oof
 
