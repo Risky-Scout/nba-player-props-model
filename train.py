@@ -635,7 +635,21 @@ def build_training_table(stats_df, adv_df, odds_df):
                 f"  {idx+1}/{len(players)} players | {len(all_rows)} rows"
             )
 
-    df = pd.DataFrame(all_rows)
+    # Reassemble chunk files flushed during loop + any remaining rows
+    if _chunk_files:
+        import pandas as _pd
+        chunk_dfs = [_pd.read_parquet(f) for f in _chunk_files]
+        if all_rows:
+            chunk_dfs.append(_pd.DataFrame(all_rows))
+        df = _pd.concat(chunk_dfs, ignore_index=True)
+        import os as _os
+        for f in _chunk_files:
+            try: _os.remove(f)
+            except: pass
+        logger.info(f"Reassembled {len(_chunk_files)} chunks + {len(all_rows)} remaining rows → {len(df)} total rows")
+    else:
+        df = pd.DataFrame(all_rows)
+
     if df.empty:
         logger.error(f"Training table EMPTY. skipped={skipped}")
     else:
