@@ -33,6 +33,38 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+
+# ── PlattCalibrator — must match calibrate_stat_side.py definition ─────────────
+# Required for joblib to unpickle calibrators saved by calibrate_stat_side.py
+class PlattCalibrator:
+    """Platt scaling via logit transform → LogisticRegression."""
+    def __init__(self, C=1.0):
+        from sklearn.linear_model import LogisticRegression
+        self.C  = C
+        self.lr = LogisticRegression(C=C, solver="lbfgs", max_iter=1000)
+        self.fitted = False
+
+    def _logit(self, p):
+        p = np.clip(np.array(p, dtype=float), 1e-4, 1 - 1e-4)
+        return np.log(p / (1 - p))
+
+    def fit(self, probs, outcomes):
+        X = self._logit(probs).reshape(-1, 1)
+        y = np.array(outcomes, dtype=int)
+        self.lr.fit(X, y)
+        self.fitted     = True
+        self.slope_     = float(self.lr.coef_[0][0])
+        self.intercept_ = float(self.lr.intercept_[0])
+        return self
+
+    def predict_proba(self, probs):
+        X = self._logit(np.array(probs)).reshape(-1, 1)
+        return self.lr.predict_proba(X)[:, 1]
+
+    def predict_proba_2d(self, X):
+        cal = self.predict_proba(X[:, 0])
+        return np.column_stack([1 - cal, cal])
+
 import pandas as pd
 
 warnings.filterwarnings("ignore")
