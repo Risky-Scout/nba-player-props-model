@@ -672,25 +672,24 @@ def main():
                 # Priority: stat_SIDE → global SIDE → raw
                 def _apply_cal(prob, stat_key, side_key):
                     """Apply calibrator. Returns (cal_prob, cal_source)."""
+                    def _safe_cal(cal, p):
+                        try:
+                            r = cal.predict_proba(np.array([p]))
+                            if hasattr(r, 'ndim') and r.ndim == 1:
+                                return float(np.clip(r[0], 0.01, 0.99))
+                            return float(np.clip(r[0][1], 0.01, 0.99))
+                        except Exception:
+                            return None
                     stat_side_key = f"{stat_key.upper()}_{side_key.upper()}"
                     if stat_side_key in platt_calibrators:
-                        cal = platt_calibrators[stat_side_key]
-                        try:
-                            cal_prob = float(np.clip(
-                                cal.predict_proba([[prob]])[0][1], 0.01, 0.99))
-                            return cal_prob, 'stat_side'
-                        except Exception:
-                            pass
+                        cp = _safe_cal(platt_calibrators[stat_side_key], prob)
+                        if cp is not None:
+                            return cp, 'stat_side'
                     if side_key.upper() in platt_calibrators:
-                        cal = platt_calibrators[side_key.upper()]
-                        try:
-                            cal_prob = float(np.clip(
-                                cal.predict_proba([[prob]])[0][1], 0.01, 0.99))
-                            return cal_prob, 'global_side'
-                        except Exception:
-                            pass
+                        cp = _safe_cal(platt_calibrators[side_key.upper()], prob)
+                        if cp is not None:
+                            return cp, 'global_side'
                     return prob, 'raw_none'
-
                 raw_over   = prob_over
                 raw_under  = prob_under
                 prob_over,  cal_src_over  = _apply_cal(prob_over,  target, "OVER")
