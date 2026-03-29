@@ -1,13 +1,13 @@
 {
   "global": {
-    "n": 1904,
+    "n": 69436,
     "n_negative": 0,
     "frac_negative": 0.0,
     "max_neg_magnitude": 0.0,
     "correction_large": false
   },
   "seg_0_0": {
-    "n": 124,
+    "n": 826,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -15,7 +15,7 @@
     "correction_large": false
   },
   "seg_0_1": {
-    "n": 148,
+    "n": 915,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -23,7 +23,7 @@
     "correction_large": false
   },
   "seg_0_2": {
-    "n": 129,
+    "n": 1429,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -31,11 +31,15 @@
     "correction_large": false
   },
   "seg_0_3": {
-    "n": 50,
-    "fallback": true
+    "n": 761,
+    "fallback": false,
+    "n_negative": 0,
+    "frac_negative": 0.0,
+    "max_neg_magnitude": 0.0,
+    "correction_large": false
   },
   "seg_1_0": {
-    "n": 415,
+    "n": 13246,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -43,7 +47,7 @@
     "correction_large": false
   },
   "seg_1_1": {
-    "n": 444,
+    "n": 14370,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -51,7 +55,7 @@
     "correction_large": false
   },
   "seg_1_2": {
-    "n": 445,
+    "n": 19360,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
@@ -59,7 +63,7 @@
     "correction_large": false
   },
   "seg_1_3": {
-    "n": 149,
+    "n": 18529,
     "fallback": false,
     "n_negative": 0,
     "frac_negative": 0.0,
