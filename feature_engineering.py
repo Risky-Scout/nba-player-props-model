@@ -1588,7 +1588,7 @@ STAT_SPECIFIC_NOISE = {
              "adv_mean_usage_percentage_last10", "implied_team_total",
              "consensus_total", "implied_team_total"},
     "stl": {"adv_assist_percentage_mean_last10", "adv_assist_to_turnover_mean_last10",
-             "opp_tov_per_game", "implied_team_total", "implied_team_total",
+             "opp_tov_per_game", "implied_team_total", "opp_implied_team_total",
              "consensus_total", "blowout_risk"},
     "pts": {"blowout_risk"},    # standalone removed in v19; gated version only
     "fg3m":{"blowout_risk", "vacated_minutes"},  # removed in v19

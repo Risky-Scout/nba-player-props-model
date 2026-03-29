@@ -391,7 +391,9 @@ def build_training_table(stats_df, adv_df, odds_df):
 
     # ── Load opening-line snapshots index for line movement features ──────────
     # For each game date that has a snapshot, enrich ctx_map with total_move and
-    # spread_move. These features have zero importance in v10 because BDL odds
+    # spread_move. NOTE: These are market-aware execution-layer features only.
+    # The originator core model (direct stat targets) does not use market lines.
+    # total_move and spread_move are enriched here for the execution/benchmark layer.
     # only cover 2025-26. Snapshots go forward from 2026-03-13 — at retrain
     # all snapshot-covered dates will have non-zero line movement features.
     #
