@@ -31,7 +31,7 @@ jobs:
       - name: Run full retrain
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-        run: python train_v12.py
+        run: python train.py
 
       - name: Commit model cache to repo
         run: |
