@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-29T00:54:37.462453",
+  "generated_at": "2026-03-29T13:53:22.387178",
   "total_dates": 19,
   "overall": {
     "label": "ALL_TIME",
@@ -133,7 +133,7 @@
     "mean_clv": 0.0063,
     "pct_true_clv": 0.103,
     "brier": 0.272,
-    "max_dd": 124.7,
+    "max_dd": 130.93,
     "sharpe": -0.296
   },
   "rolling_60": {
@@ -146,7 +146,7 @@
     "mean_clv": 0.0063,
     "pct_true_clv": 0.103,
     "brier": 0.272,
-    "max_dd": 124.7,
+    "max_dd": 130.93,
     "sharpe": -0.296
   }
 }

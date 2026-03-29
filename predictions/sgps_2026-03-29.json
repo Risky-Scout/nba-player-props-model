@@ -1,71 +1,10 @@
 {
   "date": "2026-03-29",
-  "generated_at": "2026-03-29T04:54:45.075825",
+  "generated_at": "2026-03-29T13:53:35.482222",
   "version": "2026-03-17-v13",
   "min_ev": 0.025,
-  "total_sgps": 2,
-  "two_leg": 2,
+  "total_sgps": 0,
+  "two_leg": 0,
   "three_leg": 0,
-  "sgps": [
-    {
-      "legs": 2,
-      "game": "Boston Celtics @ Charlotte Hornets",
-      "game_id": 18447903,
-      "combined_odds": -122,
-      "correlated_prob": 0.6222,
-      "naive_prob": 0.4156,
-      "ev": 0.1323,
-      "kelly_units": 0.04,
-      "leg_details": [
-        {
-          "player": "Brandon Miller",
-          "player_id": 56677823,
-          "stat": "reb",
-          "side": "OVER",
-          "line": 5.0,
-          "odds": 128,
-          "model_prob": 0.6836
-        },
-        {
-          "player": "Brandon Miller",
-          "player_id": 56677823,
-          "stat": "ast",
-          "side": "OVER",
-          "line": 3.5,
-          "odds": 142,
-          "model_prob": 0.608
-        }
-      ]
-    },
-    {
-      "legs": 2,
-      "game": "New York Knicks @ Oklahoma City Thunder",
-      "game_id": 18447907,
-      "combined_odds": -118,
-      "correlated_prob": 0.5933,
-      "naive_prob": 0.4087,
-      "ev": 0.0962,
-      "kelly_units": 0.028,
-      "leg_details": [
-        {
-          "player": "Karl-Anthony Towns",
-          "player_id": 447,
-          "stat": "ast",
-          "side": "OVER",
-          "line": 2.5,
-          "odds": 132,
-          "model_prob": 0.6787
-        },
-        {
-          "player": "Cason Wallace",
-          "player_id": 56677833,
-          "stat": "ast",
-          "side": "OVER",
-          "line": 2.5,
-          "odds": 140,
-          "model_prob": 0.6022
-        }
-      ]
-    }
-  ]
+  "sgps": []
 }
