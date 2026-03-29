@@ -378,7 +378,9 @@ def build_minutes_training_table(
 
 def _temporal_split_idx(game_dates: np.ndarray, holdout_frac: float) -> int:
     dates  = pd.to_datetime(game_dates)
-    cutoff = dates.quantile(1.0 - holdout_frac)
+    # Fix: DatetimeIndex.quantile() removed in newer pandas
+    # Convert to int64 nanoseconds, compute quantile, convert back
+    cutoff = pd.Timestamp(int(np.quantile(dates.astype(np.int64), 1.0 - holdout_frac)))
     return int(np.searchsorted(dates, cutoff))
 
 
