@@ -113,7 +113,7 @@ MAX_PER_PLAYER_STAT = 1
 
 STAT_SIDE_MIN_EV = {
     # OVER thresholds — major stats
-    ("pts",  "OVER"):  0.025,
+    ("pts",  "OVER"):  0.999,   # BANNED: auc=0.4277 INVERTED per sanity audit
     ("reb",  "OVER"):  0.025,
     ("ast",  "OVER"):  0.025,
     ("fg3m", "OVER"):  0.030,
@@ -128,7 +128,7 @@ STAT_SIDE_MIN_EV = {
     ("stocks","OVER"): 0.999,   # banned
     # UNDER thresholds — controlled reintroduction per diagnostic
     # pts UNDER: CLV=-0.102 — require strong gates
-    ("pts",  "UNDER"): 0.060,
+    ("pts",  "UNDER"): 0.120,   # SUPPRESSED: flat deciles, overconfidence +0.146
     # ast UNDER: CLV=-0.104 — require strong gates
     ("ast",  "UNDER"): 0.050,
     # reb UNDER: CLV=-0.112 — require strong gates
