@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 """
-calibrate_models.py — NBA Props Model: Post-hoc Calibration Pipeline
-VERSION: 2026-03-12-v2
+calibrate_models.py — NBA Props Model: Global Platt Calibration
+VERSION: 2026-03-29-v15
 =======================================================================
-Two-stage calibration strategy:
+Global side-level calibration (OVER / UNDER).
 
-STAGE 1 — Platt scaling per side (OVER / UNDER):
-  Fits a logistic regression (2 parameters: slope + intercept) mapping
-  raw model_prob → empirical hit rate, fitted separately for OVER and
-  UNDER picks across all stats. Works reliably with 50+ samples per
-  side. Applied first at inference time.
+This script fits global Platt calibrators as fallbacks when
+stat×side-specific calibrators are not promoted. See calibrate_stat_side.py
+for the primary calibration pipeline which uses walk-forward OOF
+evaluation and hard promotion gates.
 
-  Diagnostic finding (2026-03-12): UNDER picks in the 0.60-0.75 range
-  show systematic overconfidence — model prob 0.67, empirical hit 0.48.
-  Platt scaling corrects this: f(p) = sigmoid(a*p + b) where a < 1
-  compresses the overconfident range and b shifts toward the true rate.
+Architecture:
+  calibrate_stat_side.py — primary: stat×side OOF Platt calibration
+  calibrate_models.py    — secondary: global side fallback calibration
 
-STAGE 2 — Isotonic regression per stat (requires 50+ samples per stat):
+STAGE 1 — Global Platt scaling per side (OVER / UNDER):
+  Fits a logistic regression mapping raw model_prob → empirical hit rate
+  across all stats combined. Used as fallback when stat×side calibrator
+  is not promoted (n < 80, slope outside [0.8,1.2], or brier not improved).
+
+STAGE 2 — Isotonic regression per stat (legacy, retained for reference):
   Fits a non-parametric monotone step function per stat on graded picks.
   More expressive than Platt but needs larger samples. Applied after
   Platt as a residual correction. Gated by Brier score improvement.
