@@ -640,8 +640,12 @@ def main():
                     ("OVER",  prob_over,  over_odds,  ev_over),
                     ("UNDER", prob_under, under_odds, ev_under),
                 ]:
-                    # Stat×side EV gate
+                    # Stat×side EV gate — stricter when no promoted calibrator
                     min_ev_req = STAT_SIDE_MIN_EV.get((target, side), MIN_EV)
+                    cal_src = cal_src_over if side == "OVER" else cal_src_under
+                    if cal_src == 'raw_none':
+                        # No calibrator: require 2x EV to compensate for uncalibrated prob
+                        min_ev_req = min(min_ev_req * 2.0, 0.15)
                     if ev < min_ev_req:
                         continue
 

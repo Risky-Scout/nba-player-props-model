@@ -90,6 +90,20 @@ def market_pull_penalty(quote_history, current_line, current_over_odds, lookback
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+import os as _os
+import json as _json
+from pathlib import Path as _Path
+
+def _load_live_cal_table():
+    """Load live calibration table keyed by calibration_key."""
+    p = _Path("model_cache/live_calibration_table.json")
+    if p.exists():
+        return _json.loads(p.read_text())
+    return {}
+
+LIVE_CAL_TABLE = _load_live_cal_table()
+
+
 class LivePricer:
     """Authoritative v4 live pricer with hierarchical priors."""
 
