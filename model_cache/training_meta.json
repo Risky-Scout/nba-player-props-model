@@ -1,6 +1,6 @@
 {
   "version": "2026-03-09-v12",
-  "trained_at": "2026-03-16T06:29:26.035007",
+  "trained_at": "2026-03-29T06:54:05.822384",
   "train_seasons": [
     2023,
     2024,
@@ -28,1079 +28,1079 @@
   "targets": {
     "pts": {
       "target": "pts",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 24,
-      "median_mae": 4.3981,
-      "max_cal_error": 0.0946,
+      "median_mae": 4.2479,
+      "max_cal_error": 0.1021,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1587,
-          "error": 0.0587,
-          "n": 252,
+          "empirical_q": 0.2021,
+          "error": 0.1021,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2698,
-          "error": 0.0698,
-          "n": 252,
+          "empirical_q": 0.2979,
+          "error": 0.0979,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.3175,
-          "error": 0.0675,
-          "n": 252,
+          "empirical_q": 0.3356,
+          "error": 0.0856,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.4246,
-          "error": 0.0946,
-          "n": 252,
+          "empirical_q": 0.3938,
+          "error": 0.0638,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4841,
-          "error": 0.0841,
-          "n": 252,
+          "empirical_q": 0.4486,
+          "error": 0.0486,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5357,
-          "error": 0.0357,
-          "n": 252,
+          "empirical_q": 0.5103,
+          "error": 0.0103,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.6111,
-          "error": 0.0111,
-          "n": 252,
+          "empirical_q": 0.5959,
+          "error": 0.0041,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6627,
-          "error": 0.0073,
-          "n": 252,
+          "empirical_q": 0.637,
+          "error": 0.033,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.7103,
-          "error": 0.0397,
-          "n": 252,
+          "empirical_q": 0.6849,
+          "error": 0.0651,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7579,
-          "error": 0.0421,
-          "n": 252,
+          "empirical_q": 0.726,
+          "error": 0.074,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8333,
-          "error": 0.0667,
-          "n": 252,
+          "empirical_q": 0.8116,
+          "error": 0.0884,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "reb": {
       "target": "reb",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 28,
-      "median_mae": 1.9437,
-      "max_cal_error": 0.1151,
+      "median_mae": 1.8415,
+      "max_cal_error": 0.1096,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1905,
-          "error": 0.0905,
-          "n": 252,
+          "empirical_q": 0.1986,
+          "error": 0.0986,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.3056,
-          "error": 0.1056,
-          "n": 252,
+          "empirical_q": 0.3048,
+          "error": 0.1048,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.3651,
-          "error": 0.1151,
-          "n": 252,
+          "empirical_q": 0.3596,
+          "error": 0.1096,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.4444,
-          "error": 0.1144,
-          "n": 252,
+          "empirical_q": 0.4041,
+          "error": 0.0741,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5,
-          "error": 0.1,
-          "n": 252,
+          "empirical_q": 0.4623,
+          "error": 0.0623,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5873,
-          "error": 0.0873,
-          "n": 252,
+          "empirical_q": 0.5034,
+          "error": 0.0034,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.6746,
-          "error": 0.0746,
-          "n": 252,
+          "empirical_q": 0.5753,
+          "error": 0.0247,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6984,
-          "error": 0.0284,
-          "n": 252,
+          "empirical_q": 0.637,
+          "error": 0.033,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.75,
-          "error": 0.0,
-          "n": 252,
+          "empirical_q": 0.6986,
+          "error": 0.0514,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7738,
-          "error": 0.0262,
-          "n": 252,
+          "empirical_q": 0.7466,
+          "error": 0.0534,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8373,
-          "error": 0.0627,
-          "n": 252,
+          "empirical_q": 0.8459,
+          "error": 0.0541,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "ast": {
       "target": "ast",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 22,
-      "median_mae": 1.4142,
-      "max_cal_error": 0.0984,
+      "median_mae": 1.2385,
+      "max_cal_error": 0.1082,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1984,
-          "error": 0.0984,
-          "n": 252,
+          "empirical_q": 0.161,
+          "error": 0.061,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2659,
-          "error": 0.0659,
-          "n": 252,
+          "empirical_q": 0.3082,
+          "error": 0.1082,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.3016,
-          "error": 0.0516,
-          "n": 252,
+          "empirical_q": 0.3493,
+          "error": 0.0993,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.3889,
-          "error": 0.0589,
-          "n": 252,
+          "empirical_q": 0.4178,
+          "error": 0.0878,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4127,
-          "error": 0.0127,
-          "n": 252,
+          "empirical_q": 0.4384,
+          "error": 0.0384,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.4524,
-          "error": 0.0476,
-          "n": 252,
+          "empirical_q": 0.5308,
+          "error": 0.0308,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5238,
-          "error": 0.0762,
-          "n": 252,
+          "empirical_q": 0.6233,
+          "error": 0.0233,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5833,
-          "error": 0.0867,
-          "n": 252,
+          "empirical_q": 0.7055,
+          "error": 0.0355,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.6627,
-          "error": 0.0873,
-          "n": 252,
+          "empirical_q": 0.774,
+          "error": 0.024,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7183,
-          "error": 0.0817,
-          "n": 252,
+          "empirical_q": 0.7877,
+          "error": 0.0123,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8095,
-          "error": 0.0905,
-          "n": 252,
+          "empirical_q": 0.863,
+          "error": 0.037,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "fg3m": {
       "target": "fg3m",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 24,
-      "median_mae": 0.7839,
-      "max_cal_error": 0.1103,
+      "median_mae": 0.8369,
+      "max_cal_error": 0.1397,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.2103,
-          "error": 0.1103,
-          "n": 252,
+          "empirical_q": 0.2397,
+          "error": 0.1397,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2976,
-          "error": 0.0976,
-          "n": 252,
+          "empirical_q": 0.3185,
+          "error": 0.1185,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.3571,
-          "error": 0.1071,
-          "n": 252,
+          "empirical_q": 0.3527,
+          "error": 0.1027,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.4206,
-          "error": 0.0906,
-          "n": 252,
+          "empirical_q": 0.4384,
+          "error": 0.1084,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4325,
-          "error": 0.0325,
-          "n": 252,
+          "empirical_q": 0.4692,
+          "error": 0.0692,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5198,
-          "error": 0.0198,
-          "n": 252,
+          "empirical_q": 0.5274,
+          "error": 0.0274,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.6151,
-          "error": 0.0151,
-          "n": 252,
+          "empirical_q": 0.6027,
+          "error": 0.0027,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6508,
-          "error": 0.0192,
-          "n": 252,
+          "empirical_q": 0.6473,
+          "error": 0.0227,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.7302,
-          "error": 0.0198,
-          "n": 252,
+          "empirical_q": 0.6712,
+          "error": 0.0788,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7341,
-          "error": 0.0659,
-          "n": 252,
+          "empirical_q": 0.7363,
+          "error": 0.0637,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8214,
-          "error": 0.0786,
-          "n": 252,
+          "empirical_q": 0.8185,
+          "error": 0.0815,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "stl": {
       "target": "stl",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 20,
-      "median_mae": 0.6483,
-      "max_cal_error": 0.0579,
+      "median_mae": 0.6877,
+      "max_cal_error": 0.0644,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5714,
+          "empirical_q": 0.5685,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.571 (zero mass)"
+          "reason": "q=0.10 <= p0=0.568 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.3294,
+          "empirical_q": 0.2808,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.571 (zero mass)"
+          "reason": "q=0.20 <= p0=0.568 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.2937,
+          "empirical_q": 0.3459,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.571 (zero mass)"
+          "reason": "q=0.25 <= p0=0.568 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.4206,
+          "empirical_q": 0.387,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.571 (zero mass)"
+          "reason": "q=0.33 <= p0=0.568 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4722,
+          "empirical_q": 0.4349,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.40 <= p0=0.571 (zero mass)"
+          "reason": "q=0.40 <= p0=0.568 (zero mass)"
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5238,
+          "empirical_q": 0.5308,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.50 <= p0=0.571 (zero mass)"
+          "reason": "q=0.50 <= p0=0.568 (zero mass)"
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5873,
-          "error": 0.0127,
-          "n": 252,
+          "empirical_q": 0.5377,
+          "error": 0.0623,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6508,
-          "error": 0.0192,
-          "n": 252,
+          "empirical_q": 0.637,
+          "error": 0.033,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.6984,
-          "error": 0.0516,
-          "n": 252,
+          "empirical_q": 0.7158,
+          "error": 0.0342,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7421,
-          "error": 0.0579,
-          "n": 252,
+          "empirical_q": 0.7671,
+          "error": 0.0329,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8571,
-          "error": 0.0429,
-          "n": 252,
+          "empirical_q": 0.8356,
+          "error": 0.0644,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "blk": {
       "target": "blk",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 21,
-      "median_mae": 0.4902,
-      "max_cal_error": 0.1024,
+      "median_mae": 0.4412,
+      "max_cal_error": 0.0295,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.6984,
+          "empirical_q": 0.7397,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.698 (zero mass)"
+          "reason": "q=0.10 <= p0=0.740 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.6786,
+          "empirical_q": 0.7158,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.698 (zero mass)"
+          "reason": "q=0.20 <= p0=0.740 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.3333,
+          "empirical_q": 0.661,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.698 (zero mass)"
+          "reason": "q=0.25 <= p0=0.740 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.4603,
+          "empirical_q": 0.4623,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.698 (zero mass)"
+          "reason": "q=0.33 <= p0=0.740 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4405,
+          "empirical_q": 0.5034,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.40 <= p0=0.698 (zero mass)"
+          "reason": "q=0.40 <= p0=0.740 (zero mass)"
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5278,
+          "empirical_q": 0.5582,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.50 <= p0=0.698 (zero mass)"
+          "reason": "q=0.50 <= p0=0.740 (zero mass)"
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.6349,
+          "empirical_q": 0.6678,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.60 <= p0=0.698 (zero mass)"
+          "reason": "q=0.60 <= p0=0.740 (zero mass)"
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6706,
+          "empirical_q": 0.7158,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.67 <= p0=0.698 (zero mass)"
+          "reason": "q=0.67 <= p0=0.740 (zero mass)"
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.7143,
-          "error": 0.0357,
-          "n": 252,
+          "empirical_q": 0.7466,
+          "error": 0.0034,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7262,
-          "error": 0.0738,
-          "n": 252,
+          "empirical_q": 0.7705,
+          "error": 0.0295,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.7976,
-          "error": 0.1024,
-          "n": 252,
+          "empirical_q": 0.8733,
+          "error": 0.0267,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "tov": {
       "target": "tov",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 17,
-      "median_mae": 0.9747,
-      "max_cal_error": 0.1095,
+      "median_mae": 0.9174,
+      "max_cal_error": 0.1021,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1508,
-          "error": 0.0508,
-          "n": 252,
+          "empirical_q": 0.2021,
+          "error": 0.1021,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2381,
-          "error": 0.0381,
-          "n": 252,
+          "empirical_q": 0.2945,
+          "error": 0.0945,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.3016,
-          "error": 0.0516,
-          "n": 252,
+          "empirical_q": 0.3151,
+          "error": 0.0651,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.3135,
-          "error": 0.0165,
-          "n": 252,
+          "empirical_q": 0.387,
+          "error": 0.057,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.3373,
-          "error": 0.0627,
-          "n": 252,
+          "empirical_q": 0.4658,
+          "error": 0.0658,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.4286,
-          "error": 0.0714,
-          "n": 252,
+          "empirical_q": 0.5137,
+          "error": 0.0137,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5238,
-          "error": 0.0762,
-          "n": 252,
+          "empirical_q": 0.589,
+          "error": 0.011,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5675,
-          "error": 0.1025,
-          "n": 252,
+          "empirical_q": 0.6473,
+          "error": 0.0227,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.6587,
-          "error": 0.0913,
-          "n": 252,
+          "empirical_q": 0.7123,
+          "error": 0.0377,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.6905,
-          "error": 0.1095,
-          "n": 252,
+          "empirical_q": 0.7705,
+          "error": 0.0295,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8056,
-          "error": 0.0944,
-          "n": 252,
+          "empirical_q": 0.8459,
+          "error": 0.0541,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "pra": {
       "target": "pra",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 21,
-      "median_mae": 6.0609,
-      "max_cal_error": 0.0706,
+      "median_mae": 6.3087,
+      "max_cal_error": 0.1089,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1548,
-          "error": 0.0548,
-          "n": 252,
+          "empirical_q": 0.1747,
+          "error": 0.0747,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.25,
-          "error": 0.05,
-          "n": 252,
+          "empirical_q": 0.2808,
+          "error": 0.0808,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.2897,
-          "error": 0.0397,
-          "n": 252,
+          "empirical_q": 0.3322,
+          "error": 0.0822,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.3492,
-          "error": 0.0192,
-          "n": 252,
+          "empirical_q": 0.3938,
+          "error": 0.0638,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4087,
-          "error": 0.0087,
-          "n": 252,
+          "empirical_q": 0.4452,
+          "error": 0.0452,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5079,
-          "error": 0.0079,
-          "n": 252,
+          "empirical_q": 0.5377,
+          "error": 0.0377,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5913,
-          "error": 0.0087,
-          "n": 252,
+          "empirical_q": 0.5856,
+          "error": 0.0144,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6349,
-          "error": 0.0351,
-          "n": 252,
+          "empirical_q": 0.6336,
+          "error": 0.0364,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.7024,
-          "error": 0.0476,
-          "n": 252,
+          "empirical_q": 0.7089,
+          "error": 0.0411,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.75,
-          "error": 0.05,
-          "n": 252,
+          "empirical_q": 0.7295,
+          "error": 0.0705,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8294,
-          "error": 0.0706,
-          "n": 252,
+          "empirical_q": 0.7911,
+          "error": 0.1089,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "pr": {
       "target": "pr",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 21,
-      "median_mae": 5.3149,
-      "max_cal_error": 0.0706,
+      "median_mae": 5.6369,
+      "max_cal_error": 0.0986,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1667,
-          "error": 0.0667,
-          "n": 252,
+          "empirical_q": 0.1884,
+          "error": 0.0884,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2421,
-          "error": 0.0421,
-          "n": 252,
+          "empirical_q": 0.2979,
+          "error": 0.0979,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.2738,
-          "error": 0.0238,
-          "n": 252,
+          "empirical_q": 0.3185,
+          "error": 0.0685,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.373,
-          "error": 0.043,
-          "n": 252,
+          "empirical_q": 0.3733,
+          "error": 0.0433,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4325,
-          "error": 0.0325,
-          "n": 252,
+          "empirical_q": 0.4281,
+          "error": 0.0281,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5357,
-          "error": 0.0357,
-          "n": 252,
+          "empirical_q": 0.5034,
+          "error": 0.0034,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.6071,
-          "error": 0.0071,
-          "n": 252,
+          "empirical_q": 0.5788,
+          "error": 0.0212,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6667,
-          "error": 0.0033,
-          "n": 252,
+          "empirical_q": 0.6473,
+          "error": 0.0227,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.746,
-          "error": 0.004,
-          "n": 252,
+          "empirical_q": 0.7089,
+          "error": 0.0411,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7659,
-          "error": 0.0341,
-          "n": 252,
+          "empirical_q": 0.7466,
+          "error": 0.0534,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8294,
-          "error": 0.0706,
-          "n": 252,
+          "empirical_q": 0.8014,
+          "error": 0.0986,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "pa": {
       "target": "pa",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 22,
-      "median_mae": 5.1274,
-      "max_cal_error": 0.0905,
+      "median_mae": 5.4124,
+      "max_cal_error": 0.0986,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1627,
-          "error": 0.0627,
-          "n": 252,
+          "empirical_q": 0.1815,
+          "error": 0.0815,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2302,
-          "error": 0.0302,
-          "n": 252,
+          "empirical_q": 0.2842,
+          "error": 0.0842,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.2698,
-          "error": 0.0198,
-          "n": 252,
+          "empirical_q": 0.3356,
+          "error": 0.0856,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.3532,
-          "error": 0.0232,
-          "n": 252,
+          "empirical_q": 0.3904,
+          "error": 0.0604,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4008,
-          "error": 0.0008,
-          "n": 252,
+          "empirical_q": 0.4692,
+          "error": 0.0692,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.4762,
-          "error": 0.0238,
-          "n": 252,
+          "empirical_q": 0.524,
+          "error": 0.024,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5675,
-          "error": 0.0325,
-          "n": 252,
+          "empirical_q": 0.5856,
+          "error": 0.0144,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.627,
-          "error": 0.043,
-          "n": 252,
+          "empirical_q": 0.6336,
+          "error": 0.0364,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.7063,
-          "error": 0.0437,
-          "n": 252,
+          "empirical_q": 0.6918,
+          "error": 0.0582,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7222,
-          "error": 0.0778,
-          "n": 252,
+          "empirical_q": 0.7123,
+          "error": 0.0877,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8095,
-          "error": 0.0905,
-          "n": 252,
+          "empirical_q": 0.8014,
+          "error": 0.0986,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "ra": {
       "target": "ra",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 20,
-      "median_mae": 2.9577,
-      "max_cal_error": 0.1222,
+      "median_mae": 2.7165,
+      "max_cal_error": 0.1055,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1905,
-          "error": 0.0905,
-          "n": 252,
+          "empirical_q": 0.2055,
+          "error": 0.1055,
+          "n": 292,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.2619,
-          "error": 0.0619,
-          "n": 252,
+          "empirical_q": 0.2877,
+          "error": 0.0877,
+          "n": 292,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.2937,
-          "error": 0.0437,
-          "n": 252,
+          "empirical_q": 0.3219,
+          "error": 0.0719,
+          "n": 292,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.3611,
-          "error": 0.0311,
-          "n": 252,
+          "empirical_q": 0.387,
+          "error": 0.057,
+          "n": 292,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4246,
-          "error": 0.0246,
-          "n": 252,
+          "empirical_q": 0.4589,
+          "error": 0.0589,
+          "n": 292,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.4802,
-          "error": 0.0198,
-          "n": 252,
+          "empirical_q": 0.5377,
+          "error": 0.0377,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5833,
-          "error": 0.0167,
-          "n": 252,
+          "empirical_q": 0.6164,
+          "error": 0.0164,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.627,
-          "error": 0.043,
-          "n": 252,
+          "empirical_q": 0.6815,
+          "error": 0.0115,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.6706,
-          "error": 0.0794,
-          "n": 252,
+          "empirical_q": 0.7363,
+          "error": 0.0137,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7024,
-          "error": 0.0976,
-          "n": 252,
+          "empirical_q": 0.7534,
+          "error": 0.0466,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.7778,
-          "error": 0.1222,
-          "n": 252,
+          "empirical_q": 0.8322,
+          "error": 0.0678,
+          "n": 292,
           "skipped": false
         }
       }
     },
     "stocks": {
       "target": "stocks",
-      "n_train": 1361,
-      "n_holdout": 252,
-      "holdout_cutoff": "2026-03-01",
+      "n_train": 1612,
+      "n_holdout": 292,
+      "holdout_cutoff": "2026-03-13",
       "feature_count": 17,
-      "median_mae": 0.9273,
-      "max_cal_error": 0.0627,
+      "median_mae": 0.89,
+      "max_cal_error": 0.0568,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.1667,
+          "empirical_q": 0.2055,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.429 (zero mass)"
+          "reason": "q=0.10 <= p0=0.414 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.3056,
+          "empirical_q": 0.2979,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.429 (zero mass)"
+          "reason": "q=0.20 <= p0=0.414 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.381,
+          "empirical_q": 0.3356,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.429 (zero mass)"
+          "reason": "q=0.25 <= p0=0.414 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.4048,
+          "empirical_q": 0.3767,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.429 (zero mass)"
+          "reason": "q=0.33 <= p0=0.414 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.4405,
+          "empirical_q": 0.4178,
           "error": 0.0,
-          "n": 252,
+          "n": 292,
           "skipped": true,
-          "reason": "q=0.40 <= p0=0.429 (zero mass)"
+          "reason": "q=0.40 <= p0=0.414 (zero mass)"
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5,
-          "error": 0.0,
-          "n": 252,
+          "empirical_q": 0.5411,
+          "error": 0.0411,
+          "n": 292,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5873,
-          "error": 0.0127,
-          "n": 252,
+          "empirical_q": 0.589,
+          "error": 0.011,
+          "n": 292,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.6429,
-          "error": 0.0271,
-          "n": 252,
+          "empirical_q": 0.6575,
+          "error": 0.0125,
+          "n": 292,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.7024,
-          "error": 0.0476,
-          "n": 252,
+          "empirical_q": 0.7089,
+          "error": 0.0411,
+          "n": 292,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7421,
-          "error": 0.0579,
-          "n": 252,
+          "empirical_q": 0.7432,
+          "error": 0.0568,
+          "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8373,
-          "error": 0.0627,
-          "n": 252,
+          "empirical_q": 0.8459,
+          "error": 0.0541,
+          "n": 292,
           "skipped": false
         }
       }
     }
   },
-  "n_players": 56
+  "n_players": 59
 }
