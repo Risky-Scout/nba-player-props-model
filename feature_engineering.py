@@ -308,7 +308,7 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
     f["consensus_total"]         = total
     f["spread_for_team"]    = team_spread
     f["implied_team_total"] = implied_team
-    f["implied_team_total"]  = opp_implied
+    f["opp_implied_team_total"]  = opp_implied
     f["blowout_risk"]       = abs(spread)
     f["has_odds"]           = 1
     f["is_home"]            = int(is_home)
