@@ -1,10 +1,41 @@
 {
   "date": "2026-03-29",
-  "generated_at": "2026-03-29T13:53:35.482222",
+  "generated_at": "2026-03-29T14:24:54.073960",
   "version": "2026-03-17-v13",
   "min_ev": 0.025,
-  "total_sgps": 0,
-  "two_leg": 0,
+  "total_sgps": 1,
+  "two_leg": 1,
   "three_leg": 0,
-  "sgps": []
+  "sgps": [
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Toronto Raptors",
+      "game_id": 18447904,
+      "combined_odds": -193,
+      "correlated_prob": 0.7227,
+      "naive_prob": 0.5207,
+      "ev": 0.0971,
+      "kelly_units": 0.047,
+      "leg_details": [
+        {
+          "player": "Tristan Da Silva",
+          "player_id": 1028025497,
+          "stat": "ast",
+          "side": "OVER",
+          "line": 2.5,
+          "odds": 146,
+          "model_prob": 0.7238
+        },
+        {
+          "player": "Tristan Da Silva",
+          "player_id": 1028025497,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 4.5,
+          "odds": 104,
+          "model_prob": 0.7194
+        }
+      ]
+    }
+  ]
 }

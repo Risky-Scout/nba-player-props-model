@@ -1,44 +1,44 @@
 {
   "fallback": {
-    "pts": 1.1349999999999998,
+    "pts": 1.0899999999999999,
     "ast": 0.18999999999999995,
-    "reb": 0.010000000000000009,
+    "reb": -0.009999999999999787,
     "fg3m": -0.010000000000000009
   },
   "meta": {
     "pts": {
-      "n": 534,
-      "cv_mae_mean": 6.706854548467854,
-      "cv_mae_std": 0.2637926916908481,
-      "target_median": 1.1349999999999998,
-      "target_mean": 1.5978651685393257,
-      "fallback_correction": 1.1349999999999998,
+      "n": 542,
+      "cv_mae_mean": 6.7256432576528535,
+      "cv_mae_std": 0.2528636532990826,
+      "target_median": 1.0899999999999999,
+      "target_mean": 1.5763468634686344,
+      "fallback_correction": 1.0899999999999999,
       "model_type": "GradientBoostingRegressor"
     },
     "ast": {
-      "n": 483,
-      "cv_mae_mean": 1.9228347148688212,
-      "cv_mae_std": 0.20173067954687057,
+      "n": 487,
+      "cv_mae_mean": 1.92223746176751,
+      "cv_mae_std": 0.19744649257999514,
       "target_median": 0.18999999999999995,
-      "target_mean": 0.478944099378882,
+      "target_mean": 0.47275154004106773,
       "fallback_correction": 0.18999999999999995,
       "model_type": "GradientBoostingRegressor"
     },
     "reb": {
-      "n": 556,
-      "cv_mae_mean": 2.3888926105256565,
-      "cv_mae_std": 0.26199254447299003,
-      "target_median": 0.010000000000000009,
-      "target_mean": 0.30091726618705034,
-      "fallback_correction": 0.010000000000000009,
+      "n": 560,
+      "cv_mae_mean": 2.372716838826283,
+      "cv_mae_std": 0.24441433735596577,
+      "target_median": -0.009999999999999787,
+      "target_mean": 0.2880357142857143,
+      "fallback_correction": -0.009999999999999787,
       "model_type": "GradientBoostingRegressor"
     },
     "fg3m": {
-      "n": 386,
-      "cv_mae_mean": 1.2088974150304233,
-      "cv_mae_std": 0.10128493987214325,
+      "n": 387,
+      "cv_mae_mean": 1.2089549198241125,
+      "cv_mae_std": 0.11011778839782865,
       "target_median": -0.010000000000000009,
-      "target_mean": 0.23272020725388604,
+      "target_mean": 0.23206718346253236,
       "fallback_correction": -0.010000000000000009,
       "model_type": "GradientBoostingRegressor"
     }

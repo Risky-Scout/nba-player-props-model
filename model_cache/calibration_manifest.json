@@ -356,7 +356,7 @@
     "intercept_cal": 0.0511
   },
   "_meta": {
-    "generated_at": "2026-03-29T00:49:57.840838",
+    "generated_at": "2026-03-29T10:24:44.307936",
     "n_rows_total": 2529,
     "gate_n_total": 80,
     "gate_n_oof": 60,
