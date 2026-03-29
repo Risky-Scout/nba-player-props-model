@@ -334,3 +334,30 @@ This is a deliberate architectural choice. A model trained on odds data learns t
 **Live engine pace model:** The current live engine uses a single linear trust weight. A proper Kalman filter would update the rate estimate with uncertainty bounds that shrink as more evidence accumulates, rather than the fixed 15-minute prior weight.
 
 **SGP combinatorics:** With 400+ singles, naive SGP generation is computationally infeasible. The current system caps the SGP candidate pool to the top 6 picks by EV per game before running the copula simulation. This misses potentially optimal cross-game combinations but prevents 30-minute GitHub Actions timeouts.
+
+---
+
+## Calibration Architecture (Two-Track)
+
+This system deliberately maintains two separate calibration tracks. They are not in conflict — they serve different purposes.
+
+### Track 1: Pregame Platt Calibration
+**Scripts:** `calibrate_stat_side.py`, `calibrate_models.py`
+**Artifacts:** `model_cache/platt_STAT_SIDE.pkl`, `model_cache/platt_OVER.pkl`, `model_cache/platt_UNDER.pkl`
+**Used by:** `predict_darko_v4.py` (pregame predictions only)
+
+Platt calibrators (logistic regression on raw model probabilities) are fit per stat×side using walk-forward out-of-fold (OOF) splits — train on past, evaluate on future. Final calibrators are fit on all available data for deployment. OOF ECE is reported before saving; gate threshold is ECE < 0.05.
+
+### Track 2: Live State-Bucket Execution Penalties
+**Script:** `live_pricing.py`
+**Input:** `bucket_brier` from the live payload (required in production — hard fail if absent)
+**Used by:** Live in-game pricing engine only
+
+The live pricer uses `bucket_brier` to compute execution penalties: `cal_mult = clamp(1 - bucket_brier*2, 0.60, 1.05)`. This is intentionally a separate framework from the pregame Platt objects. The live engine operates on real-time state (lineup, pace, score) and requires different calibration logic than the pregame static model.
+
+**These two tracks are not unified by design.** Pregame probabilities use Platt stat×side calibration. Live pricing uses state-bucket execution penalties. If full unification is desired in a future version, a live calibration artifact generator keyed to the same `calibration_key` schema as `live_pricing.py` would be required.
+
+### What "no lines in training" means
+`train.py` does not use sportsbook lines as training targets or features in the originator core model. The direct stat count targets (pts, reb, ast, etc.) are trained purely on historical outcomes.
+
+`total_move` and `spread_move` derived from opening/closing snapshots are enriched in the game context but treated as execution-layer features — they inform the market-aware benchmark layer, not the originator core. This is the intended two-track architecture.

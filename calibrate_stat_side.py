@@ -209,6 +209,19 @@ class StatSideCalibrator:
 # Calibration evaluation helpers
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def _compute_ece(probs, outcomes, n_bins=8):
+    """Expected Calibration Error — used for OOF reporting."""
+    probs = np.array(probs)
+    outcomes = np.array(outcomes)
+    bins = np.linspace(0.5, 0.85, n_bins)
+    ece = 0.0
+    for i in range(len(bins)-1):
+        mask = (probs >= bins[i]) & (probs < bins[i+1])
+        if mask.sum() < 3: continue
+        ece += (mask.sum()/len(probs)) * abs(probs[mask].mean() - outcomes[mask].mean())
+    return float(ece)
+
+
 def evaluate_calibration(rows: list, calibrators: dict) -> dict:
     """
     Compare raw vs calibrated Brier scores per stat×side.
