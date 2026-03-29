@@ -1,0 +1,58 @@
+{
+  "version": "2026-03-09-v12",
+  "trained_at": "2026-03-29T16:14:07.931513",
+  "n_train": 56905,
+  "n_holdout": 10123,
+  "holdout_cutoff": "2026-01-13",
+  "feature_count": 22,
+  "mae_q50": 4.6365,
+  "max_cal_error": 0.013,
+  "coverage_50pct": 0.4988,
+  "sub20_capture": 0.959,
+  "calibration": {
+    "0.1": {
+      "empirical_q": 0.1082,
+      "error": 0.0082
+    },
+    "0.2": {
+      "empirical_q": 0.2102,
+      "error": 0.0102
+    },
+    "0.25": {
+      "empirical_q": 0.257,
+      "error": 0.007
+    },
+    "0.3": {
+      "empirical_q": 0.3072,
+      "error": 0.0072
+    },
+    "0.4": {
+      "empirical_q": 0.4089,
+      "error": 0.0089
+    },
+    "0.5": {
+      "empirical_q": 0.5122,
+      "error": 0.0122
+    },
+    "0.6": {
+      "empirical_q": 0.613,
+      "error": 0.013
+    },
+    "0.7": {
+      "empirical_q": 0.7097,
+      "error": 0.0097
+    },
+    "0.75": {
+      "empirical_q": 0.7558,
+      "error": 0.0058
+    },
+    "0.8": {
+      "empirical_q": 0.8029,
+      "error": 0.0029
+    },
+    "0.9": {
+      "empirical_q": 0.9061,
+      "error": 0.0061
+    }
+  }
+}

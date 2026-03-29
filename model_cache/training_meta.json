@@ -1,6 +1,6 @@
 {
   "version": "2026-03-09-v12",
-  "trained_at": "2026-03-29T06:54:05.822384",
+  "trained_at": "2026-03-29T16:15:36.159867",
   "train_seasons": [
     2023,
     2024,
@@ -24,7 +24,64 @@
   "architecture": "quantile_regression_v12",
   "adv_fields": 21,
   "injury_snapshots": true,
-  "minutes_model": null,
+  "minutes_model": {
+    "version": "2026-03-09-v12",
+    "trained_at": "2026-03-29T16:14:07.931513",
+    "n_train": 56905,
+    "n_holdout": 10123,
+    "holdout_cutoff": "2026-01-13",
+    "feature_count": 22,
+    "mae_q50": 4.6365,
+    "max_cal_error": 0.013,
+    "coverage_50pct": 0.4988,
+    "sub20_capture": 0.959,
+    "calibration": {
+      "0.1": {
+        "empirical_q": 0.1082,
+        "error": 0.0082
+      },
+      "0.2": {
+        "empirical_q": 0.2102,
+        "error": 0.0102
+      },
+      "0.25": {
+        "empirical_q": 0.257,
+        "error": 0.007
+      },
+      "0.3": {
+        "empirical_q": 0.3072,
+        "error": 0.0072
+      },
+      "0.4": {
+        "empirical_q": 0.4089,
+        "error": 0.0089
+      },
+      "0.5": {
+        "empirical_q": 0.5122,
+        "error": 0.0122
+      },
+      "0.6": {
+        "empirical_q": 0.613,
+        "error": 0.013
+      },
+      "0.7": {
+        "empirical_q": 0.7097,
+        "error": 0.0097
+      },
+      "0.75": {
+        "empirical_q": 0.7558,
+        "error": 0.0058
+      },
+      "0.8": {
+        "empirical_q": 0.8029,
+        "error": 0.0029
+      },
+      "0.9": {
+        "empirical_q": 0.9061,
+        "error": 0.0061
+      }
+    }
+  },
   "targets": {
     "pts": {
       "target": "pts",
@@ -478,7 +535,7 @@
       "n_holdout": 292,
       "holdout_cutoff": "2026-03-13",
       "feature_count": 21,
-      "median_mae": 0.4412,
+      "median_mae": 0.4378,
       "max_cal_error": 0.0295,
       "calibration": {
         "0.1": {
@@ -1014,8 +1071,8 @@
       "n_holdout": 292,
       "holdout_cutoff": "2026-03-13",
       "feature_count": 17,
-      "median_mae": 0.89,
-      "max_cal_error": 0.0568,
+      "median_mae": 0.8866,
+      "max_cal_error": 0.0534,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
@@ -1087,15 +1144,15 @@
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.7432,
-          "error": 0.0568,
+          "empirical_q": 0.7466,
+          "error": 0.0534,
           "n": 292,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.8459,
-          "error": 0.0541,
+          "empirical_q": 0.8493,
+          "error": 0.0507,
           "n": 292,
           "skipped": false
         }
