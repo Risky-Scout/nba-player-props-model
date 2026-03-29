@@ -172,6 +172,24 @@ class StatSideCalibrator:
             def predict_proba(self, X): return np.column_stack([1-X[:,0], X[:,0]])
             def predict(self, X): return (X[:,0] > 0.5).astype(int)
 
+        # Walk-forward OOF ECE check before fitting final calibrator
+        n = len(y)
+        if n >= 40:
+            oof_preds = []
+            oof_actuals = []
+            for split in range(20, n):
+                _X_tr = X[:split]; _y_tr = y[:split]
+                if len(set(_y_tr)) < 2: continue
+                _lr = LogisticRegression(C=1.0, solver="lbfgs", max_iter=500)
+                _lr.fit(_X_tr, _y_tr)
+                oof_preds.append(_lr.predict_proba(X[split:split+1])[0][1])
+                oof_actuals.append(y[split])
+            if len(oof_preds) > 10:
+                oof_p = np.array(oof_preds); oof_a = np.array(oof_actuals)
+                oof_ece = _compute_ece(oof_p, oof_a)
+                gate = "PASS" if oof_ece < 0.05 else "ABOVE GATE"
+                logger.info(f"    OOF ECE: {oof_ece:.4f} ({gate}) — fitting final calibrator on all data")
+
         cal = CalibratedClassifierCV(
             ProbaPassthrough(), method="sigmoid", cv="prefit"
         )

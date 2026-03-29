@@ -121,9 +121,17 @@ class LivePricer:
         player_prior_rates: dict = None,
         quote_history: list = None,
         # Real calibration quality input from state_bucket_calibration.json
-        bucket_brier: float = 0.25,
+        bucket_brier: float = None,  # None = hard fail in production; pass 0.25 explicitly for dev
         calibration_level: str = "identity",
     ) -> dict:
+
+        # Hard fail if bucket_brier not provided — prevents silent calibration degradation
+        if bucket_brier is None:
+            raise ValueError(
+                "HARD FAIL: bucket_brier is required for live pricing. "
+                "Pass the stat-side Brier score from the calibration artifacts. "
+                "Use bucket_brier=0.25 explicitly during development only."
+            )
 
         stat = stat.lower()
         shot_events        = shot_events        or []
