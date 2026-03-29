@@ -215,16 +215,16 @@ ADV_FIELDS = [
 # Trained on 2,737 graded rows using GradientBoostingRegressor per stat
 # Target: median(actual - q50) — projection truth, not market alignment
 BIAS_CORRECTION = {
-    "pts":    1.135,  # learned: +1.135 (2737 rows, updated from +0.51)
+    "pts":    0.300,  # reduced from +1.135 — overcorrection was inverting PTS_OVER AUC
     "ast":    0.190,  # learned: +0.190 (updated from +0.155)
     "reb":    0.010,  # learned: +0.010 (confirms near-zero — reset was correct)
     "fg3m":  -0.010,  # learned: -0.010 (unchanged)
     "blk":    0.00,   # no correction
     "stl":    0.00,   # no correction
     "tov":    0.00,   # insufficient data
-    "pra":    1.335,  # pts+reb+ast = 1.135+0.010+0.190
-    "pr":     1.145,  # pts+reb = 1.135+0.010
-    "pa":     1.325,  # pts+ast = 1.135+0.190
+    "pra":    0.500,  # pts+reb+ast = 0.300+0.010+0.190
+    "pr":     0.310,  # pts+reb = 0.300+0.010
+    "pa":     0.490,  # pts+ast = 0.300+0.190
     "ra":     0.200,  # reb+ast = 0.010+0.190
     "stocks": 0.00,   # stl+blk both 0.00
 }
@@ -593,10 +593,9 @@ def main():
                 # Hard cap: never shift pts more than +1.5 from minutes correction alone
                 mp_b = str(mb)
                 min_corr_raw = MINUTES_CORRECTIONS.get((target, mp_b), 0.0)
-                # Fix 3: Use 75% for pts (still under-projected), 50% for others
-                # Per rebuild doc: "use 50-75% initially, then recheck"
-                # pts buckets 1+2 still show +2.71/+2.75 residual — increase to 75%
-                pct = 0.75 if target == "pts" else 0.50
+                # Minutes corrections disabled for pts — stacking with bias correction
+                # was inverting PTS_OVER AUC to 0.43. Re-enable after retrain validates.
+                pct = 0.0 if target == "pts" else 0.50
                 min_corr = min_corr_raw * pct
                 if target == "pts":
                     min_corr = float(np.clip(min_corr, -1.0, 1.5))
