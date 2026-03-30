@@ -820,6 +820,37 @@ def main():
         logger.warning(f"fg3m gate skipped: {_e}")
     # ── end fg3m gate ─────────────────────────────────────────────────
 
+    # ── fg3m per-player gate ─────────────────────────────────────────
+    import pandas as _pd
+    try:
+        _stats = _pd.read_parquet("data/player_game_stats.parquet")
+        _cur = _stats[_stats["game_date"] >= "2025-10-01"]
+        _hit_rates = (
+            _cur.groupby("player_name")["fg3m"]
+            .apply(lambda x: (x > 0).mean())
+            .to_dict()
+        )
+        _fg3m_removed = []
+        _all_singles_filtered = []
+        for _s in all_singles:
+            if _s["stat"] == "fg3m" and _s["side"] == "OVER":
+                _player = _s["player_name"]
+                _actual_hit = _hit_rates.get(_player, None)
+                _model_p = _s.get("model_prob", 0)
+                if _actual_hit is not None and (_model_p - _actual_hit) > 0.20:
+                    _fg3m_removed.append(
+                        f"{_player}: model={_model_p:.1%} actual={_actual_hit:.1%} gap={_model_p-_actual_hit:.1%}"
+                    )
+                    continue
+            _all_singles_filtered.append(_s)
+        if _fg3m_removed:
+            for _r in _fg3m_removed:
+                logger.warning(f"fg3m gate removed: {_r}")
+        all_singles = _all_singles_filtered
+    except Exception as _e:
+        logger.warning(f"fg3m gate skipped: {_e}")
+    # ── end fg3m gate ─────────────────────────────────────────────────
+
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
 
     # ── HARD PRE-EXPORT ASSERTIONS (Fix 1+5+6 per rebuild doc) ──────────────
