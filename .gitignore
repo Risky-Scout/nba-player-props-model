@@ -27,10 +27,7 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
-data/training_table.parquet
-data/training_table.parquet
 config.php
-data/training_table.parquet
 *.bak
 feature_engineering_v1*.py
 feature_engineering_v17*.py
