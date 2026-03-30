@@ -1,0 +1,48 @@
+{
+  "2ba4ff0cef51aafdf9c5509533b14091": {
+    "home_team": "Miami Heat",
+    "away_team": "Philadelphia 76ers",
+    "commence_time": "2026-03-30T23:10:00Z",
+    "consensus_total": 246.5,
+    "consensus_spread": 2.0,
+    "implied_home_total": 122.25,
+    "implied_away_total": 124.25,
+    "books_total": {
+      "fanduel": 246.5,
+      "draftkings": 246.5,
+      "betrivers": 246.0,
+      "betmgm": 246.5
+    },
+    "books_spread": {
+      "fanduel": 2.0,
+      "draftkings": 2.5,
+      "betrivers": 2.0,
+      "betmgm": 1.5
+    },
+    "snapshot_time": "2026-03-30T15:02:49Z",
+    "snapshot_type": "opening"
+  },
+  "6faf1f26b1e369d008c889f78e15732b": {
+    "home_team": "Atlanta Hawks",
+    "away_team": "Boston Celtics",
+    "commence_time": "2026-03-30T23:40:00Z",
+    "consensus_total": 222.5,
+    "consensus_spread": -1.2,
+    "implied_home_total": 111.85,
+    "implied_away_total": 110.65,
+    "books_total": {
+      "fanduel": 222.5,
+      "draftkings": 222.5,
+      "betrivers": 222.5,
+      "betmgm": 222.5
+    },
+    "books_spread": {
+      "fanduel": -1.0,
+      "draftkings": -1.5,
+      "betrivers": -1.0,
+      "betmgm": -1.5
+    },
+    "snapshot_time": "2026-03-30T15:02:49Z",
+    "snapshot_type": "opening"
+  }
+}
