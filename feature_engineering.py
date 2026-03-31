@@ -817,7 +817,7 @@ def build_player_game_features(
         )
         f.update(mp_preds)
     except Exception:
-        for k in ("mean_min_last10","mp_q10","mp_q25","mp_q75","mp_q90",
+        for k in ("mean_min_last10","exp_mp","mp_q10","mp_q25","mp_q75","mp_q90",
                   "mp_vol","mp_pred_floor","mp_pred_ceiling"):
             f[k] = np.nan
 

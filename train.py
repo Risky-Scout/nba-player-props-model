@@ -497,6 +497,46 @@ def build_training_table(stats_df, adv_df, odds_df):
         logger.warning(f"[v19] opp_env_map failed: {_e}")
         opp_env_map = {}
     build_player_game_features._opp_env_map = opp_env_map
+
+    # Pre-load retrospective features
+    _retro_index = {}
+    _retro_cols = ['did_not_play_last_team_game','returned_from_absence',
+                   'games_since_return','limited_return_game',
+                   'is_stable_role_player','is_recent_rotation_change',
+                   'is_high_minutes_uncertainty','is_bench_fragile_minutes']
+    import pathlib as _pl
+    _rpath = _pl.Path('data/retrospective_features.parquet')
+    if _rpath.exists():
+        try:
+            _rdf = pd.read_parquet(_rpath)
+            for col in _retro_cols:
+                if col not in _rdf.columns: _rdf[col] = 0
+            _retro_index = {(int(r.player_id),int(r.game_id)):{c:int(getattr(r,c,0)) for c in _retro_cols} for r in _rdf[['player_id','game_id']+_retro_cols].itertuples(index=False)}
+            logger.info(f"Retrospective features loaded: {len(_retro_index)} entries")
+        except Exception as _e:
+            logger.error(f"Retrospective features load failed: {_e}")
+    else:
+        logger.warning("retrospective_features.parquet missing - building inline")
+        try:
+            from retrospective_features import build_retrospective_features
+            _rdf = build_retrospective_features(stats_df)
+            _rdf.to_parquet(_rpath, index=False)
+            _retro_index = {(int(r.player_id),int(r.game_id)):{c:int(getattr(r,c,0)) for c in _retro_cols} for r in _rdf[['player_id','game_id']+_retro_cols].itertuples(index=False)}
+            logger.info(f"Retrospective features built inline: {len(_retro_index)} entries")
+        except Exception as _e2:
+            logger.error(f"Retrospective inline build failed: {_e2}")
+    _odds_index = {}
+    _opath = _pl.Path('data/historical_game_odds.parquet')
+    if _opath.exists():
+        try:
+            _odf = pd.read_parquet(_opath)
+            for row in _odf.itertuples(index=False):
+                _odds_index[str(row.game_date)[:10]] = {'consensus_total':float(row.consensus_total) if row.consensus_total else 0.0,'implied_home_total':float(row.implied_home_total) if row.implied_home_total else 0.0,'implied_away_total':float(row.implied_away_total) if row.implied_away_total else 0.0}
+            logger.info(f"Historical odds loaded: {len(_odds_index)} dates")
+        except Exception as _e:
+            logger.error(f"Historical odds load failed: {_e}")
+    else:
+        logger.warning("historical_game_odds.parquet missing")
     all_rows = []; skipped = 0; _chunk_idx = 0; _chunk_files = []
     players  = list(stats_df.groupby("player_id"))
 
@@ -586,6 +626,21 @@ def build_training_table(stats_df, adv_df, odds_df):
                 skipped += 1
                 continue
 
+            # Inject retrospective features
+            _retro = _retro_index.get((int(player_id), gid), {})
+            base['did_not_play_last_team_game'] = _retro.get('did_not_play_last_team_game', 0)
+            base['returned_from_absence']       = _retro.get('returned_from_absence', 0)
+            base['games_since_return']          = _retro.get('games_since_return', 0)
+            base['limited_return_game']         = _retro.get('limited_return_game', 0)
+            base['is_stable_role_player']       = _retro.get('is_stable_role_player', 0)
+            base['is_recent_rotation_change']   = _retro.get('is_recent_rotation_change', 0)
+            base['is_high_minutes_uncertainty'] = _retro.get('is_high_minutes_uncertainty', 0)
+            base['is_bench_fragile_minutes']    = _retro.get('is_bench_fragile_minutes', 0)
+            _odds = _odds_index.get(td, {})
+            if _odds:
+                _is_home = int(tid == int(cur.get('home_team_id') or 0))
+                base['market_total_asof']  = _odds.get('consensus_total', 0.0)
+                base['implied_team_total'] = _odds.get('implied_home_total', 0.0) if _is_home else _odds.get('implied_away_total', 0.0)
             # Compute targets
             pts  = float(cur.get("pts",0)      or 0)
             reb  = float(cur.get("reb",0)      or 0)
