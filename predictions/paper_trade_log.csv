@@ -5270,3 +5270,4 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-03-29,single,Luguentz Dort,New York Knicks @ Oklahoma City Thunder,fg3m,OVER,1.5,103,0.586,0.1896,0.046,,
 2026-03-29,single,Myles Turner,LA Clippers @ Milwaukee Bucks,fg3m,OVER,1.5,-130,0.5985,0.0589,0.019,,
 2026-03-29,sgp_2leg,Tristan Da Silva|Tristan Da Silva,Orlando Magic @ Toronto Raptors,ast|reb,OVER|OVER,2.5|4.5,-193,0.7227,0.0971,0.047,,
+2026-03-31,single,Evan Mobley,Cleveland Cavaliers @ Los Angeles Lakers,fg3m,OVER,0.5,-115,0.5759,0.0767,0.022,,

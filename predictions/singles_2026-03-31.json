@@ -1,0 +1,51 @@
+{
+  "date": "2026-03-31",
+  "generated_at": "2026-03-31T14:26:27.141368",
+  "version": "2026-03-17-v13",
+  "min_ev": 0.025,
+  "total_picks": 1,
+  "picks": [
+    {
+      "player_id": 17896076,
+      "player_name": "Evan Mobley",
+      "game_id": 18447921,
+      "game": "Cleveland Cavaliers @ Los Angeles Lakers",
+      "team_id": 6,
+      "stat": "fg3m",
+      "side": "OVER",
+      "line": 0.5,
+      "odds": -115,
+      "over_odds": -115,
+      "under_odds": -120,
+      "bet_vendor": "betway",
+      "model_prob": 0.5759,
+      "model_prob_raw": 0.7061,
+      "model_prob_cal": 0.5759,
+      "cal_source": "global_side",
+      "market_prob": 0.4951,
+      "raw_edge": 0.0808,
+      "ev": 0.0767,
+      "kelly_units": 0.022,
+      "q50": 1.05,
+      "q_preds": {
+        "0.1": 0.11,
+        "0.2": 0.11,
+        "0.25": 0.14,
+        "0.33": 0.79,
+        "0.4": 1.05,
+        "0.5": 1.05,
+        "0.6": 1.05,
+        "0.67": 1.44,
+        "0.75": 1.77,
+        "0.8": 1.77,
+        "0.9": 2.35
+      },
+      "usage_bucket": 0,
+      "mp_bucket": 2,
+      "min_ev_applied": 0.03,
+      "cal_type": "global",
+      "cal_applied": true,
+      "is_sparse": false
+    }
+  ]
+}
