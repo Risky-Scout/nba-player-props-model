@@ -1,0 +1,48 @@
+{
+  "8c95b58e16520c12308e0196b0c19198": {
+    "home_team": "Orlando Magic",
+    "away_team": "Phoenix Suns",
+    "commence_time": "2026-03-31T23:10:00Z",
+    "consensus_total": 224.5,
+    "consensus_spread": -1.8,
+    "implied_home_total": 113.15,
+    "implied_away_total": 111.35,
+    "books_total": {
+      "fanduel": 224.5,
+      "draftkings": 224.5,
+      "betrivers": 224.5,
+      "betmgm": 224.5
+    },
+    "books_spread": {
+      "fanduel": -2.0,
+      "draftkings": -1.5,
+      "betrivers": -2.0,
+      "betmgm": -1.5
+    },
+    "snapshot_time": "2026-03-31T15:01:57Z",
+    "snapshot_type": "opening"
+  },
+  "5821188b8c12a7b49e0f069e3974e502": {
+    "home_team": "Brooklyn Nets",
+    "away_team": "Charlotte Hornets",
+    "commence_time": "2026-03-31T23:40:00Z",
+    "consensus_total": 219.0,
+    "consensus_spread": 17.2,
+    "implied_home_total": 100.9,
+    "implied_away_total": 118.1,
+    "books_total": {
+      "fanduel": 218.5,
+      "draftkings": 219.5,
+      "betrivers": 218.5,
+      "betmgm": 219.5
+    },
+    "books_spread": {
+      "fanduel": 17.0,
+      "draftkings": 17.5,
+      "betrivers": 17.0,
+      "betmgm": 17.5
+    },
+    "snapshot_time": "2026-03-31T15:01:57Z",
+    "snapshot_type": "opening"
+  }
+}
