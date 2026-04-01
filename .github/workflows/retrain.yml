@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -26,12 +29,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib scipy
+          pip install -r requirements.txt
 
       - name: Run full retrain
         env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python train.py
 
       - name: Commit model cache to repo
