@@ -37,7 +37,7 @@ jobs:
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add model_cache/ data/training_table.parquet data/retrospective_features.parquet data/historical_game_odds.parquet -f
+          git add model_cache/ data/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Retrain $(date -u +%Y-%m-%d): ${{ github.event.inputs.note }}"
           git pull --rebase origin main && git push origin main

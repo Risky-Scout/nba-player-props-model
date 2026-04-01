@@ -1104,8 +1104,6 @@ LAYER_2_PTS = [
     "opp_allowed_pts_factor",
     "opp_allowed_pts_mean",
     "consensus_total",
-    "market_pace_proxy",
-    "opp_pace_context",
     "spread_for_team",
     "is_home",
 ]
@@ -1116,8 +1114,6 @@ LAYER_2_AST = [
     "opp_allowed_ast_factor",
     "opp_allowed_ast_mean",
     "consensus_total",
-    "market_pace_proxy",
-    "opp_pace_context",
     "spread_for_team",
     "is_home",
     # opp_implied_total excluded — ablation Q4 will confirm
@@ -1128,8 +1124,6 @@ LAYER_2_REB = [
     "opp_allowed_reb_ewma",
     "opp_allowed_reb_factor",
     "opp_allowed_reb_mean",
-    "market_pace_proxy",
-    "opp_pace_context",
     "spread_for_team",
     "is_home",
     "implied_team_total",
@@ -1141,13 +1135,11 @@ LAYER_2_FG3M = [
     "opp_allowed_fg3m_factor",
     "opp_allowed_fg3m_mean",
     "consensus_total",
-    "market_pace_proxy",
     "spread_for_team",
     "is_home",
 ]
 
 LAYER_2_BLK = [
-    "market_pace_proxy",
     "opp_allowed_blk_ewma",
     "opp_allowed_blk_factor",
     "opp_allowed_blk_mean",
@@ -1156,7 +1148,6 @@ LAYER_2_BLK = [
 ]
 
 LAYER_2_STL = [
-    "market_pace_proxy",
     "opp_allowed_stl_ewma",
     "opp_allowed_stl_factor",
     "opp_allowed_stl_mean",
@@ -1168,8 +1159,6 @@ LAYER_2_COMBO = [
     "implied_team_total",
     "implied_team_total",
     "consensus_total",
-    "market_pace_proxy",
-    "opp_pace_context",
     "spread_for_team",
     "is_home",
 ]
@@ -1215,25 +1204,10 @@ LAYER_3_ROLE = [
 
     # ── ARCHETYPE FLAGS (TIGHTENED TAXONOMY) ──────────────────────────────────
     # PRIMARY TIER — mutually exclusive
-    "is_primary_creator",
-    "is_rim_big",
-    "is_high_usage_star",
-    # SECONDARY TIER — gated by primary
-    "is_secondary_creator",
-    "is_spotup_wing",
-    "is_stretch_big",           # DECOUPLED from is_rim_big in v19
     # OVERLAY FLAGS
-    "is_transition_scorer",
-    "is_low_usage_connector",
-    "is_foul_risk_big",
-
-    # ── ARCHETYPE CONFIDENCE (NEW) ────────────────────────────────────────────
     # Continuous 0-1: how clearly does this player fit their archetype?
     # High = model can trust archetype-conditioned features
     # Low = player sits between buckets, uncertainty should widen predictions
-    "archetype_confidence",
-
-    # ── FOUL-RISK BLOCK ───────────────────────────────────────────────────────
     "per_min_pf_last10",
     "slope5_pf",
 
@@ -1373,7 +1347,6 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "potential_ast_sample_last10",
         "pnr_bh_possessions_last10",
         "opp_allowed_ast_factor",
-        "market_pace_proxy",
         "tov_per_min_mean_last10_gated",
         "vacated_ast",
         "vacated_guard_minutes_gated",
