@@ -537,6 +537,22 @@ def build_training_table(stats_df, adv_df, odds_df):
             logger.error(f"Historical odds load failed: {_e}")
     else:
         logger.warning("historical_game_odds.parquet missing")
+
+    # Pre-load injury training features
+    _injury_index = {}
+    _injury_cols = ['dnp_injury','dnp_rest','dnp_coach_decision','is_injury_elevated_role']
+    _ipath = _pl.Path('data/injury_training_features.parquet')
+    if _ipath.exists():
+        try:
+            _idf = pd.read_parquet(_ipath)
+            for col in _injury_cols:
+                if col not in _idf.columns: _idf[col] = 0
+            _injury_index = {(int(r.player_id),int(r.game_id)):{c:int(getattr(r,c,0)) for c in _injury_cols} for r in _idf[['player_id','game_id']+_injury_cols].itertuples(index=False)}
+            logger.info(f"Injury features loaded: {len(_injury_index)} entries")
+        except Exception as _e:
+            logger.error(f"Injury features load failed: {_e}")
+    else:
+        logger.warning("injury_training_features.parquet missing — dnp features will be zero")
     all_rows = []; skipped = 0; _chunk_idx = 0; _chunk_files = []
     players  = list(stats_df.groupby("player_id"))
 
@@ -636,6 +652,12 @@ def build_training_table(stats_df, adv_df, odds_df):
             base['is_recent_rotation_change']   = _retro.get('is_recent_rotation_change', 0)
             base['is_high_minutes_uncertainty'] = _retro.get('is_high_minutes_uncertainty', 0)
             base['is_bench_fragile_minutes']    = _retro.get('is_bench_fragile_minutes', 0)
+            # Inject injury features
+            _inj = _injury_index.get((int(player_id), gid), {})
+            base['dnp_injury']              = _inj.get('dnp_injury', 0)
+            base['dnp_rest']                = _inj.get('dnp_rest', 0)
+            base['dnp_coach_decision']      = _inj.get('dnp_coach_decision', 0)
+            base['is_injury_elevated_role'] = _inj.get('is_injury_elevated_role', 0)
             _odds = _odds_index.get(td, {})
             if _odds:
                 _is_home = int(tid == int(cur.get('home_team_id') or 0))
