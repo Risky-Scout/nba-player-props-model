@@ -30,6 +30,7 @@ jobs:
 
       - name: Run full retrain
         env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: python train.py
 
