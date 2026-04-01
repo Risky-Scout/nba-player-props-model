@@ -190,7 +190,7 @@ def get_game_odds(
     try:
         records = bdl_get_all(f"{BASE_V1}/odds", params)
         if not records:
-            logger.info("get_game_odds: empty (pre-2025-26 or games without odds data)")
+            logger.debug("get_game_odds: empty (pre-2025-26 or games without odds data)")
         return records
     except Exception as exc:
         logger.warning(f"get_game_odds: {exc}")
