@@ -176,7 +176,26 @@ def train_minutes_model(stats_df, odds_df):
     logger.info(f"  Holdout MAE (Q50): {mae:.3f} minutes")
     logger.info(f"  Minutes model saved to model_cache/minutes_q*.pkl")
 
-    meta = {"mae": mae, "n_train": len(X_tr), "n_holdout": len(X_ho), "features": feat_cols}
+    # Compute calibration errors for reporting
+    cal_errors = []
+    coverage_50 = 0.0
+    if len(X_ho) > 0:
+        for q, model in [(q, joblib.load(cache_dir / f"minutes_q{q}.pkl")) for q in [10,25,50,75,90]]:
+            preds = model.predict(X_ho)
+            emp = float(np.mean(y_ho.values <= preds))
+            cal_errors.append(abs(emp - q/100.0))
+            if q == 50:
+                coverage_50 = emp
+    max_cal_err = max(cal_errors) if cal_errors else 0.0
+    meta = {
+        "mae": mae,
+        "mae_q50": mae,
+        "max_cal_error": max_cal_err,
+        "coverage_50pct": coverage_50,
+        "n_train": len(X_tr),
+        "n_holdout": len(X_ho),
+        "features": feat_cols,
+    }
     with open(cache_dir / "minutes_training_meta.json", "w") as f:
         json.dump(meta, f, indent=2)
 

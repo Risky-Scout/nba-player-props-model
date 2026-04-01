@@ -960,7 +960,23 @@ def build_player_game_features(
                       f"{sparse_stat}_per_min_ewma_10", f"{sparse_stat}_per_min_vol_last10"]:
                 f[k] = np.nan
 
-    # ── Schedule ──────────────────────────────────────────────────────────────
+    # ── Foul features ─────────────────────────────────────────────────────────
+    if "pf" in df.columns and len(min_arr) > 0:
+        _pf_arr  = pd.to_numeric(df["pf"], errors="coerce").fillna(0).values
+        _mins10  = min_arr[-10:] if len(min_arr) >= 10 else min_arr
+        _pfs10   = _pf_arr[-10:] if len(_pf_arr)  >= 10 else _pf_arr
+        _tot10   = _mins10.sum()
+        f["per_min_pf_last10"] = float(_pfs10.sum() / _tot10) if _tot10 > 0 else 0.0
+        if len(_pfs10) >= 5:
+            _xs = np.arange(len(_pfs10), dtype=float) - np.arange(len(_pfs10), dtype=float).mean()
+            f["slope5_pf"] = float(np.polyfit(_xs[-5:], _pfs10[-5:], 1)[0])
+        else:
+            f["slope5_pf"] = 0.0
+    else:
+        f["per_min_pf_last10"] = 0.0
+        f["slope5_pf"] = 0.0
+
+        # ── Schedule ──────────────────────────────────────────────────────────────
     dates = df["game_date"].tolist()
     f.update(schedule_features(dates, tdt))
 
@@ -1196,7 +1212,6 @@ LAYER_3_ROLE = [
 
     # ── ROLE-STATE FLAGS ──────────────────────────────────────────────────────
     "is_stable_role_player",
-    "is_recent_starter_change",
     "is_recent_rotation_change",
     "is_injury_elevated_role",
     "is_high_minutes_uncertainty",
@@ -1214,24 +1229,11 @@ LAYER_3_ROLE = [
     # ── TEAMMATE ABSENCE SEVERITY (NEW) ──────────────────────────────────────
     # Not a replacement for transfer scores — a stabilizer
     # Captures overall absence burden regardless of who transfers
-    "inactive_teammate_minutes_weighted",   # sum(absent_player_minutes × usage_weight)
-    "inactive_teammate_usage_weighted",     # sum(absent_player_usage × usage_weight)
 
     # ── GLOBAL SAMPLE QUALITY FLAGS (NEW) ────────────────────────────────────
     # Fires when multiple thin-sample mechanics are unreliable simultaneously
-    "low_sample_playtype_flag",     # iso + pnr + spotup + transition all thin
-    "low_sample_tracking_flag",     # cs_3pa + potential_ast + rim_defended all thin
 
     # ── PRECISE INJURY TRANSFER SCORES ───────────────────────────────────────
-    "creator_out_transfer_score",
-    "big_out_transfer_score",
-    "wing_out_transfer_score",
-    "starter_out_transfer_score",
-    "same_position_minutes_vacated",
-    "same_archetype_usage_vacated",
-    "injury_opportunity_score",
-
-    # ── SCHEDULE ──────────────────────────────────────────────────────────────
     "back_to_back",
     "four_in_6",
     "three_in_4",

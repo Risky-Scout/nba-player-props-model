@@ -498,6 +498,20 @@ def build_training_table(stats_df, adv_df, odds_df):
         opp_env_map = {}
     build_player_game_features._opp_env_map = opp_env_map
 
+    # Compute league median total for neutral imputation of missing market data
+    _league_median_total = 228.0  # NBA season median, updated each retrain
+    try:
+        import pathlib as _pl2
+        _odds_check = _pl2.Path('data/historical_game_odds.parquet')
+        if _odds_check.exists():
+            _odds_check_df = pd.read_parquet(_odds_check)
+            _valid = _odds_check_df['consensus_total'].dropna()
+            if len(_valid) > 100:
+                _league_median_total = float(_valid.median())
+                logger.info(f"League median game total: {_league_median_total:.1f}")
+    except Exception:
+        pass
+
     # Pre-load retrospective features
     _retro_index = {}
     _retro_cols = ['did_not_play_last_team_game','returned_from_absence',
@@ -661,8 +675,17 @@ def build_training_table(stats_df, adv_df, odds_df):
             _odds = _odds_index.get(td, {})
             if _odds:
                 _is_home = int(tid == int(cur.get('home_team_id') or 0))
-                base['market_total_asof']  = _odds.get('consensus_total', 0.0)
-                base['implied_team_total'] = _odds.get('implied_home_total', 0.0) if _is_home else _odds.get('implied_away_total', 0.0)
+                base['market_total_asof']      = _odds.get('consensus_total', 0.0)
+                base['implied_team_total']     = (_odds.get('implied_home_total', 0.0) if _is_home else _odds.get('implied_away_total', 0.0))
+                base['has_market_data']        = 1
+                base['market_source_snapshot'] = 1
+                base['market_source_bdl']      = 0
+            else:
+                base['market_total_asof']      = _league_median_total
+                base['implied_team_total']     = _league_median_total / 2.0
+                base['has_market_data']        = 0
+                base['market_source_snapshot'] = 0
+                base['market_source_bdl']      = 0
             # Compute targets
             pts  = float(cur.get("pts",0)      or 0)
             reb  = float(cur.get("reb",0)      or 0)
@@ -840,7 +863,7 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
     joblib.dump(feat_cols, MODEL_DIR / f"features_{target}.pkl")
 
     # ── Calibration report ────────────────────────────────────────────────────
-    zero_inflated = target in ("stl", "blk", "stocks")
+    zero_inflated = target in ("stl", "blk", "stocks", "fg3m", "tov")
     actuals_ho    = y[tr_n:]
     cal = quantile_calibration_report(
         actuals_ho, holdout_preds, zero_inflated=zero_inflated
@@ -864,7 +887,7 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
             )
 
     # ── Zero-inflated diagnostics ─────────────────────────────────────────────
-    if target in ("stl", "blk", "stocks"):
+    if target in ("stl", "blk", "stocks", "fg3m", "tov"):
         zero_frac = float(np.mean(actuals_ho == 0))
         logger.info(f"  [{target.upper()} zero-inflation] holdout zero fraction: {zero_frac:.3f}")
         zm_feats = [c for c in feat_cols if "p_zero" in c or "p_ge" in c or "blended" in c]
