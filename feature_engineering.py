@@ -491,14 +491,14 @@ def opponent_defensive_features(
         else:
             result["opp_3p_rate_allowed_last10"] = np.nan
 
-        # Pace proxy: FGA + 0.44*FTA + TOV - OREB
+        # Issue 14 fix: pace proxy normalized per 48 min at team-game level
         if all(v is not None for v in [fga, fta, tov, oreb]):
-            result["opp_pace_proxy_last10"] = float(
-                fga + 0.44 * fta + tov - oreb
-            )
+            raw_poss = fga + 0.44 * fta + tov - oreb
+            # Normalize to per-48: divide by avg players * avg min
+            # raw_poss is team-game sum already (via _game_avg)
+            result["opp_pace_proxy_last10"] = float(raw_poss / 5.0 * 48.0 / 40.0)  # ~possessions per 48 per team
         else:
             result["opp_pace_proxy_last10"] = np.nan
-
         # ── Additional box-score derived opponent features ─────────────────
         # opp_fg_miss_volume: real FGA * (1 - FG%) per opponent allowed row
         if "fga" in allowed_rows.columns and "fg_pct" in allowed_rows.columns:

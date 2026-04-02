@@ -104,7 +104,9 @@ class ResidualCenterer:
         if stat not in CORRECTABLE_STATS:
             return raw_q50
 
-        cap = CORRECTION_CAPS.get(stat, 0.50)
+        # Issue 21 fix: proportional cap (10% of raw_q50) instead of symmetric absolute
+        abs_cap = CORRECTION_CAPS.get(stat, 0.50)
+        cap = max(abs_cap, 0.10 * abs(q50)) if q50 and q50 != 0 else abs_cap
 
         # Use learned model if available
         if stat in self.models:
