@@ -66,6 +66,7 @@ try:
         load_line_movement_snapshot,
     )
     from feature_engineering import (
+    set_league_3p_prior,
         build_player_game_features,
         add_interaction_features,
         get_feature_cols_for_stat,
@@ -1106,6 +1107,10 @@ def main():
         sys.exit("No stats data.")
 
     training_df = build_training_table(stats_df, adv_df, odds_df)
+
+    # Issue 15 fix: set dynamic league 3P% prior from full training data
+    if "fg3m" in stats_df.columns and "fg3a" in stats_df.columns:
+        set_league_3p_prior(stats_df["fg3m"], stats_df["fg3a"])
     if training_df.empty:
         sys.exit("Training table empty.")
 

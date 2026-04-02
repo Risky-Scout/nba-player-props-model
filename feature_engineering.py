@@ -1,3 +1,13 @@
+# Issue 15 fix: dynamic league 3P% prior
+_LEAGUE_3P_PRIOR = 0.365
+
+def set_league_3p_prior(fg3m_series, fg3a_series):
+    global _LEAGUE_3P_PRIOR
+    total_made = float(fg3m_series.sum())
+    total_att  = float(fg3a_series.sum())
+    if total_att > 1000:
+        _LEAGUE_3P_PRIOR = round(total_made / total_att, 4)
+
 """
 feature_engineering.py — NBA Props Model Feature Engineering
 VERSION: 2026-03-13-v14
@@ -157,18 +167,17 @@ def rolling_full(arr: np.ndarray, name: str) -> dict:
     else:
         f[f"{name}_cv_last10"] = np.nan
 
-    # EWMA alpha=0.3 (half-life ~2 games) — fast recency
+    # Bug 7 fix: ewma_10 = slow decay (alpha=0.15, ~4.5 game half-life) — matches "10" convention
     if n >= 2:
         s = pd.Series(arr)
-        f[f"{name}_ewma_10"] = float(s.ewm(alpha=0.3, min_periods=2).mean().iloc[-1])
+        f[f"{name}_ewma_10"] = float(s.ewm(alpha=0.15, min_periods=2).mean().iloc[-1])
     else:
         f[f"{name}_ewma_10"] = arr[-1] if n == 1 else np.nan
 
-    # EWMA alpha=0.15 (half-life ~4.5 games) — medium recency, recommended by expert review
-    # Different from ewma_10: captures slower role/usage drift (e.g. 10-game role shift)
+    # Bug 7 fix: ewma_5 = fast decay (alpha=0.3, ~2 game half-life)
     if n >= 2:
         s = pd.Series(arr)
-        f[f"{name}_ewma_5"] = float(s.ewm(alpha=0.15, min_periods=2).mean().iloc[-1])
+        f[f"{name}_ewma_5"] = float(s.ewm(alpha=0.3, min_periods=2).mean().iloc[-1])
     else:
         f[f"{name}_ewma_5"] = arr[-1] if n == 1 else np.nan
 
@@ -708,16 +717,34 @@ def vacated_opportunity_features(
         return float(np.nanmean(pdata["min"].values.astype(float)))
 
     def _classify_role(pid: int) -> str:
+        """
+        Issue 20 fix: use BDL position field first, fall back to stat-based heuristic.
+        Position field values: G, G-F, F, F-G, F-C, C
+        """
         pdata = stats_df[
             (stats_df["player_id"] == pid) &
             (stats_df["game_date"] < target_date)
         ]
         if pdata.empty:
             return "unknown"
+        # Use BDL position field if available
+        if "position" in pdata.columns:
+            pos = str(pdata["position"].iloc[-1]).upper().strip()
+            if pos in ("C", "F-C", "C-F"):
+                return "big"
+            if pos in ("G", "G-F", "F-G"):
+                return "guard"
+            if pos == "F":
+                # Forward — use blk to distinguish big vs wing
+                avg_blk = np.nanmean(pdata["blk"].values.astype(float)) if "blk" in pdata.columns else 0
+                return "big" if avg_blk > 0.4 else "guard"
+        # Fallback: stat-based heuristic
         avg_reb = np.nanmean(pdata["reb"].values.astype(float)) if "reb" in pdata.columns else 0
         avg_ast = np.nanmean(pdata["ast"].values.astype(float)) if "ast" in pdata.columns else 0
         avg_blk = np.nanmean(pdata["blk"].values.astype(float)) if "blk" in pdata.columns else 0
-        if avg_reb > avg_ast and avg_blk > 0.3:
+        avg_fg3a = np.nanmean(pdata["fg3a"].values.astype(float)) if "fg3a" in pdata.columns else 0
+        # Bigs: high reb, low 3PA, some blocks
+        if avg_reb > avg_ast and avg_blk > 0.3 and avg_fg3a < 3.0:
             return "big"
         return "guard"
 
@@ -915,7 +942,7 @@ def build_player_game_features(
         f["fg3m_p_ge3_last10"]  = float(np.mean(last10_fg3m >= 3)) if n_window > 0 else np.nan
         # fg3m_games_in_window_last10 REMOVED (redundant)
 
-        PRIOR_3P = 0.36
+        PRIOR_3P = _LEAGUE_3P_PRIOR  # Issue 15 fix: dynamic rolling league prior
         K10, KS  = 120.0, 600.0
         att10  = float(np.sum(fg3a_arr[-10:]))
         made10 = float(np.sum(fg3m_arr[-10:]))

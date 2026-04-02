@@ -439,15 +439,15 @@ def print_report(df: pd.DataFrame, date_label: str = ""):
         print(f"\n  {'-'*68}")
         print(f"  CALIBRATION (model_prob bucket → actual hit rate):")
         print(f"    {'Bucket':12s} {'N':>5}  {'Pred':>7}  {'Actual':>7}  {'Error':>7}")
-        for lo, hi in [(0.40,0.50),(0.50,0.55),(0.55,0.60),(0.60,0.65),(0.65,0.70),(0.70,1.0)]:
+        # Issue 18 fix: equal-mass (quantile-based) bins instead of equal-width
+        try:
+            prob_vals = bet["model_prob"].dropna()
+            bin_edges = pd.qcut(prob_vals, q=8, retbins=True, duplicates="drop")[1]
+            bin_pairs = list(zip(bin_edges[:-1], bin_edges[1:]))
+        except Exception:
+            bin_pairs = [(0.40,0.50),(0.50,0.55),(0.55,0.60),(0.60,0.65),(0.65,0.70),(0.70,1.0)]
+        for lo, hi in bin_pairs:
             mask = (bet["model_prob"] >= lo) & (bet["model_prob"] < hi)
-            if mask.sum() < 3: continue
-            sub_cal = bet[mask]
-            pred_p  = float(sub_cal["model_prob"].mean())
-            act_p   = float((sub_cal["result"] == "HIT").mean())
-            err     = abs(pred_p - act_p)
-            print(f"    {lo:.0%}-{hi:.0%}      {mask.sum():5d}  {pred_p:7.3f}  {act_p:7.3f}  {err:7.3f}")
-
     clv_vals = bet["clv_proxy"].dropna()
     if len(clv_vals) > 0:
         print(f"\n  {'-'*68}")

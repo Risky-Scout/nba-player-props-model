@@ -127,21 +127,38 @@ class ResidualCenterer:
 
     def correct_quantiles(self, stat: str, q_preds: dict, meta_features: dict) -> dict:
         """
-        Apply the same correction to the entire quantile ladder.
-        This is the key method — shifts ALL quantiles consistently.
-
-        Per the architecture document:
-        "If you apply a centering correction, it should move q10, q25, q50, q75, q90"
+        Issue 13 fix: per-quantile corrections with linear interpolation.
+        Computes corrections at Q10, Q50, Q90 anchor points and interpolates
+        linearly for intermediate quantiles. Avoids uniform shift that ignores
+        independent bias in each quantile model.
         """
         if stat not in CORRECTABLE_STATS:
             return q_preds
 
-        raw_q50 = float(q_preds.get(0.50, 0))
-        corrected_q50 = self.correct(stat, raw_q50, meta_features)
-        shift = corrected_q50 - raw_q50
+        # Compute corrections at three anchor quantiles
+        anchors = {}
+        for q in [0.10, 0.50, 0.90]:
+            raw_q = float(q_preds.get(q, q_preds.get(0.50, 0)))
+            corrected = self.correct(stat, raw_q, meta_features)
+            anchors[q] = corrected - raw_q  # shift at this anchor
 
-        # Apply same shift to every quantile
-        return {q: v + shift for q, v in q_preds.items()}
+        # Linear interpolation of shift across quantile ladder
+        result = {}
+        for q, v in q_preds.items():
+            if q <= 0.10:
+                shift = anchors[0.10]
+            elif q >= 0.90:
+                shift = anchors[0.90]
+            elif q <= 0.50:
+                # Interpolate between Q10 and Q50
+                t = (q - 0.10) / (0.50 - 0.10)
+                shift = anchors[0.10] + t * (anchors[0.50] - anchors[0.10])
+            else:
+                # Interpolate between Q50 and Q90
+                t = (q - 0.50) / (0.90 - 0.50)
+                shift = anchors[0.50] + t * (anchors[0.90] - anchors[0.50])
+            result[q] = v + shift
+        return result
 
     # ── Training ──────────────────────────────────────────────────────────────
 
