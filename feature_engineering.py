@@ -493,6 +493,41 @@ def opponent_defensive_features(
         else:
             result["opp_pace_proxy_last10"] = np.nan
 
+        # ── Additional box-score derived opponent features ─────────────────
+        # opp_fg_miss_volume: real FGA * (1 - FG%) per opponent allowed row
+        if "fga" in allowed_rows.columns and "fg_pct" in allowed_rows.columns:
+            try:
+                _fg_miss_per_game = (
+                    allowed_rows.assign(_miss=allowed_rows["fga"] * (1 - allowed_rows["fg_pct"]))
+                    .groupby("game_id")["_miss"].sum()
+                )
+                result["opp_fg_miss_volume"] = float(_fg_miss_per_game.mean())
+            except Exception:
+                result["opp_fg_miss_volume"] = np.nan
+        else:
+            result["opp_fg_miss_volume"] = np.nan
+
+        # opp_3pt_miss_volume: real FG3A * (1 - FG3%) per opponent allowed row
+        if "fg3a" in allowed_rows.columns and "fg3_pct" in allowed_rows.columns:
+            try:
+                _fg3_miss_per_game = (
+                    allowed_rows.assign(_miss=allowed_rows["fg3a"] * (1 - allowed_rows["fg3_pct"]))
+                    .groupby("game_id")["_miss"].sum()
+                )
+                result["opp_3pt_miss_volume"] = float(_fg3_miss_per_game.mean())
+            except Exception:
+                result["opp_3pt_miss_volume"] = np.nan
+        else:
+            result["opp_3pt_miss_volume"] = np.nan
+
+        # opp_3pa_allowed, opp_3pm_allowed, opp_3p_rate_allowed
+        result["opp_3pa_allowed"]     = fg3a if fg3a is not None else np.nan
+        result["opp_3pm_allowed"]     = fg3m if fg3m is not None else np.nan
+        if fg3a is not None and fga is not None and fga > 0:
+            result["opp_3p_rate_allowed"] = float(fg3a / fga)
+        else:
+            result["opp_3p_rate_allowed"] = np.nan
+
         return result
 
     except Exception:
@@ -976,7 +1011,93 @@ def build_player_game_features(
         f["per_min_pf_last10"] = 0.0
         f["slope5_pf"] = 0.0
 
-        # ── Schedule ──────────────────────────────────────────────────────────────
+    
+    # ── Per-minute aliases — v19 manifest naming parity ─────────────────────
+    for _src, _dst in [
+        ("pts_per_min_mean_last10",  "per_min_pts_last10"),
+        ("reb_per_min_mean_last10",  "per_min_reb_last10"),
+        ("ast_per_min_mean_last10",  "per_min_ast_last10"),
+        ("fga_per_min_mean_last10",  "per_min_fga_last10"),
+        ("fta_per_min_mean_last10",  "per_min_fta_last10"),
+        ("stl_per_min_mean_last10",  "per_min_stl_last10"),
+        ("blk_per_min_mean_last10",  "per_min_blk_last10"),
+        ("stl_ewma_10",              "ewma10_stl"),
+        ("blk_ewma_10",              "ewma10_blk"),
+    ]:
+        f[_dst] = f.get(_src, np.nan)
+
+    # adv_<X>_mean_last10 -> adv_mean_<X>_last10 naming parity
+    for _k in list(f.keys()):
+        if _k.startswith("adv_") and "_mean_last10" in _k:
+            _field = _k[4:_k.index("_mean_last10")]
+            _mirror = f"adv_mean_{_field}_last10"
+            if _mirror not in f:
+                f[_mirror] = f[_k]
+
+    # ── Real advanced features from prior_adv (non-zero fields only) ─────────
+    if prior_adv and len(prior_adv) > 0:
+        _adf = pd.DataFrame(prior_adv).sort_values("game_date").reset_index(drop=True)
+        _last10 = _adf.tail(10)
+        _n10    = len(_last10)
+        _exp_mp = max(f.get("exp_mp") or 25.0, 1.0)
+
+        def _m10(col):
+            if col not in _adf.columns: return np.nan
+            v = _last10[col].dropna().values
+            return float(np.mean(v)) if len(v) > 0 else np.nan
+
+        # usage_percentage — mean=0.152, real data
+        _up = _m10("usage_percentage")
+        if not np.isnan(_up):
+            f["adv_mean_usage_percentage_last10"] = _up
+
+        # rebound_chances — mean=0.404, real data
+        _rct = _m10("rebound_chances_total")
+        if not np.isnan(_rct):
+            f["reb_chances_per_game"]                  = _rct
+            f["reb_chances_sample_last10"]             = float(_n10)
+            f["adv_mean_rebound_chances_total_last10"] = _rct
+
+        _rcd = _m10("rebound_chances_def")
+        if not np.isnan(_rcd):
+            f["reb_chances_def_per_game"] = _rcd
+
+        _rco = _m10("rebound_chances_off")
+        if not np.isnan(_rco):
+            f["reb_chances_off_per_game"] = _rco
+
+    # ── Safe gated / derived features ────────────────────────────────────────
+    _exp_mp2 = max(f.get("exp_mp") or 25.0, 1.0)
+
+    # pts_per_poss_adj, ast_per_poss_adj using pace proxy
+    _pace = f.get("opp_pace_proxy_last10") or 0.0
+    if _pace > 10:
+        _pmpts = f.get("per_min_pts_last10") or 0.0
+        _pmast = f.get("per_min_ast_last10") or 0.0
+        f["pts_per_poss_adj"] = _pmpts / max(_pace / 48.0, 1e-6)
+        f["ast_per_poss_adj"] = _pmast / max(_pace / 48.0, 1e-6)
+
+    # tov_per_min gated
+    _tov_rate = f.get("tov_per_min_mean_last10", np.nan)
+    if _tov_rate is not None and not (isinstance(_tov_rate, float) and np.isnan(_tov_rate)):
+        f["tov_per_min_mean_last10_gated"] = float(_tov_rate) * int(_exp_mp2 >= 18)
+
+    # regime shift gated
+    _reb5  = f.get("reb_per_min_mean_last5",  0.0) or 0.0
+    _reb10 = f.get("reb_per_min_mean_last10", 0.0) or 0.0
+    f["reb_regime_shift_gated"] = abs(_reb5 - _reb10) * int(_exp_mp2 >= 18)
+
+    _pts5  = f.get("pts_per_min_mean_last5",  0.0) or 0.0
+    _pts10 = f.get("pts_per_min_mean_last10", 0.0) or 0.0
+    f["pts_regime_shift_gated"] = abs(_pts5 - _pts10) * int(_exp_mp2 >= 18)
+
+    # blowout_risk_x_mp_vol_gated
+    _br  = f.get("blowout_risk", 0.0) or 0.0
+    _mpv = f.get("mp_vol", 0.0)       or 0.0
+    _hmd = int(f.get("has_market_data", 0))
+    f["blowout_risk_x_mp_vol_gated"] = _br * _mpv * _hmd
+
+    # ── Schedule ──────────────────────────────────────────────────────────────
     dates = df["game_date"].tolist()
     f.update(schedule_features(dates, tdt))
 
@@ -1306,22 +1427,22 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "per_min_fga_last10",
         "fga_per_min_trend_3v10",
         "per_min_fta_last10",
-        "drives_per_game",
-        "drive_fta_per_game",
-        "drive_pts_per_game",
-        "touches_per_min_ewma",         # normalized (ablation Q1 vs raw)
+
+
+
+
         "adv_mean_usage_percentage_last10",
         "adv_true_shooting_percentage_mean_last10",
         "opp_allowed_pts_ewma",
         "opp_allowed_pts_factor",
-        "opp_paint_pts_allowed",
+
         "opp_fg_miss_volume",
-        "opp_midrange_rate_allowed",
-        "iso_matchup_edge_shrunk",
-        "pnr_matchup_edge_shrunk",
-        "transition_ppp_shrunk",
+
+
+
+
         "iso_possessions_last10",
-        "pnr_bh_possessions_last10",
+
         "transition_possessions_last10",
         "pts_regime_shift_gated",
         "vacated_fga",
@@ -1337,21 +1458,21 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "ast_per_min_mean_last10",
         "ast_per_min_trend_3v10",
         "ast_per_poss_adj",
-        "potential_ast_per_game_shrunk",
-        "ast_opp_per_game",
-        "passes_per_game",              # explicitly guaranteed in compute block
-        "passes_per_min_ewma",
+
+
+
+
         "adv_assist_percentage_mean_last10",
-        "adv_secondary_assists_mean_last10",
-        "pnr_bh_freq",
-        "pnr_bh_ppp_shrunk",
-        "touches_per_min_ewma",
-        "potential_ast_sample_last10",
-        "pnr_bh_possessions_last10",
+
+
+
+
+
+
         "opp_allowed_ast_factor",
         "tov_per_min_mean_last10_gated",
         "vacated_ast",
-        "vacated_guard_minutes_gated",
+
         "blowout_risk_x_mp_vol_gated",
     ]
 
@@ -1367,17 +1488,17 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "reb_chances_per_game",
         "reb_chances_def_per_game",
         "reb_chances_off_per_game",
-        "contested_reb_per_game",
+
         "reb_chances_sample_last10",    # explicitly surfaced
         "adv_rebound_chances_total_mean_last10",
         "adv_rebound_chances_off_mean_last10",
         "adv_rebound_chances_def_mean_last10",
         "adv_mean_rebound_chances_total_last10",
-        "opp_oreb_chances_allowed",
-        "adv_mean_defended_at_rim_fga_last10",
-        "opp_rim_fga_allowed",
+
+
+
         "opp_fg_miss_volume",
-        "opp_rim_miss_volume",
+
         "opp_allowed_reb_factor",
         "vacated_reb",
         "vacated_big_minutes",
@@ -1390,26 +1511,26 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
     FG3M_L4 = [
         "per_min_fg3a_last10",
         "fg3a_per_min_trend_3v10",
-        "cs_3pa_per_game",
-        "cs_open_3p_pct_shrunk",
-        "cs_covered_3p_pct_shrunk",
+
+
+
         "fg3_pct_safe",
-        "spotup_freq",
-        "spotup_ppp_shrunk",
+
+
         "adv_pct_3pa_mean_last10",
         "is_low_3pa_last10",
         "fg3m_p_zero_last10",
         "fg3m_p_ge3_last10",
-        "cs_3pa_sample_last10",
-        "spotup_possessions_last10",
-        "opp_corner3_rate_allowed",
-        "opp_atb3_rate_allowed",
+
+
+
+
         "opp_3pa_allowed",
         "opp_3pm_allowed",
         "opp_3p_rate_allowed",
         "opp_3pt_miss_volume",
-        "adv_contested_shots_3pt_mean_last10",
-        "spotup_matchup_edge_shrunk",
+
+
         # vacated_minutes REMOVED
         "blowout_risk_x_mp_vol_gated",
     ]
@@ -1422,15 +1543,15 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "blk_p_zero_last10",
         "blk_p_ge1_last10",
         "blk_p_ge2_last10",
-        "rim_fga_defended_per_game",
-        "rim_fg_pct_allowed_shrunk",
-        "adv_defended_at_rim_fga_mean_last10",
-        "adv_defended_at_rim_fg_pct_mean_last10",
-        "adv_contested_shots_2pt_mean_last10",
-        "rim_defended_sample_last10",
-        "adv_mean_defended_at_rim_fga_last10",
-        "opp_rim_miss_volume",
-        "opp_paint_touches",
+
+
+
+
+
+
+
+
+
         "vacated_big_minutes",
         "vacated_minutes",
         "blowout_risk_x_mp_vol_gated",
@@ -1446,12 +1567,12 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "stl_p_zero_last10",
         "stl_p_ge1_last10",
         "stl_p_ge2_last10",
-        "adv_mean_deflections_last10",
-        "adv_deflections_ewma",
-        "adv_matchup_turnovers_mean_last10",
-        "adv_partial_possessions_mean_last10",
-        "opp_live_ball_tov",            # primary (fallback to opp_tov in compute)
-        "adv_switches_on_mean_last10",
+
+
+
+
+
+
         "vacated_minutes",
         # blowout_risk REMOVED
     ]
@@ -1460,12 +1581,11 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
 
     PRA_L4 = [
         "per_min_pts_last10", "pts_per_min_trend_3v10",
-        "per_min_fga_last10", "drives_per_game",
-        "iso_matchup_edge_shrunk", "opp_allowed_pts_ewma",
-        "per_min_reb_last10", "reb_chances_per_game", "adv_mean_defended_at_rim_fga_last10",
-        "per_min_ast_last10", "potential_ast_per_game_shrunk", "pnr_bh_freq",
+        "per_min_fga_last10",
+        "opp_allowed_pts_ewma",
+        "per_min_reb_last10", "reb_chances_per_game",
+        "per_min_ast_last10",
         "adv_mean_usage_percentage_last10",
-        "touches_per_min_ewma", "passes_per_min_ewma",
         "vacated_minutes",
         "pts_regime_shift_gated", "blowout_risk_x_mp_vol_gated",
     ]
@@ -1473,32 +1593,30 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
     PR_L4 = [
         "per_min_pts_last10", "pts_per_min_trend_3v10",
         "per_min_fga_last10", "opp_allowed_pts_ewma",
-        "iso_matchup_edge_shrunk",
+
         "per_min_reb_last10", "reb_chances_per_game",
-        "adv_mean_defended_at_rim_fga_last10", "opp_fg_miss_volume",
+        "opp_fg_miss_volume",
         "adv_mean_usage_percentage_last10",
-        "touches_per_min_ewma",
+
         "vacated_minutes", "blowout_risk_x_mp_vol_gated",
     ]
 
     PA_L4 = [
         "per_min_pts_last10", "pts_per_min_trend_3v10",
         "per_min_fga_last10", "opp_allowed_pts_ewma",
-        "iso_matchup_edge_shrunk", "pnr_matchup_edge_shrunk",
-        "per_min_ast_last10", "potential_ast_per_game_shrunk",
-        "pnr_bh_freq", "opp_allowed_ast_factor",
+        "per_min_ast_last10",
+        "opp_allowed_ast_factor",
         "adv_mean_usage_percentage_last10",
-        "touches_per_min_ewma", "passes_per_min_ewma",
         "vacated_minutes", "blowout_risk_x_mp_vol_gated",
     ]
 
     RA_L4 = [
         "per_min_reb_last10", "reb_chances_per_game",
-        "adv_mean_defended_at_rim_fga_last10", "opp_fg_miss_volume",
-        "per_min_ast_last10", "potential_ast_per_game_shrunk",
-        "pnr_bh_freq", "opp_allowed_ast_factor",
+        "opp_fg_miss_volume",
+        "per_min_ast_last10",
+        "opp_allowed_ast_factor",
         "adv_mean_usage_percentage_last10",
-        "touches_per_min_ewma",
+
         "vacated_minutes", "blowout_risk_x_mp_vol_gated",
     ]
 

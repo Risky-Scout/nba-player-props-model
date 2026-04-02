@@ -487,6 +487,13 @@ def build_training_table(stats_df, adv_df, odds_df):
                     'opp_allowed_stl_ewma':  _ewma_last10(last10['stl'].values),
                     'opp_allowed_stl_mean':  float(last10['stl'].mean()),
                     'opp_allowed_stl_factor': float(last10['stl'].mean() / max(stats_df['stl'].mean(), 1)),
+                    # opp_fg_miss_volume: from real FGA and FG% (FGM = FGA * FG_PCT)
+                    'opp_allowed_fga_ewma':  _ewma_last10(last10['fga'].values) if 'fga' in last10.columns else np.nan,
+                    'opp_fg_miss_volume':    float((last10['fga'] * (1 - last10['fg_pct'])).mean()) if 'fga' in last10.columns and 'fg_pct' in last10.columns else np.nan,
+                    'opp_3pa_allowed':       float(last10['fg3a'].mean()) if 'fg3a' in last10.columns else np.nan,
+                    'opp_3pm_allowed':       float(last10['fg3m'].mean()) if 'fg3m' in last10.columns else np.nan,
+                    'opp_3p_rate_allowed':   float(last10['fg3m'].mean() / max(last10['fg3a'].mean(), 1)) if 'fg3a' in last10.columns else np.nan,
+                    'opp_3pt_miss_volume':   float((last10['fg3a'] * (1 - last10['fg3_pct'])).mean()) if 'fg3a' in last10.columns and 'fg3_pct' in last10.columns else np.nan,
                 }
             logger.info(f"[v19] opp_env_map built for {len(opp_env_map)} teams from stats_df")
         else:
