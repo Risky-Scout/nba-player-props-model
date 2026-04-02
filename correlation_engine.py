@@ -352,8 +352,15 @@ class WithinPlayerCorrelationEngine:
     def _pearson_robust(self, Z: np.ndarray) -> np.ndarray:
         """
         Pearson correlation on winsorized z-scores.
+        Issue 16 fix: uses Spearman for zero-inflated stat pairs (stl, blk, tov, stocks).
         Handles NaN via pairwise complete observations.
         """
+        from scipy.stats import spearmanr as _spearmanr
+        # Zero-inflated stat indices (stl=5, blk=6, tov=3, stocks=11 — adjust if order changes)
+        _ZERO_INFLATED_STATS = {"stl", "blk", "tov", "stocks"}
+        _zi_indices = {i for i, s in enumerate(self._stat_names)
+                       if s in _ZERO_INFLATED_STATS} if hasattr(self, "_stat_names") else set()
+
         dim = Z.shape[1]
         R   = np.eye(dim)
         for i in range(dim):
@@ -364,7 +371,11 @@ class WithinPlayerCorrelationEngine:
                     continue
                 zi = Z[mask, i]
                 zj = Z[mask, j]
-                corr = float(np.corrcoef(zi, zj)[0, 1])
+                # Issue 16: use Spearman for zero-inflated stat pairs
+                if i in _zi_indices or j in _zi_indices:
+                    corr, _ = _spearmanr(zi, zj)
+                else:
+                    corr = float(np.corrcoef(zi, zj)[0, 1])
                 if np.isnan(corr):
                     corr = 0.0
                 R[i, j] = R[j, i] = corr

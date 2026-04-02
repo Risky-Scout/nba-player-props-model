@@ -123,17 +123,17 @@ def rolling_full(arr: np.ndarray, name: str) -> dict:
     NaN returned where insufficient data (LightGBM handles natively).
     """
     arr = arr.astype(float)
-    arr = arr[~np.isnan(arr)]
-    n   = len(arr)
+    # Bug 6 fix: preserve temporal structure, use nanmean on windows
+    n   = int(np.sum(~np.isnan(arr)))  # Bug 6: count non-NaN games
     f   = {}
 
-    def _safe_mean(a):    return float(np.mean(a))           if len(a) > 0 else np.nan
-    def _safe_median(a):  return float(np.median(a))         if len(a) > 0 else np.nan
-    def _safe_mad(a):     return float(np.mean(np.abs(a - np.median(a)))) if len(a) > 1 else np.nan
-    def _safe_p25(a):     return float(np.percentile(a, 25)) if len(a) > 1 else np.nan
-    def _safe_p75(a):     return float(np.percentile(a, 75)) if len(a) > 1 else np.nan
-    def _safe_min(a):     return float(np.min(a))            if len(a) > 0 else np.nan
-    def _safe_max(a):     return float(np.max(a))            if len(a) > 0 else np.nan
+    def _safe_mean(a):    return float(np.nanmean(a))        if np.any(~np.isnan(a)) else np.nan
+    def _safe_median(a):  return float(np.nanmedian(a))      if np.any(~np.isnan(a)) else np.nan
+    def _safe_mad(a):     return float(np.nanmean(np.abs(a - np.nanmedian(a)))) if np.sum(~np.isnan(a)) > 1 else np.nan
+    def _safe_p25(a):     return float(np.nanpercentile(a, 25)) if np.sum(~np.isnan(a)) > 1 else np.nan
+    def _safe_p75(a):     return float(np.nanpercentile(a, 75)) if np.sum(~np.isnan(a)) > 1 else np.nan
+    def _safe_min(a):     return float(np.nanmin(a))          if np.any(~np.isnan(a)) else np.nan
+    def _safe_max(a):     return float(np.nanmax(a))          if np.any(~np.isnan(a)) else np.nan
 
     last3  = arr[-3:]  if n >= 1 else np.array([])
     last5  = arr[-5:]  if n >= 1 else np.array([])
