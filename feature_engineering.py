@@ -223,6 +223,14 @@ def minutes_model_features(df: pd.DataFrame) -> dict:
 
     min_arr = df["min"].values.astype(float)
     f.update(rolling_full(min_arr, "mp"))
+    # Manifest naming aliases for minutes features
+    f["mp_ewma_10"]    = f.get("ewma10_min",      f.get("mp_mean_last10", np.nan))
+    f["mp_vol_last10"] = f.get("std_min_last10",  f.get("mp_cv_last10",   np.nan))
+    f["mp_mean_last10"]= f.get("mp_mean_last10",  np.nan)
+    # mp_trend_3v10: recent 3-game mean vs last 10
+    _mp3  = f.get("mp_mean_last3",  np.nan)
+    _mp10 = f.get("mp_mean_last10", np.nan)
+    f["mp_trend_3v10"] = (_mp3 - _mp10) if (not np.isnan(_mp3) and not np.isnan(_mp10) and _mp10 > 0) else np.nan
 
     last10_min = min_arr[-10:]
     n = len(last10_min)

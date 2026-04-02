@@ -467,7 +467,13 @@ def build_training_table(stats_df, adv_df, odds_df):
                 weights = np.array([0.85**(len(arr)-1-i) for i in range(len(arr))])
                 return float(np.average(arr, weights=weights)) if len(arr) > 0 else np.nan
             for opp_id, grp in stats_sorted.groupby('opp_team_id'):
-                last10 = grp.tail(10)
+                # Aggregate to game level first, then take last 10 games
+                grp_by_game = grp.groupby('game_id').agg({
+                    'pts':'sum','reb':'sum','ast':'sum','fg3m':'sum',
+                    'fga':'sum','fg3a':'sum','fg_pct':'mean','fg3_pct':'mean',
+                    'blk':'sum','stl':'sum','game_date':'max'
+                }).reset_index().sort_values('game_date')
+                last10 = grp_by_game.tail(10)
                 opp_env_map[int(opp_id)] = {
                     'opp_allowed_pts_ewma':  _ewma_last10(last10['pts'].values),
                     'opp_allowed_pts_mean':  float(last10['pts'].mean()),
