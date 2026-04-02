@@ -305,6 +305,7 @@ class ResidualCenterer:
                             "is_home":         r.get("is_home"),
                             "days_rest":       r.get("days_rest"),
                             "season_games_played": r.get("season_games_played"),
+                            "opp_def_rating":  r.get("opp_def_rating"),  # Bug 8 fix
                         })
                     except: continue
             except: continue

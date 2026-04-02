@@ -330,6 +330,14 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
     clv_vals = bet[clv_col].dropna()
     mean_clv = float(clv_vals.mean()) if len(clv_vals) > 0 else 0.0
     pct_true_clv = float((bet.get("clv_is_true", pd.Series(False)).sum() / len(bet))) if "clv_is_true" in bet.columns else 0.0
+    # Bug 10 fix: report true CLV and proxy CLV separately
+    if "clv_is_true" in bet.columns:
+        true_clv_vals  = bet[bet["clv_is_true"] == True][clv_col].dropna()
+        proxy_clv_vals = bet[bet["clv_is_true"] == False][clv_col].dropna()
+        mean_clv_true  = float(true_clv_vals.mean())  if len(true_clv_vals)  > 0 else None
+        mean_clv_proxy = float(proxy_clv_vals.mean()) if len(proxy_clv_vals) > 0 else None
+    else:
+        mean_clv_true = mean_clv_proxy = None
 
     if "model_prob" in bet.columns and "side" in bet.columns:
         actual_p = (bet["result"] == "HIT").astype(float)  # Bug 4 fix: HIT=1, MISS=0 regardless of side
@@ -346,6 +354,18 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
     pnl = bet["profit"].values
     sharpe = (np.mean(pnl) / np.std(pnl) * np.sqrt(172)) if np.std(pnl) > 0 else 0.0  # ~172 NBA slate days
 
+    # Issue 19: bootstrap CI on CLV
+    if len(clv_vals) >= 30:
+        import numpy as _np2
+        _rng = _np2.random.default_rng(42)
+        boot_means = [_rng.choice(clv_vals.values, size=len(clv_vals), replace=True).mean()
+                      for _ in range(10000)]
+        clv_ci_low  = round(float(_np2.percentile(boot_means, 2.5)), 4)
+        clv_ci_high = round(float(_np2.percentile(boot_means, 97.5)), 4)
+        clv_sig     = bool(clv_ci_low > 0)
+    else:
+        clv_ci_low = clv_ci_high = None
+        clv_sig = False
     return {
         "label":    label,
         "n_bets":   int(n),
@@ -354,6 +374,11 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
         "profit":   round(profit, 2),
         "roi":      round(roi, 4),
         "mean_clv": round(mean_clv, 4),
+        "mean_clv_true_clv": round(mean_clv_true, 4) if mean_clv_true is not None else None,
+        "mean_clv_proxy": round(mean_clv_proxy, 4) if mean_clv_proxy is not None else None,
+        "clv_ci_95": [clv_ci_low, clv_ci_high],
+        "clv_significant": clv_sig,
+        "pct_true_clv": round(pct_true_clv, 3),
         "pct_true_clv": round(pct_true_clv, 3),
         "brier":    round(brier, 4) if brier is not None else None,
         "max_dd":   round(max_dd, 2),
