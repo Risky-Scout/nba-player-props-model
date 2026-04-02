@@ -315,14 +315,14 @@ class WithinPlayerCorrelationEngine:
                 n_seg = len(Z_seg)
 
                 if n_seg < 100:
-                    # Not enough data — use global with heavy shrinkage
-                    k  = 200
+                    # Bug 1 fix: use empirical data even for small segments
                     lam = n_seg / (n_seg + k) if n_seg > 0 else 0.0
-                    R_seg = lam * self.R_global + (1.0 - lam) * self.R_global
-                    self.R_segments[(ub, mb)] = self.R_global
-                    self.audit_log[f"seg_{ub}_{mb}"] = {
-                        "n": n_seg, "fallback": True
-                    }
+                    if n_seg > 1:
+                        R_emp_small = np.corrcoef(Z_seg.T)
+                        R_seg = lam * R_emp_small + (1.0 - lam) * self.R_global
+                    else:
+                        R_seg = self.R_global
+                    self.R_segments[(ub, mb)] = R_seg
                 else:
                     R_emp_seg = self._pearson_robust(Z_seg)
                     R_shrunk  = shrink_to_global(R_emp_seg, self.R_global,

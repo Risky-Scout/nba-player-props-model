@@ -230,7 +230,7 @@ def minutes_model_features(df: pd.DataFrame) -> dict:
     # mp_trend_3v10: recent 3-game mean vs last 10
     _mp3  = f.get("mp_mean_last3",  np.nan)
     _mp10 = f.get("mp_mean_last10", np.nan)
-    f["mp_trend_3v10"] = (_mp3 - _mp10) if (not np.isnan(_mp3) and not np.isnan(_mp10) and _mp10 > 0) else np.nan
+    f["mp_trend_3v10"] = (_mp3 / _mp10) if (not np.isnan(_mp3) and not np.isnan(_mp10) and _mp10 > 0) else np.nan
 
     last10_min = min_arr[-10:]
     n = len(last10_min)
@@ -241,9 +241,7 @@ def minutes_model_features(df: pd.DataFrame) -> dict:
     f["games_20minus_last10"] = float(np.sum(last10_min <= 20))  if n > 0 else np.nan
 
     if n > 1 and np.max(last10_min) > 0:
-        f["cv_min"] = float(
-            1.0 - (np.std(last10_min) / np.max(last10_min))
-        )
+        f["cv_min"] = float(np.std(last10_min) / np.mean(last10_min)) if np.mean(last10_min) > 0 else np.nan
     else:
         f["cv_min"] = np.nan
 

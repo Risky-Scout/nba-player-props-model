@@ -286,7 +286,7 @@ class ResidualCenterer:
 
     def _load_graded(self, graded_dir: Path) -> list:
         rows = []
-        for f in sorted(graded_dir.glob("graded_2026-*.csv")):
+        for f in sorted(graded_dir.glob("graded_20*.csv")):
             try:
                 for r in csv.DictReader(open(f)):
                     try:

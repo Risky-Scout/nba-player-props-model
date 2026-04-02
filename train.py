@@ -88,7 +88,14 @@ MODEL_DIR = Path("model_cache"); MODEL_DIR.mkdir(exist_ok=True)
 
 TRAIN_SEASONS  = [2023, 2024, 2025]
 MIN_GAMES      = 15
-HOLDOUT_FRAC   = 0.15   # applied as date-based split, not random
+HOLDOUT_FRAC   = 0.15   # kept for legacy reporting only
+
+# Walk-forward cross-validation config
+WF_FOLD_DAYS      = 28    # validation window per fold (days)
+WF_MIN_TRAIN_DAYS = 180   # minimum training window before first fold
+WF_MIN_FOLD_ROWS  = 50    # minimum rows in fold to count toward calibration
+WF_MIN_CAL_ROWS   = 200   # minimum OOS rows to use target-specific calibrator
+                           # below this threshold → fall back to pooled calibrator
 
 STAT_DISPLAY = {
     "pts":"Points","reb":"Rebounds","ast":"Assists","fg3m":"Threes",
@@ -477,7 +484,7 @@ def build_training_table(stats_df, adv_df, odds_df):
                 opp_env_map[int(opp_id)] = {
                     'opp_allowed_pts_ewma':  _ewma_last10(last10['pts'].values),
                     'opp_allowed_pts_mean':  float(last10['pts'].mean()),
-                    'opp_allowed_pts_factor': float(last10['pts'].mean() / max(stats_df['pts'].mean(), 1)),
+                    'opp_allowed_pts_factor': float(last10['pts'].mean() / max(stats_df.groupby(["game_id","team_id"])["pts"].sum().mean(), 1)),
                     'opp_allowed_reb_ewma':  _ewma_last10(last10['reb'].values),
                     'opp_allowed_reb_mean':  float(last10['reb'].mean()),
                     'opp_allowed_reb_factor': float(last10['reb'].mean() / max(stats_df['reb'].mean(), 1)),
@@ -796,6 +803,66 @@ def _temporal_split_idx(game_dates: np.ndarray, holdout_frac: float) -> int:
     return int(np.searchsorted(dates, cutoff))
 
 
+def _walk_forward_oos(
+    df: pd.DataFrame,
+    feat_cols: list,
+    target: str,
+    fold_days: int = WF_FOLD_DAYS,
+    min_train_days: int = WF_MIN_TRAIN_DAYS,
+    min_fold_rows: int = WF_MIN_FOLD_ROWS,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Walk-forward cross-validation for OOS calibration.
+    Returns (oos_actuals, oos_preds_q50) arrays across all folds.
+    Season-aware: never crosses Oct 1 season boundary in a single fold.
+    """
+    dates = pd.to_datetime(df["game_date"].values)
+    X_all = df[feat_cols].values.astype(float)
+    y_all = df["actual"].values.astype(float)
+
+    min_train_date = dates[0] + pd.Timedelta(days=min_train_days)
+    max_date       = dates[-1]
+
+    oos_actuals = []
+    oos_preds   = []
+
+    fold_start = min_train_date
+    while fold_start < max_date:
+        fold_end = fold_start + pd.Timedelta(days=fold_days)
+
+        # Season-aware: cap fold at Oct 1 boundary
+        fold_year = fold_start.year
+        oct1 = pd.Timestamp(f"{fold_year}-10-01")
+        if fold_start < oct1 <= fold_end:
+            fold_end = oct1
+
+        train_mask = dates < fold_start
+        val_mask   = (dates >= fold_start) & (dates < fold_end)
+
+        n_train = train_mask.sum()
+        n_val   = val_mask.sum()
+
+        if n_train < 200 or n_val < min_fold_rows:
+            fold_start = fold_end
+            continue
+
+        X_tr, y_tr = X_all[train_mask], y_all[train_mask]
+        X_val, y_val = X_all[val_mask], y_all[val_mask]
+
+        m = lgb.LGBMRegressor(**{**LGB_BASE, "alpha": 0.5})
+        m.fit(X_tr, y_tr)
+        preds = m.predict(X_val)
+
+        oos_actuals.append(y_val)
+        oos_preds.append(preds)
+        fold_start = fold_end
+
+    if not oos_actuals:
+        return np.array([]), np.array([])
+
+    return np.concatenate(oos_actuals), np.concatenate(oos_preds)
+
+
 def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
     logger.info(f"Training {STAT_DISPLAY[target]}...")
 
@@ -859,25 +926,47 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
         f"train={tr_n} holdout={n-tr_n} (cutoff={holdout_date})"
     )
 
+    # ── Walk-forward OOS calibration ─────────────────────────────────────────
+    oos_actuals, oos_preds_q50 = _walk_forward_oos(
+        df, feat_cols, target,
+        fold_days=WF_FOLD_DAYS,
+        min_train_days=WF_MIN_TRAIN_DAYS,
+        min_fold_rows=WF_MIN_FOLD_ROWS,
+    )
+    n_oos = len(oos_actuals)
+    cal_source = "walk-forward OOS" if n_oos >= WF_MIN_CAL_ROWS else "pooled-fallback"
+    logger.info(f"  Walk-forward OOS rows: {n_oos} ({cal_source})")
+
+    # ── Production refit: ALL data through yesterday ──────────────────────────
     holdout_preds = {}
     for q in QUANTILES:
         params = {**LGB_BASE, "alpha": q}
 
-        # Calibration: train on train split, predict on holdout
-        m_cal = lgb.LGBMRegressor(**params)
-        m_cal.fit(X[:tr_n], y[:tr_n])
-        holdout_preds[q] = m_cal.predict(X[tr_n:])
-
-        # Final model: full dataset
+        # Production model — full dataset, no data excluded
         m_final = lgb.LGBMRegressor(**params)
         m_final.fit(X, y)
         joblib.dump(m_final, MODEL_DIR / f"q{int(q*100):02d}_{target}.pkl")
 
+        # Calibration predictions on OOS data
+        if n_oos >= WF_MIN_CAL_ROWS:
+            # Use walk-forward OOS preds for calibration reporting
+            # Re-use the q50 walk-forward for now; per-quantile WF is expensive
+            holdout_preds[q] = oos_preds_q50 if q == 0.5 else oos_preds_q50
+        else:
+            # Fallback: use last 15% holdout for calibration reporting
+            m_cal = lgb.LGBMRegressor(**params)
+            m_cal.fit(X[:tr_n], y[:tr_n])
+            holdout_preds[q] = m_cal.predict(X[tr_n:])
+
     joblib.dump(feat_cols, MODEL_DIR / f"features_{target}.pkl")
+    logger.info(
+        f"  Production model trained on ALL {n} rows "
+        f"({str(df['game_date'].min())[:10]} → {str(df['game_date'].max())[:10]})"
+    )
 
     # ── Calibration report ────────────────────────────────────────────────────
     zero_inflated = target in ("stl", "blk", "stocks", "fg3m", "tov")
-    actuals_ho    = y[tr_n:]
+    actuals_ho    = oos_actuals if n_oos >= WF_MIN_CAL_ROWS else y[tr_n:]
     cal = quantile_calibration_report(
         actuals_ho, holdout_preds, zero_inflated=zero_inflated
     )

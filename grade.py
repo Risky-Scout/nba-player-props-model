@@ -332,10 +332,7 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
     pct_true_clv = float((bet.get("clv_is_true", pd.Series(False)).sum() / len(bet))) if "clv_is_true" in bet.columns else 0.0
 
     if "model_prob" in bet.columns and "side" in bet.columns:
-        actual_p = (bet["result"] == "HIT").astype(float).where(
-            bet["side"] == "OVER",
-            (bet["result"] != "HIT").astype(float)
-        )
+        actual_p = (bet["result"] == "HIT").astype(float)  # Bug 4 fix: HIT=1, MISS=0 regardless of side
         model_p = bet["model_prob"].clip(0.01, 0.99)
         brier = float(((model_p - actual_p) ** 2).mean())
     else:
@@ -347,7 +344,7 @@ def compute_metrics(df: pd.DataFrame, label: str = "") -> dict:
     max_dd = float(drawdown.max()) if len(drawdown) > 0 else 0.0
 
     pnl = bet["profit"].values
-    sharpe = (np.mean(pnl) / np.std(pnl) * np.sqrt(252)) if np.std(pnl) > 0 else 0.0
+    sharpe = (np.mean(pnl) / np.std(pnl) * np.sqrt(172)) if np.std(pnl) > 0 else 0.0  # ~172 NBA slate days
 
     return {
         "label":    label,
