@@ -1,0 +1,48 @@
+{
+  "289fb44a6171fe5e7365b05dca97889e": {
+    "home_team": "Charlotte Hornets",
+    "away_team": "Phoenix Suns",
+    "commence_time": "2026-04-02T23:10:00Z",
+    "consensus_total": 223.2,
+    "consensus_spread": -5.5,
+    "implied_home_total": 114.35,
+    "implied_away_total": 108.85,
+    "books_total": {
+      "fanduel": 222.5,
+      "draftkings": 223.5,
+      "betmgm": 223.5,
+      "betrivers": 223.0
+    },
+    "books_spread": {
+      "fanduel": -5.5,
+      "draftkings": -5.5,
+      "betmgm": -5.5,
+      "betrivers": -5.5
+    },
+    "snapshot_time": "2026-04-02T14:56:06Z",
+    "snapshot_type": "opening"
+  },
+  "b70520c84d1db67fb83d5d3666ef1d46": {
+    "home_team": "Detroit Pistons",
+    "away_team": "Minnesota Timberwolves",
+    "commence_time": "2026-04-02T23:10:00Z",
+    "consensus_total": 224.5,
+    "consensus_spread": -3.5,
+    "implied_home_total": 114.0,
+    "implied_away_total": 110.5,
+    "books_total": {
+      "fanduel": 225.5,
+      "draftkings": 224.5,
+      "betmgm": 224.5,
+      "betrivers": 224.5
+    },
+    "books_spread": {
+      "fanduel": -3.5,
+      "draftkings": -3.5,
+      "betmgm": -3.5,
+      "betrivers": -3.5
+    },
+    "snapshot_time": "2026-04-02T14:56:06Z",
+    "snapshot_type": "opening"
+  }
+}
