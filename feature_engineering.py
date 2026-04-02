@@ -1431,7 +1431,6 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "pts_per_min_mean_last5",
         "pts_per_min_mean_last10",
         "pts_per_min_trend_3v10",
-        "pts_per_poss_adj",
         "per_min_fga_last10",
         "fga_per_min_trend_3v10",
         "per_min_fta_last10",
@@ -1449,9 +1448,7 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
 
 
 
-        "iso_possessions_last10",
 
-        "transition_possessions_last10",
         "pts_regime_shift_gated",
         "vacated_fga",
         "vacated_minutes",
@@ -1465,7 +1462,6 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "ast_per_min_mean_last5",
         "ast_per_min_mean_last10",
         "ast_per_min_trend_3v10",
-        "ast_per_poss_adj",
 
 
 
