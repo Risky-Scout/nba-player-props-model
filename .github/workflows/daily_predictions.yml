@@ -90,7 +90,7 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SKIP_SGPS: "1"
-        run: python predict_darko_v4.py
+        run: python predict.py
 
       # HARD FAIL: predictions file must exist or the whole job fails visibly
       - name: Verify predictions were written
@@ -116,6 +116,22 @@ jobs:
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
           git push origin main
+
+      - name: Upload predictions to server via SFTP
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASS: ${{ secrets.SFTP_PASS }}
+          SFTP_PATH: ${{ secrets.SFTP_PATH }}
+        run: |
+          sudo apt-get install -q -y lftp
+          DATE=$(date -u +%Y-%m-%d)
+          lftp -u "$SFTP_USER","$SFTP_PASS" "$SFTP_HOST" << FTPEOF
+          put predictions/singles_${DATE}.json -o ${SFTP_PATH}/singles_${DATE}.json
+          put predictions/sgps_${DATE}.json -o ${SFTP_PATH}/sgps_${DATE}.json
+          bye
+          FTPEOF
+          echo "✓ Predictions uploaded to server"
 
 
 # ── Job 3: Closing lines snapshot (6 PM ET) ──────────────────────────────────
