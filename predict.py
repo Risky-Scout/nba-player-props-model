@@ -247,18 +247,21 @@ ADV_FIELDS = [
 # Trained on 2,737 graded rows using GradientBoostingRegressor per stat
 # Target: median(actual - q50) — projection truth, not market alignment
 BIAS_CORRECTION = {
-    "pts":    0.300,  # reduced from +1.135 — overcorrection was inverting PTS_OVER AUC
-    "ast":    0.190,  # learned: +0.190 (updated from +0.155)
-    "reb":    0.010,  # learned: +0.010 (confirms near-zero — reset was correct)
-    "fg3m":  -0.010,  # learned: -0.010 (unchanged)
-    "blk":    0.00,   # no correction
-    "stl":    0.00,   # no correction
-    "tov":    0.00,   # insufficient data
-    "pra":    0.500,  # pts+reb+ast = 0.300+0.010+0.190
-    "pr":     0.310,  # pts+reb = 0.300+0.010
-    "pa":     0.490,  # pts+ast = 0.300+0.190
-    "ra":     0.200,  # reb+ast = 0.010+0.190
-    "stocks": 0.00,   # stl+blk both 0.00
+    # Zeroed out — previous corrections were calibrated on broken model
+    # (implied_team_total was constant, 78 ADV features were zero)
+    # Will retrain centerer after 2+ weeks of clean picks accumulate
+    "pts":    0.00,
+    "ast":    0.00,
+    "reb":    0.00,
+    "fg3m":   0.00,
+    "blk":    0.00,
+    "stl":    0.00,
+    "tov":    0.00,
+    "pra":    0.00,
+    "pr":     0.00,
+    "pa":     0.00,
+    "ra":     0.00,
+    "stocks": 0.00,
 }
 
 
