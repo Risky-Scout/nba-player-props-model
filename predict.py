@@ -143,39 +143,34 @@ MAX_PER_PLAYER    = 2
 MAX_PER_GAME      = 4
 MAX_PER_PLAYER_STAT = 1
 
+# All EV thresholds reset to neutral — prior bans were learned from broken model data
+# (implied_team_total was constant 110, 78 ADV features were zero)
+# Thresholds will be recalibrated after 3-4 weeks of clean picks accumulate
 STAT_SIDE_MIN_EV = {
-    # OVER thresholds — major stats
-    ("pts",  "OVER"):  0.999,   # BANNED: auc=0.4277 INVERTED per sanity audit
-    ("reb",  "OVER"):  0.025,
-    ("ast",  "OVER"):  0.025,
-    ("fg3m", "OVER"):  0.030,
-    # OVER thresholds — sparse (still tightly controlled)
-    ("stl",  "OVER"):  0.999,   # banned per diagnostic: HR=0.216 CLV=+0.037 too noisy
-    ("blk",  "OVER"):  0.999,   # banned per diagnostic: HR=0.260 not enough signal
-    ("tov",  "OVER"):  0.035,
-    ("pra",  "OVER"):  0.025,
-    ("pr",   "OVER"):  0.025,
-    ("pa",   "OVER"):  0.025,
-    ("ra",   "OVER"):  0.030,
-    ("stocks","OVER"): 0.999,   # banned
-    # UNDER thresholds — controlled reintroduction per diagnostic
-    # pts UNDER: CLV=-0.102 — require strong gates
-    ("pts",  "UNDER"): 0.120,   # SUPPRESSED: flat deciles, overconfidence +0.146
-    # ast UNDER: CLV=-0.104 — require strong gates
-    ("ast",  "UNDER"): 0.050,
-    # reb UNDER: CLV=-0.112 — require strong gates
-    ("reb",  "UNDER"): 0.999,   # suppressed: CLV=-0.112 consistently negative
-    # fg3m UNDER: CLV=-0.092 — reintroduce with strict gate
-    ("fg3m", "UNDER"): 0.999,   # BANNED per rebuild doc: CLV=-0.099, hit_rt=0.531 noise
-    # blk/stl UNDER: still allowed if very tight
-    ("blk",  "UNDER"): 0.070,
-    ("stl",  "UNDER"): 0.999,   # CLV=-0.073 stl under too noisy
-    ("tov",  "UNDER"): 0.050,
-    ("pra",  "UNDER"): 0.060,
-    ("pr",   "UNDER"): 0.060,
-    ("pa",   "UNDER"): 0.060,
-    ("ra",   "UNDER"): 0.050,
-    ("stocks","UNDER"):0.999,
+    ("pts",    "OVER"):  0.025,
+    ("reb",    "OVER"):  0.025,
+    ("ast",    "OVER"):  0.025,
+    ("fg3m",   "OVER"):  0.025,
+    ("stl",    "OVER"):  0.025,
+    ("blk",    "OVER"):  0.025,
+    ("tov",    "OVER"):  0.025,
+    ("pra",    "OVER"):  0.025,
+    ("pr",     "OVER"):  0.025,
+    ("pa",     "OVER"):  0.025,
+    ("ra",     "OVER"):  0.025,
+    ("stocks", "OVER"):  0.025,
+    ("pts",    "UNDER"): 0.025,
+    ("ast",    "UNDER"): 0.025,
+    ("reb",    "UNDER"): 0.025,
+    ("fg3m",   "UNDER"): 0.025,
+    ("blk",    "UNDER"): 0.025,
+    ("stl",    "UNDER"): 0.025,
+    ("tov",    "UNDER"): 0.025,
+    ("pra",    "UNDER"): 0.025,
+    ("pr",     "UNDER"): 0.025,
+    ("pa",     "UNDER"): 0.025,
+    ("ra",     "UNDER"): 0.025,
+    ("stocks", "UNDER"): 0.025,
 }
 
 # Per-stat per-side probability bounds
@@ -185,41 +180,57 @@ STAT_SIDE_MIN_EV = {
 # pts: 0.60 (most graded data, most calibrated)
 # reb/ast: 0.56 (less data, reb correction reset — allow more plays through)
 # fg3m: 0.57 (sparse but reasonable)
+# Probability bounds reset to neutral — will recalibrate from clean data
 STAT_SIDE_PROB_BOUNDS = {
-    "OVER":  (0.56, 0.74),   # global floor — per-stat override below
-    "UNDER": (0.67, 0.80),
+    "OVER":  (0.53, 0.85),
+    "UNDER": (0.53, 0.85),
 }
-# Per-stat OVER minimum probability (overrides global floor)
+# Per-stat OVER minimum probability — neutral floor
 OVER_MIN_PROB_BY_STAT = {
-    "pts":  0.60,
-    "reb":  0.56,
-    "ast":  0.56,
-    "fg3m": 0.57,
-    "pra":  0.58,
-    "pr":   0.57,
-    "pa":   0.57,
-    "ra":   0.56,
+    "pts":  0.53,
+    "reb":  0.53,
+    "ast":  0.53,
+    "fg3m": 0.53,
+    "stl":  0.53,
+    "blk":  0.53,
+    "tov":  0.53,
+    "pra":  0.53,
+    "pr":   0.53,
+    "pa":   0.53,
+    "ra":   0.53,
+    "stocks":0.53,
 }
 
-# Per-stat UNDER minimum probability floors (stricter per instructions)
+# Per-stat UNDER minimum probability — neutral floor
 UNDER_MIN_PROB = {
-    "pts":  0.72,
-    "ast":  0.70,
-    "reb":  0.67,
-    "fg3m": 0.66,
-    "blk":  0.74,
-    "stl":  0.99,   # effectively banned
+    "pts":  0.53,
+    "ast":  0.53,
+    "reb":  0.53,
+    "fg3m": 0.53,
+    "blk":  0.53,
+    "stl":  0.53,
+    "tov":  0.53,
+    "pra":  0.53,
+    "pr":   0.53,
+    "pa":   0.53,
+    "ra":   0.53,
+    "stocks":0.53,
 }
 
-# Per-stat UNDER minimum line-gap (line - q50 must exceed this)
-# Prevents betting unders when model is only marginally below the line
+# Minimum line gap for unders — neutral floor
 UNDER_MIN_LINE_GAP = {
-    "pts":  1.25,
-    "ast":  0.75,
-    "reb":  0.60,
-    "fg3m": 0.50,
-    "blk":  0.20,
-    "stl":  0.99,   # effectively banned
+    "pts":  0.50,
+    "ast":  0.25,
+    "reb":  0.25,
+    "fg3m": 0.25,
+    "blk":  0.10,
+    "stl":  0.10,
+    "tov":  0.25,
+    "pra":  0.50,
+    "pr":   0.50,
+    "pa":   0.50,
+    "ra":   0.25,
+    "stocks":0.10,
 }
 
 # Sparse stats that need independent calibration sign-off
@@ -908,32 +919,9 @@ def main():
 
     # ── HARD PRE-EXPORT ASSERTIONS (Fix 1+5+6 per rebuild doc) ──────────────
     # Banned markets must NEVER appear in output — fail loudly if they do
-    BANNED_MARKETS = {
-        ("blk",  "OVER"),
-        ("stl",  "OVER"),
-        ("reb",  "UNDER"),
-        ("fg3m", "UNDER"),
-        ("stl",  "UNDER"),
-    }
-    SUPPRESSED_MARKETS = {
-        ("pts",  "UNDER"),
-        ("ast",  "UNDER"),
-        ("fg3m", "OVER"),
-        ("blk",  "UNDER"),
-    }
-    violations = []
-    for s in all_singles:
-        key = (s["stat"], s["side"])
-        if key in BANNED_MARKETS:
-            violations.append(f"BANNED market in picks: {s['player_name']} {s['stat']} {s['side']}")
-        if key in SUPPRESSED_MARKETS and s.get("model_prob", 0) < 0.67:
-            violations.append(f"SUPPRESSED market below threshold: {s['player_name']} {s['stat']} {s['side']} prob={s.get('model_prob',0):.3f}")
-    if violations:
-        for v in violations:
-            logger.error(f"ASSERTION FAILED: {v}")
-        all_singles = [s for s in all_singles
-                      if (s["stat"], s["side"]) not in BANNED_MARKETS]
-        logger.warning(f"Removed {len(violations)} banned/invalid picks before export")
+    # No hard market bans — all markets eligible based on EV and probability gates
+    # Bans were removed: all were learned from broken-model data
+    # Will reintroduce evidence-based restrictions after 3-4 weeks clean picks
 
     logger.info(f"Singles before portfolio limits: {len(all_singles)}")
 
