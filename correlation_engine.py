@@ -300,7 +300,7 @@ class WithinPlayerCorrelationEngine:
 
         # ── Global matrix ─────────────────────────────────────────────────────
         R_emp_global = self._pearson_robust(Z_all)
-        self._stat_names = list(stat_list) if 'stat_list' in dir() else []
+        self._stat_names = [c.replace("z_", "") for c in stat_z_cols]  # e.g. ["pts","reb","ast",...]
         self.R_global, audit_g = enforce_psd(R_emp_global)
         self.audit_log["global"] = {"n": len(Z_all), **audit_g}
         logger.info(f"  Global corr matrix: n={len(Z_all)}, psd_audit={audit_g}")
