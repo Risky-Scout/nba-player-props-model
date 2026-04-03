@@ -130,7 +130,7 @@ STAT_DISPLAY = {
 
 MIN_EV           = 0.025   # global floor — per-stat overrides below
 MIN_GAMES_SEASON = 20  # raised from 15 — filter fringe rotation players
-KELLY_FRAC       = 0.25
+KELLY_FRAC       = 0.15  # fractional Kelly — conservative until edge verified on clean data
 MAX_UNITS_SINGLE = 1.5     # doc 7 §5: reduced from 2.0 — too much vol for current cal quality
 MAX_UNITS_SGP    = 1.0
 
