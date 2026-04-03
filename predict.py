@@ -336,7 +336,20 @@ def load_models() -> tuple:
     if not platt_calibrators:
         logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
 
-    return models, within_engine, teammate_engine, platt_calibrators
+    # Load fg3m hurdle model
+    hurdle_path = MODEL_DIR / "fg3m_hurdle.pkl"
+    fg3m_hurdle_model = None
+    if hurdle_path.exists():
+        try:
+            from fg3m_hurdle import FG3MHurdleModel
+            fg3m_hurdle_model = FG3MHurdleModel.load(str(hurdle_path))
+            logger.info("  FG3M hurdle model loaded")
+        except Exception as e:
+            logger.warning(f"  FG3M hurdle model failed to load: {e}")
+    else:
+        logger.warning("  FG3M hurdle model not found — using quantile fallback")
+
+    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model
 
 
 # ── Quantile prediction ────────────────────────────────────────────────────────
@@ -478,7 +491,7 @@ def main():
     logger.info(f"Target date: {target_date}")
 
     logger.info("Loading models...")
-    models, within_engine, teammate_engine, platt_calibrators = load_models()
+    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model = load_models()
 
     # Load minutes bucket corrections (Phase 2 fix)
     global MINUTES_CORRECTIONS
@@ -668,8 +681,18 @@ def main():
 
 
 
-                prob_over  = p_over(q_preds, line)
-                prob_under = p_under(q_preds, line)
+                # FG3M: use hurdle model for more accurate zero-inflated probability
+                if target == "fg3m" and fg3m_hurdle_model is not None:
+                    try:
+                        hurdle_result = fg3m_hurdle_model.predict_proba(dict(base), line)
+                        prob_over  = float(hurdle_result.get("p_over", p_over(q_preds, line)))
+                        prob_under = 1.0 - prob_over
+                    except Exception:
+                        prob_over  = p_over(q_preds, line)
+                        prob_under = p_under(q_preds, line)
+                else:
+                    prob_over  = p_over(q_preds, line)
+                    prob_under = p_under(q_preds, line)
 
                 # Apply Platt calibration — stat×side specific if available (doc 7 §2)
                 # Priority: stat_SIDE → global SIDE → raw

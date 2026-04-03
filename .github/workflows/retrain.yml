@@ -37,6 +37,12 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python train.py
 
+      - name: Run Platt calibration
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python calibrate_stat_side.py || echo "Calibration skipped — insufficient graded data"
+
       - name: Commit model cache to repo
         run: |
           git config user.name  "Props Bot"
