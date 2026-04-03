@@ -1247,6 +1247,44 @@ def build_player_game_features(
     # ── [v19] Compute advanced matchup + archetype + shrinkage features ────────
     # [v19] Full feature compute runs at predict time with external maps
     # During training, archetype flags computed from available features above
+
+    # ── Item 3: Primary ball-handler absence proxy ────────────────────────────
+    # Flags when the team primary assist leader played <15 min in last game
+    # Captures AST redistribution without requiring full lineup on/off data
+    try:
+        if not all_stats_df.empty and "ast" in all_stats_df.columns:
+            team_games = all_stats_df[
+                all_stats_df["team_id"] == team_id
+            ].copy()
+            team_games["game_date"] = pd.to_datetime(team_games["game_date"])
+            team_games = team_games[team_games["game_date"] < tdt]
+            if len(team_games) >= 10:
+                last20_dates = sorted(team_games["game_date"].unique())[-20:]
+                recent = team_games[team_games["game_date"].isin(last20_dates)]
+                ast_by_player = recent.groupby("player_id")["ast"].mean()
+                if len(ast_by_player) > 0:
+                    primary_id = ast_by_player.idxmax()
+                    last_date = team_games["game_date"].max()
+                    last_game = team_games[team_games["game_date"] == last_date]
+                    handler_rows = last_game[last_game["player_id"] == primary_id]
+                    if len(handler_rows) > 0:
+                        handler_mp = pd.to_numeric(
+                            handler_rows["min"].iloc[0], errors="coerce"
+                        )
+                        f["primary_handler_limited"] = 1.0 if (
+                            pd.notna(handler_mp) and handler_mp < 15.0
+                        ) else 0.0
+                    else:
+                        f["primary_handler_limited"] = 1.0
+                else:
+                    f["primary_handler_limited"] = 0.0
+            else:
+                f["primary_handler_limited"] = 0.0
+        else:
+            f["primary_handler_limited"] = 0.0
+    except Exception:
+        f["primary_handler_limited"] = 0.0
+
     return f
 
 def add_interaction_features(f: dict, stat: str) -> dict:
