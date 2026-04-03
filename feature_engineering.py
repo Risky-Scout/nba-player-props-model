@@ -441,6 +441,22 @@ def opponent_defensive_features(
             )
             return float(np.mean(per_game)) if len(per_game) > 0 else None
 
+        def _game_ewma(col: str, alpha: float = 0.15) -> Optional[float]:
+            """True EWMA over per-game opponent totals — recency-weighted."""
+            if col not in allowed_rows.columns:
+                return None
+            per_game = (
+                allowed_rows.groupby("game_id")[col]
+                .apply(lambda x: np.nansum(x.values.astype(float)))
+                .sort_index()
+            )
+            if len(per_game) == 0:
+                return None
+            if len(per_game) == 1:
+                return float(per_game.iloc[0])
+            s = pd.Series(per_game.values)
+            return float(s.ewm(alpha=alpha, min_periods=2).mean().iloc[-1])
+
         pts  = _game_avg("pts")
         reb  = _game_avg("reb")
         oreb = _game_avg("oreb")
@@ -464,27 +480,27 @@ def opponent_defensive_features(
 
         result = {
             # pts
-            "opp_allowed_pts_ewma":   pts  if pts  is not None else np.nan,
+            "opp_allowed_pts_ewma":   _game_ewma("pts"),
             "opp_allowed_pts_mean":   pts  if pts  is not None else np.nan,
             "opp_allowed_pts_factor": (pts / max(_lg_pts, 1)) if pts is not None else np.nan,
             # reb
-            "opp_allowed_reb_ewma":   reb  if reb  is not None else np.nan,
+            "opp_allowed_reb_ewma":   _game_ewma("reb"),
             "opp_allowed_reb_mean":   reb  if reb  is not None else np.nan,
             "opp_allowed_reb_factor": (reb / max(_lg_reb, 1)) if reb is not None else np.nan,
             # ast
-            "opp_allowed_ast_ewma":   ast  if ast  is not None else np.nan,
+            "opp_allowed_ast_ewma":   _game_ewma("ast"),
             "opp_allowed_ast_mean":   ast  if ast  is not None else np.nan,
             "opp_allowed_ast_factor": (ast / max(_lg_ast, 1)) if ast is not None else np.nan,
             # fg3m
-            "opp_allowed_fg3m_ewma":   fg3m if fg3m is not None else np.nan,
+            "opp_allowed_fg3m_ewma":   _game_ewma("fg3m"),
             "opp_allowed_fg3m_mean":   fg3m if fg3m is not None else np.nan,
             "opp_allowed_fg3m_factor": (fg3m / max(_lg_fg3m, 1)) if fg3m is not None else np.nan,
             # blk
-            "opp_allowed_blk_ewma":   blk  if blk  is not None else np.nan,
+            "opp_allowed_blk_ewma":   _game_ewma("blk"),
             "opp_allowed_blk_mean":   blk  if blk  is not None else np.nan,
             "opp_allowed_blk_factor": (blk / max(_lg_blk, 1)) if blk is not None else np.nan,
             # stl
-            "opp_allowed_stl_ewma":   stl  if stl  is not None else np.nan,
+            "opp_allowed_stl_ewma":   _game_ewma("stl"),
             "opp_allowed_stl_mean":   stl  if stl  is not None else np.nan,
             "opp_allowed_stl_factor": (stl / max(_lg_stl, 1)) if stl is not None else np.nan,
             # existing
