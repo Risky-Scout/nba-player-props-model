@@ -1,0 +1,94 @@
+{
+  "033717528554996f232e2517ea1ad281": {
+    "home_team": "Charlotte Hornets",
+    "away_team": "Indiana Pacers",
+    "commence_time": "2026-04-03T23:10:00Z",
+    "consensus_total": 234.5,
+    "consensus_spread": -15.5,
+    "implied_home_total": 125.0,
+    "implied_away_total": 109.5,
+    "books_total": {
+      "fanduel": 234.5,
+      "draftkings": 234.5,
+      "betmgm": 234.5,
+      "betrivers": 234.5
+    },
+    "books_spread": {
+      "fanduel": -16.0,
+      "draftkings": -15.5,
+      "betmgm": -15.5,
+      "betrivers": -15.5
+    },
+    "snapshot_time": "2026-04-03T14:41:44Z",
+    "snapshot_type": "opening"
+  },
+  "21031d5ee035e890ee79d1afeef2f40c": {
+    "home_team": "Philadelphia 76ers",
+    "away_team": "Minnesota Timberwolves",
+    "commence_time": "2026-04-03T23:10:00Z",
+    "consensus_total": 233.5,
+    "consensus_spread": -2.5,
+    "implied_home_total": 118.0,
+    "implied_away_total": 115.5,
+    "books_total": {
+      "fanduel": 233.5,
+      "draftkings": 233.5,
+      "betmgm": 233.5,
+      "betrivers": 234.0
+    },
+    "books_spread": {
+      "fanduel": -2.5,
+      "draftkings": -2.5,
+      "betmgm": -2.5,
+      "betrivers": -2.0
+    },
+    "snapshot_time": "2026-04-03T14:41:44Z",
+    "snapshot_type": "opening"
+  },
+  "cb55f248d8dbb539ca55edf31d762f6a": {
+    "home_team": "Brooklyn Nets",
+    "away_team": "Atlanta Hawks",
+    "commence_time": "2026-04-03T23:40:00Z",
+    "consensus_total": 225.5,
+    "consensus_spread": 16.5,
+    "implied_home_total": 104.5,
+    "implied_away_total": 121.0,
+    "books_total": {
+      "fanduel": 225.5,
+      "draftkings": 225.5,
+      "betmgm": 225.5,
+      "betrivers": 225.5
+    },
+    "books_spread": {
+      "fanduel": 16.5,
+      "draftkings": 16.5,
+      "betmgm": 16.5,
+      "betrivers": 17.0
+    },
+    "snapshot_time": "2026-04-03T14:41:44Z",
+    "snapshot_type": "opening"
+  },
+  "d2565f4ec40ef0701e442d56c8d44ff2": {
+    "home_team": "New York Knicks",
+    "away_team": "Chicago Bulls",
+    "commence_time": "2026-04-03T23:40:00Z",
+    "consensus_total": 237.5,
+    "consensus_spread": -15.8,
+    "implied_home_total": 126.65,
+    "implied_away_total": 110.85,
+    "books_total": {
+      "fanduel": 237.5,
+      "draftkings": 237.5,
+      "betrivers": 237.0,
+      "betmgm": 237.5
+    },
+    "books_spread": {
+      "fanduel": -16.5,
+      "draftkings": -15.5,
+      "betrivers": -16.0,
+      "betmgm": -15.5
+    },
+    "snapshot_time": "2026-04-03T14:41:44Z",
+    "snapshot_type": "opening"
+  }
+}
