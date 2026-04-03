@@ -1,18 +1,25 @@
 {
-  "generated_at": "2026-04-01T14:27:38.034601",
-  "total_dates": 21,
+  "generated_at": "2026-04-03T14:02:24.790461",
+  "total_dates": 22,
   "overall": {
     "label": "ALL_TIME",
-    "n_bets": 2545,
-    "n_hits": 1209,
-    "hit_rate": 0.475,
-    "profit": -53.16,
-    "roi": -0.0209,
-    "mean_clv": 0.0076,
+    "n_bets": 2549,
+    "n_hits": 1211,
+    "hit_rate": 0.4751,
+    "profit": -53.66,
+    "roi": -0.021,
+    "mean_clv": 0.0078,
+    "mean_clv_true_clv": 0.0754,
+    "mean_clv_proxy": -0.0131,
+    "clv_ci_95": [
+      0.0011,
+      0.0144
+    ],
+    "clv_significant": true,
     "pct_true_clv": 0.104,
-    "brier": 0.2723,
+    "brier": 0.2544,
     "max_dd": 130.93,
-    "sharpe": -0.304
+    "sharpe": -0.254
   },
   "by_tier": {},
   "by_stat": {
@@ -24,36 +31,57 @@
       "profit": -9.45,
       "roi": -0.0189,
       "mean_clv": -0.0348,
+      "mean_clv_true_clv": 0.0832,
+      "mean_clv_proxy": -0.0646,
+      "clv_ci_95": [
+        -0.0489,
+        -0.0205
+      ],
+      "clv_significant": false,
       "pct_true_clv": 0.09,
-      "brier": 0.2671,
+      "brier": 0.2696,
       "max_dd": 40.35,
-      "sharpe": -0.31
+      "sharpe": -0.256
     },
     "reb": {
       "label": "Rebounds",
-      "n_bets": 519,
-      "n_hits": 260,
+      "n_bets": 521,
+      "n_hits": 261,
       "hit_rate": 0.501,
-      "profit": -12.58,
-      "roi": -0.0242,
-      "mean_clv": -0.003,
-      "pct_true_clv": 0.106,
-      "brier": 0.2796,
+      "profit": -12.76,
+      "roi": -0.0245,
+      "mean_clv": -0.0023,
+      "mean_clv_true_clv": 0.0874,
+      "mean_clv_proxy": -0.0314,
+      "clv_ci_95": [
+        -0.0179,
+        0.0136
+      ],
+      "clv_significant": false,
+      "pct_true_clv": 0.107,
+      "brier": 0.2628,
       "max_dd": 38.81,
-      "sharpe": -0.391
+      "sharpe": -0.326
     },
     "ast": {
       "label": "Assists",
-      "n_bets": 453,
-      "n_hits": 218,
-      "hit_rate": 0.4812,
-      "profit": -23.31,
-      "roi": -0.0514,
-      "mean_clv": -0.0099,
+      "n_bets": 455,
+      "n_hits": 219,
+      "hit_rate": 0.4813,
+      "profit": -23.62,
+      "roi": -0.0519,
+      "mean_clv": -0.0095,
+      "mean_clv_true_clv": 0.0729,
+      "mean_clv_proxy": -0.0309,
+      "clv_ci_95": [
+        -0.0244,
+        0.0052
+      ],
+      "clv_significant": false,
       "pct_true_clv": 0.097,
-      "brier": 0.277,
+      "brier": 0.2575,
       "max_dd": 43.4,
-      "sharpe": -0.817
+      "sharpe": -0.681
     },
     "fg3m": {
       "label": "Threes",
@@ -63,10 +91,17 @@
       "profit": 7.37,
       "roi": 0.0204,
       "mean_clv": 0.0261,
+      "mean_clv_true_clv": 0.0509,
+      "mean_clv_proxy": 0.0143,
+      "clv_ci_95": [
+        0.0089,
+        0.0434
+      ],
+      "clv_significant": true,
       "pct_true_clv": 0.122,
-      "brier": 0.2783,
+      "brier": 0.2503,
       "max_dd": 19.83,
-      "sharpe": 0.301
+      "sharpe": 0.249
     },
     "stl": {
       "label": "Steals",
@@ -76,8 +111,15 @@
       "profit": 0.03,
       "roi": 0.0001,
       "mean_clv": -0.0239,
+      "mean_clv_true_clv": 0.0649,
+      "mean_clv_proxy": -0.0646,
+      "clv_ci_95": [
+        -0.0395,
+        -0.0076
+      ],
+      "clv_significant": false,
       "pct_true_clv": 0.109,
-      "brier": 0.2701,
+      "brier": 0.2579,
       "max_dd": 37.57,
       "sharpe": 0.001
     },
@@ -89,25 +131,39 @@
       "profit": -15.23,
       "roi": -0.0373,
       "mean_clv": 0.0812,
+      "mean_clv_true_clv": 0.0869,
+      "mean_clv_proxy": 0.0798,
+      "clv_ci_95": [
+        0.0691,
+        0.0928
+      ],
+      "clv_significant": true,
       "pct_true_clv": 0.108,
-      "brier": 0.2604,
+      "brier": 0.2226,
       "max_dd": 32.81,
-      "sharpe": -0.425
+      "sharpe": -0.351
     }
   },
   "by_side": {
     "OVER": {
       "label": "OVER",
-      "n_bets": 949,
-      "n_hits": 401,
-      "hit_rate": 0.4226,
-      "profit": -33.75,
-      "roi": -0.0356,
-      "mean_clv": 0.0956,
+      "n_bets": 953,
+      "n_hits": 403,
+      "hit_rate": 0.4229,
+      "profit": -34.25,
+      "roi": -0.0359,
+      "mean_clv": 0.0953,
+      "mean_clv_true_clv": 0.0749,
+      "mean_clv_proxy": 0.1035,
+      "clv_ci_95": [
+        0.0899,
+        0.1008
+      ],
+      "clv_significant": true,
       "pct_true_clv": 0.155,
-      "brier": 0.2453,
+      "brier": 0.2452,
       "max_dd": 64.84,
-      "sharpe": -0.461
+      "sharpe": -0.385
     },
     "UNDER": {
       "label": "UNDER",
@@ -117,36 +173,57 @@
       "profit": -19.41,
       "roi": -0.0122,
       "mean_clv": -0.0658,
+      "mean_clv_true_clv": 0.0759,
+      "mean_clv_proxy": -0.0995,
+      "clv_ci_95": [
+        -0.073,
+        -0.0584
+      ],
+      "clv_significant": false,
       "pct_true_clv": 0.074,
-      "brier": 0.2884,
+      "brier": 0.2598,
       "max_dd": 85.33,
-      "sharpe": -0.193
+      "sharpe": -0.159
     }
   },
   "rolling_30": {
     "label": "last_30d",
-    "n_bets": 2545,
-    "n_hits": 1209,
-    "hit_rate": 0.475,
-    "profit": -53.16,
-    "roi": -0.0209,
-    "mean_clv": 0.0076,
+    "n_bets": 2549,
+    "n_hits": 1211,
+    "hit_rate": 0.4751,
+    "profit": -53.66,
+    "roi": -0.021,
+    "mean_clv": 0.0078,
+    "mean_clv_true_clv": 0.0754,
+    "mean_clv_proxy": -0.0131,
+    "clv_ci_95": [
+      0.0011,
+      0.0144
+    ],
+    "clv_significant": true,
     "pct_true_clv": 0.104,
-    "brier": 0.2723,
+    "brier": 0.2544,
     "max_dd": 130.93,
-    "sharpe": -0.304
+    "sharpe": -0.254
   },
   "rolling_60": {
     "label": "last_60d",
-    "n_bets": 2545,
-    "n_hits": 1209,
-    "hit_rate": 0.475,
-    "profit": -53.16,
-    "roi": -0.0209,
-    "mean_clv": 0.0076,
+    "n_bets": 2549,
+    "n_hits": 1211,
+    "hit_rate": 0.4751,
+    "profit": -53.66,
+    "roi": -0.021,
+    "mean_clv": 0.0078,
+    "mean_clv_true_clv": 0.0754,
+    "mean_clv_proxy": -0.0131,
+    "clv_ci_95": [
+      0.0011,
+      0.0144
+    ],
+    "clv_significant": true,
     "pct_true_clv": 0.104,
-    "brier": 0.2723,
+    "brier": 0.2544,
     "max_dd": 130.93,
-    "sharpe": -0.304
+    "sharpe": -0.254
   }
 }
