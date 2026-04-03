@@ -268,6 +268,7 @@ class WithinPlayerCorrelationEngine:
     def __init__(self, model_dir: Path):
         self.model_dir    = model_dir
         self.R_global     = None          # (8,8) global matrix
+        self._stat_names  = []             # stat name list for Spearman index lookup
         self.R_segments   = {}            # {(ub, mb): (8,8) matrix}
         self.audit_log    = {}
         self._fitted      = False
@@ -299,6 +300,7 @@ class WithinPlayerCorrelationEngine:
 
         # ── Global matrix ─────────────────────────────────────────────────────
         R_emp_global = self._pearson_robust(Z_all)
+        self._stat_names = list(stat_list) if 'stat_list' in dir() else []
         self.R_global, audit_g = enforce_psd(R_emp_global)
         self.audit_log["global"] = {"n": len(Z_all), **audit_g}
         logger.info(f"  Global corr matrix: n={len(Z_all)}, psd_audit={audit_g}")
