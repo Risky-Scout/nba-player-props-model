@@ -368,8 +368,12 @@ def fetch_all_data():
     adv_df   = _merge(ADV_PATH,   new_adv_df,   ["player_id","game_id"], ["player_id","game_date"])
     odds_df  = _merge(ODDS_PATH,  new_odds_df,  ["game_id","vendor"],    ["game_id","updated_at"])
 
-    if not stats_df.empty: stats_df.to_parquet(STATS_PATH, index=False)
-    if not adv_df.empty:   adv_df.to_parquet(ADV_PATH,   index=False)
+    if not stats_df.empty:
+        stats_df['game_date'] = stats_df['game_date'].astype(str).str[:10]
+        stats_df.to_parquet(STATS_PATH, index=False)
+    if not adv_df.empty:
+        adv_df['game_date'] = adv_df['game_date'].astype(str).str[:10]
+        adv_df.to_parquet(ADV_PATH, index=False)
     if not odds_df.empty:  odds_df.to_parquet(ODDS_PATH,  index=False)
 
     logger.info(f"Data: {len(stats_df)} stats | {len(adv_df)} adv | {len(odds_df)} odds")
