@@ -238,6 +238,9 @@ def main():
 
     rows = load_graded()
     logger.info(f"Loaded {len(rows)} graded rows (sorted by date)")
+    if not rows:
+        logger.warning('No graded rows found — skipping calibration')
+        return
     logger.info(f"Date range: {rows[0]['date']} → {rows[-1]['date']}")
 
     manifest    = {}
