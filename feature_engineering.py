@@ -468,12 +468,18 @@ def opponent_defensive_features(
         tov  = _game_avg("turnover")
 
         # League averages for factor computation
-        _lg_pts  = float(all_stats_df["pts"].mean())  if "pts"  in all_stats_df.columns else 25.0
-        _lg_reb  = float(all_stats_df["reb"].mean())  if "reb"  in all_stats_df.columns else 4.5
-        _lg_ast  = float(all_stats_df["ast"].mean())  if "ast"  in all_stats_df.columns else 2.5
-        _lg_fg3m = float(all_stats_df["fg3m"].mean()) if "fg3m" in all_stats_df.columns else 1.5
-        _lg_blk  = float(all_stats_df["blk"].mean())  if "blk"  in all_stats_df.columns else 0.4
-        _lg_stl  = float(all_stats_df["stl"].mean())  if "stl"  in all_stats_df.columns else 0.7
+        # Bug 12 fix: league averages at team-game level, not player-game level
+        def _team_game_avg(col, default):
+            if col not in all_stats_df.columns:
+                return default
+            return float(all_stats_df.groupby(["game_id","team_id"])[col].sum().mean())
+
+        _lg_pts  = _team_game_avg("pts",  110.0)
+        _lg_reb  = _team_game_avg("reb",  43.0)
+        _lg_ast  = _team_game_avg("ast",  24.0)
+        _lg_fg3m = _team_game_avg("fg3m", 12.0)
+        _lg_blk  = _team_game_avg("blk",  4.8)
+        _lg_stl  = _team_game_avg("stl",  7.5)
 
         blk  = _game_avg("blk")
         stl  = _game_avg("stl")
@@ -591,7 +597,17 @@ def advanced_stats_block(adv_records: list) -> dict:
     if not adv_records:
         return f
 
-    adv_records = sorted(adv_records, key=lambda x: x.get("game_date", ""))
+    # Deduplicate by game_id — keep period=0 (game total row)
+    # BDL advanced stats: period=0 is the full-game aggregate
+    adv_by_game = {}
+    for r in adv_records:
+        gid = r.get("game_id")
+        period = r.get("period", -1)
+        if period == 0:
+            adv_by_game[gid] = r  # always prefer the game total
+        elif gid not in adv_by_game:
+            adv_by_game[gid] = r  # fallback if no period=0 exists
+    adv_records = sorted(adv_by_game.values(), key=lambda x: x.get("game_date", ""))
     recent = adv_records[-10:]
 
     for field in ALL_ADV_FIELDS:
