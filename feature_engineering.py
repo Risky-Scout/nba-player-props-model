@@ -124,9 +124,25 @@ ALL_ADV_FIELDS = (
 )
 
 
+# Per-stat EWMA alphas from within-player lag-1 autocorrelation analysis
+# Low autocorr → high alpha (recent games dominate)
+_EWMA_ALPHA_BY_STAT = {
+    "pts": 0.25, "reb": 0.30, "ast": 0.30, "fg3m": 0.30,
+    "stl": 0.30, "blk": 0.30, "tov": 0.30, "pra": 0.25,
+    "pr":  0.25, "pa":  0.25, "ra":  0.30, "stocks": 0.30,
+}
+
+# Per-stat EWMA alphas from within-player lag-1 autocorrelation analysis
+# Low autocorr → high alpha (recent games dominate)
+_EWMA_ALPHA_BY_STAT = {
+    "pts": 0.25, "reb": 0.30, "ast": 0.30, "fg3m": 0.30,
+    "stl": 0.30, "blk": 0.30, "tov": 0.30, "pra": 0.25,
+    "pr":  0.25, "pa":  0.25, "ra":  0.30, "stocks": 0.30,
+}
+
 # ── Rolling helper: 13 features per series ────────────────────────────────────
 
-def rolling_full(arr: np.ndarray, name: str) -> dict:
+def rolling_full(arr: np.ndarray, name: str, stat: str = "") -> dict:
     """
     Full rolling feature pack — 13 features per series.
     Applied to per-minute rates OR raw counts depending on caller.
@@ -170,7 +186,8 @@ def rolling_full(arr: np.ndarray, name: str) -> dict:
     # Bug 7 fix: ewma_10 = slow decay (alpha=0.15, ~4.5 game half-life) — matches "10" convention
     if n >= 2:
         s = pd.Series(arr)
-        f[f"{name}_ewma_10"] = float(s.ewm(alpha=0.15, min_periods=2).mean().iloc[-1])
+        _alpha = _EWMA_ALPHA_BY_STAT.get(stat, 0.25)
+        f[f"{name}_ewma_10"] = float(s.ewm(alpha=_alpha, min_periods=2).mean().iloc[-1])
     else:
         f[f"{name}_ewma_10"] = arr[-1] if n == 1 else np.nan
 
@@ -441,12 +458,38 @@ def opponent_defensive_features(
             )
             return float(np.mean(per_game)) if len(per_game) > 0 else None
 
-        def _game_ewma(col: str, alpha: float = 0.15) -> Optional[float]:
+        def _game_ewma(col: str, alpha: float = 0.20) -> Optional[float]:
             """True EWMA over per-game opponent totals — recency-weighted."""
             if col not in allowed_rows.columns:
                 return None
             per_game = (
                 allowed_rows.groupby("game_id")[col]
+                .apply(lambda x: np.nansum(x.values.astype(float)))
+                .sort_index()
+            )
+            if len(per_game) == 0:
+                return None
+            if len(per_game) == 1:
+                return float(per_game.iloc[0])
+            s = pd.Series(per_game.values)
+            return float(s.ewm(alpha=alpha, min_periods=2).mean().iloc[-1])
+
+        def _game_ewma_pos(col: str, pos_groups: list, alpha: float = 0.20) -> Optional[float]:
+            """EWMA of opponent allowed stats filtered by position group (e.g. guards vs bigs)."""
+            if col not in allowed_rows.columns:
+                return None
+            pos_col = "position" if "position" in allowed_rows.columns else None
+            if pos_col is None:
+                return _game_ewma(col, alpha)
+            # Filter to target position group
+            pos_mask = allowed_rows[pos_col].fillna("").str.upper().str[:1].isin(
+                [p[0].upper() for p in pos_groups]
+            )
+            pos_rows = allowed_rows[pos_mask]
+            if pos_rows.empty:
+                return _game_ewma(col, alpha)  # fallback to full team
+            per_game = (
+                pos_rows.groupby("game_id")[col]
                 .apply(lambda x: np.nansum(x.values.astype(float)))
                 .sort_index()
             )
@@ -502,13 +545,17 @@ def opponent_defensive_features(
             "opp_allowed_fg3m_mean":   fg3m if fg3m is not None else np.nan,
             "opp_allowed_fg3m_factor": (fg3m / max(_lg_fg3m, 1)) if fg3m is not None else np.nan,
             # blk
-            "opp_allowed_blk_ewma":   _game_ewma("blk"),
-            "opp_allowed_blk_mean":   blk  if blk  is not None else np.nan,
-            "opp_allowed_blk_factor": (blk / max(_lg_blk, 1)) if blk is not None else np.nan,
+            "opp_allowed_blk_ewma":       _game_ewma("blk"),
+            "opp_allowed_blk_mean":       blk  if blk  is not None else np.nan,
+            "opp_allowed_blk_factor":     (blk / max(_lg_blk, 1)) if blk is not None else np.nan,
+            "opp_allowed_blk_big_ewma":   _game_ewma_pos("blk", ["C","F"]),
+            "opp_allowed_blk_guard_ewma": _game_ewma_pos("blk", ["G"]),
             # stl
-            "opp_allowed_stl_ewma":   _game_ewma("stl"),
-            "opp_allowed_stl_mean":   stl  if stl  is not None else np.nan,
-            "opp_allowed_stl_factor": (stl / max(_lg_stl, 1)) if stl is not None else np.nan,
+            "opp_allowed_stl_ewma":         _game_ewma("stl"),
+            "opp_allowed_stl_mean":         stl  if stl  is not None else np.nan,
+            "opp_allowed_stl_factor":       (stl / max(_lg_stl, 1)) if stl is not None else np.nan,
+            "opp_allowed_stl_guard_ewma":   _game_ewma_pos("stl", ["G"]),
+            "opp_allowed_stl_big_ewma":     _game_ewma_pos("stl", ["C","F"]),
             # existing
             "opp_oreb_allowed_last10":    oreb if oreb is not None else np.nan,
             "opp_3pa_allowed_last10":     fg3a if fg3a is not None else np.nan,
@@ -1343,6 +1390,8 @@ LAYER_2_FG3M = [
 
 LAYER_2_BLK = [
     "opp_allowed_blk_ewma",
+    "opp_allowed_blk_big_ewma",
+    "opp_allowed_blk_guard_ewma",
     "opp_allowed_blk_factor",
     "opp_allowed_blk_mean",
     "spread_for_team",
@@ -1351,6 +1400,8 @@ LAYER_2_BLK = [
 
 LAYER_2_STL = [
     "opp_allowed_stl_ewma",
+    "opp_allowed_stl_guard_ewma",
+    "opp_allowed_stl_big_ewma",
     "opp_allowed_stl_factor",
     "opp_allowed_stl_mean",
     "spread_for_team",
