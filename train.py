@@ -595,6 +595,7 @@ def build_training_table(stats_df, adv_df, odds_df):
                     "consensus_total":    float(row.consensus_total) if row.consensus_total else 0.0,
                     "implied_home_total": float(row.implied_home_total) if row.implied_home_total else 0.0,
                     "implied_away_total": float(row.implied_away_total) if row.implied_away_total else 0.0,
+                    "consensus_spread":   float(row.consensus_spread) if row.consensus_spread else 0.0,
                     "home_team_id": _htid,
                     "away_team_id": _atid,
                 }
@@ -737,6 +738,8 @@ def build_training_table(stats_df, adv_df, odds_df):
                 _is_home = int(tid == int(cur.get('home_team_id') or 0))
                 base['market_total_asof']      = _odds.get('consensus_total', 0.0)
                 base['implied_team_total']     = (_odds.get('implied_home_total', 0.0) if _is_home else _odds.get('implied_away_total', 0.0))
+                _raw_spread = _odds.get('consensus_spread', 0.0)
+                base['spread_for_team']        = float(_raw_spread) if _is_home else float(-_raw_spread)
                 base['has_market_data']        = 1
                 base['market_source_snapshot'] = 1
                 base['market_source_bdl']      = 0
