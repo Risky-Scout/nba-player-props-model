@@ -63,7 +63,7 @@ def predict_minutes(prior_stats, game_context, is_home, target_date,
             "mp_mean_last5":     float(np.mean(last5)) if len(last5) > 0 else mean_last10,
             "mp_mean_last10":    mean_last10,
             "mp_ewma":           ewma,
-            "mp_trend_3v10":     float(np.mean(prior[-3:])) - mean_last10 if len(prior) >= 3 else 0.0,
+                "mp_trend_3v10":     float(np.mean(prior[-3:]) / max(float(np.mean(last10)), 0.1)),
             "mp_ceiling_last10": float(np.percentile(last10, 90)) if len(last10) > 0 else mean_last10,
             "mp_std_last10":     std_last10,
             "is_home":           float(is_home),
@@ -100,7 +100,7 @@ def predict_minutes(prior_stats, game_context, is_home, target_date,
 
 
 def train_minutes_model(stats_df, odds_df):
-    from sklearn.ensemble import GradientBoostingRegressor
+    import lightgbm as lgb
     import json
 
     logger.info("=" * 60)
@@ -127,12 +127,12 @@ def train_minutes_model(stats_df, odds_df):
                 "mp_mean_last5":     float(np.mean(last5)),
                 "mp_mean_last10":    float(np.mean(last10)),
                 "mp_ewma":           ewma,
-                "mp_trend_3v10":     float(np.mean(prior[-3:])) - float(np.mean(last10)),
+                "mp_trend_3v10":     float(np.mean(prior[-3:]) / max(float(np.mean(last10)), 0.1)),
                 "mp_ceiling_last10": float(np.percentile(last10, 90)),
                 "mp_std_last10":     float(np.std(last10)) if len(last10) > 1 else 0.0,
-                "is_home":           0.0,
-                "rest_days":         2.0,
-                "back_to_back":      0.0,
+                "is_home":           float(pdata.iloc[i].get("home_team_id") == pdata.iloc[i].get("team_id")),
+                "rest_days":         float((pdata.iloc[i]["game_date"] - pdata.iloc[i-1]["game_date"]).days) if i > 0 else 2.0,
+                "back_to_back":      1.0 if i > 0 and (pdata.iloc[i]["game_date"] - pdata.iloc[i-1]["game_date"]).days == 1 else 0.0,
                 "target":            mins[i],
                 "game_date":         pdata.iloc[i]["game_date"],
             })
@@ -158,9 +158,12 @@ def train_minutes_model(stats_df, odds_df):
 
     for q in [10,20,25,30,40,50,60,70,75,80,90]:
         alpha = q/100.0
-        m = GradientBoostingRegressor(loss="quantile", alpha=alpha,
-            n_estimators=200, max_depth=4, learning_rate=0.05,
-            subsample=0.8, random_state=42)
+        m = lgb.LGBMRegressor(
+            objective="quantile", alpha=alpha,
+            n_estimators=500, num_leaves=63,
+            learning_rate=0.03, min_child_samples=20,
+            feature_fraction=0.8, bagging_fraction=0.8,
+            bagging_freq=1, verbosity=-1, random_state=42)
         m.fit(X_tr, y_tr)
         joblib.dump(m, cache_dir / f"minutes_q{q}.pkl")
         if len(X_ho) > 0:

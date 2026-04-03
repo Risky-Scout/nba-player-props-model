@@ -641,6 +641,11 @@ def main():
                 if q_preds is None:
                     continue
 
+                # No market data — shrink quantile predictions toward median
+                if not base.get("has_odds", base.get("has_market_data", 0)):
+                    q50 = q_preds.get(0.50, 0)
+                    q_preds = {q: q50 + 0.70 * (v - q50) for q, v in q_preds.items()}
+
                 # Apply residual centerer if available, else fall back to BIAS_CORRECTION
                 if _centerer is not None:
                     try:
