@@ -1196,6 +1196,16 @@ def main():
 
     logger.info("=" * 60)
     logger.info("TRAINING COMPLETE")
+
+    # Train residual centerer on graded data accumulated so far
+    try:
+        from residual_centering import ResidualCenterer
+        centerer = ResidualCenterer()
+        centerer.train(graded_dir=Path("graded"))
+        centerer.save(model_dir=MODEL_DIR)
+        logger.info("Residual centerer trained and saved")
+    except Exception as e:
+        logger.warning(f"Residual centerer training skipped: {e}")
     for t, r in results.items():
         flag = "✓" if r.get("max_cal_error",1) < 0.05 else "⚠"
         logger.info(
