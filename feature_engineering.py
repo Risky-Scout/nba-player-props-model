@@ -987,7 +987,7 @@ def build_player_game_features(
 
     # ── STL / BLK sparse treatment ────────────────────────────────────────────
     BLEND_K = 15.0
-    for sparse_stat, col in [("stl", "stl"), ("blk", "blk")]:
+    for sparse_stat, col in [("stl", "stl"), ("blk", "blk"), ("tov", "tov")]:
         if col in df.columns and len(min_arr) > 0:
             raw  = df[col].values.astype(float)
             rate = per_minute_rate(raw, min_arr)
@@ -1596,6 +1596,9 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "stl_p_zero_last10",
         "stl_p_ge1_last10",
         "stl_p_ge2_last10",
+        "tov_p_zero_last10",
+        "tov_p_ge1_last10",
+        "tov_p_ge2_last10",
 
 
 
