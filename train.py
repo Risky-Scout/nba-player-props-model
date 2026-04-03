@@ -948,16 +948,10 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
         m_final.fit(X, y)
         joblib.dump(m_final, MODEL_DIR / f"q{int(q*100):02d}_{target}.pkl")
 
-        # Calibration predictions on OOS data
-        if n_oos >= WF_MIN_CAL_ROWS:
-            # Use walk-forward OOS preds for calibration reporting
-            # Re-use the q50 walk-forward for now; per-quantile WF is expensive
-            holdout_preds[q] = oos_preds_q50 if q == 0.5 else oos_preds_q50
-        else:
-            # Fallback: use last 15% holdout for calibration reporting
-            m_cal = lgb.LGBMRegressor(**params)
-            m_cal.fit(X[:tr_n], y[:tr_n])
-            holdout_preds[q] = m_cal.predict(X[tr_n:])
+        # Calibration: per-quantile holdout predictions
+        m_cal = lgb.LGBMRegressor(**params)
+        m_cal.fit(X[:tr_n], y[:tr_n])
+        holdout_preds[q] = m_cal.predict(X[tr_n:])
 
     joblib.dump(feat_cols, MODEL_DIR / f"features_{target}.pkl")
     logger.info(
