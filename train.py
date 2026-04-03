@@ -948,7 +948,8 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
         m_final.fit(X, y)
         joblib.dump(m_final, MODEL_DIR / f"q{int(q*100):02d}_{target}.pkl")
 
-        # Calibration: per-quantile holdout predictions
+        # Calibration: always use 15% holdout for per-quantile reporting
+        # Walk-forward OOS used only for aggregate metrics, not per-quantile cal
         m_cal = lgb.LGBMRegressor(**params)
         m_cal.fit(X[:tr_n], y[:tr_n])
         holdout_preds[q] = m_cal.predict(X[tr_n:])
