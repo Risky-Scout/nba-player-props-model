@@ -562,12 +562,50 @@ def build_training_table(stats_df, adv_df, odds_df):
             logger.error(f"Retrospective inline build failed: {_e2}")
     _odds_index = {}
     _opath = _pl.Path('data/historical_game_odds.parquet')
+    # Team name → abbr mapping for odds join
+    _TEAM_NAME_TO_ABBR = {
+        "Atlanta Hawks":"ATL","Boston Celtics":"BOS","Brooklyn Nets":"BKN",
+        "Charlotte Hornets":"CHA","Chicago Bulls":"CHI","Cleveland Cavaliers":"CLE",
+        "Dallas Mavericks":"DAL","Denver Nuggets":"DEN","Detroit Pistons":"DET",
+        "Golden State Warriors":"GSW","Houston Rockets":"HOU","Indiana Pacers":"IND",
+        "Los Angeles Clippers":"LAC","Los Angeles Lakers":"LAL","Memphis Grizzlies":"MEM",
+        "Miami Heat":"MIA","Milwaukee Bucks":"MIL","Minnesota Timberwolves":"MIN",
+        "New Orleans Pelicans":"NOP","New York Knicks":"NYK","Oklahoma City Thunder":"OKC",
+        "Orlando Magic":"ORL","Philadelphia 76ers":"PHI","Phoenix Suns":"PHX",
+        "Portland Trail Blazers":"POR","Sacramento Kings":"SAC","San Antonio Spurs":"SAS",
+        "Toronto Raptors":"TOR","Utah Jazz":"UTA","Washington Wizards":"WAS",
+    }
+    # Build abbr → team_id from stats data
+    _abbr_to_tid = {}
+    if not stats_df.empty and "team_abbr" in stats_df.columns and "team_id" in stats_df.columns:
+        for _, _r in stats_df[["team_abbr","team_id"]].drop_duplicates().iterrows():
+            if _r["team_abbr"] and _r["team_id"]:
+                _abbr_to_tid[str(_r["team_abbr"])] = int(_r["team_id"])
+
     if _opath.exists():
         try:
             _odf = pd.read_parquet(_opath)
             for row in _odf.itertuples(index=False):
-                _odds_index[str(row.game_date)[:10]] = {'consensus_total':float(row.consensus_total) if row.consensus_total else 0.0,'implied_home_total':float(row.implied_home_total) if row.implied_home_total else 0.0,'implied_away_total':float(row.implied_away_total) if row.implied_away_total else 0.0}
-            logger.info(f"Historical odds loaded: {len(_odds_index)} dates")
+                _date = str(row.game_date)[:10]
+                _habbr = _TEAM_NAME_TO_ABBR.get(row.home_team, "")
+                _aabbr = _TEAM_NAME_TO_ABBR.get(row.away_team, "")
+                _htid  = _abbr_to_tid.get(_habbr, 0)
+                _atid  = _abbr_to_tid.get(_aabbr, 0)
+                _val   = {
+                    "consensus_total":    float(row.consensus_total) if row.consensus_total else 0.0,
+                    "implied_home_total": float(row.implied_home_total) if row.implied_home_total else 0.0,
+                    "implied_away_total": float(row.implied_away_total) if row.implied_away_total else 0.0,
+                    "home_team_id": _htid,
+                    "away_team_id": _atid,
+                }
+                # Key by (date, home_team_id) and (date, away_team_id) for O(1) lookup
+                if _htid:
+                    _odds_index[(_date, _htid)] = _val
+                if _atid:
+                    _odds_index[(_date, _atid)] = _val
+                # Fallback: date-only key for backward compat
+                _odds_index[_date] = _val
+            logger.info(f"Historical odds loaded: {len([k for k in _odds_index if isinstance(k, tuple)])} team-date entries")
         except Exception as _e:
             logger.error(f"Historical odds load failed: {_e}")
     else:
@@ -693,7 +731,8 @@ def build_training_table(stats_df, adv_df, odds_df):
             base['dnp_rest']                = _inj.get('dnp_rest', 0)
             base['dnp_coach_decision']      = _inj.get('dnp_coach_decision', 0)
             base['is_injury_elevated_role'] = _inj.get('is_injury_elevated_role', 0)
-            _odds = _odds_index.get(td, {})
+            # Look up odds by (date, team_id) first, fall back to date-only
+            _odds = _odds_index.get((td, tid), _odds_index.get(td, {}))
             if _odds:
                 _is_home = int(tid == int(cur.get('home_team_id') or 0))
                 base['market_total_asof']      = _odds.get('consensus_total', 0.0)
