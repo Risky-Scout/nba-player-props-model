@@ -339,8 +339,7 @@ def load_models() -> tuple:
     # Load residual centerer if available
     try:
         from residual_centering import ResidualCenterer
-        _centerer = ResidualCenterer()
-        _centerer.load(model_dir=MODEL_DIR)
+        _centerer = ResidualCenterer.load(model_dir=MODEL_DIR)
         logger.info("  Residual centerer loaded")
     except Exception as e:
         _centerer = None

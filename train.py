@@ -1195,6 +1195,21 @@ def main():
         json.dump(meta, f, indent=2, default=str)
 
     logger.info("=" * 60)
+
+    # Train FG3M hurdle model
+    try:
+        from fg3m_hurdle import FG3MHurdleModel
+        logger.info("Training FG3M hurdle model...")
+        hurdle = FG3MHurdleModel()
+        fg3m_df = training_df[training_df["stat"] == "fg3m"].copy()
+        if len(fg3m_df) > 500:
+            hurdle.fit(fg3m_df)
+            hurdle.save("model_cache/fg3m_hurdle.pkl")
+            logger.info("FG3M hurdle model trained and saved")
+        else:
+            logger.warning(f"FG3M hurdle: insufficient rows ({len(fg3m_df)}), skipping")
+    except Exception as e:
+        logger.warning(f"FG3M hurdle training failed: {e}")
     logger.info("TRAINING COMPLETE")
 
     # Train residual centerer on graded data accumulated so far
