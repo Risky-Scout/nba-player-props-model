@@ -336,6 +336,16 @@ def load_models() -> tuple:
     if not platt_calibrators:
         logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
 
+    # Load residual centerer if available
+    try:
+        from residual_centering import ResidualCenterer
+        _centerer = ResidualCenterer()
+        _centerer.load(model_dir=MODEL_DIR)
+        logger.info("  Residual centerer loaded")
+    except Exception as e:
+        _centerer = None
+        logger.info(f"  Residual centerer not available: {e}")
+
     # Load fg3m hurdle model
     hurdle_path = MODEL_DIR / "fg3m_hurdle.pkl"
     fg3m_hurdle_model = None
@@ -349,7 +359,7 @@ def load_models() -> tuple:
     else:
         logger.warning("  FG3M hurdle model not found — using quantile fallback")
 
-    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model
+    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer
 
 
 # ── Quantile prediction ────────────────────────────────────────────────────────
@@ -491,7 +501,7 @@ def main():
     logger.info(f"Target date: {target_date}")
 
     logger.info("Loading models...")
-    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model = load_models()
+    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer = load_models()
 
     # Load minutes bucket corrections (Phase 2 fix)
     global MINUTES_CORRECTIONS
@@ -631,9 +641,22 @@ def main():
                 if q_preds is None:
                     continue
 
-                # Apply bias correction — shift entire quantile distribution
-                bias    = BIAS_CORRECTION.get(target, 0.0)
-                q_preds = {q: v + bias for q, v in q_preds.items()}
+                # Apply residual centerer if available, else fall back to BIAS_CORRECTION
+                if _centerer is not None:
+                    try:
+                        meta = {
+                            "mp_mean_last10": base.get("mp_mean_last10"),
+                            "is_home": base.get("is_home", 0),
+                            "days_rest": base.get("days_rest", 1),
+                            "opp_def_rating": base.get("opp_allowed_pts_ewma", 112.0),
+                        }
+                        q_preds = _centerer.correct_quantiles(target, q_preds, meta)
+                    except Exception:
+                        bias = BIAS_CORRECTION.get(target, 0.0)
+                        q_preds = {q: v + bias for q, v in q_preds.items()}
+                else:
+                    bias = BIAS_CORRECTION.get(target, 0.0)
+                    q_preds = {q: v + bias for q, v in q_preds.items()}
 
                 # Apply minutes-bucket correction (Phase 2 fix)
                 # Use 50% of correction per rebuild doc:
