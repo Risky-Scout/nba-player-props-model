@@ -1,6 +1,6 @@
 {
   "version": "2026-03-09-v12",
-  "trained_at": "2026-04-02T23:55:27.329254",
+  "trained_at": "2026-04-04T08:13:48.542121",
   "train_seasons": [
     2023,
     2024,
@@ -25,12 +25,12 @@
   "adv_fields": 21,
   "injury_snapshots": true,
   "minutes_model": {
-    "mae": 5.001366700094793,
-    "mae_q50": 5.001366700094793,
-    "max_cal_error": 0.01190909090909087,
-    "coverage_50pct": 0.5119090909090909,
-    "n_train": 62400,
-    "n_holdout": 11000,
+    "mae": 4.97099681012686,
+    "mae_q50": 4.97099681012686,
+    "max_cal_error": 0.022611696331274966,
+    "coverage_50pct": 0.5168906647293862,
+    "n_train": 62711,
+    "n_holdout": 11012,
     "features": [
       "mp_mean_season",
       "mp_mean_last5",
@@ -48,87 +48,87 @@
     "pts": {
       "target": "pts",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 45,
-      "median_mae": 4.6587,
-      "max_cal_error": 0.4037,
+      "median_mae": 4.6208,
+      "max_cal_error": 0.0322,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5037,
-          "error": 0.4037,
-          "n": 49924,
+          "empirical_q": 0.1201,
+          "error": 0.0201,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5037,
-          "error": 0.3037,
-          "n": 49924,
+          "empirical_q": 0.2074,
+          "error": 0.0074,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5037,
-          "error": 0.2537,
-          "n": 49924,
+          "empirical_q": 0.2549,
+          "error": 0.0049,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5037,
-          "error": 0.1737,
-          "n": 49924,
+          "empirical_q": 0.3266,
+          "error": 0.0034,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5037,
-          "error": 0.1037,
-          "n": 49924,
+          "empirical_q": 0.3889,
+          "error": 0.0111,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5037,
-          "error": 0.0037,
-          "n": 49924,
+          "empirical_q": 0.4724,
+          "error": 0.0276,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5037,
-          "error": 0.0963,
-          "n": 49924,
+          "empirical_q": 0.5678,
+          "error": 0.0322,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5037,
-          "error": 0.1663,
-          "n": 49924,
+          "empirical_q": 0.6422,
+          "error": 0.0278,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5037,
-          "error": 0.2463,
-          "n": 49924,
+          "empirical_q": 0.7199,
+          "error": 0.0301,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5037,
-          "error": 0.2963,
-          "n": 49924,
+          "empirical_q": 0.7701,
+          "error": 0.0299,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5037,
-          "error": 0.3963,
-          "n": 49924,
+          "empirical_q": 0.8771,
+          "error": 0.0229,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -136,87 +136,87 @@
     "reb": {
       "target": "reb",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 51,
-      "median_mae": 1.9284,
-      "max_cal_error": 0.4054,
+      "median_mae": 1.9202,
+      "max_cal_error": 0.019,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5054,
-          "error": 0.4054,
-          "n": 49924,
+          "empirical_q": 0.1123,
+          "error": 0.0123,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5054,
-          "error": 0.3054,
-          "n": 49924,
+          "empirical_q": 0.2152,
+          "error": 0.0152,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5054,
-          "error": 0.2554,
-          "n": 49924,
+          "empirical_q": 0.2642,
+          "error": 0.0142,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5054,
-          "error": 0.1754,
-          "n": 49924,
+          "empirical_q": 0.3342,
+          "error": 0.0042,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5054,
-          "error": 0.1054,
-          "n": 49924,
+          "empirical_q": 0.3978,
+          "error": 0.0022,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5054,
-          "error": 0.0054,
-          "n": 49924,
+          "empirical_q": 0.4947,
+          "error": 0.0053,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5054,
-          "error": 0.0946,
-          "n": 49924,
+          "empirical_q": 0.584,
+          "error": 0.016,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5054,
-          "error": 0.1646,
-          "n": 49924,
+          "empirical_q": 0.6538,
+          "error": 0.0162,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5054,
-          "error": 0.2446,
-          "n": 49924,
+          "empirical_q": 0.731,
+          "error": 0.019,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5054,
-          "error": 0.2946,
-          "n": 49924,
+          "empirical_q": 0.7849,
+          "error": 0.0151,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5054,
-          "error": 0.3946,
-          "n": 49924,
+          "empirical_q": 0.8825,
+          "error": 0.0175,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -224,87 +224,87 @@
     "ast": {
       "target": "ast",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 39,
-      "median_mae": 1.3483,
-      "max_cal_error": 0.4055,
+      "median_mae": 1.3444,
+      "max_cal_error": 0.0231,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5055,
-          "error": 0.4055,
-          "n": 49924,
+          "empirical_q": 0.1133,
+          "error": 0.0133,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5055,
-          "error": 0.3055,
-          "n": 49924,
+          "empirical_q": 0.2224,
+          "error": 0.0224,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5055,
-          "error": 0.2555,
-          "n": 49924,
+          "empirical_q": 0.2606,
+          "error": 0.0106,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5055,
-          "error": 0.1755,
-          "n": 49924,
+          "empirical_q": 0.3388,
+          "error": 0.0088,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5055,
-          "error": 0.1055,
-          "n": 49924,
+          "empirical_q": 0.4026,
+          "error": 0.0026,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5055,
-          "error": 0.0055,
-          "n": 49924,
+          "empirical_q": 0.4885,
+          "error": 0.0115,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5055,
-          "error": 0.0945,
-          "n": 49924,
+          "empirical_q": 0.58,
+          "error": 0.02,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5055,
-          "error": 0.1645,
-          "n": 49924,
+          "empirical_q": 0.6528,
+          "error": 0.0172,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5055,
-          "error": 0.2445,
-          "n": 49924,
+          "empirical_q": 0.7296,
+          "error": 0.0204,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5055,
-          "error": 0.2945,
-          "n": 49924,
+          "empirical_q": 0.7769,
+          "error": 0.0231,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5055,
-          "error": 0.3945,
-          "n": 49924,
+          "empirical_q": 0.8806,
+          "error": 0.0194,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -312,92 +312,92 @@
     "fg3m": {
       "target": "fg3m",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 43,
-      "median_mae": 0.8764,
-      "max_cal_error": 0.3539,
+      "median_mae": 0.8558,
+      "max_cal_error": 0.0374,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5461,
+          "empirical_q": 0.2277,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.414 (zero mass)"
+          "reason": "q=0.10 <= p0=0.423 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5461,
+          "empirical_q": 0.2496,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.414 (zero mass)"
+          "reason": "q=0.20 <= p0=0.423 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5461,
+          "empirical_q": 0.2986,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.414 (zero mass)"
+          "reason": "q=0.25 <= p0=0.423 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5461,
+          "empirical_q": 0.3669,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.414 (zero mass)"
+          "reason": "q=0.33 <= p0=0.423 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5461,
+          "empirical_q": 0.4275,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.40 <= p0=0.414 (zero mass)"
+          "reason": "q=0.40 <= p0=0.423 (zero mass)"
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5461,
-          "error": 0.0461,
-          "n": 49924,
+          "empirical_q": 0.5374,
+          "error": 0.0374,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5461,
-          "error": 0.0539,
-          "n": 49924,
+          "empirical_q": 0.6181,
+          "error": 0.0181,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5461,
-          "error": 0.1239,
-          "n": 49924,
+          "empirical_q": 0.6803,
+          "error": 0.0103,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5461,
-          "error": 0.2039,
-          "n": 49924,
+          "empirical_q": 0.7457,
+          "error": 0.0043,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5461,
-          "error": 0.2539,
-          "n": 49924,
+          "empirical_q": 0.7908,
+          "error": 0.0092,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5461,
-          "error": 0.3539,
-          "n": 49924,
+          "empirical_q": 0.8888,
+          "error": 0.0112,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -405,92 +405,93 @@
     "stl": {
       "target": "stl",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
-      "feature_count": 36,
-      "median_mae": 0.6838,
-      "max_cal_error": 0.3934,
+      "feature_count": 41,
+      "median_mae": 0.6821,
+      "max_cal_error": 0.0233,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5066,
+          "empirical_q": 0.4474,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.500 (zero mass)"
+          "reason": "q=0.10 <= p0=0.502 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5066,
+          "empirical_q": 0.3352,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.500 (zero mass)"
+          "reason": "q=0.20 <= p0=0.502 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5066,
+          "empirical_q": 0.2981,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.500 (zero mass)"
+          "reason": "q=0.25 <= p0=0.502 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5066,
+          "empirical_q": 0.3532,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.500 (zero mass)"
+          "reason": "q=0.33 <= p0=0.502 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5066,
+          "empirical_q": 0.4194,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.40 <= p0=0.500 (zero mass)"
+          "reason": "q=0.40 <= p0=0.502 (zero mass)"
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5066,
-          "error": 0.0066,
-          "n": 49924,
-          "skipped": false
+          "empirical_q": 0.5028,
+          "error": 0.0,
+          "n": 10552,
+          "skipped": true,
+          "reason": "q=0.50 <= p0=0.502 (zero mass)"
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5066,
-          "error": 0.0934,
-          "n": 49924,
+          "empirical_q": 0.5976,
+          "error": 0.0024,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5066,
-          "error": 0.1634,
-          "n": 49924,
+          "empirical_q": 0.6617,
+          "error": 0.0083,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5066,
-          "error": 0.2434,
-          "n": 49924,
+          "empirical_q": 0.7369,
+          "error": 0.0131,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5066,
-          "error": 0.2934,
-          "n": 49924,
+          "empirical_q": 0.7822,
+          "error": 0.0178,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5066,
-          "error": 0.3934,
-          "n": 49924,
+          "empirical_q": 0.8767,
+          "error": 0.0233,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -498,95 +499,95 @@
     "blk": {
       "target": "blk",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
-      "feature_count": 38,
-      "median_mae": 0.4368,
-      "max_cal_error": 0.3362,
+      "feature_count": 40,
+      "median_mae": 0.4307,
+      "max_cal_error": 0.0216,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.6202,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.680 (zero mass)"
+          "reason": "q=0.10 <= p0=0.688 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.5566,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.680 (zero mass)"
+          "reason": "q=0.20 <= p0=0.688 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.4903,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.680 (zero mass)"
+          "reason": "q=0.25 <= p0=0.688 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.5031,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.680 (zero mass)"
+          "reason": "q=0.33 <= p0=0.688 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.5154,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.40 <= p0=0.680 (zero mass)"
+          "reason": "q=0.40 <= p0=0.688 (zero mass)"
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.5596,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.50 <= p0=0.680 (zero mass)"
+          "reason": "q=0.50 <= p0=0.688 (zero mass)"
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.6226,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.60 <= p0=0.680 (zero mass)"
+          "reason": "q=0.60 <= p0=0.688 (zero mass)"
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5638,
+          "empirical_q": 0.6765,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.67 <= p0=0.680 (zero mass)"
+          "reason": "q=0.67 <= p0=0.688 (zero mass)"
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5638,
-          "error": 0.1862,
-          "n": 49924,
+          "empirical_q": 0.7394,
+          "error": 0.0106,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5638,
-          "error": 0.2362,
-          "n": 49924,
+          "empirical_q": 0.7869,
+          "error": 0.0131,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5638,
-          "error": 0.3362,
-          "n": 49924,
+          "empirical_q": 0.8784,
+          "error": 0.0216,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -594,91 +595,91 @@
     "tov": {
       "target": "tov",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 31,
-      "median_mae": 0.9286,
-      "max_cal_error": 0.407,
+      "median_mae": 0.9275,
+      "max_cal_error": 0.0443,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.493,
+          "empirical_q": 0.3207,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.359 (zero mass)"
+          "reason": "q=0.10 <= p0=0.358 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.493,
+          "empirical_q": 0.247,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.359 (zero mass)"
+          "reason": "q=0.20 <= p0=0.358 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.493,
+          "empirical_q": 0.2538,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.359 (zero mass)"
+          "reason": "q=0.25 <= p0=0.358 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.493,
+          "empirical_q": 0.3229,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.359 (zero mass)"
+          "reason": "q=0.33 <= p0=0.358 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.493,
-          "error": 0.093,
-          "n": 49924,
+          "empirical_q": 0.385,
+          "error": 0.015,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.493,
-          "error": 0.007,
-          "n": 49924,
+          "empirical_q": 0.4735,
+          "error": 0.0265,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.493,
-          "error": 0.107,
-          "n": 49924,
+          "empirical_q": 0.5632,
+          "error": 0.0368,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.493,
-          "error": 0.177,
-          "n": 49924,
+          "empirical_q": 0.6296,
+          "error": 0.0404,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.493,
-          "error": 0.257,
-          "n": 49924,
+          "empirical_q": 0.7065,
+          "error": 0.0435,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.493,
-          "error": 0.307,
-          "n": 49924,
+          "empirical_q": 0.7557,
+          "error": 0.0443,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.493,
-          "error": 0.407,
-          "n": 49924,
+          "empirical_q": 0.862,
+          "error": 0.038,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -686,87 +687,87 @@
     "pra": {
       "target": "pra",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 43,
-      "median_mae": 6.077,
-      "max_cal_error": 0.4015,
+      "median_mae": 6.0381,
+      "max_cal_error": 0.025,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5015,
-          "error": 0.4015,
-          "n": 49924,
+          "empirical_q": 0.1123,
+          "error": 0.0123,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5015,
-          "error": 0.3015,
-          "n": 49924,
+          "empirical_q": 0.2006,
+          "error": 0.0006,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5015,
-          "error": 0.2515,
-          "n": 49924,
+          "empirical_q": 0.2493,
+          "error": 0.0007,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5015,
-          "error": 0.1715,
-          "n": 49924,
+          "empirical_q": 0.3234,
+          "error": 0.0066,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5015,
-          "error": 0.1015,
-          "n": 49924,
+          "empirical_q": 0.3903,
+          "error": 0.0097,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5015,
-          "error": 0.0015,
-          "n": 49924,
+          "empirical_q": 0.4846,
+          "error": 0.0154,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5015,
-          "error": 0.0985,
-          "n": 49924,
+          "empirical_q": 0.5772,
+          "error": 0.0228,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5015,
-          "error": 0.1685,
-          "n": 49924,
+          "empirical_q": 0.645,
+          "error": 0.025,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5015,
-          "error": 0.2485,
-          "n": 49924,
+          "empirical_q": 0.7284,
+          "error": 0.0216,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5015,
-          "error": 0.2985,
-          "n": 49924,
+          "empirical_q": 0.7753,
+          "error": 0.0247,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5015,
-          "error": 0.3985,
-          "n": 49924,
+          "empirical_q": 0.8797,
+          "error": 0.0203,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -774,87 +775,87 @@
     "pr": {
       "target": "pr",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 42,
-      "median_mae": 5.5897,
-      "max_cal_error": 0.4012,
+      "median_mae": 5.5375,
+      "max_cal_error": 0.0273,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5012,
-          "error": 0.4012,
-          "n": 49924,
+          "empirical_q": 0.1174,
+          "error": 0.0174,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5012,
-          "error": 0.3012,
-          "n": 49924,
+          "empirical_q": 0.205,
+          "error": 0.005,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5012,
-          "error": 0.2512,
-          "n": 49924,
+          "empirical_q": 0.2488,
+          "error": 0.0012,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5012,
-          "error": 0.1712,
-          "n": 49924,
+          "empirical_q": 0.3237,
+          "error": 0.0063,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5012,
-          "error": 0.1012,
-          "n": 49924,
+          "empirical_q": 0.3927,
+          "error": 0.0073,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5012,
-          "error": 0.0012,
-          "n": 49924,
+          "empirical_q": 0.4838,
+          "error": 0.0162,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5012,
-          "error": 0.0988,
-          "n": 49924,
+          "empirical_q": 0.5737,
+          "error": 0.0263,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5012,
-          "error": 0.1688,
-          "n": 49924,
+          "empirical_q": 0.6427,
+          "error": 0.0273,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5012,
-          "error": 0.2488,
-          "n": 49924,
+          "empirical_q": 0.7237,
+          "error": 0.0263,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5012,
-          "error": 0.2988,
-          "n": 49924,
+          "empirical_q": 0.7766,
+          "error": 0.0234,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5012,
-          "error": 0.3988,
-          "n": 49924,
+          "empirical_q": 0.8786,
+          "error": 0.0214,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -862,87 +863,87 @@
     "pa": {
       "target": "pa",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 41,
-      "median_mae": 5.1019,
-      "max_cal_error": 0.4014,
+      "median_mae": 5.054,
+      "max_cal_error": 0.0253,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5014,
-          "error": 0.4014,
-          "n": 49924,
+          "empirical_q": 0.1139,
+          "error": 0.0139,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5014,
-          "error": 0.3014,
-          "n": 49924,
+          "empirical_q": 0.1993,
+          "error": 0.0007,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5014,
-          "error": 0.2514,
-          "n": 49924,
+          "empirical_q": 0.2491,
+          "error": 0.0009,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5014,
-          "error": 0.1714,
-          "n": 49924,
+          "empirical_q": 0.3253,
+          "error": 0.0047,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5014,
-          "error": 0.1014,
-          "n": 49924,
+          "empirical_q": 0.3867,
+          "error": 0.0133,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5014,
-          "error": 0.0014,
-          "n": 49924,
+          "empirical_q": 0.4778,
+          "error": 0.0222,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5014,
-          "error": 0.0986,
-          "n": 49924,
+          "empirical_q": 0.5747,
+          "error": 0.0253,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5014,
-          "error": 0.1686,
-          "n": 49924,
+          "empirical_q": 0.646,
+          "error": 0.024,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5014,
-          "error": 0.2486,
-          "n": 49924,
+          "empirical_q": 0.7253,
+          "error": 0.0247,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5014,
-          "error": 0.2986,
-          "n": 49924,
+          "empirical_q": 0.7771,
+          "error": 0.0229,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5014,
-          "error": 0.3986,
-          "n": 49924,
+          "empirical_q": 0.8765,
+          "error": 0.0235,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -950,87 +951,87 @@
     "ra": {
       "target": "ra",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 40,
-      "median_mae": 2.6366,
-      "max_cal_error": 0.4052,
+      "median_mae": 2.6303,
+      "max_cal_error": 0.0221,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5052,
-          "error": 0.4052,
-          "n": 49924,
+          "empirical_q": 0.1142,
+          "error": 0.0142,
+          "n": 10552,
           "skipped": false
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5052,
-          "error": 0.3052,
-          "n": 49924,
+          "empirical_q": 0.2109,
+          "error": 0.0109,
+          "n": 10552,
           "skipped": false
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5052,
-          "error": 0.2552,
-          "n": 49924,
+          "empirical_q": 0.2545,
+          "error": 0.0045,
+          "n": 10552,
           "skipped": false
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5052,
-          "error": 0.1752,
-          "n": 49924,
+          "empirical_q": 0.3294,
+          "error": 0.0006,
+          "n": 10552,
           "skipped": false
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5052,
-          "error": 0.1052,
-          "n": 49924,
+          "empirical_q": 0.4021,
+          "error": 0.0021,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5052,
-          "error": 0.0052,
-          "n": 49924,
+          "empirical_q": 0.4995,
+          "error": 0.0005,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5052,
-          "error": 0.0948,
-          "n": 49924,
+          "empirical_q": 0.5893,
+          "error": 0.0107,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5052,
-          "error": 0.1648,
-          "n": 49924,
+          "empirical_q": 0.6525,
+          "error": 0.0175,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5052,
-          "error": 0.2448,
-          "n": 49924,
+          "empirical_q": 0.7316,
+          "error": 0.0184,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5052,
-          "error": 0.2948,
-          "n": 49924,
+          "empirical_q": 0.7779,
+          "error": 0.0221,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5052,
-          "error": 0.3948,
-          "n": 49924,
+          "empirical_q": 0.8804,
+          "error": 0.0196,
+          "n": 10552,
           "skipped": false
         }
       }
@@ -1038,91 +1039,91 @@
     "stocks": {
       "target": "stocks",
       "n_train": 59451,
-      "n_holdout": 10592,
+      "n_holdout": 10552,
       "holdout_cutoff": "2026-01-18",
       "feature_count": 31,
-      "median_mae": 0.9469,
-      "max_cal_error": 0.3963,
+      "median_mae": 0.9454,
+      "max_cal_error": 0.0328,
       "calibration": {
         "0.1": {
           "predicted_q": 0.1,
-          "empirical_q": 0.5037,
+          "empirical_q": 0.3321,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.10 <= p0=0.360 (zero mass)"
+          "reason": "q=0.10 <= p0=0.366 (zero mass)"
         },
         "0.2": {
           "predicted_q": 0.2,
-          "empirical_q": 0.5037,
+          "empirical_q": 0.2472,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.20 <= p0=0.360 (zero mass)"
+          "reason": "q=0.20 <= p0=0.366 (zero mass)"
         },
         "0.25": {
           "predicted_q": 0.25,
-          "empirical_q": 0.5037,
+          "empirical_q": 0.2716,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.25 <= p0=0.360 (zero mass)"
+          "reason": "q=0.25 <= p0=0.366 (zero mass)"
         },
         "0.33": {
           "predicted_q": 0.33,
-          "empirical_q": 0.5037,
+          "empirical_q": 0.334,
           "error": 0.0,
-          "n": 49924,
+          "n": 10552,
           "skipped": true,
-          "reason": "q=0.33 <= p0=0.360 (zero mass)"
+          "reason": "q=0.33 <= p0=0.366 (zero mass)"
         },
         "0.4": {
           "predicted_q": 0.4,
-          "empirical_q": 0.5037,
-          "error": 0.1037,
-          "n": 49924,
+          "empirical_q": 0.3997,
+          "error": 0.0003,
+          "n": 10552,
           "skipped": false
         },
         "0.5": {
           "predicted_q": 0.5,
-          "empirical_q": 0.5037,
-          "error": 0.0037,
-          "n": 49924,
+          "empirical_q": 0.499,
+          "error": 0.001,
+          "n": 10552,
           "skipped": false
         },
         "0.6": {
           "predicted_q": 0.6,
-          "empirical_q": 0.5037,
-          "error": 0.0963,
-          "n": 49924,
+          "empirical_q": 0.5885,
+          "error": 0.0115,
+          "n": 10552,
           "skipped": false
         },
         "0.67": {
           "predicted_q": 0.67,
-          "empirical_q": 0.5037,
-          "error": 0.1663,
-          "n": 49924,
+          "empirical_q": 0.6549,
+          "error": 0.0151,
+          "n": 10552,
           "skipped": false
         },
         "0.75": {
           "predicted_q": 0.75,
-          "empirical_q": 0.5037,
-          "error": 0.2463,
-          "n": 49924,
+          "empirical_q": 0.724,
+          "error": 0.026,
+          "n": 10552,
           "skipped": false
         },
         "0.8": {
           "predicted_q": 0.8,
-          "empirical_q": 0.5037,
-          "error": 0.2963,
-          "n": 49924,
+          "empirical_q": 0.7672,
+          "error": 0.0328,
+          "n": 10552,
           "skipped": false
         },
         "0.9": {
           "predicted_q": 0.9,
-          "empirical_q": 0.5037,
-          "error": 0.3963,
-          "n": 49924,
+          "empirical_q": 0.8763,
+          "error": 0.0237,
+          "n": 10552,
           "skipped": false
         }
       }
