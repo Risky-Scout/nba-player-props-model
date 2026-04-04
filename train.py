@@ -1008,7 +1008,7 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
 
     # ── Calibration report ────────────────────────────────────────────────────
     zero_inflated = target in ("stl", "blk", "stocks", "fg3m", "tov")
-    actuals_ho    = oos_actuals if n_oos >= WF_MIN_CAL_ROWS else y[tr_n:]
+    actuals_ho    = y[tr_n:]  # always use holdout actuals — must match holdout_preds shape
     cal = quantile_calibration_report(
         actuals_ho, holdout_preds, zero_inflated=zero_inflated
     )
