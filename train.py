@@ -1207,6 +1207,21 @@ def main():
         hurdle = FG3MHurdleModel()
         fg3m_df = training_df[training_df["stat"] == "fg3m"].copy()
         if len(fg3m_df) > 500:
+            # Add column aliases the hurdle model expects
+            if "mean_fg3a_last10" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
+                fg3m_df["mean_fg3a_last10"] = fg3m_df["per_min_fg3a_last10"] * fg3m_df.get("mp_mean_last10", 36).fillna(36)
+            if "mean_fg3a_last5" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
+                fg3m_df["mean_fg3a_last5"] = fg3m_df["per_min_fg3a_last10"] * fg3m_df.get("mp_mean_last10", 36).fillna(36)
+            if "season_mean_fg3a" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
+                fg3m_df["season_mean_fg3a"] = fg3m_df["per_min_fg3a_last10"] * fg3m_df.get("mp_mean_season", 36).fillna(36)
+            if "ewma10_fg3a" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
+                fg3m_df["ewma10_fg3a"] = fg3m_df["per_min_fg3a_last10"] * fg3m_df.get("mp_ewma_10", 36).fillna(36)
+            if "zero_pct_fg3a" not in fg3m_df.columns and "fg3m_p_zero_last10" in fg3m_df.columns:
+                fg3m_df["zero_pct_fg3a"] = fg3m_df["fg3m_p_zero_last10"]
+            if "trend_fg3a" not in fg3m_df.columns and "fg3a_attempt_trend" in fg3m_df.columns:
+                fg3m_df["trend_fg3a"] = fg3m_df["fg3a_attempt_trend"]
+            if "per_min_fg3a_season" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
+                fg3m_df["per_min_fg3a_season"] = fg3m_df["per_min_fg3a_last10"]
             hurdle.fit(fg3m_df)
             hurdle.save("model_cache/fg3m_hurdle.pkl")
             logger.info("FG3M hurdle model trained and saved")
