@@ -1034,7 +1034,7 @@ def train_target_model(training_df: pd.DataFrame, target: str) -> dict:
     if target in ("stl", "blk", "stocks", "fg3m", "tov"):
         zero_frac = float(np.mean(actuals_ho == 0))
         logger.info(f"  [{target.upper()} zero-inflation] holdout zero fraction: {zero_frac:.3f}")
-        zm_feats = [c for c in feat_cols if "p_zero" in c or "p_ge" in c or "blended" in c]
+        zm_feats = [c for c in feat_cols if ("p_zero" in c or "p_ge" in c or "blended" in c) and (target in c or "fg3m" in c)]
         logger.info(f"    Zero-mass features in model: {zm_feats}")
 
     if target == "fg3m":
