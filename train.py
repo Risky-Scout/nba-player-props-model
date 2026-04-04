@@ -692,8 +692,8 @@ def build_training_table(stats_df, adv_df, odds_df):
             padv_i = [
                 r for r in padv
                 if pd.Timestamp(
-                    r.get("game_date", pd.Timestamp("2000"))
-                ) < cur["game_date"]
+                    r.get("game_date", "2000-01-01")
+                ) < pd.Timestamp(cur["game_date"])
             ]
 
             # Injury map: use snapshot if available for this date
