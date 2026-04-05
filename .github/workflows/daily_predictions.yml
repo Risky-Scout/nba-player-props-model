@@ -47,8 +47,9 @@ jobs:
           git add data/opening_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Opening lines $(date -u +%Y-%m-%d)"
-          git pull --rebase origin main
-          git push origin main
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
 
 
 # ── Job 2: Grade + Predict (8 AM ET) ─────────────────────────────────────────
@@ -114,8 +115,9 @@ jobs:
           git add predictions/ graded/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
-          git pull --rebase origin main
-          git push origin main
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
 
       - name: Upload predictions to server via SFTP
         env:
@@ -168,5 +170,6 @@ jobs:
           git add graded/closing_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Closing lines $(date -u +%Y-%m-%d)"
-          git pull --rebase origin main
-          git push origin main
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
