@@ -1,10 +1,140 @@
 {
   "date": "2026-04-05",
-  "generated_at": "2026-04-05T13:55:12.846146",
+  "generated_at": "2026-04-05T15:40:20.419676",
   "version": "2026-03-17-v13",
   "min_ev": 0.025,
-  "total_sgps": 0,
-  "two_leg": 0,
-  "three_leg": 0,
-  "sgps": []
+  "total_sgps": 4,
+  "two_leg": 3,
+  "three_leg": 1,
+  "sgps": [
+    {
+      "legs": 3,
+      "game": "Indiana Pacers @ Cleveland Cavaliers",
+      "game_id": 18447954,
+      "combined_odds": -119,
+      "correlated_prob": 0.7027,
+      "naive_prob": 0.3192,
+      "ev": 0.2932,
+      "kelly_units": 0.087,
+      "leg_details": [
+        {
+          "player": "Thomas Bryant",
+          "player_id": 74,
+          "stat": "blk",
+          "side": "UNDER",
+          "line": 0.5,
+          "odds": 140,
+          "model_prob": 0.6708
+        },
+        {
+          "player": "Kobe Brown",
+          "player_id": 56677849,
+          "stat": "reb",
+          "side": "UNDER",
+          "line": 5.5,
+          "odds": 105,
+          "model_prob": 0.7606
+        },
+        {
+          "player": "Quenton Jackson",
+          "player_id": 44477085,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 4.0,
+          "odds": 125,
+          "model_prob": 0.6256
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Indiana Pacers @ Cleveland Cavaliers",
+      "game_id": 18447954,
+      "combined_odds": -213,
+      "correlated_prob": 0.8647,
+      "naive_prob": 0.5102,
+      "ev": 0.2707,
+      "kelly_units": 0.144,
+      "leg_details": [
+        {
+          "player": "Thomas Bryant",
+          "player_id": 74,
+          "stat": "blk",
+          "side": "UNDER",
+          "line": 0.5,
+          "odds": 140,
+          "model_prob": 0.6708
+        },
+        {
+          "player": "Kobe Brown",
+          "player_id": 56677849,
+          "stat": "reb",
+          "side": "UNDER",
+          "line": 5.5,
+          "odds": 105,
+          "model_prob": 0.7606
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Indiana Pacers @ Cleveland Cavaliers",
+      "game_id": 18447954,
+      "combined_odds": -133,
+      "correlated_prob": 0.6993,
+      "naive_prob": 0.4197,
+      "ev": 0.2251,
+      "kelly_units": 0.075,
+      "leg_details": [
+        {
+          "player": "Thomas Bryant",
+          "player_id": 74,
+          "stat": "blk",
+          "side": "UNDER",
+          "line": 0.5,
+          "odds": 140,
+          "model_prob": 0.6708
+        },
+        {
+          "player": "Quenton Jackson",
+          "player_id": 44477085,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 4.0,
+          "odds": 125,
+          "model_prob": 0.6256
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Indiana Pacers @ Cleveland Cavaliers",
+      "game_id": 18447954,
+      "combined_odds": -320,
+      "correlated_prob": 0.8092,
+      "naive_prob": 0.4758,
+      "ev": 0.0621,
+      "kelly_units": 0.05,
+      "leg_details": [
+        {
+          "player": "Kobe Brown",
+          "player_id": 56677849,
+          "stat": "reb",
+          "side": "UNDER",
+          "line": 5.5,
+          "odds": 105,
+          "model_prob": 0.7606
+        },
+        {
+          "player": "Quenton Jackson",
+          "player_id": 44477085,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 4.0,
+          "odds": 125,
+          "model_prob": 0.6256
+        }
+      ]
+    }
+  ]
 }
