@@ -429,7 +429,7 @@ def opponent_defensive_features(
         # Find opponent's recent game IDs (before target date)
         opp_rows = df[
             (df["team_id"] == opp_team_id) &
-            (df["game_date"] < target_date)
+            (df["game_date"].astype(str) < str(target_date))
         ]
         if opp_rows.empty:
             return NULL
@@ -733,7 +733,7 @@ def vacated_opportunity_features(
 
     team_games = stats_df[
         (stats_df["team_id"] == team_id) &
-        (stats_df["game_date"] < target_date)
+        (stats_df["game_date"].astype(str) < str(target_date))
     ].sort_values("game_date")
 
     if team_games.empty:
@@ -768,7 +768,7 @@ def vacated_opportunity_features(
     def _asof_avg(pid: int, col: str) -> float:
         pdata = stats_df[
             (stats_df["player_id"] == pid) &
-            (stats_df["game_date"] < target_date)
+            (stats_df["game_date"].astype(str) < str(target_date))
         ]
         if pdata.empty or col not in pdata.columns:
             return np.nan
@@ -789,7 +789,7 @@ def vacated_opportunity_features(
     def _asof_mean_min(pid: int) -> float:
         pdata = stats_df[
             (stats_df["player_id"] == pid) &
-            (stats_df["game_date"] < target_date)
+            (stats_df["game_date"].astype(str) < str(target_date))
         ]
         if pdata.empty:
             return np.nan
@@ -802,7 +802,7 @@ def vacated_opportunity_features(
         """
         pdata = stats_df[
             (stats_df["player_id"] == pid) &
-            (stats_df["game_date"] < target_date)
+            (stats_df["game_date"].astype(str) < str(target_date))
         ]
         if pdata.empty:
             return "unknown"
@@ -1257,7 +1257,7 @@ def build_player_game_features(
                 all_stats_df["team_id"] == team_id
             ].copy()
             team_games["game_date"] = pd.to_datetime(team_games["game_date"])
-            team_games = team_games[team_games["game_date"] < tdt]
+            team_games = team_games[team_games["game_date"].astype(str) < str(tdt)[:10]]
             if len(team_games) >= 10:
                 last20_dates = sorted(team_games["game_date"].unique())[-20:]
                 recent = team_games[team_games["game_date"].isin(last20_dates)]

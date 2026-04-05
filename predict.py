@@ -585,8 +585,8 @@ def main():
 
     for game in games:
         gid     = game.get("id")
-        home_id = (game.get("home_team") or {}).get("id")
-        vis_id  = (game.get("visitor_team") or {}).get("id")
+        home_id = (game.get("home_team") or {}).get("id") or game.get("home_team_id")
+        vis_id  = (game.get("visitor_team") or {}).get("id") or game.get("visitor_team_id")
         home_nm = (game.get("home_team") or {}).get("full_name", "")
         vis_nm  = (game.get("visitor_team") or {}).get("full_name", "")
         glabel  = f"{vis_nm} @ {home_nm}"
@@ -595,9 +595,10 @@ def main():
         player_ids = list(set(pid for (pid, pg, _) in prop_map if pg == gid))
 
         for player_id in player_ids:
-            pdata = stats_df[stats_df["player_id"] == player_id]
+            pdata = stats_df[stats_df["player_id"] == player_id].copy()
             if pdata.empty:
                 continue
+            pdata["game_date"] = pd.to_datetime(pdata["game_date"]).dt.strftime("%Y-%m-%d")
 
             season_games = pdata[pdata["season"] == 2025]
             if len(season_games) < MIN_GAMES_SEASON:
@@ -627,9 +628,10 @@ def main():
                     team_id      = team_id,
                     all_stats_df = stats_df,
                     injury_map   = injury_map,
+                    opp_team_id  = opp_id,
                 )
             except Exception as e:
-                logger.debug(f"Feature error player={player_id}: {e}")
+                logger.warning(f"Feature error player={player_id}: {e}")
                 continue
 
             player_name = str(pdata.iloc[-1].get("player_name", f"Player {player_id}"))
