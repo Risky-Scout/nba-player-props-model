@@ -76,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install lightgbm scikit-learn pandas numpy requests pyarrow joblib scipy
+          pip install -r requirements.txt
 
       - name: Grade yesterday's predictions
         env:
