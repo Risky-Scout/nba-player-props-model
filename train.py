@@ -820,6 +820,16 @@ def build_training_table(stats_df, adv_df, odds_df):
     if df.empty:
         logger.error(f"Training table EMPTY. skipped={skipped}")
     else:
+        # Add zero-mass column aliases so manifests match training table
+        alias_map = {
+            "zero_pct_turnover": "tov_p_zero_last10",
+            "zero_pct_stl":      "stl_p_zero_last10",
+            "zero_pct_blk":      "blk_p_zero_last10",
+        }
+        for src, dst in alias_map.items():
+            if src in df.columns and dst not in df.columns:
+                df[dst] = df[src]
+                logger.info(f"  Aliased {src} -> {dst}")
         logger.info(
             f"Training table: {len(df)} rows | "
             f"{df['player_id'].nunique()} players | skipped={skipped}"
