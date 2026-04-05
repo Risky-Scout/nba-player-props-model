@@ -1,5 +1,8 @@
 {
-  "fallback": {},
+  "fallback": {
+    "ast": 1.0,
+    "reb": -0.8899999999999997
+  },
   "meta": {},
   "correctable_stats": [
     "pts",
