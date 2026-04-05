@@ -330,6 +330,9 @@ def main():
         probs    = np.array([r['prob']    for r in subset])
         outcomes = np.array([r['outcome'] for r in subset])
 
+        if len(probs) < 7:  # need at least n_splits+1 samples
+            logger.warning("No graded rows found — skipping calibration")
+            continue
         oof_probs, valid = oof_evaluate(probs, outcomes, n_splits=5)
         n_oof = int(valid.sum())
         if n_oof >= 10:
