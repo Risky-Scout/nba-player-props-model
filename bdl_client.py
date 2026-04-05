@@ -829,6 +829,8 @@ def load_line_movement_snapshot(target_date: str) -> dict:
 
     result = {}
     for eid, rec in opening.items():
+        if not isinstance(rec, dict):
+            continue
         home = rec.get("home_team", "")
         away = rec.get("away_team", "")
         game_label = f"{away} @ {home}"
