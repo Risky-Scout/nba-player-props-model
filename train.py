@@ -814,6 +814,9 @@ def build_training_table(stats_df, adv_df, odds_df):
             try: _os.remove(f)
             except: pass
         logger.info(f"Reassembled {len(_chunk_files)} chunks + {len(all_rows)} remaining rows → {len(df)} total rows")
+        # Save training table to disk for inspection and feature verification
+        df.to_parquet("data/training_table.parquet", index=False)
+        logger.info("Training table saved to data/training_table.parquet")
     else:
         df = pd.DataFrame(all_rows)
 
