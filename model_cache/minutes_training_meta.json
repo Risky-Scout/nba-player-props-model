@@ -1,10 +1,10 @@
 {
-  "mae": 4.97099681012686,
-  "mae_q50": 4.97099681012686,
-  "max_cal_error": 0.022611696331274966,
-  "coverage_50pct": 0.5168906647293862,
-  "n_train": 62711,
-  "n_holdout": 11012,
+  "mae": 4.980118452109765,
+  "mae_q50": 4.980118452109765,
+  "max_cal_error": 0.02185530282269116,
+  "coverage_50pct": 0.5140221065132,
+  "n_train": 62842,
+  "n_holdout": 10947,
   "features": [
     "mp_mean_season",
     "mp_mean_last5",
