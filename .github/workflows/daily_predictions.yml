@@ -126,13 +126,15 @@ jobs:
           SFTP_PASS: ${{ secrets.SFTP_PASS }}
           SFTP_PATH: ${{ secrets.SFTP_PATH }}
         run: |
-          sudo apt-get install -q -y lftp
           DATE=$(date -u +%Y-%m-%d)
-          lftp -u "$SFTP_USER","$SFTP_PASS" "$SFTP_HOST" << FTPEOF
-          put predictions/singles_${DATE}.json -o ${SFTP_PATH}/singles_${DATE}.json
-          put predictions/sgps_${DATE}.json -o ${SFTP_PATH}/sgps_${DATE}.json
-          bye
-          FTPEOF
+          curl --ftp-create-dirs --max-time 30 --retry 3 \
+            -u "$SFTP_USER:$SFTP_PASS" \
+            -T "predictions/singles_${DATE}.json" \
+            "ftp://$SFTP_HOST${SFTP_PATH}/singles_${DATE}.json"
+          curl --ftp-create-dirs --max-time 30 --retry 3 \
+            -u "$SFTP_USER:$SFTP_PASS" \
+            -T "predictions/sgps_${DATE}.json" \
+            "ftp://$SFTP_HOST${SFTP_PATH}/sgps_${DATE}.json"
           echo "✓ Predictions uploaded to server"
 
 

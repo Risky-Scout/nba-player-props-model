@@ -561,6 +561,16 @@ def opponent_defensive_features(
             "opp_3pa_allowed_last10":     fg3a if fg3a is not None else np.nan,
             "opp_3pm_allowed_last10":     fg3m if fg3m is not None else np.nan,
             "opp_fga_allowed_last10":     fga  if fga  is not None else np.nan,
+            # ── v2: position-split allowed stats for PTS / REB / AST / FG3M ──
+            # Guards (G, G-F) — PTS/AST/FG3M guard-matchup; Bigs (C, F) — REB/BLK
+            "opp_allowed_pts_guard_ewma":  _game_ewma_pos("pts",  ["G"]),
+            "opp_allowed_pts_big_ewma":    _game_ewma_pos("pts",  ["C","F"]),
+            "opp_allowed_reb_guard_ewma":  _game_ewma_pos("reb",  ["G"]),
+            "opp_allowed_reb_big_ewma":    _game_ewma_pos("reb",  ["C","F"]),
+            "opp_allowed_ast_guard_ewma":  _game_ewma_pos("ast",  ["G"]),
+            "opp_allowed_ast_big_ewma":    _game_ewma_pos("ast",  ["C","F"]),
+            "opp_allowed_fg3m_guard_ewma": _game_ewma_pos("fg3m", ["G"]),
+            "opp_allowed_fg3m_big_ewma":   _game_ewma_pos("fg3m", ["C","F"]),
         }
 
         # 3P rate allowed
@@ -1064,14 +1074,22 @@ def build_player_game_features(
         ]:
             f[_k] = np.nan
 
-    # ── STL / BLK sparse treatment ────────────────────────────────────────────
+    # ── STL / BLK / TOV — zero-inflated count model features ────────────────
+    # v2: Add ZI-specific parameters:
+    #   {stat}_p_nonzero_last20   : empirical P(stat > 0) over last 20 games (ZI mixing weight)
+    #   {stat}_zi_lambda_last10   : Poisson lambda estimated from nonzero games only
+    #   {stat}_hurdle_rate_last10 : p_nonzero * zi_lambda  (ZI mean)
+    #   {stat}_p_ge2_zi           : ZI-adjusted P(stat >= 2)
+    # Legacy features retained for backward-compat with existing pkl feature lists.
     BLEND_K = 15.0
     for sparse_stat, col in [("stl", "stl"), ("blk", "blk"), ("tov", "turnover")]:
         if col in df.columns and len(min_arr) > 0:
             raw  = df[col].values.astype(float)
             rate = per_minute_rate(raw, min_arr)
             last10_raw = raw[-10:]
+            last20_raw = raw[-20:] if len(raw) >= 20 else raw
 
+            # ── Legacy features (unchanged) ──
             f[f"{sparse_stat}_p_zero_last10"] = float(np.mean(last10_raw == 0)) if len(last10_raw) > 0 else np.nan
             f[f"{sparse_stat}_p_ge2_last10"]  = float(np.mean(last10_raw >= 2)) if len(last10_raw) > 0 else np.nan
             f[f"{sparse_stat}_p_ge1_last10"]  = float(np.mean(last10_raw >= 1)) if len(last10_raw) > 0 else np.nan
@@ -1086,7 +1104,6 @@ def build_player_game_features(
             else:
                 f[f"{sparse_stat}_per_min_blended"] = np.nan
 
-            # EWMA for sparse stats
             rate_series = pd.Series(rate_clean)
             if len(rate_series) >= 2:
                 f[f"{sparse_stat}_per_min_ewma_10"] = float(
@@ -1101,10 +1118,41 @@ def build_player_game_features(
                 float(np.mean(np.abs(rate[-10:] - np.median(rate[-10:]))))
                 if len(rate[-10:]) > 1 else np.nan
             )
+
+            # ── v2: Zero-inflated count model parameters ──
+            # p_nonzero: empirical ZI mixing weight (P the process is "on")
+            _nz_mask20 = last20_raw > 0
+            _p_nonzero = float(np.mean(_nz_mask20)) if len(last20_raw) > 0 else 0.5
+            f[f"{sparse_stat}_p_nonzero_last20"] = _p_nonzero
+
+            # zi_lambda: Poisson lambda from nonzero games only (count | active)
+            _nz_vals10 = last10_raw[last10_raw > 0]
+            if len(_nz_vals10) >= 2:
+                # Shrink toward 1.0 with weight 5 to prevent extreme estimates
+                _zi_lambda = float(
+                    (np.sum(_nz_vals10) + 5.0) / (len(_nz_vals10) + 5.0)
+                )
+            elif len(_nz_vals10) == 1:
+                _zi_lambda = float(_nz_vals10[0]) * 0.5 + 0.5
+            else:
+                _zi_lambda = 1.0
+            f[f"{sparse_stat}_zi_lambda_last10"] = _zi_lambda
+
+            # hurdle_rate: ZI unconditional mean = p_nonzero * lambda
+            f[f"{sparse_stat}_hurdle_rate_last10"] = _p_nonzero * _zi_lambda
+
+            # p_ge2_zi: ZI-adjusted P(stat >= 2)
+            # = p_nonzero * P(Poisson(lambda) >= 2)
+            from scipy.stats import poisson as _poisson
+            _p_ge2_zi = _p_nonzero * float(1.0 - _poisson.cdf(1, _zi_lambda))
+            f[f"{sparse_stat}_p_ge2_zi"] = float(np.clip(_p_ge2_zi, 0.0, 1.0))
+
         else:
             for k in [f"{sparse_stat}_p_zero_last10", f"{sparse_stat}_p_ge2_last10",
                       f"{sparse_stat}_p_ge1_last10", f"{sparse_stat}_per_min_blended",
-                      f"{sparse_stat}_per_min_ewma_10", f"{sparse_stat}_per_min_vol_last10"]:
+                      f"{sparse_stat}_per_min_ewma_10", f"{sparse_stat}_per_min_vol_last10",
+                      f"{sparse_stat}_p_nonzero_last20", f"{sparse_stat}_zi_lambda_last10",
+                      f"{sparse_stat}_hurdle_rate_last10", f"{sparse_stat}_p_ge2_zi"]:
                 f[k] = np.nan
 
     # ── Foul features ─────────────────────────────────────────────────────────
@@ -1236,6 +1284,93 @@ def build_player_game_features(
         stats_df    = all_stats_df,
         injury_map  = injury_map,
     ))
+
+    # ── v2: Teammate with/without delta features ──────────────────────────────
+    # Usage / AST / FG3A uplift when top-N creators are absent.
+    # Uses only games strictly before target_date → zero leakage.
+    try:
+        if not all_stats_df.empty and "ast" in all_stats_df.columns:
+            _td_str = str(tdt)[:10]
+            _team_hist = all_stats_df[
+                (all_stats_df["team_id"] == team_id) &
+                (all_stats_df["game_date"].astype(str) < _td_str)
+            ].copy()
+            _player_hist = _team_hist[_team_hist["player_id"] == player_id]
+
+            if len(_player_hist) >= 10 and len(_team_hist) >= 15:
+                # Top-2 creators by mean AST (excluding focal player)
+                _creator_means = (
+                    _team_hist[_team_hist["player_id"] != player_id]
+                    .groupby("player_id")["ast"]
+                    .apply(lambda x: pd.to_numeric(x, errors="coerce").mean())
+                    .nlargest(2)
+                )
+
+                _usage_deltas, _ast_deltas, _fg3a_deltas = [], [], []
+
+                for _cpid in _creator_means.index:
+                    _creator_games = _team_hist[
+                        _team_hist["player_id"] == _cpid
+                    ][["game_id", "min"]].copy()
+                    _creator_games["cm"] = pd.to_numeric(
+                        _creator_games["min"], errors="coerce"
+                    ).fillna(0)
+
+                    _merged = _player_hist[
+                        ["game_id", "fga", "fta", "turnover", "ast", "fg3a"]
+                    ].merge(_creator_games[["game_id", "cm"]], on="game_id", how="inner")
+
+                    if len(_merged) < 8:
+                        continue
+
+                    _with_mask    = _merged["cm"] > 5
+                    _without_mask = _merged["cm"] == 0
+                    if _with_mask.sum() < 4 or _without_mask.sum() < 2:
+                        continue
+
+                    def _safe_rate(col, mask):
+                        vals = pd.to_numeric(_merged.loc[mask, col],
+                                             errors="coerce").fillna(0)
+                        return float(vals.mean())
+
+                    # Usage proxy = FGA + 0.44*FTA + TOV
+                    _up_with    = (_safe_rate("fga", _with_mask) +
+                                   0.44 * _safe_rate("fta", _with_mask) +
+                                   _safe_rate("turnover", _with_mask))
+                    _up_without = (_safe_rate("fga", _without_mask) +
+                                   0.44 * _safe_rate("fta", _without_mask) +
+                                   _safe_rate("turnover", _without_mask))
+                    _usage_deltas.append(
+                        float(np.clip(_up_without - _up_with, -8, 12))
+                    )
+
+                    _ast_d = _safe_rate("ast", _without_mask) - _safe_rate("ast", _with_mask)
+                    _ast_deltas.append(float(np.clip(_ast_d, -5, 8)))
+
+                    _fg3a_d = _safe_rate("fg3a", _without_mask) - _safe_rate("fg3a", _with_mask)
+                    _fg3a_deltas.append(float(np.clip(_fg3a_d, -4, 6)))
+
+                f["usage_delta_without_top_creator"] = (
+                    float(np.mean(_usage_deltas)) if _usage_deltas else 0.0
+                )
+                f["ast_delta_without_top_creator"] = (
+                    float(np.mean(_ast_deltas)) if _ast_deltas else 0.0
+                )
+                f["fg3a_delta_without_top_creator"] = (
+                    float(np.mean(_fg3a_deltas)) if _fg3a_deltas else 0.0
+                )
+            else:
+                f["usage_delta_without_top_creator"] = 0.0
+                f["ast_delta_without_top_creator"]   = 0.0
+                f["fg3a_delta_without_top_creator"]  = 0.0
+        else:
+            f["usage_delta_without_top_creator"] = 0.0
+            f["ast_delta_without_top_creator"]   = 0.0
+            f["fg3a_delta_without_top_creator"]  = 0.0
+    except Exception:
+        f["usage_delta_without_top_creator"] = 0.0
+        f["ast_delta_without_top_creator"]   = 0.0
+        f["fg3a_delta_without_top_creator"]  = 0.0
 
     # ── Combo expectation proxies (always computed) ───────────────────────────
     f = add_interaction_features(f, "combo")

@@ -98,6 +98,7 @@ try:
         WithinPlayerCorrelationEngine,
         TeammateCorrelationEngine,
         usage_bucket, mp_bucket,
+        price_combo_from_simulation, COMBO_COMPONENTS,
         american_to_decimal,
         QUANTILES,
     )
@@ -721,8 +722,36 @@ def main():
 
 
 
+                # ── Combo props: price from correlated component simulation ──────
+                # Do not use direct quantile model for combos — simulation is more
+                # accurate because it preserves component calibration + correlation.
+                if target in COMBO_COMPONENTS:
+                    _comp_stats = COMBO_COMPONENTS[target]
+                    _comp_qpreds = {}
+                    for _cs in _comp_stats:
+                        _cs_qp = predict_quantiles(models, _cs, base_ix)
+                        if _cs_qp is not None:
+                            _comp_qpreds[_cs] = _cs_qp
+                    if len(_comp_qpreds) == len(_comp_stats):
+                        # Full simulation — all components available
+                        _combo_result = price_combo_from_simulation(
+                            combo_stat        = target,
+                            line              = line,
+                            component_qpreds  = _comp_qpreds,
+                            within_engine     = within_engine,
+                        )
+                        prob_over  = _combo_result["p_over"]
+                        prob_under = _combo_result["p_under"]
+                        # Override q50 from simulation for sanity checks
+                        q50 = _combo_result["q50_combo"]
+                        if q50 > 0 and line > q50 * 1.75:
+                            continue
+                    else:
+                        # Fallback: use existing quantile model if any component missing
+                        prob_over  = p_over(q_preds, line)
+                        prob_under = p_under(q_preds, line)
                 # FG3M: use hurdle model for more accurate zero-inflated probability
-                if target == "fg3m" and fg3m_hurdle_model is not None:
+                elif target == "fg3m" and fg3m_hurdle_model is not None:
                     try:
                         hurdle_result = fg3m_hurdle_model.predict_proba(dict(base), line)
                         prob_over  = float(hurdle_result.get("p_over", p_over(q_preds, line)))
