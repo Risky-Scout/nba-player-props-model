@@ -101,6 +101,7 @@ try:
         price_combo_from_simulation, COMBO_COMPONENTS,
         american_to_decimal,
         QUANTILES,
+        compute_pmf, pmf_to_fair_odds, market_efficiency,
     )
 except ImportError as e:
     sys.exit(f"Import error: {e}")
@@ -882,6 +883,20 @@ def main():
                         "cal_type":      f"{target.upper()}_{side}" if (f"{target.upper()}_{side}" in platt_calibrators) else ("global" if side in platt_calibrators else "raw_no_calibrator"),
                         "cal_applied":   cal_applied_over if side=="OVER" else cal_applied_under,
                         "is_sparse":     target in SPARSE_STATS,
+                        # ── Full PMF + fair odds + market efficiency ──
+                        **({} if target in COMBO_COMPONENTS else (
+                            lambda _pmf: {
+                                "pmf":             {k: round(v,4) for k,v in _pmf.items() if v > 0.001},
+                                "fair_odds_over":  pmf_to_fair_odds(_pmf, line)["fair_odds_over"],
+                                "fair_odds_under": pmf_to_fair_odds(_pmf, line)["fair_odds_under"],
+                                "pmf_median":      pmf_to_fair_odds(_pmf, line)["pmf_median"],
+                                "edge_over":       market_efficiency(_pmf, line, over_odds, under_odds)["edge_over"],
+                                "edge_under":      market_efficiency(_pmf, line, over_odds, under_odds)["edge_under"],
+                                "line_vs_median":  market_efficiency(_pmf, line, over_odds, under_odds)["line_vs_median"],
+                                "mkt_true_over":   market_efficiency(_pmf, line, over_odds, under_odds)["mkt_true_over"],
+                                "mkt_true_under":  market_efficiency(_pmf, line, over_odds, under_odds)["mkt_true_under"],
+                            }
+                        )(compute_pmf(q_preds, stat=target))),
                     })
 
     # ── fg3m per-player gate ─────────────────────────────────────────

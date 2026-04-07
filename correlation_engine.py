@@ -143,6 +143,179 @@ def inverse_cdf(q_preds: dict, u: np.ndarray) -> np.ndarray:
     return result
 
 
+# ── Full PMF computation ─────────────────────────────────────────────────────
+#
+# Purpose: convert quantile dict → discrete PMF over integer outcomes.
+# This is the foundation for:
+#   - Pricing any line from P(stat = k) directly
+#   - Converting to fair American odds
+#   - Measuring market efficiency (our median vs. their line)
+#   - Full distribution output per pick
+
+def compute_pmf(
+    q_preds: dict,
+    stat: str = "",
+    max_val: int = None,
+) -> dict:
+    """
+    Convert a quantile prediction dict to a discrete PMF over integer outcomes.
+
+    Method:
+      1. Enforce monotonicity on quantiles
+      2. Build a fine CDF grid via piecewise linear interpolation
+      3. Differentiate to get PMF masses at each integer k
+      4. Renormalise to sum to 1.0
+
+    Parameters
+    ----------
+    q_preds : {quantile: predicted_value} — must cover at least Q10..Q90
+    stat    : stat name — used to set sensible max_val defaults
+    max_val : maximum integer outcome to include in PMF
+
+    Returns
+    -------
+    {k: P(stat = k)} for k in 0..max_val
+    """
+    q_preds = enforce_monotonicity(q_preds)
+    qs   = np.array(sorted(q_preds.keys()))
+    vals = np.array([q_preds[q] for q in qs])
+
+    # Stat-specific max outcome defaults
+    if max_val is None:
+        _defaults = {
+            "pts": 65, "reb": 25, "ast": 20, "fg3m": 12,
+            "stl": 8,  "blk": 8,  "tov": 10,
+            "pra": 90, "pr": 70,  "pa": 70, "ra": 35, "stocks": 12,
+        }
+        max_val = _defaults.get(stat, 40)
+
+    # Build fine CDF grid (0.001 resolution)
+    u_grid  = np.linspace(0.001, 0.999, 2000)
+    x_grid  = np.interp(u_grid, qs, vals)
+
+    # P(stat <= k) = CDF(k) via interpolation of the quantile function inverse
+    # CDF at integer k: fraction of u_grid where x_grid <= k
+    pmf = {}
+    cdf_prev = 0.0
+    for k in range(0, max_val + 1):
+        cdf_k = float(np.mean(x_grid <= k + 0.5))  # +0.5 for integer rounding
+        mass  = max(cdf_k - cdf_prev, 0.0)
+        pmf[k] = mass
+        cdf_prev = cdf_k
+
+    # Normalise
+    total = sum(pmf.values())
+    if total > 0:
+        pmf = {k: v / total for k, v in pmf.items()}
+
+    return pmf
+
+
+def pmf_to_fair_odds(pmf: dict, line: float) -> dict:
+    """
+    Convert a discrete PMF to fair American odds for over/under a line.
+
+    Parameters
+    ----------
+    pmf  : {k: P(stat = k)} from compute_pmf()
+    line : the prop line (e.g. 1.5, 22.5)
+
+    Returns
+    -------
+    dict with keys:
+        p_over, p_under, p_push (if line is integer),
+        fair_odds_over, fair_odds_under  (American odds)
+        fair_decimal_over, fair_decimal_under
+        market_implied_line  (k where CDF first crosses 0.50)
+    """
+    # P(over) = P(stat > line) = sum of P(stat=k) for k > line
+    p_over  = float(sum(v for k, v in pmf.items() if k > line))
+    p_under = float(sum(v for k, v in pmf.items() if k < line))
+    p_push  = float(sum(v for k, v in pmf.items() if k == line))
+
+    # Renormalise over/under excluding push (standard book settlement)
+    denom = p_over + p_under
+    if denom > 0:
+        p_over_nopush  = p_over  / denom
+        p_under_nopush = p_under / denom
+    else:
+        p_over_nopush  = 0.5
+        p_under_nopush = 0.5
+
+    def _to_american(p: float) -> int:
+        p = float(np.clip(p, 0.01, 0.99))
+        if p >= 0.50:
+            return int(round(-p / (1 - p) * 100))
+        else:
+            return int(round((1 - p) / p * 100))
+
+    # Market implied line: median of PMF (where CDF crosses 0.50)
+    cumsum = 0.0
+    median_k = 0
+    for k in sorted(pmf.keys()):
+        cumsum += pmf[k]
+        if cumsum >= 0.50:
+            median_k = k
+            break
+
+    return {
+        "p_over":              round(p_over, 4),
+        "p_under":             round(p_under, 4),
+        "p_push":              round(p_push, 4),
+        "p_over_nopush":       round(p_over_nopush, 4),
+        "p_under_nopush":      round(p_under_nopush, 4),
+        "fair_odds_over":      _to_american(p_over_nopush),
+        "fair_odds_under":     _to_american(p_under_nopush),
+        "fair_decimal_over":   round(1.0 / max(p_over_nopush, 0.01), 3),
+        "fair_decimal_under":  round(1.0 / max(p_under_nopush, 0.01), 3),
+        "pmf_median":          median_k,
+    }
+
+
+def market_efficiency(
+    pmf: dict,
+    market_line: float,
+    market_over_odds: int = -110,
+    market_under_odds: int = -110,
+) -> dict:
+    """
+    Measure how efficiently the market has priced a prop.
+
+    Returns edge (our prob - market implied prob) for over and under,
+    and an efficiency score (0=perfectly efficient, 1=completely wrong).
+    """
+    fair = pmf_to_fair_odds(pmf, market_line)
+
+    def _implied(american: int) -> float:
+        american = int(american)
+        if american < 0:
+            return float(abs(american) / (abs(american) + 100))
+        else:
+            return float(100 / (american + 100))
+
+    mkt_impl_over  = _implied(market_over_odds)
+    mkt_impl_under = _implied(market_under_odds)
+    vig            = mkt_impl_over + mkt_impl_under - 1.0
+
+    # Remove vig (proportional method)
+    mkt_true_over  = mkt_impl_over  / (mkt_impl_over + mkt_impl_under)
+    mkt_true_under = mkt_impl_under / (mkt_impl_over + mkt_impl_under)
+
+    edge_over  = fair["p_over_nopush"]  - mkt_true_over
+    edge_under = fair["p_under_nopush"] - mkt_true_under
+
+    return {
+        "edge_over":       round(edge_over, 4),
+        "edge_under":      round(edge_under, 4),
+        "mkt_true_over":   round(mkt_true_over, 4),
+        "mkt_true_under":  round(mkt_true_under, 4),
+        "fair_odds_over":  fair["fair_odds_over"],
+        "fair_odds_under": fair["fair_odds_under"],
+        "pmf_median":      fair["pmf_median"],
+        "line_vs_median":  round(market_line - fair["pmf_median"], 2),
+    }
+
+
 # ── EV and Kelly ───────────────────────────────────────────────────────────────
 
 def american_to_decimal(odds: int) -> float:
