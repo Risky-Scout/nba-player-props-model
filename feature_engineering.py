@@ -970,7 +970,7 @@ def build_player_game_features(
             is_home      = is_home,
             target_date  = target_date,
             team_id      = team_id,
-            all_stats_df = all_stats_df,
+            all_stats_df = all_stats_df if not training_mode else pd.DataFrame(),
             injury_map   = injury_map,
         )
         f.update(mp_preds)
