@@ -942,6 +942,7 @@ def build_player_game_features(
     all_stats_df: pd.DataFrame,
     injury_map: dict,
     opp_team_id: Optional[int] = None,
+    training_mode: bool = False,
 ) -> dict:
     """
     Build complete pregame feature vector for one player.
