@@ -714,6 +714,7 @@ def build_training_table(stats_df, adv_df, odds_df):
                     all_stats_df = stats_df,
                     injury_map   = injury_map,
                     opp_team_id  = int(ctx.get("opp_team_id", 0) or 0) or None,
+                    training_mode = True,
                 )
             except Exception as e:
                 logger.debug(f"Feature error p={player_id} g={gid}: {e}")
