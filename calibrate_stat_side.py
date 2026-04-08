@@ -96,6 +96,37 @@ class PlattCalibrator:
         return np.column_stack([1 - cal, cal])
 
 
+class IsotonicCalibrator:
+    """
+    Isotonic regression calibrator — non-parametric, strictly superior to
+    Platt scaling when the probability-outcome relationship is non-sigmoid.
+    Uses sklearn IsotonicRegression with out-of-bounds clipping.
+    """
+    def __init__(self):
+        from sklearn.isotonic import IsotonicRegression
+        self.ir     = IsotonicRegression(out_of_bounds='clip', increasing=True)
+        self.fitted = False
+
+    def fit(self, probs, outcomes):
+        probs    = np.clip(np.array(probs, dtype=float), 1e-4, 1 - 1e-4)
+        outcomes = np.array(outcomes, dtype=float)
+        if len(np.unique(outcomes)) < 2:
+            raise ValueError("Need both classes to fit calibrator")
+        self.ir.fit(probs, outcomes)
+        self.fitted = True
+        return self
+
+    def predict_proba(self, probs):
+        if not self.fitted:
+            raise RuntimeError("Calibrator not fitted")
+        probs = np.clip(np.array(probs, dtype=float), 1e-4, 1 - 1e-4)
+        return np.clip(self.ir.predict(probs), 1e-4, 1 - 1e-4)
+
+    def predict_proba_2d(self, X):
+        cal = self.predict_proba(X[:, 0])
+        return np.column_stack([1 - cal, cal])
+
+
 def _compute_ece(probs, outcomes, n_bins=8):
     probs    = np.array(probs)
     outcomes = np.array(outcomes)
@@ -168,7 +199,7 @@ def oof_evaluate(probs, outcomes, n_splits=5):
         if len(np.unique(y_tr)) < 2:
             continue
         try:
-            cal = PlattCalibrator()
+            cal = IsotonicCalibrator()
             cal.fit(probs[train_idx], y_tr)
             oof[val_idx] = cal.predict_proba(probs[val_idx])
         except Exception:
@@ -280,7 +311,7 @@ def main():
 
             # Fit final calibrator on ALL data
             try:
-                final_cal = PlattCalibrator()
+                final_cal = IsotonicCalibrator()
                 final_cal.fit(probs, outcomes)
                 metrics['slope_final']     = round(final_cal.slope_, 4)
                 metrics['intercept_final'] = round(final_cal.intercept_, 4)
@@ -342,7 +373,7 @@ def main():
         metrics['n_total'] = n_total
         metrics['n_oof']   = n_oof
 
-        final_cal = PlattCalibrator()
+        final_cal = IsotonicCalibrator()
         final_cal.fit(probs, outcomes)
         joblib.dump(final_cal, MODEL_DIR / f"platt_{side}.pkl")
 
