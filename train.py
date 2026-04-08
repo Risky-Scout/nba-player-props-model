@@ -115,7 +115,7 @@ COMBO_FORMULA = {
 
 LGB_BASE = dict(
     objective="quantile", metric="quantile",
-    n_estimators=400, learning_rate=0.035,
+    n_estimators=400, learning_rate=0.035, n_jobs=-1,
     num_leaves=40, max_depth=7,
     feature_fraction=0.75, bagging_fraction=0.80, bagging_freq=1,
     reg_alpha=0.5, reg_lambda=3.0,
