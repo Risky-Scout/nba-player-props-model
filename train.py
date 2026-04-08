@@ -115,7 +115,7 @@ COMBO_FORMULA = {
 
 LGB_BASE = dict(
     objective="quantile", metric="quantile",
-    n_estimators=800, learning_rate=0.025,
+    n_estimators=400, learning_rate=0.035,
     num_leaves=40, max_depth=7,
     feature_fraction=0.75, bagging_fraction=0.80, bagging_freq=1,
     reg_alpha=0.5, reg_lambda=3.0,
@@ -770,7 +770,8 @@ def build_training_table(stats_df, adv_df, odds_df):
                 "ra":reb+ast,      "stocks":stl+blk,
             }
 
-            for target in ALL_TARGETS:
+            DIRECT_TRAIN_TARGETS = STATS  # combos priced from simulation — no direct models needed
+    for target in DIRECT_TRAIN_TARGETS:
                 base_with_ix = add_interaction_features(dict(base), target)
                 all_rows.append({
                     **base_with_ix,
