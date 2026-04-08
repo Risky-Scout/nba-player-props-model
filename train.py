@@ -770,8 +770,8 @@ def build_training_table(stats_df, adv_df, odds_df):
                 "ra":reb+ast,      "stocks":stl+blk,
             }
 
-            DIRECT_TRAIN_TARGETS = STATS  # combos priced from simulation — no direct models needed
-    for target in DIRECT_TRAIN_TARGETS:
+            DIRECT_TRAIN_TARGETS = STATS  # combos priced from simulation
+            for target in DIRECT_TRAIN_TARGETS:
                 base_with_ix = add_interaction_features(dict(base), target)
                 all_rows.append({
                     **base_with_ix,
