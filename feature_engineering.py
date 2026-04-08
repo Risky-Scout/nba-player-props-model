@@ -622,6 +622,7 @@ def opponent_defensive_features(
         else:
             result["opp_3p_rate_allowed"] = np.nan
 
+        _OPP_DEF_CACHE[_ck] = result
         return result
 
     except Exception:
@@ -1278,13 +1279,27 @@ def build_player_game_features(
     ))
 
     # ── Vacated opportunity + binary injury flags ─────────────────────────────
-    f.update(vacated_opportunity_features(
-        player_id   = player_id,
-        team_id     = team_id,
-        target_date = tdt,
-        stats_df    = all_stats_df,
-        injury_map  = injury_map,
-    ))
+    if training_mode:
+        f.update({
+            "vacated_minutes": np.nan, "vacated_fga": np.nan,
+            "vacated_fg3a": np.nan, "vacated_fta": np.nan,
+            "vacated_pts": np.nan, "vacated_ast": np.nan,
+            "vacated_reb": np.nan, "vacated_usage_proxy": np.nan,
+            "vacated_top1_fga": np.nan, "vacated_top2_fga": np.nan,
+            "vacated_top1_usage_proxy": np.nan, "vacated_top2_usage_proxy": np.nan,
+            "vacated_guard_minutes": np.nan, "vacated_big_minutes": np.nan,
+            "vacated_creation_share": np.nan, "vacated_reb_share": np.nan,
+            "num_teammates_inactive": 0, "has_injury_data": 0,
+            "starter_out_flag": 0, "primary_creator_out_flag": 0, "center_out_flag": 0,
+        })
+    else:
+        f.update(vacated_opportunity_features(
+            player_id   = player_id,
+            team_id     = team_id,
+            target_date = tdt,
+            stats_df    = all_stats_df,
+            injury_map  = injury_map,
+        ))
 
     # ── v2: Teammate with/without delta features (skipped during training for speed)
     if training_mode:
@@ -1304,42 +1319,36 @@ def build_player_game_features(
     # During training, archetype flags computed from available features above
 
     # ── Item 3: Primary ball-handler absence proxy ────────────────────────────
-    # Flags when the team primary assist leader played <15 min in last game
-    # Captures AST redistribution without requiring full lineup on/off data
-    try:
-        if not all_stats_df.empty and "ast" in all_stats_df.columns:
-            team_games = all_stats_df[
-                all_stats_df["team_id"] == team_id
-            ].copy()
-            team_games["game_date"] = pd.to_datetime(team_games["game_date"])
-            team_games = team_games[team_games["game_date"].astype(str) < str(tdt)[:10]]
-            if len(team_games) >= 10:
-                last20_dates = sorted(team_games["game_date"].unique())[-20:]
-                recent = team_games[team_games["game_date"].isin(last20_dates)]
-                ast_by_player = recent.groupby("player_id")["ast"].mean()
-                if len(ast_by_player) > 0:
-                    primary_id = ast_by_player.idxmax()
-                    last_date = team_games["game_date"].max()
-                    last_game = team_games[team_games["game_date"] == last_date]
-                    handler_rows = last_game[last_game["player_id"] == primary_id]
-                    if len(handler_rows) > 0:
-                        handler_mp = pd.to_numeric(
-                            handler_rows["min"].iloc[0], errors="coerce"
-                        )
-                        f["primary_handler_limited"] = 1.0 if (
-                            pd.notna(handler_mp) and handler_mp < 15.0
-                        ) else 0.0
+    if training_mode:
+        f["primary_handler_limited"] = 0.0
+    else:
+        try:
+            if not all_stats_df.empty and "ast" in all_stats_df.columns:
+                team_games = all_stats_df[all_stats_df["team_id"] == team_id].copy()
+                team_games["game_date"] = pd.to_datetime(team_games["game_date"])
+                team_games = team_games[team_games["game_date"].astype(str) < str(tdt)[:10]]
+                if len(team_games) >= 10:
+                    last20_dates = sorted(team_games["game_date"].unique())[-20:]
+                    recent = team_games[team_games["game_date"].isin(last20_dates)]
+                    ast_by_player = recent.groupby("player_id")["ast"].mean()
+                    if len(ast_by_player) > 0:
+                        primary_id = ast_by_player.idxmax()
+                        last_date = team_games["game_date"].max()
+                        last_game = team_games[team_games["game_date"] == last_date]
+                        handler_rows = last_game[last_game["player_id"] == primary_id]
+                        if len(handler_rows) > 0:
+                            handler_mp = pd.to_numeric(handler_rows["min"].iloc[0], errors="coerce")
+                            f["primary_handler_limited"] = 1.0 if (pd.notna(handler_mp) and handler_mp < 15.0) else 0.0
+                        else:
+                            f["primary_handler_limited"] = 1.0
                     else:
-                        f["primary_handler_limited"] = 1.0
+                        f["primary_handler_limited"] = 0.0
                 else:
                     f["primary_handler_limited"] = 0.0
             else:
                 f["primary_handler_limited"] = 0.0
-        else:
+        except Exception:
             f["primary_handler_limited"] = 0.0
-    except Exception:
-        f["primary_handler_limited"] = 0.0
-
     return f
 
 def add_interaction_features(f: dict, stat: str) -> dict:
