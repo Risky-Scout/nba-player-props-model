@@ -102,6 +102,7 @@ try:
         american_to_decimal,
         QUANTILES,
         compute_pmf, pmf_to_fair_odds, market_efficiency,
+        portfolio_kelly,
     )
 except ImportError as e:
     sys.exit(f"Import error: {e}")
@@ -801,7 +802,11 @@ def main():
                     ("UNDER", prob_under, under_odds, ev_under),
                 ]:
                     # Stat×side EV gate
-                    min_ev_req = STAT_SIDE_MIN_EV.get((target, side), MIN_EV)
+                    _oi = abs(over_odds)/(abs(over_odds)+100) if over_odds < 0 else 100/(over_odds+100)
+                    _ui = abs(under_odds)/(abs(under_odds)+100) if under_odds < 0 else 100/(under_odds+100)
+                    _vig = (_oi + _ui) - 1.0
+                    _base_ev = STAT_SIDE_MIN_EV.get((target, side), MIN_EV)
+                    min_ev_req = max(_base_ev, _vig + 0.01)
                     if ev < min_ev_req:
                         continue
 
@@ -962,6 +967,26 @@ def main():
     # ── end fg3m gate ─────────────────────────────────────────────────
 
     all_singles.sort(key=lambda x: x["ev"], reverse=True)
+
+    # ── Covariance-aware Kelly re-sizing ─────────────────────────────────────
+    # Re-price kelly_units accounting for correlation between same-game props
+    try:
+        _bet_input = [
+            {
+                "prob":         s["model_prob"],
+                "american_odds": s["odds"],
+                "stat":         s["stat"],
+                "player_id":    s["player_id"],
+                "side":         s["side"],
+            }
+            for s in all_singles
+        ]
+        _sized = portfolio_kelly(_bet_input)
+        for s, b in zip(all_singles, _sized):
+            s["kelly_units"] = b["kelly_units"]
+    except Exception as e:
+        logger.warning(f"portfolio_kelly failed: {e}")
+
 
     # ── HARD PRE-EXPORT ASSERTIONS (Fix 1+5+6 per rebuild doc) ──────────────
     # Banned markets must NEVER appear in output — fail loudly if they do

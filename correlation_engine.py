@@ -340,6 +340,110 @@ def kelly_fraction(prob: float, american_odds: int,
     return float(min(full_kelly * fraction, max_units))
 
 
+# ── Covariance-aware Kelly (portfolio Kelly) ─────────────────────────────────
+#
+# Standard Kelly sizes each bet independently, ignoring that same-game props
+# are correlated. If you bet PTS over AND PRA over for the same player, you're
+# doubling up on the same outcome. Portfolio Kelly accounts for this.
+#
+# Method (diagonal approximation — fast and stable):
+#   1. For each bet, compute full Kelly fraction
+#   2. Build a covariance matrix from pairwise correlations
+#   3. Scale each bet's Kelly by (1 - sum of correlations with other bets)
+#   4. Cap total portfolio exposure at max_portfolio_units
+#
+# Reference: Thorp (2008), "The Kelly Criterion in Blackjack, Sports Betting,
+# and the Stock Market"
+
+def portfolio_kelly(
+    bets: list,
+    fraction: float = 0.25,
+    max_per_bet: float = 2.0,
+    max_portfolio: float = 5.0,
+) -> list:
+    """
+    Size a portfolio of bets using covariance-aware Kelly.
+
+    Parameters
+    ----------
+    bets : list of dicts, each with keys:
+        prob        : model probability (float)
+        american_odds: market odds (int)
+        stat        : stat name e.g. "pts" (str)
+        player_id   : player id (int)
+        side        : "OVER" or "UNDER" (str)
+    fraction    : Kelly fraction (default 0.25 = quarter Kelly)
+    max_per_bet : max units on any single bet
+    max_portfolio: max total units across all bets
+
+    Returns
+    -------
+    Same list with "kelly_units" field set on each bet.
+    """
+    if not bets:
+        return bets
+
+    n = len(bets)
+
+    # Step 1: raw Kelly for each bet
+    raw_kellys = []
+    for b in bets:
+        k = kelly_fraction(b["prob"], b["american_odds"], fraction, max_per_bet)
+        raw_kellys.append(k)
+
+    if n == 1:
+        bets[0]["kelly_units"] = raw_kellys[0]
+        return bets
+
+    # Step 2: pairwise correlation estimates
+    # Same player + correlated stats = high correlation
+    # Different players = near zero correlation
+    STAT_CORRELATIONS = {
+        ("pts", "pra"): 0.92, ("pts", "pr"): 0.88, ("pts", "pa"): 0.88,
+        ("reb", "pra"): 0.78, ("reb", "pr"): 0.82, ("reb", "ra"): 0.82,
+        ("ast", "pra"): 0.72, ("ast", "pa"): 0.78, ("ast", "ra"): 0.72,
+        ("stl", "stocks"): 0.85, ("blk", "stocks"): 0.82,
+        ("pts", "reb"): 0.38, ("pts", "ast"): 0.36,
+        ("reb", "ast"): 0.18, ("pts", "fg3m"): 0.45,
+    }
+
+    def _corr(b1, b2):
+        if b1["player_id"] != b2["player_id"]:
+            return 0.0  # different players — treat as independent
+        s1, s2 = b1["stat"], b2["stat"]
+        if s1 == s2:
+            return 1.0  # same stat same player
+        key = (min(s1,s2), max(s1,s2))
+        base = STAT_CORRELATIONS.get(key, 0.15)
+        # Same side = positive correlation; opposite sides = negative
+        if b1["side"] != b2["side"]:
+            base = -base
+        return base
+
+    # Step 3: scale each Kelly by correlation penalty
+    scaled = []
+    for i, (b, k) in enumerate(zip(bets, raw_kellys)):
+        corr_sum = sum(
+            abs(_corr(b, bets[j]))
+            for j in range(n) if j != i
+        )
+        # Penalty: reduce Kelly proportionally to correlation exposure
+        penalty = max(0.0, 1.0 - corr_sum * 0.5)
+        scaled.append(k * penalty)
+
+    # Step 4: normalise to max_portfolio total
+    total = sum(scaled)
+    if total > max_portfolio:
+        scale_factor = max_portfolio / total
+        scaled = [s * scale_factor for s in scaled]
+
+    # Write back
+    for b, k in zip(bets, scaled):
+        b["kelly_units"] = round(float(k), 3)
+
+    return bets
+
+
 # ── Residual z-score computation ───────────────────────────────────────────────
 
 def compute_residual_zscores(
