@@ -373,12 +373,18 @@ def game_script_features(game_context: dict, is_home: int) -> dict:
 
 # ── Opponent defensive environment ────────────────────────────────────────────
 
+_OPP_DEF_CACHE: dict = {}
+
 def opponent_defensive_features(
     opp_team_id: Optional[int],
     target_date: pd.Timestamp,
     all_stats_df: pd.DataFrame,
     window: int = 10,
 ) -> dict:
+    global _OPP_DEF_CACHE
+    _ck = (opp_team_id, str(target_date)[:10])
+    if _ck in _OPP_DEF_CACHE:
+        return _OPP_DEF_CACHE[_ck]
     """
     Rolling opponent team defensive stats computed from historical box scores.
 
