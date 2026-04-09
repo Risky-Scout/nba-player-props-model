@@ -568,6 +568,12 @@ def main():
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
     logger.info(f"  {len(injury_map)} injury records")
+    INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
+    inactive_player_ids = {
+        pid for pid, info in injury_map.items()
+        if str(info.get("status","")).lower().strip() in INACTIVE_STATUSES
+    }
+    logger.info(f"  {len(inactive_player_ids)} players marked inactive")
 
     logger.info("Fetching prop lines...")
     prop_map = {}
@@ -598,6 +604,10 @@ def main():
         player_ids = list(set(pid for (pid, pg, _) in prop_map if pg == gid))
 
         for player_id in player_ids:
+            # Skip players marked inactive in injury map
+            if player_id in inactive_player_ids:
+                logger.debug(f"Skipping inactive player {player_id}")
+                continue
             pdata = stats_df[stats_df["player_id"] == player_id].copy()
             if pdata.empty:
                 continue
