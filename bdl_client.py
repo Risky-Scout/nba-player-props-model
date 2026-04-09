@@ -930,3 +930,98 @@ def enrich_game_context_with_snapshots(
 
     logger.info(f"  Game context enriched with snapshot data: {enriched}/{len(ctx_map)} games")
     return ctx_map
+
+
+# ── NBA Official Injury Report ────────────────────────────────────────────────
+
+def get_nba_injury_report() -> dict:
+    """
+    Fetch the latest NBA official injury report.
+    Returns {player_name_lower: {status, reason}} for all players listed.
+    Statuses: Out, Questionable, Doubtful, Probable, Available
+    Falls back gracefully if nbainjuries package unavailable.
+    """
+    try:
+        from nbainjuries import injury
+        from datetime import datetime
+        import warnings
+        warnings.filterwarnings("ignore")
+
+        now = datetime.now()
+        df = None
+        # Try current hour first, then fall back to 5PM report
+        for hour in [now.hour, 17, 13]:
+            try:
+                dt = datetime(now.year, now.month, now.day, hour, 0)
+                df = injury.get_reportdata(dt, return_df=True)
+                if df is not None and not df.empty:
+                    break
+            except Exception:
+                continue
+
+        if df is None or df.empty:
+            logger.warning("NBA injury report: no data returned")
+            return {}
+
+        injury_dict = {}
+        for _, row in df.iterrows():
+            name = str(row.get('Player Name', '')).strip()
+            status = str(row.get('Current Status', '')).strip()
+            reason = str(row.get('Reason', '')).strip()
+            if not name or name == 'nan':
+                continue
+            # Convert "Last, First" to "first last"
+            parts = name.split(',')
+            if len(parts) == 2:
+                name_lower = f"{parts[1].strip()} {parts[0].strip()}".lower()
+            else:
+                name_lower = name.lower()
+            injury_dict[name_lower] = {'status': status, 'reason': reason}
+
+        logger.info(f"NBA injury report: {len(injury_dict)} players")
+        return injury_dict
+
+    except Exception as e:
+        logger.warning(f"NBA injury report unavailable: {e}")
+        return {}
+
+
+def merge_injury_sources(bdl_map: dict, nba_report: dict, stats_df) -> dict:
+    """
+    Merge BDL injury map with NBA official report.
+    NBA report takes priority — it's more current and comprehensive.
+    
+    Returns enhanced injury_map {player_id: {status, reason, source}}
+    """
+    if not nba_report:
+        return bdl_map
+    
+    # Build player_id -> name lookup from stats_df
+    import pandas as pd
+    name_to_id = {}
+    if stats_df is not None and not stats_df.empty and 'player_name' in stats_df.columns:
+        for _, row in stats_df[['player_id', 'player_name']].drop_duplicates().iterrows():
+            name = str(row['player_name']).lower().strip()
+            name_to_id[name] = int(row['player_id'])
+    
+    enhanced = dict(bdl_map)
+    matched = 0
+    for name_lower, info in nba_report.items():
+        pid = name_to_id.get(name_lower)
+        if pid is None:
+            # Try partial match on last name
+            last = name_lower.split()[-1] if name_lower.split() else ''
+            for n, p in name_to_id.items():
+                if last and last in n:
+                    pid = p
+                    break
+        if pid:
+            enhanced[pid] = {
+                'status':  info['status'],
+                'reason':  info['reason'],
+                'source':  'nba_official',
+            }
+            matched += 1
+    
+    logger.info(f"NBA injury report: {matched} players matched to player_ids")
+    return enhanced

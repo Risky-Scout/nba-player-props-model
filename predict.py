@@ -81,6 +81,7 @@ try:
         get_player_game_stats, get_games, get_game_odds,
         get_injuries, get_advanced_stats_v2,
         build_game_context_map, build_injury_map,
+        get_nba_injury_report, merge_injury_sources,
         parse_props_for_game,
         enrich_game_context_with_snapshots,
     )
@@ -567,13 +568,16 @@ def main():
     logger.info("Fetching injuries...")
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
-    logger.info(f"  {len(injury_map)} injury records")
+    logger.info(f"  {len(injury_map)} BDL injury records")
+    # Merge with NBA official injury report (more current, covers game-time decisions)
+    nba_report = get_nba_injury_report()
+    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
     INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
     inactive_player_ids = {
         pid for pid, info in injury_map.items()
         if str(info.get("status","")).lower().strip() in INACTIVE_STATUSES
     }
-    logger.info(f"  {len(inactive_player_ids)} players marked inactive")
+    logger.info(f"  {len(inactive_player_ids)} players marked inactive (BDL + NBA official)")
 
     logger.info("Fetching prop lines...")
     prop_map = {}
