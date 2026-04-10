@@ -52,7 +52,6 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Retrain $(date -u +%Y-%m-%d): ${{ github.event.inputs.note }}"
           git config http.postBuffer 524288000
-          git pull --rebase origin main
-          for i in 1 2 3; do
-            git push origin main && break || sleep 10
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break || sleep 30
           done
