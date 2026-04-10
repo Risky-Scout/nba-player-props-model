@@ -47,6 +47,7 @@ jobs:
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
+          git rm --cached data/training_table.parquet 2>/dev/null || true
           git add model_cache/ data/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Retrain $(date -u +%Y-%m-%d): ${{ github.event.inputs.note }}"
