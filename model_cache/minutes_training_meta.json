@@ -1,10 +1,9 @@
 {
-  "mae": 4.980118452109765,
-  "mae_q50": 4.980118452109765,
-  "max_cal_error": 0.02185530282269116,
-  "coverage_50pct": 0.5140221065132,
-  "n_train": 62842,
-  "n_holdout": 10947,
+  "mae": 5.095968762636931,
+  "mae_q50": 5.095968762636931,
+  "max_cal_error": 0.032041809335015325,
+  "n_train": 63647,
+  "n_holdout": 11098,
   "features": [
     "mp_mean_season",
     "mp_mean_last5",
@@ -13,8 +12,18 @@
     "mp_trend_3v10",
     "mp_ceiling_last10",
     "mp_std_last10",
+    "mp_p_active",
+    "mp_starter_prob",
+    "mp_p_20plus",
+    "mp_p_28plus",
+    "mp_p_34plus",
+    "mp_role_change_score",
+    "mp_bench_fragility",
+    "mp_return_restriction",
     "is_home",
     "rest_days",
-    "back_to_back"
-  ]
+    "back_to_back",
+    "mp_teammate_abs_lift"
+  ],
+  "n_features": 19
 }

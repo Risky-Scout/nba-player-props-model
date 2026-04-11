@@ -1,9 +1,21 @@
 {
   "fallback": {
+    "pts": 1.8000000000000007,
     "ast": 1.0,
-    "reb": -0.8899999999999997
+    "reb": -0.5600000000000005,
+    "fg3m": -0.03999999999999998
   },
-  "meta": {},
+  "meta": {
+    "reb": {
+      "n": 35,
+      "cv_mae_mean": 2.278287958991639,
+      "cv_mae_std": 0.44107977603049736,
+      "target_median": -0.5600000000000005,
+      "target_mean": 0.3042857142857143,
+      "fallback_correction": -0.5600000000000005,
+      "model_type": "Ridge"
+    }
+  },
   "correctable_stats": [
     "pts",
     "ast",
