@@ -141,6 +141,10 @@ jobs:
             -u "$SFTP_USER:$SFTP_PASS" \
             -T "predictions/sgps_${DATE}.json" \
             "ftp://$SFTP_HOST${SFTP_PATH}/sgps_${DATE}.json"
+          curl --ftp-create-dirs --max-time 30 --retry 3 \
+            -u "$SFTP_USER:$SFTP_PASS" \
+            -T "predictions/pmf_display_${DATE}.json" \
+            "ftp://$SFTP_HOST${SFTP_PATH}/pmf_display_${DATE}.json"
           echo "✓ Predictions uploaded to server"
 
 
