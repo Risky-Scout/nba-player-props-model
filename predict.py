@@ -1058,6 +1058,49 @@ def main():
         json.dump(singles_out, f, indent=2, default=str)
     logger.info(f"Singles written → {singles_path}  (safe before SGP step)")
 
+    # ── PMF display JSON — full outcome table with fair odds per prop ────────
+    try:
+        pmf_display = {"date": today, "generated_at": singles_out["generated_at"], "props": []}
+        STAT_DISPLAY = {"pts":"Points","reb":"Rebounds","ast":"Assists",
+                        "fg3m":"Threes","stl":"Steals","blk":"Blocks","tov":"Turnovers"}
+        for pick in all_singles:
+            pmf = pick.get("pmf", {})
+            if not pmf:
+                continue
+            outcome_table = []
+            for x_str, prob in sorted(pmf.items(), key=lambda t: int(t[0])):
+                p = float(prob)
+                if p < 0.005:
+                    continue
+                fair_odds = int(round(-p/(1-p)*100)) if p >= 0.5 else int(round((1-p)/p*100))
+                outcome_table.append({"outcome": int(x_str), "probability": round(p,4),
+                                      "fair_odds": fair_odds, "display_prob": f"{p*100:.1f}%"})
+            pmf_display["props"].append({
+                "player_name":    pick["player_name"],
+                "game":           pick["game"],
+                "stat":           pick["stat"],
+                "stat_display":   STAT_DISPLAY.get(pick["stat"], pick["stat"]),
+                "side":           pick["side"],
+                "line":           pick["line"],
+                "model_prob":     pick["model_prob"],
+                "market_prob":    pick["market_prob"],
+                "ev":             pick["ev"],
+                "edge":           pick.get("edge_over") if pick["side"]=="OVER" else pick.get("edge_under"),
+                "fair_odds_over":  pick.get("fair_odds_over"),
+                "fair_odds_under": pick.get("fair_odds_under"),
+                "pmf_median":     pick.get("pmf_median"),
+                "line_vs_median": pick.get("line_vs_median"),
+                "affiliate": {"vendor": pick.get("bet_vendor"), "over_odds": pick.get("over_odds"),
+                              "under_odds": pick.get("under_odds"), "best_odds": pick.get("odds")},
+                "outcome_table":  outcome_table,
+            })
+        pmf_path = PRED_DIR / f"pmf_display_{today}.json"
+        with open(pmf_path, "w") as f:
+            json.dump(pmf_display, f, indent=2, default=str)
+        logger.info(f"PMF display written → {pmf_path} ({len(pmf_display['props'])} props)")
+    except Exception as e:
+        logger.warning(f"PMF display generation failed: {e}")
+
     # ── SGP generation — skipped if SKIP_SGPS=1 ───────────────────────────────
     sgp_results = {"two_leg": [], "three_leg": []}
 
