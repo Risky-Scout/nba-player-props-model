@@ -351,6 +351,16 @@ def load_models() -> tuple:
     if not platt_calibrators:
         logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
 
+    # Load Q50 bias corrections (empirical stat median bias, updated daily)
+    _q50_bias_path = Path(MODEL_CACHE) / "q50_bias_corrections.json"
+    try:
+        import json as _json
+        global _Q50_BIAS
+        _Q50_BIAS = _json.load(open(_q50_bias_path))
+        logger.info(f"  Q50 bias corrections: {_Q50_BIAS}")
+    except Exception:
+        logger.warning("  Q50 bias corrections not found — running unbiased")
+
     # Load residual centerer if available
     try:
         from residual_centering import ResidualCenterer
@@ -764,8 +774,10 @@ def main():
                             continue
                     else:
                         # Fallback: use existing quantile model if any component missing
-                        prob_over  = p_over(q_preds, line)
-                        prob_under = p_under(q_preds, line)
+                        _bias = _Q50_BIAS.get(target, 0.0)
+                        _corr_qpreds = {k: v + _bias for k, v in q_preds.items()} if _bias != 0.0 and q_preds else q_preds
+                        prob_over  = p_over(_corr_qpreds, line)
+                        prob_under = p_under(_corr_qpreds, line)
                 # FG3M: use hurdle model for more accurate zero-inflated probability
                 elif target == "fg3m" and fg3m_hurdle_model is not None:
                     try:
@@ -776,8 +788,15 @@ def main():
                         prob_over  = p_over(q_preds, line)
                         prob_under = p_under(q_preds, line)
                 else:
-                    prob_over  = p_over(q_preds, line)
-                    prob_under = p_under(q_preds, line)
+                    # Apply empirical Q50 bias correction — shift entire quantile distribution
+                    # This corrects the systematic underestimation of stat values
+                    _bias = _Q50_BIAS.get(target, 0.0)
+                    if _bias != 0.0 and q_preds:
+                        _corr_qpreds = {k: v + _bias for k, v in q_preds.items()}
+                    else:
+                        _corr_qpreds = q_preds
+                    prob_over  = p_over(_corr_qpreds, line)
+                    prob_under = p_under(_corr_qpreds, line)
 
                 # Apply Platt calibration — stat×side specific if available (doc 7 §2)
                 # Priority: stat_SIDE → global SIDE → raw
