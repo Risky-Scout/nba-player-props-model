@@ -71,7 +71,7 @@ body{background:var(--bg0);color:var(--t0);font-family:var(--sans);font-size:13p
 /* LAYOUT */
 .main{display:grid;grid-template-columns:1fr 298px;min-height:calc(100vh - 86px);}
 @media(max-width:1080px){.main{grid-template-columns:1fr;}}
-.col-L{border-right:1px solid var(--ln);overflow:hidden;}
+.col-L{border-right:1px solid var(--ln);}
 .col-R{background:var(--bg1);display:flex;flex-direction:column;overflow-y:auto;max-height:calc(100vh - 86px);position:sticky;top:86px;}
 
 /* SEC HEADER */
@@ -82,9 +82,11 @@ body{background:var(--bg0);color:var(--t0);font-family:var(--sans);font-size:13p
 /* TABLE */
 .tscroll{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;}
-.c-pl{width:190px;}.c-st{width:62px;}.c-si{width:60px;}.c-li{width:58px;}.c-fl{width:70px;}
+.c-pl{width:220px;}.c-st{width:62px;}.c-si{width:60px;}.c-li{width:58px;}.c-fl{width:70px;}
 .c-di{width:132px;}.c-fa{width:96px;}.c-po{width:76px;}.c-ed{width:72px;}
 .c-ev{width:66px;}.c-ke{width:62px;}.c-sx{width:74px;}
+.pname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pgame{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 thead th{background:var(--bg0);font-family:var(--mono);font-size:8px;font-weight:500;letter-spacing:1.2px;
   text-transform:uppercase;color:var(--t3);padding:7px 10px;text-align:left;
   border-bottom:1px solid var(--ln);white-space:nowrap;cursor:pointer;user-select:none;
@@ -98,6 +100,7 @@ tbody tr:hover td{background:rgba(255,255,255,.014);}
 tbody tr.sel td{background:rgba(240,165,0,.038);}
 tbody tr.dim td{opacity:.36;}
 tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+tbody td.c-pl{white-space:normal;overflow:hidden;}
 
 /* CELL STYLES */
 .pname{font-weight:600;font-size:13px;color:var(--t0);}
@@ -214,73 +217,6 @@ tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap;overflow:hidd
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:var(--bg0);}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px;}
-
-/* DETAIL DRAWER */
-.det-row td{padding:0!important;}
-.det-wrap{background:var(--bg1);border-bottom:2px solid var(--amb-bd);overflow:hidden;transition:max-height .22s cubic-bezier(.4,0,.2,1);}
-.det-inner{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
-@media(max-width:1300px){.det-inner{grid-template-columns:1fr 1fr;}}
-.det-sec{background:var(--bg0);border:1px solid var(--ln);border-radius:3px;overflow:hidden;}
-.det-hdr{font-family:var(--mono);font-size:7px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--t3);padding:7px 10px;border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;align-items:center;}
-.det-hdr span{color:var(--t2);}
-/* Line Ladder */
-.ll-table{width:100%;border-collapse:collapse;}
-.ll-table tr{border-bottom:1px solid var(--ln2);}
-.ll-table tr:last-child{border-bottom:none;}
-.ll-table tr.ll-posted{background:rgba(240,165,0,.05);}
-.ll-table td{font-family:var(--mono);font-size:9.5px;padding:4px 10px;white-space:nowrap;}
-.ll-line{color:var(--t1);font-weight:500;}
-.ll-line.posted{color:var(--amb);}
-.ll-prob{color:var(--t2);}
-.ll-fair{font-weight:600;}
-.ll-fair.ov{color:var(--grn);}
-.ll-fair.un{color:var(--red);}
-.ll-star{color:var(--amb);font-size:8px;}
-/* Drivers */
-.drv-list{padding:6px 0;}
-.drv{display:flex;align-items:flex-start;gap:8px;padding:5px 10px;border-bottom:1px solid var(--ln2);}
-.drv:last-child{border-bottom:none;}
-.drv-sig{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;padding:2px 5px;border-radius:2px;white-space:nowrap;flex-shrink:0;}
-.sig-pos{background:rgba(40,186,104,.12);color:var(--grn);border:1px solid rgba(40,186,104,.22);}
-.sig-neg{background:rgba(217,80,80,.1);color:var(--red);border:1px solid rgba(217,80,80,.2);}
-.sig-neu{background:var(--bg3);color:var(--t2);border:1px solid var(--ln);}
-.drv-body{min-width:0;}
-.drv-lbl{font-family:var(--mono);font-size:9.5px;font-weight:500;color:var(--t1);}
-.drv-det{font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px;line-height:1.5;white-space:normal;}
-/* Uncertainty */
-.unc-regime{padding:10px;border-bottom:1px solid var(--ln);}
-.unc-badge{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;border-radius:3px;display:inline-block;}
-.unc-stable{color:var(--grn);background:rgba(40,186,104,.1);border:1px solid rgba(40,186,104,.25);}
-.unc-moderate{color:var(--amb);background:var(--amb-bg);border:1px solid var(--amb-bd);}
-.unc-uncertain{color:var(--red);background:rgba(217,80,80,.1);border:1px solid rgba(217,80,80,.25);}
-.unc-sub{font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:5px;}
-.unc-flags{padding:6px 0;}
-.unc-flag{display:flex;align-items:center;gap:7px;padding:4px 10px;border-bottom:1px solid var(--ln2);}
-.unc-flag:last-child{border-bottom:none;}
-.unc-dot{width:5px;height:5px;border-radius:50%;background:var(--t3);flex-shrink:0;}
-.unc-dot.warn{background:var(--amb);}
-.unc-dot.danger{background:var(--red);}
-.unc-flbl{font-family:var(--mono);font-size:9px;color:var(--t2);}
-/* Sensitivity */
-.sv-table{width:100%;border-collapse:collapse;}
-.sv-table tr{border-bottom:1px solid var(--ln2);}
-.sv-table tr:last-child{border-bottom:none;}
-.sv-table tr.sv-base{background:rgba(24,200,216,.04);}
-.sv-table td{font-family:var(--mono);font-size:9px;padding:5px 10px;white-space:nowrap;}
-.sv-scen{color:var(--t2);}
-.sv-mp{color:var(--t1);font-weight:500;}
-.sv-prob{font-weight:600;}
-.sv-up{color:var(--grn);}
-.sv-dn{color:var(--red);}
-.sv-neu{color:var(--t1);}
-/* SGP add button in detail */
-.det-footer{padding:10px 16px;border-top:1px solid var(--ln);display:flex;align-items:center;gap:8px;}
-.btn-sgp-add{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;background:var(--amb-bg);border:1px solid var(--amb-bd);border-radius:2px;color:var(--amb);cursor:pointer;transition:all .1s;}
-.btn-sgp-add:hover{background:rgba(240,165,0,.16);color:#fff;}
-.btn-sgp-add.added{background:rgba(40,186,104,.1);border-color:rgba(40,186,104,.3);color:var(--grn);}
-.btn-det-close{font-family:var(--mono);font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;background:transparent;border:1px solid var(--ln);border-radius:2px;color:var(--t3);cursor:pointer;transition:all .1s;}
-.btn-det-close:hover{border-color:var(--t2);color:var(--t1);}
-.det-hint{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:.5px;margin-left:auto;}
 </style>
 </head>
 <body>
@@ -343,7 +279,7 @@ tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap;overflow:hidd
   <div class="col-L">
     <div class="sh">
       <span class="sh-t">Player Prop Pricing</span>
-      <span class="sh-s">Fair Odds = Model Prob → American · Amber marker = P50 · White marker = Posted Line · +Edge = Model beats Vig-Removed Market · <b style="color:var(--amb)">Click any row</b> to expand: Line Ladder, Drivers, Uncertainty, Sensitivity</span>
+      <span class="sh-s">Fair Odds = Model Prob → American · Amber marker = P50 · White marker = Posted Line · +Edge = Model beats Vig-Removed Market</span>
     </div>
     <div class="tscroll" id="tscroll">
       <div class="state"><div class="spin"></div>
@@ -373,27 +309,27 @@ tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap;overflow:hidd
         <div class="math">
           <div class="math-t">Fair Odds — Our Line</div>
           <div class="math-f">p ≥ 0.5 → −100·p/(1−p)<br>p &lt; 0.5 → +100·(1−p)/p</div>
-          <div class="math-d">Converts calibrated model probability to the American odds we would post as the book. When our Fair Odds differ from the Posted Odds, a pricing gap exists and an edge can be captured.</div>
+          <div class="math-d">Maps model probability to its equivalent American odds representation — the theoretically fair price with zero margin. Divergence between this fair price and the posted market price defines the pricing gap the model is measuring.</div>
         </div>
         <div class="math">
           <div class="math-t">Vig Removal</div>
           <div class="math-f">p_true = p_over / (p_over + p_under)</div>
-          <div class="math-d">Strips bookmaker margin from both sides of the market to expose the fair implied probability. Required before any edge calculation is valid.</div>
+          <div class="math-d">Raw implied probabilities from a two-sided market sum to greater than 1.0 due to the bookmaker's margin. Normalizing both sides recovers the market's true probability estimate, which is the correct baseline for any model comparison.</div>
         </div>
         <div class="math">
           <div class="math-t">Edge &amp; Expected Value</div>
           <div class="math-f">edge = p_model − (1/decimal)<br>EV = (d−1)·p − (1−p)</div>
-          <div class="math-d">Edge quantifies the pricing gap vs market. EV is the economic return per unit wagered — the true measure of long-run profitability at any odds.</div>
+          <div class="math-d">Edge is the difference between model probability and the market's vig-removed implied probability. EV expresses this difference in return-per-unit terms, weighting the magnitude of the odds. Both are required to assess line quality — edge alone does not account for price.</div>
         </div>
         <div class="math">
           <div class="math-t">Kelly Criterion</div>
           <div class="math-f">f* = (b·p − q) / b</div>
-          <div class="math-d">b = net decimal − 1, p = model win prob, q = 1−p. Optimal fractional wager that maximizes long-run wealth growth rate. Shown per row, capped at 25%.</div>
+          <div class="math-d">b = decimal odds − 1, p = model probability, q = 1 − p. Derived from maximizing the expected logarithm of wealth, Kelly sizing is the theoretically optimal fraction of capital to allocate given a known probability estimate and price. Output is capped at 25% per position.</div>
         </div>
         <div class="math">
           <div class="math-t">SGP Correlation</div>
           <div class="math-f">ρ(PTS,REB)=0.647 · ρ(PTS,AST)=0.426<br>ρ(PTS,3PM)=0.512 · ρ(REB,AST)=0.274</div>
-          <div class="math-d">Empirical NBA stat correlations from historical data. Model SGPs use Python-computed joint probability with full correlation adjustment — not naive multiplication.</div>
+          <div class="math-d">Same-game parlay pricing requires joint probability estimation across correlated outcomes. Naive multiplication of independent probabilities overstates true joint probability. These empirical correlations, derived from historical NBA box scores, are used to adjust the Gaussian copula model's joint distribution accordingly.</div>
         </div>
       </div>
     </div>
@@ -424,7 +360,7 @@ tbody td{padding:7px 10px;vertical-align:middle;white-space:nowrap;overflow:hidd
 const API='./api/live_props.php';
 const RL=30000,RP=120000,ML=6;
 const CORR={pts_pts:1,pts_reb:.647,pts_ast:.426,pts_fg3m:.512,reb_reb:1,reb_ast:.274,reb_fg3m:.195,ast_ast:1,ast_fg3m:.283,fg3m_fg3m:1};
-let all=[],legs=[],sc='edge',sd='desc',mf='all',sf='',ef=0,sideF='both',timer=null,_rp=[],openDet=null;
+let all=[],legs=[],sc='edge',sd='desc',mf='all',sf='',ef=0,sideF='both',timer=null,_rp=[];
 
 function tick(){document.getElementById('tb-time').textContent=new Date().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',timeZoneName:'short'});}
 setInterval(tick,1000);tick();
@@ -528,7 +464,6 @@ function render(){
   const sk=new Set(legs.map(l=>l.key));
   const rows=ps.map((p,i)=>{
     const k=pk(p),sel=sk.has(k)?'sel':'',dim=p.injured?'dim':'';
-    const isOpen=(openDet===i);
     let sx='';
     if(p.game_status==='pre-game') sx='<span class="sx sx-pre">Pre</span>';
     else if(p.is_overtime) sx='<span class="sx sx-ot">OT</span>';
@@ -567,8 +502,7 @@ function render(){
     const flH=fl>0?`<div style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--amb)">${fl}</div><div style="font-family:var(--mono);font-size:7px;color:var(--t3);letter-spacing:.8px;margin-top:1px">P50 PROJ</div>`:'—';
     const kp=Math.min(25,(p.kelly||0)*100);
     const kH=kp<0.1?'<span style="font-family:var(--mono);font-size:9px;color:var(--t3)">—</span>':`<div class="kw"><div class="kn">${kp.toFixed(1)}%</div><div class="kb"><div class="kf" style="width:${Math.min(100,kp*4)}%"></div></div></div>`;
-    const isOpen=(openDet===i);
-    return `<tr class="${sel} ${dim}${isOpen?' sel':''}" onclick="rowClick(event,${i})">
+    return `<tr class="${sel} ${dim}" onclick="rowClick(event,${i})">
       <td class="c-pl"><div class="pname">${p.player}</div><div class="pgame">${p.game}</div>${bdg}</td>
       <td class="c-st"><span class="stag st-${p.stat_key}">${p.stat}</span></td>
       <td class="c-si"><span class="stg ${p.side==='OVER'?'s-ov':'s-un'}">${p.side}</span></td>
@@ -581,7 +515,7 @@ function render(){
       <td class="c-ev"><span class="evv" style="color:${p.ev>0?'var(--grn)':'var(--t3)'}">${p.ev>0?'+':''}${evN}%</span></td>
       <td class="c-ke">${kH}</td>
       <td class="c-sx">${sx}</td>
-    </tr>${isOpen?`<tr class="det-row">${buildDetailHTML(p,i)}</tr>`:''}`;
+    </tr>`;
   }).join('');
 
   function th(col,lbl,cls,extra=''){
@@ -606,152 +540,13 @@ document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>
 document.getElementById('sf').addEventListener('change',e=>{sf=e.target.value;render();});
 document.getElementById('evs').addEventListener('input',e=>{ef=parseFloat(e.target.value);document.getElementById('evv').textContent=ef.toFixed(1)+'%';render();});
 
-// ── Detail panel renderers ─────────────────────────────────────────────────
-
-function renderLineLadder(ladder){
-  if(!ladder||!ladder.length) return '<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">No ladder data</div>';
-  const rows=ladder.map(r=>{
-    const isPosted=r.posted;
-    const ovFair=r.fair_over>0?'+'+r.fair_over:r.fair_over;
-    const unFair=r.fair_under>0?'+'+r.fair_under:r.fair_under;
-    const ovPct=(r.prob_over*100).toFixed(1);
-    return `<tr class="${isPosted?'ll-posted':''}">
-      <td class="ll-line ${isPosted?'posted':''}">${r.line}${isPosted?' ★':''}</td>
-      <td class="ll-prob">${ovPct}%</td>
-      <td class="ll-fair ov">${ovFair}</td>
-      <td class="ll-fair un">${unFair}</td>
-    </tr>`;
-  }).join('');
-  return `<table class="ll-table">
-    <tr style="border-bottom:1px solid var(--ln);">
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:4px 10px;">Line</td>
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:4px 10px;">P(Over)</td>
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--grn);padding:4px 10px;">Fair Over</td>
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);padding:4px 10px;">Fair Under</td>
-    </tr>
-    ${rows}
-  </table>`;
-}
-
-function renderDrivers(drivers){
-  if(!drivers||!drivers.length) return '<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">No driver data</div>';
-  const items=drivers.map(d=>{
-    const sigCls=d.signal==='positive'?'sig-pos':d.signal==='negative'?'sig-neg':'sig-neu';
-    const sigLbl=d.signal==='positive'?'Bullish':d.signal==='negative'?'Bearish':'Neutral';
-    return `<div class="drv">
-      <span class="drv-sig ${sigCls}">${sigLbl}</span>
-      <div class="drv-body">
-        <div class="drv-lbl">${d.label}</div>
-        <div class="drv-det">${d.detail}</div>
-      </div>
-    </div>`;
-  }).join('');
-  return `<div class="drv-list">${items}</div>`;
-}
-
-function renderUncertainty(unc){
-  if(!unc) return '<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">No uncertainty data</div>';
-  const regime=(unc.regime||'STABLE').toUpperCase();
-  const badgeCls=regime==='STABLE'?'unc-stable':regime==='UNCERTAIN'?'unc-uncertain':'unc-moderate';
-  const desc=regime==='STABLE'?'Role and minutes are consistent. Lower variance outcome.':
-             regime==='UNCERTAIN'?'Multiple risk flags present. Widen your implied range.':
-             'Minor instability detected. Use reduced Kelly.';
-  const flags=(unc.flags||[]);
-  const dangerFlags=new Set(['VOLATILE_ROLE','INJURY_DEPENDENT','MISSED_RECENT_GAMES']);
-  const warnFlags=new Set(['HIGH_MIN_VARIANCE','BLOWOUT_SENSITIVE','BACK_TO_BACK']);
-  const flagsHtml=flags.length?flags.map(f=>{
-    const cls=dangerFlags.has(f)?'danger':warnFlags.has(f)?'warn':'';
-    return `<div class="unc-flag"><div class="unc-dot ${cls}"></div><span class="unc-flbl">${f.replace(/_/g,' ')}</span></div>`;
-  }).join(''):'<div style="padding:8px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">No active flags</div>';
-  return `<div class="unc-regime">
-    <div class="unc-badge ${badgeCls}">${regime}</div>
-    <div class="unc-sub">${desc}</div>
-  </div>
-  <div class="unc-flags">${flagsHtml}</div>`;
-}
-
-function renderSensitivity(sens){
-  if(!sens||!sens.length) return '<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">No sensitivity data</div>';
-  const baseProb=sens.find(r=>r.scenario==='Baseline')?.prob_over||0;
-  const rows=sens.map(r=>{
-    const isBase=r.scenario==='Baseline';
-    const delta=r.prob_over-baseProb;
-    const probCls=isBase?'sv-neu':delta>0.01?'sv-up':delta<-0.01?'sv-dn':'sv-neu';
-    const deltaStr=isBase?'—':(delta>=0?'+':'')+((delta*100).toFixed(1))+'pp';
-    return `<tr class="${isBase?'sv-base':''}">
-      <td class="sv-scen">${r.scenario}</td>
-      <td class="sv-mp">${r.exp_mp?r.exp_mp.toFixed(0)+'m':'—'}</td>
-      <td class="sv-prob ${probCls}">${(r.prob_over*100).toFixed(1)}%</td>
-      <td style="font-family:var(--mono);font-size:9px;color:${delta>=0.01?'var(--grn)':delta<=-0.01?'var(--red)':'var(--t3)'};">${deltaStr}</td>
-    </tr>`;
-  }).join('');
-  return `<table class="sv-table">
-    <tr style="border-bottom:1px solid var(--ln);">
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:4px 10px;">Scenario</td>
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:4px 10px;">Exp MP</td>
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:4px 10px;">P(Over)</td>
-      <td style="font-family:var(--mono);font-size:7px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:4px 10px;">Δ vs Base</td>
-    </tr>
-    ${rows}
-  </table>`;
-}
-
-function buildDetailHTML(p,i){
-  const k=pk(p);
-  const isInSGP=legs.some(l=>l.key===k);
-  const hasFull=p.line_ladder||p.drivers||p.uncertainty||p.sensitivity;
-  const llHTML=p.line_ladder?renderLineLadder(p.line_ladder):'<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">Available after 8AM model run</div>';
-  const drvHTML=p.drivers?renderDrivers(p.drivers):'<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">Available after 8AM model run</div>';
-  const uncHTML=p.uncertainty?renderUncertainty(p.uncertainty):'<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">Available after 8AM model run</div>';
-  const sensHTML=p.sensitivity?renderSensitivity(p.sensitivity):'<div style="padding:12px 10px;font-family:var(--mono);font-size:9px;color:var(--t3);">Available after 8AM model run</div>';
-  return `<td colspan="12"><div class="det-wrap"><div class="det-inner">
-    <div class="det-sec">
-      <div class="det-hdr">Line Ladder <span>Fair odds at each alt line</span></div>
-      ${llHTML}
-    </div>
-    <div class="det-sec">
-      <div class="det-hdr">Model Drivers <span>Top factors</span></div>
-      ${drvHTML}
-    </div>
-    <div class="det-sec">
-      <div class="det-hdr">Uncertainty <span>Role stability assessment</span></div>
-      ${uncHTML}
-    </div>
-    <div class="det-sec">
-      <div class="det-hdr">MP Sensitivity <span>Prob over at ±minutes</span></div>
-      ${sensHTML}
-    </div>
-  </div>
-  <div class="det-footer">
-    <button class="btn-sgp-add ${isInSGP?'added':''}" onclick="toggleSGPFromDet(${i})">
-      ${isInSGP?'✓ In SGP Builder':'+ Add to SGP Builder'}
-    </button>
-    <button class="btn-det-close" onclick="closeDet()">Close ↑</button>
-    <span class="det-hint">${p.player} · ${p.stat} ${p.side} ${p.line} · Edge ${p.edge>=0?'+':''}${(p.edge*100).toFixed(1)}%</span>
-  </div></div></td>`;
-}
-
-function toggleSGPFromDet(i){
+function rowClick(e,i){
+  if(e.target.closest('.leg-rm')) return;
   const p=_rp[i];if(!p) return;
   const k=pk(p),idx=legs.findIndex(l=>l.key===k);
   if(idx>=0) legs.splice(idx,1);
   else{if(legs.length>=ML)return;legs.push({key:k,prop:p});}
-  renderSGP();
-  // Re-render detail footer button state
-  const detRow=document.querySelector('tr.det-row');
-  if(detRow){
-    const btn=detRow.querySelector('.btn-sgp-add');
-    if(btn){const inSGP=legs.some(l=>l.key===k);btn.className='btn-sgp-add'+(inSGP?' added':'');btn.textContent=inSGP?'✓ In SGP Builder':'+ Add to SGP Builder';}
-  }
-  render();
-}
-
-function closeDet(){openDet=null;render();}
-
-function rowClick(e,i){
-  if(e.target.closest('.leg-rm')||e.target.closest('.btn-sgp-add')||e.target.closest('.btn-det-close')) return;
-  if(openDet===i){openDet=null;}else{openDet=i;}
-  render();
+  renderSGP();render();
 }
 function clearSGP(){legs=[];renderSGP();render();}
 function remLeg(i){legs.splice(i,1);renderSGP();render();}
