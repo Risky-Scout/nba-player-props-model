@@ -22,6 +22,7 @@ v13 changes:
   - Version bump and cleanup
 """
 
+from calibrate_stat_side import IsotonicCalibrator  # needed for platt pkl loading
 import csv
 import json
 import logging
@@ -107,6 +108,9 @@ try:
     )
 except ImportError as e:
     sys.exit(f"Import error: {e}")
+
+# Required for loading Platt calibrator pkl files saved with IsotonicCalibrator class
+from calibrate_stat_side import IsotonicCalibrator
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
@@ -352,7 +356,7 @@ def load_models() -> tuple:
         logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
 
     # Load Q50 bias corrections (empirical stat median bias, updated daily)
-    _q50_bias_path = Path(MODEL_CACHE) / "q50_bias_corrections.json"
+    _q50_bias_path = Path("model_cache") / "q50_bias_corrections.json"
     try:
         import json as _json
         global _Q50_BIAS
