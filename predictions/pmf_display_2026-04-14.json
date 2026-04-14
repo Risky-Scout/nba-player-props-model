@@ -1,0 +1,666 @@
+{
+  "date": "2026-04-14",
+  "generated_at": "2026-04-14T14:50:44.823436",
+  "props": [
+    {
+      "player_name": "Pelle Larsson",
+      "game": "Miami Heat @ Charlotte Hornets",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "OVER",
+      "line": 3.5,
+      "model_prob": 0.6999,
+      "market_prob": 0.4534,
+      "ev": 0.5467,
+      "edge": 0.1516,
+      "fair_odds_over": -153,
+      "fair_odds_under": 153,
+      "pmf_median": 4,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 121,
+        "under_odds": -120,
+        "best_odds": 121
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.2075,
+          "fair_odds": 382,
+          "display_prob": "20.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1875,
+          "fair_odds": 433,
+          "display_prob": "18.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.204,
+          "fair_odds": 390,
+          "display_prob": "20.4%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1665,
+          "fair_odds": 501,
+          "display_prob": "16.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.2345,
+          "fair_odds": 326,
+          "display_prob": "23.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Scoot Henderson",
+      "game": "Portland Trail Blazers @ Phoenix Suns",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 3.5,
+      "model_prob": 0.625,
+      "market_prob": 0.45,
+      "ev": 0.375,
+      "edge": -0.055,
+      "fair_odds_over": 153,
+      "fair_odds_under": -153,
+      "pmf_median": 3,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 120,
+        "under_odds": -125,
+        "best_odds": 120
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.3345,
+          "fair_odds": 199,
+          "display_prob": "33.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.2705,
+          "fair_odds": 270,
+          "display_prob": "27.1%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.2325,
+          "fair_odds": 330,
+          "display_prob": "23.2%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1625,
+          "fair_odds": 515,
+          "display_prob": "16.2%"
+        }
+      ]
+    },
+    {
+      "player_name": "Devin Booker",
+      "game": "Portland Trail Blazers @ Phoenix Suns",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 6.0,
+      "model_prob": 0.625,
+      "market_prob": 0.5,
+      "ev": 0.3625,
+      "edge": 0.0204,
+      "fair_odds_over": -109,
+      "fair_odds_under": 109,
+      "pmf_median": 6,
+      "line_vs_median": 0.0,
+      "affiliate": {
+        "vendor": "betrivers",
+        "over_odds": 118,
+        "under_odds": 118,
+        "best_odds": 118
+      },
+      "outcome_table": [
+        {
+          "outcome": 4,
+          "probability": 0.216,
+          "fair_odds": 363,
+          "display_prob": "21.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.177,
+          "fair_odds": 465,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1805,
+          "fair_odds": 454,
+          "display_prob": "18.1%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.1875,
+          "fair_odds": 433,
+          "display_prob": "18.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.239,
+          "fair_odds": 318,
+          "display_prob": "23.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Deni Avdija",
+      "game": "Portland Trail Blazers @ Phoenix Suns",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 6.5,
+      "model_prob": 0.625,
+      "market_prob": 0.4658,
+      "ev": 0.2812,
+      "edge": -0.0193,
+      "fair_odds_over": 124,
+      "fair_odds_under": -124,
+      "pmf_median": 6,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 105,
+        "under_odds": -127,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 4,
+          "probability": 0.1735,
+          "fair_odds": 476,
+          "display_prob": "17.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.165,
+          "fair_odds": 506,
+          "display_prob": "16.5%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.215,
+          "fair_odds": 365,
+          "display_prob": "21.5%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.2305,
+          "fair_odds": 334,
+          "display_prob": "23.1%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.1125,
+          "fair_odds": 789,
+          "display_prob": "11.2%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.1035,
+          "fair_odds": 866,
+          "display_prob": "10.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Norman Powell",
+      "game": "Miami Heat @ Charlotte Hornets",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 17.5,
+      "model_prob": 0.625,
+      "market_prob": 0.487,
+      "ev": 0.2625,
+      "edge": -0.1965,
+      "fair_odds_over": 244,
+      "fair_odds_under": -244,
+      "pmf_median": 15,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 102,
+        "under_odds": -109,
+        "best_odds": 102
+      },
+      "outcome_table": [
+        {
+          "outcome": 9,
+          "probability": 0.15,
+          "fair_odds": 567,
+          "display_prob": "15.0%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.064,
+          "fair_odds": 1462,
+          "display_prob": "6.4%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.076,
+          "fair_odds": 1216,
+          "display_prob": "7.6%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.059,
+          "fair_odds": 1595,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0585,
+          "fair_odds": 1609,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.059,
+          "fair_odds": 1595,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0705,
+          "fair_odds": 1318,
+          "display_prob": "7.0%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0865,
+          "fair_odds": 1056,
+          "display_prob": "8.6%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.086,
+          "fair_odds": 1063,
+          "display_prob": "8.6%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0845,
+          "fair_odds": 1083,
+          "display_prob": "8.5%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.045,
+          "fair_odds": 2122,
+          "display_prob": "4.5%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0415,
+          "fair_odds": 2310,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.1195,
+          "fair_odds": 737,
+          "display_prob": "11.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Green",
+      "game": "Portland Trail Blazers @ Phoenix Suns",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 18.5,
+      "model_prob": 0.625,
+      "market_prob": 0.4878,
+      "ev": 0.2318,
+      "edge": -0.1793,
+      "fair_odds_over": 224,
+      "fair_odds_under": -224,
+      "pmf_median": 16,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -103,
+        "under_odds": -114,
+        "best_odds": -103
+      },
+      "outcome_table": [
+        {
+          "outcome": 9,
+          "probability": 0.1025,
+          "fair_odds": 876,
+          "display_prob": "10.2%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.042,
+          "fair_odds": 2281,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0415,
+          "fair_odds": 2310,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0495,
+          "fair_odds": 1920,
+          "display_prob": "5.0%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.07,
+          "fair_odds": 1329,
+          "display_prob": "7.0%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.076,
+          "fair_odds": 1216,
+          "display_prob": "7.6%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.076,
+          "fair_odds": 1216,
+          "display_prob": "7.6%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.077,
+          "fair_odds": 1199,
+          "display_prob": "7.7%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0785,
+          "fair_odds": 1174,
+          "display_prob": "7.8%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0785,
+          "fair_odds": 1174,
+          "display_prob": "7.8%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.068,
+          "fair_odds": 1371,
+          "display_prob": "6.8%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0375,
+          "fair_odds": 2567,
+          "display_prob": "3.8%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0325,
+          "fair_odds": 2977,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.032,
+          "fair_odds": 3025,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.0315,
+          "fair_odds": 3075,
+          "display_prob": "3.1%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.107,
+          "fair_odds": 835,
+          "display_prob": "10.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Brandon Miller",
+      "game": "Miami Heat @ Charlotte Hornets",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 20.5,
+      "model_prob": 0.625,
+      "market_prob": 0.488,
+      "ev": 0.226,
+      "edge": -0.137,
+      "fair_odds_over": 185,
+      "fair_odds_under": -185,
+      "pmf_median": 18,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -104,
+        "under_odds": -115,
+        "best_odds": -104
+      },
+      "outcome_table": [
+        {
+          "outcome": 12,
+          "probability": 0.116,
+          "fair_odds": 762,
+          "display_prob": "11.6%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.05,
+          "fair_odds": 1900,
+          "display_prob": "5.0%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.104,
+          "fair_odds": 862,
+          "display_prob": "10.4%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0625,
+          "fair_odds": 1500,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.062,
+          "fair_odds": 1513,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0625,
+          "fair_odds": 1500,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.063,
+          "fair_odds": 1487,
+          "display_prob": "6.3%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0645,
+          "fair_odds": 1450,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0645,
+          "fair_odds": 1450,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0645,
+          "fair_odds": 1450,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.06,
+          "fair_odds": 1567,
+          "display_prob": "6.0%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.0515,
+          "fair_odds": 1842,
+          "display_prob": "5.1%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.048,
+          "fair_odds": 1983,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 25,
+          "probability": 0.127,
+          "fair_odds": 687,
+          "display_prob": "12.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "LaMelo Ball",
+      "game": "Miami Heat @ Charlotte Hornets",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 23.5,
+      "model_prob": 0.625,
+      "market_prob": 0.4852,
+      "ev": 0.2202,
+      "edge": -0.0992,
+      "fair_odds_over": 159,
+      "fair_odds_under": -159,
+      "pmf_median": 22,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -105,
+        "under_odds": -119,
+        "best_odds": -105
+      },
+      "outcome_table": [
+        {
+          "outcome": 15,
+          "probability": 0.1325,
+          "fair_odds": 655,
+          "display_prob": "13.2%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0395,
+          "fair_odds": 2432,
+          "display_prob": "4.0%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0615,
+          "fair_odds": 1526,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.07,
+          "fair_odds": 1329,
+          "display_prob": "7.0%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.063,
+          "fair_odds": 1487,
+          "display_prob": "6.3%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0625,
+          "fair_odds": 1500,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0625,
+          "fair_odds": 1500,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.0615,
+          "fair_odds": 1526,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.061,
+          "fair_odds": 1539,
+          "display_prob": "6.1%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.0615,
+          "fair_odds": 1526,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 25,
+          "probability": 0.061,
+          "fair_odds": 1539,
+          "display_prob": "6.1%"
+        },
+        {
+          "outcome": 26,
+          "probability": 0.046,
+          "fair_odds": 2074,
+          "display_prob": "4.6%"
+        },
+        {
+          "outcome": 27,
+          "probability": 0.0455,
+          "fair_odds": 2098,
+          "display_prob": "4.5%"
+        },
+        {
+          "outcome": 28,
+          "probability": 0.049,
+          "fair_odds": 1941,
+          "display_prob": "4.9%"
+        },
+        {
+          "outcome": 29,
+          "probability": 0.123,
+          "fair_odds": 713,
+          "display_prob": "12.3%"
+        }
+      ]
+    }
+  ]
+}
