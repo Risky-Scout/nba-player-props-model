@@ -1,0 +1,414 @@
+{
+  "date": "2026-04-15",
+  "generated_at": "2026-04-15T14:44:43.675439",
+  "props": [
+    {
+      "player_name": "Brook Lopez",
+      "game": "Golden State Warriors @ LA Clippers",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 1.5,
+      "model_prob": 0.625,
+      "market_prob": 0.3789,
+      "ev": 0.5938,
+      "edge": -0.0679,
+      "fair_odds_over": 222,
+      "fair_odds_under": -222,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 155,
+        "under_odds": -180,
+        "best_odds": 155
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.295,
+          "fair_odds": 239,
+          "display_prob": "29.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.394,
+          "fair_odds": 154,
+          "display_prob": "39.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.311,
+          "fair_odds": 222,
+          "display_prob": "31.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Kawhi Leonard",
+      "game": "Golden State Warriors @ LA Clippers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 4.0,
+      "model_prob": 0.625,
+      "market_prob": 0.4957,
+      "ev": 0.4625,
+      "edge": -0.1239,
+      "fair_odds_over": 169,
+      "fair_odds_under": -169,
+      "pmf_median": 4,
+      "line_vs_median": 0.0,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 134,
+        "under_odds": 130,
+        "best_odds": 134
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.1955,
+          "fair_odds": 412,
+          "display_prob": "19.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.253,
+          "fair_odds": 295,
+          "display_prob": "25.3%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.286,
+          "fair_odds": 250,
+          "display_prob": "28.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.2655,
+          "fair_odds": 277,
+          "display_prob": "26.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Brandin Podziemski",
+      "game": "Golden State Warriors @ LA Clippers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 3.5,
+      "model_prob": 0.625,
+      "market_prob": 0.4256,
+      "ev": 0.425,
+      "edge": -0.1716,
+      "fair_odds_over": 294,
+      "fair_odds_under": -294,
+      "pmf_median": 3,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 128,
+        "under_odds": -145,
+        "best_odds": 128
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.127,
+          "fair_odds": 687,
+          "display_prob": "12.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.291,
+          "fair_odds": 244,
+          "display_prob": "29.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.328,
+          "fair_odds": 205,
+          "display_prob": "32.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.131,
+          "fair_odds": 663,
+          "display_prob": "13.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.123,
+          "fair_odds": 713,
+          "display_prob": "12.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "De'Anthony Melton",
+      "game": "Golden State Warriors @ LA Clippers",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "OVER",
+      "line": 3.5,
+      "model_prob": 0.625,
+      "market_prob": 0.4256,
+      "ev": 0.425,
+      "edge": 0.1154,
+      "fair_odds_over": -118,
+      "fair_odds_under": 118,
+      "pmf_median": 4,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 128,
+        "under_odds": -145,
+        "best_odds": 128
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.2255,
+          "fair_odds": 343,
+          "display_prob": "22.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.2335,
+          "fair_odds": 328,
+          "display_prob": "23.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.2035,
+          "fair_odds": 391,
+          "display_prob": "20.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1925,
+          "fair_odds": 419,
+          "display_prob": "19.2%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.145,
+          "fair_odds": 590,
+          "display_prob": "14.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Paolo Banchero",
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 5.0,
+      "model_prob": 0.625,
+      "market_prob": 0.5023,
+      "ev": 0.3812,
+      "edge": -0.2273,
+      "fair_odds_over": 264,
+      "fair_odds_under": -264,
+      "pmf_median": 4,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "caesars",
+        "over_odds": 121,
+        "under_odds": 123,
+        "best_odds": 121
+      },
+      "outcome_table": [
+        {
+          "outcome": 3,
+          "probability": 0.2805,
+          "fair_odds": 257,
+          "display_prob": "28.1%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.2335,
+          "fair_odds": 328,
+          "display_prob": "23.4%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.291,
+          "fair_odds": 244,
+          "display_prob": "29.1%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.195,
+          "fair_odds": 413,
+          "display_prob": "19.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Tyrese Maxey",
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 6.0,
+      "model_prob": 0.5778,
+      "market_prob": 0.4988,
+      "ev": 0.248,
+      "edge": 0.5012,
+      "fair_odds_over": 9900,
+      "fair_odds_under": -9900,
+      "pmf_median": 4,
+      "line_vs_median": 2.0,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 115,
+        "under_odds": 116,
+        "best_odds": 116
+      },
+      "outcome_table": [
+        {
+          "outcome": 3,
+          "probability": 0.3045,
+          "fair_odds": 228,
+          "display_prob": "30.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.2635,
+          "fair_odds": 280,
+          "display_prob": "26.4%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.2655,
+          "fair_odds": 277,
+          "display_prob": "26.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1665,
+          "fair_odds": 501,
+          "display_prob": "16.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Franz Wagner",
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 4.5,
+      "model_prob": 0.5778,
+      "market_prob": 0.478,
+      "ev": 0.1844,
+      "edge": 0.3375,
+      "fair_odds_over": 442,
+      "fair_odds_under": -442,
+      "pmf_median": 3,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -114,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.3005,
+          "fair_odds": 233,
+          "display_prob": "30.0%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.266,
+          "fair_odds": 276,
+          "display_prob": "26.6%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.249,
+          "fair_odds": 302,
+          "display_prob": "24.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.084,
+          "fair_odds": 1090,
+          "display_prob": "8.4%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1005,
+          "fair_odds": 895,
+          "display_prob": "10.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Paul George",
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 5.5,
+      "model_prob": 0.5778,
+      "market_prob": 0.4773,
+      "ev": 0.1556,
+      "edge": 0.3942,
+      "fair_odds_over": 678,
+      "fair_odds_under": -678,
+      "pmf_median": 4,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "caesars",
+        "over_odds": -121,
+        "under_odds": 100,
+        "best_odds": 100
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.1015,
+          "fair_odds": 885,
+          "display_prob": "10.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.137,
+          "fair_odds": 630,
+          "display_prob": "13.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.249,
+          "fair_odds": 302,
+          "display_prob": "24.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.2585,
+          "fair_odds": 287,
+          "display_prob": "25.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1255,
+          "fair_odds": 697,
+          "display_prob": "12.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1285,
+          "fair_odds": 678,
+          "display_prob": "12.8%"
+        }
+      ]
+    }
+  ]
+}
