@@ -497,6 +497,37 @@ def log_paper_trade(singles: list, sgps: list, target_date: str):
             })
 
 
+
+def save_all_props_snapshot(rows: list, target_date: str):
+    """
+    Persist the full evaluated prop universe BEFORE EV filters / special gates.
+    Nested structures are JSON-serialized so the frame can be written safely.
+    """
+    if not rows:
+        logger.warning("No all-prop rows to persist.")
+        return
+
+    out_path = PRED_DIR / f"all_props_{target_date}.parquet"
+    df = pd.DataFrame(rows).copy()
+
+    def _jsonify(x):
+        if isinstance(x, (dict, list, tuple, set)):
+            return json.dumps(x, default=str)
+        return x
+
+    for col in df.columns:
+        if df[col].map(lambda x: isinstance(x, (dict, list, tuple, set))).any():
+            df[col] = df[col].map(_jsonify)
+
+    try:
+        df.to_parquet(out_path, index=False)
+        logger.info(f"Saved all-prop universe: {out_path} ({len(df)} rows)")
+    except Exception as e:
+        fallback = out_path.with_suffix(".jsonl")
+        df.to_json(fallback, orient="records", lines=True)
+        logger.warning(f"Parquet save failed ({e}); wrote {fallback} instead")
+
+
 # ── Console summary ────────────────────────────────────────────────────────────
 
 def print_singles_summary(picks: list):
@@ -954,6 +985,7 @@ def main():
                         )(compute_pmf(q_preds, stat=target))),
                     })
 
+    save_all_props_snapshot([dict(x) for x in all_singles], target_date)
     # ── fg3m per-player gate ─────────────────────────────────────────
     import pandas as _pd
     try:

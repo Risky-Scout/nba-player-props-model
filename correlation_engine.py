@@ -35,7 +35,7 @@ STATS        = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 COMBO_STATS  = ["pra", "pr", "pa", "ra", "stocks"]
 ALL_TARGETS  = STATS + COMBO_STATS
 
-QUANTILES    = [0.10, 0.25, 0.50, 0.75, 0.90, 0.20, 0.80]
+QUANTILES = [0.10, 0.20, 0.25, 0.33, 0.40, 0.50, 0.60, 0.67, 0.75, 0.80, 0.90]
 
 # Shrinkage hyperparameter k: higher = more shrinkage toward global
 SHRINK_K_DEFAULT  = 100
