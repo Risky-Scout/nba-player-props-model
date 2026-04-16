@@ -1,10 +1,347 @@
 {
   "date": "2026-04-15",
-  "generated_at": "2026-04-15T14:44:43.677259",
+  "generated_at": "2026-04-16T02:01:28.045569",
   "version": "2026-03-17-v13",
   "min_ev": 0.025,
-  "total_sgps": 0,
-  "two_leg": 0,
-  "three_leg": 0,
-  "sgps": []
+  "total_sgps": 10,
+  "two_leg": 6,
+  "three_leg": 4,
+  "sgps": [
+    {
+      "legs": 3,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 1609,
+      "correlated_prob": 0.3601,
+      "naive_prob": 0.1893,
+      "ev": 5.1545,
+      "kelly_units": 0.08,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 400,
+          "model_prob": 0.534
+        },
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 5.5,
+          "odds": 178,
+          "model_prob": 0.6668
+        },
+        {
+          "player": "Paul George",
+          "player_id": 172,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 240,
+          "model_prob": 0.5316
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 898,
+      "correlated_prob": 0.4554,
+      "naive_prob": 0.1751,
+      "ev": 3.5445,
+      "kelly_units": 0.099,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 400,
+          "model_prob": 0.534
+        },
+        {
+          "player": "Paul George",
+          "player_id": 172,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 240,
+          "model_prob": 0.5316
+        },
+        {
+          "player": "Tyrese Maxey",
+          "player_id": 3547254,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 7.0,
+          "odds": 104,
+          "model_prob": 0.6167
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 860,
+      "correlated_prob": 0.4513,
+      "naive_prob": 0.2839,
+      "ev": 3.3321,
+      "kelly_units": 0.097,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 400,
+          "model_prob": 0.534
+        },
+        {
+          "player": "Paul George",
+          "player_id": 172,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 240,
+          "model_prob": 0.5316
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 640,
+      "correlated_prob": 0.5373,
+      "naive_prob": 0.2196,
+      "ev": 2.9763,
+      "kelly_units": 0.116,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 400,
+          "model_prob": 0.534
+        },
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 5.5,
+          "odds": 178,
+          "model_prob": 0.6668
+        },
+        {
+          "player": "Tyrese Maxey",
+          "player_id": 3547254,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 7.0,
+          "odds": 104,
+          "model_prob": 0.6167
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 612,
+      "correlated_prob": 0.5361,
+      "naive_prob": 0.3561,
+      "ev": 2.8167,
+      "kelly_units": 0.115,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 400,
+          "model_prob": 0.534
+        },
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 5.5,
+          "odds": 178,
+          "model_prob": 0.6668
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 316,
+      "correlated_prob": 0.6757,
+      "naive_prob": 0.3293,
+      "ev": 1.8107,
+      "kelly_units": 0.143,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 0.5,
+          "odds": 400,
+          "model_prob": 0.534
+        },
+        {
+          "player": "Tyrese Maxey",
+          "player_id": 3547254,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 7.0,
+          "odds": 104,
+          "model_prob": 0.6167
+        }
+      ]
+    },
+    {
+      "legs": 3,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 344,
+      "correlated_prob": 0.5281,
+      "naive_prob": 0.2186,
+      "ev": 1.3449,
+      "kelly_units": 0.098,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 5.5,
+          "odds": 178,
+          "model_prob": 0.6668
+        },
+        {
+          "player": "Paul George",
+          "player_id": 172,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 240,
+          "model_prob": 0.5316
+        },
+        {
+          "player": "Tyrese Maxey",
+          "player_id": 3547254,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 7.0,
+          "odds": 104,
+          "model_prob": 0.6167
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 327,
+      "correlated_prob": 0.525,
+      "naive_prob": 0.3545,
+      "ev": 1.2419,
+      "kelly_units": 0.095,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 5.5,
+          "odds": 178,
+          "model_prob": 0.6668
+        },
+        {
+          "player": "Paul George",
+          "player_id": 172,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 240,
+          "model_prob": 0.5316
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": 150,
+      "correlated_prob": 0.6672,
+      "naive_prob": 0.3278,
+      "ev": 0.6679,
+      "kelly_units": 0.111,
+      "leg_details": [
+        {
+          "player": "Paul George",
+          "player_id": 172,
+          "stat": "fg3m",
+          "side": "OVER",
+          "line": 1.5,
+          "odds": 240,
+          "model_prob": 0.5316
+        },
+        {
+          "player": "Tyrese Maxey",
+          "player_id": 3547254,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 7.0,
+          "odds": 104,
+          "model_prob": 0.6167
+        }
+      ]
+    },
+    {
+      "legs": 2,
+      "game": "Orlando Magic @ Philadelphia 76ers",
+      "game_id": 21681577,
+      "combined_odds": -117,
+      "correlated_prob": 0.7812,
+      "naive_prob": 0.4112,
+      "ev": 0.449,
+      "kelly_units": 0.131,
+      "leg_details": [
+        {
+          "player": "Paolo Banchero",
+          "player_id": 38017683,
+          "stat": "reb",
+          "side": "OVER",
+          "line": 5.5,
+          "odds": 178,
+          "model_prob": 0.6668
+        },
+        {
+          "player": "Tyrese Maxey",
+          "player_id": 3547254,
+          "stat": "ast",
+          "side": "UNDER",
+          "line": 7.0,
+          "odds": 104,
+          "model_prob": 0.6167
+        }
+      ]
+    }
+  ]
 }
