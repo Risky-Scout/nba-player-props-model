@@ -387,7 +387,17 @@ def load_models() -> tuple:
     else:
         logger.warning("  FG3M hurdle model not found — using quantile fallback")
 
-    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer
+    # Load live calibration table (built from 2534 rows — shrinks overconfident raw probs)
+    _live_cal_path = Path("model_cache") / "live_calibration_table.json"
+    live_cal_table = {}
+    try:
+        live_cal_table = json.load(open(_live_cal_path))
+        n = len([k for k in live_cal_table if not k.startswith('_')])
+        logger.info(f"  Live calibration table loaded: {n} entries")
+    except Exception as e:
+        logger.warning(f"  Live calibration table not found: {e}")
+
+    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer, live_cal_table
 
 
 # ── Quantile prediction ────────────────────────────────────────────────────────
@@ -529,7 +539,7 @@ def main():
     logger.info(f"Target date: {target_date}")
 
     logger.info("Loading models...")
-    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer = load_models()
+    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer, live_cal_table = load_models()
 
     # Load minutes bucket corrections (Phase 2 fix)
     global MINUTES_CORRECTIONS
@@ -819,10 +829,13 @@ def main():
                         cp = _safe_cal(platt_calibrators[stat_side_key], prob)
                         if cp is not None:
                             return cp, 'stat_side'
-                    if side_key.upper() in platt_calibrators:
-                        cp = _safe_cal(platt_calibrators[side_key.upper()], prob)
-                        if cp is not None:
-                            return cp, 'global_side'
+                    cal_key = f"{stat_key.upper()}_{side_key.upper()}"
+                    if cal_key in live_cal_table:
+                        entry = live_cal_table[cal_key]
+                        shrink = entry.get('recommended_prob_shrink', 1.0)
+                        offset = entry.get('recommended_prob_offset', 0.0)
+                        cp = float(np.clip(prob * shrink + offset, 0.01, 0.99))
+                        return cp, 'live_cal'
                     return prob, 'raw_none'
                 raw_over   = prob_over
                 raw_under  = prob_under
@@ -873,7 +886,7 @@ def main():
                     # Minimum Q50 projection filter (OVER only)
                     # Don't surface OVER if model projects player as non-contributor
                     # Catches bench players with high market lines but low real role
-                    _MIN_Q50 = {"pts": 12.0, "reb": 3.5, "ast": 2.5, "fg3m": 0.5}
+                    _MIN_Q50 = {"pts": 12.0, "reb": 3.5, "ast": 2.5, "fg3m": 0.5, "blk": 0.3, "stl": 0.3}
                     if side == "OVER" and q50 < _MIN_Q50.get(target, 0):
                         continue
 
