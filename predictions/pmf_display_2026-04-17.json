@@ -1,46 +1,52 @@
 {
   "date": "2026-04-17",
-  "generated_at": "2026-04-17T00:39:05.368495",
+  "generated_at": "2026-04-17T14:20:36.294949",
   "props": [
     {
-      "player_name": "Coby White",
+      "player_name": "Brandon Miller",
       "game": "Charlotte Hornets @ Orlando Magic",
       "stat": "fg3m",
       "stat_display": "Threes",
       "side": "UNDER",
-      "line": 1.5,
-      "model_prob": 0.7942,
-      "market_prob": 0.433,
-      "ev": 0.7472,
-      "edge": 0.338,
-      "fair_odds_over": 337,
-      "fair_odds_under": -337,
-      "pmf_median": 1,
-      "line_vs_median": 0.5,
+      "line": 3.0,
+      "model_prob": 0.7957,
+      "market_prob": 0.5146,
+      "ev": 0.846,
+      "edge": 0.1562,
+      "fair_odds_over": 204,
+      "fair_odds_under": -204,
+      "pmf_median": 3,
+      "line_vs_median": 0.0,
       "affiliate": {
-        "vendor": "draftkings",
-        "over_odds": -147,
-        "under_odds": 120,
-        "best_odds": 120
+        "vendor": "fanduel",
+        "over_odds": 146,
+        "under_odds": 132,
+        "best_odds": 132
       },
       "outcome_table": [
         {
-          "outcome": 0,
-          "probability": 0.226,
-          "fair_odds": 342,
-          "display_prob": "22.6%"
-        },
-        {
           "outcome": 1,
-          "probability": 0.545,
-          "fair_odds": -120,
-          "display_prob": "54.5%"
+          "probability": 0.1945,
+          "fair_odds": 414,
+          "display_prob": "19.4%"
         },
         {
           "outcome": 2,
-          "probability": 0.229,
-          "fair_odds": 337,
-          "display_prob": "22.9%"
+          "probability": 0.26,
+          "fair_odds": 285,
+          "display_prob": "26.0%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.3225,
+          "fair_odds": 210,
+          "display_prob": "32.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.223,
+          "fair_odds": 348,
+          "display_prob": "22.3%"
         }
       ]
     },
@@ -51,80 +57,200 @@
       "stat_display": "Threes",
       "side": "UNDER",
       "line": 2.5,
-      "model_prob": 0.7951,
-      "market_prob": 0.4491,
-      "ev": 0.7254,
-      "edge": 0.3549,
-      "fair_odds_over": 410,
-      "fair_odds_under": -410,
+      "model_prob": 0.7957,
+      "market_prob": 0.4424,
+      "ev": 0.7744,
+      "edge": 0.1946,
+      "fair_odds_over": 175,
+      "fair_odds_under": -175,
       "pmf_median": 2,
       "line_vs_median": 0.5,
       "affiliate": {
-        "vendor": "fanatics",
+        "vendor": "betway",
         "over_odds": -130,
-        "under_odds": 117,
-        "best_odds": 117
+        "under_odds": 123,
+        "best_odds": 123
       },
       "outcome_table": [
         {
           "outcome": 1,
-          "probability": 0.28,
-          "fair_odds": 257,
-          "display_prob": "28.0%"
+          "probability": 0.282,
+          "fair_odds": 255,
+          "display_prob": "28.2%"
         },
         {
           "outcome": 2,
-          "probability": 0.524,
-          "fair_odds": -110,
-          "display_prob": "52.4%"
+          "probability": 0.355,
+          "fair_odds": 182,
+          "display_prob": "35.5%"
         },
         {
           "outcome": 3,
-          "probability": 0.196,
-          "fair_odds": 410,
-          "display_prob": "19.6%"
+          "probability": 0.23,
+          "fair_odds": 335,
+          "display_prob": "23.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.133,
+          "fair_odds": 652,
+          "display_prob": "13.3%"
         }
       ]
     },
     {
-      "player_name": "Miles Bridges",
-      "game": "Charlotte Hornets @ Orlando Magic",
-      "stat": "fg3m",
-      "stat_display": "Threes",
-      "side": "UNDER",
-      "line": 1.5,
-      "model_prob": 0.7944,
-      "market_prob": 0.5208,
-      "ev": 0.462,
-      "edge": 0.0747,
-      "fair_odds_over": 147,
-      "fair_odds_under": -147,
-      "pmf_median": 1,
-      "line_vs_median": 0.5,
+      "player_name": "Brandin Podziemski",
+      "game": "Golden State Warriors @ Phoenix Suns",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 14.5,
+      "model_prob": 0.8319,
+      "market_prob": 0.4852,
+      "ev": 0.6637,
+      "edge": 0.1718,
+      "fair_odds_over": -192,
+      "fair_odds_under": 192,
+      "pmf_median": 17,
+      "line_vs_median": -2.5,
       "affiliate": {
-        "vendor": "fanduel",
+        "vendor": "betway",
         "over_odds": 100,
-        "under_odds": -119,
-        "best_odds": -119
+        "under_odds": -113,
+        "best_odds": 100
       },
       "outcome_table": [
         {
-          "outcome": 0,
-          "probability": 0.2125,
-          "fair_odds": 371,
-          "display_prob": "21.2%"
+          "outcome": 11,
+          "probability": 0.1425,
+          "fair_odds": 602,
+          "display_prob": "14.2%"
         },
         {
-          "outcome": 1,
-          "probability": 0.383,
-          "fair_odds": 161,
-          "display_prob": "38.3%"
+          "outcome": 12,
+          "probability": 0.0435,
+          "fair_odds": 2199,
+          "display_prob": "4.3%"
         },
+        {
+          "outcome": 13,
+          "probability": 0.0855,
+          "fair_odds": 1070,
+          "display_prob": "8.6%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0715,
+          "fair_odds": 1299,
+          "display_prob": "7.1%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0555,
+          "fair_odds": 1702,
+          "display_prob": "5.5%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0885,
+          "fair_odds": 1030,
+          "display_prob": "8.8%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.074,
+          "fair_odds": 1251,
+          "display_prob": "7.4%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0815,
+          "fair_odds": 1127,
+          "display_prob": "8.2%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0615,
+          "fair_odds": 1526,
+          "display_prob": "6.2%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.049,
+          "fair_odds": 1941,
+          "display_prob": "4.9%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.055,
+          "fair_odds": 1718,
+          "display_prob": "5.5%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.039,
+          "fair_odds": 2464,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.0395,
+          "fair_odds": 2432,
+          "display_prob": "4.0%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.1135,
+          "fair_odds": 781,
+          "display_prob": "11.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "De'Anthony Melton",
+      "game": "Golden State Warriors @ Phoenix Suns",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 2.5,
+      "model_prob": 0.7169,
+      "market_prob": 0.45,
+      "ev": 0.5771,
+      "edge": 0.315,
+      "fair_odds_over": -326,
+      "fair_odds_under": 326,
+      "pmf_median": 4,
+      "line_vs_median": -1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 120,
+        "under_odds": -125,
+        "best_odds": 120
+      },
+      "outcome_table": [
         {
           "outcome": 2,
-          "probability": 0.4045,
-          "fair_odds": 147,
-          "display_prob": "40.5%"
+          "probability": 0.235,
+          "fair_odds": 326,
+          "display_prob": "23.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.257,
+          "fair_odds": 289,
+          "display_prob": "25.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.276,
+          "fair_odds": 262,
+          "display_prob": "27.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.232,
+          "fair_odds": 331,
+          "display_prob": "23.2%"
         }
       ]
     },
@@ -136,127 +262,49 @@
       "side": "UNDER",
       "line": 4.5,
       "model_prob": 0.7957,
-      "market_prob": 0.5499,
-      "ev": 0.4588,
-      "edge": 0.2481,
-      "fair_odds_over": 395,
-      "fair_odds_under": -395,
-      "pmf_median": 3,
-      "line_vs_median": 1.5,
+      "market_prob": 0.5399,
+      "ev": 0.5191,
+      "edge": 0.0611,
+      "fair_odds_over": 151,
+      "fair_odds_under": -151,
+      "pmf_median": 4,
+      "line_vs_median": 0.5,
       "affiliate": {
         "vendor": "fanduel",
         "over_odds": 124,
-        "under_odds": -120,
-        "best_odds": -120
+        "under_odds": -110,
+        "best_odds": -110
       },
       "outcome_table": [
         {
-          "outcome": 1,
-          "probability": 0.1255,
-          "fair_odds": 697,
-          "display_prob": "12.6%"
-        },
-        {
           "outcome": 2,
-          "probability": 0.19,
-          "fair_odds": 426,
-          "display_prob": "19.0%"
+          "probability": 0.164,
+          "fair_odds": 510,
+          "display_prob": "16.4%"
         },
         {
           "outcome": 3,
-          "probability": 0.2515,
-          "fair_odds": 298,
-          "display_prob": "25.1%"
+          "probability": 0.244,
+          "fair_odds": 310,
+          "display_prob": "24.4%"
         },
         {
           "outcome": 4,
-          "probability": 0.231,
-          "fair_odds": 333,
-          "display_prob": "23.1%"
+          "probability": 0.193,
+          "fair_odds": 418,
+          "display_prob": "19.3%"
         },
         {
           "outcome": 5,
-          "probability": 0.202,
-          "fair_odds": 395,
-          "display_prob": "20.2%"
-        }
-      ]
-    },
-    {
-      "player_name": "Coby White",
-      "game": "Charlotte Hornets @ Orlando Magic",
-      "stat": "pts",
-      "stat_display": "Points",
-      "side": "OVER",
-      "line": 13.5,
-      "model_prob": 0.7764,
-      "market_prob": 0.5169,
-      "ev": 0.4515,
-      "edge": -0.0494,
-      "fair_odds_over": 114,
-      "fair_odds_under": -114,
-      "pmf_median": 13,
-      "line_vs_median": 0.5,
-      "affiliate": {
-        "vendor": "fanatics",
-        "over_odds": -115,
-        "under_odds": 100,
-        "best_odds": -115
-      },
-      "outcome_table": [
-        {
-          "outcome": 8,
-          "probability": 0.2025,
-          "fair_odds": 394,
-          "display_prob": "20.2%"
+          "probability": 0.2075,
+          "fair_odds": 382,
+          "display_prob": "20.8%"
         },
         {
-          "outcome": 9,
-          "probability": 0.052,
-          "fair_odds": 1823,
-          "display_prob": "5.2%"
-        },
-        {
-          "outcome": 10,
-          "probability": 0.029,
-          "fair_odds": 3348,
-          "display_prob": "2.9%"
-        },
-        {
-          "outcome": 11,
-          "probability": 0.029,
-          "fair_odds": 3348,
-          "display_prob": "2.9%"
-        },
-        {
-          "outcome": 12,
-          "probability": 0.0465,
-          "fair_odds": 2051,
-          "display_prob": "4.7%"
-        },
-        {
-          "outcome": 13,
-          "probability": 0.1735,
-          "fair_odds": 476,
-          "display_prob": "17.3%"
-        },
-        {
-          "outcome": 14,
-          "probability": 0.0825,
-          "fair_odds": 1112,
-          "display_prob": "8.2%"
-        },
-        {
-          "outcome": 15,
-          "probability": 0.2255,
-          "fair_odds": 343,
-          "display_prob": "22.6%"
-        },
-        {
-          "outcome": 16,
-          "probability": 0.1595,
-          "fair_odds": 527,
-          "display_prob": "16.0%"
+          "outcome": 6,
+          "probability": 0.1915,
+          "fair_odds": 422,
+          "display_prob": "19.1%"
         }
       ]
     },
@@ -266,285 +314,225 @@
       "stat": "pts",
       "stat_display": "Points",
       "side": "OVER",
-      "line": 16.5,
-      "model_prob": 0.7671,
-      "market_prob": 0.5075,
-      "ev": 0.44,
-      "edge": 0.0485,
-      "fair_odds_over": -125,
-      "fair_odds_under": 125,
-      "pmf_median": 17,
+      "line": 17.5,
+      "model_prob": 0.7454,
+      "market_prob": 0.4827,
+      "ev": 0.5057,
+      "edge": 0.0433,
+      "fair_odds_over": -111,
+      "fair_odds_under": 111,
+      "pmf_median": 18,
       "line_vs_median": -0.5,
       "affiliate": {
-        "vendor": "fanduel",
-        "over_odds": -114,
-        "under_odds": -107,
-        "best_odds": -114
+        "vendor": "betparx",
+        "over_odds": 102,
+        "under_odds": -113,
+        "best_odds": 102
       },
       "outcome_table": [
         {
           "outcome": 11,
-          "probability": 0.128,
-          "fair_odds": 681,
-          "display_prob": "12.8%"
+          "probability": 0.1075,
+          "fair_odds": 830,
+          "display_prob": "10.8%"
         },
         {
           "outcome": 12,
-          "probability": 0.047,
-          "fair_odds": 2028,
-          "display_prob": "4.7%"
-        },
-        {
-          "outcome": 13,
-          "probability": 0.052,
-          "fair_odds": 1823,
-          "display_prob": "5.2%"
-        },
-        {
-          "outcome": 14,
-          "probability": 0.0615,
-          "fair_odds": 1526,
-          "display_prob": "6.2%"
-        },
-        {
-          "outcome": 15,
-          "probability": 0.072,
-          "fair_odds": 1289,
-          "display_prob": "7.2%"
-        },
-        {
-          "outcome": 16,
-          "probability": 0.0835,
-          "fair_odds": 1098,
-          "display_prob": "8.3%"
-        },
-        {
-          "outcome": 17,
-          "probability": 0.075,
-          "fair_odds": 1233,
-          "display_prob": "7.5%"
-        },
-        {
-          "outcome": 18,
-          "probability": 0.0645,
-          "fair_odds": 1450,
-          "display_prob": "6.5%"
-        },
-        {
-          "outcome": 19,
-          "probability": 0.0605,
-          "fair_odds": 1553,
-          "display_prob": "6.0%"
-        },
-        {
-          "outcome": 20,
-          "probability": 0.0505,
-          "fair_odds": 1880,
-          "display_prob": "5.1%"
-        },
-        {
-          "outcome": 21,
-          "probability": 0.0435,
-          "fair_odds": 2199,
-          "display_prob": "4.3%"
-        },
-        {
-          "outcome": 22,
-          "probability": 0.0405,
-          "fair_odds": 2369,
-          "display_prob": "4.0%"
-        },
-        {
-          "outcome": 23,
-          "probability": 0.0375,
-          "fair_odds": 2567,
-          "display_prob": "3.8%"
-        },
-        {
-          "outcome": 24,
-          "probability": 0.0355,
-          "fair_odds": 2717,
-          "display_prob": "3.5%"
-        },
-        {
-          "outcome": 25,
-          "probability": 0.036,
-          "fair_odds": 2678,
-          "display_prob": "3.6%"
-        },
-        {
-          "outcome": 26,
-          "probability": 0.1125,
-          "fair_odds": 789,
-          "display_prob": "11.2%"
-        }
-      ]
-    },
-    {
-      "player_name": "De'Anthony Melton",
-      "game": "Golden State Warriors @ Phoenix Suns",
-      "stat": "ast",
-      "stat_display": "Assists",
-      "side": "OVER",
-      "line": 2.5,
-      "model_prob": 0.6477,
-      "market_prob": 0.4478,
-      "ev": 0.4379,
-      "edge": 0.1797,
-      "fair_odds_over": -168,
-      "fair_odds_under": 168,
-      "pmf_median": 3,
-      "line_vs_median": -0.5,
-      "affiliate": {
-        "vendor": "fanduel",
-        "over_odds": 122,
-        "under_odds": -125,
-        "best_odds": 122
-      },
-      "outcome_table": [
-        {
-          "outcome": 1,
-          "probability": 0.1375,
-          "fair_odds": 627,
-          "display_prob": "13.8%"
-        },
-        {
-          "outcome": 2,
-          "probability": 0.235,
-          "fair_odds": 326,
-          "display_prob": "23.5%"
-        },
-        {
-          "outcome": 3,
-          "probability": 0.331,
-          "fair_odds": 202,
-          "display_prob": "33.1%"
-        },
-        {
-          "outcome": 4,
-          "probability": 0.1715,
-          "fair_odds": 483,
-          "display_prob": "17.2%"
-        },
-        {
-          "outcome": 5,
-          "probability": 0.125,
-          "fair_odds": 700,
-          "display_prob": "12.5%"
-        }
-      ]
-    },
-    {
-      "player_name": "Kristaps Porzingis",
-      "game": "Golden State Warriors @ Phoenix Suns",
-      "stat": "pts",
-      "stat_display": "Points",
-      "side": "OVER",
-      "line": 17.5,
-      "model_prob": 0.6878,
-      "market_prob": 0.5,
-      "ev": 0.3132,
-      "edge": -0.002,
-      "fair_odds_over": 101,
-      "fair_odds_under": -101,
-      "pmf_median": 17,
-      "line_vs_median": 0.5,
-      "affiliate": {
-        "vendor": "draftkings",
-        "over_odds": -110,
-        "under_odds": -110,
-        "best_odds": -110
-      },
-      "outcome_table": [
-        {
-          "outcome": 10,
-          "probability": 0.1285,
-          "fair_odds": 678,
-          "display_prob": "12.8%"
-        },
-        {
-          "outcome": 11,
           "probability": 0.0425,
           "fair_odds": 2253,
           "display_prob": "4.2%"
         },
         {
-          "outcome": 12,
-          "probability": 0.043,
-          "fair_odds": 2226,
-          "display_prob": "4.3%"
-        },
-        {
           "outcome": 13,
-          "probability": 0.046,
-          "fair_odds": 2074,
-          "display_prob": "4.6%"
+          "probability": 0.0425,
+          "fair_odds": 2253,
+          "display_prob": "4.2%"
         },
         {
           "outcome": 14,
-          "probability": 0.0455,
-          "fair_odds": 2098,
-          "display_prob": "4.5%"
+          "probability": 0.0345,
+          "fair_odds": 2799,
+          "display_prob": "3.5%"
         },
         {
           "outcome": 15,
-          "probability": 0.0685,
-          "fair_odds": 1360,
-          "display_prob": "6.9%"
+          "probability": 0.095,
+          "fair_odds": 953,
+          "display_prob": "9.5%"
         },
         {
           "outcome": 16,
-          "probability": 0.0685,
-          "fair_odds": 1360,
-          "display_prob": "6.9%"
+          "probability": 0.07,
+          "fair_odds": 1329,
+          "display_prob": "7.0%"
         },
         {
           "outcome": 17,
+          "probability": 0.082,
+          "fair_odds": 1120,
+          "display_prob": "8.2%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.059,
+          "fair_odds": 1595,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0475,
+          "fair_odds": 2005,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 20,
           "probability": 0.0595,
           "fair_odds": 1581,
           "display_prob": "5.9%"
         },
         {
-          "outcome": 18,
-          "probability": 0.1,
-          "fair_odds": 900,
-          "display_prob": "10.0%"
-        },
-        {
-          "outcome": 19,
-          "probability": 0.0895,
-          "fair_odds": 1017,
-          "display_prob": "8.9%"
-        },
-        {
-          "outcome": 20,
-          "probability": 0.111,
-          "fair_odds": 801,
-          "display_prob": "11.1%"
-        },
-        {
           "outcome": 21,
-          "probability": 0.0315,
-          "fair_odds": 3075,
-          "display_prob": "3.1%"
+          "probability": 0.0525,
+          "fair_odds": 1805,
+          "display_prob": "5.2%"
         },
         {
           "outcome": 22,
-          "probability": 0.032,
-          "fair_odds": 3025,
-          "display_prob": "3.2%"
+          "probability": 0.04,
+          "fair_odds": 2400,
+          "display_prob": "4.0%"
         },
         {
           "outcome": 23,
-          "probability": 0.0315,
-          "fair_odds": 3075,
-          "display_prob": "3.1%"
+          "probability": 0.05,
+          "fair_odds": 1900,
+          "display_prob": "5.0%"
         },
         {
           "outcome": 24,
-          "probability": 0.1025,
-          "fair_odds": 876,
+          "probability": 0.0485,
+          "fair_odds": 1962,
+          "display_prob": "4.9%"
+        },
+        {
+          "outcome": 25,
+          "probability": 0.0445,
+          "fair_odds": 2147,
+          "display_prob": "4.5%"
+        },
+        {
+          "outcome": 26,
+          "probability": 0.1245,
+          "fair_odds": 703,
+          "display_prob": "12.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "LaMelo Ball",
+      "game": "Charlotte Hornets @ Orlando Magic",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 4.5,
+      "model_prob": 0.7956,
+      "market_prob": 0.5765,
+      "ev": 0.3443,
+      "edge": 0.197,
+      "fair_odds_over": 342,
+      "fair_odds_under": -342,
+      "pmf_median": 4,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 130,
+        "under_odds": -145,
+        "best_odds": -145
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.27,
+          "fair_odds": 270,
+          "display_prob": "27.0%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.2085,
+          "fair_odds": 380,
+          "display_prob": "20.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.295,
+          "fair_odds": 239,
+          "display_prob": "29.5%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.2265,
+          "fair_odds": 342,
+          "display_prob": "22.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Paolo Banchero",
+      "game": "Charlotte Hornets @ Orlando Magic",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 4.5,
+      "model_prob": 0.6687,
+      "market_prob": 0.4976,
+      "ev": 0.318,
+      "edge": 0.2209,
+      "fair_odds_over": -255,
+      "fair_odds_under": 255,
+      "pmf_median": 6,
+      "line_vs_median": -1.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -103,
+        "under_odds": -105,
+        "best_odds": -103
+      },
+      "outcome_table": [
+        {
+          "outcome": 3,
+          "probability": 0.1015,
+          "fair_odds": 885,
           "display_prob": "10.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.18,
+          "fair_odds": 456,
+          "display_prob": "18.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1505,
+          "fair_odds": 564,
+          "display_prob": "15.0%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1195,
+          "fair_odds": 737,
+          "display_prob": "11.9%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.1875,
+          "fair_odds": 433,
+          "display_prob": "18.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.261,
+          "fair_odds": 283,
+          "display_prob": "26.1%"
         }
       ]
     }
