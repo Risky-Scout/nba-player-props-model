@@ -1,4 +1,4 @@
 auc_cal_oof,auc_raw,brier_cal_oof,brier_raw,ece_cal_oof,ece_raw,intercept_cal,intercept_raw,key,logloss_cal_oof,logloss_raw,n_oof,n_total,promoted,scope,slope_cal,slope_raw
-0.5,0.5926,0.2694,0.19205,0.0671,0.18171,1.3675,0.9986,REB_UNDER,0.76844,0.57406,12,23,False,stat_side,0.2995,0.1567
-,0.5833,,0.25772,,0.12092,,0.2147,global_OVER,,0.71526,4,14,True,global,,0.0966
-0.3747,0.4476,0.31021,0.25723,0.1806,0.07576,0.2799,0.499,global_UNDER,1.04673,0.71133,40,51,True,global,-0.0419,-0.3118
+0.3667,0.4167,0.29872,0.25381,0.17565,0.07669,0.5164,0.8155,REB_UNDER,1.25605,0.71365,16,29,False,stat_side,-0.0148,-0.3831
+0.3417,0.5,0.32943,0.24648,0.22813,0.03781,0.5689,0.5195,global_OVER,1.70564,0.69154,16,26,True,global,-0.0411,-0.0112
+0.3707,0.4085,0.33697,0.28133,0.10357,0.10542,0.0924,0.6214,global_UNDER,1.33873,0.76582,55,68,True,global,-0.1767,-0.7498

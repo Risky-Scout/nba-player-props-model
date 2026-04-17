@@ -1,19 +1,37 @@
 {
   "fallback": {
-    "pts": 1.8000000000000007,
-    "ast": 1.0,
-    "reb": -0.5600000000000005,
-    "fg3m": -0.03999999999999998
+    "pts": 1.0200000000000005,
+    "ast": 0.02000000000000024,
+    "reb": -0.7899999999999998,
+    "fg3m": -0.6
   },
   "meta": {
-    "reb": {
-      "n": 35,
-      "cv_mae_mean": 2.278287958991639,
-      "cv_mae_std": 0.44107977603049736,
-      "target_median": -0.5600000000000005,
-      "target_mean": 0.3042857142857143,
-      "fallback_correction": -0.5600000000000005,
+    "pts": {
+      "n": 32,
+      "cv_mae_mean": 8.896470064537752,
+      "cv_mae_std": 3.258806296685762,
+      "target_median": 1.0200000000000005,
+      "target_mean": 1.4412500000000001,
+      "fallback_correction": 1.0200000000000005,
       "model_type": "Ridge"
+    },
+    "ast": {
+      "n": 30,
+      "cv_mae_mean": 2.3770253896254965,
+      "cv_mae_std": 0.5609986289774631,
+      "target_median": 0.02000000000000024,
+      "target_mean": 0.12099999999999995,
+      "fallback_correction": 0.02000000000000024,
+      "model_type": "Ridge"
+    },
+    "reb": {
+      "n": 52,
+      "cv_mae_mean": 3.0770704391499746,
+      "cv_mae_std": 0.547433402044122,
+      "target_median": -0.7899999999999998,
+      "target_mean": -0.5673076923076924,
+      "fallback_correction": -0.7899999999999998,
+      "model_type": "GradientBoostingRegressor"
     }
   },
   "correctable_stats": [
