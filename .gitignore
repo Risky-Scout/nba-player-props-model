@@ -52,3 +52,5 @@ bdl_client_new_functions.py
 model_cache/feature_analysis_report.json
 data/training_table.parquet
 data/training_table.parquet
+.claude/
+CLAUDE.md
