@@ -49,7 +49,7 @@ def _get_api_key() -> str:
     key = os.environ.get("BDL_API_KEY", "").strip()
     if not key:
         raise EnvironmentError(
-            "\n[DARKO] FATAL: BDL_API_KEY not set.\n"
+            "\n[nba_props_model] FATAL: BDL_API_KEY not set.\n"
             "  export BDL_API_KEY=your_key_here\n"
         )
     return key
@@ -433,7 +433,7 @@ def get_advanced_stats_v2(
 ) -> list[dict]:
     """
     GET /nba/v2/advanced_stats
-    Per-game advanced stats. Key fields for DARKO:
+    Per-game advanced stats. Key fields used downstream:
       usage_percentage     — primary usage signal for PTS/AST projection
       pace, possessions    — game script / tempo
       pace_per_40          — pace normalized
@@ -700,9 +700,8 @@ def enrich_game_context_with_team_ids(
 
         opp_team_id = ctx['away_team_id'] if is_home else ctx['home_team_id']
 
-    Called from:
-        predict_darko_v4.py  — after build_game_context_map()
-        train_v12.py         — after build_game_context_map()
+    Called from the training and prediction pipelines after
+    build_game_context_map().
 
     Safe degradation: missing game IDs or missing opp_env entries are silently
     skipped — no KeyErrors, no partial failures.
@@ -775,17 +774,17 @@ def load_line_movement_snapshot(target_date: str) -> dict:
     join on home_team+away_team label, and return a dict mapping
     game label → {total_move, spread_move, opening_total, closing_total, ...}
 
-    Called by predict_darko_v4.py and train_v12.py to enrich game_context_map
-    with high-quality sharp money signals.
+    Called by the training and prediction pipelines to enrich game_context_map
+    with sharp-money signals.
 
     Key     : "{away_team} @ {home_team}"  (matches build_game_context_map label)
     Returns : {} if either snapshot file is missing or unreadable (safe degradation)
 
     Data flow:
-      snapshot_opening_lines.py (9 AM ET) → data/opening_lines_{date}.json
-      snapshot_closing_lines.py (6 PM ET) → graded/closing_lines_{date}.json
-      [next day 8 AM] predict_darko_v4.py loads yesterday's both snapshots
-                      as "prior day sharp action" signal AND today's opening
+      scripts/snapshot_opening_lines.py (9 AM ET) -> data/opening_lines_{date}.json
+      scripts/snapshot_closing_lines.py (6 PM ET) -> artifacts/graded/closing_lines_{date}.json
+      next day 8 AM predict loads yesterday's both snapshots
+                    as prior-day sharp-action signal AND today's opening
 
     Note on naming:
       The Odds API uses its own event_id, not BDL game_id.
@@ -793,10 +792,7 @@ def load_line_movement_snapshot(target_date: str) -> dict:
       across both snapshot files and the BDL game context map.
     """
     import json, re
-    from pathlib import Path
-
-    DATA_DIR   = Path("data")
-    GRADED_DIR = Path("graded")
+    from nba_props_model.paths import DATA_DIR, GRADED_DIR
 
     opening_path = DATA_DIR   / f"opening_lines_{target_date}.json"
     closing_path = GRADED_DIR / f"closing_lines_{target_date}.json"

@@ -1,18 +1,27 @@
+"""Capture closing prop lines (6 PM ET) for CLV computation.
+
+Saves to artifacts/graded/closing_lines_{YYYY-MM-DD}.json.
 """
-snapshot_closing_lines.py — Capture closing prop lines (6 PM ET)
-Saves to graded/closing_lines_{YYYY-MM-DD}.json for CLV computation.
-"""
-import os, json, requests
+import json
+import os
+import sys
 from datetime import datetime, timezone
+from pathlib import Path
+
+import requests
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+from nba_props_model.paths import GRADED_DIR
 
 ODDS_API_KEY = os.environ.get("ODDS_API_KEY", "")
 DATE = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-OUT  = f"graded/closing_lines_{DATE}.json"
+OUT = GRADED_DIR / f"closing_lines_{DATE}.json"
 
 MARKETS = [
-    "player_points","player_rebounds","player_assists",
-    "player_threes","player_steals","player_blocks",
+    "player_points", "player_rebounds", "player_assists",
+    "player_threes", "player_steals", "player_blocks",
 ]
+
 
 def fetch_events():
     url = f"https://api.the-odds-api.com/v4/sports/basketball_nba/events?apiKey={ODDS_API_KEY}"
@@ -21,6 +30,7 @@ def fetch_events():
         print(f"Events fetch failed: {r.status_code}")
         return []
     return r.json()
+
 
 def fetch_props(event_id):
     url = (
@@ -33,6 +43,7 @@ def fetch_props(event_id):
         return None
     return r.json()
 
+
 def main():
     if not ODDS_API_KEY:
         print("No ODDS_API_KEY — skipping snapshot")
@@ -44,10 +55,10 @@ def main():
     snapshot = {"date": DATE, "captured_at": datetime.now(timezone.utc).isoformat(), "games": []}
 
     for event in events:
-        eid  = event["id"]
-        home = event.get("home_team","")
-        away = event.get("away_team","")
-        time = event.get("commence_time","")
+        eid = event["id"]
+        home = event.get("home_team", "")
+        away = event.get("away_team", "")
+        time = event.get("commence_time", "")
 
         props = fetch_props(eid)
         if not props:
@@ -63,10 +74,10 @@ def main():
         snapshot["games"].append(game)
         print(f"  {away} @ {home}: {len(game['bookmakers'])} books")
 
-    os.makedirs("graded", exist_ok=True)
     with open(OUT, "w") as f:
         json.dump(snapshot, f)
     print(f"Saved {OUT} ({len(snapshot['games'])} games)")
+
 
 if __name__ == "__main__":
     main()

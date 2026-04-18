@@ -1,8 +1,9 @@
 """
-minutes_model.py — Standalone Minutes Prediction Model
-Loads pre-trained quantile models from model_cache/minutes_q*.pkl
+NBA Props Model — standalone minutes prediction model.
 
-v2 — Added features (both training + inference):
+Loads pre-trained quantile models from artifacts/models/minutes_q*.pkl.
+
+Features used in both training and inference:
     p_active                : P(player played > 0 min) over last 20 games
     starter_prob            : P(min >= 28) over last 15 games
     p_20plus / p_28plus / p_34plus : empirical minute-threshold hit rates
@@ -10,13 +11,19 @@ v2 — Added features (both training + inference):
     bench_fragility_score   : coefficient of variation over last 20 games
     return_restriction_score: 1 if last game was unusually short after rest
     teammate_absence_lift   : extra min this player averages when top teammate sits
+
+This module remains a point-interval quantile model today. Phase 3 of the
+rebuild replaces it with a state-aware probabilistic minutes distribution.
 """
 import logging
-import numpy as np
-import pandas as pd
-import joblib
 from pathlib import Path
 from typing import Optional
+
+import joblib
+import numpy as np
+import pandas as pd
+
+from nba_props_model.paths import MODEL_DIR
 
 logger = logging.getLogger(__name__)
 _CACHE: dict = {}
@@ -34,12 +41,11 @@ def _load_models() -> None:
     global _CACHE, _FEATURES
     if _CACHE:
         return
-    cache_dir = Path("model_cache")
     for q in [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90]:
-        p = cache_dir / f"minutes_q{q}.pkl"
+        p = MODEL_DIR / f"minutes_q{q}.pkl"
         if p.exists():
             _CACHE[q] = joblib.load(p)
-    fp = cache_dir / "minutes_features.pkl"
+    fp = MODEL_DIR / "minutes_features.pkl"
     if fp.exists():
         _FEATURES = joblib.load(fp)
 
@@ -350,9 +356,7 @@ def train_minutes_model(stats_df: pd.DataFrame, odds_df) -> dict:
                 f"train={len(X_tr)}  holdout={len(X_ho)}")
     logger.info(f"  Feature list: {feat_cols}")
 
-    cache_dir = Path("model_cache")
-    cache_dir.mkdir(exist_ok=True)
-    joblib.dump(feat_cols, cache_dir / "minutes_features.pkl")
+    joblib.dump(feat_cols, MODEL_DIR / "minutes_features.pkl")
 
     cal_errors = []
     for q in [10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90]:
@@ -365,7 +369,7 @@ def train_minutes_model(stats_df: pd.DataFrame, odds_df) -> dict:
             bagging_freq=1, verbosity=-1, random_state=42,
         )
         m.fit(X_tr, y_tr)
-        joblib.dump(m, cache_dir / f"minutes_q{q}.pkl")
+        joblib.dump(m, MODEL_DIR /f"minutes_q{q}.pkl")
         if len(X_ho) > 0:
             emp    = float(np.mean(y_ho.values <= m.predict(X_ho)))
             err    = abs(emp - alpha)
@@ -375,11 +379,11 @@ def train_minutes_model(stats_df: pd.DataFrame, odds_df) -> dict:
 
     mae = 0.0
     if len(X_ho) > 0:
-        q50 = joblib.load(cache_dir / "minutes_q50.pkl")
+        q50 = joblib.load(MODEL_DIR /"minutes_q50.pkl")
         mae = float(np.mean(np.abs(y_ho.values - q50.predict(X_ho))))
 
     # Feature importance
-    fi_m = joblib.load(cache_dir / "minutes_q50.pkl")
+    fi_m = joblib.load(MODEL_DIR /"minutes_q50.pkl")
     fi   = dict(zip(feat_cols, fi_m.feature_importances_))
     fi_sorted = sorted(fi.items(), key=lambda x: -x[1])
     logger.info("  Top-10 feature importances:")
@@ -400,7 +404,7 @@ def train_minutes_model(stats_df: pd.DataFrame, odds_df) -> dict:
         "n_features":   len(feat_cols),
     }
     import json
-    with open(cache_dir / "minutes_training_meta.json", "w") as f:
+    with open(MODEL_DIR /"minutes_training_meta.json", "w") as f:
         json.dump(meta, f, indent=2)
 
     global _CACHE, _FEATURES

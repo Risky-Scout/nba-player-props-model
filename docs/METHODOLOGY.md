@@ -342,9 +342,9 @@ This is a deliberate architectural choice. A model trained on odds data learns t
 This system deliberately maintains two separate calibration tracks. They are not in conflict — they serve different purposes.
 
 ### Track 1: Pregame Platt Calibration
-**Scripts:** `calibrate_stat_side.py`, `calibrate_models.py`
-**Artifacts:** `model_cache/platt_STAT_SIDE.pkl`, `model_cache/platt_OVER.pkl`, `model_cache/platt_UNDER.pkl`
-**Used by:** `predict_darko_v4.py` (pregame predictions only)
+**Scripts:** `scripts/calibrate.py`
+**Artifacts:** `artifacts/models/platt_STAT_SIDE.pkl`, `artifacts/models/platt_over.pkl`, `artifacts/models/platt_under.pkl`
+**Used by:** `scripts/predict.py` (pregame predictions only)
 
 Platt calibrators (logistic regression on raw model probabilities) are fit per stat×side using walk-forward out-of-fold (OOF) splits — train on past, evaluate on future. Final calibrators are fit on all available data for deployment. OOF ECE is reported before saving; gate threshold is ECE < 0.05.
 

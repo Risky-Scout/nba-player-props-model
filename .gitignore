@@ -8,18 +8,6 @@ venv/
 dist/
 build/
 
-# Old cache directories (all deleted)
-data_cache/
-data_cache_async/
-data_cache_gen3/
-player_cache/
-opponent_cache/
-ngboost_models_gen3/
-models/
-
-# Parquet data files (committed only after initial training)
-# model_cache/ and data/ are tracked intentionally — DO NOT add here
-
 # OS
 .DS_Store
 Thumbs.db
@@ -27,30 +15,13 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Local-only artifacts
 config.php
 *.bak
-feature_engineering_v1*.py
-feature_engineering_v17*.py
-feature_engineering_v18*.py
-get_feature_cols_replacement.py
-patch_marketmaker_workbooks_WORKING.py
-train_v12_patch.py
-balldontlie.gs
-bdl_api_feature_blueprint.py
-bdl_client_new_functions.py
-model_cache/feature_analysis_report.json
-*.bak
-feature_engineering_v1*.py
-feature_engineering_v17*.py
-feature_engineering_v18*.py
-get_feature_cols_replacement.py
-patch_marketmaker_workbooks_WORKING.py
-train_v12_patch.py
-balldontlie.gs
-bdl_api_feature_blueprint.py
-bdl_client_new_functions.py
-model_cache/feature_analysis_report.json
 data/training_table.parquet
-data/training_table.parquet
+artifacts/models/feature_analysis_report.json
+
+# Claude Code
 .claude/
 CLAUDE.md

@@ -1,25 +1,21 @@
 #!/usr/bin/env python3
 """
-calibrate_stat_side.py — Stat×Side Platt Calibration with Walk-Forward OOF
-============================================================================
-Replaces in-sample fitting with true time-ordered OOF calibration.
+NBA Props Model — stat x side Platt calibration with walk-forward OOF.
 
 Architecture:
-  1. Load all graded rows sorted by date (temporal ordering)
-  2. For each stat×side: TimeSeriesSplit(n_splits=5) walk-forward OOF
-  3. Report OOF metrics (Brier, LogLoss, AUC, slope, intercept)
-  4. Promote calibrator only if hard gate passes
-  5. Fit final calibrator on ALL data for deployment
-  6. Save .pkl + calibration_manifest.json + calibration_report_oof.csv
+  1. Load all graded rows sorted by date (temporal ordering).
+  2. For each stat x side: TimeSeriesSplit(n_splits=5) walk-forward OOF.
+  3. Report OOF metrics (Brier, LogLoss, AUC, slope, intercept).
+  4. Promote calibrator only if hard gate passes.
+  5. Fit final calibrator on ALL data for deployment.
+  6. Save .pkl + calibration_manifest.json + calibration_report_oof.csv.
 
-Calibrator: logit(p) → LogisticRegression (simpler, more stable than CalibratedClassifierCV)
+Calibrator: logit(p) -> LogisticRegression (simpler, more stable than
+CalibratedClassifierCV).
 
-Promotion gates:
-  n_total >= 80
-  n_oof >= 60
-  brier_cal_oof < brier_raw
-  logloss_cal_oof <= logloss_raw + 0.01
-  0.8 <= slope_cal <= 1.2
+NOTE: this module is the side-level post-hoc calibrator the Phase 6 rebuild
+will deprecate in favor of full-PMF calibration. Retained during the
+transition as a fallback wrapper only.
 """
 
 import csv, glob, json, logging, warnings
@@ -43,9 +39,7 @@ try:
 except ImportError as e:
     raise SystemExit(f"Missing dependency: {e}. Run: pip install scikit-learn joblib")
 
-GRADED_DIR  = Path("graded")
-MODEL_DIR   = Path("model_cache")
-MODEL_DIR.mkdir(exist_ok=True)
+from nba_props_model.paths import GRADED_DIR, MODEL_DIR
 
 STATS = ['pts', 'reb', 'ast', 'fg3m', 'blk', 'stl']
 SIDES = ['OVER', 'UNDER']

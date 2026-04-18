@@ -1,37 +1,23 @@
 #!/usr/bin/env python3
 """
-train_darko_v4.py — NBA Props Model Training Pipeline
-VERSION: 2026-03-09-v12
+NBA Props Model — training pipeline.
 
 Architecture:
-  - NO lines in training. Labels = real game outcomes only.
-  - Targets: pts, reb, ast, fg3m, stl, blk, tov + combos (pra, pr, pa, ra, stocks)
-  - 11 quantile LightGBM models per target (Q10-Q90), pinball loss
-  - Stat-specific feature gating per expert spec (~30-80 features per stat)
-  - NaN preserved throughout (LightGBM handles natively)
-  - Residual z-scores computed for correlation engine fitting
-  - DATE-BASED temporal holdout (not random) — last 15% of games by date
-  - Incremental data pipeline (daily fetches new games only)
+  - No lines in training. Labels = real game outcomes only.
+  - Targets: pts, reb, ast, fg3m, stl, blk, tov + combos (pra, pr, pa, ra, stocks).
+  - 11 quantile LightGBM models per target (Q10-Q90), pinball loss.
+  - Stat-specific feature gating (~30-80 features per stat).
+  - NaN preserved throughout (LightGBM handles natively).
+  - Residual z-scores computed for the within-player correlation engine.
+  - Date-based temporal holdout — last 15% of games by date, not by row index.
+  - Incremental data pipeline (daily fetches new games only).
 
-v12 changes vs v10:
-  - Expanded ADV parsing: 30+ fields (was 6)
-  - Historical injury snapshot table: accumulated going forward
-    For historical rows (pre-snapshot): injury_map = {} — unavoidable
-    For inference: current injury_map always populated from live BDL
-  - Temporal holdout: split at date percentile, not row index
-  - Version strings synchronized across all modules
-  - Zero-truthiness bug fixed in combo proxies (feature_engineering v12)
-  - spread vs spread_for_team mismatch fixed (feature_engineering v12)
-  - Daily injury snapshot saved to data/injury_snapshots.parquet
-
-IMPORTANT — injury features in training:
-  BDL does not expose historical injury status. The vacated-opportunity
-  feature block is architecturally correct and IS used at inference time
-  with the current injury map. For training rows, injury_map = {} means
-  those features will be NaN/zero. The model will still learn all other
-  feature relationships correctly. As the injury snapshot table grows
-  (one row per player per day going forward), training will progressively
-  incorporate real injury state.
+Historical availability:
+  Until Phase 2 ships the as-of availability table, injury-derived features
+  for historical rows are sourced from the forward-accumulating snapshot at
+  data/injury_snapshots.parquet. Pre-snapshot rows fall back to an empty
+  map — see docs/PHASE1_AUDIT.md for why this is the structural defect
+  Phase 2 resolves.
 """
 
 import json
@@ -58,22 +44,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 try:
-    from bdl_client import (
+    from nba_props_model.data.bdl_client import (
         _get_api_key, parse_minutes,
         get_player_game_stats, get_game_odds,
         get_advanced_stats_v2, get_injuries,
         build_game_context_map,
         load_line_movement_snapshot,
     )
-    from feature_engineering import (
-    set_league_3p_prior,
+    from nba_props_model.features.engineering import (
+        set_league_3p_prior,
         build_player_game_features,
         add_interaction_features,
         get_feature_cols_for_stat,
         ALL_ADV_FIELDS,
         STATS, COMBO_STATS, ALL_TARGETS,
     )
-    from correlation_engine import (
+    from nba_props_model.correlation.sgp_engine import (
         quantile_calibration_report,
         compute_residual_zscores,
         WithinPlayerCorrelationEngine,
@@ -84,8 +70,7 @@ try:
 except ImportError as e:
     sys.exit(f"Import error: {e}")
 
-DATA_DIR  = Path("data");        DATA_DIR.mkdir(exist_ok=True)
-MODEL_DIR = Path("model_cache"); MODEL_DIR.mkdir(exist_ok=True)
+from nba_props_model.paths import DATA_DIR, MODEL_DIR, GRADED_DIR
 
 TRAIN_SEASONS  = [2023, 2024, 2025]
 MIN_GAMES      = 15
@@ -412,7 +397,7 @@ def build_training_table(stats_df, adv_df, odds_df):
     # Implementation note: training processes ALL game dates at once. We build
     # a per-date snapshot index and patch ctx_map entries at feature-build time.
     opening_snap_index: dict[str, dict] = {}  # date → {game_label → {total_move, ...}}
-    _opening_dir = Path("data")
+    _opening_dir = DATA_DIR
     for snap_file in sorted(_opening_dir.glob("opening_lines_*.json")):
         snap_date = snap_file.stem.replace("opening_lines_", "")
         try:
@@ -557,7 +542,7 @@ def build_training_table(stats_df, adv_df, odds_df):
     else:
         logger.warning("retrospective_features.parquet missing - building inline")
         try:
-            from retrospective_features import build_retrospective_features
+            from nba_props_model.features.retrospective import build_retrospective_features
             _rdf = build_retrospective_features(stats_df)
             _rdf.to_parquet(_rpath, index=False)
             _retro_index = {(int(r.player_id),int(r.game_id)):{c:int(getattr(r,c,0)) for c in _retro_cols} for r in _rdf[['player_id','game_id']+_retro_cols].itertuples(index=False)}
@@ -1175,7 +1160,7 @@ def main():
     # are available as features in the stat model training table.
     logger.info("Training standalone minutes model...")
     try:
-        from minutes_model import train_minutes_model
+        from nba_props_model.models.minutes import train_minutes_model
         minutes_result = train_minutes_model(stats_df, odds_df)
         if minutes_result:
             logger.info(
@@ -1217,7 +1202,7 @@ def main():
 
     # Train FG3M hurdle model
     try:
-        from fg3m_hurdle import FG3MHurdleModel
+        from nba_props_model.models.fg3m_hurdle import FG3MHurdleModel
         logger.info("Training FG3M hurdle model...")
         hurdle = FG3MHurdleModel()
         fg3m_df = training_df[training_df["stat"] == "fg3m"].copy()
@@ -1238,7 +1223,7 @@ def main():
             if "per_min_fg3a_season" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
                 fg3m_df["per_min_fg3a_season"] = fg3m_df["per_min_fg3a_last10"]
             hurdle.fit(fg3m_df)
-            hurdle.save("model_cache/fg3m_hurdle.pkl")
+            hurdle.save(str(MODEL_DIR / "fg3m_hurdle.pkl"))
             logger.info("FG3M hurdle model trained and saved")
         else:
             logger.warning(f"FG3M hurdle: insufficient rows ({len(fg3m_df)}), skipping")
@@ -1248,9 +1233,9 @@ def main():
 
     # Train residual centerer on graded data accumulated so far
     try:
-        from residual_centering import ResidualCenterer
+        from nba_props_model.calibration.residual_centering import ResidualCenterer
         centerer = ResidualCenterer()
-        centerer.train(graded_dir=Path("graded"))
+        centerer.train(graded_dir=GRADED_DIR)
         centerer.save(model_dir=MODEL_DIR)
         logger.info("Residual centerer trained and saved")
     except Exception as e:

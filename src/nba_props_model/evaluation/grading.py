@@ -1,25 +1,17 @@
-from typing import Optional, Tuple
 #!/usr/bin/env python3
 """
-grade_darko_v4.py  VERSION: 2026-03-13-v3
-===========================================
-Syndicate-grade grading: TRUE CLV tracking, ROI, calibration, drawdown analysis.
+NBA Props Model — grading and CLV.
 
-CLV computation (v3 upgrade):
-  True CLV = model_prob - closing_fair_prob
-  where closing_fair_prob is loaded from graded/closing_lines_{date}.json
-  (captured at 6 PM ET via snapshot_closing_lines.py, post-injury-report).
+True CLV = model_prob - closing_fair_prob, where closing_fair_prob is loaded
+from artifacts/graded/closing_lines_{date}.json (captured at 6 PM ET via
+scripts/snapshot_closing_lines.py, post-injury-report).
 
-  If no closing snapshot exists for a date, falls back to:
-    clv = model_prob - market_prob  (pick-time 8 AM market price)
-  and marks the column "clv_proxy=True" to distinguish.
-
-  True CLV is the gold-standard performance metric used by professional
-  bettors and market makers. A sustained positive CLV means the model
-  is consistently finding edges that the closing market validates.
-  Positive CLV with negative ROI = variance; fix sizing.
-  Positive CLV + positive ROI   = edge; scale up.
+If no closing snapshot exists for a date, falls back to
+clv = model_prob - market_prob (pick-time 8 AM market price) and marks the
+column clv_proxy=True to distinguish.
 """
+
+from typing import Optional, Tuple
 
 import argparse
 import json
@@ -117,8 +109,8 @@ def lookup_closing_prob(
     return None, False
 
 
-GRADED_DIR = Path("graded"); GRADED_DIR.mkdir(exist_ok=True)
-PRED_DIR   = Path("predictions")
+from nba_props_model.paths import GRADED_DIR, PRED_DIR
+
 PERF_LOG   = GRADED_DIR / "performance_log.csv"
 CUM_REPORT = GRADED_DIR / "cumulative_report.json"
 
@@ -223,7 +215,7 @@ def grade_single(pred: dict, actual_stat, closing_lines: dict = None) -> dict:
 
 def fetch_actual_stats(target_date: str) -> dict:
     try:
-        from bdl_client import get_player_game_stats, parse_minutes
+        from nba_props_model.data.bdl_client import get_player_game_stats, parse_minutes
     except ImportError:
         logger.error("bdl_client.py not found. Cannot fetch actual stats.")
         return {}

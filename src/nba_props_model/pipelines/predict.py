@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-predict_darko_v4.py — NBA Props Model Prediction Engine
-VERSION: 2026-03-26-v15
+NBA Props Model — daily prediction pipeline.
 
-Outputs (SEPARATE FILES):
-  predictions/singles_{date}.json   — individual prop bets (EV > 2.5%)
-  predictions/sgps_{date}.json      — 2-leg and 3-leg SGPs (EV > 2.5%)
-  predictions/paper_trade_log.csv   — forward paper trade ledger
+Outputs (separate files, one per day):
+  predictions/singles_{date}.json       — individual prop bets (EV > 2.5%)
+  predictions/sgps_{date}.json          — 2-leg and 3-leg SGPs (EV > 2.5%)
+  predictions/pmf_display_{date}.json   — full PMF rows for the web dashboard
+  predictions/all_props_{date}.parquet  — full universe of evaluated props
+  predictions/paper_trade_log.csv       — forward paper trade ledger
 
 Architecture:
   - Loads Q10-Q90 quantile models per target
@@ -15,14 +16,9 @@ Architecture:
   - SGPs via Gaussian copula simulation (50k samples)
   - Quarter-Kelly sizing, 2-unit cap singles, 1-unit cap SGPs
   - Supports: pts, reb, ast, fg3m, stl, blk, tov + combo props
-
-v13 changes:
-  - Bias correction rolled back to 50% magnitude (fix OVER hit rate)
-  - BIAS_CORRECTION moved to module-level constant (out of inner loop)
-  - Version bump and cleanup
 """
 
-from calibrate_stat_side import IsotonicCalibrator  # needed for platt pkl loading
+from nba_props_model.calibration.stat_side_platt import IsotonicCalibrator  # needed for platt pkl loading
 import csv
 import json
 import logging
@@ -77,7 +73,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 try:
-    from bdl_client import (
+    from nba_props_model.data.bdl_client import (
         _get_api_key, parse_minutes,
         get_player_game_stats, get_games, get_game_odds,
         get_injuries, get_advanced_stats_v2,
@@ -86,13 +82,13 @@ try:
         parse_props_for_game,
         enrich_game_context_with_snapshots,
     )
-    from feature_engineering import (
+    from nba_props_model.features.engineering import (
         build_player_game_features,
         add_interaction_features,
         get_feature_cols_for_stat,
         STATS, COMBO_STATS, ALL_TARGETS,
     )
-    from correlation_engine import (
+    from nba_props_model.correlation.sgp_engine import (
         p_over, p_under,
         ev_from_prob, kelly_fraction,
         enforce_monotonicity,
@@ -109,15 +105,9 @@ try:
 except ImportError as e:
     sys.exit(f"Import error: {e}")
 
-# Required for loading Platt calibrator pkl files saved with IsotonicCalibrator class
-from calibrate_stat_side import IsotonicCalibrator
-
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
-DATA_DIR  = Path("data")
-MODEL_DIR = Path("model_cache")
-PRED_DIR  = Path("predictions")
-PRED_DIR.mkdir(exist_ok=True)
+from nba_props_model.paths import DATA_DIR, MODEL_DIR, PRED_DIR  # noqa: E402
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -288,7 +278,7 @@ BIAS_CORRECTION = {
 def load_minutes_corrections() -> dict:
     """Load per-stat × minutes-bucket bias corrections from diagnostic."""
     import json
-    path = Path("model_cache/minutes_bucket_corrections.json")
+    path = MODEL_DIR / "minutes_bucket_corrections.json"
     if not path.exists():
         return {}
     raw = json.loads(path.read_text())
@@ -356,7 +346,7 @@ def load_models() -> tuple:
         logger.warning("  No Platt calibrators found — run: python3 calibrate_models.py --mode platt")
 
     # Load Q50 bias corrections (empirical stat median bias, updated daily)
-    _q50_bias_path = Path("model_cache") / "q50_bias_corrections.json"
+    _q50_bias_path = MODEL_DIR / "q50_bias_corrections.json"
     try:
         import json as _json
         global _Q50_BIAS
@@ -367,7 +357,7 @@ def load_models() -> tuple:
 
     # Load residual centerer if available
     try:
-        from residual_centering import ResidualCenterer
+        from nba_props_model.calibration.residual_centering import ResidualCenterer
         _centerer = ResidualCenterer.load(model_dir=MODEL_DIR)
         logger.info("  Residual centerer loaded")
     except Exception as e:
@@ -379,7 +369,7 @@ def load_models() -> tuple:
     fg3m_hurdle_model = None
     if hurdle_path.exists():
         try:
-            from fg3m_hurdle import FG3MHurdleModel
+            from nba_props_model.models.fg3m_hurdle import FG3MHurdleModel
             fg3m_hurdle_model = FG3MHurdleModel.load(str(hurdle_path))
             logger.info("  FG3M hurdle model loaded")
         except Exception as e:
@@ -387,7 +377,17 @@ def load_models() -> tuple:
     else:
         logger.warning("  FG3M hurdle model not found — using quantile fallback")
 
-    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer
+    # Load live calibration table (built from 2534 rows — shrinks overconfident raw probs)
+    _live_cal_path = MODEL_DIR / "live_calibration_table.json"
+    live_cal_table = {}
+    try:
+        live_cal_table = json.load(open(_live_cal_path))
+        n = len([k for k in live_cal_table if not k.startswith('_')])
+        logger.info(f"  Live calibration table loaded: {n} entries")
+    except Exception as e:
+        logger.warning(f"  Live calibration table not found: {e}")
+
+    return models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer, live_cal_table
 
 
 # ── Quantile prediction ────────────────────────────────────────────────────────
@@ -487,6 +487,37 @@ def log_paper_trade(singles: list, sgps: list, target_date: str):
             })
 
 
+
+def save_all_props_snapshot(rows: list, target_date: str):
+    """
+    Persist the full evaluated prop universe BEFORE EV filters / special gates.
+    Nested structures are JSON-serialized so the frame can be written safely.
+    """
+    if not rows:
+        logger.warning("No all-prop rows to persist.")
+        return
+
+    out_path = PRED_DIR / f"all_props_{target_date}.parquet"
+    df = pd.DataFrame(rows).copy()
+
+    def _jsonify(x):
+        if isinstance(x, (dict, list, tuple, set)):
+            return json.dumps(x, default=str)
+        return x
+
+    for col in df.columns:
+        if df[col].map(lambda x: isinstance(x, (dict, list, tuple, set))).any():
+            df[col] = df[col].map(_jsonify)
+
+    try:
+        df.to_parquet(out_path, index=False)
+        logger.info(f"Saved all-prop universe: {out_path} ({len(df)} rows)")
+    except Exception as e:
+        fallback = out_path.with_suffix(".jsonl")
+        df.to_json(fallback, orient="records", lines=True)
+        logger.warning(f"Parquet save failed ({e}); wrote {fallback} instead")
+
+
 # ── Console summary ────────────────────────────────────────────────────────────
 
 def print_singles_summary(picks: list):
@@ -529,7 +560,7 @@ def main():
     logger.info(f"Target date: {target_date}")
 
     logger.info("Loading models...")
-    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer = load_models()
+    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer, live_cal_table = load_models()
 
     # Load minutes bucket corrections (Phase 2 fix)
     global MINUTES_CORRECTIONS
@@ -539,7 +570,7 @@ def main():
     else:
         logger.info("  No minutes bucket corrections found (run minutes_bias_fix.py)")
     if not models:
-        sys.exit("No models in model_cache/. Run training script first.")
+        sys.exit(f"No models in {MODEL_DIR}/. Run training script first.")
 
     stats_path = DATA_DIR / "player_game_stats.parquet"
     adv_path   = DATA_DIR / "advanced_stats.parquet"
@@ -548,7 +579,7 @@ def main():
 
     # Load calibration manifest
     cal_manifest = {}
-    manifest_path = Path("model_cache/calibration_manifest.json")
+    manifest_path = MODEL_DIR / "calibration_manifest.json"
     if manifest_path.exists():
         cal_manifest = json.loads(manifest_path.read_text())
         promoted = [k for k,v in cal_manifest.items()
@@ -819,10 +850,13 @@ def main():
                         cp = _safe_cal(platt_calibrators[stat_side_key], prob)
                         if cp is not None:
                             return cp, 'stat_side'
-                    if side_key.upper() in platt_calibrators:
-                        cp = _safe_cal(platt_calibrators[side_key.upper()], prob)
-                        if cp is not None:
-                            return cp, 'global_side'
+                    cal_key = f"{stat_key.upper()}_{side_key.upper()}"
+                    if cal_key in live_cal_table:
+                        entry = live_cal_table[cal_key]
+                        shrink = entry.get('recommended_prob_shrink', 1.0)
+                        offset = entry.get('recommended_prob_offset', 0.0)
+                        cp = float(np.clip(prob * shrink + offset, 0.01, 0.99))
+                        return cp, 'live_cal'
                     return prob, 'raw_none'
                 raw_over   = prob_over
                 raw_under  = prob_under
@@ -873,7 +907,7 @@ def main():
                     # Minimum Q50 projection filter (OVER only)
                     # Don't surface OVER if model projects player as non-contributor
                     # Catches bench players with high market lines but low real role
-                    _MIN_Q50 = {"pts": 12.0, "reb": 3.5, "ast": 2.5, "fg3m": 0.5}
+                    _MIN_Q50 = {"pts": 12.0, "reb": 3.5, "ast": 2.5, "fg3m": 0.5, "blk": 0.3, "stl": 0.3}
                     if side == "OVER" and q50 < _MIN_Q50.get(target, 0):
                         continue
 
@@ -941,10 +975,11 @@ def main():
                         )(compute_pmf(q_preds, stat=target))),
                     })
 
+    save_all_props_snapshot([dict(x) for x in all_singles], target_date)
     # ── fg3m per-player gate ─────────────────────────────────────────
     import pandas as _pd
     try:
-        _stats = _pd.read_parquet("data/player_game_stats.parquet")
+        _stats = _pd.read_parquet(DATA_DIR / "player_game_stats.parquet")
         _cur = _stats[_stats["game_date"] >= "2025-10-01"]
         _hit_rates = (
             _cur.groupby("player_name")["fg3m"]
@@ -975,7 +1010,7 @@ def main():
     # ── fg3m per-player gate ─────────────────────────────────────────
     import pandas as _pd
     try:
-        _stats = _pd.read_parquet("data/player_game_stats.parquet")
+        _stats = _pd.read_parquet(DATA_DIR / "player_game_stats.parquet")
         _cur = _stats[_stats["game_date"] >= "2025-10-01"]
         _hit_rates = (
             _cur.groupby("player_name")["fg3m"]

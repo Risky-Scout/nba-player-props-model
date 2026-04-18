@@ -1,40 +1,26 @@
 #!/usr/bin/env python3
 """
-residual_centering.py — Learned Residual Centering Models
-==========================================================
-Permanent replacement for hardcoded BIAS_CORRECTION in predict_darko_v4.py.
+NBA Props Model — learned residual centering.
 
-Architecture:
-  Instead of: q50 += 1.50  (hardcoded forever)
-  We build:   q50 += residual_model_pts.predict(meta_features)
+Replaces a hardcoded per-stat bias constant with a learned correction
+predicted from meta-features (raw q50, expected minutes, role stability,
+usage/archetype, opponent context confidence, feature coverage confidence).
 
-  Where meta_features include:
-    - raw q50 projection
-    - expected minutes
-    - role stability
-    - usage / archetype
-    - opponent context confidence
-    - feature coverage confidence
-
-Per the permanent architecture document:
-  "A stat-specific projection engine + learned residual centering +
-   dynamic variance + stat×side calibration + strict deployment filters"
+Artifacts written to artifacts/models/:
+    residual_centerer_pts.pkl
+    residual_centerer_ast.pkl
+    residual_centerer_reb.pkl
+    residual_centerer_fg3m.pkl
+    residual_centering_meta.json
 
 Usage:
-    # Train:
-    python3 residual_centering.py --train
+    # Train from graded history:
+    python -m nba_props_model.calibration.residual_centering --train
 
-    # Apply at inference (called from predict_darko_v4.py):
-    from residual_centering import ResidualCenterer
-    centerer = ResidualCenterer.load()
-    corrected_q50 = centerer.correct("pts", raw_q50, meta_features)
-
-Output files:
-    model_cache/residual_centerer_pts.pkl
-    model_cache/residual_centerer_ast.pkl
-    model_cache/residual_centerer_reb.pkl
-    model_cache/residual_centerer_fg3m.pkl
-    model_cache/residual_centering_meta.json
+    # At inference:
+    from nba_props_model.calibration.residual_centering import load_centerer
+    centerer = load_centerer()
+    q_preds = centerer.correct_quantiles(target, q_preds, base_features)
 """
 
 import csv
@@ -56,9 +42,7 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
-GRADED_DIR = Path("graded")
-MODEL_DIR  = Path("model_cache")
-MODEL_DIR.mkdir(exist_ok=True)
+from nba_props_model.paths import GRADED_DIR, MODEL_DIR
 
 # Stats with enough sample for learned correction
 CORRECTABLE_STATS = ["pts", "ast", "reb", "fg3m"]
@@ -332,24 +316,11 @@ class ResidualCenterer:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Integration helper for predict_darko_v4.py
+# Integration helper for the prediction pipeline
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def load_centerer() -> "ResidualCenterer":
-    """
-    Drop-in replacement for hardcoded BIAS_CORRECTION.
-    Call once at startup in predict_darko_v4.py.
-
-    Usage in predict_darko_v4.py:
-        from residual_centering import load_centerer
-        centerer = load_centerer()
-
-        # In prediction loop, replace:
-        #   bias = BIAS_CORRECTION.get(target, 0.0)
-        #   q_preds = {q: v + bias for q, v in q_preds.items()}
-        # With:
-        #   q_preds = centerer.correct_quantiles(target, q_preds, base_features)
-    """
+    """Load the trained residual centerer artifact from artifacts/models/."""
     return ResidualCenterer.load()
 
 
@@ -362,7 +333,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--train", action="store_true", help="Train residual centerers")
     parser.add_argument("--evaluate", action="store_true", help="Evaluate on holdout")
-    parser.add_argument("--graded-dir", default="graded")
+    parser.add_argument("--graded-dir", default=str(GRADED_DIR))
     args = parser.parse_args()
 
     if args.train:
@@ -379,11 +350,7 @@ if __name__ == "__main__":
             print(f"  cv_MAE={m['cv_mae_mean']:.3f}±{m['cv_mae_std']:.3f}")
             print(f"  median_residual={m['target_median']:+.3f}")
             print(f"  fallback_correction={m['fallback_correction']:+.3f}")
-        print("\n✓ Saved to model_cache/")
-        print("\nNext step: replace BIAS_CORRECTION in predict_darko_v4.py")
-        print("  from residual_centering import load_centerer")
-        print("  centerer = load_centerer()")
-        print("  q_preds = centerer.correct_quantiles(target, q_preds, base_features)")
+        print(f"\nSaved to {MODEL_DIR}/")
 
     elif args.evaluate:
         centerer = ResidualCenterer.load()

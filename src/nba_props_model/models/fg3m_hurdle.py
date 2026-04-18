@@ -354,6 +354,7 @@ if __name__ == "__main__":
     print("  Bridges  0.5 → p_over 68–85%")
     print("  Holiday  1.5 → p_over 60–80%")
 
-    Path('model_cache').mkdir(exist_ok=True)
-    hurdle.save('model_cache/fg3m_hurdle.pkl')
-    print(f"\n✓ Saved to model_cache/fg3m_hurdle.pkl")
+    from nba_props_model.paths import MODEL_DIR
+    out = MODEL_DIR / "fg3m_hurdle.pkl"
+    hurdle.save(str(out))
+    print(f"\nSaved to {out}")

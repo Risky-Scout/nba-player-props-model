@@ -38,7 +38,7 @@ jobs:
       - name: Snapshot opening lines
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: python snapshot_opening_lines.py
+        run: python scripts/snapshot_opening_lines.py
 
       - name: Commit opening lines
         run: |
@@ -59,7 +59,6 @@ jobs:
   predict:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    # FIXED: removed 'needs: snapshot_opening' — that was causing silent skips
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event.schedule == '0 13 * * *'
@@ -89,7 +88,7 @@ jobs:
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: python grade.py
+        run: python scripts/grade.py
         continue-on-error: true
 
       - name: Generate today's predictions
@@ -97,7 +96,7 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           SKIP_SGPS: "1"
-        run: python predict.py
+        run: python scripts/predict.py
 
       # HARD FAIL: predictions file must exist or the whole job fails visibly
       - name: Verify predictions were written
@@ -118,7 +117,7 @@ jobs:
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add predictions/ graded/ -f
+          git add predictions/ artifacts/graded/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
           for i in 1 2 3; do
@@ -173,13 +172,13 @@ jobs:
       - name: Snapshot closing lines (post-injury-report)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: python snapshot_closing_lines.py
+        run: python scripts/snapshot_closing_lines.py
 
       - name: Commit closing lines
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add graded/closing_lines_*.json
+          git add artifacts/graded/closing_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Closing lines $(date -u +%Y-%m-%d)"
           for i in 1 2 3; do

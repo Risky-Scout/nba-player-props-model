@@ -1,8 +1,7 @@
 """
-correlation_engine.py — DARKO v4 Correlation Engine
-VERSION: 2026-02-28-v10
+NBA Props Model — within-player and teammate correlation engine.
 
-Expert-reviewed architecture:
+Architecture:
   - Residual-based correlation (not raw stat correlation)
     resid_S = actual_S - pred_Q50_S
     scale_S = max(pred_Q75_S - pred_Q25_S, 0.5)

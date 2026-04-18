@@ -6,7 +6,7 @@ on:
       note:
         description: 'Reason for retrain'
         required: false
-        default: 'Minutes model clean retrain'
+        default: 'Scheduled retrain'
 
 jobs:
   retrain:
@@ -35,20 +35,20 @@ jobs:
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: python train.py
+        run: python scripts/train.py
 
       - name: Run Platt calibration
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python calibrate_stat_side.py || echo "Calibration skipped — insufficient graded data"
+          python scripts/calibrate.py || echo "Calibration skipped — insufficient graded data"
 
-      - name: Commit model cache to repo
+      - name: Commit retrained artifacts
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
           git rm --cached data/training_table.parquet 2>/dev/null || true
-          git add model_cache/ -f
+          git add artifacts/models/ -f
           git add data/ -f
           git rm --cached data/training_table.parquet 2>/dev/null || true
           git diff --staged --quiet && echo "Nothing to commit" || \
