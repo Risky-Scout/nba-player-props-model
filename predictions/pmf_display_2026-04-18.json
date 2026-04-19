@@ -1,0 +1,786 @@
+{
+  "date": "2026-04-18",
+  "generated_at": "2026-04-18T14:01:15.302950",
+  "props": [
+    {
+      "player_name": "Tim Hardaway Jr.",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.0,
+      "model_prob": 0.7957,
+      "market_prob": 0.4899,
+      "ev": 1.0052,
+      "edge": 0.2983,
+      "fair_odds_over": 372,
+      "fair_odds_under": -372,
+      "pmf_median": 1,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "caesars",
+        "over_odds": 142,
+        "under_odds": 152,
+        "best_odds": 152
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.5395,
+          "fair_odds": -117,
+          "display_prob": "53.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.3155,
+          "fair_odds": 217,
+          "display_prob": "31.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.145,
+          "fair_odds": 590,
+          "display_prob": "14.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Cameron Johnson",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.0,
+      "model_prob": 0.7957,
+      "market_prob": 0.5142,
+      "ev": 0.9097,
+      "edge": 0.4858,
+      "fair_odds_over": 9900,
+      "fair_odds_under": -9900,
+      "pmf_median": 2,
+      "line_vs_median": 0.0,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 154,
+        "under_odds": 140,
+        "best_odds": 140
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1125,
+          "fair_odds": 789,
+          "display_prob": "11.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3835,
+          "fair_odds": 161,
+          "display_prob": "38.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.504,
+          "fair_odds": -102,
+          "display_prob": "50.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Onyeka Okongwu",
+      "game": "Atlanta Hawks @ New York Knicks",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7945,
+      "market_prob": 0.4235,
+      "ev": 0.8274,
+      "edge": 0.1965,
+      "fair_odds_over": 163,
+      "fair_odds_under": -163,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -145,
+        "under_odds": 130,
+        "best_odds": 130
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.177,
+          "fair_odds": 465,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.443,
+          "fair_odds": 126,
+          "display_prob": "44.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.247,
+          "fair_odds": 305,
+          "display_prob": "24.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.133,
+          "fair_odds": 652,
+          "display_prob": "13.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Rui Hachimura",
+      "game": "Houston Rockets @ Los Angeles Lakers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7957,
+      "market_prob": 0.4289,
+      "ev": 0.7903,
+      "edge": 0.3351,
+      "fair_odds_over": 324,
+      "fair_odds_under": -324,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanatics",
+        "over_odds": -145,
+        "under_odds": 125,
+        "best_odds": 125
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2755,
+          "fair_odds": 263,
+          "display_prob": "27.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4885,
+          "fair_odds": 105,
+          "display_prob": "48.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.236,
+          "fair_odds": 324,
+          "display_prob": "23.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "James Harden",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7952,
+      "market_prob": 0.4255,
+      "ev": 0.7892,
+      "edge": 0.3685,
+      "fair_odds_over": 385,
+      "fair_odds_under": -385,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "caesars",
+        "over_odds": -150,
+        "under_odds": 125,
+        "best_odds": 125
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.3705,
+          "fair_odds": 170,
+          "display_prob": "37.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.4235,
+          "fair_odds": 136,
+          "display_prob": "42.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.206,
+          "fair_odds": 385,
+          "display_prob": "20.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Mikal Bridges",
+      "game": "Atlanta Hawks @ New York Knicks",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7957,
+      "market_prob": 0.4467,
+      "ev": 0.7744,
+      "edge": 0.3503,
+      "fair_odds_over": 393,
+      "fair_odds_under": -393,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -125,
+        "under_odds": 123,
+        "best_odds": 123
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.3725,
+          "fair_odds": 168,
+          "display_prob": "37.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4245,
+          "fair_odds": 136,
+          "display_prob": "42.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.203,
+          "fair_odds": 393,
+          "display_prob": "20.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "LeBron James",
+      "game": "Houston Rockets @ Los Angeles Lakers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7957,
+      "market_prob": 0.4802,
+      "ev": 0.6232,
+      "edge": 0.3358,
+      "fair_odds_over": 443,
+      "fair_odds_under": -443,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -113,
+        "under_odds": 104,
+        "best_odds": 104
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.399,
+          "fair_odds": 151,
+          "display_prob": "39.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.417,
+          "fair_odds": 140,
+          "display_prob": "41.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.184,
+          "fair_odds": 443,
+          "display_prob": "18.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Nikola Jokic",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7945,
+      "market_prob": 0.4743,
+      "ev": 0.6208,
+      "edge": 0.3567,
+      "fair_odds_over": 492,
+      "fair_odds_under": -492,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -119,
+        "under_odds": 104,
+        "best_odds": 104
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.3135,
+          "fair_odds": 219,
+          "display_prob": "31.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.5175,
+          "fair_odds": -107,
+          "display_prob": "51.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.169,
+          "fair_odds": 492,
+          "display_prob": "16.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Reed Sheppard",
+      "game": "Houston Rockets @ Los Angeles Lakers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7957,
+      "market_prob": 0.4712,
+      "ev": 0.6073,
+      "edge": 0.2308,
+      "fair_odds_over": 236,
+      "fair_odds_under": -236,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "caesars",
+        "over_odds": -125,
+        "under_odds": 102,
+        "best_odds": 102
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.413,
+          "fair_odds": 142,
+          "display_prob": "41.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.289,
+          "fair_odds": 246,
+          "display_prob": "28.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.188,
+          "fair_odds": 432,
+          "display_prob": "18.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.11,
+          "fair_odds": 809,
+          "display_prob": "11.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jabari Smith Jr.",
+      "game": "Houston Rockets @ Los Angeles Lakers",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 14.5,
+      "model_prob": 0.783,
+      "market_prob": 0.4807,
+      "ev": 0.5816,
+      "edge": 0.0933,
+      "fair_odds_over": -135,
+      "fair_odds_under": 135,
+      "pmf_median": 16,
+      "line_vs_median": -1.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 102,
+        "under_odds": -115,
+        "best_odds": 102
+      },
+      "outcome_table": [
+        {
+          "outcome": 9,
+          "probability": 0.111,
+          "fair_odds": 801,
+          "display_prob": "11.1%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0485,
+          "fair_odds": 1962,
+          "display_prob": "4.9%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0585,
+          "fair_odds": 1609,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0745,
+          "fair_odds": 1242,
+          "display_prob": "7.4%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0645,
+          "fair_odds": 1450,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.069,
+          "fair_odds": 1349,
+          "display_prob": "6.9%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0645,
+          "fair_odds": 1450,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0815,
+          "fair_odds": 1127,
+          "display_prob": "8.2%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0915,
+          "fair_odds": 993,
+          "display_prob": "9.2%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.057,
+          "fair_odds": 1654,
+          "display_prob": "5.7%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0435,
+          "fair_odds": 2199,
+          "display_prob": "4.3%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0305,
+          "fair_odds": 3179,
+          "display_prob": "3.0%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0365,
+          "fair_odds": 2640,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.0385,
+          "fair_odds": 2497,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.1305,
+          "fair_odds": 666,
+          "display_prob": "13.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Aaron Gordon",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7944,
+      "market_prob": 0.5133,
+      "ev": 0.5439,
+      "edge": 0.1527,
+      "fair_odds_over": 199,
+      "fair_odds_under": -199,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 105,
+        "under_odds": -106,
+        "best_odds": -106
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.221,
+          "fair_odds": 352,
+          "display_prob": "22.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.445,
+          "fair_odds": 125,
+          "display_prob": "44.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.334,
+          "fair_odds": 199,
+          "display_prob": "33.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Miles McBride",
+      "game": "Atlanta Hawks @ New York Knicks",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7944,
+      "market_prob": 0.5223,
+      "ev": 0.4677,
+      "edge": 0.1397,
+      "fair_odds_over": 196,
+      "fair_odds_under": -196,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 102,
+        "under_odds": -118,
+        "best_odds": -118
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.268,
+          "fair_odds": 273,
+          "display_prob": "26.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.394,
+          "fair_odds": 154,
+          "display_prob": "39.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.338,
+          "fair_odds": 196,
+          "display_prob": "33.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Sandro Mamukelashvili",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "OVER",
+      "line": 4.0,
+      "model_prob": 0.641,
+      "market_prob": 0.4876,
+      "ev": 0.4615,
+      "edge": 0.3214,
+      "fair_odds_over": -424,
+      "fair_odds_under": 424,
+      "pmf_median": 5,
+      "line_vs_median": -1.0,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 128,
+        "under_odds": 117,
+        "best_odds": 128
+      },
+      "outcome_table": [
+        {
+          "outcome": 3,
+          "probability": 0.157,
+          "fair_odds": 537,
+          "display_prob": "15.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.178,
+          "fair_odds": 462,
+          "display_prob": "17.8%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.25,
+          "fair_odds": 300,
+          "display_prob": "25.0%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.2595,
+          "fair_odds": 285,
+          "display_prob": "25.9%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.1555,
+          "fair_odds": 543,
+          "display_prob": "15.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Nickeil Alexander-Walker",
+      "game": "Atlanta Hawks @ New York Knicks",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 3.5,
+      "model_prob": 0.7957,
+      "market_prob": 0.5404,
+      "ev": 0.4078,
+      "edge": 0.0831,
+      "fair_odds_over": 166,
+      "fair_odds_under": -166,
+      "pmf_median": 3,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 108,
+        "under_odds": -130,
+        "best_odds": -130
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.3235,
+          "fair_odds": 209,
+          "display_prob": "32.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.3,
+          "fair_odds": 233,
+          "display_prob": "30.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.225,
+          "fair_odds": 344,
+          "display_prob": "22.5%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1515,
+          "fair_odds": 560,
+          "display_prob": "15.2%"
+        }
+      ]
+    },
+    {
+      "player_name": "Sam Merrill",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7953,
+      "market_prob": 0.5643,
+      "ev": 0.3633,
+      "edge": 0.2687,
+      "fair_odds_over": 499,
+      "fair_odds_under": -499,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "caesars",
+        "over_odds": 122,
+        "under_odds": -140,
+        "best_odds": -140
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.413,
+          "fair_odds": 142,
+          "display_prob": "41.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.42,
+          "fair_odds": 138,
+          "display_prob": "42.0%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.167,
+          "fair_odds": 499,
+          "display_prob": "16.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Evan Mobley",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 2.5,
+      "model_prob": 0.7273,
+      "market_prob": 0.5656,
+      "ev": 0.229,
+      "edge": 0.0169,
+      "fair_odds_over": -140,
+      "fair_odds_under": 140,
+      "pmf_median": 3,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -145,
+        "under_odds": 120,
+        "best_odds": -145
+      },
+      "outcome_table": [
+        {
+          "outcome": 2,
+          "probability": 0.4175,
+          "fair_odds": 140,
+          "display_prob": "41.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.257,
+          "fair_odds": 289,
+          "display_prob": "25.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.176,
+          "fair_odds": 468,
+          "display_prob": "17.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1495,
+          "fair_odds": 569,
+          "display_prob": "14.9%"
+        }
+      ]
+    }
+  ]
+}
