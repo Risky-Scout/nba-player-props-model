@@ -145,11 +145,9 @@ CDF calibration over the persisted full-universe history.
 
 ## 6. Legacy naming
 
-The product is the **NBA Props Model**. Legacy strings referencing "DARKO",
-"darko", "Gen3", or "predict_darko_v4.py" remain in docstrings and log messages
-across `train.py`, `predict.py`, `grade.py`, `bdl_client.py`,
-`correlation_engine.py`, `residual_centering.py`, and the dead `predict_backup.py`
-/ `predict_calibrated_experiment.py`. These will be purged in the reorganization
+The product is the **NBA Props Model**. Prior-iteration legacy naming
+persists in docstrings, log messages, and filenames across the live
+source and several dead scripts. These are purged in the reorganization
 commit.
 
 ---
