@@ -1229,6 +1229,63 @@ def main():
             logger.warning(f"FG3M hurdle: insufficient rows ({len(fg3m_df)}), skipping")
     except Exception as e:
         logger.warning(f"FG3M hurdle training failed: {e}")
+    # ── Train per-minute rate quantile ladders for pts/reb/ast/tov ────────────
+    # The rate trainer wants one row per player-game with feature columns plus
+    # the raw stat + minutes columns. training_df has one row per (player,
+    # game, stat); we build the "wide" view from the "pts" slice (which exists
+    # for every player-game) and join the raw stat/min columns from stats_df.
+    try:
+        from nba_props_model.models.rate_models import train_rate_models
+        logger.info("Training per-minute rate models (pts, reb, ast, tov)...")
+        pts_slice = training_df[training_df["stat"] == "pts"].drop(columns=["actual"])
+        raw_cols = ["player_id", "game_id", "min",
+                    "pts", "reb", "ast", "turnover", "stl", "blk"]
+        # Drop any columns already present on the slice to avoid _x/_y suffixes
+        # from overlapping names.
+        overlap = [c for c in raw_cols if c not in ("player_id", "game_id")
+                   and c in pts_slice.columns]
+        if overlap:
+            pts_slice = pts_slice.drop(columns=overlap)
+        wide = pts_slice.merge(
+            stats_df[raw_cols], on=["player_id", "game_id"], how="left",
+        )
+        rate_meta = train_rate_models(wide)
+        if rate_meta and rate_meta.get("stats"):
+            for entry in rate_meta["stats"]:
+                stat = entry.get("stat", "?")
+                cal = entry.get("calibration", {}) or {}
+                cal_summary = " ".join(
+                    f"Q{k[1:3]}={v:.3f}" for k, v in cal.items() if k.endswith("_err")
+                )
+                logger.info(
+                    f"  rate_{stat}: n_train={entry.get('n_train',0):,}  "
+                    f"n_val={entry.get('n_val',0):,}  {cal_summary}"
+                )
+        else:
+            logger.warning("rate models: no results")
+    except Exception as e:
+        logger.warning(f"Rate model training failed: {e}")
+
+    # ── Train sparse-stat hurdle models for stl and blk ──────────────────────
+    try:
+        from nba_props_model.models.sparse_hurdle import train_sparse_hurdle
+        logger.info("Training sparse hurdle models (stl, blk)...")
+        # Reuse the wide view built above.
+        hurdle_meta = train_sparse_hurdle(wide)
+        if hurdle_meta and hurdle_meta.get("stats"):
+            for entry in hurdle_meta["stats"]:
+                stat = entry["stat"]
+                logger.info(
+                    f"  hurdle_{stat}: n_train={entry['n_train']:,}  "
+                    f"n_val={entry['n_val']:,}  "
+                    f"zero_rate_train={entry['zero_rate_train']:.3f}  "
+                    f"zero_brier_val={entry['zero_brier_val']:.4f}"
+                )
+        else:
+            logger.warning("sparse hurdle models: no results")
+    except Exception as e:
+        logger.warning(f"Sparse hurdle training failed: {e}")
+
     logger.info("TRAINING COMPLETE")
 
     # Train residual centerer on graded data accumulated so far
