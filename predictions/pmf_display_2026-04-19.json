@@ -1,0 +1,864 @@
+{
+  "date": "2026-04-19",
+  "generated_at": "2026-04-19T13:59:45.699671",
+  "props": [
+    {
+      "player_name": "Dylan Harper",
+      "game": "Portland Trail Blazers @ San Antonio Spurs",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.6622,
+      "market_prob": 0.2835,
+      "ev": 1.1521,
+      "edge": 0.158,
+      "fair_odds_over": 127,
+      "fair_odds_under": -127,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 225,
+        "under_odds": -350,
+        "best_odds": 225
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5585,
+          "fair_odds": -127,
+          "display_prob": "55.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3375,
+          "fair_odds": 196,
+          "display_prob": "33.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.104,
+          "fair_odds": 862,
+          "display_prob": "10.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jerami Grant",
+      "game": "Portland Trail Blazers @ San Antonio Spurs",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.6622,
+      "market_prob": 0.3077,
+      "ev": 0.9865,
+      "edge": 0.1523,
+      "fair_odds_over": 117,
+      "fair_odds_under": -117,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": 200,
+        "under_odds": -300,
+        "best_odds": 200
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.54,
+          "fair_odds": -117,
+          "display_prob": "54.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3585,
+          "fair_odds": 179,
+          "display_prob": "35.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1015,
+          "fair_odds": 885,
+          "display_prob": "10.2%"
+        }
+      ]
+    },
+    {
+      "player_name": "Julian Champagnie",
+      "game": "Portland Trail Blazers @ San Antonio Spurs",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.6622,
+      "market_prob": 0.3374,
+      "ev": 0.8541,
+      "edge": 0.1121,
+      "fair_odds_over": 122,
+      "fair_odds_under": -122,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 180,
+        "under_odds": -235,
+        "best_odds": 180
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5505,
+          "fair_odds": -122,
+          "display_prob": "55.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4495,
+          "fair_odds": 122,
+          "display_prob": "45.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Grayson Allen",
+      "game": "Phoenix Suns @ Oklahoma City Thunder",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7943,
+      "market_prob": 0.4249,
+      "ev": 0.8429,
+      "edge": 0.1921,
+      "fair_odds_over": 161,
+      "fair_odds_under": -161,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -140,
+        "under_odds": 132,
+        "best_odds": 132
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1415,
+          "fair_odds": 607,
+          "display_prob": "14.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4755,
+          "fair_odds": 110,
+          "display_prob": "47.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2645,
+          "fair_odds": 278,
+          "display_prob": "26.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1185,
+          "fair_odds": 744,
+          "display_prob": "11.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Deni Avdija",
+      "game": "Portland Trail Blazers @ San Antonio Spurs",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7946,
+      "market_prob": 0.4176,
+      "ev": 0.8276,
+      "edge": 0.2324,
+      "fair_odds_over": 186,
+      "fair_odds_under": -186,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -154,
+        "under_odds": 130,
+        "best_odds": 130
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.193,
+          "fair_odds": 418,
+          "display_prob": "19.3%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.457,
+          "fair_odds": 119,
+          "display_prob": "45.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.35,
+          "fair_odds": 186,
+          "display_prob": "35.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "VJ Edgecombe",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7946,
+      "market_prob": 0.458,
+      "ev": 0.6925,
+      "edge": 0.219,
+      "fair_odds_over": 210,
+      "fair_odds_under": -210,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -125,
+        "under_odds": 113,
+        "best_odds": 113
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2365,
+          "fair_odds": 323,
+          "display_prob": "23.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4405,
+          "fair_odds": 127,
+          "display_prob": "44.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.323,
+          "fair_odds": 210,
+          "display_prob": "32.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Luguentz Dort",
+      "game": "Phoenix Suns @ Oklahoma City Thunder",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7943,
+      "market_prob": 0.468,
+      "ev": 0.668,
+      "edge": 0.1335,
+      "fair_odds_over": 151,
+      "fair_odds_under": -151,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betrivers",
+        "over_odds": -118,
+        "under_odds": 110,
+        "best_odds": 110
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1945,
+          "fair_odds": 414,
+          "display_prob": "19.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.407,
+          "fair_odds": 146,
+          "display_prob": "40.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.201,
+          "fair_odds": 398,
+          "display_prob": "20.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1975,
+          "fair_odds": 406,
+          "display_prob": "19.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jaylen Brown",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7945,
+      "market_prob": 0.4867,
+      "ev": 0.6288,
+      "edge": 0.1823,
+      "fair_odds_over": 202,
+      "fair_odds_under": -202,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -106,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1755,
+          "fair_odds": 470,
+          "display_prob": "17.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4935,
+          "fair_odds": 103,
+          "display_prob": "49.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.331,
+          "fair_odds": 202,
+          "display_prob": "33.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Paul George",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7952,
+      "market_prob": 0.4628,
+      "ev": 0.6222,
+      "edge": 0.2072,
+      "fair_odds_over": 203,
+      "fair_odds_under": -203,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -132,
+        "under_odds": 104,
+        "best_odds": 104
+      },
+      "outcome_table": [
+        {
+          "outcome": 1,
+          "probability": 0.2745,
+          "fair_odds": 264,
+          "display_prob": "27.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.3955,
+          "fair_odds": 153,
+          "display_prob": "39.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.33,
+          "fair_odds": 203,
+          "display_prob": "33.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Tyrese Maxey",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7957,
+      "market_prob": 0.4871,
+      "ev": 0.5994,
+      "edge": 0.3389,
+      "fair_odds_over": 475,
+      "fair_odds_under": -475,
+      "pmf_median": 1,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -110,
+        "under_odds": 101,
+        "best_odds": 101
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.113,
+          "fair_odds": 785,
+          "display_prob": "11.3%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.405,
+          "fair_odds": 147,
+          "display_prob": "40.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.308,
+          "fair_odds": 225,
+          "display_prob": "30.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.174,
+          "fair_odds": 475,
+          "display_prob": "17.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Devin Booker",
+      "game": "Phoenix Suns @ Oklahoma City Thunder",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 23.5,
+      "model_prob": 0.8005,
+      "market_prob": 0.4932,
+      "ev": 0.5703,
+      "edge": 0.2003,
+      "fair_odds_over": -226,
+      "fair_odds_under": 226,
+      "pmf_median": 27,
+      "line_vs_median": -3.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -104,
+        "under_odds": -110,
+        "best_odds": -104
+      },
+      "outcome_table": [
+        {
+          "outcome": 19,
+          "probability": 0.121,
+          "fair_odds": 726,
+          "display_prob": "12.1%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0345,
+          "fair_odds": 2799,
+          "display_prob": "3.5%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0345,
+          "fair_odds": 2799,
+          "display_prob": "3.5%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.07,
+          "fair_odds": 1329,
+          "display_prob": "7.0%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.0465,
+          "fair_odds": 2051,
+          "display_prob": "4.7%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.0585,
+          "fair_odds": 1609,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 25,
+          "probability": 0.0655,
+          "fair_odds": 1427,
+          "display_prob": "6.6%"
+        },
+        {
+          "outcome": 26,
+          "probability": 0.06,
+          "fair_odds": 1567,
+          "display_prob": "6.0%"
+        },
+        {
+          "outcome": 27,
+          "probability": 0.0365,
+          "fair_odds": 2640,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 28,
+          "probability": 0.032,
+          "fair_odds": 3025,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 29,
+          "probability": 0.0315,
+          "fair_odds": 3075,
+          "display_prob": "3.1%"
+        },
+        {
+          "outcome": 30,
+          "probability": 0.213,
+          "fair_odds": 369,
+          "display_prob": "21.3%"
+        },
+        {
+          "outcome": 31,
+          "probability": 0.052,
+          "fair_odds": 1823,
+          "display_prob": "5.2%"
+        },
+        {
+          "outcome": 32,
+          "probability": 0.1445,
+          "fair_odds": 592,
+          "display_prob": "14.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Dillon Brooks",
+      "game": "Phoenix Suns @ Oklahoma City Thunder",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "OVER",
+      "line": 15.5,
+      "model_prob": 0.7293,
+      "market_prob": 0.4966,
+      "ev": 0.4239,
+      "edge": -0.0476,
+      "fair_odds_over": 123,
+      "fair_odds_under": -123,
+      "pmf_median": 14,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -105,
+        "under_odds": -108,
+        "best_odds": -105
+      },
+      "outcome_table": [
+        {
+          "outcome": 9,
+          "probability": 0.1035,
+          "fair_odds": 866,
+          "display_prob": "10.3%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.078,
+          "fair_odds": 1182,
+          "display_prob": "7.8%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0515,
+          "fair_odds": 1842,
+          "display_prob": "5.1%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0765,
+          "fair_odds": 1207,
+          "display_prob": "7.6%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.075,
+          "fair_odds": 1233,
+          "display_prob": "7.5%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.12,
+          "fair_odds": 733,
+          "display_prob": "12.0%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0465,
+          "fair_odds": 2051,
+          "display_prob": "4.7%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0465,
+          "fair_odds": 2051,
+          "display_prob": "4.7%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0985,
+          "fair_odds": 915,
+          "display_prob": "9.8%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0445,
+          "fair_odds": 2147,
+          "display_prob": "4.5%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.054,
+          "fair_odds": 1752,
+          "display_prob": "5.4%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.035,
+          "fair_odds": 2757,
+          "display_prob": "3.5%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0325,
+          "fair_odds": 2977,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.0325,
+          "fair_odds": 2977,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.1055,
+          "fair_odds": 848,
+          "display_prob": "10.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Daniss Jenkins",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 2.5,
+      "model_prob": 0.7273,
+      "market_prob": 0.5056,
+      "ev": 0.3886,
+      "edge": 0.4944,
+      "fair_odds_over": -9900,
+      "fair_odds_under": 9900,
+      "pmf_median": 5,
+      "line_vs_median": -2.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -110,
+        "under_odds": -105,
+        "best_odds": -110
+      },
+      "outcome_table": [
+        {
+          "outcome": 3,
+          "probability": 0.229,
+          "fair_odds": 337,
+          "display_prob": "22.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.255,
+          "fair_odds": 292,
+          "display_prob": "25.5%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.2015,
+          "fair_odds": 396,
+          "display_prob": "20.2%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1735,
+          "fair_odds": 476,
+          "display_prob": "17.3%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.141,
+          "fair_odds": 609,
+          "display_prob": "14.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Tobias Harris",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.6622,
+      "market_prob": 0.4496,
+      "ev": 0.3773,
+      "edge": 0.0059,
+      "fair_odds_over": 120,
+      "fair_odds_under": -120,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 108,
+        "under_odds": -143,
+        "best_odds": 108
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5445,
+          "fair_odds": -120,
+          "display_prob": "54.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.337,
+          "fair_odds": 197,
+          "display_prob": "33.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1185,
+          "fair_odds": 744,
+          "display_prob": "11.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Cade Cunningham",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 9.5,
+      "model_prob": 0.6661,
+      "market_prob": 0.4584,
+      "ev": 0.3654,
+      "edge": 0.5416,
+      "fair_odds_over": 9900,
+      "fair_odds_under": -9900,
+      "pmf_median": 7,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -136,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 4,
+          "probability": 0.16,
+          "fair_odds": 525,
+          "display_prob": "16.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1995,
+          "fair_odds": 401,
+          "display_prob": "20.0%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.139,
+          "fair_odds": 619,
+          "display_prob": "13.9%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.275,
+          "fair_odds": 264,
+          "display_prob": "27.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.2265,
+          "fair_odds": 342,
+          "display_prob": "22.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Suggs",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "OVER",
+      "line": 4.5,
+      "model_prob": 0.7273,
+      "market_prob": 0.5668,
+      "ev": 0.2506,
+      "edge": 0.1637,
+      "fair_odds_over": -271,
+      "fair_odds_under": 271,
+      "pmf_median": 6,
+      "line_vs_median": -1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -139,
+        "under_odds": 125,
+        "best_odds": -139
+      },
+      "outcome_table": [
+        {
+          "outcome": 4,
+          "probability": 0.2695,
+          "fair_odds": 271,
+          "display_prob": "27.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1965,
+          "fair_odds": 409,
+          "display_prob": "19.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1305,
+          "fair_odds": 666,
+          "display_prob": "13.1%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.209,
+          "fair_odds": 378,
+          "display_prob": "20.9%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.1945,
+          "fair_odds": 414,
+          "display_prob": "19.4%"
+        }
+      ]
+    }
+  ]
+}
