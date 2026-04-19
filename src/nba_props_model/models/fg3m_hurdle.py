@@ -261,6 +261,47 @@ class FG3MHurdleModel:
             'p_attempts':         round(p_meaningful, 4),
         }
 
+    # ── Full PMF output ───────────────────────────────────────────────────────
+    FG3M_DOMAIN_MAX = 15
+
+    def pmf(self, features: dict) -> np.ndarray:
+        """Return the discrete PMF over {0, 1, ..., FG3M_DOMAIN_MAX}.
+
+        Uses the same three-stage decomposition as `predict_proba` but
+        exposes the full distribution rather than a single probability
+        at a line. The Phase 6 full-PMF calibration layer consumes this.
+
+        Decomposition:
+            P(fg3m = 0) = (1 - p_meaningful)
+                        + p_meaningful * Binomial(0 | n, p)
+            P(fg3m = k) = p_meaningful * Binomial(k | n, p)  for k >= 1
+        """
+        if not self.is_fitted:
+            raise RuntimeError("Call fit() or load() first")
+
+        # Reuse the decomposition via predict_proba at a sentinel line.
+        decomp = self.predict_proba(features, line=0.5)
+        p_meaningful = float(decomp["p_meaningful"])
+        exp_fg3a = max(int(round(float(decomp["expected_fg3a"]))), 1)
+        shrunk_pct = float(decomp["shrunk_pct"])
+
+        k_range = np.arange(self.FG3M_DOMAIN_MAX + 1)
+        binom_pmf = binom.pmf(k_range, exp_fg3a, shrunk_pct)
+        # Extend the Binomial to include tail mass above FG3M_DOMAIN_MAX
+        # into the last bin so the PMF sums to 1.
+        tail = 1.0 - binom.cdf(self.FG3M_DOMAIN_MAX, exp_fg3a, shrunk_pct)
+        binom_pmf = binom_pmf.copy()
+        binom_pmf[-1] += max(0.0, tail)
+
+        pmf_out = np.zeros(self.FG3M_DOMAIN_MAX + 1)
+        pmf_out[0] = (1.0 - p_meaningful) + p_meaningful * binom_pmf[0]
+        pmf_out[1:] = p_meaningful * binom_pmf[1:]
+
+        s = pmf_out.sum()
+        if s > 0:
+            pmf_out = pmf_out / s
+        return pmf_out
+
     # ── Persistence ───────────────────────────────────────────────────────────
     def save(self, path: str):
         joblib.dump(self, path)

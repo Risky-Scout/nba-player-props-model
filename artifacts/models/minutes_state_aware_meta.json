@@ -1,0 +1,79 @@
+{
+  "n_train": 63905,
+  "n_val": 11201,
+  "features": [
+    "mp_mean_season",
+    "mp_mean_last5",
+    "mp_mean_last10",
+    "mp_ewma",
+    "mp_trend_3v10",
+    "mp_ceiling_last10",
+    "mp_std_last10",
+    "mp_p_active",
+    "mp_starter_prob",
+    "mp_p_20plus",
+    "mp_p_28plus",
+    "mp_p_34plus",
+    "mp_role_change_score",
+    "mp_bench_fragility",
+    "mp_return_restriction",
+    "prob_active",
+    "days_since_last_played",
+    "is_returning_from_absence",
+    "minutes_restriction_flag",
+    "num_teammates_out_total",
+    "vacated_minutes_guard",
+    "vacated_minutes_wing",
+    "vacated_minutes_big",
+    "teammate_out_count_guard",
+    "teammate_out_count_wing",
+    "teammate_out_count_big",
+    "vacated_fga_total",
+    "is_home",
+    "rest_days",
+    "back_to_back"
+  ],
+  "state_classifier_logloss": 0.47510841573285284,
+  "state_classifier_brier": {
+    "active_normal": 0.15242502858766843,
+    "active_limited": 0.15242502858766843
+  },
+  "conditional": {
+    "limited": {
+      "n_train": 30406,
+      "n_val": 5734,
+      "q10_emp": 0.1410882455528427,
+      "q10_err": 0.041088245552842684,
+      "q25_emp": 0.2863620509243111,
+      "q25_err": 0.03636205092431111,
+      "q50_emp": 0.4986048133937914,
+      "q50_err": 0.001395186606208576,
+      "q75_emp": 0.7038716428322288,
+      "q75_err": 0.046128357167771195,
+      "q90_emp": 0.8517614230903383,
+      "q90_err": 0.04823857690966171
+    },
+    "normal": {
+      "n_train": 33499,
+      "n_val": 5467,
+      "q10_emp": 0.1448692152917505,
+      "q10_err": 0.0448692152917505,
+      "q25_emp": 0.31498079385403327,
+      "q25_err": 0.06498079385403327,
+      "q50_emp": 0.5324675324675324,
+      "q50_err": 0.03246753246753242,
+      "q75_emp": 0.7495884397292848,
+      "q75_err": 0.0004115602707152055,
+      "q90_emp": 0.8860435339308579,
+      "q90_err": 0.013956466069142137
+    }
+  },
+  "limited_upper_threshold": 24.0,
+  "quantiles": [
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    0.9
+  ]
+}
