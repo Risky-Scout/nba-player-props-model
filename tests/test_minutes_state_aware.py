@@ -239,4 +239,6 @@ def test_predict_minutes_returns_expected_dict_keys_with_no_artifacts(monkeypatc
                 "mp_q75", "mp_q90", "mp_vol",
                 "mp_pred_floor", "mp_pred_ceiling"):
         assert key in result
-    assert result["_distribution"] is not None
+    # The distribution is accessible via the side-channel, not the return dict
+    # (so the dict is parquet-serializable).
+    assert m.last_distribution() is not None

@@ -623,6 +623,11 @@ def predict_minutes(
     q75 = dist.quantile(0.75)
     q90 = dist.quantile(0.90)
     vol = max(std_last10, dist.std())
+    # Stash the full distribution on a weak singleton so callers that want
+    # it for simulation can retrieve without contaminating the returned
+    # feature dict (which is often parquet-serialized by the training
+    # pipeline).
+    _set_last_distribution(dist)
     return {
         "mean_min_last10": mean_last10,
         "exp_mp": float(exp_mp),
@@ -633,8 +638,25 @@ def predict_minutes(
         "mp_vol": float(vol),
         "mp_pred_floor": float(dist.quantile(0.05)),
         "mp_pred_ceiling": float(dist.quantile(0.95)),
-        "_distribution": dist,   # consumed by the rate simulation layer
     }
+
+
+# ── Last-distribution side-channel ───────────────────────────────────────────
+
+_LAST_DISTRIBUTION: Optional[MinutesDistribution] = None
+
+
+def _set_last_distribution(d: MinutesDistribution) -> None:
+    global _LAST_DISTRIBUTION
+    _LAST_DISTRIBUTION = d
+
+
+def last_distribution() -> Optional[MinutesDistribution]:
+    """Return the MinutesDistribution computed by the most recent
+    `predict_minutes` call. Useful for callers that want to feed the
+    full distribution to the simulation layer without re-invoking the
+    classifier and conditional-quantile models."""
+    return _LAST_DISTRIBUTION
 
 
 # ── Training ─────────────────────────────────────────────────────────────────
