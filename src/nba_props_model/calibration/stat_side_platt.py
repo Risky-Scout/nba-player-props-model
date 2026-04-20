@@ -303,12 +303,18 @@ def main():
             # Promotion check
             promoted, reasons = check_promotion(metrics, n_total, n_oof)
 
-            # Fit final calibrator on ALL data
+            # Fit final calibrator on ALL data. IsotonicCalibrator is
+            # non-parametric, so slope/intercept come from regressing the
+            # calibrated probabilities against outcomes (NOT from non-existent
+            # object attributes — the earlier `.slope_` read was a Platt-only
+            # leftover and produced an AttributeError warning on every run).
             try:
                 final_cal = IsotonicCalibrator()
                 final_cal.fit(probs, outcomes)
-                metrics['slope_final']     = round(final_cal.slope_, 4)
-                metrics['intercept_final'] = round(final_cal.intercept_, 4)
+                cal_probs = final_cal.predict_proba(probs)
+                slope_final, intercept_final = _calibration_slope(cal_probs, outcomes)
+                metrics['slope_final']     = round(slope_final, 4)
+                metrics['intercept_final'] = round(intercept_final, 4)
             except Exception as e:
                 logger.warning(f"  {key} final fit failed: {e}")
                 promoted = False

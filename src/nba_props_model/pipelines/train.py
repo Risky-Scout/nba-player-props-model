@@ -446,6 +446,40 @@ def build_training_table(stats_df, adv_df, odds_df):
     snap_dates_available = len(injury_snapshots_index)
     snap_dates_used = 0
 
+    # ── As-of availability table (historical replay) ────────────────────────
+    # The forward-only injury_snapshots table starts when CI began writing
+    # snapshots, leaving ~99% of historical rows without availability signal.
+    # The as-of availability table (Phase 2) is the complete replay and is
+    # what the predict path already consumes — train must use the same
+    # source so train/predict parity holds.
+    availability_cols = (
+        "prob_active", "availability_confidence",
+        "days_since_last_played", "is_returning_from_absence",
+        "minutes_restriction_flag", "num_teammates_out_total",
+        "vacated_minutes_guard", "vacated_minutes_wing", "vacated_minutes_big",
+        "teammate_out_count_guard", "teammate_out_count_wing",
+        "teammate_out_count_big", "vacated_fga_total",
+    )
+    availability_lookup: dict[tuple[int, str], dict] = {}
+    try:
+        from nba_props_model.features.availability_asof import load_availability_table
+        _avail_df = load_availability_table()
+        for r in _avail_df.itertuples(index=False):
+            key = (int(r.player_id), str(pd.Timestamp(r.game_date).date()))
+            availability_lookup[key] = {
+                c: getattr(r, c, None) for c in availability_cols
+            }
+        logger.info(
+            f"As-of availability table loaded: {len(availability_lookup):,} "
+            f"(player_id, game_date) keys from "
+            f"{_avail_df['game_date'].nunique()} dates"
+        )
+    except FileNotFoundError as _e:
+        logger.warning(f"As-of availability table missing: {_e}")
+    except Exception as _e:
+        logger.warning(f"As-of availability load failed: {_e}")
+    avail_rows_matched = 0
+
 
     # ── [v19] Build opponent environment map from stats_df ──────────────────
     # BDL has no opponent season averages endpoint — compute from stats_df directly
@@ -706,6 +740,17 @@ def build_training_table(stats_df, adv_df, odds_df):
                 skipped += 1
                 continue
 
+            # Inject as-of availability features (same source and columns
+            # used by the predict path — parity test in
+            # tests/test_availability_parity.py enforces this).
+            _avail_row = availability_lookup.get((int(player_id), td))
+            if _avail_row is not None:
+                for _c in availability_cols:
+                    _v = _avail_row.get(_c)
+                    if _v is not None:
+                        base[_c] = _v
+                avail_rows_matched += 1
+
             # Inject retrospective features
             _retro = _retro_index.get((int(player_id), gid), {})
             base['did_not_play_last_team_game'] = _retro.get('did_not_play_last_team_game', 0)
@@ -829,10 +874,22 @@ def build_training_table(stats_df, adv_df, odds_df):
                 f"Injury snapshots: {snap_dates_available} dates available | "
                 f"{snap_dates_used} game-rows used real injury data"
             )
+        if availability_lookup:
+            total = max(len(df), 1)
+            pct = 100.0 * avail_rows_matched / total
+            logger.info(
+                f"As-of availability matched: {avail_rows_matched:,}/{total:,} "
+                f"training rows ({pct:.1f}%) carry real availability features"
+            )
+            if pct < 95.0:
+                logger.warning(
+                    f"Availability match rate {pct:.1f}% below 95% target — "
+                    f"check (player_id, game_date) key alignment"
+                )
         else:
             logger.warning(
-                "No injury snapshots found. Vacated-opportunity features will be "
-                "NaN in training. Run daily to accumulate snapshots going forward."
+                "No as-of availability table. Vacated-opportunity features will "
+                "be NaN in training — run scripts/build_availability_table.py."
             )
     return df
 
@@ -1163,18 +1220,24 @@ def main():
         from nba_props_model.models.minutes import train_minutes_model
         minutes_result = train_minutes_model(stats_df, odds_df)
         if minutes_result:
+            mae = minutes_result.get("mae_q50", float("nan"))
+            cal = minutes_result.get("max_cal_error", float("nan"))
+            cov = minutes_result.get("coverage_50pct", float("nan"))
             logger.info(
-                f"Minutes model: MAE={minutes_result['mae_q50']:.3f}min  "
-                f"cal_err={minutes_result['max_cal_error']:.3f}  "
-                f"50%_coverage={minutes_result['coverage_50pct']:.1%}"
+                f"Minutes model: MAE={mae:.3f}min  "
+                f"cal_err={cal:.3f}  "
+                f"50%_coverage={cov:.1%}"
             )
         else:
             logger.warning("Minutes model training returned no results — continuing without it")
     except Exception as e:
         logger.warning(f"Minutes model training failed: {e} — continuing without it")
 
+    # Combos (pra/pr/pa/ra/stocks) are never direct-trained — they are priced
+    # from simulated component PMFs downstream. Only single stats go through
+    # the per-target quantile ladder here.
     results = {}
-    for target in ALL_TARGETS:
+    for target in STATS:
         r = train_target_model(training_df, target)
         if r:
             results[target] = r

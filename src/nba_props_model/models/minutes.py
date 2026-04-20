@@ -782,6 +782,8 @@ def train_state_aware_minutes_model(
 
     # Conditional quantile models per active state.
     conditional_metrics: dict = {}
+    cond_models: dict[str, dict[int, object]] = {"limited": {}, "normal": {}}
+    all_cal_errs: list[float] = []
     for state, tag in ((STATE_LIMITED, "limited"), (STATE_NORMAL, "normal")):
         state_mask = state_labels == state
         X_state_tr = X_all[state_mask & train_mask]
@@ -804,14 +806,42 @@ def train_state_aware_minutes_model(
             m.fit(X_state_tr, y_state_tr)
             qpct = int(round(q * 100))
             joblib.dump(m, MODEL_DIR / f"minutes_{tag}_q{qpct:02d}.pkl")
+            cond_models[tag][qpct] = m
             if len(X_state_val) > 50:
                 emp = float(np.mean(y_state_val <= m.predict(X_state_val)))
                 cal[f"q{qpct}_emp"] = emp
                 cal[f"q{qpct}_err"] = abs(emp - q)
+                all_cal_errs.append(abs(emp - q))
         conditional_metrics[tag] = {
             "n_train": int(len(X_state_tr)), "n_val": int(len(X_state_val)),
             **cal,
         }
+
+    # Canonical holdout metrics on the full validation set: use classifier
+    # probability × conditional medians (or active-state conditional Q50) to
+    # produce an expected-minutes MAE and a coverage check at 50%. This is
+    # the minutes artifact contract the caller reads — keep it stable.
+    mae_q50 = float("nan")
+    max_cal_err = float("nan")
+    coverage_50pct = float("nan")
+    try:
+        if cond_models["limited"] and cond_models["normal"]:
+            lim_q50 = cond_models["limited"][50].predict(X_val)
+            nor_q50 = cond_models["normal"][50].predict(X_val)
+            lim_q25 = cond_models["limited"].get(25, cond_models["limited"][50]).predict(X_val)
+            lim_q75 = cond_models["limited"].get(75, cond_models["limited"][50]).predict(X_val)
+            nor_q25 = cond_models["normal"].get(25, cond_models["normal"][50]).predict(X_val)
+            nor_q75 = cond_models["normal"].get(75, cond_models["normal"][50]).predict(X_val)
+            p_normal = clf_preds
+            q50_mix = p_normal * nor_q50 + (1.0 - p_normal) * lim_q50
+            mae_q50 = float(np.mean(np.abs(q50_mix - y_val)))
+            lb = np.where(b_val == 1, nor_q25, lim_q25)
+            ub = np.where(b_val == 1, nor_q75, lim_q75)
+            coverage_50pct = float(np.mean((y_val >= lb) & (y_val <= ub)))
+        if all_cal_errs:
+            max_cal_err = float(max(all_cal_errs))
+    except Exception as e:
+        logger.warning(f"  canonical holdout metrics computation failed: {e}")
 
     meta = {
         "n_train": int(len(X_tr)),
@@ -822,6 +852,11 @@ def train_state_aware_minutes_model(
         "conditional": conditional_metrics,
         "limited_upper_threshold": LIMITED_UPPER,
         "quantiles": list(QUANTILES),
+        # Canonical minutes artifact contract — consumed by train.py logger and
+        # downstream diagnostics. Do not rename without updating callers.
+        "mae_q50": mae_q50,
+        "max_cal_error": max_cal_err,
+        "coverage_50pct": coverage_50pct,
     }
     with open(MODEL_DIR / "minutes_state_aware_meta.json", "w") as f:
         json.dump(meta, f, indent=2)

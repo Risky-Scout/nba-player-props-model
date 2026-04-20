@@ -150,21 +150,55 @@ class ResidualCenterer:
         """
         Train one residual model per stat from graded daily files.
         Target: actual - q50 (projection error)
+
+        Sparse-data policy: if a stat has fewer than LEARN_MIN rows, fall back
+        to a James-Stein-style shrinkage toward the family/global median:
+            delta_hat = w * stat_median + (1 - w) * global_median
+            w = n / (n + SHRINK_K)
+        No WARNING is emitted — sparse handling is normal operating behavior.
         """
         logger.info("Loading graded data for residual centering training...")
         rows = self._load_graded(graded_dir)
         logger.info(f"  {len(rows)} graded rows loaded")
 
+        # Global prior for shrinkage — median residual across ALL correctable
+        # stats. Provides a zero-ish anchor when a single stat has too few
+        # graded samples to trust on its own.
+        global_residuals = [
+            r["actual"] - r["q50"]
+            for r in rows
+            if r["stat"] in CORRECTABLE_STATS and r["q50"] > 0
+        ]
+        global_median = float(np.median(global_residuals)) if global_residuals else 0.0
+
+        LEARN_MIN = 30
+        SHRINK_K = 30
+
         results = {}
         for stat in CORRECTABLE_STATS:
             stat_rows = [r for r in rows if r["stat"] == stat]
-            if len(stat_rows) < 30:
-                logger.warning(f"  {stat}: only {len(stat_rows)} rows — skipping learned model, using median")
+            if len(stat_rows) < LEARN_MIN:
+                n = len(stat_rows)
                 medians = [r["actual"] - r["q50"] for r in stat_rows if r["q50"] > 0]
-                if medians:
-                    self.fallback[stat] = float(np.clip(np.median(medians),
-                                                        -CORRECTION_CAPS[stat],
-                                                        CORRECTION_CAPS[stat]))
+                stat_median = float(np.median(medians)) if medians else 0.0
+                w = n / (n + SHRINK_K) if (n + SHRINK_K) > 0 else 0.0
+                delta = w * stat_median + (1.0 - w) * global_median
+                self.fallback[stat] = float(np.clip(
+                    delta, -CORRECTION_CAPS[stat], CORRECTION_CAPS[stat]
+                ))
+                self.meta[stat] = {
+                    "n": n,
+                    "model_type": "shrinkage_fallback",
+                    "stat_median": stat_median,
+                    "global_median": global_median,
+                    "shrinkage_w": w,
+                    "fallback_correction": self.fallback[stat],
+                }
+                logger.info(
+                    f"  {stat}: n={n} below learn_min={LEARN_MIN} — "
+                    f"shrinkage fallback delta={delta:+.3f} "
+                    f"(w={w:.2f} stat_med={stat_median:+.3f} glob_med={global_median:+.3f})"
+                )
                 continue
 
             X_list, y_list = [], []

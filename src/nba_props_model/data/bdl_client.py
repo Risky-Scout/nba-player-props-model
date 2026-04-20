@@ -901,20 +901,20 @@ def enrich_game_context_with_snapshots(
         open_total  = snap.get("opening_total")
         open_spread = snap.get("opening_spread")
 
-        # Cross-source total_move: BDL consensus (~8 AM) vs Odds API open (9 AM)
+        # Pregame-only line movement: opening -> as-of-prediction (BDL 8 AM).
+        # The open_close_*_delta fallback would leak a CLOSING quote — which
+        # is post-prediction — so it is removed. Closing-line data is reserved
+        # for ex-post CLV evaluation in scripts/snapshot_closing_lines.py and
+        # evaluation/grading.py.
         bdl_total = ctx.get("consensus_total")
         if open_total and bdl_total:
-            ctx["total_move"]  = round(float(bdl_total) - float(open_total), 2)
-        elif ctx.get("open_close_total_delta"):
-            ctx["total_move"]  = ctx["open_close_total_delta"]
+            ctx["total_move"] = round(float(bdl_total) - float(open_total), 2)
         else:
-            ctx["total_move"]  = None
+            ctx["total_move"] = None
 
         bdl_spread = ctx.get("consensus_spread_home")
         if open_spread is not None and bdl_spread is not None:
             ctx["spread_move"] = round(float(bdl_spread) - float(open_spread), 2)
-        elif ctx.get("open_close_spread_delta"):
-            ctx["spread_move"] = ctx["open_close_spread_delta"]
         else:
             ctx["spread_move"] = None
 
