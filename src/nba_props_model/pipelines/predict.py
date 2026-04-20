@@ -88,6 +88,21 @@ try:
         get_feature_cols_for_stat,
         STATS, COMBO_STATS, ALL_TARGETS,
     )
+    from nba_props_model.calibration.pmf_calibration import load_calibrator as _load_pmf_cal
+    from nba_props_model.models import minutes as _minutes_mod
+    from nba_props_model.models.rate_models import rate_quantiles as _rate_quantiles
+    from nba_props_model.models.simulation import simulate_stat_pmf as _simulate_stat_pmf
+    from nba_props_model.models.sparse_hurdle import (
+        hurdle_pmf as _hurdle_pmf,
+        stocks_pmf as _stocks_pmf,
+    )
+    from nba_props_model.models import combos as _combos_mod
+    from nba_props_model.models.simulation import StatPMF as _StatPMF
+    from nba_props_model.pipelines.pmf_predict import score_prop_line as _score_prop_line
+    from nba_props_model.features.availability_asof import (
+        load_availability_table as _load_availability_table,
+        AvailabilityBuilder as _AvailabilityBuilder,
+    )
     from nba_props_model.correlation.sgp_engine import (
         p_over, p_under,
         ev_from_prob, kelly_fraction,
@@ -588,6 +603,122 @@ def main():
     else:
         logger.warning("  calibration_manifest.json missing — run calibrate_stat_side.py")
 
+    # ── PMF-first cutover readiness detection (MIGRATION.md §3 step 4) ───────
+    # Determine per-stat whether the rebuilt PMF pipeline has every artifact
+    # it needs. For each ready stat we:
+    #   * bypass the legacy direct-total quantile path
+    #   * compute prob_over/prob_under from the PMF (calibrated when
+    #     pmf_cal_{stat}.pkl is present)
+    #   * tag cal_source="pmf" or "pmf_cal"
+    _rate_ready = {
+        s: all((MODEL_DIR / f"rate_{s}_q{int(100*q):02d}.pkl").exists()
+               for q in (0.10, 0.25, 0.50, 0.75, 0.90))
+           and (MODEL_DIR / f"rate_{s}_features.pkl").exists()
+        for s in ("pts", "reb", "ast", "tov")
+    }
+    _hurdle_ready = {
+        s: (MODEL_DIR / f"hurdle_{s}_zero.pkl").exists()
+           and all((MODEL_DIR / f"hurdle_{s}_pos_q{int(100*q):02d}.pkl").exists()
+                   for q in (0.10, 0.25, 0.50, 0.75, 0.90))
+           and (MODEL_DIR / f"hurdle_{s}_features.pkl").exists()
+        for s in ("stl", "blk")
+    }
+    _pmf_ready: dict = {}
+    _pmf_ready.update(_rate_ready)
+    _pmf_ready.update(_hurdle_ready)
+    _pmf_ready["stocks"] = _hurdle_ready.get("stl", False) and _hurdle_ready.get("blk", False)
+    _pmf_ready["fg3m"] = fg3m_hurdle_model is not None
+
+    # Per-stat calibrators (optional — PMFs work even without calibrator).
+    _pmf_calibrators: dict = {}
+    for _stat in ("pts", "reb", "ast", "tov", "stl", "blk", "stocks", "fg3m"):
+        _c = _load_pmf_cal(_stat)
+        if _c is not None:
+            _pmf_calibrators[_stat] = _c
+    n_ready = sum(1 for v in _pmf_ready.values() if v)
+    logger.info(
+        f"  PMF pipeline ready for {n_ready}/{len(_pmf_ready)} stats: "
+        f"{sorted(s for s, v in _pmf_ready.items() if v)}"
+    )
+    logger.info(
+        f"  PMF calibrators loaded: {sorted(_pmf_calibrators.keys()) or '(none)'}"
+    )
+
+    # ── Availability lookup for today's slate ───────────────────────────────
+    # The state-aware minutes model consumes availability features. We
+    # join them per (player_id, game_date). If the persisted table does
+    # not yet contain today's date we build a live as-of snapshot from
+    # the raw parquet sources.
+    _availability_lookup: dict[tuple[int, str], dict] = {}
+    _availability_builder = None
+    _availability_cols = (
+        "prob_active", "days_since_last_played", "is_returning_from_absence",
+        "minutes_restriction_flag", "num_teammates_out_total",
+        "vacated_minutes_guard", "vacated_minutes_wing", "vacated_minutes_big",
+        "teammate_out_count_guard", "teammate_out_count_wing",
+        "teammate_out_count_big", "vacated_fga_total",
+    )
+    try:
+        av_df = _load_availability_table()
+        today_mask = av_df["game_date"].astype(str).str[:10] == target_date
+        _av_today = av_df[today_mask]
+        if _av_today.empty:
+            _availability_builder = _AvailabilityBuilder.from_data_dir()
+            logger.info(
+                "  Availability table has no rows for today; live builder ready "
+                "for on-demand features_for calls per player-game."
+            )
+        else:
+            for r in _av_today.itertuples(index=False):
+                _availability_lookup[(int(r.player_id), str(r.game_date))] = {
+                    c: getattr(r, c, None) for c in _availability_cols
+                }
+            logger.info(
+                f"  Availability rows for today: {len(_availability_lookup)} "
+                "(from persisted table)"
+            )
+    except FileNotFoundError:
+        logger.warning(
+            "  player_availability_asof.parquet missing — new minutes model "
+            "will fall back to default availability"
+        )
+
+    # ── PMF builder helper (uses already-loaded artifacts + minutes dist) ──
+    def _pmf_build_for_stat(target, minutes_dist, feature_row, fg3m_hurdle_model):
+        if target in ("pts", "reb", "ast", "tov"):
+            q = _rate_quantiles(target, feature_row)
+            if q is None:
+                return None
+            pmf_obj = _simulate_stat_pmf(
+                stat=target, minutes_dist=minutes_dist,
+                feature_row=feature_row, n_draws=4000,
+                rng=np.random.default_rng(hash((target, feature_row.get("player_id", 0))) & 0xFFFFFFFF),
+                rate_q_override=q,
+            )
+            return None if pmf_obj is None else pmf_obj.pmf
+        if target in ("stl", "blk"):
+            return _hurdle_pmf(target, feature_row)
+        if target == "stocks":
+            stl = _hurdle_pmf("stl", feature_row)
+            blk = _hurdle_pmf("blk", feature_row)
+            return _stocks_pmf(stl, blk) if (stl is not None and blk is not None) else None
+        if target == "fg3m" and fg3m_hurdle_model is not None:
+            try:
+                return fg3m_hurdle_model.pmf(feature_row)
+            except Exception:
+                return None
+        # Combo stats derived from components.
+        if target in ("pra", "pr", "pa", "ra"):
+            components: dict = {}
+            for s in _combos_mod.COMBO_COMPONENTS[target]:
+                raw = _pmf_build_for_stat(s, minutes_dist, feature_row, fg3m_hurdle_model)
+                if raw is None:
+                    return None
+                components[s] = _StatPMF(stat=s, pmf=raw)
+            combo_pmf = _combos_mod.build_combo_pmf(target, components)
+            return None if combo_pmf is None else combo_pmf.pmf
+        return None
+
     logger.info("Loading historical data...")
     stats_df = pd.read_parquet(stats_path)
     adv_df   = pd.read_parquet(adv_path) if adv_path.exists() else pd.DataFrame()
@@ -700,6 +831,44 @@ def main():
             ub = usage_bucket(float(base.get("adv_usage_percentage_mean_last10") or 0))
             mb = mp_bucket(float(base.get("mp_mean_last10") or 0))
 
+            # ── New PMF pipeline per-player context ─────────────────────────
+            # The rebuilt minutes model has been invoked inside build_player_game_features
+            # via predict_minutes; its full distribution is accessible through the
+            # module-level side-channel. This is the input to the rate x minutes
+            # simulation the PMF-first path uses.
+            _avail_row = None
+            if _availability_lookup:
+                _avail_row = _availability_lookup.get(
+                    (player_id, str(target_date)), None
+                )
+            elif _availability_builder is not None:
+                try:
+                    _pairs = pd.DataFrame([{
+                        "player_id": player_id, "team_id": team_id,
+                        "game_date": str(target_date),
+                    }])
+                    _fts = _availability_builder.features_for(_pairs)
+                    if len(_fts):
+                        _avail_row = {
+                            c: _fts.iloc[0].get(c) for c in _availability_cols
+                        }
+                except Exception as _e:
+                    logger.debug(f"availability builder call failed for {player_id}: {_e}")
+            # Re-run the state-aware minutes model with the availability row so
+            # that prob_active + teammate-absence signal actually flow into the
+            # minutes distribution used by the PMF simulator. The call is cheap
+            # (re-uses the already-cached classifier pickles).
+            try:
+                _mp_dist = _minutes_mod.minutes_distribution(
+                    prior_stats=pdata, game_context=ctx,
+                    is_home=bool(is_home), target_date=target_date,
+                    team_id=team_id, all_stats_df=stats_df,
+                    injury_map=injury_map, availability=_avail_row,
+                )
+            except Exception as _e:
+                logger.debug(f"minutes_distribution rebuild failed for {player_id}: {_e}")
+                _mp_dist = _minutes_mod.last_distribution()
+
             for target in ALL_TARGETS:
                 prop = prop_map.get((player_id, gid, target))
                 if prop is None:
@@ -783,10 +952,37 @@ def main():
 
 
 
+                # ── PMF-first cutover (MIGRATION.md §3 step 4) ─────────────────
+                # When the rebuilt PMF pipeline has the artifacts for this stat,
+                # price the line from the calibrated PMF. Falls through to the
+                # legacy direct-total path below if any required artifact is
+                # missing.
+                _pmf_used = False
+                if target in _pmf_ready and _pmf_ready[target] and _mp_dist is not None:
+                    try:
+                        _pmf_arr = _pmf_build_for_stat(
+                            target=target, minutes_dist=_mp_dist,
+                            feature_row=base_ix, fg3m_hurdle_model=fg3m_hurdle_model,
+                        )
+                    except Exception as _e:
+                        logger.debug(f"PMF build failed for {target}: {_e}")
+                        _pmf_arr = None
+                    if _pmf_arr is not None:
+                        _cal = _pmf_calibrators.get(target)
+                        if _cal is not None:
+                            _pmf_arr = _cal.apply(_pmf_arr)
+                        _po, _pu = _score_prop_line(_pmf_arr, float(line))
+                        prob_over = float(_po)
+                        prob_under = float(_pu)
+                        _pmf_used = True
+                if _pmf_used:
+                    # Short-circuit legacy branches below; enforce monotonicity
+                    # invariants and continue to the downstream filter+EV block.
+                    pass
                 # ── Combo props: price from correlated component simulation ──────
                 # Do not use direct quantile model for combos — simulation is more
                 # accurate because it preserves component calibration + correlation.
-                if target in COMBO_COMPONENTS:
+                elif target in COMBO_COMPONENTS:
                     _comp_stats = COMBO_COMPONENTS[target]
                     _comp_qpreds = {}
                     for _cs in _comp_stats:
@@ -860,8 +1056,16 @@ def main():
                     return prob, 'raw_none'
                 raw_over   = prob_over
                 raw_under  = prob_under
-                prob_over,  cal_src_over  = _apply_cal(prob_over,  target, "OVER")
-                prob_under, cal_src_under = _apply_cal(prob_under, target, "UNDER")
+                if _pmf_used:
+                    # The PMF pipeline has already been calibrated at the CDF
+                    # level (if a pmf_cal_{stat}.pkl was loaded) — skip the
+                    # legacy side-level Platt wrapper and tag the source as
+                    # "pmf" or "pmf_cal" for downstream diagnostics.
+                    cal_src_over = "pmf_cal" if target in _pmf_calibrators else "pmf"
+                    cal_src_under = cal_src_over
+                else:
+                    prob_over,  cal_src_over  = _apply_cal(prob_over,  target, "OVER")
+                    prob_under, cal_src_under = _apply_cal(prob_under, target, "UNDER")
                 cal_applied_over  = (cal_src_over  != 'raw_none')
                 cal_applied_under = (cal_src_under != 'raw_none')
 
