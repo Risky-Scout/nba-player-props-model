@@ -60,7 +60,11 @@
   "global_OVER": {
     "key": "global_OVER",
     "scope": "global",
-    "promoted": true,
+    "promoted": false,
+    "promotion_reasons": [
+      "brier_cal_oof=0.2928 >= brier_raw=0.2579",
+      "logloss_cal_oof=1.2336 degrades vs logloss_raw=0.7162"
+    ],
     "n_total": 41,
     "n_oof": 30,
     "brier_raw": 0.25794,
@@ -79,7 +83,11 @@
   "global_UNDER": {
     "key": "global_UNDER",
     "scope": "global",
-    "promoted": true,
+    "promoted": false,
+    "promotion_reasons": [
+      "brier_cal_oof=0.3167 >= brier_raw=0.2864",
+      "logloss_cal_oof=1.1411 degrades vs logloss_raw=0.7822"
+    ],
     "n_total": 91,
     "n_oof": 75,
     "brier_raw": 0.28637,
@@ -96,7 +104,7 @@
     "intercept_cal": 0.1844
   },
   "_meta": {
-    "generated_at": "2026-04-21T00:37:54.093694",
+    "generated_at": "2026-04-21T04:41:03.449773",
     "n_rows_total": 132,
     "gate_n_total": 80,
     "gate_n_oof": 60,
