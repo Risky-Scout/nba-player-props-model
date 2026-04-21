@@ -39,11 +39,12 @@ import pandas as pd  # noqa: E402
 
 from nba_props_model.calibration.pmf_calibration import load_calibrator  # noqa: E402
 from nba_props_model.evaluation.diagnostics import (  # noqa: E402
-    FoldMetrics, american_to_implied_prob, bootstrap_ci,
+    FoldMetrics, bootstrap_ci,
     brier, calibration_slope_intercept, devig_pair,
     discrete_crps, ece, edge_decile_monotonicity, log_score,
     pit_ks_distance, randomized_pit, write_report,
 )
+from nba_props_model.selection.bet_selection import american_to_implied_prob  # noqa: E402
 from nba_props_model.paths import DATA_DIR, MODEL_DIR, REPO_ROOT  # noqa: E402
 from nba_props_model.models.simulation import DOMAIN_MAX as MAIN_DOMAIN_MAX  # noqa: E402
 from nba_props_model.models.sparse_hurdle import DOMAIN_MAX as SPARSE_DOMAIN_MAX  # noqa: E402
