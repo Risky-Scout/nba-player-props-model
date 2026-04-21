@@ -90,6 +90,63 @@ _STATE_FEATURES: Optional[list[str]] = None
 _LEGACY_CACHE: dict = {}
 _LEGACY_FEATURES: Optional[list] = None
 
+# ── Monotone CDF calibrator (fitted walk-forward OOF) ─────────────────────────
+# See train_minutes_calibrator() below. Fits an isotonic map from predicted
+# CDF value to empirical frequency so interval coverage matches nominal. The
+# map is monotone non-decreasing by construction so distribution validity is
+# preserved.
+_MINUTES_CDF_CAL: Optional[object] = None
+_MINUTES_CDF_CAL_LOADED: bool = False
+
+
+class MinutesCDFCalibrator:
+    """Isotonic PIT-style calibration for a predicted minutes distribution.
+
+    After fitting, `apply_cdf(f)` maps a raw predicted CDF value `f` to a
+    calibrated CDF value that matches empirical coverage on the holdout.
+    """
+
+    def __init__(self) -> None:
+        self.iso = None
+
+    def fit(self, pred_cdf_at_actual: np.ndarray) -> "MinutesCDFCalibrator":
+        from sklearn.isotonic import IsotonicRegression
+        u = np.clip(np.asarray(pred_cdf_at_actual, dtype=float), 0.0, 1.0)
+        u = np.sort(u)
+        n = len(u)
+        if n < 5:
+            self.iso = None
+            return self
+        empirical = (np.arange(1, n + 1)) / float(n + 1)
+        # Anchor endpoints so the map takes [0,1] -> [0,1] monotonically.
+        xs = np.concatenate([[0.0], u, [1.0]])
+        ys = np.concatenate([[0.0], empirical, [1.0]])
+        self.iso = IsotonicRegression(
+            y_min=0.0, y_max=1.0, out_of_bounds="clip", increasing=True
+        ).fit(xs, ys)
+        return self
+
+    def apply_cdf(self, f: float) -> float:
+        if self.iso is None:
+            return float(np.clip(f, 0.0, 1.0))
+        return float(np.clip(self.iso.predict([float(f)])[0], 0.0, 1.0))
+
+
+def _load_minutes_cdf_calibrator() -> Optional[MinutesCDFCalibrator]:
+    global _MINUTES_CDF_CAL, _MINUTES_CDF_CAL_LOADED
+    if _MINUTES_CDF_CAL_LOADED:
+        return _MINUTES_CDF_CAL
+    _MINUTES_CDF_CAL_LOADED = True
+    p = MODEL_DIR / "minutes_cdf_calibrator.pkl"
+    if p.exists():
+        try:
+            _MINUTES_CDF_CAL = joblib.load(p)
+            logger.info("Minutes CDF calibrator loaded.")
+        except Exception as e:
+            logger.warning(f"Minutes CDF calibrator load failed: {e}")
+            _MINUTES_CDF_CAL = None
+    return _MINUTES_CDF_CAL
+
 
 def _load_state_aware() -> bool:
     """Load the state-aware artifacts. Return True if all artifacts present."""
@@ -322,6 +379,13 @@ class MinutesDistribution:
     # ── interface ──
 
     def cdf(self, minutes: float) -> float:
+        raw = self._raw_cdf(minutes)
+        cal = _load_minutes_cdf_calibrator()
+        if cal is not None:
+            return cal.apply_cdf(raw)
+        return raw
+
+    def _raw_cdf(self, minutes: float) -> float:
         m = max(0.0, float(minutes))
         if m >= MINUTES_CEILING:
             return 1.0
@@ -354,6 +418,13 @@ class MinutesDistribution:
         return float(np.std(samples))
 
     def sample(self, n: int, rng: np.random.Generator) -> np.ndarray:
+        # Route through the calibrated CDF when the monotone calibrator is
+        # loaded — otherwise draw from the raw per-state quantile ladders
+        # for speed.
+        cal = _load_minutes_cdf_calibrator()
+        if cal is not None:
+            u = rng.uniform(0.0, 1.0, size=n)
+            return np.array([self.quantile(float(ui)) for ui in u], dtype=float)
         p = np.array(self.state_probs, dtype=float)
         p = p / max(p.sum(), 1e-9)
         states = rng.choice(3, size=n, p=p)
@@ -843,6 +914,75 @@ def train_state_aware_minutes_model(
     except Exception as e:
         logger.warning(f"  canonical holdout metrics computation failed: {e}")
 
+    # ── Monotone PIT calibrator on the internal holdout ──────────────────
+    # Build a per-row MinutesDistribution, evaluate F_hat_i = cdf(y_i), and
+    # fit an isotonic map so F_cal ~ Uniform(0,1). This preserves CDF
+    # monotonicity by construction and pulls 50% coverage toward nominal.
+    cal_coverage_50pct_after = float("nan")
+    cal_mae_q50_after = float("nan")
+    try:
+        if cond_models["limited"] and cond_models["normal"]:
+            lim_q_preds = {q: cond_models["limited"][q].predict(X_val) for q in (10, 25, 50, 75, 90) if q in cond_models["limited"]}
+            nor_q_preds = {q: cond_models["normal"][q].predict(X_val) for q in (10, 25, 50, 75, 90) if q in cond_models["normal"]}
+            p_active_val = np.ones(len(y_val))  # training labels are active-only
+            p_normal_all = clf_preds * p_active_val
+            p_limited_all = (1.0 - clf_preds) * p_active_val
+            pit_vals = np.zeros(len(y_val), dtype=float)
+            for i in range(len(y_val)):
+                lim_q = {k: float(v[i]) for k, v in lim_q_preds.items()}
+                nor_q = {k: float(v[i]) for k, v in nor_q_preds.items()}
+                dist = MinutesDistribution(
+                    state_probs=(0.0, float(p_limited_all[i]), float(p_normal_all[i])),
+                    limited_quantiles=lim_q,
+                    normal_quantiles=nor_q,
+                )
+                pit_vals[i] = dist._raw_cdf(float(y_val[i]))
+            calibrator = MinutesCDFCalibrator().fit(pit_vals)
+            joblib.dump(calibrator, MODEL_DIR / "minutes_cdf_calibrator.pkl")
+            logger.info(
+                f"Minutes CDF calibrator fitted on {len(pit_vals):,} holdout rows"
+            )
+            # Post-calibration coverage check — draw calibrated quantiles at
+            # 0.25 / 0.75 and re-measure coverage.
+            cov_hits = 0
+            abs_err = 0.0
+            for i in range(len(y_val)):
+                lim_q = {k: float(v[i]) for k, v in lim_q_preds.items()}
+                nor_q = {k: float(v[i]) for k, v in nor_q_preds.items()}
+                dist = MinutesDistribution(
+                    state_probs=(0.0, float(p_limited_all[i]), float(p_normal_all[i])),
+                    limited_quantiles=lim_q,
+                    normal_quantiles=nor_q,
+                )
+                raw_cdf = dist._raw_cdf(float(y_val[i]))
+                pit_cal = calibrator.apply_cdf(raw_cdf)
+                # Coverage: whether the actual falls inside calibrated
+                # [q25, q75]. Invert calibrator to find minute level whose
+                # calibrated cdf = 0.25 / 0.75.
+                def _inv_cal(tau):
+                    lo, hi = 0.0, MINUTES_CEILING
+                    for _ in range(60):
+                        mid = 0.5 * (lo + hi)
+                        if calibrator.apply_cdf(dist._raw_cdf(mid)) < tau:
+                            lo = mid
+                        else:
+                            hi = mid
+                    return 0.5 * (lo + hi)
+                q25 = _inv_cal(0.25); q75 = _inv_cal(0.75)
+                if q25 <= float(y_val[i]) <= q75:
+                    cov_hits += 1
+                q50_cal = _inv_cal(0.5)
+                abs_err += abs(q50_cal - float(y_val[i]))
+            cal_coverage_50pct_after = float(cov_hits / max(len(y_val), 1))
+            cal_mae_q50_after = float(abs_err / max(len(y_val), 1))
+            logger.info(
+                f"Minutes CDF calibrator holdout: "
+                f"coverage_50pct={cal_coverage_50pct_after:.3f}  "
+                f"mae_q50={cal_mae_q50_after:.3f}"
+            )
+    except Exception as e:
+        logger.warning(f"Minutes CDF calibrator fit failed: {e}")
+
     meta = {
         "n_train": int(len(X_tr)),
         "n_val": int(len(X_val)),
@@ -857,16 +997,22 @@ def train_state_aware_minutes_model(
         "mae_q50": mae_q50,
         "max_cal_error": max_cal_err,
         "coverage_50pct": coverage_50pct,
+        # Post-calibration holdout metrics — reported separately so callers
+        # can compare raw vs calibrated at a glance.
+        "mae_q50_calibrated": cal_mae_q50_after,
+        "coverage_50pct_calibrated": cal_coverage_50pct_after,
     }
     with open(MODEL_DIR / "minutes_state_aware_meta.json", "w") as f:
         json.dump(meta, f, indent=2)
     logger.info("  wrote minutes_state_aware_meta.json")
 
     # Refresh in-process caches.
-    global _STATE_CLF, _COND_Q, _STATE_FEATURES
+    global _STATE_CLF, _COND_Q, _STATE_FEATURES, _MINUTES_CDF_CAL, _MINUTES_CDF_CAL_LOADED
     _STATE_CLF = None
     _COND_Q = {}
     _STATE_FEATURES = None
+    _MINUTES_CDF_CAL = None
+    _MINUTES_CDF_CAL_LOADED = False
     _load_state_aware()
     return meta
 

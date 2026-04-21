@@ -99,3 +99,49 @@ def test_availability_table_matches_training_rows_above_95pct():
         f"availability coverage {pct:.2f}% below 95% on {total} rows "
         f"({matched} matched)"
     )
+
+
+def test_training_availability_warning_uses_unique_player_game_denominator():
+    """The prior warning used `len(df)` which is exploded 1-row-per-stat.
+    That multiplies the denominator by the number of stats (~7x) and
+    under-reports coverage. The fix computes coverage on the unique
+    (player_id, game_id) population."""
+    src = TRAIN.read_text()
+    # The correct denominator is the unique player-game count — look for
+    # the specific construction so regressions get caught.
+    assert (
+        'df[["player_id", "game_id"]].drop_duplicates()' in src
+        or 'df[["player_id","game_id"]].drop_duplicates()' in src
+    ), "availability coverage must be computed on unique player-games"
+    # And the stale exploded-denominator expression must be gone.
+    stale = "pct = 100.0 * avail_rows_matched / total"
+    assert stale not in src, "stale exploded-row denominator still present"
+
+
+def test_training_audits_unmatched_root_causes():
+    """If any unique player-game fails the availability join, the trainer
+    must print explicit root-cause counts so a coverage drop is debuggable
+    without re-running the full build."""
+    src = TRAIN.read_text()
+    assert "_audit_unmatched_availability" in src, (
+        "unmatched-root-cause audit helper missing"
+    )
+    for reason in (
+        "date_outside_availability_window",
+        "player_id_absent_from_availability",
+        "other_source_gap",
+    ):
+        assert reason in src, f"audit must report reason {reason!r}"
+
+
+def test_training_separates_injury_snapshot_from_asof_availability_logging():
+    """Keep the two different sources clearly labeled — the injury-snapshot
+    number (forward-only, sparse) must not be confused with the as-of
+    availability number (historical replay, dense)."""
+    src = TRAIN.read_text()
+    assert "Injury snapshots metric" in src, (
+        "injury-snapshot log line must be distinctly labeled"
+    )
+    assert "As-of availability metric" in src, (
+        "as-of availability log line must be distinctly labeled"
+    )

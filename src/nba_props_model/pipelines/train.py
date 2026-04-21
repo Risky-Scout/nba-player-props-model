@@ -461,6 +461,8 @@ def build_training_table(stats_df, adv_df, odds_df):
         "teammate_out_count_big", "vacated_fga_total",
     )
     availability_lookup: dict[tuple[int, str], dict] = {}
+    availability_date_range: tuple[str, str] | None = None
+    availability_player_ids: set[int] = set()
     try:
         from nba_props_model.features.availability_asof import load_availability_table
         _avail_df = load_availability_table()
@@ -469,16 +471,26 @@ def build_training_table(stats_df, adv_df, odds_df):
             availability_lookup[key] = {
                 c: getattr(r, c, None) for c in availability_cols
             }
+            availability_player_ids.add(int(r.player_id))
+        _d = _avail_df["game_date"].astype(str).str.slice(0, 10)
+        availability_date_range = (_d.min(), _d.max())
         logger.info(
             f"As-of availability table loaded: {len(availability_lookup):,} "
             f"(player_id, game_date) keys from "
-            f"{_avail_df['game_date'].nunique()} dates"
+            f"{_avail_df['game_date'].nunique()} dates "
+            f"({availability_date_range[0]} → {availability_date_range[1]})"
         )
     except FileNotFoundError as _e:
         logger.warning(f"As-of availability table missing: {_e}")
     except Exception as _e:
         logger.warning(f"As-of availability load failed: {_e}")
-    avail_rows_matched = 0
+    # Track unique (player_id, game_date) pairs that matched vs missed.
+    # The older code used `len(df)` as the denominator — but `df` is
+    # exploded 1-row-per-(player, game, stat), so the ratio under-reports
+    # by the number of stats trained (~7x). The correct denominator is the
+    # unique player-game count.
+    avail_pg_matched: set[tuple[int, str]] = set()
+    avail_pg_missed: set[tuple[int, str]] = set()
 
 
     # ── [v19] Build opponent environment map from stats_df ──────────────────
@@ -743,13 +755,16 @@ def build_training_table(stats_df, adv_df, odds_df):
             # Inject as-of availability features (same source and columns
             # used by the predict path — parity test in
             # tests/test_availability_parity.py enforces this).
-            _avail_row = availability_lookup.get((int(player_id), td))
+            _pg_key = (int(player_id), td)
+            _avail_row = availability_lookup.get(_pg_key)
             if _avail_row is not None:
                 for _c in availability_cols:
                     _v = _avail_row.get(_c)
                     if _v is not None:
                         base[_c] = _v
-                avail_rows_matched += 1
+                avail_pg_matched.add(_pg_key)
+            elif availability_lookup:
+                avail_pg_missed.add(_pg_key)
 
             # Inject retrospective features
             _retro = _retro_index.get((int(player_id), gid), {})
@@ -869,22 +884,36 @@ def build_training_table(stats_df, adv_df, odds_df):
             f"Training table: {len(df)} rows | "
             f"{df['player_id'].nunique()} players | skipped={skipped}"
         )
+        # ── Metric 1: injury-snapshot coverage (forward-only) ──────────
         if snap_dates_available > 0:
             logger.info(
-                f"Injury snapshots: {snap_dates_available} dates available | "
-                f"{snap_dates_used} game-rows used real injury data"
+                f"Injury snapshots metric: {snap_dates_available} dates "
+                f"available | {snap_dates_used} game-rows used real injury "
+                f"snapshot data (forward-only source, expected to be sparse)"
             )
+        # ── Metric 2: as-of availability coverage on unique player-games ─
+        # Denominator MUST be unique (player_id, game_date) pairs, not the
+        # exploded training rows. Exploded rows count the stat-dimension
+        # (≈7x multiplier) and produce a falsely low ratio.
         if availability_lookup:
-            total = max(len(df), 1)
-            pct = 100.0 * avail_rows_matched / total
+            unique_pg = df[["player_id", "game_id"]].drop_duplicates().shape[0]
+            matched_unique = len(avail_pg_matched)
+            pct = 100.0 * matched_unique / max(unique_pg, 1)
             logger.info(
-                f"As-of availability matched: {avail_rows_matched:,}/{total:,} "
-                f"training rows ({pct:.1f}%) carry real availability features"
+                f"As-of availability metric: {matched_unique:,}/{unique_pg:,} "
+                f"unique player-games matched ({pct:.1f}%)"
             )
+            if avail_pg_missed:
+                _audit_unmatched_availability(
+                    avail_pg_missed=avail_pg_missed,
+                    availability_date_range=availability_date_range,
+                    availability_player_ids=availability_player_ids,
+                    stats_df=stats_df,
+                )
             if pct < 95.0:
                 logger.warning(
-                    f"Availability match rate {pct:.1f}% below 95% target — "
-                    f"check (player_id, game_date) key alignment"
+                    f"As-of availability coverage {pct:.1f}% below 95% "
+                    f"target on unique player-games — see root-cause audit"
                 )
         else:
             logger.warning(
@@ -892,6 +921,33 @@ def build_training_table(stats_df, adv_df, odds_df):
                 "be NaN in training — run scripts/build_availability_table.py."
             )
     return df
+
+
+def _audit_unmatched_availability(
+    *,
+    avail_pg_missed: set[tuple[int, str]],
+    availability_date_range: tuple[str, str] | None,
+    availability_player_ids: set[int],
+    stats_df: pd.DataFrame,
+) -> None:
+    """Print root-cause counts for player-games that did not match the
+    as-of availability table."""
+    lo, hi = availability_date_range if availability_date_range else ("0001-01-01", "9999-12-31")
+    reasons = {
+        "date_outside_availability_window": 0,
+        "player_id_absent_from_availability": 0,
+        "other_source_gap": 0,
+    }
+    for pid, date_iso in avail_pg_missed:
+        if date_iso < lo or date_iso > hi:
+            reasons["date_outside_availability_window"] += 1
+        elif pid not in availability_player_ids:
+            reasons["player_id_absent_from_availability"] += 1
+        else:
+            reasons["other_source_gap"] += 1
+    logger.info("As-of availability unmatched root causes:")
+    for r, n in reasons.items():
+        logger.info(f"  {r}: {n:,}")
 
 
 # ── Per-target quantile model training ────────────────────────────────────────

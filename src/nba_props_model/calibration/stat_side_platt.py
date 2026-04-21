@@ -352,6 +352,13 @@ def main():
             })
 
     # ── Global side calibrators ────────────────────────────────────────────────
+    # Subject global side calibrators to the same promotion gate as stat×side.
+    # If OOF Brier gets worse (or log-loss meaningfully degrades), the
+    # calibrator is NOT written to the production MODEL_DIR — it is saved
+    # to a diagnostics subdirectory so predict.py never loads it. Also
+    # remove any stale production artifact from a previous promoted run.
+    diagnostics_dir = MODEL_DIR / "calibration_diagnostics"
+    diagnostics_dir.mkdir(parents=True, exist_ok=True)
     logger.info("\n--- Global Side Calibrators ---")
     for side in SIDES:
         key     = f"global_{side}"
@@ -375,18 +382,64 @@ def main():
 
         final_cal = IsotonicCalibrator()
         final_cal.fit(probs, outcomes)
-        joblib.dump(final_cal, MODEL_DIR / f"platt_{side}.pkl")
 
-        promoted = True  # always save global fallback
-        logger.info(
-            f"  {key:<15} n={n_total:>4} oof={n_oof:>4} "
-            f"Brier {metrics.get('brier_raw',0):.4f}→{metrics.get('brier_cal_oof',0):.4f} "
-            f"✓ SAVED (global fallback always saved)"
+        # Gate: production load ONLY when OOF Brier improves AND log-loss
+        # doesn't meaningfully degrade. Otherwise stash as diagnostics.
+        prod_path = MODEL_DIR / f"platt_{side}.pkl"
+        diag_path = diagnostics_dir / f"platt_{side}.pkl"
+        gate_reasons = []
+        brier_improves = (
+            'brier_raw' in metrics and 'brier_cal_oof' in metrics and
+            metrics['brier_cal_oof'] < metrics['brier_raw']
         )
+        logloss_ok = (
+            'logloss_cal_oof' in metrics and 'logloss_raw' in metrics and
+            metrics['logloss_cal_oof'] <= metrics['logloss_raw'] + GATE_LOGLOSS_TOL
+        )
+        if not brier_improves:
+            gate_reasons.append(
+                f"brier_cal_oof={metrics.get('brier_cal_oof', float('nan')):.4f} "
+                f">= brier_raw={metrics.get('brier_raw', float('nan')):.4f}"
+            )
+        if not logloss_ok:
+            gate_reasons.append(
+                f"logloss_cal_oof={metrics.get('logloss_cal_oof', float('nan')):.4f} "
+                f"degrades vs logloss_raw={metrics.get('logloss_raw', float('nan')):.4f}"
+            )
+        promoted = len(gate_reasons) == 0
 
-        manifest[key] = {'key': key, 'scope': 'global', 'promoted': True,
+        if promoted:
+            joblib.dump(final_cal, prod_path)
+            logger.info(
+                f"  {key:<15} n={n_total:>4} oof={n_oof:>4} "
+                f"Brier {metrics.get('brier_raw',0):.4f}→{metrics.get('brier_cal_oof',0):.4f} "
+                f"✓ PROMOTED"
+            )
+            # Clean any stale diagnostic copy.
+            if diag_path.exists():
+                try:
+                    diag_path.unlink()
+                except Exception:
+                    pass
+        else:
+            joblib.dump(final_cal, diag_path)
+            # Remove any stale production artifact so predict.py never
+            # picks up a worsening calibrator from a prior promoted run.
+            if prod_path.exists():
+                try:
+                    prod_path.unlink()
+                except Exception:
+                    pass
+            logger.info(
+                f"  {key:<15} n={n_total:>4} oof={n_oof:>4} "
+                f"Brier {metrics.get('brier_raw',0):.4f}→{metrics.get('brier_cal_oof',0):.4f} "
+                f"✗ DIAGNOSTICS-ONLY ({'; '.join(gate_reasons)})"
+            )
+
+        manifest[key] = {'key': key, 'scope': 'global', 'promoted': promoted,
+                         'promotion_reasons': gate_reasons if not promoted else [],
                          'n_total': n_total, 'n_oof': n_oof, **metrics}
-        report_rows.append({'key': key, 'scope': 'global', 'promoted': True,
+        report_rows.append({'key': key, 'scope': 'global', 'promoted': promoted,
                             'n_total': n_total, 'n_oof': n_oof, **metrics})
 
     # ── Save manifest and report ───────────────────────────────────────────────

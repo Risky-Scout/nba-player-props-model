@@ -880,60 +880,7 @@ def main():
                 vendor     = prop.get("best_over_vendor", prop.get("vendor", ""))
 
                 base_ix = add_interaction_features(dict(base), target)
-                q_preds = predict_quantiles(models, target, base_ix)
-                if q_preds is None:
-                    continue
 
-                # No market data — shrink quantile predictions toward median
-                if not base.get("has_odds", base.get("has_market_data", 0)):
-                    q50 = q_preds.get(0.50, 0)
-                    q_preds = {q: q50 + 0.70 * (v - q50) for q, v in q_preds.items()}
-
-                # Apply residual centerer if available, else fall back to BIAS_CORRECTION
-                if _centerer is not None:
-                    try:
-                        meta = {
-                            "mp_mean_last10": base.get("mp_mean_last10"),
-                            "is_home": base.get("is_home", 0),
-                            "days_rest": base.get("days_rest", 1),
-                            "opp_def_rating": base.get("opp_allowed_pts_ewma", 112.0),
-                        }
-                        q_preds = _centerer.correct_quantiles(target, q_preds, meta)
-                    except Exception:
-                        bias = BIAS_CORRECTION.get(target, 0.0)
-                        q_preds = {q: v + bias for q, v in q_preds.items()}
-                else:
-                    bias = BIAS_CORRECTION.get(target, 0.0)
-                    q_preds = {q: v + bias for q, v in q_preds.items()}
-
-                # Apply minutes-bucket correction (Phase 2 fix)
-                # Use 50% of correction per rebuild doc:
-                # "use 50-75% of the holdout correction initially, then recheck"
-                # Hard cap: never shift pts more than +1.5 from minutes correction alone
-                mp_b = str(mb)
-                min_corr_raw = MINUTES_CORRECTIONS.get((target, mp_b), 0.0)
-                # Minutes corrections disabled for pts — stacking with bias correction
-                # was inverting PTS_OVER AUC to 0.43. Re-enable after retrain validates.
-                pct = 0.0 if target == "pts" else 0.50
-                min_corr = min_corr_raw * pct
-                if target == "pts":
-                    min_corr = float(np.clip(min_corr, -1.0, 1.5))
-                elif target in ("reb","ast"):
-                    min_corr = float(np.clip(min_corr, -0.5, 0.8))
-                if min_corr != 0.0:
-                    q_preds = {q: v + min_corr for q, v in q_preds.items()}
-
-                q50     = q_preds.get(0.50, line)
-
-                # Bad-line sanity filter (permanent architecture — deployment layer)
-                # Skip if market line is more than 1.75x the model projection
-                # Tightened from 2.5x — REB/AST unders were slipping through at 1.8x
-                if q50 > 0 and line > q50 * 1.75:
-                    continue
-                # Alt-line guard: if line > 1.5x q50 AND q50 < 15 for pts,
-                # this is almost certainly an alt/inflated line (Jalen Duren pattern)
-                if target == "pts" and q50 < 17.0 and line > q50 * 1.5:
-                    continue
                 # Skip if line is negative (impossible stat value)
                 if line <= 0:
                     continue
@@ -942,7 +889,7 @@ def main():
                     "ast":  2.0,
                     "fg3m": 0.5,
                     "reb":  2.0,
-                    "pts":  8.0,   # raised: avoid bench padding
+                    "pts":  8.0,
                     "stl":  0.5,
                     "blk":  0.5,
                 }
@@ -950,124 +897,56 @@ def main():
                 if line < min_line:
                     continue
 
+                # ── PMF-ONLY production pricing path ─────────────────────────
+                # Canonical pipeline:
+                #   availability -> state-aware minutes -> rate/hurdle PMF ->
+                #   PMF/CDF calibration -> (prob_over, prob_under)
+                # No legacy quantile ladder, no Platt/live_cal overlay, no Q50
+                # bias shift, no minutes-bucket correction, no residual
+                # centerer. If the PMF build fails for any reason, skip the
+                # candidate — never fall back silently to a legacy path.
+                if not (target in _pmf_ready and _pmf_ready[target]) or _mp_dist is None:
+                    continue
+                try:
+                    _pmf_arr = _pmf_build_for_stat(
+                        target=target, minutes_dist=_mp_dist,
+                        feature_row=base_ix, fg3m_hurdle_model=fg3m_hurdle_model,
+                    )
+                except Exception as _e:
+                    logger.debug(f"PMF build failed for {target}: {_e}")
+                    _pmf_arr = None
+                if _pmf_arr is None:
+                    continue
+                _cal = _pmf_calibrators.get(target)
+                if _cal is not None:
+                    _pmf_arr = _cal.apply(_pmf_arr)
+                _po, _pu = _score_prop_line(_pmf_arr, float(line))
+                prob_over = float(_po)
+                prob_under = float(_pu)
+                raw_over = prob_over
+                raw_under = prob_under
+                cal_src_over = "pmf_cal" if target in _pmf_calibrators else "pmf"
+                cal_src_under = cal_src_over
+                cal_applied_over = (target in _pmf_calibrators)
+                cal_applied_under = cal_applied_over
 
+                # Derive quantiles + median directly from the PMF so every
+                # downstream gate reads the PMF as the source of truth. No
+                # legacy quantile ladder is consulted.
+                _cdf_arr = np.cumsum(_pmf_arr)
+                def _pmf_quantile(tau: float) -> float:
+                    k = int(np.searchsorted(_cdf_arr, tau, side="left"))
+                    return float(min(k, len(_pmf_arr) - 1))
+                q_preds = {q: _pmf_quantile(q) for q in (0.10, 0.20, 0.25, 0.33, 0.40,
+                                                         0.50, 0.60, 0.67, 0.75, 0.80, 0.90)}
+                q50 = q_preds[0.50]
 
-                # ── PMF-first cutover (MIGRATION.md §3 step 4) ─────────────────
-                # When the rebuilt PMF pipeline has the artifacts for this stat,
-                # price the line from the calibrated PMF. Falls through to the
-                # legacy direct-total path below if any required artifact is
-                # missing.
-                _pmf_used = False
-                if target in _pmf_ready and _pmf_ready[target] and _mp_dist is not None:
-                    try:
-                        _pmf_arr = _pmf_build_for_stat(
-                            target=target, minutes_dist=_mp_dist,
-                            feature_row=base_ix, fg3m_hurdle_model=fg3m_hurdle_model,
-                        )
-                    except Exception as _e:
-                        logger.debug(f"PMF build failed for {target}: {_e}")
-                        _pmf_arr = None
-                    if _pmf_arr is not None:
-                        _cal = _pmf_calibrators.get(target)
-                        if _cal is not None:
-                            _pmf_arr = _cal.apply(_pmf_arr)
-                        _po, _pu = _score_prop_line(_pmf_arr, float(line))
-                        prob_over = float(_po)
-                        prob_under = float(_pu)
-                        _pmf_used = True
-                if _pmf_used:
-                    # Short-circuit legacy branches below; enforce monotonicity
-                    # invariants and continue to the downstream filter+EV block.
-                    pass
-                # ── Combo props: price from correlated component simulation ──────
-                # Do not use direct quantile model for combos — simulation is more
-                # accurate because it preserves component calibration + correlation.
-                elif target in COMBO_COMPONENTS:
-                    _comp_stats = COMBO_COMPONENTS[target]
-                    _comp_qpreds = {}
-                    for _cs in _comp_stats:
-                        _cs_qp = predict_quantiles(models, _cs, base_ix)
-                        if _cs_qp is not None:
-                            _comp_qpreds[_cs] = _cs_qp
-                    if len(_comp_qpreds) == len(_comp_stats):
-                        # Full simulation — all components available
-                        _combo_result = price_combo_from_simulation(
-                            combo_stat        = target,
-                            line              = line,
-                            component_qpreds  = _comp_qpreds,
-                            within_engine     = within_engine,
-                        )
-                        prob_over  = _combo_result["p_over"]
-                        prob_under = _combo_result["p_under"]
-                        # Override q50 from simulation for sanity checks
-                        q50 = _combo_result["q50_combo"]
-                        if q50 > 0 and line > q50 * 1.75:
-                            continue
-                    else:
-                        # Fallback: use existing quantile model if any component missing
-                        _bias = _Q50_BIAS.get(target, 0.0)
-                        _corr_qpreds = {k: v + _bias for k, v in q_preds.items()} if _bias != 0.0 and q_preds else q_preds
-                        prob_over  = p_over(_corr_qpreds, line)
-                        prob_under = p_under(_corr_qpreds, line)
-                # FG3M: use hurdle model for more accurate zero-inflated probability
-                elif target == "fg3m" and fg3m_hurdle_model is not None:
-                    try:
-                        hurdle_result = fg3m_hurdle_model.predict_proba(dict(base), line)
-                        prob_over  = float(hurdle_result.get("p_over", p_over(q_preds, line)))
-                        prob_under = 1.0 - prob_over
-                    except Exception:
-                        prob_over  = p_over(q_preds, line)
-                        prob_under = p_under(q_preds, line)
-                else:
-                    # Apply empirical Q50 bias correction — shift entire quantile distribution
-                    # This corrects the systematic underestimation of stat values
-                    _bias = _Q50_BIAS.get(target, 0.0)
-                    if _bias != 0.0 and q_preds:
-                        _corr_qpreds = {k: v + _bias for k, v in q_preds.items()}
-                    else:
-                        _corr_qpreds = q_preds
-                    prob_over  = p_over(_corr_qpreds, line)
-                    prob_under = p_under(_corr_qpreds, line)
-
-                # Apply Platt calibration — stat×side specific if available (doc 7 §2)
-                # Priority: stat_SIDE → global SIDE → raw
-                def _apply_cal(prob, stat_key, side_key):
-                    """Apply calibrator. Returns (cal_prob, cal_source)."""
-                    def _safe_cal(cal, p):
-                        try:
-                            r = cal.predict_proba(np.array([p]))
-                            if hasattr(r, 'ndim') and r.ndim == 1:
-                                return float(np.clip(r[0], 0.01, 0.99))
-                            return float(np.clip(r[0][1], 0.01, 0.99))
-                        except Exception:
-                            return None
-                    stat_side_key = f"{stat_key.upper()}_{side_key.upper()}"
-                    if stat_side_key in platt_calibrators:
-                        cp = _safe_cal(platt_calibrators[stat_side_key], prob)
-                        if cp is not None:
-                            return cp, 'stat_side'
-                    cal_key = f"{stat_key.upper()}_{side_key.upper()}"
-                    if cal_key in live_cal_table:
-                        entry = live_cal_table[cal_key]
-                        shrink = entry.get('recommended_prob_shrink', 1.0)
-                        offset = entry.get('recommended_prob_offset', 0.0)
-                        cp = float(np.clip(prob * shrink + offset, 0.01, 0.99))
-                        return cp, 'live_cal'
-                    return prob, 'raw_none'
-                raw_over   = prob_over
-                raw_under  = prob_under
-                if _pmf_used:
-                    # The PMF pipeline has already been calibrated at the CDF
-                    # level (if a pmf_cal_{stat}.pkl was loaded) — skip the
-                    # legacy side-level Platt wrapper and tag the source as
-                    # "pmf" or "pmf_cal" for downstream diagnostics.
-                    cal_src_over = "pmf_cal" if target in _pmf_calibrators else "pmf"
-                    cal_src_under = cal_src_over
-                else:
-                    prob_over,  cal_src_over  = _apply_cal(prob_over,  target, "OVER")
-                    prob_under, cal_src_under = _apply_cal(prob_under, target, "UNDER")
-                cal_applied_over  = (cal_src_over  != 'raw_none')
-                cal_applied_under = (cal_src_under != 'raw_none')
+                # Bad-line sanity filter — PMF-sourced
+                if q50 > 0 and line > q50 * 1.75:
+                    continue
+                # Alt-line guard (PMF-sourced q50)
+                if target == "pts" and q50 < 17.0 and line > q50 * 1.5:
+                    continue
 
                 ev_over  = ev_from_prob(prob_over,  over_odds)
                 ev_under = ev_from_prob(prob_under, under_odds)
@@ -1160,11 +1039,13 @@ def main():
                         # Deployment metadata for CLV tracing (doc 7 traceability)
                         "min_ev_applied": round(min_ev_req, 4),
                         # Fix 4: Explicit audit trail — raw vs calibrated
-                        "cal_type":      f"{target.upper()}_{side}" if (f"{target.upper()}_{side}" in platt_calibrators) else ("global" if side in platt_calibrators else "raw_no_calibrator"),
+                        "cal_type":      "pmf_cal" if target in _pmf_calibrators else "pmf_raw",
                         "cal_applied":   cal_applied_over if side=="OVER" else cal_applied_under,
                         "is_sparse":     target in SPARSE_STATS,
                         # ── Full PMF + fair odds + market efficiency ──
-                        **({} if target in COMBO_COMPONENTS else (
+                        # Source of truth is the PMF array built above —
+                        # no reconstruction from quantile ladders.
+                        **(
                             lambda _pmf: {
                                 "pmf":             {k: round(v,4) for k,v in _pmf.items() if v > 0.001},
                                 "fair_odds_over":  pmf_to_fair_odds(_pmf, line)["fair_odds_over"],
@@ -1176,7 +1057,7 @@ def main():
                                 "mkt_true_over":   market_efficiency(_pmf, line, over_odds, under_odds)["mkt_true_over"],
                                 "mkt_true_under":  market_efficiency(_pmf, line, over_odds, under_odds)["mkt_true_under"],
                             }
-                        )(compute_pmf(q_preds, stat=target))),
+                        )({int(k): float(v) for k, v in enumerate(_pmf_arr)}),
                     })
 
     save_all_props_snapshot([dict(x) for x in all_singles], target_date)
