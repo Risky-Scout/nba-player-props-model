@@ -135,7 +135,15 @@ def main() -> None:
         help="Path to the OOF PMF parquet produced by calibrate_pmf.",
     )
     parser.add_argument("--run-date", default=datetime.utcnow().strftime("%Y-%m-%d"))
+    parser.add_argument(
+        "--core-props-only", action="store_true",
+        help=(
+            "Restrict diagnostics to core props (PTS, REB, AST, FG3M, TOV). "
+            "Skips STL, BLK, STOCKS. CI runtime optimization."
+        ),
+    )
     args = parser.parse_args()
+    core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
 
     start = time.time()
     logger.info("=" * 60)
@@ -163,6 +171,9 @@ def main() -> None:
 
     rng = np.random.default_rng(0)
     for stat in sorted(oof["stat"].unique()):
+        if core_only_allowed is not None and stat not in core_only_allowed:
+            logger.info(f"  {stat}: skipped (--core-props-only)")
+            continue
         sub = oof[oof["stat"] == stat].copy()
         sub = sub.sort_values("game_date")
         if len(sub) < 80:

@@ -43,10 +43,22 @@ jobs:
         run: |
           python scripts/calibrate.py || echo "Calibration skipped — insufficient graded data"
 
+      - name: Upload training-table artifact for Phase 8 handoff
+        # Phase 8 downloads this artifact instead of rebuilding the table
+        # (rebuild takes 60–120 min). Uploaded BEFORE the commit step so
+        # a) the file is available even if the commit is skipped, and
+        # b) Phase 8 does not need any commit to pick it up.
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-table
+          path: data/training_table.parquet
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Commit retrained artifacts
         run: |
-          git config user.name  "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git rm --cached data/training_table.parquet 2>/dev/null || true
           git add artifacts/models/ -f
           git add data/ -f

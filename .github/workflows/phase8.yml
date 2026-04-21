@@ -16,15 +16,27 @@ on:
         required: false
         default: 'Phase 8 run'
       max_folds:
-        description: 'Walk-forward fold cap for calibrate_pmf.py (CI default 8)'
+        description: 'Walk-forward fold cap for calibrate_pmf.py (CI default 6)'
         required: false
-        default: '8'
+        default: '6'
+      core_props_only:
+        description: 'Restrict calibration and diagnostics to core props (PTS, REB, AST, FG3M, TOV) only'
+        type: boolean
+        default: false
+        required: false
 
 jobs:
   # ─── A. Build training table ─────────────────────────────────────────────
+  # Artifact-first: the retrain.yml workflow uploads `training-table` at the
+  # end of every retrain. This job downloads that artifact instead of
+  # rebuilding (rebuild takes 60–120 min). Falls back to a local build only
+  # when no artifact is available.
   build-table:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
+    permissions:
+      actions: read
+      contents: read
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
@@ -40,18 +52,57 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Find latest successful retrain run
+        id: find_retrain
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RUN_ID=$(gh run list \
+            --workflow=retrain.yml --status=success --branch=main \
+            --limit=1 --json databaseId --jq '.[0].databaseId' || true)
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful retrain run found."
+          else
+            echo "Latest successful retrain run: $RUN_ID"
+          fi
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Download training-table from latest retrain (artifact-first)
+        id: fetch_table
+        if: steps.find_retrain.outputs.run_id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: training-table
+          path: data
+          run-id: ${{ steps.find_retrain.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Check whether training table was downloaded
+        id: have_table
+        run: |
+          if [ -s data/training_table.parquet ]; then
+            echo "status=present" >> "$GITHUB_OUTPUT"
+            echo "Training table present (size: $(stat -c%s data/training_table.parquet) bytes)"
+          else
+            echo "status=missing" >> "$GITHUB_OUTPUT"
+            echo "Training table missing — will run local --build-table-only fallback"
+          fi
+
+      - name: Install dependencies (only for local build fallback)
+        if: steps.have_table.outputs.status == 'missing'
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build training table
+      - name: Build training table locally (fallback)
+        if: steps.have_table.outputs.status == 'missing'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python scripts/train.py --build-table-only
 
-      - name: Upload training table
+      - name: Upload training table for downstream Phase 8 jobs
         uses: actions/upload-artifact@v4
         with:
           name: training-table
@@ -95,8 +146,11 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          python scripts/calibrate_pmf.py \
-            --max-folds ${{ github.event.inputs.max_folds }}
+          ARGS="--max-folds ${{ github.event.inputs.max_folds }}"
+          if [ "${{ github.event.inputs.core_props_only }}" = "true" ]; then
+            ARGS="$ARGS --core-props-only"
+          fi
+          python scripts/calibrate_pmf.py $ARGS
 
       - name: Upload calibration outputs
         uses: actions/upload-artifact@v4
@@ -153,7 +207,11 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
           RUN_DATE=$(date -u +%Y-%m-%d)
-          python scripts/run_diagnostics.py --run-date "$RUN_DATE"
+          ARGS="--run-date $RUN_DATE"
+          if [ "${{ github.event.inputs.core_props_only }}" = "true" ]; then
+            ARGS="$ARGS --core-props-only"
+          fi
+          python scripts/run_diagnostics.py $ARGS
 
       - name: Run market-relative evaluation
         env:
@@ -184,8 +242,8 @@ jobs:
 
       - name: Commit Phase 8 artifacts back to origin/main
         run: |
-          git config user.name  "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add artifacts/models/pmf_cal_*.pkl 2>/dev/null || true
           git add artifacts/docs/ 2>/dev/null || true
           git add data/oof_pmfs.parquet 2>/dev/null || true

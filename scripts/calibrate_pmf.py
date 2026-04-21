@@ -273,6 +273,7 @@ def _generate_fold_pmfs(
     stats_df: pd.DataFrame,
     availability_df: pd.DataFrame,
     fold_artifact_dir: Path,
+    allowed_stats: set[str] | None = None,
 ) -> dict[str, list[dict]]:
     """Produce per-stat OOF PMFs on val_rows using models trained for this fold.
 
@@ -346,8 +347,13 @@ def _generate_fold_pmfs(
 
         feature_row = {k: getattr(row, k, 0.0) for k in row._fields}
 
+        def _allowed(stat: str) -> bool:
+            return allowed_stats is None or stat in allowed_stats
+
         # Main stats via minutes x rate simulation.
         for stat in RATE_STATS:
+            if not _allowed(stat):
+                continue
             q = rate_quantiles(stat, feature_row)
             if q is None:
                 continue
@@ -368,23 +374,25 @@ def _generate_fold_pmfs(
             })
 
         # Sparse stats.
-        stl_pmf = hurdle_pmf("stl", feature_row)
-        blk_pmf = hurdle_pmf("blk", feature_row)
-        if stl_pmf is not None:
+        need_stl = _allowed("stl") or _allowed("stocks")
+        need_blk = _allowed("blk") or _allowed("stocks")
+        stl_pmf = hurdle_pmf("stl", feature_row) if need_stl else None
+        blk_pmf = hurdle_pmf("blk", feature_row) if need_blk else None
+        if _allowed("stl") and stl_pmf is not None:
             y = float(row_stats.get("stl", 0) or 0)
             results["stl"].append({
                 "player_id": player_id, "game_id": game_id, "game_date": game_date,
                 "outcome": int(np.clip(y, 0, len(stl_pmf) - 1)),
                 "pmf": stl_pmf.astype(np.float64),
             })
-        if blk_pmf is not None:
+        if _allowed("blk") and blk_pmf is not None:
             y = float(row_stats.get("blk", 0) or 0)
             results["blk"].append({
                 "player_id": player_id, "game_id": game_id, "game_date": game_date,
                 "outcome": int(np.clip(y, 0, len(blk_pmf) - 1)),
                 "pmf": blk_pmf.astype(np.float64),
             })
-        if stl_pmf is not None and blk_pmf is not None:
+        if _allowed("stocks") and stl_pmf is not None and blk_pmf is not None:
             sp = stocks_pmf(stl_pmf, blk_pmf)
             if sp is not None:
                 y = float((row_stats.get("stl", 0) or 0) + (row_stats.get("blk", 0) or 0))
@@ -395,7 +403,7 @@ def _generate_fold_pmfs(
                 })
 
         # FG3M.
-        if fg3m_model is not None:
+        if _allowed("fg3m") and fg3m_model is not None:
             try:
                 p = fg3m_model.pmf(feature_row)
                 y = float(row_stats.get("fg3m", 0) or 0)
@@ -464,7 +472,15 @@ def main() -> None:
         "--temp-root", default=None,
         help="Root of the per-fold temp directories. Default: system temp.",
     )
+    parser.add_argument(
+        "--core-props-only", action="store_true",
+        help=(
+            "Restrict calibration to core props (PTS, REB, AST, FG3M, TOV). "
+            "Skips STL, BLK, STOCKS. CI runtime optimization."
+        ),
+    )
     args = parser.parse_args()
+    core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
 
     start = time.time()
     logger.info("=" * 60)
@@ -537,6 +553,7 @@ def main() -> None:
             fold_out = _generate_fold_pmfs(
                 val_rows=val_rows, stats_df=stats_df,
                 availability_df=availability_df, fold_artifact_dir=fold_dir,
+                allowed_stats=core_only_allowed,
             )
             counts = {s: len(v) for s, v in fold_out.items() if v}
             logger.info(f"  fold PMF counts: {counts}")
