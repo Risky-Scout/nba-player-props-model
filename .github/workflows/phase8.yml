@@ -1,5 +1,13 @@
 name: NBA Props Model — Phase 8 (PMF calibration + diagnostics + market eval)
 
+# Split into three dependent jobs to stay inside GitHub Actions timeouts and
+# let any single stage be rerun without paying the cost of the others:
+#   A. build-table     — regenerate data/training_table.parquet
+#   B. calibrate       — walk-forward OOF PMF calibration (fold-capped)
+#   C. diagnostics     — matched diagnostics + de-vigged market evaluation
+# Artifacts flow A -> B -> C via actions/upload-artifact + download-artifact.
+# Only the final job pushes back to origin/main.
+
 on:
   workflow_dispatch:
     inputs:
@@ -7,15 +15,18 @@ on:
         description: 'Reason for Phase 8 run'
         required: false
         default: 'Phase 8 run'
+      max_folds:
+        description: 'Walk-forward fold cap for calibrate_pmf.py (CI default 8)'
+        required: false
+        default: '8'
 
 jobs:
-  phase8:
+  # ─── A. Build training table ─────────────────────────────────────────────
+  build-table:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
-
+    timeout-minutes: 60
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
     steps:
       - name: Checkout repo (origin/main)
         uses: actions/checkout@v5
@@ -34,52 +45,132 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build training table (required by calibrate_pmf)
+      - name: Build training table
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python scripts/train.py --build-table-only
+
+      - name: Upload training table
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-table
+          path: data/training_table.parquet
+          if-no-files-found: error
+          retention-days: 7
+
+  # ─── B. PMF calibration (fold-capped) ────────────────────────────────────
+  calibrate:
+    needs: build-table
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout repo (origin/main)
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download training table from build-table job
+        uses: actions/download-artifact@v4
+        with:
+          name: training-table
+          path: data
+
+      - name: Run PMF calibration (walk-forward OOF, fold-capped)
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          # data/training_table.parquet is too large to live in git and is
-          # re-generated every retrain. Phase 8 must rebuild it from the
-          # persisted parquets before calibrate_pmf.py can run. This runs
-          # the feature-engineering + training-table assembly portion of
-          # scripts/train.py and exits before any model training.
-          python scripts/train.py --build-table-only
+          python scripts/calibrate_pmf.py \
+            --max-folds ${{ github.event.inputs.max_folds }}
 
-      - name: Run PMF calibration (walk-forward OOF)
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: python scripts/calibrate_pmf.py
+      - name: Upload calibration outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmf-calibration
+          path: |
+            artifacts/models/pmf_cal_*.pkl
+            data/oof_pmfs.parquet
+            artifacts/docs/pmf_calibration_run.md
+          if-no-files-found: warn
+          retention-days: 30
 
-      - name: Run diagnostics (model-vs-legacy)
+  # ─── C. Diagnostics + market-relative evaluation ─────────────────────────
+  diagnostics:
+    needs: [build-table, calibrate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout repo (origin/main)
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download training table from build-table job
+        uses: actions/download-artifact@v4
+        with:
+          name: training-table
+          path: data
+
+      - name: Download calibration outputs from calibrate job
+        uses: actions/download-artifact@v4
+        with:
+          name: pmf-calibration
+          # Unpack into repo root: pkls go under artifacts/models/, oof
+          # parquet under data/, markdown under artifacts/docs/.
+          path: .
+
+      - name: Run diagnostics
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
           RUN_DATE=$(date -u +%Y-%m-%d)
           python scripts/run_diagnostics.py --run-date "$RUN_DATE"
 
-      - name: Run market-relative evaluation (de-vigged market baseline)
+      - name: Run market-relative evaluation
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          # Matched market-vs-model evaluation is embedded in
-          # scripts/run_diagnostics.py via market_logscore_lift using
-          # de-vigged over/under odds from the OOF table. The helpers in
+          # The matched market-vs-model comparison is computed inside
+          # scripts/run_diagnostics.py via market_logscore_lift on the
+          # OOF de-vigged over/under probs. The helpers in
           # src/nba_props_model/evaluation/market_baseline.py expose
-          # devigged_main_line, market_implied_cdf_from_alt_lines, and
-          # market_pmf_from_cdf for alt-line ladder reconstruction. The
-          # diagnostics step above already computes the matched comparison
-          # per fold and writes it into artifacts/docs/diagnostics_*.md.
-          # Re-invoke with --emit-market so the dedicated section is
-          # re-computed and persisted even when the OOF file already
-          # exists. If the script does not accept --emit-market, fall
-          # through — the prior step already produced the report.
-          RUN_DATE=$(date -u +%Y-%m-%d)
-          python scripts/run_diagnostics.py --run-date "$RUN_DATE" \
-            || echo "market-relative eval section already produced by diagnostics step"
+          # devigged_main_line / market_implied_cdf_from_alt_lines /
+          # market_pmf_from_cdf for alt-line ladder reconstruction.
+          # The diagnostics step above has already produced the matched
+          # section — this step is a no-op guard in case a future split
+          # wants a dedicated entry point.
+          echo "Market-relative eval embedded in run_diagnostics output above."
 
-      - name: Upload Phase 8 artifacts (diagnostics + calibration)
+      - name: Upload Phase 8 outputs
         uses: actions/upload-artifact@v4
         with:
           name: phase8-outputs
@@ -91,7 +182,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Commit Phase 8 artifacts
+      - name: Commit Phase 8 artifacts back to origin/main
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
