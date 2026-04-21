@@ -34,6 +34,18 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Build training table (required by calibrate_pmf)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          # data/training_table.parquet is too large to live in git and is
+          # re-generated every retrain. Phase 8 must rebuild it from the
+          # persisted parquets before calibrate_pmf.py can run. This runs
+          # the feature-engineering + training-table assembly portion of
+          # scripts/train.py and exits before any model training.
+          python scripts/train.py --build-table-only
+
       - name: Run PMF calibration (walk-forward OOF)
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}

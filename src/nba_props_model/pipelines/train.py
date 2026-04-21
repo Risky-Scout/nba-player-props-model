@@ -1241,7 +1241,7 @@ def fit_correlation_engine(training_df: pd.DataFrame):
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
-def main():
+def main(build_table_only: bool = False):
     logger.info("=" * 60)
     logger.info("NBA Props Model TRAINING — VERSION 2026-03-09-v12")
     logger.info("Quantile Regression | Expert-reviewed features | Pinball loss")
@@ -1267,6 +1267,21 @@ def main():
         set_league_3p_prior(stats_df["fg3m"], stats_df["fg3a"])
     if training_df.empty:
         sys.exit("Training table empty.")
+
+    # ── --build-table-only exit point ───────────────────────────────────────
+    # Phase 8 only needs data/training_table.parquet on disk; it must not
+    # pay the 60-120 min cost of a full retrain. build_training_table has
+    # already written the parquet by this point (see the to_parquet call
+    # inside build_training_table). Exit cleanly so the caller can proceed
+    # to calibrate_pmf.py.
+    if build_table_only:
+        logger.info("=" * 60)
+        logger.info(
+            "--build-table-only: training table persisted, exiting before "
+            "any model training."
+        )
+        logger.info("=" * 60)
+        return
 
     # ── Train minutes model FIRST ─────────────────────────────────────────────
     # Must run before stat models so that exp_mp, mp_q25, mp_q75, mp_vol
