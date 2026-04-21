@@ -20,6 +20,18 @@ from nba_props_model.models.minutes import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _disable_minutes_cdf_calibrator(monkeypatch):
+    """These tests assert raw-distribution invariants (inactive mass,
+    state mixture, analytic mean). The retrained global calibrator would
+    reshape those properties by design — disable it for this file so the
+    architectural checks stay sharp. End-to-end calibrated-distribution
+    behavior is validated separately in tests/test_minutes_calibrator.py."""
+    from nba_props_model.models import minutes as m
+    monkeypatch.setattr(m, "_MINUTES_CDF_CAL", None)
+    monkeypatch.setattr(m, "_MINUTES_CDF_CAL_LOADED", True)
+
+
 def _example_dist(
     p_inactive=0.10, p_limited=0.20, p_normal=0.70,
 ) -> MinutesDistribution:

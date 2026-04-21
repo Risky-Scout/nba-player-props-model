@@ -382,6 +382,14 @@ class MinutesDistribution:
         raw = self._raw_cdf(minutes)
         cal = _load_minutes_cdf_calibrator()
         if cal is not None:
+            # Pin CDF endpoints so the distribution stays valid after the
+            # monotone map even when the fitted calibrator does not
+            # exactly hit 0/1 at the boundaries (isotonic regression
+            # fit is numerical, not exact at x==1.0).
+            if raw <= 0.0:
+                return 0.0
+            if raw >= 1.0:
+                return 1.0
             return cal.apply_cdf(raw)
         return raw
 
