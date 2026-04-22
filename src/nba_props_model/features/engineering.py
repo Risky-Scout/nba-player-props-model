@@ -1,6 +1,61 @@
 # Issue 15 fix: dynamic league 3P% prior
 _LEAGUE_3P_PRIOR = 0.365
 
+# ── Profiling counters (runtime-unblock pass 2026-04-22) ─────────────────────
+# Gated by PROFILE_BUILD_TABLE env var; zero-overhead when off.
+import os as _prof_os
+import time as _prof_time
+PROFILE_BUILD_TABLE = _prof_os.environ.get("PROFILE_BUILD_TABLE", "0") == "1"
+_OPP_DEF_STATS: dict = {
+    "hits": 0,
+    "misses": 0,
+    "total_s": 0.0,
+    "hit_s": 0.0,
+    "miss_s": 0.0,
+    "miss_copy_s": 0.0,
+    "miss_groupby_s": 0.0,
+}
+
+# Per-block accumulators inside build_player_game_features. Populated only
+# when PROFILE_BUILD_TABLE=1.
+_BPGF_STATS: dict = {}
+
+_BPGF_KEYS = (
+    "df_sort_reset",
+    "minutes_model_features",
+    "predict_minutes",
+    "rate_stats_loop",
+    "usage_proxy",
+    "fg3m_block",
+    "sparse_zi_loop",
+    "foul_block",
+    "per_min_aliases",
+    "prior_adv_block",
+    "safe_gated_block",
+    "schedule_features",
+    "game_script_features",
+    "advanced_stats_block",
+    "opponent_defensive_features",
+    "vacated_block",
+    "combo_interactions",
+    "player_metadata_tail",
+)
+
+
+def reset_profile_counters() -> None:
+    for k in _OPP_DEF_STATS:
+        _OPP_DEF_STATS[k] = 0 if isinstance(_OPP_DEF_STATS[k], int) else 0.0
+    _BPGF_STATS.clear()
+    for k in _BPGF_KEYS:
+        _BPGF_STATS[k] = 0.0
+
+
+def snapshot_profile_counters() -> dict:
+    out = dict(_OPP_DEF_STATS)
+    for k in _BPGF_KEYS:
+        out[f"bpgf_{k}_s"] = _BPGF_STATS.get(k, 0.0)
+    return out
+
 def set_league_3p_prior(fg3m_series, fg3a_series):
     global _LEAGUE_3P_PRIOR
     total_made = float(fg3m_series.sum())
@@ -382,8 +437,15 @@ def opponent_defensive_features(
     window: int = 10,
 ) -> dict:
     global _OPP_DEF_CACHE
+    if PROFILE_BUILD_TABLE:
+        _prof_t0 = _prof_time.perf_counter()
     _ck = (opp_team_id, str(target_date)[:10])
     if _ck in _OPP_DEF_CACHE:
+        if PROFILE_BUILD_TABLE:
+            _elapsed = _prof_time.perf_counter() - _prof_t0
+            _OPP_DEF_STATS["hits"] += 1
+            _OPP_DEF_STATS["hit_s"] += _elapsed
+            _OPP_DEF_STATS["total_s"] += _elapsed
         return _OPP_DEF_CACHE[_ck]
     """
     Rolling opponent team defensive stats computed from historical box scores.
@@ -429,8 +491,12 @@ def opponent_defensive_features(
         return NULL
 
     try:
+        if PROFILE_BUILD_TABLE:
+            _prof_tc = _prof_time.perf_counter()
         df = all_stats_df.copy()
         df["game_date"] = pd.to_datetime(df["game_date"])
+        if PROFILE_BUILD_TABLE:
+            _OPP_DEF_STATS["miss_copy_s"] += _prof_time.perf_counter() - _prof_tc
 
         # Find opponent's recent game IDs (before target date)
         opp_rows = df[
@@ -523,12 +589,16 @@ def opponent_defensive_features(
                 return default
             return float(all_stats_df.groupby(["game_id","team_id"])[col].sum().mean())
 
+        if PROFILE_BUILD_TABLE:
+            _prof_tg = _prof_time.perf_counter()
         _lg_pts  = _team_game_avg("pts",  110.0)
         _lg_reb  = _team_game_avg("reb",  43.0)
         _lg_ast  = _team_game_avg("ast",  24.0)
         _lg_fg3m = _team_game_avg("fg3m", 12.0)
         _lg_blk  = _team_game_avg("blk",  4.8)
         _lg_stl  = _team_game_avg("stl",  7.5)
+        if PROFILE_BUILD_TABLE:
+            _OPP_DEF_STATS["miss_groupby_s"] += _prof_time.perf_counter() - _prof_tg
 
         blk  = _game_avg("blk")
         stl  = _game_avg("stl")
@@ -629,9 +699,19 @@ def opponent_defensive_features(
             result["opp_3p_rate_allowed"] = np.nan
 
         _OPP_DEF_CACHE[_ck] = result
+        if PROFILE_BUILD_TABLE:
+            _elapsed = _prof_time.perf_counter() - _prof_t0
+            _OPP_DEF_STATS["misses"] += 1
+            _OPP_DEF_STATS["miss_s"] += _elapsed
+            _OPP_DEF_STATS["total_s"] += _elapsed
         return result
 
     except Exception:
+        if PROFILE_BUILD_TABLE:
+            _elapsed = _prof_time.perf_counter() - _prof_t0
+            _OPP_DEF_STATS["misses"] += 1
+            _OPP_DEF_STATS["miss_s"] += _elapsed
+            _OPP_DEF_STATS["total_s"] += _elapsed
         return NULL
 
 
@@ -960,33 +1040,78 @@ def build_player_game_features(
     Pass from game_context['opp_team_id'] or derive from BDL game data.
     """
     f = {}
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     df  = prior_stats.sort_values("game_date").reset_index(drop=True)
     tdt = pd.Timestamp(target_date)
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["df_sort_reset"] += _prof_time.perf_counter() - _t
 
     min_arr = df["min"].values.astype(float) if "min" in df.columns else np.array([])
 
     # ── Minutes model block ───────────────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     f.update(minutes_model_features(df))
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["minutes_model_features"] += _prof_time.perf_counter() - _t
 
     # ── Standalone minutes model predictions ─────────────────────────────────
-    try:
-        from minutes_model import predict_minutes
-        mp_preds = predict_minutes(
-            prior_stats  = prior_stats,
-            game_context = game_context,
-            is_home      = is_home,
-            target_date  = target_date,
-            team_id      = team_id,
-            all_stats_df = all_stats_df,
-            injury_map   = injury_map,
-        )
-        f.update(mp_preds)
-    except Exception:
-        for k in ("mean_min_last10","exp_mp","mp_q10","mp_q25","mp_q75","mp_q90",
-                  "mp_vol","mp_pred_floor","mp_pred_ceiling"):
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
+    if training_mode:
+        # Do not run predict_minutes during training-table build.
+        # Rationale:
+        #   1. Profiling on 2026-04-22 measured predict_minutes at 92.5% of
+        #      build_player_game_features wall-clock — the dominant hotspot.
+        #   2. predict_minutes is a prediction-layer call that returns
+        #      model outputs (exp_mp, mp_q10/25/75/90, mp_vol, pred_floor,
+        #      pred_ceiling). Injecting those outputs into the training
+        #      feature vector for downstream stat models is a training-
+        #      contamination path: the stat models would learn against
+        #      features that the minutes model produces, not raw history.
+        #   3. Only mean_min_last10 is semantically a raw rolling stat
+        #      and can be sourced directly from df["min"].tail(10).mean().
+        #      The model-predicted quantiles/bounds are set to NaN so the
+        #      removal of contamination is visible; LightGBM handles NaN
+        #      natively.
+        #   4. Commit ab6c7e7 (2026-04-07) previously short-circuited this
+        #      by passing an empty stats_df to predict_minutes during
+        #      training. That guardrail was lost during the src-layout
+        #      reorg (e680c2e, 2026-04-18). This block restores the gate.
+        if len(df) >= 10 and "min" in df.columns:
+            f["mean_min_last10"] = float(
+                pd.to_numeric(df["min"].tail(10), errors="coerce")
+                .fillna(0).mean()
+            )
+        else:
+            f["mean_min_last10"] = np.nan
+        for k in ("exp_mp", "mp_q10", "mp_q25", "mp_q75", "mp_q90",
+                  "mp_vol", "mp_pred_floor", "mp_pred_ceiling"):
             f[k] = np.nan
+    else:
+        try:
+            from minutes_model import predict_minutes
+            mp_preds = predict_minutes(
+                prior_stats  = prior_stats,
+                game_context = game_context,
+                is_home      = is_home,
+                target_date  = target_date,
+                team_id      = team_id,
+                all_stats_df = all_stats_df,
+                injury_map   = injury_map,
+            )
+            f.update(mp_preds)
+        except Exception:
+            for k in ("mean_min_last10","exp_mp","mp_q10","mp_q25","mp_q75","mp_q90",
+                      "mp_vol","mp_pred_floor","mp_pred_ceiling"):
+                f[k] = np.nan
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["predict_minutes"] += _prof_time.perf_counter() - _t
 
     # ── Per-minute rates + full rolling ──────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     RATE_STATS = {
         "pts": "pts", "reb": "reb", "ast": "ast",
         "fg3m": "fg3m", "stl": "stl", "blk": "blk",
@@ -1011,8 +1136,12 @@ def build_player_game_features(
             for sfx in sfxs:
                 f[f"{feat_name}_per_min_{sfx}"] = np.nan
                 f[f"{feat_name}_raw_{sfx}"]     = np.nan
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["rate_stats_loop"] += _prof_time.perf_counter() - _t
 
     # ── Usage proxy ───────────────────────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     if all(c in df.columns for c in ["fga", "fta", "turnover"]) and len(min_arr) > 0:
         up_raw  = (df["fga"].values + 0.44 * df["fta"].values +
                    df["turnover"].values).astype(float)
@@ -1024,8 +1153,12 @@ def build_player_game_features(
                 "floor_last10","ceiling_last10","trend_3v10"]
         for sfx in sfxs:
             f[f"usage_proxy_per_min_{sfx}"] = np.nan
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["usage_proxy"] += _prof_time.perf_counter() - _t
 
     # ── 3PM block: two-stage ──────────────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     if all(c in df.columns for c in ["fg3m", "fg3a"]):
         fg3m_raw = df["fg3m"].values.astype(float)
         fg3a_raw = df["fg3a"].values.astype(float)
@@ -1081,8 +1214,12 @@ def build_player_game_features(
             "fg3a_attempt_trend","per_min_fg3a_last10","fg3a_per_min_trend_3v10",
         ]:
             f[_k] = np.nan
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["fg3m_block"] += _prof_time.perf_counter() - _t
 
     # ── STL / BLK / TOV — zero-inflated count model features ────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     # v2: Add ZI-specific parameters:
     #   {stat}_p_nonzero_last20   : empirical P(stat > 0) over last 20 games (ZI mixing weight)
     #   {stat}_zi_lambda_last10   : Poisson lambda estimated from nonzero games only
@@ -1162,8 +1299,12 @@ def build_player_game_features(
                       f"{sparse_stat}_p_nonzero_last20", f"{sparse_stat}_zi_lambda_last10",
                       f"{sparse_stat}_hurdle_rate_last10", f"{sparse_stat}_p_ge2_zi"]:
                 f[k] = np.nan
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["sparse_zi_loop"] += _prof_time.perf_counter() - _t
 
     # ── Foul features ─────────────────────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     if "pf" in df.columns and len(min_arr) > 0:
         _pf_arr  = pd.to_numeric(df["pf"], errors="coerce").fillna(0).values
         _mins10  = min_arr[-10:] if len(min_arr) >= 10 else min_arr
@@ -1178,9 +1319,13 @@ def build_player_game_features(
     else:
         f["per_min_pf_last10"] = 0.0
         f["slope5_pf"] = 0.0
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["foul_block"] += _prof_time.perf_counter() - _t
 
-    
+
     # ── Per-minute aliases — v19 manifest naming parity ─────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     for _src, _dst in [
         ("pts_per_min_mean_last10",  "per_min_pts_last10"),
         ("reb_per_min_mean_last10",  "per_min_reb_last10"),
@@ -1201,8 +1346,12 @@ def build_player_game_features(
             _mirror = f"adv_mean_{_field}_last10"
             if _mirror not in f:
                 f[_mirror] = f[_k]
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["per_min_aliases"] += _prof_time.perf_counter() - _t
 
     # ── Real advanced features from prior_adv (non-zero fields only) ─────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     if prior_adv and len(prior_adv) > 0:
         _adf = pd.DataFrame(prior_adv).sort_values("game_date").reset_index(drop=True)
         _last10 = _adf.tail(10)
@@ -1233,8 +1382,12 @@ def build_player_game_features(
         _rco = _m10("rebound_chances_off")
         if not np.isnan(_rco):
             f["reb_chances_off_per_game"] = _rco
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["prior_adv_block"] += _prof_time.perf_counter() - _t
 
     # ── Safe gated / derived features ────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     _exp_mp2 = max(f.get("exp_mp") or 25.0, 1.0)
 
     # pts_per_poss_adj, ast_per_poss_adj using pace proxy
@@ -1264,27 +1417,47 @@ def build_player_game_features(
     _mpv = f.get("mp_vol", 0.0)       or 0.0
     _hmd = int(f.get("has_market_data", 0))
     f["blowout_risk_x_mp_vol_gated"] = _br * _mpv * _hmd
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["safe_gated_block"] += _prof_time.perf_counter() - _t
 
     # ── Schedule ──────────────────────────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     dates = df["game_date"].tolist()
     f.update(schedule_features(dates, tdt))
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["schedule_features"] += _prof_time.perf_counter() - _t
 
     # ── Game script / market odds ─────────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     f.update(game_script_features(game_context, is_home))
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["game_script_features"] += _prof_time.perf_counter() - _t
 
     # ── Advanced stats (causal only) ──────────────────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     f.update(advanced_stats_block(prior_adv))
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["advanced_stats_block"] += _prof_time.perf_counter() - _t
 
     # ── Opponent defensive environment ────────────────────────────────────────
     # opp_team_id can be passed directly or extracted from game_context
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     _opp_id = opp_team_id or (game_context or {}).get("opp_team_id")
     f.update(opponent_defensive_features(
         opp_team_id  = _opp_id,
         target_date  = tdt,
         all_stats_df = all_stats_df,
     ))
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["opponent_defensive_features"] += _prof_time.perf_counter() - _t
 
     # ── Vacated opportunity + binary injury flags ─────────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     if training_mode:
         f.update({
             "vacated_minutes": np.nan, "vacated_fga": np.nan,
@@ -1306,6 +1479,8 @@ def build_player_game_features(
             stats_df    = all_stats_df,
             injury_map  = injury_map,
         ))
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["vacated_block"] += _prof_time.perf_counter() - _t
 
     # ── v2: Teammate with/without delta features (skipped during training for speed)
     if training_mode:
@@ -1314,7 +1489,11 @@ def build_player_game_features(
         f["fg3a_delta_without_top_creator"]  = 0.0
 
     # ── Combo expectation proxies (always computed) ───────────────────────────
+    if PROFILE_BUILD_TABLE:
+        _t = _prof_time.perf_counter()
     f = add_interaction_features(f, "combo")
+    if PROFILE_BUILD_TABLE:
+        _BPGF_STATS["combo_interactions"] += _prof_time.perf_counter() - _t
 
     # ── Player metadata ───────────────────────────────────────────────────────
     f["games_played"] = len(df)

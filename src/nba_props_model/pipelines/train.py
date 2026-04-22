@@ -34,6 +34,15 @@ import lightgbm as lgb
 import gc
 import numpy as np
 import pandas as pd
+import time as _prof_time
+
+# ── Profiling flags (runtime-unblock pass 2026-04-22) ───────────────────────
+# Gated by env vars; zero overhead when PROFILE_BUILD_TABLE is off.
+PROFILE_BUILD_TABLE = os.environ.get("PROFILE_BUILD_TABLE", "0") == "1"
+_slice_start_env = os.environ.get("BUILD_TABLE_SLICE_START", "0") or "0"
+BUILD_TABLE_SLICE_START = int(_slice_start_env)
+_slice_count_env = os.environ.get("BUILD_TABLE_SLICE_COUNT", "") or ""
+BUILD_TABLE_SLICE_COUNT = int(_slice_count_env) if _slice_count_env else None
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(
@@ -665,9 +674,91 @@ def build_training_table(stats_df, adv_df, odds_df):
     all_rows = []; skipped = 0; _chunk_idx = 0; _chunk_files = []
     players  = list(stats_df.groupby("player_id"))
 
+    # ── Profiling slice support (no-op unless env vars set) ──────────────
+    # List-slice BEFORE iteration so we only pay the cost of the selected
+    # players — a continue-in-loop approach wastes wall time.
+    if BUILD_TABLE_SLICE_START > 0 or BUILD_TABLE_SLICE_COUNT is not None:
+        _s = BUILD_TABLE_SLICE_START
+        _e = _s + BUILD_TABLE_SLICE_COUNT if BUILD_TABLE_SLICE_COUNT is not None else len(players)
+        logger.info(
+            f"  [PROFILE] Slicing players[{_s}:{_e}] out of {len(players)} total"
+        )
+        players = players[_s:_e]
+
+    # ── Profile accumulators (PROFILE_BUILD_TABLE=1 only) ─────────────────
+    _timing = {
+        "player_wall_s": 0.0,
+        "bpgf_calls": 0,
+        "bpgf_wall_s": 0.0,
+        "retro_wall_s": 0.0,
+        "injury_wall_s": 0.0,
+        "avail_wall_s": 0.0,
+        "odds_wall_s": 0.0,
+        "gc_wall_s": 0.0,
+        "players_done": 0,
+    }
+    if PROFILE_BUILD_TABLE:
+        from nba_props_model.features import engineering as _eng_prof
+        _eng_prof.reset_profile_counters()
+        _last_summary_opp = dict(_eng_prof.snapshot_profile_counters())
+
+    def _emit_timing_summary(stage: str):
+        if not PROFILE_BUILD_TABLE:
+            return
+        opp = _eng_prof.snapshot_profile_counters()
+        n_players = max(_timing["players_done"], 1)
+        n_bpgf = max(_timing["bpgf_calls"], 1)
+        mean_bpgf_ms = 1000.0 * _timing["bpgf_wall_s"] / n_bpgf
+        mean_player_s = _timing["player_wall_s"] / n_players
+        hit_rate = opp["hits"] / max(opp["hits"] + opp["misses"], 1)
+        logger.info(
+            "  TIMING-SUMMARY [%s] players=%d mean_player=%.2fs bpgf=%d "
+            "mean_bpgf=%.2fms  bpgf_total=%.2fs",
+            stage, n_players, mean_player_s,
+            _timing["bpgf_calls"], mean_bpgf_ms, _timing["bpgf_wall_s"],
+        )
+        logger.info(
+            "    opp_def  total=%.2fs (hit=%.2fs miss=%.2fs copy=%.2fs gb=%.2fs)  "
+            "hits=%d misses=%d hit_rate=%.3f",
+            opp["total_s"], opp["hit_s"], opp["miss_s"],
+            opp["miss_copy_s"], opp["miss_groupby_s"],
+            opp["hits"], opp["misses"], hit_rate,
+        )
+        # Sort bpgf block keys by cumulative time, descending.
+        block_items = [
+            (k.replace("bpgf_", "").replace("_s", ""), v)
+            for k, v in opp.items() if k.startswith("bpgf_") and k.endswith("_s")
+        ]
+        block_items.sort(key=lambda kv: kv[1], reverse=True)
+        for k, v in block_items:
+            share = 100.0 * v / max(_timing["bpgf_wall_s"], 1e-9)
+            logger.info(f"    bpgf.{k:30s}  {v:7.2f}s  ({share:5.1f}%)")
+        # Unattributed share = bpgf_total - sum(blocks)
+        attributed = sum(v for _, v in block_items)
+        unattributed = max(_timing["bpgf_wall_s"] - attributed, 0.0)
+        logger.info(
+            f"    bpgf.{'unattributed':30s}  {unattributed:7.2f}s  "
+            f"({100.0*unattributed/max(_timing['bpgf_wall_s'],1e-9):5.1f}%)"
+        )
+        logger.info(
+            "    train-loop injections: retro=%.2fs inj=%.2fs avail=%.2fs odds=%.2fs gc=%.2fs",
+            _timing["retro_wall_s"],
+            _timing["injury_wall_s"],
+            _timing["avail_wall_s"],
+            _timing["odds_wall_s"],
+            _timing["gc_wall_s"],
+        )
+        _last_summary_opp.update(opp)
+
     for idx, (player_id, pdata) in enumerate(players):
+        if PROFILE_BUILD_TABLE:
+            _p_t0 = _prof_time.perf_counter()
         if idx % 50 == 0 and idx > 0:
+            if PROFILE_BUILD_TABLE:
+                _gc_t0 = _prof_time.perf_counter()
             gc.collect()
+            if PROFILE_BUILD_TABLE:
+                _timing["gc_wall_s"] += _prof_time.perf_counter() - _gc_t0
             logger.info(f"  GC at player {idx}/{len(players)}")
         pdata = pdata.sort_values("game_date").reset_index(drop=True)
         if len(pdata) < MIN_GAMES:
@@ -734,6 +825,8 @@ def build_training_table(stats_df, adv_df, odds_df):
                 snap_dates_used += 1
 
             try:
+                if PROFILE_BUILD_TABLE:
+                    _bpgf_t0 = _prof_time.perf_counter()
                 base = build_player_game_features(
                     player_id    = int(player_id),
                     prior_stats  = prior,
@@ -747,6 +840,9 @@ def build_training_table(stats_df, adv_df, odds_df):
                     opp_team_id  = int(ctx.get("opp_team_id", 0) or 0) or None,
                     training_mode = True,
                 )
+                if PROFILE_BUILD_TABLE:
+                    _timing["bpgf_wall_s"] += _prof_time.perf_counter() - _bpgf_t0
+                    _timing["bpgf_calls"] += 1
             except Exception as e:
                 logger.debug(f"Feature error p={player_id} g={gid}: {e}")
                 skipped += 1
@@ -755,6 +851,8 @@ def build_training_table(stats_df, adv_df, odds_df):
             # Inject as-of availability features (same source and columns
             # used by the predict path — parity test in
             # tests/test_availability_parity.py enforces this).
+            if PROFILE_BUILD_TABLE:
+                _av_t0 = _prof_time.perf_counter()
             _pg_key = (int(player_id), td)
             _avail_row = availability_lookup.get(_pg_key)
             if _avail_row is not None:
@@ -765,8 +863,12 @@ def build_training_table(stats_df, adv_df, odds_df):
                 avail_pg_matched.add(_pg_key)
             elif availability_lookup:
                 avail_pg_missed.add(_pg_key)
+            if PROFILE_BUILD_TABLE:
+                _timing["avail_wall_s"] += _prof_time.perf_counter() - _av_t0
 
             # Inject retrospective features
+            if PROFILE_BUILD_TABLE:
+                _rt_t0 = _prof_time.perf_counter()
             _retro = _retro_index.get((int(player_id), gid), {})
             base['did_not_play_last_team_game'] = _retro.get('did_not_play_last_team_game', 0)
             base['returned_from_absence']       = _retro.get('returned_from_absence', 0)
@@ -776,13 +878,21 @@ def build_training_table(stats_df, adv_df, odds_df):
             base['is_recent_rotation_change']   = _retro.get('is_recent_rotation_change', 0)
             base['is_high_minutes_uncertainty'] = _retro.get('is_high_minutes_uncertainty', 0)
             base['is_bench_fragile_minutes']    = _retro.get('is_bench_fragile_minutes', 0)
+            if PROFILE_BUILD_TABLE:
+                _timing["retro_wall_s"] += _prof_time.perf_counter() - _rt_t0
             # Inject injury features
+            if PROFILE_BUILD_TABLE:
+                _ij_t0 = _prof_time.perf_counter()
             _inj = _injury_index.get((int(player_id), gid), {})
             base['dnp_injury']              = _inj.get('dnp_injury', 0)
             base['dnp_rest']                = _inj.get('dnp_rest', 0)
             base['dnp_coach_decision']      = _inj.get('dnp_coach_decision', 0)
             base['is_injury_elevated_role'] = _inj.get('is_injury_elevated_role', 0)
+            if PROFILE_BUILD_TABLE:
+                _timing["injury_wall_s"] += _prof_time.perf_counter() - _ij_t0
             # Look up odds by (date, team_id) first, fall back to date-only
+            if PROFILE_BUILD_TABLE:
+                _od_t0 = _prof_time.perf_counter()
             _odds = _odds_index.get((td, tid), _odds_index.get(td, {}))
             if _odds:
                 _is_home = int(tid == int(cur.get('home_team_id') or 0))
@@ -799,6 +909,8 @@ def build_training_table(stats_df, adv_df, odds_df):
                 base['has_market_data']        = 0
                 base['market_source_snapshot'] = 0
                 base['market_source_bdl']      = 0
+            if PROFILE_BUILD_TABLE:
+                _timing["odds_wall_s"] += _prof_time.perf_counter() - _od_t0
             # Compute targets
             pts  = float(cur.get("pts",0)      or 0)
             reb  = float(cur.get("reb",0)      or 0)
@@ -848,6 +960,17 @@ def build_training_table(stats_df, adv_df, odds_df):
             logger.info(
                 f"  {idx+1}/{len(players)} players | {len(all_rows)} rows"
             )
+
+        # ── End-of-player profiling accumulation + periodic summary ──
+        if PROFILE_BUILD_TABLE:
+            _timing["player_wall_s"] += _prof_time.perf_counter() - _p_t0
+            _timing["players_done"] += 1
+            if _timing["players_done"] % 25 == 0:
+                _emit_timing_summary(stage=f"players_done={_timing['players_done']}")
+
+    # Final summary at loop exit (covers partial slices < 25 players).
+    if PROFILE_BUILD_TABLE and _timing["players_done"] > 0:
+        _emit_timing_summary(stage=f"final_players_done={_timing['players_done']}")
 
     # Reassemble chunk files flushed during loop + any remaining rows
     if _chunk_files:
