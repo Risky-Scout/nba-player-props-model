@@ -24,6 +24,11 @@ on:
         type: boolean
         default: false
         required: false
+      allow_local_build_fallback:
+        description: 'If true, allow Phase 8 to rebuild training_table.parquet locally via scripts/train.py --build-table-only when no retrain artifact is found. Default false — prefer failing fast and triggering retrain.yml instead.'
+        type: boolean
+        default: false
+        required: false
 
 jobs:
   # ─── A. Build training table ─────────────────────────────────────────────
@@ -52,25 +57,48 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Find latest successful retrain run
+      - name: Find latest retrain run that actually uploaded training-table
         id: find_retrain
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          RUN_ID=$(gh run list \
-            --workflow=retrain.yml --status=success --branch=main \
-            --limit=1 --json databaseId --jq '.[0].databaseId' || true)
-          if [ -z "$RUN_ID" ]; then
-            echo "No successful retrain run found."
+          # Enumerate up to 20 recent successful retrain.yml runs on main and
+          # select the newest whose artifacts include a non-expired
+          # "training-table". This guards against the earlier bug where a
+          # success-only lookup selected a pre-upload-step run and silently
+          # fell through to a 120-min local rebuild.
+          set -euo pipefail
+          SELECTED=""
+          RUN_IDS=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/retrain.yml/runs" \
+            -X GET -f status=success -f branch=main -f per_page=20 \
+            --jq '.workflow_runs[].id')
+          for rid in $RUN_IDS; do
+            HAS_ARTIFACT=$(gh api \
+              "repos/${GITHUB_REPOSITORY}/actions/runs/${rid}/artifacts" \
+              --jq '[.artifacts[] | select(.name=="training-table" and .expired==false)] | length')
+            if [ "$HAS_ARTIFACT" -ge 1 ]; then
+              SELECTED="$rid"
+              break
+            fi
+            echo "run $rid: no live training-table artifact"
+          done
+          if [ -z "$SELECTED" ]; then
+            echo "No retrain run with training-table artifact found among the 20 most recent successful runs."
           else
-            echo "Latest successful retrain run: $RUN_ID"
+            echo "Selected retrain run: $SELECTED"
           fi
-          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "run_id=$SELECTED" >> "$GITHUB_OUTPUT"
 
-      - name: Download training-table from latest retrain (artifact-first)
+      - name: Fail fast when no artifact and fallback disabled
+        if: steps.find_retrain.outputs.run_id == '' && github.event.inputs.allow_local_build_fallback != 'true'
+        run: |
+          echo "::error::No retrain run with training-table artifact found. Trigger retrain.yml first."
+          exit 1
+
+      - name: Download training-table from selected retrain run
         id: fetch_table
         if: steps.find_retrain.outputs.run_id != ''
-        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: training-table
@@ -86,21 +114,36 @@ jobs:
             echo "Training table present (size: $(stat -c%s data/training_table.parquet) bytes)"
           else
             echo "status=missing" >> "$GITHUB_OUTPUT"
-            echo "Training table missing — will run local --build-table-only fallback"
+            echo "Training table missing."
           fi
 
       - name: Install dependencies (only for local build fallback)
-        if: steps.have_table.outputs.status == 'missing'
+        if: steps.have_table.outputs.status == 'missing' && github.event.inputs.allow_local_build_fallback == 'true'
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Build training table locally (fallback)
-        if: steps.have_table.outputs.status == 'missing'
+      - name: Build training table locally (explicit fallback)
+        if: steps.have_table.outputs.status == 'missing' && github.event.inputs.allow_local_build_fallback == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python scripts/train.py --build-table-only
+
+      - name: Verify training table is present and substantial (>10 MB)
+        run: |
+          set -euo pipefail
+          if [ ! -f data/training_table.parquet ]; then
+            echo "::error::data/training_table.parquet is missing after build-table job."
+            exit 1
+          fi
+          SIZE=$(stat -c%s data/training_table.parquet)
+          MIN=$((10 * 1024 * 1024))
+          if [ "$SIZE" -lt "$MIN" ]; then
+            echo "::error::training_table.parquet too small ($SIZE bytes) — expected >10 MB. Likely a corrupt or truncated artifact."
+            exit 1
+          fi
+          echo "Training table OK: $SIZE bytes"
 
       - name: Upload training table for downstream Phase 8 jobs
         uses: actions/upload-artifact@v4
