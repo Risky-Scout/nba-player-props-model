@@ -153,11 +153,21 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  # ─── B. PMF calibration (fold-capped) ────────────────────────────────────
-  calibrate:
+  # ─── B1. PMF calibration — per-fold matrix ───────────────────────────────
+  # Each fold runs on its own GitHub-hosted runner in parallel. Observed
+  # local single-fold wall-clock 26.5 min on an M-series Mac (2026-04-22
+  # diagnostic); GitHub runners are ~1.5x slower, and the previous serial
+  # run exceeded 88 min for a single fold before timing out. 120 min per
+  # matrix job gives safe margin while preserving the point of the
+  # refactor: 6 folds in parallel rather than serial.
+  calibrate-fold:
     needs: build-table
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        fold: [1, 2, 3, 4, 5, 6]
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
@@ -184,18 +194,79 @@ jobs:
           name: training-table
           path: data
 
-      - name: Run PMF calibration (walk-forward OOF, fold-capped)
+      - name: Run PMF calibration for fold ${{ matrix.fold }}
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          ARGS="--max-folds ${{ github.event.inputs.max_folds }}"
+          mkdir -p artifacts
+          ARGS="--fold-index ${{ matrix.fold }} \
+                --max-folds ${{ github.event.inputs.max_folds }} \
+                --emit-fold-oof artifacts/fold_${{ matrix.fold }}.parquet \
+                --skip-final-fit"
           if [ "${{ github.event.inputs.core_props_only }}" = "true" ]; then
             ARGS="$ARGS --core-props-only"
           fi
           python scripts/calibrate_pmf.py $ARGS
 
-      - name: Upload calibration outputs
+      - name: Upload fold ${{ matrix.fold }} OOF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fold-${{ matrix.fold }}-oof
+          path: artifacts/fold_${{ matrix.fold }}.parquet
+          if-no-files-found: error
+          retention-days: 14
+
+  # ─── B2. Aggregate per-fold OOFs + fit final calibrators ─────────────────
+  aggregate-calibration:
+    needs: calibrate-fold
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Checkout repo (origin/main)
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download all fold OOF artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: fold-*-oof
+          path: artifacts/folds_raw
+
+      - name: Flatten fold artifacts into a single directory
+        # download-artifact lays each artifact out at
+        # artifacts/folds_raw/fold-N-oof/fold_N.parquet. Collect the
+        # parquets into a flat directory so aggregate mode sees every
+        # fold_*.parquet in one glob.
+        run: |
+          mkdir -p artifacts/folds
+          find artifacts/folds_raw -name 'fold_*.parquet' -exec cp -v '{}' artifacts/folds/ \;
+          ls -la artifacts/folds/
+
+      - name: Aggregate + fit final PMF calibrators
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python scripts/calibrate_pmf.py \
+            --aggregate-mode \
+            --aggregate-oofs artifacts/folds/
+
+      - name: Upload final calibration artifacts
         uses: actions/upload-artifact@v4
         with:
           name: pmf-calibration
@@ -208,7 +279,7 @@ jobs:
 
   # ─── C. Diagnostics + market-relative evaluation ─────────────────────────
   diagnostics:
-    needs: [build-table, calibrate]
+    needs: [build-table, aggregate-calibration]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:

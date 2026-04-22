@@ -479,13 +479,106 @@ def main() -> None:
             "Skips STL, BLK, STOCKS. CI runtime optimization."
         ),
     )
+    # Single-fold / aggregate modes — used to parallelize Phase 8 across a
+    # GitHub Actions matrix. A single job runs --fold-index N with
+    # --emit-fold-oof + --skip-final-fit to emit that fold's OOF parquet
+    # only; an --aggregate-mode job stacks every fold_*.parquet in
+    # --aggregate-oofs and fits the final per-stat PMF calibrators.
+    parser.add_argument(
+        "--fold-index", type=int, default=None,
+        help="1-based fold index to run (single-fold mode). Incompatible "
+             "with --aggregate-mode.",
+    )
+    parser.add_argument(
+        "--emit-fold-oof", default=None,
+        help="Path to write the fold's OOF PMF parquet. Required when "
+             "--fold-index is set.",
+    )
+    parser.add_argument(
+        "--skip-final-fit", action="store_true",
+        help="Skip final pmf_cal_*.pkl + pmf_calibration_run.md writeout. "
+             "Used in single-fold mode so only the aggregate job fits "
+             "the final calibrators.",
+    )
+    parser.add_argument(
+        "--aggregate-mode", action="store_true",
+        help="Read fold OOF parquets from --aggregate-oofs, stack them, "
+             "and fit the final PMF calibrators. Skips all per-fold "
+             "refit work.",
+    )
+    parser.add_argument(
+        "--aggregate-oofs", default=None,
+        help="Directory of fold_*.parquet files to stack in aggregate mode.",
+    )
     args = parser.parse_args()
+    if args.fold_index is not None and args.emit_fold_oof is None:
+        parser.error("--fold-index requires --emit-fold-oof")
+    if args.aggregate_mode and not args.aggregate_oofs:
+        parser.error("--aggregate-mode requires --aggregate-oofs")
+    if args.aggregate_mode and args.fold_index is not None:
+        parser.error("--aggregate-mode is incompatible with --fold-index")
     core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
 
     start = time.time()
     logger.info("=" * 60)
     logger.info("PMF calibration — walk-forward OOF refits")
     logger.info("=" * 60)
+
+    # ── Aggregate mode: read fold OOFs and fit final calibrators ────────
+    if args.aggregate_mode:
+        agg_dir = Path(args.aggregate_oofs)
+        oof_paths = sorted(agg_dir.glob("fold_*.parquet"))
+        if not oof_paths:
+            logger.error(f"No fold_*.parquet in {agg_dir}")
+            sys.exit(1)
+        frames = [pd.read_parquet(p) for p in oof_paths]
+        oof_df_agg = pd.concat(frames, ignore_index=True)
+        logger.info(
+            f"Aggregate mode: loaded {len(oof_paths)} fold files "
+            f"({len(oof_df_agg):,} rows total)"
+        )
+        # Reconstruct per_fold_results + fold_bounds from the stacked
+        # OOF frame so _fit_final_calibrators_and_emit_report consumes
+        # the same shape as the full-run path.
+        agg_per_fold_results: list[dict[str, list[dict]]] = []
+        agg_fold_bounds: list[tuple[pd.Timestamp, pd.Timestamp]] = []
+        fold_group_keys = sorted(
+            oof_df_agg[["fold_start", "fold_end"]].drop_duplicates().itertuples(index=False, name=None),
+            key=lambda fp: fp[0],
+        )
+        for fs_str, fe_str in fold_group_keys:
+            fstart = pd.Timestamp(fs_str) if fs_str else pd.NaT
+            fend = pd.Timestamp(fe_str) if fe_str else pd.NaT
+            agg_fold_bounds.append((fstart, fend))
+            sub = oof_df_agg[
+                (oof_df_agg["fold_start"] == fs_str) &
+                (oof_df_agg["fold_end"] == fe_str)
+            ]
+            fold_res: dict[str, list[dict]] = {}
+            for stat_name, sub_stat in sub.groupby("stat"):
+                fold_res[str(stat_name)] = [
+                    {
+                        "player_id": int(r.player_id),
+                        "game_id": int(r.game_id),
+                        "game_date": str(r.game_date),
+                        "outcome": int(r.outcome),
+                        "pmf": np.asarray(r.pmf),
+                    }
+                    for r in sub_stat.itertuples(index=False)
+                ]
+            agg_per_fold_results.append(fold_res)
+        agg_backup = MODEL_DIR.parent / "archive" / (
+            "aggregate_only_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        )
+        _fit_final_calibrators_and_emit_report(
+            per_fold_results=agg_per_fold_results,
+            fold_bounds=agg_fold_bounds,
+            folds=agg_fold_bounds,
+            full_data_backup=agg_backup,
+            start=start,
+            fold_days=args.fold_days,
+        )
+        return
 
     stats_df = pd.read_parquet(DATA_DIR / "player_game_stats.parquet")
     stats_df["game_date"] = stats_df["game_date"].astype(str).str[:10]
@@ -507,6 +600,20 @@ def main() -> None:
     logger.info(f"Built {len(folds)} walk-forward folds")
     for i, (fs, fe) in enumerate(folds, 1):
         logger.info(f"  fold {i:>2}: {fs.date()} -> {fe.date()}")
+
+    # ── Single-fold mode: run just the requested fold ──────────────────
+    if args.fold_index is not None:
+        if not (1 <= args.fold_index <= len(folds)):
+            logger.error(
+                f"--fold-index {args.fold_index} out of range [1, {len(folds)}]"
+            )
+            sys.exit(1)
+        selected = folds[args.fold_index - 1]
+        folds = [selected]
+        logger.info(
+            f"Single-fold mode: running fold {args.fold_index} "
+            f"({selected[0].date()} -> {selected[1].date()})"
+        )
 
     # Back up existing production artifacts before any dir-swap churn.
     full_data_backup = MODEL_DIR.parent / "archive" / (
@@ -561,6 +668,57 @@ def main() -> None:
         finally:
             _restore_model_dir(originals)
 
+    # ── Single-fold mode: emit fold OOF parquet and exit ────────────────
+    # Each fold's OOF rows are materialized into the same schema the
+    # aggregate path reads, then written to --emit-fold-oof. The final
+    # calibrator fit is deferred to a later --aggregate-mode invocation.
+    if args.fold_index is not None:
+        fold_oof_rows: list[dict] = []
+        for fold_idx, fold_res in enumerate(per_fold_results):
+            fstart, fend = (fold_bounds[fold_idx] if fold_idx < len(fold_bounds)
+                            else (pd.NaT, pd.NaT))
+            for stat, rows in fold_res.items():
+                for r in rows:
+                    fold_oof_rows.append({
+                        "stat": stat,
+                        "player_id": r["player_id"],
+                        "game_id": r["game_id"],
+                        "game_date": r["game_date"],
+                        "outcome": r["outcome"],
+                        "pmf": r["pmf"],
+                        "fold_start": str(fstart.date()) if pd.notna(fstart) else "",
+                        "fold_end": str(fend.date()) if pd.notna(fend) else "",
+                    })
+        fold_oof_df = pd.DataFrame(fold_oof_rows)
+        fold_out_path = Path(args.emit_fold_oof)
+        fold_out_path.parent.mkdir(parents=True, exist_ok=True)
+        fold_oof_df.to_parquet(fold_out_path, index=False)
+        logger.info(
+            f"Fold {args.fold_index} OOF written to {fold_out_path} "
+            f"({len(fold_oof_df):,} rows)"
+        )
+        if args.skip_final_fit:
+            logger.info("--skip-final-fit: exiting without final calibrator fit")
+            return
+
+    _fit_final_calibrators_and_emit_report(
+        per_fold_results=per_fold_results,
+        fold_bounds=fold_bounds,
+        folds=folds,
+        full_data_backup=full_data_backup,
+        start=start,
+        fold_days=args.fold_days,
+    )
+
+
+def _fit_final_calibrators_and_emit_report(
+    per_fold_results: list[dict[str, list[dict]]],
+    fold_bounds: list[tuple[pd.Timestamp, pd.Timestamp]],
+    folds: list[tuple[pd.Timestamp, pd.Timestamp]],
+    full_data_backup: Path,
+    start: float,
+    fold_days: int,
+) -> None:
     # Persist the full OOF universe before any further processing so
     # scripts/run_diagnostics.py has a deterministic input to read.
     oof_rows: list[dict] = []
@@ -602,7 +760,7 @@ def main() -> None:
         if len(pmfs) >= MIN_VAL_ROWS_PER_STAT
     }
     rng = np.random.default_rng(0)
-    meta = fit_all(per_stat_inputs, fold_days=args.fold_days,
+    meta = fit_all(per_stat_inputs, fold_days=fold_days,
                    min_train_days=MIN_TRAIN_DAYS, rng=rng)
 
     logger.info("=" * 60)
@@ -641,7 +799,7 @@ def main() -> None:
         "# PMF calibration run",
         "",
         f"**Run at:** {datetime.utcnow().isoformat()}Z",
-        f"**Folds:** {len(folds)} walk-forward, {args.fold_days}-day validation, "
+        f"**Folds:** {len(folds)} walk-forward, {fold_days}-day validation, "
         f"{MIN_TRAIN_DAYS}-day minimum training window.",
         f"**Production artifact backup:** `{full_data_backup}`",
         "",
