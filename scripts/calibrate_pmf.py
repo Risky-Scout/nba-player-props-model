@@ -541,6 +541,17 @@ def _generate_fold_pmfs(
                     logger.debug(f"  fg3m pmf failed for ({player_id},{game_id}): {e}")
         finally:
             _pmf_timer_add("row_total", time.perf_counter() - _row_t0)
+            # Per-25-row throughput ping — narrow-grained visibility for
+            # the first minutes of a fold before the 500-row PARTIAL
+            # SNAPSHOT fires.
+            processed = _PMF_GEN_COUNTS.get("row_total", 0)
+            if processed > 0 and processed % 25 == 0:
+                elapsed = time.perf_counter() - _t_total_start
+                rate = processed / elapsed if elapsed > 0 else 0
+                logger.info(
+                    f"  PMF gen progress: {processed} rows in {elapsed:.1f}s "
+                    f"({rate:.2f} rows/sec, {1000.0*elapsed/processed:.1f} ms/row)"
+                )
             # Periodic partial snapshot — protects against mid-run
             # timeouts by flushing hotspot timings to the log before the
             # fold finishes. Keyed on the actual row-processed count,
@@ -622,6 +633,15 @@ def main() -> None:
             "Skips STL, BLK, STOCKS. CI runtime optimization."
         ),
     )
+    parser.add_argument(
+        "--val-rows-limit", type=int, default=None,
+        help=(
+            "Profiling-only: cap the number of validation rows scored per "
+            "fold to this integer (deterministic .head(N), no sampling). "
+            "Used to measure PMF-gen throughput without running a full "
+            "fold. Downstream metrics under this flag are diagnostic only."
+        ),
+    )
     # Single-fold / aggregate modes — used to parallelize Phase 8 across a
     # GitHub Actions matrix. A single job runs --fold-index N with
     # --emit-fold-oof + --skip-final-fit to emit that fold's OOF parquet
@@ -666,6 +686,13 @@ def main() -> None:
     logger.info("=" * 60)
     logger.info("PMF calibration — walk-forward OOF refits")
     logger.info("=" * 60)
+
+    if args.val_rows_limit is not None:
+        logger.warning(
+            "PROFILE MODE: val_rows_limit active (%d); downstream metrics "
+            "are diagnostic only and must not be used for ship/quality claims.",
+            args.val_rows_limit,
+        )
 
     # ── Aggregate mode: read fold OOFs and fit final calibrators ────────
     if args.aggregate_mode:
@@ -796,6 +823,12 @@ def main() -> None:
                 (pd.to_datetime(training_df["game_date"]) >= fold_start) &
                 (pd.to_datetime(training_df["game_date"]) < fold_end)
             ]
+            if args.val_rows_limit is not None and len(val_rows) > args.val_rows_limit:
+                val_rows = val_rows.head(args.val_rows_limit).reset_index(drop=True)
+                logger.info(
+                    f"--val-rows-limit={args.val_rows_limit} applied; "
+                    f"val_rows reduced to {len(val_rows):,}"
+                )
             logger.info(f"  val rows: {len(val_rows):,}")
             if len(val_rows) < MIN_VAL_ROWS_PER_STAT:
                 logger.warning(f"  fold {i} val rows too few — skipping PMF gen")

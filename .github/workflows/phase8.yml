@@ -29,6 +29,11 @@ on:
         type: boolean
         default: false
         required: false
+      val_rows_limit:
+        description: 'Profiling only: cap val_rows per fold to this many (empty = no cap). Non-empty forces aggregate-calibration and diagnostics to be skipped because the resulting metrics are not representative.'
+        type: string
+        required: false
+        default: ''
 
 jobs:
   # ─── A. Build training table ─────────────────────────────────────────────
@@ -230,6 +235,9 @@ jobs:
           if [ "${{ github.event.inputs.core_props_only }}" = "true" ]; then
             ARGS="$ARGS --core-props-only"
           fi
+          if [ -n "${{ github.event.inputs.val_rows_limit }}" ]; then
+            ARGS="$ARGS --val-rows-limit ${{ github.event.inputs.val_rows_limit }}"
+          fi
           python scripts/calibrate_pmf.py $ARGS
 
       - name: Upload fold ${{ matrix.fold }} OOF artifact
@@ -243,6 +251,7 @@ jobs:
   # ─── B2. Aggregate per-fold OOFs + fit final calibrators ─────────────────
   aggregate-calibration:
     needs: calibrate-fold
+    if: ${{ github.event.inputs.val_rows_limit == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -303,6 +312,7 @@ jobs:
   # ─── C. Diagnostics + market-relative evaluation ─────────────────────────
   diagnostics:
     needs: [build-table, aggregate-calibration]
+    if: ${{ github.event.inputs.val_rows_limit == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
