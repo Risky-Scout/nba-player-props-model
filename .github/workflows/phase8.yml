@@ -228,16 +228,28 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           mkdir -p artifacts
+          # Bind workflow_dispatch inputs to shell variables via the
+          # modern `inputs.*` context so we can echo raw values before
+          # building ARGS. If the previous run missed val_rows_limit,
+          # this tells us exactly where it was lost.
+          VAL_ROWS_LIMIT="${{ inputs.val_rows_limit }}"
+          MAX_FOLDS="${{ inputs.max_folds }}"
+          CORE_PROPS_ONLY="${{ inputs.core_props_only }}"
+          echo "workflow input max_folds='${MAX_FOLDS}'"
+          echo "workflow input core_props_only='${CORE_PROPS_ONLY}'"
+          echo "workflow input val_rows_limit='${VAL_ROWS_LIMIT}'"
+          echo "full inputs JSON: ${{ toJSON(inputs) }}"
           ARGS="--fold-index ${{ matrix.fold }} \
-                --max-folds ${{ github.event.inputs.max_folds }} \
+                --max-folds ${MAX_FOLDS} \
                 --emit-fold-oof artifacts/fold_${{ matrix.fold }}.parquet \
                 --skip-final-fit"
-          if [ "${{ github.event.inputs.core_props_only }}" = "true" ]; then
+          if [ "${CORE_PROPS_ONLY}" = "true" ]; then
             ARGS="$ARGS --core-props-only"
           fi
-          if [ -n "${{ github.event.inputs.val_rows_limit }}" ]; then
-            ARGS="$ARGS --val-rows-limit ${{ github.event.inputs.val_rows_limit }}"
+          if [ -n "${VAL_ROWS_LIMIT}" ]; then
+            ARGS="$ARGS --val-rows-limit ${VAL_ROWS_LIMIT}"
           fi
+          echo "calibrate-fold ARGS: ${ARGS}"
           python scripts/calibrate_pmf.py $ARGS
 
       - name: Upload fold ${{ matrix.fold }} OOF artifact

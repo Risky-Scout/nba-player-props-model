@@ -680,6 +680,11 @@ def main() -> None:
         parser.error("--aggregate-mode requires --aggregate-oofs")
     if args.aggregate_mode and args.fold_index is not None:
         parser.error("--aggregate-mode is incompatible with --fold-index")
+    logger.info(
+        "CLI args: fold_index=%s max_folds=%s core_props_only=%s val_rows_limit=%s aggregate_mode=%s",
+        args.fold_index, args.max_folds, args.core_props_only,
+        args.val_rows_limit, args.aggregate_mode,
+    )
     core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
 
     start = time.time()
