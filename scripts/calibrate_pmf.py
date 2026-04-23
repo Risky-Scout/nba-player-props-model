@@ -285,6 +285,67 @@ def _refit_models_for_fold(
 # ── per-fold OOF PMF generation ─────────────────────────────────────────────
 
 
+# Cumulative wall-clock accumulators for the OOF PMF hot path. Printed
+# unconditionally at the end of every _generate_fold_pmfs call so every
+# Phase 8 run emits hotspot data — no debug flag required. Named row-loop
+# keys sum to "row_total" within a small residual ("unattributed_row_
+# overhead"). Meta keys (_generate_fold_pmfs_total, parquet_write,
+# row_total) are excluded from the residual calculation.
+_PMF_GEN_TIMES: dict = {}
+_PMF_GEN_COUNTS: dict = {}
+_PMF_GEN_META_KEYS = frozenset({"_generate_fold_pmfs_total", "parquet_write", "row_total"})
+
+
+def _reset_pmf_gen_timers() -> None:
+    _PMF_GEN_TIMES.clear()
+    _PMF_GEN_COUNTS.clear()
+
+
+def _pmf_timer_add(key: str, seconds: float, count: int = 1) -> None:
+    _PMF_GEN_TIMES[key] = _PMF_GEN_TIMES.get(key, 0.0) + seconds
+    _PMF_GEN_COUNTS[key] = _PMF_GEN_COUNTS.get(key, 0) + count
+
+
+def _log_pmf_gen_summary(val_row_count: int, fold_index: int | None) -> None:
+    total = _PMF_GEN_TIMES.get("_generate_fold_pmfs_total", 0.0)
+    row_total = _PMF_GEN_TIMES.get("row_total", 0.0)
+    n_rows = _PMF_GEN_COUNTS.get("row_total", 0)
+    tag = f"fold={fold_index}" if fold_index is not None else "fold=?"
+    logger.info("=" * 60)
+    logger.info(f"PMF GEN TIMING [{tag}] val_rows={val_row_count}  rows_processed={n_rows}")
+    logger.info("=" * 60)
+    logger.info(f"  {'_generate_fold_pmfs_total':32s} {total:8.2f}s")
+    if val_row_count > 0:
+        logger.info(f"  avg per input val row          {1000.0*total/val_row_count:8.2f}ms")
+    # Row-loop timers, sorted descending by cumulative wall-clock.
+    named_items = sorted(
+        ((k, v) for k, v in _PMF_GEN_TIMES.items() if k not in _PMF_GEN_META_KEYS),
+        key=lambda kv: kv[1], reverse=True,
+    )
+    for k, v in named_items:
+        n = _PMF_GEN_COUNTS.get(k, 0)
+        pct = 100.0 * v / max(row_total, 1e-9)
+        avg_ms = 1000.0 * v / max(n, 1) if n else 0.0
+        logger.info(f"  {k:32s} {v:8.2f}s  ({pct:5.1f}%)  n={n:>7d}  avg={avg_ms:7.2f}ms")
+    logger.info(
+        f"  {'row_total':32s} {row_total:8.2f}s  "
+        f"n={n_rows:>7d}  avg={1000.0*row_total/max(n_rows,1):7.2f}ms"
+    )
+    # Unattributed residual: row_total - sum(named row-loop timers).
+    summed = sum(v for k, v in _PMF_GEN_TIMES.items() if k not in _PMF_GEN_META_KEYS)
+    unattributed = max(row_total - summed, 0.0)
+    pct_u = 100.0 * unattributed / max(row_total, 1e-9)
+    avg_u_ms = 1000.0 * unattributed / max(n_rows, 1) if n_rows else 0.0
+    logger.info(
+        f"  {'unattributed_row_overhead':32s} {unattributed:8.2f}s  "
+        f"({pct_u:5.1f}%)  n={n_rows:>7d}  avg={avg_u_ms:7.2f}ms"
+    )
+    # Parquet-write timing lives outside the row loop; print separately.
+    pq = _PMF_GEN_TIMES.get("parquet_write")
+    if pq is not None:
+        logger.info(f"  {'parquet_write (post-loop)':32s} {pq:8.2f}s")
+
+
 def _load_fg3m_if_present(model_dir: Path) -> FG3MHurdleModel | None:
     p = model_dir / "fg3m_hurdle.pkl"
     if not p.exists():
@@ -302,6 +363,7 @@ def _generate_fold_pmfs(
     availability_df: pd.DataFrame,
     fold_artifact_dir: Path,
     allowed_stats: set[str] | None = None,
+    fold_index: int | None = None,
 ) -> dict[str, list[dict]]:
     """Produce per-stat OOF PMFs on val_rows using models trained for this fold.
 
@@ -309,7 +371,12 @@ def _generate_fold_pmfs(
     'outcome', 'pmf', 'pmf_cal_source'}. stocks and combos are included in
     v1 only for sparse stats — combos derive in the predict-layer not
     here.
+
+    Emits an unconditional PMF GEN TIMING summary at completion. See the
+    module-level _PMF_GEN_TIMES / _PMF_GEN_COUNTS accumulators.
     """
+    _reset_pmf_gen_timers()
+    _t_total_start = time.perf_counter()
     from nba_props_model.models.rate_models import rate_quantiles
     from nba_props_model.models.sparse_hurdle import hurdle_pmf
 
@@ -329,120 +396,154 @@ def _generate_fold_pmfs(
 
     rng = np.random.default_rng(0)
     for row in val_rows.itertuples(index=False):
-        player_id = int(row.player_id)
-        game_id = int(row.game_id)
-        game_date = str(row.game_date)[:10]
-
-        # Build minutes distribution.
-        history = stats_by_player_date.get(player_id)
-        if history is None:
-            continue
-        history = history[history["game_date"] < game_date]
-        if len(history) < 10:
-            continue
-
-        # Context: recover is_home, rest_days, back_to_back from stats_df.
-        # (stats_df has home_team_id / team_id which lets us infer is_home;
-        # rest_days is the gap since the previous played game.)
-        prev_games = history.tail(1)
-        rest_days = 2
-        if len(prev_games):
-            prev_date = pd.to_datetime(prev_games.iloc[-1]["game_date"])
-            rest_days = int((pd.to_datetime(game_date) - prev_date).days)
-        b2b = 1 if rest_days == 1 else 0
-
-        avail = avail_lookup.get((player_id, game_date))
-        # Minutes distribution uses the fold's state-aware artifacts.
-        # We need home/team_id from stats_df for the row itself:
-        row_stats = stats_df[
-            (stats_df["player_id"] == player_id) & (stats_df["game_id"] == game_id)
-        ]
-        if row_stats.empty:
-            continue
-        row_stats = row_stats.iloc[0]
-        team_id = int(row_stats["team_id"])
-        is_home = int(row_stats["home_team_id"] == team_id)
-
+        _row_t0 = time.perf_counter()
         try:
-            m_dist = minutes_distribution(
-                prior_stats=history, game_context={"rest_days": rest_days, "back_to_back": b2b},
-                is_home=bool(is_home), target_date=game_date, team_id=team_id,
-                all_stats_df=stats_df, injury_map={}, availability=avail,
-            )
-        except Exception as e:
-            logger.debug(f"  minutes_distribution failed for ({player_id},{game_id}): {e}")
-            continue
+            player_id = int(row.player_id)
+            game_id = int(row.game_id)
+            game_date = str(row.game_date)[:10]
 
-        feature_row = {k: getattr(row, k, 0.0) for k in row._fields}
-
-        def _allowed(stat: str) -> bool:
-            return allowed_stats is None or stat in allowed_stats
-
-        # Main stats via minutes x rate simulation.
-        for stat in RATE_STATS:
-            if not _allowed(stat):
-                continue
-            q = rate_quantiles(stat, feature_row)
-            if q is None:
-                continue
-            from nba_props_model.models.simulation import simulate_stat_pmf
-            pmf_obj = simulate_stat_pmf(
-                stat=stat, minutes_dist=m_dist, feature_row=feature_row,
-                n_draws=3000, rng=rng, rate_q_override=q,
-            )
-            if pmf_obj is None:
-                continue
-            # outcome_int
-            outcome_col = "turnover" if stat == "tov" else stat
-            y = float(row_stats.get(outcome_col, 0) or 0)
-            results[stat].append({
-                "player_id": player_id, "game_id": game_id, "game_date": game_date,
-                "outcome": int(np.clip(y, 0, len(pmf_obj.pmf) - 1)),
-                "pmf": pmf_obj.pmf.astype(np.float64),
-            })
-
-        # Sparse stats.
-        need_stl = _allowed("stl") or _allowed("stocks")
-        need_blk = _allowed("blk") or _allowed("stocks")
-        stl_pmf = hurdle_pmf("stl", feature_row) if need_stl else None
-        blk_pmf = hurdle_pmf("blk", feature_row) if need_blk else None
-        if _allowed("stl") and stl_pmf is not None:
-            y = float(row_stats.get("stl", 0) or 0)
-            results["stl"].append({
-                "player_id": player_id, "game_id": game_id, "game_date": game_date,
-                "outcome": int(np.clip(y, 0, len(stl_pmf) - 1)),
-                "pmf": stl_pmf.astype(np.float64),
-            })
-        if _allowed("blk") and blk_pmf is not None:
-            y = float(row_stats.get("blk", 0) or 0)
-            results["blk"].append({
-                "player_id": player_id, "game_id": game_id, "game_date": game_date,
-                "outcome": int(np.clip(y, 0, len(blk_pmf) - 1)),
-                "pmf": blk_pmf.astype(np.float64),
-            })
-        if _allowed("stocks") and stl_pmf is not None and blk_pmf is not None:
-            sp = stocks_pmf(stl_pmf, blk_pmf)
-            if sp is not None:
-                y = float((row_stats.get("stl", 0) or 0) + (row_stats.get("blk", 0) or 0))
-                results["stocks"].append({
-                    "player_id": player_id, "game_id": game_id, "game_date": game_date,
-                    "outcome": int(np.clip(y, 0, len(sp) - 1)),
-                    "pmf": sp.astype(np.float64),
-                })
-
-        # FG3M.
-        if _allowed("fg3m") and fg3m_model is not None:
+            # history + usable-length guard — timed as history_filter on
+            # every exit path (nested try/finally captures both continues).
+            _hf_t0 = time.perf_counter()
             try:
-                p = fg3m_model.pmf(feature_row)
-                y = float(row_stats.get("fg3m", 0) or 0)
-                results["fg3m"].append({
-                    "player_id": player_id, "game_id": game_id, "game_date": game_date,
-                    "outcome": int(np.clip(y, 0, len(p) - 1)),
-                    "pmf": p.astype(np.float64),
-                })
-            except Exception as e:
-                logger.debug(f"  fg3m pmf failed for ({player_id},{game_id}): {e}")
+                history = stats_by_player_date.get(player_id)
+                if history is None:
+                    continue
+                history = history[history["game_date"] < game_date]
+                if len(history) < 10:
+                    continue
+            finally:
+                _pmf_timer_add("history_filter", time.perf_counter() - _hf_t0)
 
+            # Context: recover is_home, rest_days, back_to_back from stats_df.
+            # (stats_df has home_team_id / team_id which lets us infer is_home;
+            # rest_days is the gap since the previous played game.)
+            prev_games = history.tail(1)
+            rest_days = 2
+            if len(prev_games):
+                prev_date = pd.to_datetime(prev_games.iloc[-1]["game_date"])
+                rest_days = int((pd.to_datetime(game_date) - prev_date).days)
+            b2b = 1 if rest_days == 1 else 0
+
+            avail = avail_lookup.get((player_id, game_date))
+            # Minutes distribution uses the fold's state-aware artifacts.
+            # We need home/team_id from stats_df for the row itself:
+            row_stats = stats_df[
+                (stats_df["player_id"] == player_id) & (stats_df["game_id"] == game_id)
+            ]
+            if row_stats.empty:
+                continue
+            row_stats = row_stats.iloc[0]
+            team_id = int(row_stats["team_id"])
+            is_home = int(row_stats["home_team_id"] == team_id)
+
+            try:
+                _t = time.perf_counter()
+                m_dist = minutes_distribution(
+                    prior_stats=history, game_context={"rest_days": rest_days, "back_to_back": b2b},
+                    is_home=bool(is_home), target_date=game_date, team_id=team_id,
+                    all_stats_df=stats_df, injury_map={}, availability=avail,
+                )
+                _pmf_timer_add("minutes_distribution_build", time.perf_counter() - _t)
+            except Exception as e:
+                logger.debug(f"  minutes_distribution failed for ({player_id},{game_id}): {e}")
+                continue
+
+            _fr_t0 = time.perf_counter()
+            feature_row = {k: getattr(row, k, 0.0) for k in row._fields}
+            _pmf_timer_add("feature_row_build", time.perf_counter() - _fr_t0)
+
+            def _allowed(stat: str) -> bool:
+                return allowed_stats is None or stat in allowed_stats
+
+            # Main stats via minutes x rate simulation.
+            for stat in RATE_STATS:
+                if not _allowed(stat):
+                    continue
+                _t = time.perf_counter()
+                q = rate_quantiles(stat, feature_row)
+                _pmf_timer_add(f"rate_quantiles.{stat}", time.perf_counter() - _t)
+                if q is None:
+                    continue
+                from nba_props_model.models.simulation import simulate_stat_pmf
+                _t = time.perf_counter()
+                pmf_obj = simulate_stat_pmf(
+                    stat=stat, minutes_dist=m_dist, feature_row=feature_row,
+                    n_draws=3000, rng=rng, rate_q_override=q,
+                )
+                _pmf_timer_add(f"simulate_stat_pmf.{stat}", time.perf_counter() - _t)
+                if pmf_obj is None:
+                    continue
+                # outcome_int
+                outcome_col = "turnover" if stat == "tov" else stat
+                y = float(row_stats.get(outcome_col, 0) or 0)
+                results[stat].append({
+                    "player_id": player_id, "game_id": game_id, "game_date": game_date,
+                    "outcome": int(np.clip(y, 0, len(pmf_obj.pmf) - 1)),
+                    "pmf": pmf_obj.pmf.astype(np.float64),
+                })
+
+            # Sparse stats.
+            need_stl = _allowed("stl") or _allowed("stocks")
+            need_blk = _allowed("blk") or _allowed("stocks")
+            if need_stl:
+                _t = time.perf_counter()
+                stl_pmf = hurdle_pmf("stl", feature_row)
+                _pmf_timer_add("hurdle_pmf.stl", time.perf_counter() - _t)
+            else:
+                stl_pmf = None
+
+            if need_blk:
+                _t = time.perf_counter()
+                blk_pmf = hurdle_pmf("blk", feature_row)
+                _pmf_timer_add("hurdle_pmf.blk", time.perf_counter() - _t)
+            else:
+                blk_pmf = None
+            if _allowed("stl") and stl_pmf is not None:
+                y = float(row_stats.get("stl", 0) or 0)
+                results["stl"].append({
+                    "player_id": player_id, "game_id": game_id, "game_date": game_date,
+                    "outcome": int(np.clip(y, 0, len(stl_pmf) - 1)),
+                    "pmf": stl_pmf.astype(np.float64),
+                })
+            if _allowed("blk") and blk_pmf is not None:
+                y = float(row_stats.get("blk", 0) or 0)
+                results["blk"].append({
+                    "player_id": player_id, "game_id": game_id, "game_date": game_date,
+                    "outcome": int(np.clip(y, 0, len(blk_pmf) - 1)),
+                    "pmf": blk_pmf.astype(np.float64),
+                })
+            if _allowed("stocks") and stl_pmf is not None and blk_pmf is not None:
+                _t = time.perf_counter()
+                sp = stocks_pmf(stl_pmf, blk_pmf)
+                _pmf_timer_add("stocks_pmf", time.perf_counter() - _t)
+                if sp is not None:
+                    y = float((row_stats.get("stl", 0) or 0) + (row_stats.get("blk", 0) or 0))
+                    results["stocks"].append({
+                        "player_id": player_id, "game_id": game_id, "game_date": game_date,
+                        "outcome": int(np.clip(y, 0, len(sp) - 1)),
+                        "pmf": sp.astype(np.float64),
+                    })
+
+            # FG3M.
+            if _allowed("fg3m") and fg3m_model is not None:
+                try:
+                    _t = time.perf_counter()
+                    p = fg3m_model.pmf(feature_row)
+                    _pmf_timer_add("fg3m_model_pmf", time.perf_counter() - _t)
+                    y = float(row_stats.get("fg3m", 0) or 0)
+                    results["fg3m"].append({
+                        "player_id": player_id, "game_id": game_id, "game_date": game_date,
+                        "outcome": int(np.clip(y, 0, len(p) - 1)),
+                        "pmf": p.astype(np.float64),
+                    })
+                except Exception as e:
+                    logger.debug(f"  fg3m pmf failed for ({player_id},{game_id}): {e}")
+        finally:
+            _pmf_timer_add("row_total", time.perf_counter() - _row_t0)
+
+    _PMF_GEN_TIMES["_generate_fold_pmfs_total"] = time.perf_counter() - _t_total_start
+    _log_pmf_gen_summary(val_row_count=len(val_rows), fold_index=fold_index)
     return results
 
 
@@ -690,6 +791,7 @@ def main() -> None:
                 val_rows=val_rows, stats_df=stats_df,
                 availability_df=availability_df, fold_artifact_dir=fold_dir,
                 allowed_stats=core_only_allowed,
+                fold_index=i,
             )
             counts = {s: len(v) for s, v in fold_out.items() if v}
             logger.info(f"  fold PMF counts: {counts}")
@@ -721,10 +823,12 @@ def main() -> None:
         fold_oof_df = pd.DataFrame(fold_oof_rows)
         fold_out_path = Path(args.emit_fold_oof)
         fold_out_path.parent.mkdir(parents=True, exist_ok=True)
+        _t_pq = time.perf_counter()
         fold_oof_df.to_parquet(fold_out_path, index=False)
+        _pmf_timer_add("parquet_write", time.perf_counter() - _t_pq)
         logger.info(
             f"Fold {args.fold_index} OOF written to {fold_out_path} "
-            f"({len(fold_oof_df):,} rows)"
+            f"({len(fold_oof_df):,} rows) in {_PMF_GEN_TIMES['parquet_write']:.2f}s"
         )
         if args.skip_final_fit:
             logger.info("--skip-final-fit: exiting without final calibrator fit")
