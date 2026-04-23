@@ -1,0 +1,786 @@
+{
+  "date": "2026-04-23",
+  "generated_at": "2026-04-23T15:47:03.150489",
+  "props": [
+    {
+      "player_name": "Onyeka Okongwu",
+      "game": "New York Knicks @ Atlanta Hawks",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7441,
+      "market_prob": 0.3403,
+      "ev": 1.0834,
+      "edge": 0.2692,
+      "fair_odds_over": 156,
+      "fair_odds_under": -156,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -225,
+        "under_odds": 180,
+        "best_odds": 180
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6095,
+          "fair_odds": -156,
+          "display_prob": "61.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2692,
+          "fair_odds": 271,
+          "display_prob": "26.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0854,
+          "fair_odds": 1071,
+          "display_prob": "8.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0051,
+          "fair_odds": 19508,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0052,
+          "fair_odds": 19131,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Collin Murray-Boyles",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7691,
+      "market_prob": 0.3571,
+      "ev": 1.0765,
+      "edge": 0.2962,
+      "fair_odds_over": 188,
+      "fair_odds_under": -188,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -200,
+        "under_odds": 170,
+        "best_odds": 170
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6533,
+          "fair_odds": -188,
+          "display_prob": "65.3%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2315,
+          "fair_odds": 332,
+          "display_prob": "23.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0835,
+          "fair_odds": 1098,
+          "display_prob": "8.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Brunson",
+      "game": "New York Knicks @ Atlanta Hawks",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.762,
+      "market_prob": 0.367,
+      "ev": 0.9812,
+      "edge": 0.2876,
+      "fair_odds_over": 190,
+      "fair_odds_under": -190,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -197,
+        "under_odds": 160,
+        "best_odds": 160
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6546,
+          "fair_odds": -190,
+          "display_prob": "65.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2147,
+          "fair_odds": 366,
+          "display_prob": "21.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0962,
+          "fair_odds": 940,
+          "display_prob": "9.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0051,
+          "fair_odds": 19508,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Rudy Gobert",
+      "game": "Denver Nuggets @ Minnesota Timberwolves",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.764,
+      "market_prob": 0.3801,
+      "ev": 0.9789,
+      "edge": 0.2788,
+      "fair_odds_over": 193,
+      "fair_odds_under": -193,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -170,
+        "under_odds": 159,
+        "best_odds": 159
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6589,
+          "fair_odds": -193,
+          "display_prob": "65.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2103,
+          "fair_odds": 376,
+          "display_prob": "21.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0997,
+          "fair_odds": 903,
+          "display_prob": "10.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Immanuel Quickley",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 1.0,
+      "model_prob": 0.7673,
+      "market_prob": 0.5278,
+      "ev": 0.9567,
+      "edge": 0.1628,
+      "fair_odds_over": 223,
+      "fair_odds_under": -223,
+      "pmf_median": 0,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 185,
+        "under_odds": 155,
+        "best_odds": 155
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5193,
+          "fair_odds": -108,
+          "display_prob": "51.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2481,
+          "fair_odds": 303,
+          "display_prob": "24.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1508,
+          "fair_odds": 563,
+          "display_prob": "15.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0392,
+          "fair_odds": 2451,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0058,
+          "fair_odds": 17141,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0052,
+          "fair_odds": 19131,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0071,
+          "fair_odds": 13985,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0061,
+          "fair_odds": 16293,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jarrett Allen",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7517,
+      "market_prob": 0.3659,
+      "ev": 0.9545,
+      "edge": 0.2502,
+      "fair_odds_over": 160,
+      "fair_odds_under": -160,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -200,
+        "under_odds": 160,
+        "best_odds": 160
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6161,
+          "fair_odds": -160,
+          "display_prob": "61.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2714,
+          "fair_odds": 268,
+          "display_prob": "27.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0773,
+          "fair_odds": 1194,
+          "display_prob": "7.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0051,
+          "fair_odds": 19508,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Donte DiVincenzo",
+      "game": "Denver Nuggets @ Minnesota Timberwolves",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6868,
+      "market_prob": 0.3545,
+      "ev": 0.8062,
+      "edge": 0.1924,
+      "fair_odds_over": 121,
+      "fair_odds_under": -121,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -225,
+        "under_odds": 163,
+        "best_odds": 163
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5469,
+          "fair_odds": -121,
+          "display_prob": "54.7%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2797,
+          "fair_odds": 258,
+          "display_prob": "28.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1317,
+          "fair_odds": 659,
+          "display_prob": "13.2%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0057,
+          "fair_odds": 17444,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0052,
+          "fair_odds": 19131,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0059,
+          "fair_odds": 16849,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0053,
+          "fair_odds": 18768,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0057,
+          "fair_odds": 17444,
+          "display_prob": "0.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Collin Murray-Boyles",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6681,
+      "market_prob": 0.3655,
+      "ev": 0.7706,
+      "edge": 0.1446,
+      "fair_odds_over": 104,
+      "fair_odds_under": -104,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -190,
+        "under_odds": 165,
+        "best_odds": 165
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5101,
+          "fair_odds": -104,
+          "display_prob": "51.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3161,
+          "fair_odds": 216,
+          "display_prob": "31.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1145,
+          "fair_odds": 773,
+          "display_prob": "11.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0173,
+          "fair_odds": 5680,
+          "display_prob": "1.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0067,
+          "fair_odds": 14825,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.007,
+          "fair_odds": 14186,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0059,
+          "fair_odds": 16849,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0064,
+          "fair_odds": 15525,
+          "display_prob": "0.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Dyson Daniels",
+      "game": "New York Knicks @ Atlanta Hawks",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7299,
+      "market_prob": 0.41,
+      "ev": 0.7153,
+      "edge": 0.2109,
+      "fair_odds_over": 164,
+      "fair_odds_under": -164,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -158,
+        "under_odds": 135,
+        "best_odds": 135
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2286,
+          "fair_odds": 337,
+          "display_prob": "22.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3922,
+          "fair_odds": 155,
+          "display_prob": "39.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2181,
+          "fair_odds": 359,
+          "display_prob": "21.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0904,
+          "fair_odds": 1006,
+          "display_prob": "9.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0108,
+          "fair_odds": 9159,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0102,
+          "fair_odds": 9704,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0093,
+          "fair_odds": 10653,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0083,
+          "fair_odds": 11948,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0114,
+          "fair_odds": 8672,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.01,
+          "fair_odds": 9900,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0106,
+          "fair_odds": 9334,
+          "display_prob": "1.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Anthony Edwards",
+      "game": "Denver Nuggets @ Minnesota Timberwolves",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7613,
+      "market_prob": 0.4275,
+      "ev": 0.7129,
+      "edge": 0.1676,
+      "fair_odds_over": 147,
+      "fair_odds_under": -147,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -147,
+        "under_odds": 125,
+        "best_odds": 125
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5951,
+          "fair_odds": -147,
+          "display_prob": "59.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3324,
+          "fair_odds": 201,
+          "display_prob": "33.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0363,
+          "fair_odds": 2655,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0055,
+          "fair_odds": 18082,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Anthony Edwards",
+      "game": "Denver Nuggets @ Minnesota Timberwolves",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 5.5,
+      "model_prob": 0.778,
+      "market_prob": 0.441,
+      "ev": 0.7116,
+      "edge": 0.2923,
+      "fair_odds_over": 275,
+      "fair_odds_under": -275,
+      "pmf_median": 4,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -136,
+        "under_odds": 120,
+        "best_odds": 120
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0892,
+          "fair_odds": 1021,
+          "display_prob": "8.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.116,
+          "fair_odds": 762,
+          "display_prob": "11.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1457,
+          "fair_odds": 586,
+          "display_prob": "14.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1338,
+          "fair_odds": 647,
+          "display_prob": "13.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1328,
+          "fair_odds": 653,
+          "display_prob": "13.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1158,
+          "fair_odds": 764,
+          "display_prob": "11.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0895,
+          "fair_odds": 1017,
+          "display_prob": "8.9%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0638,
+          "fair_odds": 1467,
+          "display_prob": "6.4%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0445,
+          "fair_odds": 2147,
+          "display_prob": "4.5%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0295,
+          "fair_odds": 3290,
+          "display_prob": "2.9%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0163,
+          "fair_odds": 6035,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0103,
+          "fair_odds": 9609,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Karl-Anthony Towns",
+      "game": "New York Knicks @ Atlanta Hawks",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7704,
+      "market_prob": 0.438,
+      "ev": 0.695,
+      "edge": 0.2225,
+      "fair_odds_over": 195,
+      "fair_odds_under": -195,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -140,
+        "under_odds": 120,
+        "best_odds": 120
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6605,
+          "fair_odds": -195,
+          "display_prob": "66.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2199,
+          "fair_odds": 355,
+          "display_prob": "22.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0884,
+          "fair_odds": 1031,
+          "display_prob": "8.8%"
+        }
+      ]
+    }
+  ]
+}

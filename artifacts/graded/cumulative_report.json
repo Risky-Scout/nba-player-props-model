@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-04-22T14:46:26.499463",
-  "total_dates": 11,
+  "generated_at": "2026-04-23T15:12:13.845725",
+  "total_dates": 12,
   "overall": {
     "label": "ALL_TIME",
-    "n_bets": 155,
-    "n_hits": 84,
-    "hit_rate": 0.5419,
-    "profit": 12.66,
-    "roi": 0.0817,
-    "mean_clv": -0.1157,
+    "n_bets": 163,
+    "n_hits": 86,
+    "hit_rate": 0.5276,
+    "profit": 9.69,
+    "roi": 0.0595,
+    "mean_clv": -0.1266,
     "mean_clv_true_clv": 0.1445,
-    "mean_clv_proxy": -0.1173,
+    "mean_clv_proxy": -0.1283,
     "clv_ci_95": [
-      -0.1489,
-      -0.0808
+      -0.1587,
+      -0.0925
     ],
     "clv_significant": false,
     "pct_true_clv": 0.006,
-    "brier": 0.2826,
+    "brier": 0.2892,
     "max_dd": 10.62,
-    "sharpe": 1.064
+    "sharpe": 0.767
   },
   "by_tier": {},
   "by_stat": {
@@ -45,23 +45,23 @@
     },
     "reb": {
       "label": "Rebounds",
-      "n_bets": 44,
-      "n_hits": 25,
-      "hit_rate": 0.5682,
-      "profit": 4.47,
-      "roi": 0.1016,
-      "mean_clv": -0.0948,
+      "n_bets": 45,
+      "n_hits": 26,
+      "hit_rate": 0.5778,
+      "profit": 5.8,
+      "roi": 0.1289,
+      "mean_clv": -0.0987,
       "mean_clv_true_clv": 0.1445,
-      "mean_clv_proxy": -0.1004,
+      "mean_clv_proxy": -0.1042,
       "clv_ci_95": [
-        -0.1447,
-        -0.042
+        -0.1477,
+        -0.0466
       ],
       "clv_significant": false,
-      "pct_true_clv": 0.023,
-      "brier": 0.2681,
+      "pct_true_clv": 0.022,
+      "brier": 0.2644,
       "max_dd": 5.92,
-      "sharpe": 1.376
+      "sharpe": 1.735
     },
     "ast": {
       "label": "Assists",
@@ -105,43 +105,43 @@
     },
     "stl": {
       "label": "Steals",
-      "n_bets": 15,
+      "n_bets": 16,
       "n_hits": 7,
-      "hit_rate": 0.4667,
-      "profit": -0.7,
-      "roi": -0.0464,
-      "mean_clv": -0.2478,
+      "hit_rate": 0.4375,
+      "profit": -1.7,
+      "roi": -0.106,
+      "mean_clv": -0.252,
       "mean_clv_true_clv": null,
-      "mean_clv_proxy": -0.2478,
+      "mean_clv_proxy": -0.252,
       "clv_ci_95": [
         null,
         null
       ],
       "clv_significant": false,
       "pct_true_clv": 0.0,
-      "brier": 0.3313,
+      "brier": 0.3385,
       "max_dd": 5.35,
-      "sharpe": -0.58
+      "sharpe": -1.334
     },
     "blk": {
       "label": "Blocks",
-      "n_bets": 8,
-      "n_hits": 4,
-      "hit_rate": 0.5,
-      "profit": 1.0,
-      "roi": 0.125,
-      "mean_clv": -0.0198,
+      "n_bets": 14,
+      "n_hits": 5,
+      "hit_rate": 0.3571,
+      "profit": -2.3,
+      "roi": -0.1643,
+      "mean_clv": -0.1638,
       "mean_clv_true_clv": null,
-      "mean_clv_proxy": -0.0198,
+      "mean_clv_proxy": -0.1638,
       "clv_ci_95": [
         null,
         null
       ],
       "clv_significant": false,
       "pct_true_clv": 0.0,
-      "brier": 0.2725,
-      "max_dd": 2.0,
-      "sharpe": 1.429
+      "brier": 0.3551,
+      "max_dd": 5.0,
+      "sharpe": -1.891
     }
   },
   "by_side": {
@@ -167,63 +167,63 @@
     },
     "UNDER": {
       "label": "UNDER",
-      "n_bets": 114,
-      "n_hits": 61,
-      "hit_rate": 0.5351,
-      "profit": 7.8,
-      "roi": 0.0684,
-      "mean_clv": -0.2339,
+      "n_bets": 122,
+      "n_hits": 63,
+      "hit_rate": 0.5164,
+      "profit": 4.83,
+      "roi": 0.0396,
+      "mean_clv": -0.2408,
       "mean_clv_true_clv": null,
-      "mean_clv_proxy": -0.2339,
+      "mean_clv_proxy": -0.2408,
       "clv_ci_95": [
-        -0.2489,
-        -0.2186
+        -0.2561,
+        -0.2255
       ],
       "clv_significant": false,
       "pct_true_clv": 0.0,
-      "brier": 0.2876,
+      "brier": 0.2961,
       "max_dd": 10.29,
-      "sharpe": 0.891
+      "sharpe": 0.51
     }
   },
   "rolling_30": {
     "label": "last_30d",
-    "n_bets": 155,
-    "n_hits": 84,
-    "hit_rate": 0.5419,
-    "profit": 12.66,
-    "roi": 0.0817,
-    "mean_clv": -0.1157,
+    "n_bets": 163,
+    "n_hits": 86,
+    "hit_rate": 0.5276,
+    "profit": 9.69,
+    "roi": 0.0595,
+    "mean_clv": -0.1266,
     "mean_clv_true_clv": 0.1445,
-    "mean_clv_proxy": -0.1173,
+    "mean_clv_proxy": -0.1283,
     "clv_ci_95": [
-      -0.1485,
-      -0.0818
+      -0.159,
+      -0.0931
     ],
     "clv_significant": false,
     "pct_true_clv": 0.006,
-    "brier": 0.2826,
-    "max_dd": 6.23,
-    "sharpe": 1.064
+    "brier": 0.2892,
+    "max_dd": 8.65,
+    "sharpe": 0.767
   },
   "rolling_60": {
     "label": "last_60d",
-    "n_bets": 155,
-    "n_hits": 84,
-    "hit_rate": 0.5419,
-    "profit": 12.66,
-    "roi": 0.0817,
-    "mean_clv": -0.1157,
+    "n_bets": 163,
+    "n_hits": 86,
+    "hit_rate": 0.5276,
+    "profit": 9.69,
+    "roi": 0.0595,
+    "mean_clv": -0.1266,
     "mean_clv_true_clv": 0.1445,
-    "mean_clv_proxy": -0.1173,
+    "mean_clv_proxy": -0.1283,
     "clv_ci_95": [
-      -0.1485,
-      -0.0818
+      -0.159,
+      -0.0931
     ],
     "clv_significant": false,
     "pct_true_clv": 0.006,
-    "brier": 0.2826,
-    "max_dd": 6.23,
-    "sharpe": 1.064
+    "brier": 0.2892,
+    "max_dd": 8.65,
+    "sharpe": 0.767
   }
 }
