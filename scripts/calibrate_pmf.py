@@ -195,8 +195,13 @@ def _refit_models_for_fold(
     availability_df: pd.DataFrame,
     training_df: pd.DataFrame,
     fold_artifact_dir: Path,
+    allowed_stats: set[str] | None = None,
 ) -> None:
     """Refit minutes + rate + hurdle + fg3m on data strictly before fold_start.
+
+    `allowed_stats` restricts which per-stat trainers run. The minutes model
+    always trains because every downstream stat PMF depends on it. None
+    means "train the full family" (unchanged legacy behavior).
 
     Writes the trained artifacts to fold_artifact_dir. Caller is
     responsible for having swapped MODEL_DIR to fold_artifact_dir before
@@ -213,7 +218,7 @@ def _refit_models_for_fold(
         f"training_df rows={len(train_training):,}"
     )
 
-    # State-aware minutes.
+    # State-aware minutes (always trained — needed by every downstream stat).
     train_state_aware_minutes_model(train_stats, availability_df=train_avail)
 
     # Build wide view for rate + sparse hurdle.
@@ -227,31 +232,54 @@ def _refit_models_for_fold(
     wide = pts_slice.merge(
         train_stats[raw_cols], on=["player_id", "game_id"], how="left",
     )
-    train_rate_models(wide)
-    train_sparse_hurdle(wide)
+
+    # Rate models — subset when allowed_stats is given.
+    from nba_props_model.models.rate_models import RATE_STATS
+    rate_subset = (
+        tuple(s for s in RATE_STATS if s in allowed_stats)
+        if allowed_stats is not None else RATE_STATS
+    )
+    if rate_subset:
+        train_rate_models(wide, stats=rate_subset)
+    else:
+        logger.info("  rate models: none in allowed_stats, skipping")
+
+    # Sparse hurdle (stl / blk) — subset when allowed_stats is given.
+    from nba_props_model.models.sparse_hurdle import SPARSE_STATS
+    sparse_subset = (
+        tuple(s for s in SPARSE_STATS if s in allowed_stats)
+        if allowed_stats is not None else SPARSE_STATS
+    )
+    if sparse_subset:
+        train_sparse_hurdle(wide, stats=sparse_subset)
+    else:
+        logger.info("  sparse hurdle (stl/blk): skipped (not in allowed_stats)")
 
     # FG3M hurdle. Same column-alias block used by the main pipeline.
-    fg3m_df = train_training[train_training["stat"] == "fg3m"].copy()
-    if len(fg3m_df) > 500:
-        for src, dst, mul in [
-            ("per_min_fg3a_last10", "mean_fg3a_last10", "mp_mean_last10"),
-            ("per_min_fg3a_last10", "mean_fg3a_last5",  "mp_mean_last10"),
-            ("per_min_fg3a_last10", "season_mean_fg3a", "mp_mean_season"),
-            ("per_min_fg3a_last10", "ewma10_fg3a",      "mp_ewma_10"),
-        ]:
-            if dst not in fg3m_df.columns and src in fg3m_df.columns:
-                fg3m_df[dst] = fg3m_df[src] * fg3m_df.get(mul, 36).fillna(36)
-        if "zero_pct_fg3a" not in fg3m_df.columns and "fg3m_p_zero_last10" in fg3m_df.columns:
-            fg3m_df["zero_pct_fg3a"] = fg3m_df["fg3m_p_zero_last10"]
-        if "trend_fg3a" not in fg3m_df.columns and "fg3a_attempt_trend" in fg3m_df.columns:
-            fg3m_df["trend_fg3a"] = fg3m_df["fg3a_attempt_trend"]
-        if "per_min_fg3a_season" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
-            fg3m_df["per_min_fg3a_season"] = fg3m_df["per_min_fg3a_last10"]
-        fg3m_hurdle = FG3MHurdleModel()
-        fg3m_hurdle.fit(fg3m_df)
-        fg3m_hurdle.save(str(fold_artifact_dir / "fg3m_hurdle.pkl"))
+    if allowed_stats is not None and "fg3m" not in allowed_stats:
+        logger.info("  fg3m hurdle: skipped (not in allowed_stats)")
     else:
-        logger.warning("  fg3m hurdle: insufficient rows, skipping")
+        fg3m_df = train_training[train_training["stat"] == "fg3m"].copy()
+        if len(fg3m_df) > 500:
+            for src, dst, mul in [
+                ("per_min_fg3a_last10", "mean_fg3a_last10", "mp_mean_last10"),
+                ("per_min_fg3a_last10", "mean_fg3a_last5",  "mp_mean_last10"),
+                ("per_min_fg3a_last10", "season_mean_fg3a", "mp_mean_season"),
+                ("per_min_fg3a_last10", "ewma10_fg3a",      "mp_ewma_10"),
+            ]:
+                if dst not in fg3m_df.columns and src in fg3m_df.columns:
+                    fg3m_df[dst] = fg3m_df[src] * fg3m_df.get(mul, 36).fillna(36)
+            if "zero_pct_fg3a" not in fg3m_df.columns and "fg3m_p_zero_last10" in fg3m_df.columns:
+                fg3m_df["zero_pct_fg3a"] = fg3m_df["fg3m_p_zero_last10"]
+            if "trend_fg3a" not in fg3m_df.columns and "fg3a_attempt_trend" in fg3m_df.columns:
+                fg3m_df["trend_fg3a"] = fg3m_df["fg3a_attempt_trend"]
+            if "per_min_fg3a_season" not in fg3m_df.columns and "per_min_fg3a_last10" in fg3m_df.columns:
+                fg3m_df["per_min_fg3a_season"] = fg3m_df["per_min_fg3a_last10"]
+            fg3m_hurdle = FG3MHurdleModel()
+            fg3m_hurdle.fit(fg3m_df)
+            fg3m_hurdle.save(str(fold_artifact_dir / "fg3m_hurdle.pkl"))
+        else:
+            logger.warning("  fg3m hurdle: insufficient rows, skipping")
 
 
 # ── per-fold OOF PMF generation ─────────────────────────────────────────────
@@ -644,6 +672,7 @@ def main() -> None:
                 fold_start=fold_start, stats_df=stats_df,
                 availability_df=availability_df, training_df=training_df,
                 fold_artifact_dir=fold_dir,
+                allowed_stats=core_only_allowed,
             )
 
             # Generate OOF PMFs on validation rows.

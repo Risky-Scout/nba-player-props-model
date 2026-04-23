@@ -16,13 +16,13 @@ on:
         required: false
         default: 'Phase 8 run'
       max_folds:
-        description: 'Walk-forward fold cap for calibrate_pmf.py (CI default 6)'
+        description: 'Walk-forward fold cap for calibrate_pmf.py (CI default 4)'
         required: false
-        default: '6'
+        default: '4'
       core_props_only:
         description: 'Restrict calibration and diagnostics to core props (PTS, REB, AST, FG3M, TOV) only'
         type: boolean
-        default: false
+        default: true
         required: false
       allow_local_build_fallback:
         description: 'If true, allow Phase 8 to rebuild training_table.parquet locally via scripts/train.py --build-table-only when no retrain artifact is found. Default false — prefer failing fast and triggering retrain.yml instead.'
@@ -153,21 +153,44 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  # ─── A2. Dynamically size the fold matrix from max_folds input ───────────
+  # Avoids launching idle runners when max_folds < 6. Generates a JSON
+  # array [1, 2, ..., N] consumed by calibrate-fold's strategy.matrix.
+  setup-matrix:
+    needs: build-table
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      folds: ${{ steps.gen.outputs.folds }}
+    steps:
+      - id: gen
+        env:
+          MAX_FOLDS: ${{ github.event.inputs.max_folds }}
+        run: |
+          python - <<'PY'
+          import json, os
+          n = int(os.environ.get("MAX_FOLDS", "4") or "4")
+          folds = list(range(1, n + 1))
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"folds={json.dumps(folds)}\n")
+          print(f"Dynamic fold matrix: {folds}")
+          PY
+
   # ─── B1. PMF calibration — per-fold matrix ───────────────────────────────
   # Each fold runs on its own GitHub-hosted runner in parallel. Observed
   # local single-fold wall-clock 26.5 min on an M-series Mac (2026-04-22
-  # diagnostic); GitHub runners are ~1.5x slower, and the previous serial
-  # run exceeded 88 min for a single fold before timing out. 120 min per
-  # matrix job gives safe margin while preserving the point of the
-  # refactor: 6 folds in parallel rather than serial.
+  # diagnostic); GitHub runners are slower and the prior 120-min budget
+  # still proved too tight. 300 min per matrix job gives safe margin
+  # while preserving the point of the refactor: N folds in parallel
+  # rather than serial. Matrix size is driven dynamically by max_folds.
   calibrate-fold:
-    needs: build-table
+    needs: [build-table, setup-matrix]
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
-        fold: [1, 2, 3, 4, 5, 6]
+        fold: ${{ fromJSON(needs.setup-matrix.outputs.folds) }}
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
