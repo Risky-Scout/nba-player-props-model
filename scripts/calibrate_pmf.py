@@ -392,6 +392,46 @@ def _generate_fold_pmfs(
         for pid, g in stats_df.groupby("player_id")
     }
 
+    # Per-row stat lookup — one O(1) dict hit per val row instead of an
+    # O(N) boolean scan of stats_df. Holds the first box-score row for
+    # each (player_id, game_id) pair; the previous boolean filter also
+    # consumed `.iloc[0]`, so semantics are preserved. Values are stored
+    # as dicts so downstream .get(col, default) calls behave identically.
+    row_stats_lookup: dict[tuple[int, int], dict] = {}
+    row_stats_dup_count = 0
+    for _r in stats_df.itertuples(index=False):
+        _key = (int(_r.player_id), int(_r.game_id))
+        if _key in row_stats_lookup:
+            row_stats_dup_count += 1
+            continue
+        row_stats_lookup[_key] = _r._asdict()
+    logger.info(
+        f"row_stats_lookup built: {len(row_stats_lookup):,} unique (player_id, "
+        f"game_id) keys; duplicate_key_count={row_stats_dup_count:,}"
+    )
+    # Sanity: confirm itertuples._asdict() preserved stats_df column names
+    # intact (and did not rename any columns to _0, _1, ... because they
+    # weren't valid Python identifiers). Log the key list of the first
+    # entry so any silent renames surface before the loop starts.
+    if row_stats_lookup:
+        _sample_key = next(iter(row_stats_lookup))
+        _sample_keys = list(row_stats_lookup[_sample_key].keys())
+        logger.info(
+            f"row_stats_lookup sanity: sample_key={_sample_key}, "
+            f"keys={_sample_keys}"
+        )
+
+    # Pre-sorted date vectors per player for O(log N) history slicing —
+    # replaces the per-row boolean filter `history["game_date"] < date`.
+    # Each stats_by_player_date frame is already sort_values("game_date")
+    # + reset_index(drop=True), so a searchsorted on the "game_date"
+    # column yields the same cutoff as the prior boolean filter (strict
+    # < comparison on 10-char ISO strings is monotone).
+    history_date_vec: dict[int, np.ndarray] = {
+        pid: df["game_date"].astype(str).str.slice(0, 10).to_numpy()
+        for pid, df in stats_by_player_date.items()
+    }
+
     results: dict[str, list[dict]] = {s: [] for s in list(RATE_STATS) + list(SPARSE_STATS) + ["stocks", "fg3m"]}
 
     rng = np.random.default_rng(0)
@@ -406,12 +446,17 @@ def _generate_fold_pmfs(
             # every exit path (nested try/finally captures both continues).
             _hf_t0 = time.perf_counter()
             try:
-                history = stats_by_player_date.get(player_id)
-                if history is None:
+                history_full = stats_by_player_date.get(player_id)
+                if history_full is None:
                     continue
-                history = history[history["game_date"] < game_date]
-                if len(history) < 10:
+                date_vec = history_date_vec.get(player_id)
+                # searchsorted side='left' returns the first index whose
+                # date >= game_date; rows before it satisfy the old
+                # strict `< game_date` filter.
+                cutoff = int(np.searchsorted(date_vec, game_date, side="left"))
+                if cutoff < 10:
                     continue
+                history = history_full.iloc[:cutoff]
             finally:
                 _pmf_timer_add("history_filter", time.perf_counter() - _hf_t0)
 
@@ -426,14 +471,13 @@ def _generate_fold_pmfs(
             b2b = 1 if rest_days == 1 else 0
 
             avail = avail_lookup.get((player_id, game_date))
-            # Minutes distribution uses the fold's state-aware artifacts.
-            # We need home/team_id from stats_df for the row itself:
-            row_stats = stats_df[
-                (stats_df["player_id"] == player_id) & (stats_df["game_id"] == game_id)
-            ]
-            if row_stats.empty:
+            # O(1) pre-indexed lookup — replaces the O(|stats_df|) boolean
+            # filter + .iloc[0]. Semantics preserved: same (player_id,
+            # game_id) row, same field set. Missing key maps to the old
+            # early-continue on row_stats.empty.
+            row_stats = row_stats_lookup.get((player_id, game_id))
+            if row_stats is None:
                 continue
-            row_stats = row_stats.iloc[0]
             team_id = int(row_stats["team_id"])
             is_home = int(row_stats["home_team_id"] == team_id)
 
