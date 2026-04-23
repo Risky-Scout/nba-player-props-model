@@ -541,6 +541,20 @@ def _generate_fold_pmfs(
                     logger.debug(f"  fg3m pmf failed for ({player_id},{game_id}): {e}")
         finally:
             _pmf_timer_add("row_total", time.perf_counter() - _row_t0)
+            # Periodic partial snapshot — protects against mid-run
+            # timeouts by flushing hotspot timings to the log before the
+            # fold finishes. Keyed on the actual row-processed count,
+            # not on per-stat result list lengths (which skew under
+            # _allowed() gating).
+            processed_rows = _PMF_GEN_COUNTS.get("row_total", 0)
+            if processed_rows > 0 and processed_rows % 500 == 0:
+                _PMF_GEN_TIMES["_generate_fold_pmfs_total"] = (
+                    time.perf_counter() - _t_total_start
+                )
+                logger.info("PMF GEN TIMING PARTIAL SNAPSHOT")
+                _log_pmf_gen_summary(
+                    val_row_count=processed_rows, fold_index=fold_index,
+                )
 
     _PMF_GEN_TIMES["_generate_fold_pmfs_total"] = time.perf_counter() - _t_total_start
     _log_pmf_gen_summary(val_row_count=len(val_rows), fold_index=fold_index)
