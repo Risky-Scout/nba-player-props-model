@@ -997,7 +997,7 @@ def _fit_final_calibrators_and_emit_report(
 
     per_stat_inputs = {
         stat: (pmfs.astype(np.float64), outcomes.astype(int),
-               np.array([pd.Timestamp(d) for d in dates]))
+               np.array([pd.Timestamp(str(d)) for d in dates]))
         for stat, (pmfs, outcomes, dates) in stacked.items()
         if len(pmfs) >= MIN_VAL_ROWS_PER_STAT
     }
