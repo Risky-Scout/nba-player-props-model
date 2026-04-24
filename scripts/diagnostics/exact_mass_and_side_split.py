@@ -218,6 +218,29 @@ def _atom_metrics_for_stat(fold_stat: pd.DataFrame, min_atom_count: int) -> dict
     else:
         atom_logloss = float("nan")
 
+    # ── Distributional summary (reuses P, realized, outcomes) ─────────
+    # Honest distribution-level sanity checks before any correction
+    # layer: predicted vs realized mean, P(X=0), P(X<=1). No tilt, no
+    # reweighting — just read the PMF as is.
+    pred_mean = float(np.sum(P * np.arange(P.shape[1])[None, :], axis=1).mean())
+    realized_mean = float(fold_stat["outcome"].mean())
+    pred_p0 = float(P[:, 0].mean())
+    realized_p0 = float((fold_stat["outcome"].to_numpy() == 0).mean())
+    if P.shape[1] >= 2:
+        pred_p_le1 = float((P[:, 0] + P[:, 1]).mean())
+    else:
+        pred_p_le1 = float(P[:, 0].mean())
+    realized_p_le1 = float((fold_stat["outcome"].to_numpy() <= 1).mean())
+    distributional_summary = {
+        "n_rows": int(n),
+        "pred_mean": pred_mean,
+        "realized_mean": realized_mean,
+        "pred_p0": pred_p0,
+        "realized_p0": realized_p0,
+        "pred_p_le1": pred_p_le1,
+        "realized_p_le1": realized_p_le1,
+    }
+
     reliability = [
         {
             "atom_value": int(k),
@@ -238,6 +261,7 @@ def _atom_metrics_for_stat(fold_stat: pd.DataFrame, min_atom_count: int) -> dict
         "atom_ece_empirical": atom_ece_empirical,
         "atom_brier": atom_brier,
         "atom_logloss": atom_logloss,
+        "distributional_summary": distributional_summary,
         "reliability": reliability,
     }
 
@@ -311,6 +335,34 @@ def _side_metrics_unconditional(matched: pd.DataFrame) -> dict:
            and np.isfinite(out["under_brier_improvement_pct"])
         else float("nan")
     )
+    return out
+
+
+def _matched_distributional_summary(matched: pd.DataFrame) -> dict:
+    """Matched-rows distribution summary (post-join).
+
+    Computes mean model P(over line) vs realized P(over line) across all
+    matched rows, plus an optional int-line-bucketed view for buckets
+    with >= 20 rows. Called only when len(matched) > 0.
+    """
+    out = {
+        "n_matched": int(len(matched)),
+        "mean_model_p_over": float(matched["model_p_over"].mean()),
+        "mean_realized_p_over": float(matched["realized_over"].mean()),
+    }
+    bucket_rows: list[dict] = []
+    for line_bucket, grp in matched.groupby(matched["line"].astype(float).apply(int)):
+        if len(grp) < 20:
+            continue
+        bucket_rows.append({
+            "line_bucket": int(line_bucket),
+            "n_rows": int(len(grp)),
+            "mean_model_p_over": float(grp["model_p_over"].mean()),
+            "mean_realized_p_over": float(grp["realized_over"].mean()),
+        })
+    if bucket_rows:
+        bucket_rows.sort(key=lambda r: r["line_bucket"])
+        out["by_line_bucket"] = bucket_rows
     return out
 
 
@@ -572,6 +624,16 @@ def main() -> None:
         sanity = _side_metrics_unconditional(matched)
         edge = _edge_selection_metrics(matched)
 
+        # Matched-rows distributional summary is attached to the same
+        # distributional_summary dict emitted by _atom_metrics_for_stat.
+        # When no matched rows exist (expected for TOV / any stat without
+        # closing-line coverage) the atom-level fields still land; the
+        # matched-side block is simply absent.
+        if len(matched) > 0:
+            atom_report["distributional_summary"]["matched"] = (
+                _matched_distributional_summary(matched)
+            )
+
         nbhd = _line_neighborhood_table(
             matched, stat=stat, line_neighborhood=args.line_neighborhood,
         )
@@ -603,6 +665,22 @@ def main() -> None:
             f"atom_logloss={atom_report['atom_logloss']:.4f}  "
             f"n_rows={atom_report['n_rows']}"
         )
+        _dist = atom_report["distributional_summary"]
+        print(
+            f"  DIST  pred_mean={_dist['pred_mean']:.2f} "
+            f"realized_mean={_dist['realized_mean']:.2f}  "
+            f"pred_p0={_dist['pred_p0']:.3f} "
+            f"realized_p0={_dist['realized_p0']:.3f}  "
+            f"pred_p_le1={_dist['pred_p_le1']:.3f} "
+            f"realized_p_le1={_dist['realized_p_le1']:.3f}"
+        )
+        _dmatch = _dist.get("matched")
+        if _dmatch is not None:
+            print(
+                f"  DIST-MATCHED  mean_model_p_over={_dmatch['mean_model_p_over']:.3f}  "
+                f"mean_realized_p_over={_dmatch['mean_realized_p_over']:.3f}  "
+                f"n_matched={_dmatch['n_matched']}"
+            )
         print(
             f"  matched={len(matched):,}  unmatched={n_unmatched:,}  "
             f"duplicates_excluded={n_dupes}  integer_lines_excluded={n_int}"
