@@ -7,6 +7,21 @@ globally uniform shift or is segmented by context. Outcome classification:
   - MIXED                    → narrow PTS-only correction pass + per-stat
                                  context investigation for REB/AST
 
+Bucket families (FIVE active, ONE omitted):
+  - minutes_pred  (predicted-minutes bins)
+  - home_away
+  - b2b
+  - rest_days
+  - role_proxy   (qcut on mp_mean_last10)
+
+The starter_prob family was intentionally OMITTED in this V1 because the
+mp_starter_prob column does not exist in the local training_table.parquet
+schema. We removed the family rather than substitute a proxy, so the
+decomposition is honest about the contexts it actually inspects. The
+omission is reported in stdout and in the JSON metadata via the
+ACTIVE_BUCKET_FAMILIES / OMITTED_BUCKET_FAMILIES / OMISSION_REASON
+fields.
+
 Operates on the audited keyed row set only. No retraining, no model edits,
 no workflow changes. Uses existing public helpers verbatim:
   - nba_props_model.models.minutes.minutes_distribution
@@ -46,6 +61,15 @@ GLOBAL_WITHIN_PP = 3.0
 SEGMENTED_DEVIATION_PP = 5.0
 GLOBAL_COVERAGE_THRESHOLD = 0.80
 
+ACTIVE_BUCKET_FAMILIES = [
+    "minutes_pred", "home_away", "b2b", "rest_days", "role_proxy",
+]
+OMITTED_BUCKET_FAMILIES = ["starter_prob"]
+OMISSION_REASON = (
+    "mp_starter_prob column not present in local training_table.parquet; "
+    "family removed rather than proxied"
+)
+
 
 # ── utilities ──────────────────────────────────────────────────────────────
 
@@ -80,7 +104,7 @@ STATS_REQUIRED = [
 ]
 FEATURES_REQUIRED = [
     "player_id", "game_id", "game_date",
-    "is_home", "back_to_back", "mp_starter_prob", "rest_days", "mp_mean_last10",
+    "is_home", "back_to_back", "rest_days", "mp_mean_last10",
 ]
 
 
@@ -218,7 +242,7 @@ def _load_features(path: Path) -> pd.DataFrame:
     df["game_date"] = df["game_date"].astype(str).str.slice(0, 10)
     for c in ("is_home", "back_to_back", "rest_days"):
         df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
-    for c in ("mp_starter_prob", "mp_mean_last10"):
+    for c in ("mp_mean_last10",):
         df[c] = pd.to_numeric(df[c], errors="coerce")
     return df
 
@@ -414,7 +438,6 @@ def _build_stat_row_tables(
                 "realized_stat": int(realized[stat]),
                 "is_home": int(feats["is_home"]),
                 "back_to_back": int(feats["back_to_back"]),
-                "mp_starter_prob": float(feats["mp_starter_prob"]),
                 "rest_days": int(feats["rest_days"]),
                 "mp_mean_last10": float(feats["mp_mean_last10"]),
             })
@@ -546,22 +569,6 @@ def _qcut_labels(
     codes = np.clip(codes, 0, n_buckets - 1)
     mapped = np.array([used[c] for c in codes], dtype=object)
     return mapped, list(map(float, bins))
-
-
-def _bucket_starter_prob(
-    df: pd.DataFrame,
-) -> tuple[list[tuple[str, pd.DataFrame]], list[float]]:
-    labels, bins = _qcut_labels(
-        df["mp_starter_prob"].to_numpy(), 3, ["low", "medium", "high"],
-    )
-    df_l = df.copy()
-    df_l["_bucket"] = labels
-    out: list[tuple[str, pd.DataFrame]] = []
-    for name in ("low", "medium", "high"):
-        sub = df_l[df_l["_bucket"] == name]
-        if len(sub):
-            out.append((name, sub.drop(columns=["_bucket"])))
-    return out, bins
 
 
 def _bucket_rest_days(df: pd.DataFrame) -> list[tuple[str, pd.DataFrame]]:
@@ -774,6 +781,11 @@ def main() -> None:
     )
     _print_preflight(preflight)
 
+    print("\n=== BUCKET FAMILIES ===")
+    print(f"  active   = {ACTIVE_BUCKET_FAMILIES}")
+    print(f"  omitted  = {OMITTED_BUCKET_FAMILIES}")
+    print(f"  reason   = {OMISSION_REASON}")
+
     stats_tuple = tuple(s.lower() for s in args.stats)
     fold_oof = _load_fold_oof(args.fold_oof, stats_tuple)
     stats_df = _load_stats(args.stats_df)
@@ -845,7 +857,6 @@ def main() -> None:
         features_by_key[key] = {
             "is_home": int(row["is_home"]),
             "back_to_back": int(row["back_to_back"]),
-            "mp_starter_prob": float(row["mp_starter_prob"]),
             "rest_days": int(row["rest_days"]),
             "mp_mean_last10": float(row["mp_mean_last10"]),
         }
@@ -888,7 +899,6 @@ def main() -> None:
             ("minutes_pred", lambda d: (_bucket_minutes_pred(d), None)),
             ("home_away", lambda d: (_bucket_home_away(d), None)),
             ("b2b", lambda d: (_bucket_b2b(d), None)),
-            ("starter_prob", lambda d: _bucket_starter_prob(d)),
             ("rest_days", lambda d: (_bucket_rest_days(d), None)),
             ("role_proxy", lambda d: _bucket_role_proxy(d)),
         ]
@@ -981,6 +991,9 @@ def main() -> None:
             "n_rows": int(match_out["audit"]["n_fully_auditable_rows"]),
             "stats": list(stats_tuple),
             "fold_oof_path": str(args.fold_oof),
+            "active_bucket_families": ACTIVE_BUCKET_FAMILIES,
+            "omitted_bucket_families": OMITTED_BUCKET_FAMILIES,
+            "omission_reason": OMISSION_REASON,
         },
         "preflight": preflight,
         "match_audit": match_out["audit"],
