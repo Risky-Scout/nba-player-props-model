@@ -364,6 +364,7 @@ def _generate_fold_pmfs(
     fold_artifact_dir: Path,
     allowed_stats: set[str] | None = None,
     fold_index: int | None = None,
+    pmf_draws: int = 300,
 ) -> dict[str, list[dict]]:
     """Produce per-stat OOF PMFs on val_rows using models trained for this fold.
 
@@ -513,7 +514,7 @@ def _generate_fold_pmfs(
                 _t = time.perf_counter()
                 pmf_obj = simulate_stat_pmf(
                     stat=stat, minutes_dist=m_dist, feature_row=feature_row,
-                    n_draws=3000, rng=rng, rate_q_override=q,
+                    n_draws=pmf_draws, rng=rng, rate_q_override=q,
                 )
                 _pmf_timer_add(f"simulate_stat_pmf.{stat}", time.perf_counter() - _t)
                 if pmf_obj is None:
@@ -686,6 +687,16 @@ def main() -> None:
             "fold. Downstream metrics under this flag are diagnostic only."
         ),
     )
+    parser.add_argument(
+        "--pmf-draws", type=int, default=300,
+        help=(
+            "Monte Carlo sample count for simulate_stat_pmf during Phase 8 "
+            "OOF generation. Phase 8 default 300. Lower values reduce "
+            "wall-clock proportionally; use 3000 to reproduce the previous "
+            "behavior. Production prediction (predict.py) is unaffected — "
+            "it pins n_draws=4000 at its own call site."
+        ),
+    )
     # Single-fold / aggregate modes — used to parallelize Phase 8 across a
     # GitHub Actions matrix. A single job runs --fold-index N with
     # --emit-fold-oof + --skip-final-fit to emit that fold's OOF parquet
@@ -729,6 +740,7 @@ def main() -> None:
         args.fold_index, args.max_folds, args.core_props_only,
         args.val_rows_limit, args.aggregate_mode,
     )
+    logger.info("CLI args: pmf_draws=%d", args.pmf_draws)
     core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
 
     start = time.time()
@@ -888,6 +900,7 @@ def main() -> None:
                 availability_df=availability_df, fold_artifact_dir=fold_dir,
                 allowed_stats=core_only_allowed,
                 fold_index=i,
+                pmf_draws=args.pmf_draws,
             )
             counts = {s: len(v) for s, v in fold_out.items() if v}
             logger.info(f"  fold PMF counts: {counts}")

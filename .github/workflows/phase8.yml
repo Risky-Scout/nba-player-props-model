@@ -34,6 +34,11 @@ on:
         type: string
         required: false
         default: ''
+      pmf_draws:
+        description: 'Monte Carlo sample count for simulate_stat_pmf during Phase 8 OOF (default 300; 3000 is the old behavior). Production predict is unaffected.'
+        type: string
+        required: false
+        default: '300'
 
 jobs:
   # ─── A. Build training table ─────────────────────────────────────────────
@@ -235,9 +240,11 @@ jobs:
           VAL_ROWS_LIMIT="${{ inputs.val_rows_limit }}"
           MAX_FOLDS="${{ inputs.max_folds }}"
           CORE_PROPS_ONLY="${{ inputs.core_props_only }}"
+          PMF_DRAWS="${{ inputs.pmf_draws }}"
           echo "workflow input max_folds='${MAX_FOLDS}'"
           echo "workflow input core_props_only='${CORE_PROPS_ONLY}'"
           echo "workflow input val_rows_limit='${VAL_ROWS_LIMIT}'"
+          echo "workflow input pmf_draws='${PMF_DRAWS}'"
           echo "full inputs JSON: ${{ toJSON(inputs) }}"
           ARGS="--fold-index ${{ matrix.fold }} \
                 --max-folds ${MAX_FOLDS} \
@@ -248,6 +255,9 @@ jobs:
           fi
           if [ -n "${VAL_ROWS_LIMIT}" ]; then
             ARGS="$ARGS --val-rows-limit ${VAL_ROWS_LIMIT}"
+          fi
+          if [ -n "${PMF_DRAWS}" ]; then
+            ARGS="$ARGS --pmf-draws ${PMF_DRAWS}"
           fi
           echo "calibrate-fold ARGS: ${ARGS}"
           python scripts/calibrate_pmf.py $ARGS
