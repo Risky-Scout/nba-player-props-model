@@ -1073,7 +1073,7 @@ def _fit_final_calibrators_and_emit_report(
 
     # Dropped stats (insufficient data).
     insufficient = [
-        stat for stat, (pmfs, _, _) in stacked.items()
+        stat for stat, (pmfs, _, _, _) in stacked.items()
         if len(pmfs) < MIN_VAL_ROWS_PER_STAT
     ]
     for stat in insufficient:
