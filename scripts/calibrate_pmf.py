@@ -688,13 +688,14 @@ def main() -> None:
         ),
     )
     parser.add_argument(
-        "--pmf-draws", type=int, default=300,
+        "--pmf-draws", type=int, default=3000,
         help=(
             "Monte Carlo sample count for simulate_stat_pmf during Phase 8 "
-            "OOF generation. Phase 8 default 300. Lower values reduce "
-            "wall-clock proportionally; use 3000 to reproduce the previous "
-            "behavior. Production prediction (predict.py) is unaffected — "
-            "it pins n_draws=4000 at its own call site."
+            "OOF generation. Default 3000. Lower values reduce runtime "
+            "but increase calibration noise, especially for bench/rotation "
+            "PMFs where each missing draw has high relative weight. "
+            "Production prediction (predict.py) is unaffected — it pins "
+            "n_draws=4000 at its own call site."
         ),
     )
     # Single-fold / aggregate modes — used to parallelize Phase 8 across a

@@ -55,16 +55,19 @@ class StatPMF:
         return np.arange(len(self.pmf))
 
     def cdf(self, x: float) -> float:
-        """P(stat <= x) with linear interpolation between integer bins."""
+        """P(stat <= x) for an integer-valued stat PMF.
+
+        Discrete step function. For integer NBA stats the CDF jumps at
+        each integer atom and is constant between atoms. The previous
+        piecewise-linear implementation was incorrect for integer
+        outcomes and distorted probabilities at half-point lines.
+        """
         if x < 0:
             return 0.0
-        if x >= len(self.pmf) - 1:
+        k = int(np.floor(x))
+        if k >= len(self.pmf) - 1:
             return 1.0
-        full_cdf = np.cumsum(self.pmf)
-        lo = int(np.floor(x))
-        hi = lo + 1
-        w = float(x - lo)
-        return float((1 - w) * full_cdf[lo] + w * full_cdf[min(hi, len(full_cdf) - 1)])
+        return float(np.cumsum(self.pmf)[k])
 
     def prob_over(self, line: float) -> float:
         """Book convention: OVER hits when stat > line (strict)."""

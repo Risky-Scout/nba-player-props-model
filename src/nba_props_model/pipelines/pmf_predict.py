@@ -141,20 +141,29 @@ def build_prop_pmfs(
 
 
 def score_prop_line(pmf: np.ndarray, line: float) -> tuple[float, float]:
-    """Return (p_over, p_under) at an offered line using piecewise-linear CDF."""
-    cdf = np.cumsum(pmf)
-    cdf = np.clip(cdf, 0.0, 1.0)
-    if line <= 0:
-        p_over = float(1.0 - cdf[0])
-        return p_over, 1.0 - p_over
-    if line >= len(pmf) - 1:
-        return 0.0, 1.0
-    lo = int(np.floor(line))
-    hi = lo + 1
-    w = float(line - lo)
-    cdf_at_line = (1 - w) * cdf[lo] + w * cdf[min(hi, len(cdf) - 1)]
-    p_over = float(1.0 - cdf_at_line)
-    return p_over, 1.0 - p_over
+    """Return P(over), P(under) for an integer-valued stat PMF.
+
+    For standard half-point NBA prop lines:
+        over hits iff Y > line
+        under hits iff Y < line
+
+    For whole-number lines, returns no-push conditional probabilities
+    (P(over) and P(under) sum to 1.0 with push mass excluded). The
+    caller's EV engine handles push semantics separately.
+    """
+    arr = np.asarray(pmf, dtype=float)
+    arr = np.clip(arr, 0.0, None)
+    s = arr.sum()
+    if s <= 0:
+        return 0.5, 0.5
+    arr = arr / s
+    values = np.arange(len(arr))
+    p_over_raw = float(arr[values > line].sum())
+    p_under_raw = float(arr[values < line].sum())
+    denom = p_over_raw + p_under_raw
+    if denom <= 0:
+        return 0.5, 0.5
+    return p_over_raw / denom, p_under_raw / denom
 
 
 # ── Top-level per-day driver ─────────────────────────────────────────────────
