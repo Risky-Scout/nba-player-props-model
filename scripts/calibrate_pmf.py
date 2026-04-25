@@ -1099,7 +1099,7 @@ def _fit_final_calibrators_and_emit_report(
         "|---|---:|---|---|---|",
     ]
     for stat in sorted(stacked.keys()):
-        (pmfs, _, _) = stacked[stat]
+        (pmfs, _, _, _) = stacked[stat]
         stat_meta = meta.get("stats", {}).get(stat, {"fitted": False, "reason": "insufficient"})
         if stat_meta.get("fitted"):
             lines.append(
