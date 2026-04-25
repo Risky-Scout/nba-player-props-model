@@ -32,6 +32,7 @@ import numpy as np
 import pandas as pd
 
 from nba_props_model.calibration.pmf_calibration import load_calibrator
+from nba_props_model.calibration.role_buckets import role_bucket_from_minutes_dist
 from nba_props_model.models import combos, simulation, sparse_hurdle
 from nba_props_model.models.minutes import MinutesDistribution, minutes_distribution
 from nba_props_model.selection.bet_selection import (
@@ -124,15 +125,28 @@ def build_prop_pmfs(
                 model_version="combo_independence_v1",
             )
 
-    # Apply per-stat PMF calibration if present.
+    # Ex-ante role bucket: depends only on the predicted minutes
+    # distribution, never on realized minutes or outcomes. Used as the
+    # calibrator key for role-aware bundles.
+    role_bucket = role_bucket_from_minutes_dist(minutes_dist)
+
+    # Apply per-stat PMF calibration if present. Detect role-aware
+    # bundles explicitly via the bundle's `version` attribute — no
+    # broad TypeError fallback, so a real bug inside apply() surfaces
+    # rather than silently routing to the legacy branch.
     for stat, prop in out.items():
         cal = load_calibrator(stat)
         if cal is None:
             continue
-        cal_pmf = cal.apply(prop.pmf)
+        if getattr(cal, "version", None) == "role_aware_pmf_cal_v1":
+            cal_pmf = cal.apply(prop.pmf, role_bucket=role_bucket)
+            version_tag = f"role_aware_pmf_cal_v1:{role_bucket}"
+        else:
+            cal_pmf = cal.apply(prop.pmf)
+            version_tag = "pmf_cal_v1"
         out[stat] = PropPMF(
             stat=stat, pmf=cal_pmf, calibrated=True,
-            model_version=f"{prop.model_version}+pmf_cal_v1",
+            model_version=f"{prop.model_version}+{version_tag}",
         )
     return out
 
