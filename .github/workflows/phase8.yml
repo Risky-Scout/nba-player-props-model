@@ -35,10 +35,10 @@ on:
         required: false
         default: ''
       pmf_draws:
-        description: 'Monte Carlo sample count for simulate_stat_pmf during Phase 8 OOF (default 300; 3000 is the old behavior). Production predict is unaffected.'
+        description: 'Monte Carlo sample count for simulate_stat_pmf during Phase 8 OOF generation. Default 3000. Lower values reduce runtime but increase calibration noise, especially for bench/rotation PMFs. Production prediction is unaffected.'
         type: string
         required: false
-        default: '300'
+        default: '3000'
 
 jobs:
   # ─── A. Build training table ─────────────────────────────────────────────
@@ -199,6 +199,7 @@ jobs:
     timeout-minutes: 300
     strategy:
       fail-fast: false
+      max-parallel: 5
       matrix:
         fold: ${{ fromJSON(needs.setup-matrix.outputs.folds) }}
     env:
@@ -272,7 +273,7 @@ jobs:
 
   # ─── B2. Aggregate per-fold OOFs + fit final calibrators ─────────────────
   aggregate-calibration:
-    needs: calibrate-fold
+    needs: [calibrate-fold, setup-matrix]
     if: ${{ github.event.inputs.val_rows_limit == '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -312,6 +313,18 @@ jobs:
           find artifacts/folds_raw -name 'fold_*.parquet' -exec cp -v '{}' artifacts/folds/ \;
           ls -la artifacts/folds/
 
+      - name: Verify expected fold count
+        run: |
+          EXPECTED=$(echo '${{ needs.setup-matrix.outputs.folds }}' | python3 -c "import json, sys; print(len(json.load(sys.stdin)))")
+          COUNT=$(find artifacts/folds -maxdepth 1 -type f -name 'fold_*.parquet' | wc -l | tr -d ' ')
+          echo "expected fold count: $EXPECTED"
+          echo "found fold count:    $COUNT"
+          if [ "$COUNT" -ne "$EXPECTED" ]; then
+            echo "::error::Expected $EXPECTED fold parquet files, found $COUNT"
+            find artifacts/folds -maxdepth 1 -type f -name 'fold_*.parquet' | sort
+            exit 1
+          fi
+
       - name: Aggregate + fit final PMF calibrators
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -321,6 +334,7 @@ jobs:
             --aggregate-oofs artifacts/folds/
 
       - name: Upload final calibration artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pmf-calibration
@@ -328,6 +342,9 @@ jobs:
             artifacts/models/pmf_cal_*.pkl
             data/oof_pmfs.parquet
             artifacts/docs/pmf_calibration_run.md
+            artifacts/folds/fold_*.parquet
+            artifacts/models/pmf_cal_meta.json
+            artifacts/models/pmf_cal_role_*.pkl
           if-no-files-found: warn
           retention-days: 30
 
