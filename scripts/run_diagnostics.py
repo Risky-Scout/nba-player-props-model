@@ -23,6 +23,7 @@ scripts/calibrate_pmf.py's OOF sweep.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import sys
@@ -169,6 +170,7 @@ def main() -> None:
     fold_metrics: list[FoldMetrics] = []
     new_rows: list[dict] = []
     legacy_rows: list[dict] = []
+    role_diag_rows: list[dict] = []
 
     rng = np.random.default_rng(0)
     for stat in sorted(oof["stat"].unique()):
@@ -186,6 +188,30 @@ def main() -> None:
         new_pmfs = _pad_or_truncate_pmf(new_pmfs, domain_max + 1)
         outcomes = sub["outcome"].values.astype(int)
 
+        # Calibrator is per-stat — load once, not per fold. Role-aware
+        # bundles need the ex-ante role_bucket per row; fail loudly if
+        # absent rather than silently fall back to the global calibrator.
+        cal = load_calibrator(stat)
+        if cal is None:
+            new_pmfs_cal = new_pmfs
+        elif getattr(cal, "version", None) == "role_aware_pmf_cal_v1":
+            if "role_bucket" not in sub.columns:
+                logger.error(
+                    f"role-aware calibrator loaded for {stat} but OOF "
+                    "parquet lacks `role_bucket` column. Cannot evaluate "
+                    "role-aware calibration without per-row role bucket "
+                    "assignments. Regenerate the OOF artifact with "
+                    "Stage-3+ calibrate_pmf.py."
+                )
+                sys.exit(1)
+            role_buckets_full = sub["role_bucket"].astype(str).to_numpy()
+            new_pmfs_cal = np.stack([
+                cal.apply(p, role_bucket=rb)
+                for p, rb in zip(new_pmfs, role_buckets_full)
+            ])
+        else:
+            new_pmfs_cal = np.stack([cal.apply(p) for p in new_pmfs])
+
         # Evaluate new PMF diagnostics fold by fold.
         sub["fold"] = sub["fold_start"].astype(str)
         for fstart in sorted(sub["fold"].unique()):
@@ -197,12 +223,7 @@ def main() -> None:
             pmf_slice = new_pmfs[sub_idx]
             out_slice = outcomes[sub_idx]
 
-            # Calibrated PMF if available.
-            cal = load_calibrator(stat)
-            if cal is not None:
-                pmf_slice_cal = np.stack([cal.apply(p) for p in pmf_slice])
-            else:
-                pmf_slice_cal = pmf_slice
+            pmf_slice_cal = new_pmfs_cal[sub_idx]
 
             # Over-prob model: prob(stat > nearest integer line) at a reference
             # line equal to the per-fold median integer for this stat.
@@ -247,10 +268,56 @@ def main() -> None:
                  for p, y in zip(pmf_slice_cal, out_slice)]
             )
 
+        # ── Role-stratified diagnostics (Stage 5 verification) ──────────
+        # Only fires when the OOF parquet carries per-row role buckets
+        # (post-Stage-3 artifacts). Computed on `new_pmfs_cal`, so for
+        # role-aware calibrators these metrics measure the actual blended
+        # role × global calibration, not the global isotonic alone.
+        #
+        # The randomized PIT inside each bucket is seeded deterministically
+        # from (stat, role_bucket) via SHA-256 so results are reproducible
+        # across processes (Python hash randomization is per-process and
+        # would make plain hash() non-reproducible) and independent of
+        # the evaluation order of the outer groupby loop.
+        if "role_bucket" in sub.columns:
+            for role_bucket_label, role_chunk in sub.groupby("role_bucket"):
+                if len(role_chunk) < 50:
+                    continue
+                role_idx = role_chunk.index
+                sub_idx_role = [sub.index.get_loc(i) for i in role_idx]
+                role_pmf = new_pmfs_cal[sub_idx_role]
+                role_out = outcomes[sub_idx_role]
+                seed_bytes = hashlib.sha256(
+                    f"{stat}|{role_bucket_label}|role_diag".encode("utf-8")
+                ).digest()[:8]
+                seed = int.from_bytes(seed_bytes, "little") % (2**32)
+                role_rng = np.random.default_rng(seed)
+                pit = randomized_pit(role_pmf, role_out, role_rng)
+                ks = pit_ks_distance(pit)
+                ls = log_score(role_pmf, role_out)
+                crps = discrete_crps(role_pmf, role_out)
+                ref_line_role = float(np.median(role_out)) + 0.5
+                over_probs_role = 1.0 - _cdf_at(role_pmf, ref_line_role)
+                over_realised_role = (role_out > ref_line_role).astype(int)
+                ece_role = float(ece(over_probs_role, over_realised_role))
+                role_diag_rows.append({
+                    "stat": stat,
+                    "role_bucket": str(role_bucket_label),
+                    "n": int(len(role_out)),
+                    "log_score": float(ls),
+                    "crps": float(crps),
+                    "pit_mean": float(np.mean(pit)),
+                    "pit_std": float(np.std(pit)),
+                    "pit_ks": float(ks),
+                    "ece": ece_role,
+                })
+
     report_path = DOCS_DIR / f"diagnostics_{args.run_date}.md"
     write_report(fold_metrics, run_date=args.run_date)
     # Append cross-path comparison summary.
     _append_comparison_summary(report_path, fold_metrics, args.run_date)
+    # Append role-stratified PMF diagnostics if the OOF carried role buckets.
+    _append_role_stratified_section(report_path, role_diag_rows)
 
     logger.info(f"Wrote {report_path}")
     logger.info(f"Done in {(time.time() - start):.1f}s")
@@ -273,16 +340,22 @@ def _pad_or_truncate_pmf(pmfs: np.ndarray, target_len: int) -> np.ndarray:
 
 
 def _cdf_at(pmfs: np.ndarray, x: float) -> np.ndarray:
+    """P(stat <= x) for an integer-valued stat PMF (discrete step CDF).
+
+    Mirrors the production fix from Stage 1 (StatPMF.cdf in
+    src/nba_props_model/models/simulation.py): the CDF jumps at each
+    integer atom and is constant between atoms. The previous
+    interpolation form was incorrect for integer outcomes and
+    distorted over/under probabilities at half-point reference lines.
+    """
     cdfs = np.cumsum(pmfs, axis=1)
     cdfs = np.clip(cdfs, 0.0, 1.0)
     if x < 0:
         return np.zeros(len(pmfs))
-    if x >= cdfs.shape[1] - 1:
+    k = int(np.floor(x))
+    if k >= cdfs.shape[1] - 1:
         return np.ones(len(pmfs))
-    lo = int(np.floor(x))
-    hi = lo + 1
-    w = x - lo
-    return (1 - w) * cdfs[:, lo] + w * cdfs[:, min(hi, cdfs.shape[1] - 1)]
+    return cdfs[:, k]
 
 
 def _fold_metrics_from(
@@ -405,6 +478,40 @@ def _append_comparison_summary(
             else "LEGACY still wins on this stat; do not activate bet selection yet"
         )
         lines.append(f"- **{stat}**: new wins {wins} / legacy wins {losses} / ties {ties}. {note}")
+    existing = path.read_text() if path.exists() else ""
+    path.write_text(existing + "\n".join(lines) + "\n")
+
+
+def _append_role_stratified_section(
+    path: Path, role_rows: list[dict],
+) -> None:
+    """Append role-stratified PMF diagnostics to the report.
+
+    No-op when role_rows is empty (older OOF parquets without
+    role_bucket simply produce no rows in the upstream loop).
+    """
+    if not role_rows:
+        return
+    buckets_seen = sorted({r["role_bucket"] for r in role_rows})
+    total_n = sum(int(r["n"]) for r in role_rows)
+    lines = [
+        "",
+        "---",
+        "",
+        "## Role-aware PMF diagnostics by stat × role_bucket",
+        "",
+        f"Evaluated role buckets: {', '.join(buckets_seen)}; rows: {total_n:,}",
+        "",
+        "| stat | role_bucket | n | log_score | CRPS | PIT mean | PIT std | PIT KS | ECE |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for r in sorted(role_rows, key=lambda x: (x["stat"], x["role_bucket"])):
+        lines.append(
+            f"| {r['stat']} | {r['role_bucket']} | {r['n']} | "
+            f"{r['log_score']:.4f} | {r['crps']:.4f} | "
+            f"{r['pit_mean']:.4f} | {r['pit_std']:.4f} | {r['pit_ks']:.4f} | "
+            f"{r['ece']:.4f} |"
+        )
     existing = path.read_text() if path.exists() else ""
     path.write_text(existing + "\n".join(lines) + "\n")
 
