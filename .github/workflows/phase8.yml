@@ -333,6 +333,54 @@ jobs:
             --aggregate-mode \
             --aggregate-oofs artifacts/folds/
 
+      - name: Validate aggregate OOF role buckets
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          import pandas as pd
+
+          path = Path("data/oof_pmfs.parquet")
+          if not path.exists():
+              raise SystemExit("data/oof_pmfs.parquet missing after aggregate calibration")
+
+          df = pd.read_parquet(path)
+          required = [
+              "role_bucket",
+              "minutes_mean",
+              "minutes_std",
+              "minutes_q10",
+              "minutes_q25",
+              "minutes_q50",
+              "minutes_q75",
+              "minutes_q90",
+              "p_inactive",
+              "p_limited",
+              "p_normal",
+          ]
+          missing = [c for c in required if c not in df.columns]
+          if missing:
+              raise SystemExit(f"OOF parquet missing required role/minutes columns: {missing}")
+
+          role = df["role_bucket"].astype(str).fillna("unknown")
+          counts = role.value_counts(dropna=False)
+          print("role_bucket value counts:")
+          print(counts.to_string())
+
+          total = len(role)
+          known = int((role != "unknown").sum())
+          if total <= 0:
+              raise SystemExit("OOF parquet has zero rows")
+          if known == 0:
+              raise SystemExit("All OOF rows have role_bucket='unknown'; role-aware calibration is invalid")
+          if known / total < 0.50:
+              raise SystemExit(
+                  f"Known role_bucket share too low: {known}/{total} = {known / total:.2%}"
+              )
+
+          print(f"Known role_bucket share OK: {known}/{total} = {known / total:.2%}")
+          PY
+
       - name: Upload final calibration artifacts
         if: always()
         uses: actions/upload-artifact@v4
