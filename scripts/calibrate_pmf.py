@@ -1039,10 +1039,13 @@ def _fit_final_calibrators_and_emit_report(
         logger.error("No OOF data collected; aborting before calibrator fit.")
         sys.exit(1)
 
-    # Stage 4: pass role_buckets into fit_all once role-aware PMF calibration is implemented.
+    # Pass role_buckets through to fit_all so role-aware PMF calibrators
+    # are fitted (Stage 4b). pmf_calibration.fit_all() accepts either a
+    # 3-tuple (legacy global cal) or a 4-tuple (role-aware) per stat.
     per_stat_inputs = {
         stat: (pmfs.astype(np.float64), outcomes.astype(int),
-               np.array([pd.Timestamp(str(d)) for d in dates]))
+               np.array([pd.Timestamp(str(d)) for d in dates]),
+               role_buckets)
         for stat, (pmfs, outcomes, dates, role_buckets) in stacked.items()
         if len(pmfs) >= MIN_VAL_ROWS_PER_STAT
     }
