@@ -47,6 +47,9 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from nba_props_model.calibration.pmf_calibration import fit_all  # noqa: E402
+from nba_props_model.calibration.role_buckets import (  # noqa: E402
+    role_bucket_features_from_minutes_dist,
+)
 from nba_props_model.paths import DATA_DIR, MODEL_DIR, REPO_ROOT  # noqa: E402
 from nba_props_model.models.minutes import (  # noqa: E402
     MinutesDistribution,
@@ -490,6 +493,7 @@ def _generate_fold_pmfs(
                     all_stats_df=stats_df, injury_map={}, availability=avail,
                 )
                 _pmf_timer_add("minutes_distribution_build", time.perf_counter() - _t)
+                role_meta = role_bucket_features_from_minutes_dist(m_dist)
             except Exception as e:
                 logger.debug(f"  minutes_distribution failed for ({player_id},{game_id}): {e}")
                 continue
@@ -526,6 +530,7 @@ def _generate_fold_pmfs(
                     "player_id": player_id, "game_id": game_id, "game_date": game_date,
                     "outcome": int(np.clip(y, 0, len(pmf_obj.pmf) - 1)),
                     "pmf": pmf_obj.pmf.astype(np.float64),
+                    **role_meta,
                 })
 
             # Sparse stats.
@@ -550,6 +555,7 @@ def _generate_fold_pmfs(
                     "player_id": player_id, "game_id": game_id, "game_date": game_date,
                     "outcome": int(np.clip(y, 0, len(stl_pmf) - 1)),
                     "pmf": stl_pmf.astype(np.float64),
+                    **role_meta,
                 })
             if _allowed("blk") and blk_pmf is not None:
                 y = float(row_stats.get("blk", 0) or 0)
@@ -557,6 +563,7 @@ def _generate_fold_pmfs(
                     "player_id": player_id, "game_id": game_id, "game_date": game_date,
                     "outcome": int(np.clip(y, 0, len(blk_pmf) - 1)),
                     "pmf": blk_pmf.astype(np.float64),
+                    **role_meta,
                 })
             if _allowed("stocks") and stl_pmf is not None and blk_pmf is not None:
                 _t = time.perf_counter()
@@ -568,6 +575,7 @@ def _generate_fold_pmfs(
                         "player_id": player_id, "game_id": game_id, "game_date": game_date,
                         "outcome": int(np.clip(y, 0, len(sp) - 1)),
                         "pmf": sp.astype(np.float64),
+                        **role_meta,
                     })
 
             # FG3M.
@@ -581,6 +589,7 @@ def _generate_fold_pmfs(
                         "player_id": player_id, "game_id": game_id, "game_date": game_date,
                         "outcome": int(np.clip(y, 0, len(p) - 1)),
                         "pmf": p.astype(np.float64),
+                        **role_meta,
                     })
                 except Exception as e:
                     logger.debug(f"  fg3m pmf failed for ({player_id},{game_id}): {e}")
@@ -634,9 +643,9 @@ def _pad_pmf(pmf: np.ndarray, target_len: int) -> np.ndarray:
 
 def stack_per_stat(
     per_fold_results: list[dict[str, list[dict]]],
-) -> dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]]:
-    """Concatenate per-fold results into (pmfs, outcomes, dates) arrays."""
-    stacked: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray]] = {}
+) -> dict[str, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]:
+    """Concatenate per-fold results into (pmfs, outcomes, dates, role_buckets) arrays."""
+    stacked: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = {}
     all_stats = set()
     for fold_res in per_fold_results:
         all_stats.update(fold_res.keys())
@@ -650,7 +659,8 @@ def stack_per_stat(
         pmfs = np.stack([_pad_pmf(r["pmf"], target_len) for r in rows], axis=0)
         outcomes = np.array([r["outcome"] for r in rows], dtype=int)
         dates = np.array([r["game_date"] for r in rows])
-        stacked[stat] = (pmfs, outcomes, dates)
+        role_buckets = np.array([r.get("role_bucket", "unknown") for r in rows])
+        stacked[stat] = (pmfs, outcomes, dates, role_buckets)
     return stacked
 
 
@@ -795,6 +805,17 @@ def main() -> None:
                         "game_date": str(r.game_date),
                         "outcome": int(r.outcome),
                         "pmf": np.asarray(r.pmf),
+                        "role_bucket": getattr(r, "role_bucket", "unknown"),
+                        "minutes_mean": getattr(r, "minutes_mean", np.nan),
+                        "minutes_std": getattr(r, "minutes_std", np.nan),
+                        "minutes_q10": getattr(r, "minutes_q10", np.nan),
+                        "minutes_q25": getattr(r, "minutes_q25", np.nan),
+                        "minutes_q50": getattr(r, "minutes_q50", np.nan),
+                        "minutes_q75": getattr(r, "minutes_q75", np.nan),
+                        "minutes_q90": getattr(r, "minutes_q90", np.nan),
+                        "p_inactive": getattr(r, "p_inactive", np.nan),
+                        "p_limited": getattr(r, "p_limited", np.nan),
+                        "p_normal": getattr(r, "p_normal", np.nan),
                     }
                     for r in sub_stat.itertuples(index=False)
                 ]
@@ -929,6 +950,17 @@ def main() -> None:
                         "pmf": r["pmf"],
                         "fold_start": str(fstart.date()) if pd.notna(fstart) else "",
                         "fold_end": str(fend.date()) if pd.notna(fend) else "",
+                        "role_bucket": r.get("role_bucket", "unknown"),
+                        "minutes_mean": r.get("minutes_mean"),
+                        "minutes_std": r.get("minutes_std"),
+                        "minutes_q10": r.get("minutes_q10"),
+                        "minutes_q25": r.get("minutes_q25"),
+                        "minutes_q50": r.get("minutes_q50"),
+                        "minutes_q75": r.get("minutes_q75"),
+                        "minutes_q90": r.get("minutes_q90"),
+                        "p_inactive": r.get("p_inactive"),
+                        "p_limited": r.get("p_limited"),
+                        "p_normal": r.get("p_normal"),
                     })
         fold_oof_df = pd.DataFrame(fold_oof_rows)
         fold_out_path = Path(args.emit_fold_oof)
@@ -979,6 +1011,17 @@ def _fit_final_calibrators_and_emit_report(
                     "pmf": r["pmf"],
                     "fold_start": str(fstart.date()) if pd.notna(fstart) else "",
                     "fold_end": str(fend.date()) if pd.notna(fend) else "",
+                    "role_bucket": r.get("role_bucket", "unknown"),
+                    "minutes_mean": r.get("minutes_mean"),
+                    "minutes_std": r.get("minutes_std"),
+                    "minutes_q10": r.get("minutes_q10"),
+                    "minutes_q25": r.get("minutes_q25"),
+                    "minutes_q50": r.get("minutes_q50"),
+                    "minutes_q75": r.get("minutes_q75"),
+                    "minutes_q90": r.get("minutes_q90"),
+                    "p_inactive": r.get("p_inactive"),
+                    "p_limited": r.get("p_limited"),
+                    "p_normal": r.get("p_normal"),
                 })
     oof_df = pd.DataFrame(oof_rows)
     oof_path = DATA_DIR / "oof_pmfs.parquet"
@@ -988,7 +1031,7 @@ def _fit_final_calibrators_and_emit_report(
     # Aggregate across folds and fit per-stat calibrators.
     stacked = stack_per_stat(per_fold_results)
     logger.info("OOF aggregation:")
-    for stat, (pmfs, outcomes, dates) in stacked.items():
+    for stat, (pmfs, outcomes, dates, role_buckets) in stacked.items():
         logger.info(f"  {stat}: n={len(pmfs):,}  domain={pmfs.shape[1]}")
 
     # Fit calibrators. We run fit_all per-stat and capture its meta log.
@@ -996,10 +1039,11 @@ def _fit_final_calibrators_and_emit_report(
         logger.error("No OOF data collected; aborting before calibrator fit.")
         sys.exit(1)
 
+    # Stage 4: pass role_buckets into fit_all once role-aware PMF calibration is implemented.
     per_stat_inputs = {
         stat: (pmfs.astype(np.float64), outcomes.astype(int),
                np.array([pd.Timestamp(str(d)) for d in dates]))
-        for stat, (pmfs, outcomes, dates) in stacked.items()
+        for stat, (pmfs, outcomes, dates, role_buckets) in stacked.items()
         if len(pmfs) >= MIN_VAL_ROWS_PER_STAT
     }
     rng = np.random.default_rng(0)
