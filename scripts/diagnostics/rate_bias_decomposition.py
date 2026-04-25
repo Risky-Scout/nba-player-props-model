@@ -22,6 +22,17 @@ omission is reported in stdout and in the JSON metadata via the
 ACTIVE_BUCKET_FAMILIES / OMITTED_BUCKET_FAMILIES / OMISSION_REASON
 fields.
 
+Minutes-model features: the full minutes-model feature vector
+(22 fields in the current state-aware model — 10 mp_* features computed
+at predict time inside minutes.py from prior_stats history, plus 12
+availability / teammate / vacated-minutes features that live in
+data/player_availability_asof.parquet) is assembled INSIDE
+`minutes_distribution()` at call time. Those 22 fields are NOT required
+to be present in features_df for this diagnostic, and training_table.parquet
+is not the canonical source for them. Preflight checks only the minimum
+columns this script consumes directly for bucketing/reporting (see
+FEATURES_REQUIRED).
+
 Operates on the audited keyed row set only. No retraining, no model edits,
 no workflow changes. Uses existing public helpers verbatim:
   - nba_props_model.models.minutes.minutes_distribution
@@ -46,7 +57,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import joblib
 import numpy as np
 import pandas as pd
 
@@ -114,8 +124,8 @@ def _preflight(
     features_df_path: Path,
     minutes_models_dir: Path,
 ) -> dict:
-    """Check files + minimum required columns + dynamic minutes-feature
-    list. Returns a preflight record; fails loud on any missing input."""
+    """Check files + minimum required columns. Returns a preflight
+    record; fails loud on any missing input."""
     _require_path(fold_oof_path, "--fold-oof")
     _require_path(stats_df_path, "--stats-df")
     _require_path(features_df_path, "--features-df")
@@ -139,58 +149,20 @@ def _preflight(
             + json.dumps(hard_missing)
         )
 
-    feat_pkl = minutes_models_dir / "minutes_state_aware_features.pkl"
-    feat_meta = minutes_models_dir / "minutes_state_aware_meta.json"
-    minutes_feature_source = None
-    minutes_feature_list: list[str] = []
-    if feat_pkl.exists():
-        try:
-            loaded = joblib.load(feat_pkl)
-            if isinstance(loaded, (list, tuple)):
-                minutes_feature_list = [str(x) for x in loaded]
-                minutes_feature_source = str(feat_pkl)
-        except Exception as e:
-            print(
-                f"WARN: failed to load minutes feature pkl {feat_pkl}: {e}; "
-                "trying JSON meta fallback"
-            )
-    if not minutes_feature_list and feat_meta.exists():
-        try:
-            meta = json.loads(feat_meta.read_text())
-            feats = meta.get("features")
-            if isinstance(feats, list):
-                minutes_feature_list = [str(x) for x in feats]
-                minutes_feature_source = str(feat_meta)
-        except Exception as e:
-            print(f"WARN: failed to read minutes feature meta {feat_meta}: {e}")
-
-    missing_minutes_feats: list[str] = []
-    if minutes_feature_list:
-        missing_minutes_feats = [
-            f for f in minutes_feature_list if f not in features_schema
-        ]
-        if missing_minutes_feats:
-            _die(
-                "preflight failed — features_df is missing minutes model "
-                f"features (source={minutes_feature_source}, "
-                f"count={len(missing_minutes_feats)}): "
-                f"{missing_minutes_feats}"
-            )
-    else:
-        print(
-            "WARN: no minutes feature list available "
-            "(minutes_state_aware_features.pkl and "
-            "minutes_state_aware_meta.json both absent or unreadable); "
-            "falling back to minimum-column check only"
-        )
+    # No 22-feature minutes-model preflight here: this script does not
+    # directly consume the full minutes feature vector from features_df.
+    # `minutes_distribution()` assembles it internally from prior_stats
+    # history + the availability_lookup (player_availability_asof.parquet).
+    # Of the 22 minutes-model features, the 10 mp_* are computed at
+    # predict time inside minutes.py and the 12 availability / teammate /
+    # vacated-minutes features come from the availability lookup —
+    # neither lives in training_table.parquet, so a presence check there
+    # would be the wrong contract.
 
     return {
         "fold_oof_columns_ok": True,
         "stats_df_columns_ok": True,
         "features_df_minimum_columns_ok": True,
-        "minutes_feature_source": minutes_feature_source,
-        "minutes_feature_count": len(minutes_feature_list),
-        "minutes_features_missing_count": len(missing_minutes_feats),
     }
 
 
@@ -199,9 +171,6 @@ def _print_preflight(p: dict) -> None:
     print(f"  fold_oof columns OK                 = {p['fold_oof_columns_ok']}")
     print(f"  stats_df columns OK                 = {p['stats_df_columns_ok']}")
     print(f"  features_df minimum columns OK      = {p['features_df_minimum_columns_ok']}")
-    print(f"  minutes feature source              = {p['minutes_feature_source']}")
-    print(f"  minutes feature count               = {p['minutes_feature_count']}")
-    print(f"  minutes features missing            = {p['minutes_features_missing_count']}")
 
 
 # ── loaders (post-preflight) ───────────────────────────────────────────────
