@@ -368,6 +368,7 @@ def _generate_fold_pmfs(
     allowed_stats: set[str] | None = None,
     fold_index: int | None = None,
     pmf_draws: int = 300,
+    fg3m_val_rows: pd.DataFrame | None = None,
 ) -> dict[str, list[dict]]:
     """Produce per-stat OOF PMFs on val_rows using models trained for this fold.
 
@@ -425,6 +426,28 @@ def _generate_fold_pmfs(
             f"keys={_sample_keys}"
         )
 
+    # Per-(player_id, game_id) FG3M feature_row lookup. The FG3M model
+    # expects FG3M-namespaced feature columns (season_mean_fg3a,
+    # mean_fg3a_last10, zero_pct_fg3a, ...) which are populated only on
+    # `stat == "fg3m"` rows of training_table.parquet. The PTS-row
+    # iteration spine cannot supply these — using the PTS feature_row
+    # at the FG3M call site collapses every FG3M PMF to ~delta(0).
+    fg3m_feature_lookup: dict[tuple[int, int], dict] = {}
+    if fg3m_val_rows is not None and len(fg3m_val_rows) > 0:
+        for _r in fg3m_val_rows.itertuples(index=False):
+            _key = (int(_r.player_id), int(_r.game_id))
+            if _key not in fg3m_feature_lookup:
+                fg3m_feature_lookup[_key] = _r._asdict()
+        logger.info(
+            f"fg3m_feature_lookup built: {len(fg3m_feature_lookup):,} "
+            f"unique (player_id, game_id) keys from fg3m val rows"
+        )
+    elif allowed_stats is None or "fg3m" in allowed_stats:
+        logger.warning(
+            "fg3m_val_rows not supplied; FG3M PMFs will be skipped for "
+            "this fold to avoid the PTS-feature-row collapse bug."
+        )
+
     # Pre-sorted date vectors per player for O(log N) history slicing —
     # replaces the per-row boolean filter `history["game_date"] < date`.
     # Each stats_by_player_date frame is already sort_values("game_date")
@@ -439,6 +462,14 @@ def _generate_fold_pmfs(
     results: dict[str, list[dict]] = {s: [] for s in list(RATE_STATS) + list(SPARSE_STATS) + ["stocks", "fg3m"]}
 
     rng = np.random.default_rng(0)
+    # FG3M lookup coverage counters. Track how many player-games hit
+    # vs miss the fg3m_feature_lookup so a high-miss-rate fold is
+    # detected before downstream calibration treats partial coverage
+    # as ground truth.
+    fg3m_attempts = 0
+    fg3m_lookup_hits = 0
+    fg3m_lookup_misses = 0
+
     for row in val_rows.itertuples(index=False):
         _row_t0 = time.perf_counter()
         try:
@@ -578,11 +609,22 @@ def _generate_fold_pmfs(
                         **role_meta,
                     })
 
-            # FG3M.
+            # FG3M. Use the FG3M-namespaced feature row keyed by
+            # (player_id, game_id) — NOT the PTS-built feature_row,
+            # which would zero out the FG3M Stage-1 features and
+            # collapse the PMF to ~delta(0). Tally
+            # fg3m_attempts / fg3m_lookup_hits / fg3m_lookup_misses
+            # for the fold-end coverage summary.
             if _allowed("fg3m") and fg3m_model is not None:
+                fg3m_attempts += 1
+                fg3m_feature_row = fg3m_feature_lookup.get((player_id, game_id))
+                if fg3m_feature_row is None:
+                    fg3m_lookup_misses += 1
+                    continue
+                fg3m_lookup_hits += 1
                 try:
                     _t = time.perf_counter()
-                    p = fg3m_model.pmf(feature_row)
+                    p = fg3m_model.pmf(fg3m_feature_row)
                     _pmf_timer_add("fg3m_model_pmf", time.perf_counter() - _t)
                     y = float(row_stats.get("fg3m", 0) or 0)
                     results["fg3m"].append({
@@ -623,6 +665,22 @@ def _generate_fold_pmfs(
 
     _PMF_GEN_TIMES["_generate_fold_pmfs_total"] = time.perf_counter() - _t_total_start
     _log_pmf_gen_summary(val_row_count=len(val_rows), fold_index=fold_index)
+    # FG3M lookup coverage summary. A high miss rate signals that the
+    # FG3M-stat slice of training_df is incomplete for this fold
+    # window — calibration on partial coverage would silently treat
+    # missing rows as if FG3M wasn't being predicted at all.
+    if fg3m_attempts:
+        fg3m_hit_rate = fg3m_lookup_hits / fg3m_attempts
+        logger.info(
+            f"FG3M feature lookup coverage: attempts={fg3m_attempts:,}, "
+            f"hits={fg3m_lookup_hits:,}, misses={fg3m_lookup_misses:,}, "
+            f"hit_rate={fg3m_hit_rate:.2%}"
+        )
+        if fg3m_hit_rate < 0.95:
+            logger.warning(
+                f"FG3M feature lookup hit rate below 95%: {fg3m_hit_rate:.2%}. "
+                "FG3M OOF rows may be under-emitted for this fold."
+            )
     return results
 
 
@@ -906,6 +964,16 @@ def main() -> None:
                 (pd.to_datetime(training_df["game_date"]) >= fold_start) &
                 (pd.to_datetime(training_df["game_date"]) < fold_end)
             ]
+            # Companion FG3M-stat slice for the same fold window. Used
+            # by `_generate_fold_pmfs` to build a (player_id, game_id)
+            # → fg3m_feature_row lookup. Not affected by
+            # --val-rows-limit because it only feeds a hash lookup; the
+            # iteration spine is still val_rows.
+            fg3m_val_rows = training_df[
+                (training_df["stat"] == "fg3m") &
+                (pd.to_datetime(training_df["game_date"]) >= fold_start) &
+                (pd.to_datetime(training_df["game_date"]) < fold_end)
+            ]
             if args.val_rows_limit is not None and len(val_rows) > args.val_rows_limit:
                 val_rows = val_rows.head(args.val_rows_limit).reset_index(drop=True)
                 logger.info(
@@ -923,6 +991,7 @@ def main() -> None:
                 allowed_stats=core_only_allowed,
                 fold_index=i,
                 pmf_draws=args.pmf_draws,
+                fg3m_val_rows=fg3m_val_rows,
             )
             counts = {s: len(v) for s, v in fold_out.items() if v}
             logger.info(f"  fold PMF counts: {counts}")
