@@ -184,7 +184,18 @@ def main() -> None:
             continue
         domain_max = DOMAIN_FOR_STAT.get(stat, sub["pmf"].iloc[0].shape[0] - 1)
 
-        new_pmfs = np.stack(sub["pmf"].values)
+        # Prefer the active-conditioned PMF column when the OOF
+        # parquet carries it. Calibrators are fit on `pmf_active`,
+        # so diagnostics measured against `pmf_active` align with
+        # the training target. Fall back to raw `pmf` for older OOF
+        # parquets that pre-date the active-conditioning patch.
+        if "pmf_active" in sub.columns:
+            new_pmfs = np.stack(sub["pmf_active"].values)
+            _diag_pmf_source = "pmf_active"
+        else:
+            new_pmfs = np.stack(sub["pmf"].values)
+            _diag_pmf_source = "pmf"
+        logger.info(f"  {stat}: PMF source column = {_diag_pmf_source}")
         new_pmfs = _pad_or_truncate_pmf(new_pmfs, domain_max + 1)
         outcomes = sub["outcome"].values.astype(int)
 
@@ -499,6 +510,10 @@ def _append_role_stratified_section(
         "---",
         "",
         "## Role-aware PMF diagnostics by stat × role_bucket",
+        "",
+        "_Diagnostics use active-conditioned PMFs (`pmf_active`) when "
+        "the OOF parquet carries that column; otherwise fall back to "
+        "raw `pmf`. Calibrators are fit on the same source._",
         "",
         f"Evaluated role buckets: {', '.join(buckets_seen)}; rows: {total_n:,}",
         "",

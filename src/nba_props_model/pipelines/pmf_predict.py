@@ -23,6 +23,7 @@ predictions/all_props_{date}.parquet and predictions/singles_{date}.json.
 """
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass
 from datetime import datetime
@@ -35,6 +36,7 @@ from nba_props_model.calibration.pmf_calibration import load_calibrator
 from nba_props_model.calibration.role_buckets import role_bucket_from_minutes_dist
 from nba_props_model.models import combos, simulation, sparse_hurdle
 from nba_props_model.models.minutes import MinutesDistribution, minutes_distribution
+from nba_props_model.paths import MODEL_DIR
 from nba_props_model.selection.bet_selection import (
     BetCandidate,
     SelectionThresholds,
@@ -47,6 +49,14 @@ logger = logging.getLogger(__name__)
 MAIN_STATS = ("pts", "reb", "ast", "tov")
 SPARSE_STATS = ("stl", "blk")
 COMBO_STATS = tuple(combos.COMBO_COMPONENTS.keys())
+
+# Stats whose simulation embeds inactive/DNP zero-mass via
+# `minutes_dist.sample()` and therefore must be active-conditioned
+# before applying a calibrator that was fit on active-conditioned
+# PMFs. FG3M / sparse / stocks / combos are NOT active-conditioned
+# by this patch (their PMFs are already conditional on appearing or
+# use different math entirely).
+ACTIVE_CONDITION_STATS = {"pts", "reb", "ast", "tov"}
 
 
 @dataclass
@@ -129,24 +139,60 @@ def build_prop_pmfs(
     # distribution, never on realized minutes or outcomes. Used as the
     # calibrator key for role-aware bundles.
     role_bucket = role_bucket_from_minutes_dist(minutes_dist)
+    # Ex-ante P(inactive) used only when the loaded calibrator's
+    # training target is active-conditioned (per pmf_cal_meta.json).
+    # In legacy mode, target_pmf falls through to the raw PMF and
+    # downstream behavior is identical to pre-patch.
+    calibration_target_active = _is_active_conditioned_calibration()
+    try:
+        p_inactive = float(np.clip(float(minutes_dist.state_probs[0]), 0.0, 0.99))
+    except Exception:
+        p_inactive = 0.0
 
-    # Apply per-stat PMF calibration if present. Detect role-aware
-    # bundles explicitly via the bundle's `version` attribute — no
-    # broad TypeError fallback, so a real bug inside apply() surfaces
-    # rather than silently routing to the legacy branch.
+    # Per-stat target PMF + calibrator application. The target PMF is
+    # decided FIRST, independent of whether a calibrator is loaded —
+    # so prop pricing always sees the market-aligned (active-
+    # conditioned) distribution for RATE_STATS in active mode, even
+    # when no calibrator artifact exists for that stat.
     for stat, prop in out.items():
+        # Decide the calibration-target shape for this stat.
+        if (
+            calibration_target_active
+            and stat in ACTIVE_CONDITION_STATS
+            and p_inactive > 0.0
+        ):
+            target_pmf = active_condition_pmf(prop.pmf, p_inactive)
+            active_tag = "+active_conditioned"
+        else:
+            target_pmf = prop.pmf
+            active_tag = ""
+
         cal = load_calibrator(stat)
         if cal is None:
+            # No calibrator artifact for this stat. In active mode we
+            # still persist the active-conditioned PMF so downstream
+            # pricing/export sees the market-aligned distribution; in
+            # legacy mode we leave out[stat] alone (raw uncalibrated).
+            if active_tag:
+                out[stat] = PropPMF(
+                    stat=stat, pmf=target_pmf, calibrated=False,
+                    model_version=f"{prop.model_version}{active_tag}",
+                )
             continue
+
+        # Calibrator exists; apply it to target_pmf. Detect role-aware
+        # bundles explicitly via the bundle's `version` attribute —
+        # no broad TypeError fallback, so a real bug inside apply()
+        # surfaces rather than silently routing to the legacy branch.
         if getattr(cal, "version", None) == "role_aware_pmf_cal_v1":
-            cal_pmf = cal.apply(prop.pmf, role_bucket=role_bucket)
+            cal_pmf = cal.apply(target_pmf, role_bucket=role_bucket)
             version_tag = f"role_aware_pmf_cal_v1:{role_bucket}"
         else:
-            cal_pmf = cal.apply(prop.pmf)
+            cal_pmf = cal.apply(target_pmf)
             version_tag = "pmf_cal_v1"
         out[stat] = PropPMF(
             stat=stat, pmf=cal_pmf, calibrated=True,
-            model_version=f"{prop.model_version}+{version_tag}",
+            model_version=f"{prop.model_version}+{version_tag}{active_tag}",
         )
     return out
 
@@ -178,6 +224,66 @@ def score_prop_line(pmf: np.ndarray, line: float) -> tuple[float, float]:
     if denom <= 0:
         return 0.5, 0.5
     return p_over_raw / denom, p_under_raw / denom
+
+
+def active_condition_pmf(pmf: np.ndarray, p_inactive: float) -> np.ndarray:
+    """Return P(stat | played) from a raw unconditional PMF + P(inactive).
+
+    Decomposes the unconditional PMF as
+        pmf[0] = p_inactive + (1 - p_inactive) * pmf_active[0]
+        pmf[k] = (1 - p_inactive) * pmf_active[k]    for k > 0
+    and solves for pmf_active.
+
+    Edge cases (preserves PMF validity in all branches):
+      - empty input: returns the singleton PMF [1.0].
+      - p_inactive clipped to [0.0, 0.99].
+      - p_inactive <= 0: returns a normalized copy of pmf.
+      - pmf[0] < p_inactive: clipped to 0; renormalize.
+      - degenerate / non-finite output: fall back to a normalized copy
+        of the original pmf.
+
+    Returns a finite, nonneg array summing to 1.0 with the same shape.
+    """
+    arr = np.asarray(pmf, dtype=float).copy()
+    if arr.size == 0:
+        return np.array([1.0], dtype=float)
+    arr = np.clip(arr, 0.0, None)
+    s = arr.sum()
+    if not np.isfinite(s) or s <= 0:
+        n = max(len(arr), 1)
+        return np.full_like(arr, 1.0 / n)
+    arr = arr / s
+    p_inactive = float(np.clip(p_inactive, 0.0, 0.99))
+    if p_inactive <= 0.0:
+        return arr
+    denom = 1.0 - p_inactive
+    out = arr / denom
+    out[0] = max(0.0, arr[0] - p_inactive) / denom
+    out = np.clip(out, 0.0, None)
+    s_out = out.sum()
+    if not np.isfinite(s_out) or s_out <= 0:
+        return arr
+    return out / s_out
+
+
+def _is_active_conditioned_calibration() -> bool:
+    """Return True iff `artifacts/models/pmf_cal_meta.json` declares
+    `calibration_target == "active_conditioned_prop_live"`.
+
+    Returns False (legacy raw-PMF calibration target) when the
+    metadata file is missing, malformed, or carries a different
+    target. Without this gate, applying a legacy raw-target
+    calibrator to an active-conditioned PMF would be a silent
+    target mismatch.
+    """
+    try:
+        meta_path = MODEL_DIR / "pmf_cal_meta.json"
+        if not meta_path.exists():
+            return False
+        meta = json.loads(meta_path.read_text())
+        return meta.get("calibration_target") == "active_conditioned_prop_live"
+    except Exception:
+        return False
 
 
 # ── Top-level per-day driver ─────────────────────────────────────────────────

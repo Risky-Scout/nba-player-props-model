@@ -50,6 +50,9 @@ from nba_props_model.calibration.pmf_calibration import fit_all  # noqa: E402
 from nba_props_model.calibration.role_buckets import (  # noqa: E402
     role_bucket_features_from_minutes_dist,
 )
+from nba_props_model.pipelines.pmf_predict import (  # noqa: E402
+    active_condition_pmf,
+)
 from nba_props_model.paths import DATA_DIR, MODEL_DIR, REPO_ROOT  # noqa: E402
 from nba_props_model.models.minutes import (  # noqa: E402
     MinutesDistribution,
@@ -561,6 +564,9 @@ def _generate_fold_pmfs(
                     "player_id": player_id, "game_id": game_id, "game_date": game_date,
                     "outcome": int(np.clip(y, 0, len(pmf_obj.pmf) - 1)),
                     "pmf": pmf_obj.pmf.astype(np.float64),
+                    "pmf_active": active_condition_pmf(
+                        pmf_obj.pmf, role_meta.get("p_inactive", 0.0)
+                    ).astype(np.float64),
                     **role_meta,
                 })
 
@@ -586,6 +592,8 @@ def _generate_fold_pmfs(
                     "player_id": player_id, "game_id": game_id, "game_date": game_date,
                     "outcome": int(np.clip(y, 0, len(stl_pmf) - 1)),
                     "pmf": stl_pmf.astype(np.float64),
+                    # Sparse hurdle PMF is already active-conditional.
+                    "pmf_active": stl_pmf.astype(np.float64),
                     **role_meta,
                 })
             if _allowed("blk") and blk_pmf is not None:
@@ -594,6 +602,7 @@ def _generate_fold_pmfs(
                     "player_id": player_id, "game_id": game_id, "game_date": game_date,
                     "outcome": int(np.clip(y, 0, len(blk_pmf) - 1)),
                     "pmf": blk_pmf.astype(np.float64),
+                    "pmf_active": blk_pmf.astype(np.float64),
                     **role_meta,
                 })
             if _allowed("stocks") and stl_pmf is not None and blk_pmf is not None:
@@ -606,6 +615,7 @@ def _generate_fold_pmfs(
                         "player_id": player_id, "game_id": game_id, "game_date": game_date,
                         "outcome": int(np.clip(y, 0, len(sp) - 1)),
                         "pmf": sp.astype(np.float64),
+                        "pmf_active": sp.astype(np.float64),
                         **role_meta,
                     })
 
@@ -631,6 +641,8 @@ def _generate_fold_pmfs(
                         "player_id": player_id, "game_id": game_id, "game_date": game_date,
                         "outcome": int(np.clip(y, 0, len(p) - 1)),
                         "pmf": p.astype(np.float64),
+                        # FG3M hurdle PMF is already active/prop-live conditional.
+                        "pmf_active": p.astype(np.float64),
                         **role_meta,
                     })
                 except Exception as e:
@@ -702,7 +714,16 @@ def _pad_pmf(pmf: np.ndarray, target_len: int) -> np.ndarray:
 def stack_per_stat(
     per_fold_results: list[dict[str, list[dict]]],
 ) -> dict[str, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]:
-    """Concatenate per-fold results into (pmfs, outcomes, dates, role_buckets) arrays."""
+    """Concatenate per-fold results into (pmfs, outcomes, dates, role_buckets) arrays.
+
+    `pmfs` is the active-conditioned PMF column (`pmf_active`) when
+    present in each row dict, with row-level fallback to the
+    unconditional `pmf` for backward compatibility with pre-active-
+    conditioning OOF parquets. The calibration target is therefore
+    `P(stat | played)` whenever every row in this fitting run carries
+    `pmf_active` — the post-fit metadata write in
+    `_fit_final_calibrators_and_emit_report` records that fact.
+    """
     stacked: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = {}
     all_stats = set()
     for fold_res in per_fold_results:
@@ -714,7 +735,16 @@ def stack_per_stat(
         if not rows:
             continue
         target_len = DOMAIN_MAX_BY_STAT[stat] + 1
-        pmfs = np.stack([_pad_pmf(r["pmf"], target_len) for r in rows], axis=0)
+        pmfs = np.stack(
+            [
+                _pad_pmf(
+                    r.get("pmf_active") if r.get("pmf_active") is not None else r["pmf"],
+                    target_len,
+                )
+                for r in rows
+            ],
+            axis=0,
+        )
         outcomes = np.array([r["outcome"] for r in rows], dtype=int)
         dates = np.array([r["game_date"] for r in rows])
         role_buckets = np.array([r.get("role_bucket", "unknown") for r in rows])
@@ -856,8 +886,9 @@ def main() -> None:
             ]
             fold_res: dict[str, list[dict]] = {}
             for stat_name, sub_stat in sub.groupby("stat"):
-                fold_res[str(stat_name)] = [
-                    {
+                _built: list[dict] = []
+                for r in sub_stat.itertuples(index=False):
+                    row = {
                         "player_id": int(r.player_id),
                         "game_id": int(r.game_id),
                         "game_date": str(r.game_date),
@@ -875,8 +906,16 @@ def main() -> None:
                         "p_limited": getattr(r, "p_limited", np.nan),
                         "p_normal": getattr(r, "p_normal", np.nan),
                     }
-                    for r in sub_stat.itertuples(index=False)
-                ]
+                    # Critical: only include pmf_active when the parquet
+                    # row actually has a non-None value. Synthesizing
+                    # pmf_active from raw pmf would mislead the
+                    # calibration_target metadata gate into falsely
+                    # claiming active-conditioned calibration.
+                    pa = getattr(r, "pmf_active", None)
+                    if pa is not None:
+                        row["pmf_active"] = np.asarray(pa)
+                    _built.append(row)
+                fold_res[str(stat_name)] = _built
             agg_per_fold_results.append(fold_res)
         agg_backup = MODEL_DIR.parent / "archive" / (
             "aggregate_only_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -1010,7 +1049,7 @@ def main() -> None:
                             else (pd.NaT, pd.NaT))
             for stat, rows in fold_res.items():
                 for r in rows:
-                    fold_oof_rows.append({
+                    row = {
                         "stat": stat,
                         "player_id": r["player_id"],
                         "game_id": r["game_id"],
@@ -1030,7 +1069,13 @@ def main() -> None:
                         "p_inactive": r.get("p_inactive"),
                         "p_limited": r.get("p_limited"),
                         "p_normal": r.get("p_normal"),
-                    })
+                    }
+                    # Only include pmf_active when the source row has a
+                    # real value (no synthesized fallback that would
+                    # mislead the calibration_target metadata gate).
+                    if r.get("pmf_active") is not None:
+                        row["pmf_active"] = r["pmf_active"]
+                    fold_oof_rows.append(row)
         fold_oof_df = pd.DataFrame(fold_oof_rows)
         fold_out_path = Path(args.emit_fold_oof)
         fold_out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1063,6 +1108,26 @@ def _fit_final_calibrators_and_emit_report(
     start: float,
     fold_days: int,
 ) -> None:
+    # Determine whether per-fold results uniformly carry pmf_active.
+    # This single flag drives BOTH the OOF parquet emission (omit the
+    # column entirely when not uniform, to avoid mixed-NaN parquet
+    # columns) AND the calibration_target metadata gate (only claim
+    # active-conditioned target when every row genuinely had it).
+    all_rows_have_pmf_active = True
+    total_rows_seen = 0
+    for fold_res in per_fold_results:
+        for stat, rows in fold_res.items():
+            for r in rows:
+                total_rows_seen += 1
+                if r.get("pmf_active") is None:
+                    all_rows_have_pmf_active = False
+                    break
+            if not all_rows_have_pmf_active:
+                break
+        if not all_rows_have_pmf_active:
+            break
+    pmf_active_uniform = bool(total_rows_seen > 0 and all_rows_have_pmf_active)
+
     # Persist the full OOF universe before any further processing so
     # scripts/run_diagnostics.py has a deterministic input to read.
     oof_rows: list[dict] = []
@@ -1071,7 +1136,7 @@ def _fit_final_calibrators_and_emit_report(
                         else (pd.NaT, pd.NaT))
         for stat, rows in fold_res.items():
             for r in rows:
-                oof_rows.append({
+                row = {
                     "stat": stat,
                     "player_id": r["player_id"],
                     "game_id": r["game_id"],
@@ -1091,7 +1156,10 @@ def _fit_final_calibrators_and_emit_report(
                     "p_inactive": r.get("p_inactive"),
                     "p_limited": r.get("p_limited"),
                     "p_normal": r.get("p_normal"),
-                })
+                }
+                if pmf_active_uniform:
+                    row["pmf_active"] = r["pmf_active"]
+                oof_rows.append(row)
     oof_df = pd.DataFrame(oof_rows)
     oof_path = DATA_DIR / "oof_pmfs.parquet"
     oof_df.to_parquet(oof_path, index=False)
@@ -1121,6 +1189,30 @@ def _fit_final_calibrators_and_emit_report(
     rng = np.random.default_rng(0)
     meta = fit_all(per_stat_inputs, fold_days=fold_days,
                    min_train_days=MIN_TRAIN_DAYS, rng=rng)
+    # Augment pmf_cal_meta.json with active-conditioning provenance —
+    # ONLY when the precomputed pmf_active_uniform flag is True (every
+    # OOF row in this fitting run carried a genuine pmf_active value).
+    # If False, the calibration was at least partially fit on raw pmf
+    # and we must NOT claim "active_conditioned_prop_live".
+    if pmf_active_uniform:
+        meta["calibration_target"] = "active_conditioned_prop_live"
+        meta["pmf_active_available"] = True
+        cal_meta_path = MODEL_DIR / "pmf_cal_meta.json"
+        with open(cal_meta_path, "w") as f:
+            json.dump(meta, f, indent=2, default=str)
+        logger.info(
+            f"Augmented {cal_meta_path.name}: "
+            "calibration_target=active_conditioned_prop_live, "
+            "pmf_active_available=true"
+        )
+    else:
+        logger.info(
+            "Skipping calibration_target metadata write: "
+            f"pmf_active_uniform={pmf_active_uniform}, "
+            f"total_rows_seen={total_rows_seen}. "
+            "Calibration was at least partially fit on raw pmf; "
+            "live prediction will use the legacy raw-PMF path."
+        )
 
     logger.info("=" * 60)
     logger.info("Per-stat calibration results")
