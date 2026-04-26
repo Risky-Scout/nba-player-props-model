@@ -99,6 +99,61 @@ def extract_features(df: pd.DataFrame, cols: list) -> pd.DataFrame:
     return out
 
 
+def _derive_volume_gate_features(features: dict) -> dict:
+    """Fill in the FG3M Stage-1 derived feature keys when absent.
+
+    The training table emits raw per-minute columns
+    (`per_min_fg3a_last10`, `mp_mean_last10`, ...) but the
+    `volume_gate_scaler` was fit on per-game-equivalent counts
+    (`season_mean_fg3a`, `mean_fg3a_last10`, ...). When a caller
+    passes a raw training-table row, the missing derived keys default
+    to 0.0 inside `predict_proba` and the StandardScaler maps them to
+    extreme negative z-scores, collapsing the PMF.
+
+    This helper mirrors the training-time derivation block in
+    `scripts/calibrate_pmf.py` so the model is self-consistent
+    regardless of how the caller built the feature dict. Idempotent:
+    keys already present in `features` are left untouched.
+
+    Returns a NEW dict; the input is not mutated. All numeric reads
+    go through `_safe_float`, which returns the provided default for
+    None / missing / NaN / inf / non-numeric values, and preserves
+    legitimate zero values unchanged.
+    """
+    out = dict(features)
+
+    def _safe_float(name: str, default: float = 0.0) -> float:
+        v = out.get(name, default)
+        if v is None:
+            return default
+        try:
+            v = float(v)
+        except Exception:
+            return default
+        if not np.isfinite(v):
+            return default
+        return v
+
+    src = "per_min_fg3a_last10"
+    if src in out and out[src] is not None:
+        pm10 = _safe_float(src, 0.0)
+        if "mean_fg3a_last10" not in out:
+            out["mean_fg3a_last10"] = pm10 * _safe_float("mp_mean_last10", 36.0)
+        if "mean_fg3a_last5" not in out:
+            out["mean_fg3a_last5"] = pm10 * _safe_float("mp_mean_last10", 36.0)
+        if "season_mean_fg3a" not in out:
+            out["season_mean_fg3a"] = pm10 * _safe_float("mp_mean_season", 36.0)
+        if "ewma10_fg3a" not in out:
+            out["ewma10_fg3a"] = pm10 * _safe_float("mp_ewma_10", 36.0)
+        if "per_min_fg3a_season" not in out:
+            out["per_min_fg3a_season"] = pm10
+    if "zero_pct_fg3a" not in out and "fg3m_p_zero_last10" in out:
+        out["zero_pct_fg3a"] = _safe_float("fg3m_p_zero_last10", 0.0)
+    if "trend_fg3a" not in out and "fg3a_attempt_trend" in out:
+        out["trend_fg3a"] = _safe_float("fg3a_attempt_trend", 0.0)
+    return out
+
+
 # ── Main model class ───────────────────────────────────────────────────────────
 
 class FG3MHurdleModel:
@@ -173,7 +228,14 @@ class FG3MHurdleModel:
         if not self.is_fitted:
             raise RuntimeError("Call fit() or load() first")
 
-        features = dict(features)
+        # Self-derive any missing Stage-1 inputs from the raw
+        # per-minute columns the training table emits. Idempotent on
+        # pre-derived feature dicts (training-time path), so this
+        # change is invisible there. At inference (where the caller
+        # routes the raw stat=='fg3m' training-table row through),
+        # this is what bridges the per-minute → per-game gap that
+        # was collapsing the PMF to ~delta(0).
+        features = _derive_volume_gate_features(dict(features))
 
         # ── Archetype assignment ──────────────────────────────────────────────
         season_fg3a = features.get('season_mean_fg3a',
