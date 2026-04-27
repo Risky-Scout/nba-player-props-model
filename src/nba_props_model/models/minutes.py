@@ -131,6 +131,15 @@ class MinutesCDFCalibrator:
             return float(np.clip(f, 0.0, 1.0))
         return float(np.clip(self.iso.predict([float(f)])[0], 0.0, 1.0))
 
+    def apply_cdf_vec(self, f_array: np.ndarray) -> np.ndarray:
+        """Vectorized form of apply_cdf — consumes a numpy array in one
+        sklearn call instead of one call per element. Used by the
+        vectorized MinutesDistribution.sample bisection path."""
+        f = np.asarray(f_array, dtype=float)
+        if self.iso is None:
+            return np.clip(f, 0.0, 1.0)
+        return np.clip(self.iso.predict(f), 0.0, 1.0)
+
 
 def _load_minutes_cdf_calibrator() -> Optional[MinutesCDFCalibrator]:
     global _MINUTES_CDF_CAL, _MINUTES_CDF_CAL_LOADED
@@ -426,25 +435,70 @@ class MinutesDistribution:
         return float(np.std(samples))
 
     def sample(self, n: int, rng: np.random.Generator) -> np.ndarray:
-        # Route through the calibrated CDF when the monotone calibrator is
-        # loaded — otherwise draw from the raw per-state quantile ladders
-        # for speed.
+        """Draw n minutes samples, vectorized.
+
+        Both code paths preserve the exact RNG bit-stream consumed by the
+        previous scalar implementation:
+          * Calibrator path: a single rng.uniform(size=n) call followed
+            by 60 numpy-vectorized bisection iterations on the calibrated
+            CDF. Identical inverse-CDF semantics to the prior scalar
+            self.quantile(ui) loop.
+          * Non-calibrator path: rng.choice(3, size=n, p=p) followed by
+            one rng.uniform(size=n_non_inactive) batch. NumPy's Generator
+            consumes the BitGenerator stream identically for batched vs.
+            iterated single uniforms, so this is byte-equivalent to the
+            prior per-row scalar rng.uniform calls.
+        """
         cal = _load_minutes_cdf_calibrator()
         if cal is not None:
             u = rng.uniform(0.0, 1.0, size=n)
-            return np.array([self.quantile(float(ui)) for ui in u], dtype=float)
+            return self._quantile_vec(u, cal)
+        # No-calibrator path — vectorized state choice + np.interp on
+        # the anchored piecewise-linear inverse-CDF arrays.
         p = np.array(self.state_probs, dtype=float)
         p = p / max(p.sum(), 1e-9)
         states = rng.choice(3, size=n, p=p)
+        non_inactive = states != STATE_INACTIVE
+        n_ni = int(non_inactive.sum())
         out = np.zeros(n, dtype=float)
-        for i, s in enumerate(states):
-            if s == STATE_INACTIVE:
-                out[i] = 0.0
-            elif s == STATE_LIMITED:
-                out[i] = _sample_from_quantiles(self.limited_quantiles, rng)
-            else:
-                out[i] = _sample_from_quantiles(self.normal_quantiles, rng)
+        if n_ni == 0:
+            return out
+        u = rng.uniform(0.0, 1.0, size=n_ni)
+        ni_idx = np.flatnonzero(non_inactive)
+        is_lim = states[ni_idx] == STATE_LIMITED
+        xs_lim, ys_lim = _quantile_arrays(self.limited_quantiles)
+        xs_nor, ys_nor = _quantile_arrays(self.normal_quantiles)
+        if is_lim.any():
+            out[ni_idx[is_lim]] = np.interp(u[is_lim], ys_lim, xs_lim)
+        if (~is_lim).any():
+            out[ni_idx[~is_lim]] = np.interp(u[~is_lim], ys_nor, xs_nor)
         return out
+
+    def _quantile_vec(self, q_array: np.ndarray,
+                      cal: "MinutesCDFCalibrator") -> np.ndarray:
+        """Vectorized 60-iteration bisection inverse of the calibrated
+        CDF. Math is identical to the scalar self.quantile loop applied
+        elementwise; only the per-step CDF evaluation is vectorized."""
+        q = np.clip(np.asarray(q_array, dtype=float), 1e-6, 1 - 1e-6)
+        lo = np.zeros_like(q)
+        hi = np.full_like(q, MINUTES_CEILING)
+        xs_lim, ys_lim = _quantile_arrays(self.limited_quantiles)
+        xs_nor, ys_nor = _quantile_arrays(self.normal_quantiles)
+        p0, p1, p2 = self.state_probs
+        for _ in range(60):
+            mid = 0.5 * (lo + hi)
+            m = np.maximum(0.0, mid)
+            c_lim = np.interp(m, xs_lim, ys_lim)
+            c_nor = np.interp(m, xs_nor, ys_nor)
+            raw = p0 + p1 * c_lim + p2 * c_nor
+            raw = np.where(m >= MINUTES_CEILING, 1.0, raw)
+            cal_out = cal.apply_cdf_vec(raw)
+            cal_out = np.where(raw <= 0.0, 0.0, cal_out)
+            cal_out = np.where(raw >= 1.0, 1.0, cal_out)
+            below = cal_out < q
+            lo = np.where(below, mid, lo)
+            hi = np.where(below, hi, mid)
+        return 0.5 * (lo + hi)
 
 
 def _clean_quantiles(q: dict[int, float], lo: float, hi: float) -> dict[int, float]:
@@ -486,6 +540,24 @@ def _cdf_from_quantiles(q: dict[int, float], x: float) -> float:
                 return float(y1)
             return float(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
     return 1.0
+
+
+def _quantile_arrays(q: dict[int, float]) -> tuple[np.ndarray, np.ndarray]:
+    """Convert a {qpct: minutes} table to the anchored (xs, ys) numpy
+    arrays used by np.interp. Mirrors the construction used by
+    _cdf_from_quantiles / _sample_from_quantiles, except that we hand
+    back arrays for vectorized consumers. Empty dict -> trivial
+    [0, MINUTES_CEILING] / [0, 1] anchored ladder.
+    """
+    if not q:
+        return (np.array([0.0, MINUTES_CEILING], dtype=float),
+                np.array([0.0, 1.0], dtype=float))
+    sorted_keys = sorted(q.keys())
+    xs = [float(q[k]) for k in sorted_keys]
+    ys = [k / 100.0 for k in sorted_keys]
+    xs_a = np.array([0.0] + xs + [MINUTES_CEILING], dtype=float)
+    ys_a = np.array([0.0] + ys + [1.0], dtype=float)
+    return xs_a, ys_a
 
 
 def _sample_from_quantiles(q: dict[int, float], rng: np.random.Generator) -> float:

@@ -89,33 +89,22 @@ class StatPMF:
 def _rate_samples_from_quantiles(
     q: dict[int, float], n: int, rng: np.random.Generator,
 ) -> np.ndarray:
-    """Inverse-CDF sample from a quantile table (rates >= 0)."""
+    """Inverse-CDF sample from a quantile table (rates >= 0).
+
+    Vectorized via np.interp over the anchored piecewise-linear quantile
+    ladder. Mathematically identical to the previous scalar Python-loop
+    inverse-interpolation: same uniform draw, same monotone (xs, ys)
+    arrays, same linear interpolation. Differences are bounded by float
+    precision (O(1e-15)).
+    """
     sorted_keys = sorted(q.keys())
     xs = [max(0.0, q[k]) for k in sorted_keys]
     ys = [k / 100.0 for k in sorted_keys]
     # Anchor at tails: at q=0 assume zero rate; at q=1 assume 1.2x q90.
     xs = [0.0] + xs + [max(xs[-1] * 1.2, xs[-1] + 0.05)]
     ys = [0.0] + ys + [1.0]
-
     u = rng.uniform(0, 1, size=n)
-    out = np.empty(n, dtype=float)
-    xs_a = np.array(xs)
-    ys_a = np.array(ys)
-    for i, ui in enumerate(u):
-        if ui <= ys_a[0]:
-            out[i] = xs_a[0]
-            continue
-        if ui >= ys_a[-1]:
-            out[i] = xs_a[-1]
-            continue
-        idx = int(np.searchsorted(ys_a, ui))
-        y0, y1 = ys_a[idx - 1], ys_a[idx]
-        x0, x1 = xs_a[idx - 1], xs_a[idx]
-        if y1 == y0:
-            out[i] = x1
-        else:
-            out[i] = x0 + (x1 - x0) * (ui - y0) / (y1 - y0)
-    return out
+    return np.interp(u, np.asarray(ys, dtype=float), np.asarray(xs, dtype=float))
 
 
 def simulate_stat_pmf(
