@@ -37,7 +37,7 @@ import sys
 import tempfile
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, date
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
@@ -69,6 +69,7 @@ from nba_props_model.models.sparse_hurdle import (  # noqa: E402
 )
 from nba_props_model.models.fg3m_hurdle import FG3MHurdleModel  # noqa: E402
 from nba_props_model.models.simulation import DOMAIN_MAX as MAIN_DOMAIN_MAX  # noqa: E402
+from nba_props_model.models.simulation import simulate_stat_pmf  # noqa: E402
 
 logging.basicConfig(
     level=logging.INFO,
@@ -473,6 +474,11 @@ def _generate_fold_pmfs(
     fg3m_lookup_hits = 0
     fg3m_lookup_misses = 0
 
+    # Hoisted out of the per-row loop — same closure logic, defined
+    # once instead of recreated each iteration.
+    def _allowed(stat: str) -> bool:
+        return allowed_stats is None or stat in allowed_stats
+
     for row in val_rows.itertuples(index=False):
         _row_t0 = time.perf_counter()
         try:
@@ -504,8 +510,18 @@ def _generate_fold_pmfs(
             prev_games = history.tail(1)
             rest_days = 2
             if len(prev_games):
-                prev_date = pd.to_datetime(prev_games.iloc[-1]["game_date"])
-                rest_days = int((pd.to_datetime(game_date) - prev_date).days)
+                # Pure-Python date arithmetic on ISO 'YYYY-MM-DD' strings
+                # is ~50x faster than scalar pd.to_datetime(). game_date
+                # is already 10-char ISO from the .astype(str).str[:10]
+                # normalization at fold-load time; the str(...)[:10]
+                # wrappers below defend against any future caller that
+                # passes a Timestamp or longer ISO string.
+                prev_date = date.fromisoformat(
+                    str(prev_games.iloc[-1]["game_date"])[:10]
+                )
+                rest_days = int(
+                    (date.fromisoformat(str(game_date)[:10]) - prev_date).days
+                )
             b2b = 1 if rest_days == 1 else 0
 
             avail = avail_lookup.get((player_id, game_date))
@@ -533,11 +549,12 @@ def _generate_fold_pmfs(
                 continue
 
             _fr_t0 = time.perf_counter()
-            feature_row = {k: getattr(row, k, 0.0) for k in row._fields}
+            # `row._asdict()` is a single C-level call; the prior dict
+            # comprehension over `row._fields` had a `getattr(..., 0.0)`
+            # default that never fired (row._fields enumerates existing
+            # fields), so this is byte-equivalent and ~5-10x faster.
+            feature_row = row._asdict()
             _pmf_timer_add("feature_row_build", time.perf_counter() - _fr_t0)
-
-            def _allowed(stat: str) -> bool:
-                return allowed_stats is None or stat in allowed_stats
 
             # Main stats via minutes x rate simulation.
             for stat in RATE_STATS:
@@ -548,7 +565,6 @@ def _generate_fold_pmfs(
                 _pmf_timer_add(f"rate_quantiles.{stat}", time.perf_counter() - _t)
                 if q is None:
                     continue
-                from nba_props_model.models.simulation import simulate_stat_pmf
                 _t = time.perf_counter()
                 pmf_obj = simulate_stat_pmf(
                     stat=stat, minutes_dist=m_dist, feature_row=feature_row,
@@ -936,6 +952,12 @@ def main() -> None:
     availability_df["game_date"] = availability_df["game_date"].astype(str).str[:10]
     training_df = pd.read_parquet(DATA_DIR / "training_table.parquet")
     training_df["game_date"] = training_df["game_date"].astype(str).str[:10]
+    # Precompute the game_date Timestamp values once as a LOCAL Series.
+    # Held by index alignment for boolean masking against training_df.
+    # NOT attached as a column on training_df — that would leak into
+    # val_rows / fg3m_val_rows / row._asdict() and break the
+    # performance-only invariant (no row-shape change).
+    training_game_date_ts = pd.to_datetime(training_df["game_date"])
     logger.info(
         f"Loaded: stats={len(stats_df):,}  avail={len(availability_df):,}  "
         f"training={len(training_df):,}"
@@ -1000,8 +1022,8 @@ def main() -> None:
             # Generate OOF PMFs on validation rows.
             val_rows = training_df[
                 (training_df["stat"] == "pts") &
-                (pd.to_datetime(training_df["game_date"]) >= fold_start) &
-                (pd.to_datetime(training_df["game_date"]) < fold_end)
+                (training_game_date_ts >= fold_start) &
+                (training_game_date_ts < fold_end)
             ]
             # Companion FG3M-stat slice for the same fold window. Used
             # by `_generate_fold_pmfs` to build a (player_id, game_id)
@@ -1010,8 +1032,8 @@ def main() -> None:
             # iteration spine is still val_rows.
             fg3m_val_rows = training_df[
                 (training_df["stat"] == "fg3m") &
-                (pd.to_datetime(training_df["game_date"]) >= fold_start) &
-                (pd.to_datetime(training_df["game_date"]) < fold_end)
+                (training_game_date_ts >= fold_start) &
+                (training_game_date_ts < fold_end)
             ]
             if args.val_rows_limit is not None and len(val_rows) > args.val_rows_limit:
                 val_rows = val_rows.head(args.val_rows_limit).reset_index(drop=True)
