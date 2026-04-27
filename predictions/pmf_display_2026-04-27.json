@@ -1,0 +1,960 @@
+{
+  "date": "2026-04-27",
+  "generated_at": "2026-04-27T15:29:26.474693",
+  "props": [
+    {
+      "player_name": "Isaiah Stewart",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 1.0,
+      "model_prob": 0.8324,
+      "market_prob": 0.5649,
+      "ev": 0.7315,
+      "edge": 0.2675,
+      "fair_odds_over": 497,
+      "fair_odds_under": -497,
+      "pmf_median": 0,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 170,
+        "under_odds": 108,
+        "best_odds": 108
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6175,
+          "fair_odds": -161,
+          "display_prob": "61.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2582,
+          "fair_odds": 287,
+          "display_prob": "25.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0898,
+          "fair_odds": 1014,
+          "display_prob": "9.0%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0053,
+          "fair_odds": 18768,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Cade Cunningham",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 9.5,
+      "model_prob": 0.798,
+      "market_prob": 0.4867,
+      "ev": 0.6359,
+      "edge": 0.3113,
+      "fair_odds_over": 395,
+      "fair_odds_under": -395,
+      "pmf_median": 6,
+      "line_vs_median": 3.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -106,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0385,
+          "fair_odds": 2497,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.048,
+          "fair_odds": 1983,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0645,
+          "fair_odds": 1450,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0838,
+          "fair_odds": 1093,
+          "display_prob": "8.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.098,
+          "fair_odds": 920,
+          "display_prob": "9.8%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0927,
+          "fair_odds": 979,
+          "display_prob": "9.3%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0935,
+          "fair_odds": 970,
+          "display_prob": "9.3%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0983,
+          "fair_odds": 917,
+          "display_prob": "9.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.1003,
+          "fair_odds": 897,
+          "display_prob": "10.0%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0805,
+          "fair_odds": 1142,
+          "display_prob": "8.1%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0583,
+          "fair_odds": 1615,
+          "display_prob": "5.8%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0508,
+          "fair_odds": 1869,
+          "display_prob": "5.1%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0295,
+          "fair_odds": 3290,
+          "display_prob": "2.9%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0225,
+          "fair_odds": 4344,
+          "display_prob": "2.2%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.015,
+          "fair_odds": 6567,
+          "display_prob": "1.5%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.012,
+          "fair_odds": 8233,
+          "display_prob": "1.2%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Rudy Gobert",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6589,
+      "market_prob": 0.3837,
+      "ev": 0.6011,
+      "edge": 0.2752,
+      "fair_odds_over": 193,
+      "fair_odds_under": -193,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -195,
+        "under_odds": 143,
+        "best_odds": 143
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6589,
+          "fair_odds": -193,
+          "display_prob": "65.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2103,
+          "fair_odds": 376,
+          "display_prob": "21.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0997,
+          "fair_odds": 903,
+          "display_prob": "10.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Naz Reid",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 1.5,
+      "model_prob": 0.6828,
+      "market_prob": 0.4235,
+      "ev": 0.5704,
+      "edge": 0.2593,
+      "fair_odds_over": -215,
+      "fair_odds_under": 215,
+      "pmf_median": 2,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 130,
+        "under_odds": -145,
+        "best_odds": 130
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0747,
+          "fair_odds": 1239,
+          "display_prob": "7.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2425,
+          "fair_odds": 312,
+          "display_prob": "24.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.3279,
+          "fair_odds": 205,
+          "display_prob": "32.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.2364,
+          "fair_odds": 323,
+          "display_prob": "23.6%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0959,
+          "fair_odds": 943,
+          "display_prob": "9.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0207,
+          "fair_odds": 4731,
+          "display_prob": "2.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jaden McDaniels",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 4.5,
+      "model_prob": 0.7045,
+      "market_prob": 0.4357,
+      "ev": 0.564,
+      "edge": 0.2688,
+      "fair_odds_over": 238,
+      "fair_odds_under": -238,
+      "pmf_median": 3,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -140,
+        "under_odds": 122,
+        "best_odds": 122
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1242,
+          "fair_odds": 705,
+          "display_prob": "12.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1512,
+          "fair_odds": 561,
+          "display_prob": "15.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1547,
+          "fair_odds": 546,
+          "display_prob": "15.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1515,
+          "fair_odds": 560,
+          "display_prob": "15.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1227,
+          "fair_odds": 715,
+          "display_prob": "12.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0958,
+          "fair_odds": 944,
+          "display_prob": "9.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.065,
+          "fair_odds": 1438,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0503,
+          "fair_odds": 1888,
+          "display_prob": "5.0%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.031,
+          "fair_odds": 3126,
+          "display_prob": "3.1%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0203,
+          "fair_odds": 4826,
+          "display_prob": "2.0%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0145,
+          "fair_odds": 6797,
+          "display_prob": "1.5%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.01,
+          "fair_odds": 9900,
+          "display_prob": "1.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Alex Caruso",
+      "game": "Oklahoma City Thunder @ Phoenix Suns",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 3.0,
+      "model_prob": 0.6607,
+      "market_prob": 0.4979,
+      "ev": 0.546,
+      "edge": 0.1628,
+      "fair_odds_over": 195,
+      "fair_odds_under": -195,
+      "pmf_median": 2,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 132,
+        "under_odds": 134,
+        "best_odds": 134
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2445,
+          "fair_odds": 309,
+          "display_prob": "24.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1893,
+          "fair_odds": 428,
+          "display_prob": "18.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.147,
+          "fair_odds": 580,
+          "display_prob": "14.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.121,
+          "fair_odds": 726,
+          "display_prob": "12.1%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0877,
+          "fair_odds": 1040,
+          "display_prob": "8.8%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0675,
+          "fair_odds": 1381,
+          "display_prob": "6.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.043,
+          "fair_odds": 2226,
+          "display_prob": "4.3%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0367,
+          "fair_odds": 2625,
+          "display_prob": "3.7%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.02,
+          "fair_odds": 4900,
+          "display_prob": "2.0%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.015,
+          "fair_odds": 6567,
+          "display_prob": "1.5%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0097,
+          "fair_odds": 10209,
+          "display_prob": "1.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Chet Holmgren",
+      "game": "Oklahoma City Thunder @ Phoenix Suns",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.676,
+      "market_prob": 0.415,
+      "ev": 0.5412,
+      "edge": 0.261,
+      "fair_odds_over": 209,
+      "fair_odds_under": -209,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -162,
+        "under_odds": 128,
+        "best_odds": 128
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.4203,
+          "fair_odds": 138,
+          "display_prob": "42.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2556,
+          "fair_odds": 291,
+          "display_prob": "25.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1511,
+          "fair_odds": 562,
+          "display_prob": "15.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.119,
+          "fair_odds": 740,
+          "display_prob": "11.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0081,
+          "fair_odds": 12246,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.008,
+          "fair_odds": 12400,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0068,
+          "fair_odds": 14606,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0084,
+          "fair_odds": 11805,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0081,
+          "fair_odds": 12246,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.008,
+          "fair_odds": 12400,
+          "display_prob": "0.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Green",
+      "game": "Oklahoma City Thunder @ Phoenix Suns",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.6472,
+      "market_prob": 0.4029,
+      "ev": 0.5405,
+      "edge": 0.2443,
+      "fair_odds_over": 183,
+      "fair_odds_under": -183,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -165,
+        "under_odds": 138,
+        "best_odds": 138
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2343,
+          "fair_odds": 327,
+          "display_prob": "23.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2362,
+          "fair_odds": 323,
+          "display_prob": "23.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1767,
+          "fair_odds": 466,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.128,
+          "fair_odds": 681,
+          "display_prob": "12.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0835,
+          "fair_odds": 1098,
+          "display_prob": "8.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0558,
+          "fair_odds": 1692,
+          "display_prob": "5.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0338,
+          "fair_odds": 2859,
+          "display_prob": "3.4%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.019,
+          "fair_odds": 5163,
+          "display_prob": "1.9%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0138,
+          "fair_odds": 7146,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jaden McDaniels",
+      "game": "Minnesota Timberwolves @ Denver Nuggets",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7144,
+      "market_prob": 0.4498,
+      "ev": 0.536,
+      "edge": 0.2646,
+      "fair_odds_over": 250,
+      "fair_odds_under": -250,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -132,
+        "under_odds": 115,
+        "best_odds": 115
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.7144,
+          "fair_odds": -250,
+          "display_prob": "71.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2341,
+          "fair_odds": 327,
+          "display_prob": "23.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0263,
+          "fair_odds": 3702,
+          "display_prob": "2.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Royce O'Neale",
+      "game": "Oklahoma City Thunder @ Phoenix Suns",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 4.5,
+      "model_prob": 0.7452,
+      "market_prob": 0.4712,
+      "ev": 0.5278,
+      "edge": 0.274,
+      "fair_odds_over": 293,
+      "fair_odds_under": -293,
+      "pmf_median": 3,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -121,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1562,
+          "fair_odds": 540,
+          "display_prob": "15.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1645,
+          "fair_odds": 508,
+          "display_prob": "16.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.172,
+          "fair_odds": 481,
+          "display_prob": "17.2%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1425,
+          "fair_odds": 602,
+          "display_prob": "14.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.11,
+          "fair_odds": 809,
+          "display_prob": "11.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.082,
+          "fair_odds": 1120,
+          "display_prob": "8.2%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0612,
+          "fair_odds": 1534,
+          "display_prob": "6.1%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0415,
+          "fair_odds": 2310,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0283,
+          "fair_odds": 3434,
+          "display_prob": "2.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0208,
+          "fair_odds": 4708,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0118,
+          "fair_odds": 8375,
+          "display_prob": "1.2%"
+        }
+      ]
+    },
+    {
+      "player_name": "Cade Cunningham",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6175,
+      "market_prob": 0.3839,
+      "ev": 0.5128,
+      "edge": 0.2336,
+      "fair_odds_over": 161,
+      "fair_odds_under": -161,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -190,
+        "under_odds": 145,
+        "best_odds": 145
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6175,
+          "fair_odds": -161,
+          "display_prob": "61.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2414,
+          "fair_odds": 314,
+          "display_prob": "24.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1056,
+          "fair_odds": 847,
+          "display_prob": "10.6%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Wendell Carter Jr.",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 7.5,
+      "model_prob": 0.7085,
+      "market_prob": 0.4615,
+      "ev": 0.4879,
+      "edge": 0.247,
+      "fair_odds_over": 243,
+      "fair_odds_under": -243,
+      "pmf_median": 5,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -125,
+        "under_odds": 110,
+        "best_odds": 110
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0517,
+          "fair_odds": 1834,
+          "display_prob": "5.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0683,
+          "fair_odds": 1364,
+          "display_prob": "6.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0885,
+          "fair_odds": 1030,
+          "display_prob": "8.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0958,
+          "fair_odds": 944,
+          "display_prob": "9.6%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1035,
+          "fair_odds": 866,
+          "display_prob": "10.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1123,
+          "fair_odds": 790,
+          "display_prob": "11.2%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1022,
+          "fair_odds": 878,
+          "display_prob": "10.2%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0862,
+          "fair_odds": 1060,
+          "display_prob": "8.6%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0705,
+          "fair_odds": 1318,
+          "display_prob": "7.0%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0542,
+          "fair_odds": 1745,
+          "display_prob": "5.4%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0478,
+          "fair_odds": 1992,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.038,
+          "fair_odds": 2532,
+          "display_prob": "3.8%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.023,
+          "fair_odds": 4248,
+          "display_prob": "2.3%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0203,
+          "fair_odds": 4826,
+          "display_prob": "2.0%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.011,
+          "fair_odds": 8991,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.008,
+          "fair_odds": 12400,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0053,
+          "fair_odds": 18768,
+          "display_prob": "0.5%"
+        }
+      ]
+    }
+  ]
+}
