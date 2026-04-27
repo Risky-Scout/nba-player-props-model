@@ -451,16 +451,17 @@ jobs:
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          # The matched market-vs-model comparison is computed inside
-          # scripts/run_diagnostics.py via market_logscore_lift on the
-          # OOF de-vigged over/under probs. The helpers in
+          # NOTE: scripts/run_diagnostics.py does NOT currently join
+          # de-vigged opening-line probabilities into the OOF parquet.
+          # The "logloss lift" column in the diagnostics markdown is
+          # measured against a neutral 0.5 baseline, not real market
+          # probabilities. The helpers in
           # src/nba_props_model/evaluation/market_baseline.py expose
           # devigged_main_line / market_implied_cdf_from_alt_lines /
-          # market_pmf_from_cdf for alt-line ladder reconstruction.
-          # The diagnostics step above has already produced the matched
-          # section — this step is a no-op guard in case a future split
-          # wants a dedicated entry point.
-          echo "Market-relative eval embedded in run_diagnostics output above."
+          # market_pmf_from_cdf for a future alt-line ladder join.
+          # Until that join is wired in, the diagnostics report emits
+          # `market_eval_available=false` and the lift column is NaN.
+          echo "Market-relative eval not available; baseline-only metrics emitted."
 
       - name: Upload Phase 8 outputs
         uses: actions/upload-artifact@v4
@@ -470,6 +471,8 @@ jobs:
             artifacts/docs/diagnostics_*.md
             artifacts/docs/pmf_calibration_run.md
             artifacts/models/pmf_cal_*.pkl
+            artifacts/models/pmf_cal_role_*.pkl
+            artifacts/models/pmf_cal_meta.json
             data/oof_pmfs.parquet
           if-no-files-found: warn
           retention-days: 30

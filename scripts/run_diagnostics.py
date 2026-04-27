@@ -11,7 +11,13 @@ Metrics per stat and per fold:
   * randomized PIT mean / std / KS distance from Uniform(0,1)
   * line-level Brier averaged over offered lines from opening-snapshot
   * over/under calibration: slope, intercept, ECE
-  * market-relative log-score lift vs the de-vigged opening market probs
+  * logloss lift vs a neutral 0.5 baseline (real de-vigged market
+    probabilities are NOT currently joined into the OOF input; when
+    market_eval_available=false the lift column is emitted as NaN
+    and the report includes an explicit "Market evaluation status"
+    section. Wiring real opening-line de-vigged probs requires joining
+    data/opening_lines_*.json onto the OOF rows by
+    (player_name, game_date, stat, line) — tracked separately.)
   * edge-decile monotonicity where enough graded rows exist
   * bootstrap ROI 95% CI on the selected-bet subset
 
@@ -58,6 +64,15 @@ logger = logging.getLogger("run_diagnostics")
 
 
 DOCS_DIR = REPO_ROOT / "artifacts" / "docs"
+
+# Real de-vigged opening-line probabilities are not yet joined into the
+# OOF parquet emitted by scripts/calibrate_pmf.py. Until that join is
+# wired in (data/opening_lines_*.json -> per-row over/under probs by
+# player_name + game_date + stat + line), diagnostics MUST NOT report a
+# market-relative lift. We emit NaN for the lift column, set
+# market_eval_available=False in the JSON sidecar, and append an
+# explicit warning section to the markdown.
+MARKET_EVAL_AVAILABLE = False
 
 
 # ── legacy PMF construction from quantile ladder ───────────────────────────
@@ -242,7 +257,13 @@ def main() -> None:
             over_probs = 1.0 - _cdf_at(pmf_slice_cal, ref_line)
             over_realised = (out_slice > ref_line).astype(int)
 
-            market_probs = np.full(len(over_realised), 0.5)
+            # Real de-vigged opening-line market probabilities are not
+            # joined into the OOF parquet today. Pass NaN so
+            # _fold_metrics_from emits market_logscore_lift = NaN
+            # instead of a misleading constant-0.5 baseline lift.
+            # The appended "Market evaluation status" section makes
+            # this gap explicit in the diagnostics markdown.
+            market_probs = np.full(len(over_realised), np.nan)
 
             fm_new = _fold_metrics_from(
                 pmf_slice_cal, out_slice, over_probs, market_probs,
@@ -329,6 +350,15 @@ def main() -> None:
     _append_comparison_summary(report_path, fold_metrics, args.run_date)
     # Append role-stratified PMF diagnostics if the OOF carried role buckets.
     _append_role_stratified_section(report_path, role_diag_rows)
+    # Append market evaluation status — explicit, never silent.
+    _append_market_eval_status(report_path, available=MARKET_EVAL_AVAILABLE)
+    # Sidecar JSON for downstream consumers (WoO / EV Analytics).
+    sidecar = DOCS_DIR / f"diagnostics_{args.run_date}.meta.json"
+    sidecar.write_text(json.dumps({
+        "market_eval_available": bool(MARKET_EVAL_AVAILABLE),
+        "lift_baseline": "neutral_0p5" if not MARKET_EVAL_AVAILABLE else "devigged_opening_line",
+        "run_date": args.run_date,
+    }, indent=2))
 
     logger.info(f"Wrote {report_path}")
     logger.info(f"Done in {(time.time() - start):.1f}s")
@@ -382,6 +412,19 @@ def _fold_metrics_from(
     slope, intercept = calibration_slope_intercept(over_probs_model, over_realised)
     ls = log_score(pmfs, outcomes)
     crps = discrete_crps(pmfs, outcomes)
+    # If market probabilities are NaN (the unavailable path), emit
+    # market_logscore_lift = NaN rather than computing a misleading
+    # constant-0.5 baseline lift.
+    if not np.all(np.isfinite(over_probs_market)):
+        return FoldMetrics(
+            fold_start=fold_start, fold_end=fold_end, stat=stat, n=int(len(outcomes)),
+            log_score=ls, crps=crps,
+            pit_mean=float(np.mean(pit)), pit_std=float(np.std(pit)), pit_ks=ks,
+            brier=bs, ece=ece_v,
+            cal_slope=slope, cal_intercept=intercept,
+            market_logscore_lift=float("nan"),
+            edge_monotonicity_rho=float("nan"),
+        )
     market_logscore = -np.mean(
         over_realised * np.log(np.clip(over_probs_market, 1e-9, 1 - 1e-9))
         + (1 - over_realised) * np.log(np.clip(1 - over_probs_market, 1e-9, 1 - 1e-9))
@@ -527,6 +570,51 @@ def _append_role_stratified_section(
             f"{r['pit_mean']:.4f} | {r['pit_std']:.4f} | {r['pit_ks']:.4f} | "
             f"{r['ece']:.4f} |"
         )
+    existing = path.read_text() if path.exists() else ""
+    path.write_text(existing + "\n".join(lines) + "\n")
+
+
+def _append_market_eval_status(path: Path, available: bool) -> None:
+    """Append an explicit 'Market evaluation status' section to the
+    diagnostics markdown so consumers can never mistake a
+    neutral-0.5 baseline lift for a real market-relative comparison.
+    Always emitted — never silent — even when available=True (in
+    which case it states which baseline was used)."""
+    lines = [
+        "",
+        "---",
+        "",
+        "## Market evaluation status",
+        "",
+    ]
+    if not available:
+        lines += [
+            "**Market-relative evaluation unavailable: no matched de-vigged "
+            "market probabilities found.**",
+            "",
+            "The `logloss lift` column in the per-stat tables above is emitted "
+            "as `nan` because real opening-line de-vigged over/under "
+            "probabilities are not currently joined onto the OOF rows. The "
+            "previous code path silently substituted a constant 0.5 baseline, "
+            "which produced a misleading non-zero lift. This report now flags "
+            "the gap explicitly.",
+            "",
+            "`market_eval_available = false`",
+            "",
+            "Wiring real market data requires joining `data/opening_lines_*.json` "
+            "to the OOF parquet by `(player_name, game_date, stat, line)`; "
+            "the helpers `devigged_main_line` / "
+            "`market_implied_cdf_from_alt_lines` in "
+            "`src/nba_props_model/evaluation/market_baseline.py` are ready to "
+            "consume that join.",
+        ]
+    else:
+        lines += [
+            "Market-relative evaluation enabled. `logloss lift` column above "
+            "is computed against per-row de-vigged opening-line probabilities.",
+            "",
+            "`market_eval_available = true`",
+        ]
     existing = path.read_text() if path.exists() else ""
     path.write_text(existing + "\n".join(lines) + "\n")
 
