@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Standalone Model PMFs — 2026-04-27 Late NBA Slate</title>
+<title>PMF Distribution Viewer — Standalone Model Output</title>
 <style>
 :root { color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -15,25 +15,48 @@ body {
   line-height: 1.5; font-size: 13px;
 }
 h1 { font-size: 22px; margin: 0 0 4px; color: #f0f0f0; font-weight: 600; }
+h2 { font-size: 15px; margin: 0 0 8px; color: #f0f0f0;
+     border-bottom: 1px solid #2a3038; padding-bottom: 6px; font-weight: 600; }
 .subtitle { color: #8a96a3; font-size: 13px; margin-bottom: 4px; }
 .filenote { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
             color: #6cc9d4; margin-bottom: 18px; }
+.banner {
+  background: #2a1f10; border-left: 4px solid #f0a500;
+  padding: 10px 14px; margin: 16px 0;
+  border-radius: 3px; font-size: 13px; font-weight: 500; color: #ffd989;
+}
+.banner strong { color: #ffe8a3; }
 .links { margin-bottom: 16px; }
 .links a { color: #6cc9d4; margin-right: 14px; text-decoration: none;
            font-size: 12px; border-bottom: 1px dotted #2a3038; }
 .links a:hover { color: #b3e5e8; border-bottom-color: #6cc9d4; }
+.section { margin-top: 24px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px;
+      font-size: 12px; }
+.kv .k { color: #8a96a3; }
+.kv .v { color: #e8e8e8; font-family: ui-monospace, monospace; }
+.note { background: #1a1f26; border-left: 3px solid #6cc9d4;
+        padding: 10px 14px; margin: 12px 0; border-radius: 3px; font-size: 12px; }
+.note strong { color: #f0f0f0; }
+.evidence { font-size: 12px; color: #cfd8dc; }
+.evidence ul { margin: 4px 0 8px 18px; padding: 0; }
+.evidence li { margin-bottom: 4px; }
+.pos { color: #4caf50; }
+.neg { color: #ef5350; }
+.neutral { color: #8a96a3; }
+
 .filters { background: #161b21; border: 1px solid #2a3038;
            padding: 12px; margin-bottom: 16px; display: flex;
            gap: 10px; flex-wrap: wrap; align-items: center; border-radius: 4px; }
+.filters label { font-size: 11px; color: #8a96a3; margin-right: 4px; }
 .filters input, .filters select {
   padding: 6px 8px; background: #1f262d; border: 1px solid #3a4048;
   color: #e8e8e8; border-radius: 3px; font-family: inherit; font-size: 12px;
 }
-.filters label { font-size: 11px; color: #8a96a3; margin-right: 4px; }
-.section { margin-top: 24px; }
-.section h2 { font-size: 15px; margin: 0 0 8px; color: #f0f0f0;
-              border-bottom: 1px solid #2a3038; padding-bottom: 6px;
-              font-weight: 600; }
+.filter-help {
+  background: #14202a; border: 1px solid #244055; padding: 8px 12px;
+  border-radius: 3px; font-size: 12px; color: #b3d4e8; margin-bottom: 12px;
+}
 table.summary { width: 100%; border-collapse: collapse; font-size: 12px;
                 font-variant-numeric: tabular-nums; }
 table.summary th { background: #1a1f26; padding: 6px 8px; text-align: left;
@@ -52,26 +75,14 @@ table.summary tr.row:hover td { background: #161b21; }
 .card h3 { margin: 0 0 4px; font-size: 14px; color: #f0f0f0; font-weight: 600; }
 .card .meta { font-size: 11px; color: #8a96a3; margin-bottom: 4px; }
 .card svg { width: 100%; height: 130px; display: block; margin: 6px 0; }
-.card .stats { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 2px 12px;
-               font-size: 11px; align-items: baseline; }
+.card .stats { display: grid; grid-template-columns: auto 1fr auto 1fr;
+               gap: 2px 12px; font-size: 11px; align-items: baseline; }
 .card .stats .label { color: #8a96a3; }
-.card .stats .val { color: #e8e8e8; font-family: ui-monospace, "SF Mono", monospace;
+.card .stats .val { color: #e8e8e8;
+                    font-family: ui-monospace, "SF Mono", monospace;
                     text-align: right; }
 .card .fg3m-note { color: #f0a500; font-size: 10px; margin-top: 6px;
                    font-style: italic; }
-.pos { color: #4caf50; }
-.neg { color: #ef5350; }
-.neutral { color: #8a96a3; }
-.note { background: #1a1f26; border-left: 3px solid #6cc9d4;
-        padding: 10px 14px; margin: 12px 0; border-radius: 3px; font-size: 12px; }
-.note strong { color: #f0f0f0; }
-.evidence { font-size: 12px; color: #cfd8dc; }
-.evidence ul { margin: 4px 0 8px 18px; padding: 0; }
-.evidence li { margin-bottom: 4px; }
-.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px;
-      font-size: 12px; }
-.kv .k { color: #8a96a3; }
-.kv .v { color: #e8e8e8; font-family: ui-monospace, monospace; }
 .legend { font-size: 11px; color: #8a96a3; margin: 4px 0 0 0;
           display: flex; gap: 16px; flex-wrap: wrap; }
 .legend span::before { content: "■ "; }
@@ -83,18 +94,25 @@ table.summary tr.row:hover td { background: #161b21; }
 </style>
 </head>
 <body>
-<h1>Standalone Model PMFs — 2026-04-27 Late NBA Slate</h1>
-<div class="subtitle">Model-only calibrated PMFs; not market-anchored</div>
+<h1>PMF Distribution Viewer — Standalone Model Output</h1>
+<div class="subtitle">2026-04-27 late NBA slate · Model-only calibrated PMFs</div>
 <div class="filenote">Canonical file: player_prop_pmfs_tonight_MODEL_ONLY.parquet</div>
 
+<div class="banner">
+  <strong>These PMFs are standalone model outputs, not market-anchored.</strong>
+  Market columns are reference/comparison only. The MARKET_ANCHORED_REFERENCE
+  files are not for evaluating the standalone model.
+</div>
+
 <div class="links">
+  <a href="START_HERE.html">← Start here</a>
+  <a href="PMF_MODEL_REVIEW_OVERVIEW.html">Overview</a>
+  <a href="QUICK_START.md">Quick Start</a>
+  <a href="MODEL_EVALUATION_SUMMARY.md">Evaluation summary</a>
   <a href="player_prop_pmfs_tonight_MODEL_ONLY.parquet">MODEL_ONLY parquet</a>
-  <a href="player_prop_pmfs_tonight_MODEL_ONLY.csv">MODEL_ONLY csv</a>
-  <a href="player_prop_pmfs_tonight_MODEL_ONLY.jsonl">MODEL_ONLY jsonl</a>
   <a href="player_prop_pmfs_tonight_MODEL_ONLY_SUMMARY.csv">SUMMARY csv</a>
   <a href="player_prop_pmfs_tonight_MODEL_ONLY_EXPANDED.csv">EXPANDED csv</a>
-  <a href="MODEL_EVALUATION_SUMMARY.md">Evaluation summary</a>
-  <a href="README_FOR_DEREK.md">README</a>
+  <a href="player_prop_pmfs_tonight_MODEL_ONLY_WIDE.csv">WIDE csv</a>
 </div>
 
 
@@ -104,6 +122,16 @@ table.summary tr.row:hover td { background: #161b21; }
       <span class="k">stats</span><span class="v">AST, FG3M, PTS, REB</span>
       <span class="k">teams</span><span class="v">DEN, MIN, OKC, PHX</span>
       <span class="k">role buckets</span><span class="v">bench, core, rotation, starter</span>
+    </div>
+    
+
+
+    <div class="filter-help">
+      <strong>How to use the filters:</strong> type a player name to narrow the
+      list; pick a game / team / stat / role to focus; pick an edge direction to
+      see only rows where the model is above (green), below (red), or
+      ≈equal-to / no-market (grey) vs the market. Filters apply to both the
+      summary table and the chart cards below.
     </div>
     
 
@@ -234,8 +262,9 @@ table.summary tr.row:hover td { background: #161b21; }
   <strong>What to do with this dashboard.</strong> Open
   <code>player_prop_pmfs_tonight_MODEL_ONLY.parquet</code> as the
   canonical machine-readable model output. Use this dashboard for
-  visual inspection. Use the SUMMARY CSV for a one-row-per-prop view
-  and the EXPANDED CSV for an outcome-level audit.
+  visual inspection. Use the SUMMARY CSV for a one-row-per-prop view,
+  the EXPANDED CSV for an outcome-level audit, and the WIDE CSV for a
+  spreadsheet-friendly view of the full PMF.
 </div>
 
 <script>
@@ -273,7 +302,6 @@ table.summary tr.row:hover td { background: #161b21; }
     el && el.addEventListener('input', applyFilters);
     el && el.addEventListener('change', applyFilters);
   });
-  // Sortable summary table
   const tbl = $('table.summary');
   if (tbl){
     const ths = $$('thead th', tbl);

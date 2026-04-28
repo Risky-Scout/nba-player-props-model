@@ -1,12 +1,14 @@
-# README for Derek — tonight's PMF delivery (2026-04-27, after 20:29 ET)
+# Quick Start — PMF Model Review Package (2026-04-27 late NBA slate)
 
 ## Recommended viewing order
 
-1. Open **`DEREK_EXECUTIVE_SUMMARY.html`** — short visual landing page.
-2. Open **`DEREK_PMF_MODEL_VIEWER.html`** — full dashboard, every PMF visually inspectable.
-3. Use **`player_prop_pmfs_tonight_MODEL_ONLY.parquet`** as the canonical machine-readable model output.
-4. Use **`player_prop_pmfs_tonight_MODEL_ONLY_SUMMARY.csv`** for one-row-per-prop summaries (mean, median, mode, p_over_line_model, edge vs market).
-5. Use **`player_prop_pmfs_tonight_MODEL_ONLY_EXPANDED.csv`** for one-row-per-outcome probability audit.
+1. Open **`START_HERE.html`** — landing page with all entry points.
+2. Open **`PMF_MODEL_REVIEW_OVERVIEW.html`** — short visual overview with example PMFs and calibration evidence.
+3. Open **`PMF_DISTRIBUTION_VIEWER.html`** — full dashboard, every PMF visually inspectable.
+4. Use **`player_prop_pmfs_tonight_MODEL_ONLY.parquet`** as the canonical machine-readable model output.
+5. Use **`player_prop_pmfs_tonight_MODEL_ONLY_SUMMARY.csv`** for one-row-per-prop summaries (mean, median, mode, p_over_line_model, edge vs market).
+6. Use **`player_prop_pmfs_tonight_MODEL_ONLY_EXPANDED.csv`** for one-row-per-outcome probability audit.
+7. Use **`player_prop_pmfs_tonight_MODEL_ONLY_WIDE.csv`** for the easiest spreadsheet viewing of the full PMFs (one column per outcome).
 
 The MODEL_ONLY files are the **standalone model**. The
 `player_prop_pmfs_tonight_MARKET_ANCHORED_REFERENCE.*` files are NOT

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Executive summary — 2026-04-27 late slate model PMFs</title>
+<title>Model Review Overview — 2026-04-27 Late NBA Slate</title>
 <style>
 :root { color-scheme: dark; }
 * { box-sizing: border-box; }
@@ -15,25 +15,48 @@ body {
   line-height: 1.5; font-size: 13px;
 }
 h1 { font-size: 22px; margin: 0 0 4px; color: #f0f0f0; font-weight: 600; }
+h2 { font-size: 15px; margin: 0 0 8px; color: #f0f0f0;
+     border-bottom: 1px solid #2a3038; padding-bottom: 6px; font-weight: 600; }
 .subtitle { color: #8a96a3; font-size: 13px; margin-bottom: 4px; }
 .filenote { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
             color: #6cc9d4; margin-bottom: 18px; }
+.banner {
+  background: #2a1f10; border-left: 4px solid #f0a500;
+  padding: 10px 14px; margin: 16px 0;
+  border-radius: 3px; font-size: 13px; font-weight: 500; color: #ffd989;
+}
+.banner strong { color: #ffe8a3; }
 .links { margin-bottom: 16px; }
 .links a { color: #6cc9d4; margin-right: 14px; text-decoration: none;
            font-size: 12px; border-bottom: 1px dotted #2a3038; }
 .links a:hover { color: #b3e5e8; border-bottom-color: #6cc9d4; }
+.section { margin-top: 24px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px;
+      font-size: 12px; }
+.kv .k { color: #8a96a3; }
+.kv .v { color: #e8e8e8; font-family: ui-monospace, monospace; }
+.note { background: #1a1f26; border-left: 3px solid #6cc9d4;
+        padding: 10px 14px; margin: 12px 0; border-radius: 3px; font-size: 12px; }
+.note strong { color: #f0f0f0; }
+.evidence { font-size: 12px; color: #cfd8dc; }
+.evidence ul { margin: 4px 0 8px 18px; padding: 0; }
+.evidence li { margin-bottom: 4px; }
+.pos { color: #4caf50; }
+.neg { color: #ef5350; }
+.neutral { color: #8a96a3; }
+
 .filters { background: #161b21; border: 1px solid #2a3038;
            padding: 12px; margin-bottom: 16px; display: flex;
            gap: 10px; flex-wrap: wrap; align-items: center; border-radius: 4px; }
+.filters label { font-size: 11px; color: #8a96a3; margin-right: 4px; }
 .filters input, .filters select {
   padding: 6px 8px; background: #1f262d; border: 1px solid #3a4048;
   color: #e8e8e8; border-radius: 3px; font-family: inherit; font-size: 12px;
 }
-.filters label { font-size: 11px; color: #8a96a3; margin-right: 4px; }
-.section { margin-top: 24px; }
-.section h2 { font-size: 15px; margin: 0 0 8px; color: #f0f0f0;
-              border-bottom: 1px solid #2a3038; padding-bottom: 6px;
-              font-weight: 600; }
+.filter-help {
+  background: #14202a; border: 1px solid #244055; padding: 8px 12px;
+  border-radius: 3px; font-size: 12px; color: #b3d4e8; margin-bottom: 12px;
+}
 table.summary { width: 100%; border-collapse: collapse; font-size: 12px;
                 font-variant-numeric: tabular-nums; }
 table.summary th { background: #1a1f26; padding: 6px 8px; text-align: left;
@@ -52,26 +75,14 @@ table.summary tr.row:hover td { background: #161b21; }
 .card h3 { margin: 0 0 4px; font-size: 14px; color: #f0f0f0; font-weight: 600; }
 .card .meta { font-size: 11px; color: #8a96a3; margin-bottom: 4px; }
 .card svg { width: 100%; height: 130px; display: block; margin: 6px 0; }
-.card .stats { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 2px 12px;
-               font-size: 11px; align-items: baseline; }
+.card .stats { display: grid; grid-template-columns: auto 1fr auto 1fr;
+               gap: 2px 12px; font-size: 11px; align-items: baseline; }
 .card .stats .label { color: #8a96a3; }
-.card .stats .val { color: #e8e8e8; font-family: ui-monospace, "SF Mono", monospace;
+.card .stats .val { color: #e8e8e8;
+                    font-family: ui-monospace, "SF Mono", monospace;
                     text-align: right; }
 .card .fg3m-note { color: #f0a500; font-size: 10px; margin-top: 6px;
                    font-style: italic; }
-.pos { color: #4caf50; }
-.neg { color: #ef5350; }
-.neutral { color: #8a96a3; }
-.note { background: #1a1f26; border-left: 3px solid #6cc9d4;
-        padding: 10px 14px; margin: 12px 0; border-radius: 3px; font-size: 12px; }
-.note strong { color: #f0f0f0; }
-.evidence { font-size: 12px; color: #cfd8dc; }
-.evidence ul { margin: 4px 0 8px 18px; padding: 0; }
-.evidence li { margin-bottom: 4px; }
-.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px;
-      font-size: 12px; }
-.kv .k { color: #8a96a3; }
-.kv .v { color: #e8e8e8; font-family: ui-monospace, monospace; }
 .legend { font-size: 11px; color: #8a96a3; margin: 4px 0 0 0;
           display: flex; gap: 16px; flex-wrap: wrap; }
 .legend span::before { content: "■ "; }
@@ -91,11 +102,18 @@ table.counts td { font-family: ui-monospace, monospace; padding: 4px 0; }
 .cta { background: #1f3742; border: 1px solid #2c5466; padding: 12px 16px;
        border-radius: 4px; margin-top: 24px; }
 .cta a { color: #6cc9d4; font-weight: 600; }
+.card .kv { font-size: 11px; }
+.card .kv .v { font-family: ui-monospace, monospace; }
 </style>
 </head>
 <body>
-<h1>Executive summary — 2026-04-27 late NBA slate</h1>
+<h1>Model Review Overview — 2026-04-27 Late NBA Slate</h1>
 <div class="subtitle">Standalone calibrated model PMFs; not market-anchored</div>
+
+<div class="banner">
+  <strong>These PMFs are standalone model outputs, not market-anchored.</strong>
+  Market columns are reference/comparison only.
+</div>
 
 <p class="lede">
   This package contains standalone model PMFs for the 2026-04-27 late
@@ -104,13 +122,20 @@ table.counts td { font-family: ui-monospace, monospace; padding: 4px 0; }
   comparison references only.
 </p>
 
+<div class="links">
+  <a href="START_HERE.html">← Start here</a>
+  <a href="PMF_DISTRIBUTION_VIEWER.html">Open the full distribution viewer →</a>
+</div>
+
 <div class="section">
   <h2>What to open first</h2>
   <ul class="evidence">
-    <li><strong><code>DEREK_PMF_MODEL_VIEWER.html</code></strong> — full visual dashboard, every PMF as a chart with summary table and filters.</li>
+    <li><strong><code>START_HERE.html</code></strong> — landing page with file index.</li>
+    <li><strong><code>PMF_DISTRIBUTION_VIEWER.html</code></strong> — full visual dashboard, every PMF as a chart with summary table and filters.</li>
     <li><strong><code>player_prop_pmfs_tonight_MODEL_ONLY.parquet</code></strong> — canonical machine-readable PMFs (one row per player × stat).</li>
     <li><code>player_prop_pmfs_tonight_MODEL_ONLY_SUMMARY.csv</code> — one-row-per-prop summary including median, mode, and edge vs market.</li>
     <li><code>player_prop_pmfs_tonight_MODEL_ONLY_EXPANDED.csv</code> — one-row-per-outcome audit (every <code>k</code>, every probability).</li>
+    <li><code>player_prop_pmfs_tonight_MODEL_ONLY_WIDE.csv</code> — wide format with one row per player×stat and one column per outcome (<code>prob_0</code>, <code>prob_1</code>, …).</li>
     <li><code>MODEL_EVALUATION_SUMMARY.md</code> — what is and isn't proven about the model.</li>
     <li><code>player_prop_pmfs_tonight_MARKET_ANCHORED_REFERENCE.*</code> — reference only; do <em>not</em> use for evaluating the standalone model.</li>
   </ul>
@@ -146,12 +171,11 @@ table.counts td { font-family: ui-monospace, monospace; padding: 4px 0; }
     <li><strong>Source predictions are from the morning predict run.</strong> Late-breaking injuries / lineup changes after ~14:27 ET 2026-04-27 may not be fully reflected.</li>
     <li><strong>Local availability table is stale</strong> (last refreshed 2026-04-18, 0 rows for 2026-04-27). Player-active priors fall back to history.</li>
     <li><strong>TOV is absent from this slate</strong> because the source <code>all_props</code> file contained no TOV offerings for these two games.</li>
-    <li>The <em>opponent</em> field uses full team name; the <code>team_abbr</code> column carries the canonical abbreviation.</li>
   </ul>
 </div>
 
 <div class="cta">
-  Open the full dashboard: <a href="DEREK_PMF_MODEL_VIEWER.html">DEREK_PMF_MODEL_VIEWER.html</a>
+  Open the full dashboard: <a href="PMF_DISTRIBUTION_VIEWER.html">PMF_DISTRIBUTION_VIEWER.html</a>
 </div>
 
 </body>

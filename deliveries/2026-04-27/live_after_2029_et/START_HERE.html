@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Start Here — PMF Model Review Package (2026-04-27 Late NBA Slate)</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text",
+               system-ui, sans-serif;
+  margin: 0; padding: 24px;
+  background: #0f1419; color: #e8e8e8;
+  line-height: 1.5; font-size: 13px;
+}
+h1 { font-size: 22px; margin: 0 0 4px; color: #f0f0f0; font-weight: 600; }
+h2 { font-size: 15px; margin: 0 0 8px; color: #f0f0f0;
+     border-bottom: 1px solid #2a3038; padding-bottom: 6px; font-weight: 600; }
+.subtitle { color: #8a96a3; font-size: 13px; margin-bottom: 4px; }
+.filenote { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
+            color: #6cc9d4; margin-bottom: 18px; }
+.banner {
+  background: #2a1f10; border-left: 4px solid #f0a500;
+  padding: 10px 14px; margin: 16px 0;
+  border-radius: 3px; font-size: 13px; font-weight: 500; color: #ffd989;
+}
+.banner strong { color: #ffe8a3; }
+.links { margin-bottom: 16px; }
+.links a { color: #6cc9d4; margin-right: 14px; text-decoration: none;
+           font-size: 12px; border-bottom: 1px dotted #2a3038; }
+.links a:hover { color: #b3e5e8; border-bottom-color: #6cc9d4; }
+.section { margin-top: 24px; }
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px;
+      font-size: 12px; }
+.kv .k { color: #8a96a3; }
+.kv .v { color: #e8e8e8; font-family: ui-monospace, monospace; }
+.note { background: #1a1f26; border-left: 3px solid #6cc9d4;
+        padding: 10px 14px; margin: 12px 0; border-radius: 3px; font-size: 12px; }
+.note strong { color: #f0f0f0; }
+.evidence { font-size: 12px; color: #cfd8dc; }
+.evidence ul { margin: 4px 0 8px 18px; padding: 0; }
+.evidence li { margin-bottom: 4px; }
+.pos { color: #4caf50; }
+.neg { color: #ef5350; }
+.neutral { color: #8a96a3; }
+
+.lede { font-size: 15px; color: #cfd8dc; max-width: 760px; margin-bottom: 18px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+         gap: 12px; margin-top: 12px; }
+.tile { background: #161b21; border: 1px solid #2a3038; border-radius: 4px;
+        padding: 16px 18px; }
+.tile a.title { color: #6cc9d4; font-size: 14px; font-weight: 600;
+                text-decoration: none; }
+.tile a.title:hover { text-decoration: underline; }
+.tile .desc { color: #cfd8dc; font-size: 12px; margin-top: 6px; }
+.tile .step { display: inline-block; width: 22px; height: 22px;
+              background: #2c5466; color: #b3e5e8; border-radius: 50%;
+              text-align: center; line-height: 22px; margin-right: 6px;
+              font-size: 11px; font-weight: 700; }
+.fileinfo { font-family: ui-monospace, monospace; font-size: 11px;
+            color: #8a96a3; margin-top: 4px; }
+</style>
+</head>
+<body>
+<h1>PMF Model Review Package</h1>
+<div class="subtitle">2026-04-27 late NBA slate · 61 model-only rows</div>
+
+<div class="banner">
+  <strong>The canonical PMFs are standalone model outputs.</strong>
+  They are <strong>not</strong> market-anchored. Market columns are
+  reference / comparison only. The
+  <code>player_prop_pmfs_tonight_MARKET_ANCHORED_REFERENCE.*</code>
+  files are <strong>not</strong> for evaluating the standalone model.
+</div>
+
+<p class="lede">
+  This page is the entry point. Pick the format that matches how you
+  want to inspect the model: a high-level visual overview, a deep
+  per-PMF dashboard, or one of three machine-readable tables.
+</p>
+
+<div class="cards">
+
+  <div class="tile">
+    <span class="step">1</span><a class="title" href="PMF_MODEL_REVIEW_OVERVIEW.html">Open the Overview →</a>
+    <div class="desc">Short visual landing page: counts, four example PMFs (PTS, REB, AST, FG3M), calibration evidence, and honest limitations.</div>
+    <div class="fileinfo">PMF_MODEL_REVIEW_OVERVIEW.html</div>
+  </div>
+
+  <div class="tile">
+    <span class="step">2</span><a class="title" href="PMF_DISTRIBUTION_VIEWER.html">Open the Distribution Viewer →</a>
+    <div class="desc">Every PMF as a bar chart, with line / mean / median / mode markers, summary table, and filters by player / game / team / stat / role / edge direction.</div>
+    <div class="fileinfo">PMF_DISTRIBUTION_VIEWER.html</div>
+  </div>
+
+  <div class="tile">
+    <span class="step">3</span><a class="title" href="player_prop_pmfs_tonight_MODEL_ONLY_SUMMARY.csv">SUMMARY CSV</a>
+    <div class="desc">One row per (player × stat). Contains mean, median, mode, p0, p_ge_1..p_ge_7, p_over_line_model, market_fair_over_prob, model_edge_vs_market.</div>
+    <div class="fileinfo">player_prop_pmfs_tonight_MODEL_ONLY_SUMMARY.csv (also .parquet)</div>
+  </div>
+
+  <div class="tile">
+    <span class="step">4</span><a class="title" href="player_prop_pmfs_tonight_MODEL_ONLY_EXPANDED.csv">EXPANDED CSV</a>
+    <div class="desc">One row per (player × stat × outcome_k). Full per-outcome audit: probability, CDF, survival_prob_ge_k.</div>
+    <div class="fileinfo">player_prop_pmfs_tonight_MODEL_ONLY_EXPANDED.csv (also .parquet)</div>
+  </div>
+
+  <div class="tile">
+    <span class="step">5</span><a class="title" href="player_prop_pmfs_tonight_MODEL_ONLY_WIDE.csv">WIDE CSV (easiest spreadsheet view)</a>
+    <div class="desc">One row per (player × stat). Each outcome probability gets its own column (<code>prob_0</code>, <code>prob_1</code>, … <code>prob_N</code>). Open in Excel / Numbers / Sheets.</div>
+    <div class="fileinfo">player_prop_pmfs_tonight_MODEL_ONLY_WIDE.csv (also .parquet)</div>
+  </div>
+
+  <div class="tile">
+    <span class="step">★</span><a class="title" href="player_prop_pmfs_tonight_MODEL_ONLY.parquet">Canonical MODEL_ONLY parquet</a>
+    <div class="desc">The primary machine-readable model output. <code>pmf_json</code> contains the full PMF for each (player × stat). Use this when scripting against the model.</div>
+    <div class="fileinfo">player_prop_pmfs_tonight_MODEL_ONLY.parquet (also .csv, .jsonl)</div>
+  </div>
+
+</div>
+
+<div class="section">
+  <h2>Reference docs</h2>
+  <ul class="evidence">
+    <li><a href="QUICK_START.md">QUICK_START.md</a> — short read-me explaining each column.</li>
+    <li><a href="MODEL_EVALUATION_SUMMARY.md">MODEL_EVALUATION_SUMMARY.md</a> — what is and isn't proven about the model (Phase 8 OOF results, FG3M tail correction, market comparison).</li>
+    <li><a href="README.md">README.md</a> — full schema reference + caveats.</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>Honest contract</h2>
+  <ul class="evidence">
+    <li>The canonical PMFs in <code>MODEL_ONLY</code> files are the <strong>standalone model</strong>: active-conditioned + role-aware calibrated; FG3M additionally has a validated <code>k≥7, w=0.2</code> tail-shrink correction.</li>
+    <li>Market columns (<code>line</code>, <code>market_fair_over_prob</code>, <code>market_source</code>, <code>market_offered_*</code>, <code>model_edge_vs_market</code>) are <strong>comparison references only</strong>. They do not modify <code>pmf_json</code>.</li>
+    <li>The <code>MARKET_ANCHORED_REFERENCE</code> files have a market-tilted <code>pmf_json</code> (CDF anchored at the offered line). They are <strong>not</strong> for evaluating the standalone model.</li>
+    <li>The latest matched closing-line audit found the de-vigged closing market beats the standalone calibrated model on log-loss in 9 of 11 cohorts (95% CI). <strong>No market-beating claim is made.</strong></li>
+  </ul>
+</div>
+
+</body>
+</html>
