@@ -150,9 +150,10 @@ Each flag is an `enum` string. The set of accepted values is fixed per flag.
 | `pmf_sum_error` | float (numeric, `\|Σp − 1\|`) | absolute deviation from 1 before any renormalization |
 | `calibration_confidence` | `high`, `medium`, `low` | `high` for `core/starter/rotation`; `medium` for `bench/fringe`; `low` for `inactive_risk` and any role with < 50 OOF rows in the active calibrator's fit |
 | `market_coverage_status` | `full`, `partial`, `sparse`, `none` | `full`: every Tier-1 book present; `partial`: 2+ books; `sparse`: 1 book; `none`: no market |
-| `tov_status` | `current_phase8`, `overlay_off` | always `current_phase8` while Phase 10D/10D.2 overlays are not in production. Documents that no TOV overlay is applied. |
+| `tov_status` | `current_phase8`, `overlay_off` | always `current_phase8` while Phase 10D/10D.2 overlays are not in production. Documents that no TOV overlay is applied. The run-level `manifest.tov_status` field uses a different vocabulary (`present` vs `missing_from_prediction_source`) and reports whether the prediction source emitted any TOV rows at all. |
 | `injury_freshness_status` | `fresh` (≤3 hr), `stale` (3–12 hr), `very_stale` (>12 hr), `unknown` | per-row mtime of the injury source feeding `p_inactive` |
-| `lineup_freshness_status` | `confirmed`, `projected`, `unknown` | derived from upstream availability source |
+| `lineup_freshness_status` | `confirmed`, `projected`, `unknown` | derived from upstream availability source. `projected` is set when `role_bucket` was derived from the `mp_bucket` projected-minutes feature in predict.py; `confirmed` requires a confirmed-lineup source (not currently consumed). |
+| `role_freshness_status` | `confirmed_lineup`, `derived_from_projected_minutes`, `missing` | row-level provenance for `role_bucket` itself. `derived_from_projected_minutes` means we mapped predict.py's `mp_bucket` (4-bucket projected-minutes feature) to a 4-tier role; `missing` means `role_bucket` could not be derived for that row. |
 
 ---
 
@@ -209,19 +210,41 @@ scorer.
 
 ```jsonc
 {
-  "delivery_date": "2026-04-27",
+  "delivery_date": "2026-04-29",
   "pipeline_run_id": "<uuid>",
   "snapshot_type": "morning|pre_close|close_lock|after_game",
-  "snapshot_time_utc": "2026-04-27T13:00:00Z",
+  "snapshot_time_utc": "2026-04-29T18:27:55Z",
   "model_version": "b7949ed#phase10c",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
+  "finality_status": "final|provisional",
+  "finality_blocker_codes": ["injury_very_stale", "lineup_unconfirmed", "missing_stats:tov"],
+  "finality_blockers": [
+    {
+      "code": "injury_very_stale",
+      "detail": "data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.",
+      "required_to_resolve": "BDL_API_KEY for live BDL injury fetch OR refreshed nba_injury_reports.parquet, then re-run scripts/predict.py"
+    },
+    /* ... one entry per blocker, all carrying code/detail/required_to_resolve ... */
+  ],
   "tov_overlay": "off",
   "tov_overlay_reason": "Phase 10D/10D.2 failed independent validation gates",
+  "tov_status": "present | missing_from_prediction_source",
+  "target_stats": {
+    "expected": ["pts","reb","ast","tov","fg3m"],
+    "in_delivery": ["ast","blk","fg3m","pts","reb","stl"],
+    "missing": ["tov"],
+    "extra_relative_to_supported": ["blk","stl"]
+  },
   "sources": {
-    "all_props_parquet": {
-      "path": "predictions/all_props_2026-04-27.parquet",
-      "mtime_utc": "2026-04-27T11:55:11Z",
-      "sha256": "..."
+    "model_only_parquet": {
+      "path": "deliveries/{date}/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "...",
+      "sha256": "...",
+      "auto_built_from_predictions": true
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-04-29.parquet",
+      "mtime_utc": "..."
     },
     "availability_table": {
       "path": "data/player_availability_asof.parquet",
@@ -229,10 +252,11 @@ scorer.
       "freshness_status": "fresh|stale|very_stale"
     },
     "odds_snapshot": {
-      "path": "data/odds_api/processed/2026-04-27/odds_pairs_morning_*.parquet",
+      "path": "data/odds_api/processed/{date}/odds_pairs_*.parquet",
       "mtime_utc": "...",
       "books_seen": ["fanduel", "draftkings", "..."],
-      "coverage_status": "full|partial|sparse|none"
+      "coverage_status": "full|partial|sparse|none",
+      "fetch_status": "consumed_from_disk|skipped:no_disk_snapshot|skipped:no_odds_fetch_flag"
     }
   },
   "row_counts": {
@@ -249,9 +273,27 @@ scorer.
     "injury_freshness_status": {"fresh": 0, "stale": 0, "very_stale": 0, "unknown": 0},
     "lineup_freshness_status": {"confirmed": 0, "projected": 0, "unknown": 0}
   },
-  "warnings": []
+  "warnings": [],
+  "no_odds_fetch": false,
+  "freshness_manifest": {
+    "path": "data/freshness_manifest/2026-04-29.json",
+    "built_at_utc": "...",
+    "overall_status": "ready|partial|not_ready|missing",
+    "odds_status": "ok|partial|fail|skipped|skipped:no_api_key",
+    "regions_requested": ["us","us2"],
+    "books_seen": ["..."],
+    "tov_status": "present|missing_from_prediction_source",
+    "predictions_mtime_utc": "...",
+    "availability_freshness_status": "fresh|stale|very_stale|unknown",
+    "finals_finality_status": "finals_pending|finals_present|unknown"
+  }
 }
 ```
+
+The `freshness_manifest` block is populated by reading
+`data/freshness_manifest/{date}.json`, which `scripts/refresh_daily_inputs.py`
+writes before each build. See `docs/daily_data_freshness_runbook.md` for
+the producer-side schema and on-call response.
 
 ---
 
@@ -299,6 +341,38 @@ which live in `docs/phase11_tov_structural_refit_plan.md` and the Phase
 
 ---
 
+## 7a. Pipeline orchestration
+
+A daily slate is produced by three scripts driven by
+`.github/workflows/daily_pmf_delivery.yml`:
+
+```
+scripts/refresh_daily_inputs.py     ← fetches Odds API (regions us+us2),
+                                       writes data/freshness_manifest/{date}.json
+scripts/build_daily_pmf_delivery.py ← consumes predictions + odds + freshness
+                                       manifest, writes both delivery folders
+                                       and wizard_of_odds/run_manifest.json
+scripts/score_daily_pmf_delivery_after_game.py
+                                    ← consumes box-score finals, appends
+                                       after_game_*.* to both folders
+```
+
+The workflow runs four jobs per day on a UTC cron:
+
+| job          | UTC cron     | snapshot      |
+|--------------|--------------|---------------|
+| `morning`    | `30 13 * * *` | `morning`     |
+| `pre_close`  | `30 22 * * *` | `pre_close`   |
+| `close_lock` | `50 23 * * *` | `close_lock`  |
+| `after_game` | `30 6 * * *`  | `after_game`  |
+
+Only `deliveries/{date}/{canonical_source,pmf_model_review_package,wizard_of_odds}/`
+are staged in CI commits. `data/odds_api/`, `data/freshness_manifest/`,
+`artifacts/`, scratch HTML files, and any failed Phase 10D / 10D.2
+overlay artifacts are never staged.
+
+---
+
 ## 8. Honest framing
 
 This spec describes the contract for the **current safest committed model
@@ -308,3 +382,37 @@ zero-inflation tradeoffs documented in
 `docs/phase10d2_tov_mean_preserving_report.md` are still present in
 emitted TOV PMFs; the structural refit plan in
 `docs/phase11_tov_structural_refit_plan.md` is the path to fix them.
+
+### 8a. TOV is currently absent from the slate
+
+`predict.py` is **market-driven** — it emits one `(player, stat, line, side)`
+row per offered book line. When no book offers a TOV market for a given
+slate, no TOV row is generated and `manifest.target_stats.missing` lists
+`tov`.
+
+Until the **Phase 11C player-stat-grid prediction refactor** lands, TOV
+will appear in the manifest's `target_stats.missing` set whenever no
+book offers a TOV market that day. This is recorded in every delivery as
+the blocker code `missing_stats:tov`. The refactor will emit one model-only
+PMF row per `(player, eligible_stat)` regardless of whether a market line
+is offered.
+
+### 8b. role_bucket provenance
+
+`role_bucket` is filled today from `predict.py`'s `mp_bucket` (a 4-bucket
+projected-minutes feature derived from `mp_mean_last10` per
+`src/nba_props_model/correlation/sgp_engine.py:mp_bucket`). The mapping is
+deterministic:
+
+| `mp_bucket` | `mp_mean_last10` window | derived `role_bucket` |
+|-------------|-------------------------|------------------------|
+| 3           | ≥ 30 min                | `starter`              |
+| 2           | 22–30 min               | `rotation`             |
+| 1           | 15–22 min               | `bench`                |
+| 0           | < 15 min                | `fringe`               |
+
+We do **not** synthesize `core` or `inactive_risk` from this signal —
+those tiers require usage data and confirmed-lineup status which we do
+not currently consume. The row-level `role_freshness_status` records
+`derived_from_projected_minutes` so downstream consumers can distinguish
+this from a confirmed-lineup source.

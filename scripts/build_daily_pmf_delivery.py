@@ -72,6 +72,26 @@ HIGH_CONF_ROLES = ("starter", "core", "rotation")
 MED_CONF_ROLES = ("bench", "fringe")
 LOW_CONF_ROLES = ("inactive_risk",)
 
+# Deterministic mapping from `mp_bucket` (4-bucket projected-minutes
+# feature emitted by predict.py via correlation/sgp_engine.mp_bucket()).
+# Thresholds documented in src/nba_props_model/correlation/sgp_engine.py:
+#   bucket 0 → mp_mean_last10 < 15  (fringe)
+#   bucket 1 → 15 ≤ mp < 22         (bench)
+#   bucket 2 → 22 ≤ mp < 30         (rotation)
+#   bucket 3 → mp ≥ 30              (starter)
+# This is ex-ante (10-game rolling mean of minutes played) and does not
+# require lineup confirmation. We never derive `core` or `inactive_risk`
+# from this signal — those tiers require usage data and confirmed lineup
+# status which we do not have at the canonical-source layer.
+MP_BUCKET_TO_ROLE = {
+    0: "fringe",
+    1: "bench",
+    2: "rotation",
+    3: "starter",
+}
+ROLE_SOURCE_DERIVED_FROM_MINUTES = "derived_from_projected_minutes"
+ROLE_SOURCE_UNKNOWN = "unknown"
+
 P_GE_LADDER = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
 PMF_VALID_OK = "ok"
 TOV_STATUS_CURRENT = "current_phase8"
@@ -93,6 +113,7 @@ CANONICAL_COLUMNS_BASE = [
     "pmf_valid", "pmf_sum_error", "calibration_confidence",
     "market_coverage_status", "tov_status",
     "injury_freshness_status", "lineup_freshness_status",
+    "role_freshness_status",
 ]
 # Columns that carry the full untruncated PMF so consumers can reconstruct
 # exactly for stats whose support exceeds 20 (e.g. points). These are added
@@ -236,6 +257,174 @@ def _calibration_confidence(role: str | None) -> str:
     return "low"
 
 
+# ── Canonical model-only build from predictions/all_props_*.parquet ──────
+
+
+NBA_TEAM_NAME_TO_ABBR = {
+    "Atlanta Hawks": "ATL", "Boston Celtics": "BOS", "Brooklyn Nets": "BKN",
+    "Charlotte Hornets": "CHA", "Chicago Bulls": "CHI",
+    "Cleveland Cavaliers": "CLE", "Dallas Mavericks": "DAL",
+    "Denver Nuggets": "DEN", "Detroit Pistons": "DET",
+    "Golden State Warriors": "GSW", "Houston Rockets": "HOU",
+    "Indiana Pacers": "IND", "LA Clippers": "LAC",
+    "Los Angeles Clippers": "LAC", "Los Angeles Lakers": "LAL",
+    "Memphis Grizzlies": "MEM", "Miami Heat": "MIA",
+    "Milwaukee Bucks": "MIL", "Minnesota Timberwolves": "MIN",
+    "New Orleans Pelicans": "NOP", "New York Knicks": "NYK",
+    "Oklahoma City Thunder": "OKC", "Orlando Magic": "ORL",
+    "Philadelphia 76ers": "PHI", "Phoenix Suns": "PHX",
+    "Portland Trail Blazers": "POR", "Sacramento Kings": "SAC",
+    "San Antonio Spurs": "SAS", "Toronto Raptors": "TOR",
+    "Utah Jazz": "UTA", "Washington Wizards": "WAS",
+}
+
+
+def _team_id_to_abbr_map() -> dict[int, str]:
+    p = REPO_ROOT / "data" / "player_game_stats.parquet"
+    if not p.exists():
+        return {}
+    df = pd.read_parquet(p, columns=["team_id", "team_abbr"]).drop_duplicates()
+    return dict(zip(df["team_id"].astype(int), df["team_abbr"].astype(str)))
+
+
+def _normalize_pmf_json_string(s) -> str | None:
+    """Take a PMF JSON dict-string with possibly imprecise sums; return a
+    new JSON dict-string normalized to sum exactly 1 (to float64 precision)."""
+    if not isinstance(s, str):
+        return None
+    try:
+        d = {int(k): float(v) for k, v in json.loads(s).items()}
+    except Exception:
+        return None
+    if not d:
+        return None
+    K = max(d.keys()) + 1
+    arr = np.zeros(K, dtype=float)
+    for k, v in d.items():
+        arr[k] = max(0.0, float(v))
+    s_total = arr.sum()
+    if s_total <= 0 or not np.isfinite(s_total):
+        return None
+    arr = arr / s_total
+    return json.dumps({str(k): float(v) for k, v in enumerate(arr) if v > 0.0})
+
+
+def _parse_game_string(g) -> tuple[str | None, str | None]:
+    """\"Houston Rockets @ Los Angeles Lakers\" → (\"HOU\", \"LAL\")."""
+    if not isinstance(g, str) or " @ " not in g:
+        return None, None
+    away_name, home_name = g.split(" @ ", 1)
+    return (NBA_TEAM_NAME_TO_ABBR.get(away_name.strip()),
+            NBA_TEAM_NAME_TO_ABBR.get(home_name.strip()))
+
+
+def _odds_commence_lookup(date: str) -> dict[int, str]:
+    """Return {game_id → commence_time_utc} from any odds_pairs file for
+    {date}, if available. Used to populate game_start_time when the
+    prediction file lacks it."""
+    base = REPO_ROOT / "data" / "odds_api" / "processed" / date
+    if not base.exists():
+        return {}
+    out: dict[int, str] = {}
+    for fp in sorted(base.glob("odds_pairs_*.parquet")):
+        try:
+            cols = ["game_id", "commence_time_utc"]
+            df = pd.read_parquet(fp, columns=cols)
+            for _, r in df.iterrows():
+                gid = r.get("game_id")
+                ct = r.get("commence_time_utc")
+                if pd.notna(gid) and pd.notna(ct):
+                    out.setdefault(int(gid), str(ct))
+        except Exception:
+            continue
+    return out
+
+
+def build_canonical_from_predictions(predictions_path: Path, *,
+                                       date: str,
+                                       canonical_dir: Path) -> Path:
+    """Read predictions/all_props_{date}.parquet, normalize into the
+    canonical MODEL_ONLY schema, and write parquet/jsonl/csv under
+    canonical_dir. Returns the parquet path.
+
+    The predictions file emits one row per (player, stat, side); we keep
+    the first PMF per (player, stat) since both sides share the PMF.
+    """
+    if not predictions_path.exists():
+        raise SystemExit(f"predictions parquet missing: {predictions_path}")
+    src = pd.read_parquet(predictions_path)
+    if "pmf" not in src.columns:
+        raise SystemExit("predictions parquet missing 'pmf' column")
+    src = src.drop_duplicates(["player_id", "stat"], keep="first").reset_index(drop=True)
+
+    ta_map = _team_id_to_abbr_map()
+    commence_map = _odds_commence_lookup(date)
+
+    rows = []
+    for _, r in src.iterrows():
+        away_abbr, home_abbr = _parse_game_string(r.get("game"))
+        team_abbr = (ta_map.get(int(r["team_id"]))
+                     if pd.notna(r.get("team_id")) else None)
+        if team_abbr is not None and home_abbr is not None:
+            is_home = (team_abbr == home_abbr)
+            opponent = away_abbr if is_home else home_abbr
+        else:
+            is_home, opponent = None, None
+        gid = int(r["game_id"]) if pd.notna(r.get("game_id")) else None
+        # Derive role_bucket from the projected-minutes feature emitted
+        # by predict.py. Never fabricate when the feature is absent.
+        mp_b = r.get("mp_bucket")
+        if pd.notna(mp_b):
+            try:
+                mp_b_int = int(mp_b)
+                role_bucket = MP_BUCKET_TO_ROLE.get(mp_b_int)
+                role_source = (ROLE_SOURCE_DERIVED_FROM_MINUTES
+                               if role_bucket else ROLE_SOURCE_UNKNOWN)
+            except (TypeError, ValueError):
+                role_bucket, role_source = None, ROLE_SOURCE_UNKNOWN
+        else:
+            role_bucket, role_source = None, ROLE_SOURCE_UNKNOWN
+        rows.append({
+            "player_id": int(r["player_id"]) if pd.notna(r.get("player_id")) else None,
+            "player_name": r.get("player_name"),
+            "team_abbr": team_abbr,
+            "team_id": int(r["team_id"]) if pd.notna(r.get("team_id")) else None,
+            "opponent": opponent,
+            "is_home": is_home,
+            "game_id": gid,
+            "game": r.get("game"),
+            "game_start_et": commence_map.get(gid) if gid is not None else None,
+            "stat": r.get("stat"),
+            "role_bucket": role_bucket,
+            "role_source": role_source,
+            "mp_bucket": (int(mp_b) if pd.notna(mp_b) else None),
+            "usage_bucket": (int(r.get("usage_bucket"))
+                              if pd.notna(r.get("usage_bucket")) else None),
+            "minutes_mean": None,
+            "minutes_q50": r.get("q50"),
+            "p_inactive_used": None,
+            "support_min": 0,
+            "support_max": None,
+            "line": r.get("line"),
+            "market_fair_over_prob": r.get("mkt_true_over"),
+            "market_source": r.get("bet_vendor"),
+            "market_offered_side": r.get("side"),
+            "market_offered_odds": r.get("odds"),
+            "pmf_source": (f"predict.py:{r.get('cal_source','phase8_pmf_cal')}"
+                            if r.get("cal_applied") else "predict.py:raw"),
+            "pmf_active": _normalize_pmf_json_string(r.get("pmf")),
+        })
+    df = pd.DataFrame(rows)
+    canonical_dir.mkdir(parents=True, exist_ok=True)
+    pq_path = canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    df.to_parquet(pq_path, index=False)
+    df.to_json(canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.jsonl",
+                orient="records", lines=True)
+    df.to_csv(canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.csv",
+                index=False)
+    return pq_path
+
+
 # ── Source discovery ─────────────────────────────────────────────────────
 
 
@@ -259,6 +448,28 @@ def _find_odds_snapshot(date: str) -> Path | None:
     return pairs[-1] if pairs else None
 
 
+def _list_odds_pair_files(date: str) -> list[Path]:
+    base = REPO_ROOT / "data" / "odds_api" / "processed" / date
+    if not base.exists():
+        return []
+    return sorted(base.glob("odds_pairs_*.parquet"))
+
+
+def _find_freshness_manifest(date: str) -> Path | None:
+    p = REPO_ROOT / "data" / "freshness_manifest" / f"{date}.json"
+    return p if p.exists() else None
+
+
+def _load_freshness_manifest(path: Path | None) -> dict | None:
+    if path is None or not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text())
+    except Exception as e:
+        print(f"WARN: failed to read freshness manifest {path}: {e}")
+        return None
+
+
 def _injury_freshness(path: Path | None) -> str:
     if path is None or not path.exists():
         return "unknown"
@@ -274,9 +485,31 @@ def _lineup_freshness_for_row(row: pd.Series) -> str:
     src = str(row.get("role_source") or "").lower()
     if "confirmed" in src:
         return "confirmed"
-    if "projected" in src or "minutes_distribution" in src:
+    if ("projected" in src or "minutes_distribution" in src
+            or "derived_from_projected_minutes" in src):
         return "projected"
     return "unknown"
+
+
+def _role_freshness_for_row(row: pd.Series) -> str:
+    """Row-level flag describing the provenance of `role_bucket`.
+
+    Distinct from `lineup_freshness_status` (which uses the spec
+    vocabulary `confirmed | projected | unknown`). The role-freshness
+    flag records *which signal* produced `role_bucket`:
+
+      - `confirmed_lineup`        — confirmed starter / rotation list
+      - `derived_from_projected_minutes` — from `mp_bucket`
+      - `missing`                 — `role_bucket is null`
+    """
+    if not row.get("role_bucket"):
+        return "missing"
+    src = str(row.get("role_source") or "").lower()
+    if "confirmed" in src:
+        return "confirmed_lineup"
+    if "derived_from_projected_minutes" in src:
+        return ROLE_SOURCE_DERIVED_FROM_MINUTES
+    return "missing"
 
 
 def _market_coverage_status(books_seen: list[str]) -> str:
@@ -304,12 +537,40 @@ def load_model_only(parquet_path: Path) -> pd.DataFrame:
     return df
 
 
-def load_odds_snapshot(parquet_path: Path | None) -> pd.DataFrame:
-    if parquet_path is None or not parquet_path.exists():
+def load_odds_snapshot(parquet_path: Path | None,
+                         *, all_paths: list[Path] | None = None
+                         ) -> pd.DataFrame:
+    """Load one or many odds_pairs_*.parquet files. When `all_paths` is
+    supplied (e.g. multi-region capture in one date directory), every
+    file is concatenated and de-duplicated to the freshest quote per
+    (event, book, market, player, line)."""
+    paths: list[Path] = []
+    if all_paths:
+        paths = [p for p in all_paths if p and p.exists()]
+    elif parquet_path is not None and parquet_path.exists():
+        paths = [parquet_path]
+    if not paths:
         return pd.DataFrame()
-    df = pd.read_parquet(parquet_path)
+    frames = []
+    for p in paths:
+        try:
+            frames.append(pd.read_parquet(p))
+        except Exception as e:
+            print(f"  WARN: failed to read {p}: {e}")
+    if not frames:
+        return pd.DataFrame()
+    df = pd.concat(frames, ignore_index=True)
     if "market_stat" in df.columns:
         df = df[df["market_stat"].astype(str).isin(SUPPORTED_STATS)]
+    if not df.empty and "snapshot_time_utc" in df.columns:
+        # Keep the freshest quote per book/market/player/line.
+        keys = [c for c in ("event_id", "bookmaker_key", "market_key",
+                              "player_name", "line")
+                 if c in df.columns]
+        if keys:
+            df = (df.sort_values("snapshot_time_utc")
+                    .drop_duplicates(subset=keys, keep="last")
+                    .reset_index(drop=True))
     return df
 
 
@@ -372,6 +633,7 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "tov_status": TOV_STATUS_CURRENT,
             "injury_freshness_status": inj_fresh,
             "lineup_freshness_status": _lineup_freshness_for_row(r),
+            "role_freshness_status": _role_freshness_for_row(r),
             "_pmf_arr": pmf,
         })
     df = pd.DataFrame(rows)
@@ -430,10 +692,12 @@ def build_market_comparison(canonical: pd.DataFrame, odds: pd.DataFrame
         return pd.DataFrame(columns=CANONICAL_COLUMNS_BASE), []
 
     needed = {"market_stat", "line", "bookmaker_key", "no_vig_over_prob",
-              "over_price", "under_price"}
+              "over_odds_american", "under_odds_american"}
     missing = needed - set(odds.columns)
     if missing:
         # Tolerant: if the snapshot lacks expected columns, fall back to none.
+        print(f"  WARN: odds snapshot missing columns {sorted(missing)}; "
+              f"market_comparison will be empty")
         return pd.DataFrame(columns=CANONICAL_COLUMNS_BASE), []
 
     # Normalize player name to match canonical's player_name.
@@ -460,10 +724,10 @@ def build_market_comparison(canonical: pd.DataFrame, odds: pd.DataFrame
             row = {col: c[col] for col in CANONICAL_COLUMNS_BASE if col in c.index}
             row["line"] = line
             row["book"] = book
-            row["market_over_odds"] = (int(m["over_price"])
-                                         if pd.notna(m["over_price"]) else None)
-            row["market_under_odds"] = (int(m["under_price"])
-                                          if pd.notna(m["under_price"]) else None)
+            row["market_over_odds"] = (int(m["over_odds_american"])
+                                         if pd.notna(m["over_odds_american"]) else None)
+            row["market_under_odds"] = (int(m["under_odds_american"])
+                                          if pd.notna(m["under_odds_american"]) else None)
             row["market_no_vig_over_prob"] = no_vig
             row["model_p_over"] = p_over
             row["fair_over_odds_american"] = _prob_to_american(p_over)
@@ -507,7 +771,8 @@ def build_outcome_level(canonical: pd.DataFrame) -> pd.DataFrame:
                     "model_version", "pipeline_run_id",
                     "pmf_valid", "pmf_sum_error", "calibration_confidence",
                     "market_coverage_status", "tov_status",
-                    "injury_freshness_status", "lineup_freshness_status")
+                    "injury_freshness_status", "lineup_freshness_status",
+                    "role_freshness_status")
                    if col in r.index}
             row["k"] = int(k)
             row["p_k"] = float(p)
@@ -596,10 +861,81 @@ def _csv_round(df: pd.DataFrame) -> pd.DataFrame:
 # ── Derek package writer ─────────────────────────────────────────────────
 
 
+def _run_status_block(*, delivery_date: str, snapshot_type: str,
+                       model_version: str, finality_status: str,
+                       finality_blockers: list[dict],
+                       n_rows: int, n_books: int,
+                       coverage: str, role_rollup: dict,
+                       injury_freshness: str) -> str:
+    """One concise run-status block consumed by README + START_HERE.
+
+    Lists the CLIENT-FACING summary in plain English plus a tight
+    bulleted blocker section. Long required-to-resolve text lives only
+    in run_manifest.json.
+    """
+    if finality_status == "final":
+        banner = ("status: <b>FINAL</b> &middot; ready for client use")
+    else:
+        banner = (f"status: <b>PROVISIONAL</b> &middot; "
+                  f"safe to use, with the caveats below")
+    role_summary = (
+        ", ".join(f"{k}: {v}" for k, v in (role_rollup or {}).items())
+        or "no role signal")
+    blocker_lines = []
+    for b in finality_blockers:
+        blocker_lines.append(f"- <code>{b['code']}</code> — {b['detail']}")
+    blockers_html = ("\n".join(blocker_lines)
+                       if blocker_lines else "- (no blockers)")
+    return (
+        f"<b>Run status — {delivery_date} — snapshot {snapshot_type}</b><br>\n"
+        f"{banner}<br>\n"
+        f"props: <b>{n_rows}</b> &middot; books: <b>{n_books}</b> "
+        f"&middot; market coverage: <b>{coverage}</b> &middot; "
+        f"injury freshness: <b>{injury_freshness}</b><br>\n"
+        f"role provenance: {role_summary}<br>\n"
+        f"model: <code>{model_version}</code>\n"
+        f"<br><br>\n"
+        f"<b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>\n"
+        f"{blockers_html}\n"
+    )
+
+
+def _run_status_block_md(*, delivery_date: str, snapshot_type: str,
+                           model_version: str, finality_status: str,
+                           finality_blockers: list[dict],
+                           n_rows: int, n_books: int, coverage: str,
+                           role_rollup: dict,
+                           injury_freshness: str) -> str:
+    role_summary = (
+        ", ".join(f"`{k}`: {v}" for k, v in (role_rollup or {}).items())
+        or "no role signal")
+    blocker_md = "\n".join(
+        f"- `{b['code']}` — {b['detail']}"
+        for b in finality_blockers) or "- _no blockers_"
+    banner = ("**FINAL** — ready for client use" if finality_status == "final"
+              else "**PROVISIONAL** — safe to use, with the caveats below")
+    return (
+        f"## Run status — {delivery_date} — snapshot `{snapshot_type}`\n\n"
+        f"{banner}\n\n"
+        f"- props: **{n_rows}**\n"
+        f"- books: **{n_books}**\n"
+        f"- market coverage: **{coverage}**\n"
+        f"- injury freshness: **{injury_freshness}**\n"
+        f"- role provenance: {role_summary}\n"
+        f"- model: `{model_version}`\n\n"
+        f"### Caveats\n\n"
+        f"Full detail (including the `required_to_resolve` field for each "
+        f"blocker) is in `wizard_of_odds/run_manifest.json`.\n\n"
+        f"{blocker_md}\n"
+    )
+
+
 def write_derek_package(canonical: pd.DataFrame,
                           outcome_long: pd.DataFrame, *,
                           delivery_date: str, pkg_dir: Path,
-                          model_only_path: Path | None) -> None:
+                          model_only_path: Path | None,
+                          run_status_html: str = "",
+                          run_status_md: str = "") -> None:
     """Layout per spec §1.1. The Derek package mirrors the canonical
     model-only PMF (no market joins). HTML viewers are placeholders here;
     the existing `scripts/build_pmf_review_package.py` produces the rich
@@ -632,7 +968,8 @@ def write_derek_package(canonical: pd.DataFrame,
         pkg_dir / "06_OUTCOME_LEVEL_PROBABILITIES.csv", index=False)
 
     _write_start_here(pkg_dir / "01_START_HERE.html",
-                       delivery_date=delivery_date, n_rows=len(canon_clean))
+                       delivery_date=delivery_date, n_rows=len(canon_clean),
+                       run_status_html=run_status_html)
     _write_overview(pkg_dir / "02_MODEL_REVIEW_OVERVIEW.html",
                      delivery_date=delivery_date, canonical=canon_clean,
                      model_only_path=model_only_path)
@@ -640,7 +977,8 @@ def write_derek_package(canonical: pd.DataFrame,
                        canonical=canon_clean, delivery_date=delivery_date)
 
     (pkg_dir / "README.md").write_text(
-        _readme_text(delivery_date=delivery_date, n_rows=len(canon_clean)))
+        _readme_text(delivery_date=delivery_date, n_rows=len(canon_clean),
+                      run_status_md=run_status_md))
 
 
 _HTML_BASE_STYLE = """
@@ -662,38 +1000,45 @@ th{background:#f0f0f0}
 """
 
 
-def _readme_text(*, delivery_date: str, n_rows: int) -> str:
+def _readme_text(*, delivery_date: str, n_rows: int,
+                   run_status_md: str = "") -> str:
     return (
         f"# PMF Model Review Package — {delivery_date}\n\n"
-        f"Generated by `scripts/build_daily_pmf_delivery.py`. "
-        f"See `docs/daily_pmf_delivery_spec.md` for the row schema.\n\n"
-        f"## What's in this package\n\n"
-        f"- `01_START_HERE.html` — read first.\n"
-        f"- `02_MODEL_REVIEW_OVERVIEW.html` — slate summary, model version, quality flags.\n"
-        f"- `03_PMF_DISTRIBUTION_VIEWER.html` — visual histogram of every PMF.\n"
-        f"- `04_PROP_SUMMARY.{{csv,parquet}}` — one row per (player, stat) with mean/median/mode/p0.\n"
-        f"- `05_FULL_PMF_WIDE.{{csv,parquet}}` — `04_*` plus `pmf_json` and `p_ge_1 … p_ge_20`.\n"
-        f"- `06_OUTCOME_LEVEL_PROBABILITIES.{{csv,parquet}}` — long form, one row per (player, stat, k).\n"
-        f"- `machine_readable/` — exact same data, programmatic consumption.\n\n"
-        f"Rows: **{n_rows}**.\n\n"
-        f"## Hard guarantee — model-only, never anchored\n\n"
-        f"PMFs in this package are the **canonical model-only PMFs**. They are "
-        f"NOT market-anchored. No PMF probability has been adjusted to fit a "
-        f"book line. Market data (when present at all) lives in the separate "
-        f"Wizard of Odds package as a side-by-side reference; PMFs there are "
-        f"identical to the PMFs here.\n\n"
-        f"## TOV status\n\n"
-        f"TOV PMFs (when emitted by the slate) are produced by the current "
-        f"production Phase 8 calibrators. **No Phase 10D / 10D.2 TOV overlay "
-        f"is applied** — those overlays did not pass independent validation. "
-        f"See `docs/phase11_tov_structural_refit_plan.md` for the next move.\n"
+        + (run_status_md + "\n---\n\n" if run_status_md else "")
+        + f"Generated by `scripts/build_daily_pmf_delivery.py`. "
+          f"See `docs/daily_pmf_delivery_spec.md` for the row schema.\n\n"
+          f"## What's in this package\n\n"
+          f"- `01_START_HERE.html` — read first.\n"
+          f"- `02_MODEL_REVIEW_OVERVIEW.html` — slate summary, model version, quality flags.\n"
+          f"- `03_PMF_DISTRIBUTION_VIEWER.html` — visual histogram of every PMF.\n"
+          f"- `04_PROP_SUMMARY.{{csv,parquet}}` — one row per (player, stat) with mean/median/mode/p0.\n"
+          f"- `05_FULL_PMF_WIDE.{{csv,parquet}}` — `04_*` plus `pmf_json` and `p_ge_1 … p_ge_20`.\n"
+          f"- `06_OUTCOME_LEVEL_PROBABILITIES.{{csv,parquet}}` — long form, one row per (player, stat, k).\n"
+          f"- `machine_readable/` — exact same data, programmatic consumption.\n\n"
+          f"Rows: **{n_rows}**.\n\n"
+          f"## Hard guarantee — model-only, never anchored\n\n"
+          f"PMFs in this package are the **canonical model-only PMFs**. They are "
+          f"NOT market-anchored. No PMF probability has been adjusted to fit a "
+          f"book line. Market data (when present at all) lives in the separate "
+          f"Wizard of Odds package as a side-by-side reference; PMFs there are "
+          f"identical to the PMFs here.\n\n"
+          f"## TOV status\n\n"
+          f"TOV PMFs (when emitted by the slate) are produced by the current "
+          f"production Phase 8 calibrators. **No Phase 10D / 10D.2 TOV overlay "
+          f"is applied** — those overlays did not pass independent validation. "
+          f"See `docs/phase11_tov_structural_refit_plan.md` for the next move.\n"
     )
 
 
-def _write_start_here(path: Path, *, delivery_date: str, n_rows: int) -> None:
+def _write_start_here(path: Path, *, delivery_date: str, n_rows: int,
+                       run_status_html: str = "") -> None:
+    status_box = (f'<div class="callout">{run_status_html}</div>'
+                  if run_status_html else "")
     body = f"""
 <p><b>Delivery date:</b> {delivery_date} &nbsp;&nbsp;
 <b>Rows:</b> {n_rows}</p>
+
+{status_box}
 
 <div class="callout">
 <b>Model-only, never anchored.</b> The PMFs in this package are the
@@ -915,6 +1260,13 @@ def main() -> int:
                      help="path to a single odds_pairs_*.parquet (optional)")
     ap.add_argument("--no-odds-fetch", action="store_true",
                      help="never make Odds-API HTTP calls (default: on)")
+    ap.add_argument("--freshness-manifest", default=None,
+                     help="path to data/freshness_manifest/{date}.json "
+                           "(optional; auto-discovered)")
+    ap.add_argument("--rebuild-canonical", action="store_true",
+                     help="force rebuild deliveries/{date}/canonical_source/* "
+                           "from predictions/all_props_{date}.parquet even "
+                           "when an existing canonical parquet is on disk")
     ap.add_argument("--edge-threshold", type=float, default=0.04,
                      help="absolute edge threshold for publishable_edges")
     args = ap.parse_args()
@@ -931,25 +1283,73 @@ def main() -> int:
     print(f"  snapshot_time_utc={snapshot_time_utc}")
     print("=" * 72)
 
-    # 1. Locate canonical MODEL_ONLY parquet.
-    model_only_path = (Path(args.model_only) if args.model_only
-                        else _find_model_only_parquet(delivery_date))
-    if model_only_path is None:
-        print(f"ERROR: no MODEL_ONLY parquet for {delivery_date}. "
-              f"Run scripts/predict.py + scripts/export_live_pmf_slate.py first.")
-        return 2
-    print(f"  model_only: {model_only_path.relative_to(REPO_ROOT)}")
+    # 1. Locate canonical MODEL_ONLY parquet — three fallbacks:
+    #    (a) explicit --model-only path
+    #    (b) a previously-built MODEL_ONLY parquet under deliveries/{date}/
+    #    (c) build one on the fly from predictions/all_props_{date}.parquet
+    canonical_built = False
+    model_only_path: Path | None = None
+    if args.model_only:
+        model_only_path = Path(args.model_only).resolve()
+    elif (found := _find_model_only_parquet(delivery_date)) is not None \
+            and not args.rebuild_canonical:
+        model_only_path = found.resolve()
+    else:
+        preds_path = (Path(args.predictions).resolve() if args.predictions
+                      else (REPO_ROOT / "predictions"
+                            / f"all_props_{delivery_date}.parquet").resolve())
+        if preds_path.exists():
+            canonical_dir = (REPO_ROOT / "deliveries" / delivery_date
+                              / "canonical_source")
+            label = ("rebuilding canonical" if args.rebuild_canonical
+                     else "building canonical")
+            print(f"  {label} from {preds_path.relative_to(REPO_ROOT)} …")
+            model_only_path = build_canonical_from_predictions(
+                preds_path, date=delivery_date,
+                canonical_dir=canonical_dir).resolve()
+            canonical_built = True
+        else:
+            print(f"ERROR: no MODEL_ONLY parquet for {delivery_date} and "
+                  f"no predictions/all_props_{delivery_date}.parquet to "
+                  f"build from. Run scripts/predict.py first.")
+            return 2
+    try:
+        rel_path = model_only_path.relative_to(REPO_ROOT)
+    except ValueError:
+        rel_path = model_only_path
+    print(f"  model_only: {rel_path}"
+          + ("  (auto-built)" if canonical_built else ""))
     model_only = load_model_only(model_only_path)
     print(f"  rows: {len(model_only):,}")
 
     # 2. Load Odds API snapshot (no HTTP calls; we only consume disk).
-    odds_path = (Path(args.odds_snapshot) if args.odds_snapshot
-                  else _find_odds_snapshot(delivery_date))
-    if odds_path:
-        print(f"  odds_snapshot: {odds_path.relative_to(REPO_ROOT)}")
+    if args.odds_snapshot:
+        odds_path: Path | None = Path(args.odds_snapshot)
+        odds_pair_files = [odds_path]
+    else:
+        odds_pair_files = _list_odds_pair_files(delivery_date)
+        odds_path = odds_pair_files[-1] if odds_pair_files else None
+    if odds_pair_files:
+        for fp in odds_pair_files:
+            print(f"  odds_snapshot: {fp.relative_to(REPO_ROOT)}")
     else:
         print("  odds_snapshot: <none>")
-    odds = load_odds_snapshot(odds_path)
+    odds = load_odds_snapshot(odds_path, all_paths=odds_pair_files)
+
+    # 2b. Freshness manifest (input — written by refresh_daily_inputs.py).
+    fm_path = (Path(args.freshness_manifest)
+               if args.freshness_manifest
+               else _find_freshness_manifest(delivery_date))
+    freshness_manifest = _load_freshness_manifest(fm_path)
+    if freshness_manifest is not None:
+        try:
+            rel_fm = fm_path.relative_to(REPO_ROOT)
+        except ValueError:
+            rel_fm = fm_path
+        print(f"  freshness_manifest: {rel_fm}  "
+              f"(overall={freshness_manifest.get('overall_status')})")
+    else:
+        print("  freshness_manifest: <none>")
 
     # 3. Build canonical row frame.
     injury_path = REPO_ROOT / "data" / "player_availability_asof.parquet"
@@ -989,12 +1389,9 @@ def main() -> int:
             print(f"  - {m}")
         edges = pd.DataFrame(columns=CANONICAL_COLUMNS_BASE)
 
-    # 6. Write Derek package.
+    # 6. Write Derek package.  (run_status block needs the manifest values
+    #    that step 7 computes; we build the manifest first, then write.)
     derek_dir = REPO_ROOT / "deliveries" / delivery_date / "pmf_model_review_package"
-    write_derek_package(canonical, outcome_long,
-                          delivery_date=delivery_date, pkg_dir=derek_dir,
-                          model_only_path=model_only_path)
-    print(f"  wrote {derek_dir.relative_to(REPO_ROOT)}")
 
     # 7. Build manifest.
     quality_rollup = {
@@ -1014,7 +1411,89 @@ def main() -> int:
         "lineup_freshness_status":
             canonical["lineup_freshness_status"].value_counts().to_dict()
             if not canonical.empty else {},
+        "role_freshness_status":
+            canonical["role_freshness_status"].value_counts().to_dict()
+            if not canonical.empty and "role_freshness_status" in canonical.columns
+            else {},
     }
+    # Target-stats completeness: expected vs in delivery.
+    expected_stats = list(SUPPORTED_STATS)  # pts, reb, ast, tov, fg3m
+    in_delivery_stats = sorted(canonical["stat"].astype(str).unique().tolist())
+    missing_stats = sorted(set(expected_stats) - set(in_delivery_stats))
+    extra_stats = sorted(set(in_delivery_stats) - set(expected_stats))
+    tov_status_field = ("present" if "tov" in in_delivery_stats
+                        else "missing_from_prediction_source")
+
+    # Odds-fetch status: explicit signal even when the runner is disk-only.
+    if args.no_odds_fetch:
+        odds_fetch_status = "skipped:no_odds_fetch_flag"
+    elif odds_path:
+        odds_fetch_status = "consumed_from_disk"
+    else:
+        odds_fetch_status = "skipped:no_disk_snapshot"
+
+    # Finality status — does this delivery have everything it needs to ship?
+    # Each blocker is a stable string code with an explicit meaning.
+    finality_blockers: list[dict] = []
+    if coverage == "none":
+        finality_blockers.append({
+            "code": "market_coverage_none",
+            "detail": "No book offered any line; no market_comparison rows.",
+            "required_to_resolve": ("ODDS_API_KEY (with quota) and a "
+                                     "fresh us+us2 fetch"),
+        })
+    if _injury_freshness(injury_path) == "very_stale":
+        finality_blockers.append({
+            "code": "injury_very_stale",
+            "detail": ("data/player_availability_asof.parquet age > 12 hr; "
+                       "predictions were produced against stale availability."),
+            "required_to_resolve": ("BDL_API_KEY for live BDL injury fetch "
+                                     "OR refreshed nba_injury_reports.parquet, "
+                                     "then re-run scripts/predict.py"),
+        })
+    role_missing = (("missing" in
+                       (canonical.get("role_freshness_status",
+                                        pd.Series(dtype=str))
+                        .astype(str).unique().tolist()))
+                     if "role_freshness_status" in canonical.columns
+                     else True)
+    role_only_projected = (
+        not role_missing and
+        "confirmed_lineup" not in
+        (canonical["role_freshness_status"].astype(str).unique().tolist())
+    )
+    if role_missing:
+        finality_blockers.append({
+            "code": "role_bucket_missing",
+            "detail": ("role_bucket could not be derived for at least one "
+                        "row (mp_bucket absent in predictions)."),
+            "required_to_resolve": ("predict.py must emit mp_bucket for "
+                                     "every (player, stat) row"),
+        })
+    elif role_only_projected:
+        finality_blockers.append({
+            "code": "lineup_unconfirmed",
+            "detail": ("role_bucket derived from projected minutes "
+                        "(mp_bucket); no confirmed-lineup source consumed."),
+            "required_to_resolve": ("confirmed lineups source "
+                                     "(BDL get_lineups or NBA injury report "
+                                     "starter flag) wired into predict.py"),
+        })
+    if missing_stats:
+        finality_blockers.append({
+            "code": f"missing_stats:{','.join(missing_stats)}",
+            "detail": (f"Predictions did not emit rows for {missing_stats}. "
+                        f"predict.py is market-driven; with no offered "
+                        f"market line, no row is generated for those stats."),
+            "required_to_resolve": ("Phase 11C player-stat-grid prediction "
+                                     "refactor: emit one model-only PMF row "
+                                     "per (player, eligible_stat) regardless "
+                                     "of whether a market line is offered. "
+                                     "See docs/phase11_tov_structural_refit_plan.md."),
+        })
+    finality_status = "final" if not finality_blockers else "provisional"
+    finality_blocker_codes = [b["code"] for b in finality_blockers]
+
     manifest = {
         "delivery_date": delivery_date,
         "pipeline_run_id": pipeline_run_id,
@@ -1022,14 +1501,34 @@ def main() -> int:
         "snapshot_time_utc": snapshot_time_utc,
         "model_version": model_version,
         "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
+        "finality_status": finality_status,
+        "finality_blocker_codes": finality_blocker_codes,
+        "finality_blockers": finality_blockers,
         "tov_overlay": "off",
         "tov_overlay_reason": TOV_STATUS_REASON,
+        "tov_status": tov_status_field,
+        "target_stats": {
+            "expected": expected_stats,
+            "in_delivery": in_delivery_stats,
+            "missing": missing_stats,
+            "extra_relative_to_supported": extra_stats,
+        },
         "sources": {
             "model_only_parquet": {
                 "path": str(model_only_path.relative_to(REPO_ROOT)),
                 "mtime_utc": _file_mtime_iso_utc(model_only_path),
                 "sha256": _file_sha256(model_only_path),
+                "auto_built_from_predictions": bool(canonical_built),
             },
+            "predictions_parquet": ({
+                "path": str(
+                    (REPO_ROOT / "predictions"
+                     / f"all_props_{delivery_date}.parquet")
+                    .relative_to(REPO_ROOT)),
+                "mtime_utc": _file_mtime_iso_utc(
+                    REPO_ROOT / "predictions"
+                    / f"all_props_{delivery_date}.parquet"),
+            }),
             "availability_table": {
                 "path": (str(injury_path.relative_to(REPO_ROOT))
                          if injury_path.exists() else None),
@@ -1041,9 +1540,11 @@ def main() -> int:
                 "mtime_utc": _file_mtime_iso_utc(odds_path),
                 "books_seen": books_seen,
                 "coverage_status": coverage,
+                "fetch_status": odds_fetch_status,
             } if odds_path else {
                 "path": None, "mtime_utc": None, "books_seen": [],
                 "coverage_status": "none",
+                "fetch_status": odds_fetch_status,
             }),
         },
         "row_counts": {
@@ -1055,7 +1556,74 @@ def main() -> int:
         "quality_rollup": quality_rollup,
         "warnings": [*msgs_canon, *msgs_edges],
         "no_odds_fetch": bool(args.no_odds_fetch),
+        "freshness_manifest": ({
+            "path": str(fm_path.relative_to(REPO_ROOT))
+                     if fm_path is not None else None,
+            "built_at_utc": freshness_manifest.get("built_at_utc"),
+            "overall_status": freshness_manifest.get("overall_status"),
+            "odds_status": freshness_manifest.get("odds", {}).get("status"),
+            "regions_requested":
+                freshness_manifest.get("regions_requested"),
+            "books_seen": freshness_manifest.get("odds", {}).get("books_seen"),
+            "tov_status": freshness_manifest.get("tov_status"),
+            "predictions_mtime_utc":
+                freshness_manifest.get("predictions", {}).get("mtime_utc"),
+            "availability_freshness_status":
+                (freshness_manifest.get("availability_table", {})
+                 .get("freshness_status")),
+            "finals_finality_status":
+                freshness_manifest.get("finals", {}).get("finality_status"),
+            "role_freshness_status_rollup":
+                quality_rollup.get("role_freshness_status"),
+        } if freshness_manifest is not None else {
+            "path": None, "overall_status": "missing",
+            "odds_status": odds_fetch_status,
+            "regions_requested": None,
+            "books_seen": books_seen,
+            "tov_status": tov_status_field,
+            "predictions_mtime_utc":
+                _file_mtime_iso_utc(REPO_ROOT / "predictions"
+                                      / f"all_props_{delivery_date}.parquet"),
+            "availability_freshness_status":
+                _injury_freshness(injury_path),
+            "finals_finality_status": "unknown",
+            "role_freshness_status_rollup":
+                quality_rollup.get("role_freshness_status"),
+        }),
     }
+
+    # 7b. Build run-status block now that the manifest is finalised, then
+    #     write the Derek package with that block embedded.
+    injury_rollup = (canonical["injury_freshness_status"]
+                       .value_counts().to_dict()
+                       if not canonical.empty else {})
+    injury_summary = max(injury_rollup, key=injury_rollup.get,
+                          default="unknown")
+    run_status_html = _run_status_block(
+        delivery_date=delivery_date, snapshot_type=snapshot_type,
+        model_version=model_version, finality_status=finality_status,
+        finality_blockers=finality_blockers,
+        n_rows=int(len(canonical)),
+        n_books=len(books_seen),
+        coverage=coverage,
+        role_rollup=quality_rollup.get("role_freshness_status", {}),
+        injury_freshness=injury_summary)
+    run_status_md = _run_status_block_md(
+        delivery_date=delivery_date, snapshot_type=snapshot_type,
+        model_version=model_version, finality_status=finality_status,
+        finality_blockers=finality_blockers,
+        n_rows=int(len(canonical)),
+        n_books=len(books_seen),
+        coverage=coverage,
+        role_rollup=quality_rollup.get("role_freshness_status", {}),
+        injury_freshness=injury_summary)
+
+    write_derek_package(canonical, outcome_long,
+                          delivery_date=delivery_date, pkg_dir=derek_dir,
+                          model_only_path=model_only_path,
+                          run_status_html=run_status_html,
+                          run_status_md=run_status_md)
+    print(f"  wrote {derek_dir.relative_to(REPO_ROOT)}")
 
     # 8. Write Wizard of Odds package.
     woo_dir = REPO_ROOT / "deliveries" / delivery_date / "wizard_of_odds"
@@ -1064,6 +1632,8 @@ def main() -> int:
     print(f"  wrote {woo_dir.relative_to(REPO_ROOT)}")
     print(f"  publishable_edges: {len(edges)} rows "
           f"(edge ≥ {args.edge_threshold})")
+    print(f"  finality_status: {finality_status} "
+          f"(blockers: {finality_blocker_codes or 'none'})")
     return 0
 
 
