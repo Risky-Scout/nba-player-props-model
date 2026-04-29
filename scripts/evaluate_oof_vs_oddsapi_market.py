@@ -84,13 +84,32 @@ def _parse_pmf(pmf_obj) -> np.ndarray:
 
 
 def _p_over_line(pmf: np.ndarray, line: float) -> float:
-    K = len(pmf)
-    k = int(np.floor(line))
-    if k < 0:
-        return 1.0
-    if k >= K - 1:
-        return 0.0
-    return float(1.0 - pmf[: k + 1].sum())
+    """Strict discrete-integer settlement of P(stat > line).
+
+    Half-point line: P(over) + P(under) = 1, no push.
+    Whole-number line: push mass at k == line is excluded from the
+    over/under denominator (sportsbook settlement convention).
+
+    Normalizing by (p_over + p_under) avoids the FP-epsilon trap where
+    `1 - sum(pmf[:k+1])` returns -2.22e-16 on PMFs fully concentrated
+    below the line.
+    """
+    arr = np.asarray(pmf, dtype=float)
+    arr = np.clip(arr, 0.0, None)
+    s = arr.sum()
+    if s <= 0 or not np.isfinite(s):
+        return float("nan")
+    arr = arr / s
+    values = np.arange(len(arr))
+    p_over = float(arr[values > line].sum())
+    p_under = float(arr[values < line].sum())
+    denom = p_over + p_under
+    if denom <= 0 or not np.isfinite(denom):
+        return float("nan")
+    p = p_over / denom
+    if -1e-12 <= p <= 1 + 1e-12:
+        return min(1.0, max(0.0, p))
+    return p
 
 
 def _logloss(p: np.ndarray, y: np.ndarray) -> float:
