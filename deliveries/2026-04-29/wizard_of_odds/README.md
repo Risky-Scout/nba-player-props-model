@@ -1,21 +1,20 @@
 # Wizard of Odds — 2026-04-29
 
-## Run status — 2026-04-29 — snapshot `morning`
+## Run status — 2026-04-29 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **104**
 - books: **13**
 - market coverage: **full**
-- injury freshness: **very_stale**
+- injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 104
-- model: `bb723eb#phase10c`
+- model: `113c7b5#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.
 - `lineup_unconfirmed` — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
 - `missing_stats:tov` — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
 
@@ -36,15 +35,15 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['injury_very_stale', 'lineup_unconfirmed', 'missing_stats:tov']`
+- **finality_blockers**: `['lineup_unconfirmed', 'missing_stats:tov']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
 - **books_seen**: `13`
-- **freshness.overall_status**: `ready`
-- **availability_freshness_status**: `very_stale`
+- **freshness.overall_status**: `not_ready`
+- **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 104}`
 - **tov_status**: `missing_from_prediction_source`
-- **row counts**: fair_odds_board=2689, full_pmfs_wide=104, market_comparison=1502, publishable_edges=1439
+- **row counts**: fair_odds_board=2689, full_pmfs_wide=104, market_comparison=1314, publishable_edges=1239
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

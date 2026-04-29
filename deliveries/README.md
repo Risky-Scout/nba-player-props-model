@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-04-29T20:12:35Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-04-29T23:19:02Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -9,7 +9,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 |---|---|---:|---:|---:|---:|---|---|---|---|---|
 | **2026-04-27** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 114 | 2877 | 346 | 312 | `full` | `very_stale` | `missing_from_prediction_source` | `pending_outcomes` | `bb723eb#phase10c` |
 | **2026-04-28** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `n/a` | `—` |
-| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 104 | 2689 | 1502 | 1439 | `full` | `very_stale` | `missing_from_prediction_source` | `pending_outcomes` | `bb723eb#phase10c` |
+| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 104 | 2689 | 1314 | 1239 | `full` | `fresh` | `missing_from_prediction_source` | `pending_outcomes` | `113c7b5#phase10c` |
 
 ## Per-date links
 
@@ -57,7 +57,7 @@ See [`STATUS.md`](2026-04-28/STATUS.md) for the cause and the required-to-resolv
 
 ### 2026-04-29 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
 
-_injury_very_stale, lineup_unconfirmed, missing_stats:tov_
+_lineup_unconfirmed, missing_stats:tov_
 
 **Derek (PMF model review)**
 

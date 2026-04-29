@@ -1,21 +1,20 @@
 # PMF Model Review Package — 2026-04-29
 
-## Run status — 2026-04-29 — snapshot `morning`
+## Run status — 2026-04-29 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **104**
 - books: **13**
 - market coverage: **full**
-- injury freshness: **very_stale**
+- injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 104
-- model: `bb723eb#phase10c`
+- model: `113c7b5#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.
 - `lineup_unconfirmed` — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
 - `missing_stats:tov` — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
 
