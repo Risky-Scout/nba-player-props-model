@@ -490,6 +490,90 @@ def cmd_historical_snapshot(args) -> int:
     return 0
 
 
+def _shift_iso(iso: str, delta_minutes: int) -> str:
+    """Shift an ISO-8601 UTC ts (Zulu suffix) by `delta_minutes` minutes."""
+    from datetime import datetime, timedelta, timezone
+    dt = datetime.strptime(iso.replace("Z", "+00:00"), "%Y-%m-%dT%H:%M:%S%z")
+    dt = dt.astimezone(timezone.utc) + timedelta(minutes=delta_minutes)
+    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def cmd_historical_lock_day(args) -> int:
+    """Per-event historical lock capture for one calendar day.
+
+    For each event scheduled on `--target-date` (filtered by an optional
+    commence-window), fetch historical event-odds at
+    `snapshot_time_utc = commence_time_utc - <lock_offset_minutes>` (default 5).
+    Guarantees `snapshot_time_utc <= commence_time_utc` (no leakage).
+    """
+    api_key = _get_api_key()
+    target = args.target_date
+    # Initial events list snapshot: 11:00 UTC (≈07:00 ET) of the target date —
+    # at that time every game is upcoming, so the event list is complete.
+    list_snap = f"{target}T11:00:00Z"
+    if args.dry_run:
+        print(f"[dry-run] would fetch historical events at {list_snap}")
+        return 0
+
+    print(f"=" * 72)
+    print(f"HISTORICAL LOCK DAY — target {target}")
+    print(f"  events list snapshot: {list_snap}")
+    print(f"  lock offset:          T-{args.lock_offset_minutes} min")
+    print(f"=" * 72)
+    blob, _ = fetch_historical_events(api_key, list_snap)
+    save_raw_json(blob, target, f"hist_events_{list_snap}")
+    events = blob.get("data", []) if isinstance(blob, dict) else []
+    if args.commence_after:
+        events = [e for e in events if e.get("commence_time", "") >= args.commence_after]
+    if args.commence_before:
+        events = [e for e in events if e.get("commence_time", "") <= args.commence_before]
+    print(f"  events at list-snapshot: {len(events)} "
+          f"(after commence window filter)")
+    if not events:
+        print(f"  WARN: no historical events for {target} in window")
+        return 0
+    events.sort(key=lambda e: e.get("commence_time", ""))
+    selected = events[: args.max_events]
+    print(f"  selecting first {len(selected)} of {len(events)} events")
+    markets = args.markets.split(",") if args.markets else DEFAULT_MARKETS
+
+    all_quotes: list[dict] = []
+    all_pairs: list[dict] = []
+    for ev in selected:
+        eid = ev.get("id")
+        commence = ev.get("commence_time", "")
+        if not eid or not commence:
+            print(f"  WARN: skipping event with missing id/commence_time: {ev}")
+            continue
+        snap_iso = _shift_iso(commence, -int(args.lock_offset_minutes))
+        if snap_iso > commence:
+            print(f"  ERROR: leakage check failed for {eid}: "
+                  f"snap={snap_iso} > commence={commence}")
+            continue
+        print(f"  → event {eid} {ev.get('away_team')} @ {ev.get('home_team')}  "
+              f"commence={commence}  lock_snap={snap_iso}")
+        eb, _ = fetch_historical_event_odds(api_key, eid, snap_iso, markets, args.regions)
+        save_raw_json(eb, target, f"hist_event_{eid}_lock_{snap_iso}")
+        meta = make_snapshot_meta("historical_lock_minus_5m" if args.lock_offset_minutes == 5
+                                  else f"historical_lock_minus_{args.lock_offset_minutes}m",
+                                  snap_iso, "historical",
+                                  f"data/odds_api/raw/{target}/hist_event_{eid}_lock_{_safe_filename(snap_iso)}.json")
+        q = flatten_event_odds(eb, meta)
+        p = pair_quotes(q)
+        all_quotes.extend(q)
+        all_pairs.extend(p)
+        print(f"    quotes: {len(q)}  pairs: {len(p)}")
+        time.sleep(0.4)
+
+    save_processed(pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
+                   f"hist_lockday_{target}")
+    print(f"\nLOCK-DAY summary:")
+    print(f"  events captured:       {len(selected)}")
+    print(f"  total raw quote rows:  {len(all_quotes)}")
+    print(f"  total paired rows:     {len(all_pairs)}")
+    return 0
+
+
 def cmd_smoke_test(args) -> int:
     api_key = _get_api_key()
     markets = args.markets.split(",") if args.markets else DEFAULT_MARKETS
@@ -660,6 +744,19 @@ def main() -> int:
     s.add_argument("--max-events", type=int, default=20)
     s.add_argument("--dry-run", action="store_true")
 
+    s = sub.add_parser("historical-lock-day",
+                       help="Per-event historical lock capture for one calendar day "
+                            "(snapshot = commence_time - lock_offset_minutes, "
+                            "guaranteed <= commence_time).")
+    s.add_argument("--target-date", required=True)
+    s.add_argument("--commence-after", default=None)
+    s.add_argument("--commence-before", default=None)
+    s.add_argument("--max-events", type=int, default=2)
+    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--regions", default="us")
+    s.add_argument("--lock-offset-minutes", type=int, default=5)
+    s.add_argument("--dry-run", action="store_true")
+
     s = sub.add_parser("historical-snapshot")
     s.add_argument("--snapshot-time-utc", required=True)
     s.add_argument("--snapshot-type", required=True,
@@ -682,6 +779,7 @@ def main() -> int:
         "historical-event-odds": cmd_historical_event_odds,
         "live-snapshot": cmd_live_snapshot,
         "historical-snapshot": cmd_historical_snapshot,
+        "historical-lock-day": cmd_historical_lock_day,
     }
     return routes[args.cmd](args) or 0
 
