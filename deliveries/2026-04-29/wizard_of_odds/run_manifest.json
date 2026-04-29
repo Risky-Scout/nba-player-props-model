@@ -1,9 +1,9 @@
 {
   "delivery_date": "2026-04-29",
-  "pipeline_run_id": "6a397f72-9b85-47f1-9f41-24db5538117a",
+  "pipeline_run_id": "e43daa4b-faaa-4f7c-8ade-bc98c517adb1",
   "snapshot_type": "morning",
-  "snapshot_time_utc": "2026-04-29T19:14:47Z",
-  "model_version": "35b31b2#phase10c",
+  "snapshot_time_utc": "2026-04-29T19:57:46Z",
+  "model_version": "bb723eb#phase10c",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
   "finality_status": "provisional",
   "finality_blocker_codes": [
@@ -58,7 +58,7 @@
   "sources": {
     "model_only_parquet": {
       "path": "deliveries/2026-04-29/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "mtime_utc": "2026-04-29T19:14:47.335727Z",
+      "mtime_utc": "2026-04-29T19:57:46.732466Z",
       "sha256": "041675e22886bed4a430944ec41177b830224e9e657b59ae9a0882d05a4c0dc1",
       "auto_built_from_predictions": true
     },
@@ -152,5 +152,15 @@
     "role_freshness_status_rollup": {
       "derived_from_projected_minutes": 104
     }
+  },
+  "after_game": {
+    "status": "pending_outcomes",
+    "scored_at_utc": "2026-04-29T20:08:53Z",
+    "n_scored_pmf_rows": 0,
+    "n_scored_market_rows": 0,
+    "n_clv_rows": 0,
+    "nll_mean": null,
+    "rps_mean": null,
+    "abs_mean_error": null
   }
 }

@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset=utf-8><title>NBA PMF deliveries index</title><style>
+body{font-family:system-ui;max-width:1300px;margin:1.5rem auto;padding:0 1rem;color:#222}
+h1{margin-top:0}h2{margin-top:1.6rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}
+table{border-collapse:collapse;margin:0.6rem 0;width:100%;font-size:0.92em}
+th,td{padding:0.35rem 0.55rem;border:1px solid #ddd;text-align:left}
+th{background:#f0f0f0}
+td.right{text-align:right}
+.cls-final{background:#dff5dd}
+.cls-prov{background:#fff7d6}
+.cls-no{background:#ffe0e0}
+code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
+.callout{background:#fff8d6;border-left:4px solid #d4a900;padding:0.5rem 0.9rem;margin:0.8rem 0}
+</style></head><body><h1>NBA PMF deliveries</h1><p>Index regenerated 2026-04-29T20:12:35Z by <code>scripts/build_deliveries_index.py</code>.</p>
+<table>
+<tr><th>date</th><th>classification</th><th>props</th><th>fair_odds</th><th>market_comparison</th><th>publishable_edges</th><th>coverage</th><th>injury_fresh</th><th>tov_status</th><th>after_game</th><th>model_version</th></tr>
+<tr class="cls-prov"><td><b>2026-04-27</b></td><td><code>PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS</code></td><td class=right>114</td><td class=right>2877</td><td class=right>346</td><td class=right>312</td><td><code>full</code></td><td><code>very_stale</code></td><td><code>missing_from_prediction_source</code></td><td><code>pending_outcomes</code></td><td><code>bb723eb#phase10c</code></td></tr>
+<tr class="cls-no"><td><b>2026-04-28</b></td><td><code>NOT_DELIVERABLE_READY</code></td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>n/a</code></td><td><code>&mdash;</code></td></tr>
+<tr class="cls-prov"><td><b>2026-04-29</b></td><td><code>PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS</code></td><td class=right>104</td><td class=right>2689</td><td class=right>1502</td><td class=right>1439</td><td><code>full</code></td><td><code>very_stale</code></td><td><code>missing_from_prediction_source</code></td><td><code>pending_outcomes</code></td><td><code>bb723eb#phase10c</code></td></tr>
+</table>
+<div class="callout">All PMFs are model-only. TOV PMFs (when emitted) come from Phase 8 calibrators — no Phase 10D / 10D.2 overlay is wired into production.</div>
+<h2>2026-04-27 — <code>PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS</code></h2>
+<p><i>injury_very_stale, lineup_unconfirmed, missing_stats:tov</i></p>
+<p><b>Derek</b> <a href="2026-04-27/pmf_model_review_package/01_START_HERE.html">01_START_HERE.html</a> &middot; <a href="2026-04-27/pmf_model_review_package/03_PMF_DISTRIBUTION_VIEWER.html">03_PMF_DISTRIBUTION_VIEWER.html</a> &middot; <a href="2026-04-27/pmf_model_review_package/04_PROP_SUMMARY.csv">04_PROP_SUMMARY.csv</a> &middot; <a href="2026-04-27/pmf_model_review_package/05_FULL_PMF_WIDE.csv">05_FULL_PMF_WIDE.csv</a> &middot; <a href="2026-04-27/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv">06_OUTCOME_LEVEL_PROBABILITIES.csv</a> &middot; <a href="2026-04-27/pmf_model_review_package/machine_readable/model_only.parquet">machine_readable/model_only.parquet</a> &middot; <a href="2026-04-27/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md">MODEL_PERFORMANCE_AND_CALIBRATION.md</a></p>
+<p><b>Wizard of Odds</b> <a href="2026-04-27/wizard_of_odds/README.md">README.md</a> &middot; <a href="2026-04-27/wizard_of_odds/fair_odds_board.csv">fair_odds_board.csv</a> &middot; <a href="2026-04-27/wizard_of_odds/full_pmfs_wide.csv">full_pmfs_wide.csv</a> &middot; <a href="2026-04-27/wizard_of_odds/full_pmfs_outcome_level.csv">full_pmfs_outcome_level.csv</a> &middot; <a href="2026-04-27/wizard_of_odds/market_comparison.csv">market_comparison.csv</a> &middot; <a href="2026-04-27/wizard_of_odds/publishable_edges.csv">publishable_edges.csv</a> &middot; <a href="2026-04-27/wizard_of_odds/run_manifest.json">run_manifest.json</a></p>
+<p><b>After-game</b> (<code>pending_outcomes</code>) <a href="2026-04-27/after_game_scoring/after_game_summary.md">after_game_summary.md</a> &middot; <a href="2026-04-27/after_game_scoring/after_game_status.json">after_game_status.json</a></p>
+<h2>2026-04-28 — <code>NOT_DELIVERABLE_READY</code></h2>
+<p><i>predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship</i></p>
+<h2>2026-04-29 — <code>PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS</code></h2>
+<p><i>injury_very_stale, lineup_unconfirmed, missing_stats:tov</i></p>
+<p><b>Derek</b> <a href="2026-04-29/pmf_model_review_package/01_START_HERE.html">01_START_HERE.html</a> &middot; <a href="2026-04-29/pmf_model_review_package/03_PMF_DISTRIBUTION_VIEWER.html">03_PMF_DISTRIBUTION_VIEWER.html</a> &middot; <a href="2026-04-29/pmf_model_review_package/04_PROP_SUMMARY.csv">04_PROP_SUMMARY.csv</a> &middot; <a href="2026-04-29/pmf_model_review_package/05_FULL_PMF_WIDE.csv">05_FULL_PMF_WIDE.csv</a> &middot; <a href="2026-04-29/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv">06_OUTCOME_LEVEL_PROBABILITIES.csv</a> &middot; <a href="2026-04-29/pmf_model_review_package/machine_readable/model_only.parquet">machine_readable/model_only.parquet</a> &middot; <a href="2026-04-29/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md">MODEL_PERFORMANCE_AND_CALIBRATION.md</a></p>
+<p><b>Wizard of Odds</b> <a href="2026-04-29/wizard_of_odds/README.md">README.md</a> &middot; <a href="2026-04-29/wizard_of_odds/fair_odds_board.csv">fair_odds_board.csv</a> &middot; <a href="2026-04-29/wizard_of_odds/full_pmfs_wide.csv">full_pmfs_wide.csv</a> &middot; <a href="2026-04-29/wizard_of_odds/full_pmfs_outcome_level.csv">full_pmfs_outcome_level.csv</a> &middot; <a href="2026-04-29/wizard_of_odds/market_comparison.csv">market_comparison.csv</a> &middot; <a href="2026-04-29/wizard_of_odds/publishable_edges.csv">publishable_edges.csv</a> &middot; <a href="2026-04-29/wizard_of_odds/run_manifest.json">run_manifest.json</a></p>
+<p><b>After-game</b> (<code>pending_outcomes</code>) <a href="2026-04-29/after_game_scoring/after_game_summary.md">after_game_summary.md</a> &middot; <a href="2026-04-29/after_game_scoring/after_game_status.json">after_game_status.json</a></p>
+</body></html>

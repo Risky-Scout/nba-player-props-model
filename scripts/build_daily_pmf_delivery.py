@@ -1217,7 +1217,8 @@ def _html_doc(title: str, body: str) -> str:
 def write_woo_package(canonical: pd.DataFrame, fair_board: pd.DataFrame,
                        market_comp: pd.DataFrame, edges: pd.DataFrame,
                        outcome_long: pd.DataFrame, *,
-                       pkg_dir: Path, manifest: dict) -> None:
+                       pkg_dir: Path, manifest: dict,
+                       run_status_md: str = "") -> None:
     pkg_dir.mkdir(parents=True, exist_ok=True)
 
     _write_csv_parquet(fair_board, pkg_dir / "fair_odds_board")
@@ -1240,6 +1241,90 @@ def write_woo_package(canonical: pd.DataFrame, fair_board: pd.DataFrame,
 
     (pkg_dir / "run_manifest.json").write_text(
         json.dumps(manifest, indent=2, default=str))
+
+    (pkg_dir / "README.md").write_text(
+        _woo_readme_text(manifest=manifest, run_status_md=run_status_md))
+
+
+def _woo_readme_text(*, manifest: dict, run_status_md: str = "") -> str:
+    odds = manifest.get("sources", {}).get("odds_snapshot", {}) or {}
+    fm = manifest.get("freshness_manifest", {}) or {}
+    rc = manifest.get("row_counts", {}) or {}
+    ag = manifest.get("after_game", {}) or {
+        "status": "pending_outcomes",
+        "reason": "scoring runner has not yet been invoked for this delivery",
+    }
+    delivery_date = manifest.get("delivery_date", "?")
+    return (
+        f"# Wizard of Odds — {delivery_date}\n\n"
+        + (run_status_md + "\n---\n\n" if run_status_md else "")
+        + "## Files\n\n"
+          "| file | role |\n"
+          "|---|---|\n"
+          "| `fair_odds_board.{csv,parquet,jsonl}` | one row per (player, stat, line) "
+          "with the model's fair over/under American odds. Independent of any book. |\n"
+          "| `full_pmfs_wide.{csv,parquet}` | one row per (player, stat) with `pmf_json`, `mean`, `median`, `mode`, `p0`, `p_ge_1 … p_ge_20`. |\n"
+          "| `full_pmfs_outcome_level.{csv,parquet}` | long form: one row per (player, stat, k) with `P(outcome=k)`. |\n"
+          "| `market_comparison.{csv,parquet}` | one row per (player, stat, line, book) joining the model fair odds to the book's offered odds and no-vig probability. |\n"
+          "| `publishable_edges.{csv,parquet}` | subset of `market_comparison` filtered by `\\|edge\\| ≥ threshold` and quality flags. |\n"
+          "| `run_manifest.json` | sources, snapshot lifecycle, quality rollup, model version, finality status, and the freshness manifest passthrough. |\n"
+          "| `after_game_clv_and_scoring.{csv,parquet,md}` | post-tip CLV + scoring artifacts (added by `scripts/score_daily_pmf_delivery_after_game.py`). |\n\n"
+          "## Run summary\n\n"
+        + f"- **finality_status**: `{manifest.get('finality_status')}`\n"
+          f"- **finality_blockers**: `{manifest.get('finality_blocker_codes') or []}`\n"
+          f"- **market_coverage_status**: `{odds.get('coverage_status')}`\n"
+          f"- **odds.fetch_status**: `{odds.get('fetch_status')}`\n"
+          f"- **books_seen**: `{len(odds.get('books_seen', []) or [])}`\n"
+          f"- **freshness.overall_status**: `{fm.get('overall_status')}`\n"
+          f"- **availability_freshness_status**: `{fm.get('availability_freshness_status')}`\n"
+          f"- **role_freshness_status (rollup)**: `{fm.get('role_freshness_status_rollup') or {}}`\n"
+          f"- **tov_status**: `{manifest.get('tov_status')}`\n"
+          f"- **row counts**: fair_odds_board={rc.get('fair_odds_board')}, full_pmfs_wide={rc.get('full_pmfs_wide')}, market_comparison={rc.get('market_comparison')}, publishable_edges={rc.get('publishable_edges')}\n"
+          f"- **after-game scoring**: `{ag.get('status')}`"
+        + (f" — {ag.get('reason')}" if ag.get('reason') else "")
+        + "\n\n## Hard rules echoed in this package\n\n"
+          "- **Model-only PMFs are canonical.** Market columns are reference only; no probability has been adjusted to fit a book line.\n"
+          "- **TOV PMFs (when present) come from Phase 8 calibrators with no Phase 10D / 10D.2 overlay** — those overlays did not pass independent validation.\n"
+          "- **Sparse market coverage does not drop a row** — every model-only row is emitted; market joins are best-effort.\n"
+          "- **Provenance** — `model_version` and `pipeline_run_id` are present on every row and reproduced verbatim in `run_manifest.json`.\n\n"
+          "See `docs/daily_pmf_delivery_spec.md` for the full row schema and §7 validation gates, and `docs/daily_data_freshness_runbook.md` for the freshness manifest contract.\n"
+    )
+
+
+def _write_model_performance_stub(*, pkg_dir: Path, delivery_date: str,
+                                    n_rows: int, manifest: dict) -> None:
+    """Emit a `MODEL_PERFORMANCE_AND_CALIBRATION.md` for the Derek package.
+
+    When outcomes are not yet available, the file is a *stub* recording
+    that scoring is pending. The after-game runner overwrites it when it
+    posts metrics. We never fabricate outcome metrics here.
+    """
+    blockers = ", ".join(manifest.get("finality_blocker_codes") or []) \
+                or "_none_"
+    text = (
+        f"# Model performance & calibration — {delivery_date}\n\n"
+        f"**after_game_status**: `pending_outcomes`\n\n"
+        f"This file will be re-written by "
+        f"`scripts/score_daily_pmf_delivery_after_game.py` once box-score "
+        f"finals are loaded into `data/player_game_stats.parquet` for "
+        f"{delivery_date}.\n\n"
+        f"## Rollup at delivery time\n\n"
+        f"- delivery_date: `{delivery_date}`\n"
+        f"- props in delivery: **{n_rows}**\n"
+        f"- finality_status: `{manifest.get('finality_status')}`\n"
+        f"- finality_blockers: {blockers}\n"
+        f"- model_version: `{manifest.get('model_version')}`\n\n"
+        f"## What this file will contain after scoring\n\n"
+        f"- props scored, PMF NLL, RPS, mean absolute error\n"
+        f"- assigned probability to the realized outcome\n"
+        f"- model logloss / Brier per (stat, role_bucket) where market "
+        f"lines exist\n"
+        f"- CLV summary where morning and close snapshots both exist\n"
+        f"- model vs market logloss / Brier comparison **only when "
+        f"directly measured** — no claims of market superiority "
+        f"otherwise\n"
+    )
+    (pkg_dir / "MODEL_PERFORMANCE_AND_CALIBRATION.md").write_text(text)
 
 
 # ── Main orchestration ──────────────────────────────────────────────────
@@ -1623,12 +1708,16 @@ def main() -> int:
                           model_only_path=model_only_path,
                           run_status_html=run_status_html,
                           run_status_md=run_status_md)
+    _write_model_performance_stub(
+        pkg_dir=derek_dir, delivery_date=delivery_date,
+        n_rows=int(len(canonical)), manifest=manifest)
     print(f"  wrote {derek_dir.relative_to(REPO_ROOT)}")
 
     # 8. Write Wizard of Odds package.
     woo_dir = REPO_ROOT / "deliveries" / delivery_date / "wizard_of_odds"
     write_woo_package(canonical, fair_board, market_comp, edges,
-                       outcome_long, pkg_dir=woo_dir, manifest=manifest)
+                       outcome_long, pkg_dir=woo_dir, manifest=manifest,
+                       run_status_md=run_status_md)
     print(f"  wrote {woo_dir.relative_to(REPO_ROOT)}")
     print(f"  publishable_edges: {len(edges)} rows "
           f"(edge ≥ {args.edge_threshold})")

@@ -1,37 +1,43 @@
 name: NBA PMF Delivery — Daily Pipeline
 
 # Four jobs aligned to the snapshot lifecycle in
-# docs/daily_pmf_delivery_spec.md:
+# docs/daily_pmf_delivery_spec.md and orchestrated by
+# scripts/run_daily_delivery_pipeline.py:
 #
-#   13:30 UTC = 8:30 AM ET  morning            (>=4 hr to first tip)
-#   22:30 UTC = 5:30 PM ET  pre_close          (~30 min before early-window tips)
-#   23:50 UTC = 6:50 PM ET  close_lock         (T-5 min from typical tip)
-#   06:30 UTC = 1:30 AM ET  after_game         (post-final scoring)
+#   13:30 UTC = 8:30 AM ET  morning      (>=4 hr to first tip)
+#   22:30 UTC = 5:30 PM ET  pre_close    (~30 min before early-window tips)
+#   23:50 UTC = 6:50 PM ET  close_lock   (T-5 min from typical tip)
+#   06:30 UTC = 1:30 AM ET  after_game   (post-final scoring of yesterday)
 #
-# Each job:
-#   1. runs scripts/refresh_daily_inputs.py to pull odds (regions us+us2)
-#      and write data/freshness_manifest/{date}.json
-#   2. runs scripts/build_daily_pmf_delivery.py with the appropriate
-#      --snapshot value, which consumes the freshness manifest
-#   3. (after_game only) runs scripts/score_daily_pmf_delivery_after_game.py
+# The wrapper invokes (in order, per mode):
+#   1. scripts/refresh_daily_inputs.py            (us+us2 odds + freshness manifest)
+#   2. scripts/predict.py                         (morning + full_day, --predict only)
+#   3. scripts/build_daily_pmf_delivery.py        (snapshot=mode)
+#   4. scripts/score_daily_pmf_delivery_after_game.py  (after_game / full_day)
+#   5. scripts/build_deliveries_index.py          (always, last)
+#
+# Secrets are referenced exclusively as env vars; never echoed.
+#   - ODDS_API_KEY  required for live odds fetch
+#   - BDL_API_KEY   required for live BDL injury / lineup / box-score fetch
+#                   (predict.py degrades gracefully when missing — the
+#                    wrapper's --predict flag is opt-in)
 #
 # Hard rules echoed by every job:
-#   - never logs ODDS_API_KEY
-#   - never stages data/odds_api/, data/freshness_manifest/, artifacts/, or
-#     scratch files. Only the deliveries/{date}/ folders and the model_only
-#     canonical_source are staged.
-#   - never wires the failed Phase 10D / 10D.2 TOV overlays.
+#   - never log ODDS_API_KEY or BDL_API_KEY
+#   - never stage data/odds_api/, data/freshness_manifest/, artifacts/, logs
+#     dashboards, scratch files, or failed Phase 10D / 10D.2 reports
+#   - never wire the failed Phase 10D / 10D.2 TOV overlays
 
 on:
   schedule:
-    - cron: '30 13 * * *'   # 8:30 AM ET — morning
-    - cron: '30 22 * * *'   # 5:30 PM ET — pre_close
-    - cron: '50 23 * * *'   # 6:50 PM ET — close_lock
-    - cron: '30 6 * * *'    # 1:30 AM ET — after_game (yesterday's slate)
+    - cron: '30 13 * * *'
+    - cron: '30 22 * * *'
+    - cron: '50 23 * * *'
+    - cron: '30 6 * * *'
   workflow_dispatch:
     inputs:
-      snapshot:
-        description: "Snapshot type to run"
+      mode:
+        description: "Wrapper mode"
         required: true
         default: morning
         type: choice
@@ -40,10 +46,17 @@ on:
           - pre_close
           - close_lock
           - after_game
+          - full_day
       delivery_date:
         description: "Delivery date (YYYY-MM-DD); blank = today (UTC)"
         required: false
         default: ""
+      run_predict:
+        description: "Run scripts/predict.py before refresh (morning/full_day only). Requires BDL_API_KEY."
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 env:
   PYTHON_VERSION: "3.11"
@@ -53,19 +66,19 @@ jobs:
   # ── Morning ───────────────────────────────────────────────────────────────
   morning:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.event.inputs.snapshot == 'morning' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'morning') ||
       github.event.schedule == '30 13 * * *'
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy requests
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
       - name: Resolve delivery date
         id: d
         run: |
@@ -74,27 +87,27 @@ jobs:
           else
             echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
-      - name: Refresh inputs (us + us2 odds, freshness manifest)
+      - name: Run delivery pipeline (morning)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python scripts/refresh_daily_inputs.py \
+          PREDICT_FLAG=""
+          if [ "${{ github.event.inputs.run_predict }}" = "true" ]; then
+            PREDICT_FLAG="--predict"
+          fi
+          python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
+            --mode morning \
             --regions us us2 \
-            --snapshot-type morning_7am \
-            --max-events 20
-      - name: Build delivery (morning)
-        run: |
-          python scripts/build_daily_pmf_delivery.py \
-            --date ${{ steps.d.outputs.date }} \
-            --snapshot morning
-      - name: Stage approved code/docs and validated delivery folder
+            --rebuild-canonical $PREDICT_FLAG
+      - name: Stage and commit approved files
         run: |
           git config user.name "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add deliveries/${{ steps.d.outputs.date }}/canonical_source \
-                  deliveries/${{ steps.d.outputs.date }}/pmf_model_review_package \
-                  deliveries/${{ steps.d.outputs.date }}/wizard_of_odds
+          git add deliveries/${{ steps.d.outputs.date }} \
+                  deliveries/README.md \
+                  deliveries/index.html
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "morning delivery ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do
@@ -106,17 +119,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.event.inputs.snapshot == 'pre_close' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'pre_close') ||
       github.event.schedule == '30 22 * * *'
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy requests
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
       - name: Resolve delivery date
         id: d
         run: |
@@ -125,27 +138,22 @@ jobs:
           else
             echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
-      - name: Refresh inputs (us + us2 odds)
+      - name: Run delivery pipeline (pre_close)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python scripts/refresh_daily_inputs.py \
+          python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
-            --regions us us2 \
-            --snapshot-type close_or_lock \
-            --max-events 20
-      - name: Build delivery (pre_close)
-        run: |
-          python scripts/build_daily_pmf_delivery.py \
-            --date ${{ steps.d.outputs.date }} \
-            --snapshot pre_close
-      - name: Stage delivery folder
+            --mode pre_close \
+            --regions us us2
+      - name: Stage and commit
         run: |
           git config user.name "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add deliveries/${{ steps.d.outputs.date }}/canonical_source \
-                  deliveries/${{ steps.d.outputs.date }}/pmf_model_review_package \
-                  deliveries/${{ steps.d.outputs.date }}/wizard_of_odds
+          git add deliveries/${{ steps.d.outputs.date }} \
+                  deliveries/README.md \
+                  deliveries/index.html
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "pre_close delivery ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do
@@ -157,17 +165,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.event.inputs.snapshot == 'close_lock' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'close_lock') ||
       github.event.schedule == '50 23 * * *'
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy requests
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
       - name: Resolve delivery date
         id: d
         run: |
@@ -176,27 +184,22 @@ jobs:
           else
             echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
-      - name: Refresh inputs (us + us2 odds)
+      - name: Run delivery pipeline (close_lock)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python scripts/refresh_daily_inputs.py \
+          python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
-            --regions us us2 \
-            --snapshot-type close_or_lock \
-            --max-events 20
-      - name: Build delivery (close_lock)
-        run: |
-          python scripts/build_daily_pmf_delivery.py \
-            --date ${{ steps.d.outputs.date }} \
-            --snapshot close_lock
-      - name: Stage delivery folder
+            --mode close_lock \
+            --regions us us2
+      - name: Stage and commit
         run: |
           git config user.name "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add deliveries/${{ steps.d.outputs.date }}/canonical_source \
-                  deliveries/${{ steps.d.outputs.date }}/pmf_model_review_package \
-                  deliveries/${{ steps.d.outputs.date }}/wizard_of_odds
+          git add deliveries/${{ steps.d.outputs.date }} \
+                  deliveries/README.md \
+                  deliveries/index.html
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "close_lock delivery ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do
@@ -208,17 +211,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.event.inputs.snapshot == 'after_game' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'after_game') ||
       github.event.schedule == '30 6 * * *'
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy requests
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
       - name: Resolve delivery date (yesterday)
         id: d
         run: |
@@ -228,21 +231,20 @@ jobs:
             echo "date=$(date -u -d 'yesterday' +%Y-%m-%d 2>/dev/null || \
               date -u -v-1d +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
-      - name: Refresh inputs (no odds fetch)
+      - name: Run delivery pipeline (after_game)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python scripts/refresh_daily_inputs.py \
+          python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
-            --no-odds-fetch
-      - name: Score after-game outcomes
-        run: |
-          python scripts/score_daily_pmf_delivery_after_game.py \
-            --date ${{ steps.d.outputs.date }}
-      - name: Stage scored delivery folder
+            --mode after_game
+      - name: Stage and commit
         run: |
           git config user.name "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add deliveries/${{ steps.d.outputs.date }}/pmf_model_review_package \
-                  deliveries/${{ steps.d.outputs.date }}/wizard_of_odds
+          git add deliveries/${{ steps.d.outputs.date }} \
+                  deliveries/README.md \
+                  deliveries/index.html
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "after_game scoring ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do

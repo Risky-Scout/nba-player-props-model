@@ -1,191 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Model Review Overview — 2026-04-27 Late NBA Slate</title>
-<style>
-:root { color-scheme: dark; }
-* { box-sizing: border-box; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Text",
-               system-ui, sans-serif;
-  margin: 0; padding: 24px;
-  background: #0f1419; color: #e8e8e8;
-  line-height: 1.5; font-size: 13px;
-}
-h1 { font-size: 22px; margin: 0 0 4px; color: #f0f0f0; font-weight: 600; }
-h2 { font-size: 15px; margin: 0 0 8px; color: #f0f0f0;
-     border-bottom: 1px solid #2a3038; padding-bottom: 6px; font-weight: 600; }
-.subtitle { color: #8a96a3; font-size: 13px; margin-bottom: 4px; }
-.filenote { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px;
-            color: #6cc9d4; margin-bottom: 18px; }
-.banner {
-  background: #2a1f10; border-left: 4px solid #f0a500;
-  padding: 10px 14px; margin: 16px 0;
-  border-radius: 3px; font-size: 13px; font-weight: 500; color: #ffd989;
-}
-.banner strong { color: #ffe8a3; }
-.links { margin-bottom: 16px; }
-.links a { color: #6cc9d4; margin-right: 14px; text-decoration: none;
-           font-size: 12px; border-bottom: 1px dotted #2a3038; }
-.links a:hover { color: #b3e5e8; border-bottom-color: #6cc9d4; }
-.section { margin-top: 24px; }
-.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px;
-      font-size: 12px; }
-.kv .k { color: #8a96a3; }
-.kv .v { color: #e8e8e8; font-family: ui-monospace, monospace; }
-.note { background: #1a1f26; border-left: 3px solid #6cc9d4;
-        padding: 10px 14px; margin: 12px 0; border-radius: 3px; font-size: 12px; }
-.note strong { color: #f0f0f0; }
-.evidence { font-size: 12px; color: #cfd8dc; }
-.evidence ul { margin: 4px 0 8px 18px; padding: 0; }
-.evidence li { margin-bottom: 4px; }
-.pos { color: #4caf50; }
-.neg { color: #ef5350; }
-.neutral { color: #8a96a3; }
+<!doctype html><html><head><meta charset=utf-8><title>Model Review Overview</title><style>
+body{font-family:system-ui;max-width:1100px;margin:2rem auto;padding:0 1rem;color:#222}
+h1{margin-top:0}h2{margin-top:1.6rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}
+code{background:#f3f3f3;padding:0.1em 0.3em;border-radius:3px;font-size:0.95em}
+.callout{background:#fff8d6;border-left:4px solid #d4a900;padding:0.6rem 1rem;margin:1rem 0}
+.callout-warn{background:#ffe8e0;border-left:4px solid #c33;padding:0.6rem 1rem;margin:1rem 0}
+.pmf-card{border:1px solid #ddd;border-radius:6px;padding:0.8rem 1rem;margin:0.8rem 0;background:#fafafa}
+.pmf-head{display:flex;justify-content:space-between;font-weight:600}
+.pmf-meta{color:#666;font-size:0.9em;margin:0.2rem 0 0.6rem}
+.bars{display:flex;align-items:flex-end;gap:2px;height:90px;margin:0.4rem 0 0.2rem;background:#fff;border:1px solid #eee;padding:4px}
+.bar{display:flex;flex-direction:column;align-items:center;min-width:14px;font-size:0.7em;color:#666}
+.bar > .fill{background:#3b6;border-radius:1px 1px 0 0;width:100%}
+.bar > .label{margin-top:2px}
+table{border-collapse:collapse;margin:0.6rem 0}
+th,td{padding:0.3rem 0.6rem;border:1px solid #ddd;text-align:left;font-size:0.92em}
+th{background:#f0f0f0}
+</style></head><body><h1>Model Review Overview</h1>
+<p><b>Delivery date:</b> 2026-04-27 &nbsp;&nbsp;
+<b>Rows:</b> 114 &nbsp;&nbsp;
+<b>Model version:</b> <code>bb723eb#phase10c</code></p>
 
-.filters { background: #161b21; border: 1px solid #2a3038;
-           padding: 12px; margin-bottom: 16px; display: flex;
-           gap: 10px; flex-wrap: wrap; align-items: center; border-radius: 4px; }
-.filters label { font-size: 11px; color: #8a96a3; margin-right: 4px; }
-.filters input, .filters select {
-  padding: 6px 8px; background: #1f262d; border: 1px solid #3a4048;
-  color: #e8e8e8; border-radius: 3px; font-family: inherit; font-size: 12px;
-}
-.filter-help {
-  background: #14202a; border: 1px solid #244055; padding: 8px 12px;
-  border-radius: 3px; font-size: 12px; color: #b3d4e8; margin-bottom: 12px;
-}
-table.summary { width: 100%; border-collapse: collapse; font-size: 12px;
-                font-variant-numeric: tabular-nums; }
-table.summary th { background: #1a1f26; padding: 6px 8px; text-align: left;
-                   border-bottom: 1px solid #3a4048; cursor: pointer;
-                   user-select: none; font-weight: 600; }
-table.summary th:hover { background: #232a31; }
-table.summary td { padding: 4px 8px; border-bottom: 1px solid #1c2228; }
-table.summary tr.row:hover td { background: #161b21; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-        gap: 12px; margin-top: 8px; }
-.card { background: #161b21; border: 1px solid #2a3038; padding: 12px 14px;
-        border-radius: 4px; transition: border-color 0.15s; }
-.card.edge-pos { border-left: 3px solid #4caf50; }
-.card.edge-neg { border-left: 3px solid #ef5350; }
-.card.edge-null { border-left: 3px solid #555c63; }
-.card h3 { margin: 0 0 4px; font-size: 14px; color: #f0f0f0; font-weight: 600; }
-.card .meta { font-size: 11px; color: #8a96a3; margin-bottom: 4px; }
-.card svg { width: 100%; height: 130px; display: block; margin: 6px 0; }
-.card .stats { display: grid; grid-template-columns: auto 1fr auto 1fr;
-               gap: 2px 12px; font-size: 11px; align-items: baseline; }
-.card .stats .label { color: #8a96a3; }
-.card .stats .val { color: #e8e8e8;
-                    font-family: ui-monospace, "SF Mono", monospace;
-                    text-align: right; }
-.card .fg3m-note { color: #f0a500; font-size: 10px; margin-top: 6px;
-                   font-style: italic; }
-.legend { font-size: 11px; color: #8a96a3; margin: 4px 0 0 0;
-          display: flex; gap: 16px; flex-wrap: wrap; }
-.legend span::before { content: "■ "; }
-.legend .l-bar::before { color: #5fb3d4; }
-.legend .l-line::before { content: "│ "; color: #f0a500; }
-.legend .l-mean::before { content: "│ "; color: #4caf50; }
-.legend .l-median::before { content: "│ "; color: #9b87f5; }
-.legend .l-mode::before { content: "● "; color: #ffffff; }
+<p><b>Source:</b> <code>/Users/josephshackelford/woo_models/Gen3_DARKO_Model/deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet</code></p>
 
-.lede { font-size: 14px; color: #cfd8dc; max-width: 720px; margin-bottom: 16px; }
-.examples { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 12px; margin-top: 12px; }
-table.counts { border-collapse: collapse; font-size: 12px; margin: 8px 0; }
-table.counts th { text-align: left; padding: 4px 12px 4px 0;
-                  color: #8a96a3; font-weight: 400; }
-table.counts td { font-family: ui-monospace, monospace; padding: 4px 0; }
-.cta { background: #1f3742; border: 1px solid #2c5466; padding: 12px 16px;
-       border-radius: 4px; margin-top: 24px; }
-.cta a { color: #6cc9d4; font-weight: 600; }
-.card .kv { font-size: 11px; }
-.card .kv .v { font-family: ui-monospace, monospace; }
-</style>
-</head>
-<body>
-<h1>Model Review Overview — 2026-04-27 Late NBA Slate</h1>
-<div class="subtitle">Standalone calibrated model PMFs; not market-anchored</div>
+<h2>Per-stat coverage</h2>
+<table><tr><th>stat</th><th>rows</th></tr><tr><td>ast</td><td>15</td></tr><tr><td>blk</td><td>15</td></tr><tr><td>fg3m</td><td>21</td></tr><tr><td>pts</td><td>20</td></tr><tr><td>reb</td><td>29</td></tr><tr><td>stl</td><td>14</td></tr></table>
 
-<div class="banner">
-  <strong>Standalone model PMFs — not market-anchored.</strong>
-  Market columns are reference/comparison only.
-</div>
+<h2>Per-role coverage</h2>
+<table><tr><th>role</th><th>rows</th></tr><tr><td>rotation</td><td>51</td></tr><tr><td>starter</td><td>44</td></tr><tr><td>bench</td><td>18</td></tr><tr><td>fringe</td><td>1</td></tr></table>
 
-<div class="links">
-  <a href="01_START_HERE.html">← Start here</a>
-  <a href="03_PMF_DISTRIBUTION_VIEWER.html">Open the full distribution viewer →</a>
-</div>
+<h2>Quality rollup</h2>
+<ul>
+<li>PMF validity OK: <b>100.0%</b></li>
+<li>max |Σp − 1|: <b>4.44e-16</b></li>
+<li>Market coverage breakdown:
+<table><tr><th>status</th><th>rows</th></tr><tr><td>full</td><td>114</td></tr></table></li>
+</ul>
 
-<p class="lede">
-  This package contains standalone model PMFs for the 2026-04-27 late
-  NBA slate (OKC @ PHX 21:30 ET; MIN @ DEN 22:30 ET). The canonical
-  PMFs are model-only.
-</p>
-
-<div class="section">
-  <h2>What's in this package</h2>
-  <ul class="evidence">
-    <li><code>01_START_HERE.html</code> — the index page (open first).</li>
-    <li><code>02_MODEL_REVIEW_OVERVIEW.html</code> — this page; counts + example PMFs + evidence.</li>
-    <li><code>03_PMF_DISTRIBUTION_VIEWER.html</code> — full visual dashboard, every PMF as a chart.</li>
-    <li><code>04_PROP_SUMMARY.csv</code> / <code>.parquet</code> — one row per (player × stat).</li>
-    <li><code>05_FULL_PMF_WIDE.csv</code> / <code>.parquet</code> — one row per (player × stat) with one column per outcome (<code>prob_0</code>, <code>prob_1</code>, …, <code>prob_N</code>). Spreadsheet-friendly.</li>
-    <li><code>06_OUTCOME_LEVEL_PROBABILITIES.csv</code> / <code>.parquet</code> — one row per (player × stat × outcome_k) with probability, CDF, and survival.</li>
-    <li><code>machine_readable/</code> — raw machine-readable copies of the canonical model PMFs (parquet, JSONL, plus a CSV with embedded JSON for the PMFs).</li>
-    <li><code>MODEL_EVALUATION_SUMMARY.md</code> — what is and isn't proven about the model.</li>
-  </ul>
-</div>
-
-<div class="section">
-  <h2>Counts</h2>
-  <table class="counts"><tr><th>total props (player × stat)</th><td>61</td></tr><tr><th>rows · Minnesota Timberwolves @ Denver Nuggets</th><td>31</td></tr><tr><th>rows · Oklahoma City Thunder @ Phoenix Suns</th><td>30</td></tr><tr><th>rows · AST</th><td>10</td></tr><tr><th>rows · FG3M</th><td>16</td></tr><tr><th>rows · PTS</th><td>14</td></tr><tr><th>rows · REB</th><td>21</td></tr><tr><th>rows · DEN</th><td>16</td></tr><tr><th>rows · MIN</th><td>15</td></tr><tr><th>rows · OKC</th><td>14</td></tr><tr><th>rows · PHX</th><td>16</td></tr><tr><th>rows · bench</th><td>4</td></tr><tr><th>rows · core</th><td>25</td></tr><tr><th>rows · rotation</th><td>18</td></tr><tr><th>rows · starter</th><td>14</td></tr></table>
-</div>
-
-<div class="section">
-  <h2>Distribution examples (highest-mean player per stat)</h2>
-  <div class="examples">
-    <div class="card edge-neg"><h3>Nikola Jokic — PTS</h3><div class="meta">Denver Nuggets vs Minnesota Timberwolves · role: starter · line: 30.5</div><svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="22.4" y="121.66" width="4.1" height="0.34" fill="#5fb3d4" /><rect x="27.2" y="108.84" width="4.1" height="13.16" fill="#5fb3d4" /><rect x="32.0" y="108.62" width="4.1" height="13.38" fill="#5fb3d4" /><rect x="36.8" y="107.81" width="4.1" height="14.19" fill="#5fb3d4" /><rect x="41.6" y="104.69" width="4.1" height="17.31" fill="#5fb3d4" /><rect x="46.4" y="107.64" width="4.1" height="14.36" fill="#5fb3d4" /><rect x="51.2" y="108.56" width="4.1" height="13.44" fill="#5fb3d4" /><rect x="56.1" y="109.22" width="4.1" height="12.78" fill="#5fb3d4" /><rect x="60.9" y="105.74" width="4.1" height="16.26" fill="#5fb3d4" /><rect x="65.7" y="101.36" width="4.1" height="20.64" fill="#5fb3d4" /><rect x="70.5" y="98.67" width="4.1" height="23.33" fill="#5fb3d4" /><rect x="75.3" y="94.42" width="4.1" height="27.58" fill="#5fb3d4" /><rect x="80.1" y="86.49" width="4.1" height="35.51" fill="#5fb3d4" /><rect x="85.0" y="88.18" width="4.1" height="33.82" fill="#5fb3d4" /><rect x="89.8" y="81.96" width="4.1" height="40.04" fill="#5fb3d4" /><rect x="94.6" y="71.87" width="4.1" height="50.13" fill="#5fb3d4" /><rect x="99.4" y="67.99" width="4.1" height="54.01" fill="#5fb3d4" /><rect x="104.2" y="61.08" width="4.1" height="60.92" fill="#5fb3d4" /><rect x="109.0" y="60.39" width="4.1" height="61.61" fill="#5fb3d4" /><rect x="113.8" y="64.26" width="4.1" height="57.74" fill="#5fb3d4" /><rect x="118.7" y="37.93" width="4.1" height="84.07" fill="#5fb3d4" /><rect x="123.5" y="28.67" width="4.1" height="93.33" fill="#5fb3d4" /><rect x="128.3" y="44.59" width="4.1" height="77.41" fill="#5fb3d4" /><rect x="133.1" y="34.37" width="4.1" height="87.63" fill="#5fb3d4" /><rect x="137.9" y="32.64" width="4.1" height="89.36" fill="#5fb3d4" /><rect x="142.7" y="29.29" width="4.1" height="92.71" fill="#5fb3d4" /><rect x="147.5" y="20.07" width="4.1" height="101.93" fill="#5fb3d4" /><rect x="152.4" y="20.58" width="4.1" height="101.42" fill="#5fb3d4" /><rect x="157.2" y="22.79" width="4.1" height="99.21" fill="#5fb3d4" /><rect x="162.0" y="15.92" width="4.1" height="106.08" fill="#5fb3d4" /><rect x="166.8" y="8.00" width="4.1" height="114.00" fill="#5fb3d4" /><rect x="171.6" y="22.71" width="4.1" height="99.29" fill="#5fb3d4" /><rect x="176.4" y="36.90" width="4.1" height="85.10" fill="#5fb3d4" /><rect x="181.2" y="12.26" width="4.1" height="109.74" fill="#5fb3d4" /><rect x="186.1" y="37.84" width="4.1" height="84.16" fill="#5fb3d4" /><rect x="190.9" y="33.40" width="4.1" height="88.60" fill="#5fb3d4" /><rect x="195.7" y="66.72" width="4.1" height="55.28" fill="#5fb3d4" /><rect x="200.5" y="63.18" width="4.1" height="58.82" fill="#5fb3d4" /><rect x="205.3" y="63.53" width="4.1" height="58.47" fill="#5fb3d4" /><rect x="210.1" y="70.65" width="4.1" height="51.35" fill="#5fb3d4" /><rect x="215.0" y="80.89" width="4.1" height="41.11" fill="#5fb3d4" /><rect x="219.8" y="78.89" width="4.1" height="43.11" fill="#5fb3d4" /><rect x="224.6" y="83.22" width="4.1" height="38.78" fill="#5fb3d4" /><rect x="229.4" y="104.20" width="4.1" height="17.80" fill="#5fb3d4" /><rect x="234.2" y="102.58" width="4.1" height="19.42" fill="#5fb3d4" /><rect x="239.0" y="106.04" width="4.1" height="15.96" fill="#5fb3d4" /><rect x="243.8" y="109.17" width="4.1" height="12.83" fill="#5fb3d4" /><rect x="248.7" y="107.16" width="4.1" height="14.84" fill="#5fb3d4" /><rect x="253.5" y="113.25" width="4.1" height="8.75" fill="#5fb3d4" /><rect x="258.3" y="111.82" width="4.1" height="10.18" fill="#5fb3d4" /><rect x="263.1" y="120.98" width="4.1" height="1.02" fill="#5fb3d4" /><rect x="267.9" y="117.00" width="4.1" height="5.00" fill="#5fb3d4" /><rect x="272.7" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="277.5" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="282.4" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="287.2" y="117.83" width="4.1" height="4.17" fill="#5fb3d4" /><rect x="292.0" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="296.8" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="301.6" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="306.4" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="311.2" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="316.1" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="320.9" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="325.7" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="330.5" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="335.3" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="340.1" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="345.0" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="349.8" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="354.6" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="359.4" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="364.2" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="369.0" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="373.8" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="378.7" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="383.5" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="388.3" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="393.1" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="397.9" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="402.7" y="122.00" width="4.1" height="0.00" fill="#5fb3d4" /><rect x="407.5" y="118.28" width="4.1" height="3.72" fill="#5fb3d4" /><line x1="22" y1="122" x2="412" y2="122" stroke="#3a4048" stroke-width="1" /><line x1="171.3" y1="8" x2="171.3" y2="122" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="3,2" /><text x="171.3" y="7" font-size="9" fill="#f0a500" text-anchor="middle">line 30.5</text><line x1="152.9" y1="8" x2="152.9" y2="122" stroke="#4caf50" stroke-width="1.2" stroke-dasharray="2,2" opacity="0.85" /><line x1="154.4" y1="8" x2="154.4" y2="122" stroke="#9b87f5" stroke-width="1.2" stroke-dasharray="1,2" opacity="0.85" /><circle cx="168.9" cy="8.00" r="3" fill="#ffffff" stroke="#1a1f26" stroke-width="1" opacity="0.9" /><text x="24.4" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">0</text><text x="217.0" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">40</text><text x="409.6" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">80</text><text x="2" y="16" font-size="9" fill="#cfcfcf">0.045</text><text x="2" y="121" font-size="9" fill="#cfcfcf">0</text></svg><div class="kv"><span class="k">mean</span><span class="v">26.694</span><span class="k">median</span><span class="v">27</span><span class="k">mode</span><span class="v">30</span><span class="k">p0</span><span class="v">0.0001</span><span class="k">p_over (model)</span><span class="v">0.3630</span><span class="k">p_over (market)</span><span class="v">0.5141</span><span class="k">edge</span><span class="v"><span class="neg">-0.1511</span></span></div></div><div class="card edge-neg"><h3>Nikola Jokic — REB</h3><div class="meta">Denver Nuggets vs Minnesota Timberwolves · role: starter · line: 13.5</div><svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="22.9" y="121.93" width="10.7" height="0.07" fill="#5fb3d4" /><rect x="35.5" y="115.19" width="10.7" height="6.81" fill="#5fb3d4" /><rect x="48.1" y="113.84" width="10.7" height="8.16" fill="#5fb3d4" /><rect x="60.7" y="112.40" width="10.7" height="9.60" fill="#5fb3d4" /><rect x="73.3" y="111.03" width="10.7" height="10.97" fill="#5fb3d4" /><rect x="85.8" y="106.51" width="10.7" height="15.49" fill="#5fb3d4" /><rect x="98.4" y="102.31" width="10.7" height="19.69" fill="#5fb3d4" /><rect x="111.0" y="88.50" width="10.7" height="33.50" fill="#5fb3d4" /><rect x="123.6" y="73.34" width="10.7" height="48.66" fill="#5fb3d4" /><rect x="136.2" y="59.97" width="10.7" height="62.03" fill="#5fb3d4" /><rect x="148.8" y="37.26" width="10.7" height="84.74" fill="#5fb3d4" /><rect x="161.3" y="38.06" width="10.7" height="83.94" fill="#5fb3d4" /><rect x="173.9" y="13.83" width="10.7" height="108.17" fill="#5fb3d4" /><rect x="186.5" y="8.00" width="10.7" height="114.00" fill="#5fb3d4" /><rect x="199.1" y="16.94" width="10.7" height="105.06" fill="#5fb3d4" /><rect x="211.7" y="16.06" width="10.7" height="105.94" fill="#5fb3d4" /><rect x="224.2" y="26.47" width="10.7" height="95.53" fill="#5fb3d4" /><rect x="236.8" y="46.16" width="10.7" height="75.84" fill="#5fb3d4" /><rect x="249.4" y="55.09" width="10.7" height="66.91" fill="#5fb3d4" /><rect x="262.0" y="82.11" width="10.7" height="39.89" fill="#5fb3d4" /><rect x="274.6" y="89.20" width="10.7" height="32.80" fill="#5fb3d4" /><rect x="287.1" y="104.37" width="10.7" height="17.63" fill="#5fb3d4" /><rect x="299.7" y="106.74" width="10.7" height="15.26" fill="#5fb3d4" /><rect x="312.3" y="112.67" width="10.7" height="9.33" fill="#5fb3d4" /><rect x="324.9" y="115.15" width="10.7" height="6.85" fill="#5fb3d4" /><rect x="337.5" y="118.76" width="10.7" height="3.24" fill="#5fb3d4" /><rect x="350.0" y="119.59" width="10.7" height="2.41" fill="#5fb3d4" /><rect x="362.6" y="120.86" width="10.7" height="1.14" fill="#5fb3d4" /><rect x="375.2" y="121.53" width="10.7" height="0.47" fill="#5fb3d4" /><rect x="387.8" y="121.35" width="10.7" height="0.65" fill="#5fb3d4" /><rect x="400.4" y="120.88" width="10.7" height="1.12" fill="#5fb3d4" /><line x1="22" y1="122" x2="412" y2="122" stroke="#3a4048" stroke-width="1" /><line x1="198.1" y1="8" x2="198.1" y2="122" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="3,2" /><text x="198.1" y="7" font-size="9" fill="#f0a500" text-anchor="middle">line 13.5</text><line x1="196.4" y1="8" x2="196.4" y2="122" stroke="#4caf50" stroke-width="1.2" stroke-dasharray="2,2" opacity="0.85" /><line x1="191.8" y1="8" x2="191.8" y2="122" stroke="#9b87f5" stroke-width="1.2" stroke-dasharray="1,2" opacity="0.85" /><circle cx="191.8" cy="8.00" r="3" fill="#ffffff" stroke="#1a1f26" stroke-width="1" opacity="0.9" /><text x="28.3" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">0</text><text x="217.0" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">15</text><text x="405.7" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">30</text><text x="2" y="16" font-size="9" fill="#cfcfcf">0.096</text><text x="2" y="121" font-size="9" fill="#cfcfcf">0</text></svg><div class="kv"><span class="k">mean</span><span class="v">13.361</span><span class="k">median</span><span class="v">13</span><span class="k">mode</span><span class="v">13</span><span class="k">p0</span><span class="v">0.0001</span><span class="k">p_over (model)</span><span class="v">0.4891</span><span class="k">p_over (market)</span><span class="v">0.5384</span><span class="k">edge</span><span class="v"><span class="neg">-0.0493</span></span></div></div><div class="card edge-neg"><h3>Nikola Jokic — AST</h3><div class="meta">Denver Nuggets vs Minnesota Timberwolves · role: starter · line: 9.5</div><svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="23.1" y="121.94" width="12.8" height="0.06" fill="#5fb3d4" /><rect x="38.1" y="110.31" width="12.8" height="11.69" fill="#5fb3d4" /><rect x="53.1" y="107.49" width="12.8" height="14.51" fill="#5fb3d4" /><rect x="68.1" y="101.14" width="12.8" height="20.86" fill="#5fb3d4" /><rect x="83.1" y="93.11" width="12.8" height="28.89" fill="#5fb3d4" /><rect x="98.1" y="60.53" width="12.8" height="61.47" fill="#5fb3d4" /><rect x="113.1" y="47.93" width="12.8" height="74.07" fill="#5fb3d4" /><rect x="128.1" y="36.04" width="12.8" height="85.96" fill="#5fb3d4" /><rect x="143.1" y="8.00" width="12.8" height="114.00" fill="#5fb3d4" /><rect x="158.1" y="10.25" width="12.8" height="111.75" fill="#5fb3d4" /><rect x="173.1" y="12.17" width="12.8" height="109.83" fill="#5fb3d4" /><rect x="188.1" y="29.91" width="12.8" height="92.09" fill="#5fb3d4" /><rect x="203.1" y="43.39" width="12.8" height="78.61" fill="#5fb3d4" /><rect x="218.1" y="70.90" width="12.8" height="51.10" fill="#5fb3d4" /><rect x="233.1" y="88.23" width="12.8" height="33.77" fill="#5fb3d4" /><rect x="248.1" y="105.19" width="12.8" height="16.81" fill="#5fb3d4" /><rect x="263.1" y="110.56" width="12.8" height="11.44" fill="#5fb3d4" /><rect x="278.1" y="114.68" width="12.8" height="7.32" fill="#5fb3d4" /><rect x="293.1" y="118.13" width="12.8" height="3.87" fill="#5fb3d4" /><rect x="308.1" y="119.99" width="12.8" height="2.01" fill="#5fb3d4" /><rect x="323.1" y="120.62" width="12.8" height="1.38" fill="#5fb3d4" /><rect x="338.1" y="120.94" width="12.8" height="1.06" fill="#5fb3d4" /><rect x="353.1" y="121.76" width="12.8" height="0.24" fill="#5fb3d4" /><rect x="368.1" y="121.74" width="12.8" height="0.26" fill="#5fb3d4" /><rect x="383.1" y="122.00" width="12.8" height="0.00" fill="#5fb3d4" /><rect x="398.1" y="121.74" width="12.8" height="0.26" fill="#5fb3d4" /><line x1="22" y1="122" x2="412" y2="122" stroke="#3a4048" stroke-width="1" /><line x1="172.0" y1="8" x2="172.0" y2="122" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="3,2" /><text x="172.0" y="7" font-size="9" fill="#f0a500" text-anchor="middle">line 9.5</text><line x1="164.8" y1="8" x2="164.8" y2="122" stroke="#4caf50" stroke-width="1.2" stroke-dasharray="2,2" opacity="0.85" /><line x1="164.5" y1="8" x2="164.5" y2="122" stroke="#9b87f5" stroke-width="1.2" stroke-dasharray="1,2" opacity="0.85" /><circle cx="149.5" cy="8.00" r="3" fill="#ffffff" stroke="#1a1f26" stroke-width="1" opacity="0.9" /><text x="29.5" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">0</text><text x="224.5" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">13</text><text x="404.5" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">25</text><text x="2" y="16" font-size="9" fill="#cfcfcf">0.122</text><text x="2" y="121" font-size="9" fill="#cfcfcf">0</text></svg><div class="kv"><span class="k">mean</span><span class="v">9.018</span><span class="k">median</span><span class="v">9</span><span class="k">mode</span><span class="v">8</span><span class="k">p0</span><span class="v">0.0001</span><span class="k">p_over (model)</span><span class="v">0.4394</span><span class="k">p_over (market)</span><span class="v">0.4739</span><span class="k">edge</span><span class="v"><span class="neg">-0.0345</span></span></div></div><div class="card edge-neg"><h3>Jamal Murray — FG3M</h3><div class="meta">Denver Nuggets vs Minnesota Timberwolves · role: starter · line: 3.5</div><svg viewBox="0 0 420 140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect x="23.8" y="121.98" width="20.7" height="0.02" fill="#5fb3d4" /><rect x="48.2" y="14.98" width="20.7" height="107.02" fill="#5fb3d4" /><rect x="72.6" y="8.00" width="20.7" height="114.00" fill="#5fb3d4" /><rect x="97.0" y="38.04" width="20.7" height="83.96" fill="#5fb3d4" /><rect x="121.3" y="72.81" width="20.7" height="49.19" fill="#5fb3d4" /><rect x="145.7" y="100.12" width="20.7" height="21.88" fill="#5fb3d4" /><rect x="170.1" y="108.00" width="20.7" height="14.00" fill="#5fb3d4" /><rect x="194.5" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="218.8" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="243.2" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="267.6" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="292.0" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="316.3" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="340.7" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="365.1" y="122.00" width="20.7" height="0.00" fill="#5fb3d4" /><rect x="389.5" y="120.55" width="20.7" height="1.45" fill="#5fb3d4" /><line x1="22" y1="122" x2="412" y2="122" stroke="#3a4048" stroke-width="1" /><line x1="119.5" y1="8" x2="119.5" y2="122" stroke="#f0a500" stroke-width="1.5" stroke-dasharray="3,2" /><text x="119.5" y="7" font-size="9" fill="#f0a500" text-anchor="middle">line 3.5</text><line x1="96.4" y1="8" x2="96.4" y2="122" stroke="#4caf50" stroke-width="1.2" stroke-dasharray="2,2" opacity="0.85" /><line x1="82.9" y1="8" x2="82.9" y2="122" stroke="#9b87f5" stroke-width="1.2" stroke-dasharray="1,2" opacity="0.85" /><circle cx="82.9" cy="8.00" r="3" fill="#ffffff" stroke="#1a1f26" stroke-width="1" opacity="0.9" /><text x="34.2" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">0</text><text x="229.2" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">8</text><text x="399.8" y="135" font-size="9" fill="#cfcfcf" text-anchor="middle">15</text><text x="2" y="16" font-size="9" fill="#cfcfcf">0.291</text><text x="2" y="121" font-size="9" fill="#cfcfcf">0</text></svg><div class="kv"><span class="k">mean</span><span class="v">2.551</span><span class="k">median</span><span class="v">2</span><span class="k">mode</span><span class="v">2</span><span class="k">p0</span><span class="v">0.0001</span><span class="k">p_over (model)</span><span class="v">0.2210</span><span class="k">p_over (market)</span><span class="v">0.4070</span><span class="k">edge</span><span class="v"><span class="neg">-0.1860</span></span></div><div class="fg3m-note">FG3M uses validated k≥7 tail-shrink correction.</div></div>
-  </div>
-</div>
-
-<div class="section">
-  <h2>How the model PMFs were built</h2>
-  <ul class="evidence">
-    <li>Source predictions come from the local pregame predict pipeline output.</li>
-    <li>Each raw PMF is active-conditioned: <code>pmf_active = active_condition_pmf(raw_pmf, p_inactive)</code>, where <code>p_inactive</code> comes from the locally-computed minutes distribution.</li>
-    <li>Role-aware Phase-8 calibration: <code>RoleAwarePMFCalibrator.apply(pmf_active, role_bucket=…)</code> across six buckets (inactive_risk, fringe, bench, rotation, core, starter).</li>
-    <li>FG3M only: validated tail-shrink at <code>k ≥ 7</code> with weight <code>w = 0.2</code> (mass-preserving), correcting the upper-tail overshoot from the Phase-8 audit.</li>
-  </ul>
-</div>
-
-<div class="section">
-  <h2>Calibration / backtest evidence</h2>
-  <ul class="evidence">
-    <li>Phase 8 walk-forward OOF: 247,625 rows (15 folds × 5 stats). 0 validity failures.</li>
-    <li>Role-aware calibration: 6 buckets. Active-conditioned target.</li>
-    <li>PTS/REB/AST/TOV: stat-level Δnll −0.028 to −0.073 vs raw; calibrated mean within ~1% of observed; calibrated <code>p_over</code> at standard lines within 0.005 of observed; all 30 (stat × bucket) cells improved.</li>
-    <li>FG3M tail correction (k≥7, w=0.2) selected by time-safe grid validation. Mean error +0.293 → +0.012; P(k≥7) error +0.020 → −0.001.</li>
-    <li>Matched closing-line audit (n=3,818): de-vigged closing market beats standalone calibrated model on log-loss in 9 of 11 cohorts (95% CI). <strong>No standalone market-beating claim is made.</strong></li>
-  </ul>
-</div>
-
-<div class="section">
-  <h2>Honest limitations</h2>
-  <ul class="evidence">
-    <li><strong>No standalone market-beating claim.</strong> The model did not beat the closing market on the latest matched audit.</li>
-    <li><strong>Source predictions are from the morning predict run</strong> (mtime ~14:27 ET 2026-04-27). Late-breaking injuries / lineup changes may not be fully reflected.</li>
-    <li><strong>Local availability table is stale</strong> (last refreshed 2026-04-18, 0 rows for 2026-04-27). Player-active priors fall back to history.</li>
-    <li><strong>TOV is absent from this slate</strong> because the source <code>all_props</code> file contained no TOV offerings for these two games.</li>
-  </ul>
-</div>
-
-<div class="cta">
-  Open the full dashboard: <a href="03_PMF_DISTRIBUTION_VIEWER.html">03_PMF_DISTRIBUTION_VIEWER.html</a>
-</div>
-
-</body>
-</html>
+<div class="callout">PMFs are model-only. No market anchoring.</div>
+</body></html>

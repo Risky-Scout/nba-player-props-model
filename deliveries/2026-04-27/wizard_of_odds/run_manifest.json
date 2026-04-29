@@ -1,0 +1,156 @@
+{
+  "delivery_date": "2026-04-27",
+  "pipeline_run_id": "9da0cf79-d99f-453d-92cc-de3b4001b40d",
+  "snapshot_type": "morning",
+  "snapshot_time_utc": "2026-04-29T19:57:11Z",
+  "model_version": "bb723eb#phase10c",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
+  "finality_status": "provisional",
+  "finality_blocker_codes": [
+    "injury_very_stale",
+    "lineup_unconfirmed",
+    "missing_stats:tov"
+  ],
+  "finality_blockers": [
+    {
+      "code": "injury_very_stale",
+      "detail": "data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.",
+      "required_to_resolve": "BDL_API_KEY for live BDL injury fetch OR refreshed nba_injury_reports.parquet, then re-run scripts/predict.py"
+    },
+    {
+      "code": "lineup_unconfirmed",
+      "detail": "role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.",
+      "required_to_resolve": "confirmed lineups source (BDL get_lineups or NBA injury report starter flag) wired into predict.py"
+    },
+    {
+      "code": "missing_stats:tov",
+      "detail": "Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.",
+      "required_to_resolve": "Phase 11C player-stat-grid prediction refactor: emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered. See docs/phase11_tov_structural_refit_plan.md."
+    }
+  ],
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "missing_from_prediction_source",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "tov",
+      "fg3m"
+    ],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pts",
+      "reb",
+      "stl"
+    ],
+    "missing": [
+      "tov"
+    ],
+    "extra_relative_to_supported": [
+      "blk",
+      "stl"
+    ]
+  },
+  "sources": {
+    "model_only_parquet": {
+      "path": "deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "2026-04-29T19:57:11.614352Z",
+      "sha256": "948a674545c381763ee965a86e813ff032acb10ee23a4ce5429470f47069c054",
+      "auto_built_from_predictions": true
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-04-27.parquet",
+      "mtime_utc": "2026-04-27T18:27:23.761456Z"
+    },
+    "availability_table": {
+      "path": "data/player_availability_asof.parquet",
+      "mtime_utc": "2026-04-19T01:47:03.906101Z",
+      "freshness_status": "very_stale"
+    },
+    "odds_snapshot": {
+      "path": "data/odds_api/processed/2026-04-27/odds_pairs_smoke_hist_846b0e9b691b5a291619fa22f96c7dfa_2026-04-27T110000Z.parquet",
+      "mtime_utc": "2026-04-28T20:14:42.506814Z",
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "fanatics",
+        "fanduel",
+        "williamhill_us"
+      ],
+      "coverage_status": "full",
+      "fetch_status": "consumed_from_disk"
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 2877,
+    "full_pmfs_wide": 114,
+    "market_comparison": 346,
+    "publishable_edges": 312
+  },
+  "quality_rollup": {
+    "pmf_valid_ok_pct": 1.0,
+    "pmf_sum_error_max": 4.440892098500626e-16,
+    "calibration_confidence": {
+      "high": 95,
+      "medium": 19
+    },
+    "market_coverage_status": {
+      "full": 114
+    },
+    "injury_freshness_status": {
+      "very_stale": 114
+    },
+    "lineup_freshness_status": {
+      "projected": 114
+    },
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 114
+    }
+  },
+  "warnings": [],
+  "no_odds_fetch": false,
+  "freshness_manifest": {
+    "path": "data/freshness_manifest/2026-04-27.json",
+    "built_at_utc": "2026-04-29T19:57:11Z",
+    "overall_status": "partial",
+    "odds_status": "skipped",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betrivers",
+      "bovada",
+      "draftkings",
+      "fanatics",
+      "fanduel",
+      "williamhill_us"
+    ],
+    "tov_status": "missing_from_prediction_source",
+    "predictions_mtime_utc": "2026-04-27T18:27:23.761456Z",
+    "availability_freshness_status": "very_stale",
+    "finals_finality_status": "finals_pending",
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 114
+    }
+  },
+  "after_game": {
+    "scored_at_utc": "2026-04-29T20:08:53Z",
+    "n_scored_pmf_rows": 0,
+    "n_scored_market_rows": 0,
+    "n_clv_rows": 0,
+    "nll_mean": null,
+    "rps_mean": null,
+    "abs_mean_error": null,
+    "status": "pending_outcomes"
+  }
+}

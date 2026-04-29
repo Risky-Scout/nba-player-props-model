@@ -1,0 +1,10 @@
+{
+  "after_game_status": "pending_outcomes",
+  "delivery_date": "2026-04-29",
+  "scored_at_utc": "2026-04-29T20:08:53Z",
+  "n_scored_pmf_rows": 0,
+  "n_scored_market_rows": 0,
+  "n_clv_rows": 0,
+  "outcomes_source": "data/player_game_stats.parquet",
+  "reason": "outcomes table has no rows for this delivery date; rerun once box-score finals land"
+}

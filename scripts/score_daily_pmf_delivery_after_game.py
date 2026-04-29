@@ -391,9 +391,12 @@ def main() -> int:
     delivery_date = args.date
     woo_dir = REPO_ROOT / "deliveries" / delivery_date / "wizard_of_odds"
     derek_dir = REPO_ROOT / "deliveries" / delivery_date / "pmf_model_review_package"
+    after_game_dir = (REPO_ROOT / "deliveries" / delivery_date
+                       / "after_game_scoring")
     if not woo_dir.exists():
         print(f"ERROR: WoO package missing for {delivery_date}: {woo_dir}")
         return 2
+    after_game_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"scoring delivery {delivery_date} …")
     canonical = pd.read_parquet(woo_dir / "full_pmfs_wide.parquet")
@@ -432,10 +435,16 @@ def main() -> int:
     clv_by_stat = _agg_clv_by(clv, "stat") if not clv.empty else pd.DataFrame()
     clv_by_book = _agg_clv_by(clv, "book") if not clv.empty else pd.DataFrame()
 
-    # Writers.
+    # Writers — Phase 11C layout: every artifact also lives under
+    # `after_game_scoring/`, and a status indicator is always written
+    # so the deliveries index can detect `pending_outcomes`.
+    after_game_status = ("scored" if not scoring.empty
+                         else "pending_outcomes")
     if not scoring.empty:
         _write(scoring, derek_dir / "after_game_scoring")
         _write(scoring, woo_dir / "after_game_clv_and_scoring")
+        _write(scoring, after_game_dir / "after_game_scoring")
+        _write(scoring, after_game_dir / "after_game_clv_and_scoring")
     summary_path = derek_dir / "after_game_summary.md"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     write_summary_md(scoring, market_scoring, clv,
@@ -443,15 +452,41 @@ def main() -> int:
     write_summary_md(scoring, market_scoring, clv,
                       path=woo_dir / "after_game_clv_and_scoring.md",
                       delivery_date=delivery_date)
+    # Mirror the same summary into the `after_game_scoring/` folder.
+    write_summary_md(scoring, market_scoring, clv,
+                      path=after_game_dir / "after_game_summary.md",
+                      delivery_date=delivery_date)
+    write_summary_md(scoring, market_scoring, clv,
+                      path=after_game_dir / "after_game_clv_and_scoring.md",
+                      delivery_date=delivery_date)
 
-    if not cal_by_stat.empty:
-        cal_by_stat.to_csv(woo_dir / "calibration_by_stat.csv", index=False)
-    if not cal_by_role.empty:
-        cal_by_role.to_csv(woo_dir / "calibration_by_role_bucket.csv", index=False)
-    if not clv_by_stat.empty:
-        clv_by_stat.to_csv(woo_dir / "clv_by_stat.csv", index=False)
-    if not clv_by_book.empty:
-        clv_by_book.to_csv(woo_dir / "clv_by_book.csv", index=False)
+    for fname, df in (("calibration_by_stat.csv", cal_by_stat),
+                       ("calibration_by_role_bucket.csv", cal_by_role),
+                       ("clv_by_stat.csv", clv_by_stat),
+                       ("clv_by_book.csv", clv_by_book)):
+        if not df.empty:
+            df.to_csv(woo_dir / fname, index=False)
+            df.to_csv(after_game_dir / fname, index=False)
+
+    # Status indicator — always written so the deliveries index does not
+    # have to special-case the absence of any scoring file.
+    status_payload = {
+        "after_game_status": after_game_status,
+        "delivery_date": delivery_date,
+        "scored_at_utc": (datetime.now(timezone.utc)
+                            .isoformat(timespec="seconds")
+                            .replace("+00:00", "Z")),
+        "n_scored_pmf_rows": int(len(scoring)),
+        "n_scored_market_rows": int(len(market_scoring)),
+        "n_clv_rows": int(len(clv)),
+        "outcomes_source": (str(args.outcomes) if args.outcomes
+                              else "data/player_game_stats.parquet"),
+        "reason": (None if not scoring.empty else
+                    "outcomes table has no rows for this delivery date; "
+                    "rerun once box-score finals land"),
+    }
+    (after_game_dir / "after_game_status.json").write_text(
+        json.dumps(status_payload, indent=2, default=str))
 
     # Append a short post-mortem to the manifest.
     manifest_path = woo_dir / "run_manifest.json"
@@ -462,6 +497,7 @@ def main() -> int:
             mf = {}
         mf.setdefault("after_game", {})
         mf["after_game"].update({
+            "status": after_game_status,
             "scored_at_utc": datetime.now(timezone.utc)
                               .isoformat(timespec="seconds")
                               .replace("+00:00", "Z"),
