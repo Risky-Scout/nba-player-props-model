@@ -1,0 +1,2 @@
+timestamp_utc,from_version,to_version,decision,gates_passed,gates_failed,reason,operator,code_commit
+2026-04-30T22:30:59+00:00,,2026-03-09-v12,bootstrap,,,Initial champion registration; no validation gates evaluated.,phase13a-bootstrap,53286fea7054921ce9e5ecdfc2d995acdb353c67

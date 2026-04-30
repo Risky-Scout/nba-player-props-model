@@ -1,0 +1,136 @@
+name: NBA PMF Model — Nightly Training & Calibration
+
+# Phase 13A — daily champion/challenger training, calibration, validation,
+# and (if gates pass) atomic promotion.
+#
+# Schedule rationale:
+#   06:30 UTC = 2:30 AM ET   after-game scoring (handled by daily_pmf_delivery.yml)
+#   09:30 UTC = 5:30 AM ET   THIS WORKFLOW: train challenger, calibrate, validate, maybe promote.
+#   14:30 UTC                hard cutoff — the orchestrator will refuse to promote past this point.
+#   15:00 UTC = 11 AM ET     first WoO monetization run (daily_pmf_delivery.yml).
+#
+# Hard rules echoed:
+#   - Production champion is unchanged on any failure path.
+#   - Promotion is forbidden at or after 14:30 UTC. The orchestrator enforces this.
+#   - Never market-anchor model-only PMFs.
+#   - Never reference Phase 10D / 10D.2 overlays.
+#   - Never log or stage secrets, raw API data, zips, logs, or scratch files.
+#   - Delivery scripts read only champion_pointer.json; they never reference
+#     artifacts/models/challengers/.
+#
+# Authorship: commits use Joseph Shackelford <josephshack@gmail.com> via
+# git config + --author flags. Never list Claude/Anthropic/bot as author.
+
+on:
+  schedule:
+    # 09:30 UTC daily — well after after-game scoring (06:30 UTC) and well
+    # before the 15:00 UTC WoO monetization run.
+    - cron: '30 9 * * *'
+  workflow_dispatch:
+    inputs:
+      as_of_date:
+        description: "As-of date (YYYY-MM-DD); blank = yesterday (UTC)"
+        required: false
+        default: ""
+      dry:
+        description: "Dry-run mode (challenger snapshots champion; no retraining). Recommended until full training driver is wired."
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      no_promote:
+        description: "Run all stages but never promote, even if gates pass."
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+
+  nightly_training:
+    runs-on: ubuntu-latest
+    # Hard cap: 240 minutes. The 09:30 UTC start + 240 min cap = 13:30 UTC
+    # latest finish, which is still 90 minutes before the 14:30 UTC promotion
+    # cutoff and 5.5 hours before the 15:00 UTC WoO publish window.
+    timeout-minutes: 240
+    concurrency:
+      group: phase13a-nightly-training
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
+
+      - name: Resolve as_of_date
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
+            echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
+          else
+            # Default = yesterday UTC (after-game scoring already ran at 06:30 UTC).
+            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d 2>/dev/null || \
+              date -u -v-1d +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bootstrap champion registry (idempotent)
+        run: |
+          python scripts/_bootstrap_champion_registry.py
+
+      - name: Run nightly training + calibration
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          DRY_FLAG="--dry-run"
+          if [ "${{ github.event.inputs.dry }}" = "false" ]; then
+            DRY_FLAG="--no-dry-run"
+          fi
+          NO_PROMOTE_FLAG=""
+          if [ "${{ github.event.inputs.no_promote }}" = "true" ]; then
+            NO_PROMOTE_FLAG="--no-promote"
+          fi
+          python scripts/run_nightly_training_and_calibration.py \
+            --as-of-date ${{ steps.d.outputs.date }} \
+            $DRY_FLAG $NO_PROMOTE_FLAG
+
+      - name: Run automation verification suite
+        run: |
+          python scripts/verify_training_automation.py \
+            --as-of-date ${{ steps.d.outputs.date }}
+
+      - name: Stage and commit registry + manifests (Joseph Shackelford authorship)
+        run: |
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          # Whitelist: only the lightweight registry + manifest JSON/MD/CSV.
+          # NEVER stage:
+          #   - data/odds_api, data/bdl, data/freshness_manifest, data/dunks_and_threes
+          #   - artifacts/raw, logs, *.zip, dashboards, scratch HTML
+          #   - failed Phase 10D / 10D.2 outputs
+          #   - any *.pkl or *.parquet under challenger or champion dirs
+          git add artifacts/models/registry/champion_pointer.json \
+                  artifacts/models/registry/model_registry.json \
+                  artifacts/models/registry/promotion_log.csv \
+                  artifacts/models/champion/README.md || true
+          # Manifests: JSON + MD only. Pickles/parquets are gitignored.
+          git add 'artifacts/models/challengers/${{ steps.d.outputs.date }}/*.json' \
+                  'artifacts/models/challengers/${{ steps.d.outputs.date }}/*.md' || true
+          git add 'artifacts/training_readiness/${{ steps.d.outputs.date }}/*.json' \
+                  'artifacts/training_readiness/${{ steps.d.outputs.date }}/*.md' || true
+          git add 'artifacts/nightly_training/${{ steps.d.outputs.date }}/*.json' \
+                  'artifacts/nightly_training/${{ steps.d.outputs.date }}/*.md' || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "phase13a nightly training run ${{ steps.d.outputs.date }}"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done

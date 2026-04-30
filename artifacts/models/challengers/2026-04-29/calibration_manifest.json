@@ -1,0 +1,63 @@
+{
+  "as_of_date": "2026-04-29",
+  "calibrator_type": "phase8-role-bucket",
+  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "details": {
+    "calibration_window": {
+      "fold_days": 28,
+      "min_train_days": 365,
+      "scheme": "rolling-walk-forward",
+      "training_window_end": "2026-04-01",
+      "training_window_start": "2025-04-01",
+      "validation_window_end": "2026-04-29",
+      "validation_window_start": "2026-04-02"
+    },
+    "calibrator_kind": "dry-run-champion-reference",
+    "champion_calibration_manifest_sha256": "54a102af463b6ec96c29bcaa81c7388e39c8035b937c5abc58020e24bdb46ec2",
+    "champion_pmf_cal_meta_sha256": "5d0a8286b0aff4ddc5067ebb6af01fde37f0e2b583f0df2b3fb54fca91238f04",
+    "samples_by_role_bucket": {
+      "ast": {},
+      "blk": {},
+      "fg3m": {},
+      "pts": {},
+      "reb": {},
+      "stl": {},
+      "tov": {}
+    },
+    "samples_by_stat": {
+      "ast": 31302,
+      "blk": 31302,
+      "fg3m": 31302,
+      "pts": 31302,
+      "reb": 31302,
+      "stl": 31302,
+      "tov": 0
+    },
+    "shrinkage_applied": {
+      "ast": false,
+      "blk": false,
+      "fg3m": false,
+      "pts": false,
+      "reb": false,
+      "stl": false,
+      "tov": true
+    },
+    "shrinkage_floor_samples": 50,
+    "tov_diagnostics": {
+      "mean_bias": null,
+      "nll": null,
+      "notes": "Diagnostics computed by validate_champion_vs_challenger.py.",
+      "p0_error": null,
+      "role_bucket_calibration": null,
+      "rps": null
+    }
+  },
+  "dry_run": true,
+  "finished_at_utc": "2026-04-30T22:49:23+00:00",
+  "notes": "Phase 13A dry-run inherits champion calibrators by reference. The rolling validation window is reported but no recompute is performed. Walk-forward only \u2014 no future leakage.",
+  "phase10d_overlays_in_use": false,
+  "schema_version": "1.0",
+  "started_at_utc": "2026-04-30T22:49:23+00:00",
+  "status": "ok",
+  "warnings": []
+}

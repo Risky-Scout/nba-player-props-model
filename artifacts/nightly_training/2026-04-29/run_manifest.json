@@ -1,0 +1,80 @@
+{
+  "as_of_date": "2026-04-29",
+  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "dry_run": true,
+  "final_status": "halted_no_promotion",
+  "finished_at_utc": "2026-04-30T22:49:24+00:00",
+  "halted_reason": "promotion_clock_cutoff",
+  "no_promote": false,
+  "phase10d_overlays_in_use": false,
+  "promotion_summary": {
+    "from_version": null,
+    "promoted": false,
+    "reason": null,
+    "to_version": null
+  },
+  "schema_version": "1.0",
+  "smoke_summary": {
+    "champion_pointer_smoke": true,
+    "derek_compat_smoke": true,
+    "woo_compat_smoke": true
+  },
+  "started_at_utc": "2026-04-30T22:49:20+00:00",
+  "steps": [
+    {
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "scripts/check_daily_training_readiness.py",
+        "--date",
+        "2026-04-29"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-04-29/logs/readiness.log",
+      "name": "readiness",
+      "tail": "{\"date\": \"2026-04-29\", \"overall_pass\": true, \"blocking_failed\": []}"
+    },
+    {
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "scripts/train_daily_challenger_model.py",
+        "--as-of-date",
+        "2026-04-29",
+        "--dry-run"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-04-29/logs/train_challenger.log",
+      "name": "train_challenger",
+      "tail": "}"
+    },
+    {
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "scripts/calibrate_daily_challenger_pmfs.py",
+        "--as-of-date",
+        "2026-04-29",
+        "--dry-run"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-04-29/logs/calibrate_challenger.log",
+      "name": "calibrate_challenger",
+      "tail": "}"
+    },
+    {
+      "command": [
+        "/Library/Developer/CommandLineTools/usr/bin/python3",
+        "scripts/validate_champion_vs_challenger.py",
+        "--as-of-date",
+        "2026-04-29"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-04-29/logs/validate.log",
+      "name": "validate",
+      "tail": "}"
+    },
+    {
+      "name": "promote",
+      "reason": "promotion_clock_unsafe_at_or_after_14:30_utc",
+      "skipped": true
+    }
+  ]
+}

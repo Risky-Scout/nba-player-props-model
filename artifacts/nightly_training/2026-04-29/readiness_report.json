@@ -1,0 +1,92 @@
+{
+  "as_of_date": "2026-04-29",
+  "checks": [
+    {
+      "detail": "rows through 2026-04-29: 83497",
+      "name": "outcomes_through_as_of_date",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "0 rows have date > 2026-04-29; trainer must filter them out",
+      "name": "future_dates_present_advisory",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "present=['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl'] missing=['tov']",
+      "name": "required_stat_columns_present",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "ok",
+      "name": "no_impossible_stat_values",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "83497 >= 5000",
+      "name": "min_training_rows",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "enough=['pts', 'reb', 'ast', 'fg3m', 'stl', 'blk'] thin=[]",
+      "name": "min_per_stat_rows",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "0 duplicates on 2026-04-29",
+      "name": "no_duplicate_player_game_rows_on_date",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "8 parquet snapshot(s) for 2026-04-29",
+      "name": "odds_snapshots_for_date",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "present",
+      "name": "freshness_manifest_for_date",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "ok",
+      "name": "no_promotion_lock_held",
+      "passed": true,
+      "severity": "blocking"
+    }
+  ],
+  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "counts": {
+    "odds_snapshot_files_on_date": 8,
+    "per_stat_rows_through_as_of": {
+      "ast": 83497,
+      "blk": 83497,
+      "fg3m": 83497,
+      "pts": 83497,
+      "reb": 83497,
+      "stl": 83497
+    },
+    "player_game_stats_rows_after_as_of": 0,
+    "player_game_stats_rows_on_as_of_date": 17,
+    "player_game_stats_rows_through_as_of": 83497,
+    "player_game_stats_total_rows": 83497,
+    "stat_columns_present": {
+      "ast": "ast",
+      "blk": "blk",
+      "fg3m": "fg3m",
+      "pts": "pts",
+      "reb": "reb",
+      "stl": "stl"
+    }
+  },
+  "generated_at_utc": "2026-04-30T22:49:21+00:00",
+  "overall_pass": true,
+  "schema_version": "1.0"
+}

@@ -1,0 +1,143 @@
+{
+  "as_of_date": "2026-04-29",
+  "challenger_metrics": {
+    "brier_logloss_at_market": null,
+    "by_line_bucket": {},
+    "by_role_bucket": {},
+    "by_stat": {
+      "ast": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "blk": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "fg3m": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "pts": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "reb": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "stl": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "tov": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      }
+    },
+    "clv": null,
+    "ece": null,
+    "edge_buckets": null,
+    "market_comparison": null,
+    "mean_error": null,
+    "median_error": null,
+    "nll": null,
+    "p0_calibration": null,
+    "rps": null,
+    "tov": {
+      "mean_bias": null,
+      "nll": null,
+      "p0_error": null,
+      "rps": null
+    }
+  },
+  "champion_metrics": {
+    "brier_logloss_at_market": null,
+    "by_line_bucket": {},
+    "by_role_bucket": {},
+    "by_stat": {
+      "ast": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "blk": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "fg3m": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "pts": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "reb": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "stl": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      },
+      "tov": {
+        "ece": null,
+        "nll": null,
+        "rps": null
+      }
+    },
+    "clv": null,
+    "ece": null,
+    "edge_buckets": null,
+    "market_comparison": null,
+    "mean_error": null,
+    "median_error": null,
+    "nll": null,
+    "p0_calibration": null,
+    "rps": null,
+    "tov": {
+      "mean_bias": null,
+      "nll": null,
+      "p0_error": null,
+      "rps": null
+    }
+  },
+  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "gates_failed": [
+    "nll_improves_or_non_worse",
+    "rps_improves_or_non_worse",
+    "calibration_error_improves",
+    "p0_error_improves_or_non_worse",
+    "mean_bias_does_not_worsen",
+    "tov_does_not_regress",
+    "starter_core_role_buckets_do_not_regress",
+    "bench_fringe_role_buckets_do_not_regress_materially",
+    "no_severe_stat_bucket_regression",
+    "promotion_clock_safe"
+  ],
+  "gates_passed": [
+    "pmf_validity",
+    "no_future_leakage",
+    "sufficient_calibration_samples",
+    "derek_feed_compatibility",
+    "woo_export_compatibility",
+    "no_phase10d_overlays_referenced"
+  ],
+  "generated_at_utc": "2026-04-30T22:49:24+00:00",
+  "promote": false,
+  "reason": "gate_failed:nll_improves_or_non_worse",
+  "schema_version": "1.0",
+  "warnings": []
+}

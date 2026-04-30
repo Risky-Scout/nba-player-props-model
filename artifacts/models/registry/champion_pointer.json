@@ -1,0 +1,20 @@
+{
+  "calibrator_version": "phase8-role-bucket",
+  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "created_at_utc": "2026-04-30T22:30:59+00:00",
+  "model_dir": "artifacts/models",
+  "model_version": "2026-03-09-v12",
+  "notes": "Phase 13A bootstrap. Records the existing production artifacts at artifacts/models/ as the current champion. No retraining performed; production read paths unchanged.",
+  "phase10d_overlays_in_use": false,
+  "promoted_at_utc": "2026-04-30T22:30:59+00:00",
+  "schema_version": "1.0",
+  "supported_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ]
+}

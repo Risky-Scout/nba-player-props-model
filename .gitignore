@@ -23,6 +23,38 @@ data/training_table.parquet
 data/dunks_and_threes/
 artifacts/models/feature_analysis_report.json
 
+# Phase 13A — never stage raw API data, secrets, scratch, or failed overlays
+data/odds_api/
+data/bdl/
+data/freshness_manifest/
+artifacts/raw/
+logs/
+logs_*/
+*.zip
+.env
+.env.*
+# Failed Phase 10D / 10D.2 overlay outputs (script files allowed; scratch outputs not)
+artifacts/phase10*_*/
+artifacts/phase10d*/
+artifacts/phase10d2*/
+docs/phase10d_*.md
+docs/phase10d2_*.md
+# Local-only scratch / dashboards
+preview.html
+wizardofodds_live_nba_edge.html
+wizardofodds_nba_sharp_*.html
+fold-1-oof.zip
+
+# Phase 13A — large challenger / champion-backup pickles & parquets are
+# gitignored. The lightweight JSON / MD manifests under these dirs ARE staged.
+artifacts/models/challengers/**/*.pkl
+artifacts/models/challengers/**/*.parquet
+artifacts/models/champion/**/*.pkl
+artifacts/models/champion/**/*.parquet
+
+# Phase 13A — local-only run logs (verification reads them but they shouldn't ship)
+artifacts/nightly_training/**/logs/
+
 # Claude Code
 .claude/
 CLAUDE.md
