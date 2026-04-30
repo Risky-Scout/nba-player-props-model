@@ -174,6 +174,10 @@ def _woo_export(
     cmd = [PYTHON, str(WOO_EXPORT)]
     if only_date:
         cmd.extend(["--date", only_date])
+    else:
+        # Phase 12E — be explicit so the intent ("rebuild every available
+        # date") is visible in CI logs even though it's also the default.
+        cmd.append("--all-available")
     if snapshot_type_label:
         cmd.extend(["--snapshot-type-label", snapshot_type_label])
     if finality_status_override:

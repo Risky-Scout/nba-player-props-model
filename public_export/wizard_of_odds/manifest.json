@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-04-30T14:23:32Z",
+  "built_at_utc": "2026-04-30T15:03:20Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-04-29",
@@ -91,8 +91,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "woo_morning_monetization",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "morning",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -192,8 +192,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "woo_morning_monetization",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "morning",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -207,6 +207,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": "woo_morning_monetization",
-  "finality_status_override": "PROVISIONAL_EARLY_MARKET"
+  "snapshot_type_label": null,
+  "finality_status_override": null
 }

@@ -466,6 +466,14 @@ def main(argv: list[str] | None = None) -> int:
         help="restrict to specific date(s); repeatable. Default: all dates with WoO manifest.",
     )
     ap.add_argument(
+        "--all-available",
+        action="store_true",
+        help="build every date with a wizard_of_odds run_manifest.json. "
+        "This is the default behaviour when --date is omitted; the flag is "
+        "accepted explicitly so workflows and runbooks can spell out intent. "
+        "Mutually exclusive with --date.",
+    )
+    ap.add_argument(
         "--keep-existing",
         action="store_true",
         help="do not wipe existing date dirs in out-dir before writing",
@@ -494,6 +502,9 @@ def main(argv: list[str] | None = None) -> int:
         "mapping, monetization_status=needs_affiliate_mapping.",
     )
     args = ap.parse_args(argv)
+
+    if args.all_available and args.date:
+        ap.error("--all-available is mutually exclusive with --date")
 
     top = build(
         deliveries_root=args.deliveries_root.resolve(),

@@ -67,7 +67,10 @@ jobs:
 
       - name: Build public export folder
         run: |
-          python scripts/build_wizard_of_odds_public_export.py
+          python scripts/build_wizard_of_odds_public_export.py --all-available
+      - name: Verify public export folder
+        run: |
+          python scripts/verify_wizard_of_odds_public_export.py
 
       - name: FTP deploy (FTPS, with optional plain fallback)
         env:
