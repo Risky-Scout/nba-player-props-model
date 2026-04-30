@@ -1,0 +1,179 @@
+{
+  "built_at_utc": "2026-04-30T03:27:38Z",
+  "deliveries_root": "deliveries",
+  "out_dir": "public_export/wizard_of_odds",
+  "latest_date": "2026-04-29",
+  "dates": [
+    {
+      "date": "2026-04-27",
+      "snapshot_type": "morning",
+      "snapshot_time_utc": "2026-04-30T01:55:00Z",
+      "model_version": "113c7b5#phase10c",
+      "finality_status": "provisional",
+      "finality_blocker_codes": [
+        "injury_very_stale",
+        "role_bucket_missing"
+      ],
+      "row_counts": {
+        "fair_odds_board": 3229,
+        "full_pmfs_wide": 158,
+        "market_comparison": 346,
+        "publishable_edges": 312
+      },
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "fanatics",
+        "fanduel",
+        "williamhill_us"
+      ],
+      "tov_status": "present",
+      "files": [
+        {
+          "name": "fair_odds_board.csv",
+          "size_bytes": 1829032
+        },
+        {
+          "name": "fair_odds_board.parquet",
+          "size_bytes": 104791
+        },
+        {
+          "name": "fair_odds_board.jsonl",
+          "size_bytes": 4373953
+        },
+        {
+          "name": "full_pmfs_wide.csv",
+          "size_bytes": 153849
+        },
+        {
+          "name": "full_pmfs_wide.parquet",
+          "size_bytes": 98854
+        },
+        {
+          "name": "full_pmfs_outcome_level.csv",
+          "size_bytes": 1053566
+        },
+        {
+          "name": "full_pmfs_outcome_level.parquet",
+          "size_bytes": 41644
+        },
+        {
+          "name": "market_comparison.csv",
+          "size_bytes": 216572
+        },
+        {
+          "name": "market_comparison.parquet",
+          "size_bytes": 48131
+        },
+        {
+          "name": "publishable_edges.csv",
+          "size_bytes": 196251
+        },
+        {
+          "name": "publishable_edges.parquet",
+          "size_bytes": 47089
+        },
+        {
+          "name": "run_manifest.json",
+          "size_bytes": 4061
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 3113
+        }
+      ],
+      "missing_files": []
+    },
+    {
+      "date": "2026-04-29",
+      "snapshot_type": "morning",
+      "snapshot_time_utc": "2026-04-30T01:54:51Z",
+      "model_version": "113c7b5#phase10c",
+      "finality_status": "provisional",
+      "finality_blocker_codes": [
+        "injury_very_stale",
+        "role_bucket_missing"
+      ],
+      "row_counts": {
+        "fair_odds_board": 3001,
+        "full_pmfs_wide": 143,
+        "market_comparison": 1508,
+        "publishable_edges": 1442
+      },
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betparx",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl"
+      ],
+      "tov_status": "present",
+      "files": [
+        {
+          "name": "fair_odds_board.csv",
+          "size_bytes": 1705202
+        },
+        {
+          "name": "fair_odds_board.parquet",
+          "size_bytes": 97883
+        },
+        {
+          "name": "fair_odds_board.jsonl",
+          "size_bytes": 4067733
+        },
+        {
+          "name": "full_pmfs_wide.csv",
+          "size_bytes": 138301
+        },
+        {
+          "name": "full_pmfs_wide.parquet",
+          "size_bytes": 91869
+        },
+        {
+          "name": "full_pmfs_outcome_level.csv",
+          "size_bytes": 1156905
+        },
+        {
+          "name": "full_pmfs_outcome_level.parquet",
+          "size_bytes": 39400
+        },
+        {
+          "name": "market_comparison.csv",
+          "size_bytes": 949147
+        },
+        {
+          "name": "market_comparison.parquet",
+          "size_bytes": 82791
+        },
+        {
+          "name": "publishable_edges.csv",
+          "size_bytes": 908392
+        },
+        {
+          "name": "publishable_edges.parquet",
+          "size_bytes": 81166
+        },
+        {
+          "name": "run_manifest.json",
+          "size_bytes": 4234
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 3115
+        }
+      ],
+      "missing_files": []
+    }
+  ]
+}

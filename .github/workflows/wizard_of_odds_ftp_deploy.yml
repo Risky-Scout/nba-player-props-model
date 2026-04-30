@@ -1,0 +1,84 @@
+name: Wizard of Odds — FTP Deploy
+
+# Phase 12B — publish public_export/wizard_of_odds/ to the WoO FTP portal.
+#
+# Triggers:
+#   - workflow_dispatch (manual)
+#   - workflow_run "completed" of "NBA PMF Delivery — Daily Pipeline"
+#
+# Hard rules:
+#   - Credentials read only from GitHub Actions secrets, never echoed.
+#   - WOO_FTP_PASSWORD is masked by the runner; no `echo`, `set -x`, or
+#     printenv on it.
+#   - FTPS-first, with plain-FTP fallback enabled by default because the
+#     target host (vsFTPd 3.0.5) does not advertise AUTH TLS. Toggle the
+#     `allow_plain` input to "false" if FTPS is later enabled server-side.
+#   - Never stages/uploads anything outside public_export/wizard_of_odds/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      check_connection_only:
+        description: "Connect/login/cwd then exit (no upload)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      allow_plain:
+        description: "Allow plain-FTP fallback if FTPS fails (target is vsFTPd, default true)"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      dry_run:
+        description: "Walk only; do not connect or upload"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+  workflow_run:
+    workflows: ["NBA PMF Delivery — Daily Pipeline"]
+    types: [completed]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build public export folder
+        run: |
+          python scripts/build_wizard_of_odds_public_export.py
+
+      - name: FTP deploy (FTPS, with optional plain fallback)
+        env:
+          WOO_FTP_HOST: ${{ secrets.WOO_FTP_HOST }}
+          WOO_FTP_USER: ${{ secrets.WOO_FTP_USER }}
+          WOO_FTP_PASSWORD: ${{ secrets.WOO_FTP_PASSWORD }}
+          WOO_FTP_REMOTE_DIR: ${{ secrets.WOO_FTP_REMOTE_DIR }}
+        run: |
+          # Default allow_plain=true because vsFTPd target does not advertise AUTH TLS.
+          # workflow_run firings (no inputs) inherit this default.
+          ALLOW_PLAIN="${{ github.event.inputs.allow_plain }}"
+          if [ -z "$ALLOW_PLAIN" ]; then ALLOW_PLAIN="true"; fi
+          FLAGS=""
+          if [ "${{ github.event.inputs.check_connection_only }}" = "true" ]; then
+            FLAGS="$FLAGS --check-connection"
+          fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+          if [ "$ALLOW_PLAIN" = "true" ]; then
+            FLAGS="$FLAGS --allow-plain"
+          fi
+          python scripts/deploy_wizard_of_odds_ftp.py $FLAGS

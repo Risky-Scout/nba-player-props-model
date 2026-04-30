@@ -1,0 +1,153 @@
+{
+  "delivery_date": "2026-04-29",
+  "pipeline_run_id": "e96071d4-3423-4b29-b0e1-4c5bbf74fdf2",
+  "snapshot_type": "morning",
+  "snapshot_time_utc": "2026-04-30T01:54:51Z",
+  "model_version": "113c7b5#phase10c",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
+  "finality_status": "provisional",
+  "finality_blocker_codes": [
+    "injury_very_stale",
+    "role_bucket_missing"
+  ],
+  "finality_blockers": [
+    {
+      "code": "injury_very_stale",
+      "detail": "data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.",
+      "required_to_resolve": "BDL_API_KEY for live BDL injury fetch OR refreshed nba_injury_reports.parquet, then re-run scripts/predict.py"
+    },
+    {
+      "code": "role_bucket_missing",
+      "detail": "role_bucket could not be derived for at least one row (mp_bucket absent in predictions).",
+      "required_to_resolve": "predict.py must emit mp_bucket for every (player, stat) row"
+    }
+  ],
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "present",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "tov",
+      "fg3m"
+    ],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pts",
+      "reb",
+      "stl",
+      "tov"
+    ],
+    "missing": [],
+    "extra_relative_to_supported": [
+      "blk",
+      "stl"
+    ]
+  },
+  "sources": {
+    "model_only_parquet": {
+      "path": "deliveries/2026-04-29/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "2026-04-30T01:54:51.162641Z",
+      "sha256": "9616848a5b2d15a8ee7161006cd0d048c23100205d5e5b46dd055413c6f66ca7",
+      "auto_built_from_predictions": true
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-04-29.parquet",
+      "mtime_utc": "2026-04-29T16:18:08.566677Z"
+    },
+    "availability_table": {
+      "path": "data/player_availability_asof.parquet",
+      "mtime_utc": "2026-04-19T01:47:03.906101Z",
+      "freshness_status": "very_stale"
+    },
+    "odds_snapshot": {
+      "path": "data/odds_api/processed/2026-04-29/odds_pairs_live_slate_morning_7am_2026-04-29T191438Z.parquet",
+      "mtime_utc": "2026-04-29T19:14:46.636251Z",
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betparx",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl"
+      ],
+      "coverage_status": "full",
+      "fetch_status": "consumed_from_disk"
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 3001,
+    "full_pmfs_wide": 143,
+    "market_comparison": 1508,
+    "publishable_edges": 1442
+  },
+  "quality_rollup": {
+    "pmf_valid_ok_pct": 1.0,
+    "pmf_sum_error_max": 3.3306690738754696e-16,
+    "calibration_confidence": {
+      "high": 91,
+      "low": 39,
+      "medium": 13
+    },
+    "market_coverage_status": {
+      "full": 143
+    },
+    "injury_freshness_status": {
+      "very_stale": 143
+    },
+    "lineup_freshness_status": {
+      "projected": 104,
+      "unknown": 39
+    },
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 104,
+      "missing": 39
+    }
+  },
+  "warnings": [],
+  "no_odds_fetch": false,
+  "freshness_manifest": {
+    "path": "data/freshness_manifest/2026-04-29.json",
+    "built_at_utc": "2026-04-29T19:14:46Z",
+    "overall_status": "ready",
+    "odds_status": "ok",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betparx",
+      "betrivers",
+      "bovada",
+      "draftkings",
+      "espnbet",
+      "fanatics",
+      "fanduel",
+      "fliff",
+      "hardrockbet",
+      "hardrockbet_az",
+      "hardrockbet_fl"
+    ],
+    "tov_status": "missing_from_prediction_source",
+    "predictions_mtime_utc": "2026-04-29T16:18:08.566677Z",
+    "availability_freshness_status": "very_stale",
+    "finals_finality_status": "finals_pending",
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 104,
+      "missing": 39
+    }
+  }
+}

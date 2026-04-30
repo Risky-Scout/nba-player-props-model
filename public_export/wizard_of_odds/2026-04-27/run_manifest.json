@@ -1,0 +1,143 @@
+{
+  "delivery_date": "2026-04-27",
+  "pipeline_run_id": "cc8ed13d-d841-4bd2-9d27-476a72441e85",
+  "snapshot_type": "morning",
+  "snapshot_time_utc": "2026-04-30T01:55:00Z",
+  "model_version": "113c7b5#phase10c",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
+  "finality_status": "provisional",
+  "finality_blocker_codes": [
+    "injury_very_stale",
+    "role_bucket_missing"
+  ],
+  "finality_blockers": [
+    {
+      "code": "injury_very_stale",
+      "detail": "data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.",
+      "required_to_resolve": "BDL_API_KEY for live BDL injury fetch OR refreshed nba_injury_reports.parquet, then re-run scripts/predict.py"
+    },
+    {
+      "code": "role_bucket_missing",
+      "detail": "role_bucket could not be derived for at least one row (mp_bucket absent in predictions).",
+      "required_to_resolve": "predict.py must emit mp_bucket for every (player, stat) row"
+    }
+  ],
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "present",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "tov",
+      "fg3m"
+    ],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pts",
+      "reb",
+      "stl",
+      "tov"
+    ],
+    "missing": [],
+    "extra_relative_to_supported": [
+      "blk",
+      "stl"
+    ]
+  },
+  "sources": {
+    "model_only_parquet": {
+      "path": "deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "2026-04-30T01:55:00.792125Z",
+      "sha256": "d6ff7a8241b8c5c33175b810932c1cb063ec9ce0b39cdfb8f4e747524eeaa6cf",
+      "auto_built_from_predictions": true
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-04-27.parquet",
+      "mtime_utc": "2026-04-27T18:27:23.761456Z"
+    },
+    "availability_table": {
+      "path": "data/player_availability_asof.parquet",
+      "mtime_utc": "2026-04-19T01:47:03.906101Z",
+      "freshness_status": "very_stale"
+    },
+    "odds_snapshot": {
+      "path": "data/odds_api/processed/2026-04-27/odds_pairs_smoke_hist_846b0e9b691b5a291619fa22f96c7dfa_2026-04-27T110000Z.parquet",
+      "mtime_utc": "2026-04-28T20:14:42.506814Z",
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "fanatics",
+        "fanduel",
+        "williamhill_us"
+      ],
+      "coverage_status": "full",
+      "fetch_status": "consumed_from_disk"
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 3229,
+    "full_pmfs_wide": 158,
+    "market_comparison": 346,
+    "publishable_edges": 312
+  },
+  "quality_rollup": {
+    "pmf_valid_ok_pct": 1.0,
+    "pmf_sum_error_max": 4.440892098500626e-16,
+    "calibration_confidence": {
+      "high": 95,
+      "low": 44,
+      "medium": 19
+    },
+    "market_coverage_status": {
+      "full": 158
+    },
+    "injury_freshness_status": {
+      "very_stale": 158
+    },
+    "lineup_freshness_status": {
+      "projected": 114,
+      "unknown": 44
+    },
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 114,
+      "missing": 44
+    }
+  },
+  "warnings": [],
+  "no_odds_fetch": false,
+  "freshness_manifest": {
+    "path": "data/freshness_manifest/2026-04-27.json",
+    "built_at_utc": "2026-04-29T19:57:11Z",
+    "overall_status": "partial",
+    "odds_status": "skipped",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betrivers",
+      "bovada",
+      "draftkings",
+      "fanatics",
+      "fanduel",
+      "williamhill_us"
+    ],
+    "tov_status": "missing_from_prediction_source",
+    "predictions_mtime_utc": "2026-04-27T18:27:23.761456Z",
+    "availability_freshness_status": "very_stale",
+    "finals_finality_status": "finals_pending",
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 114,
+      "missing": 44
+    }
+  }
+}
