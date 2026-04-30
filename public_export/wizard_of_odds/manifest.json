@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-04-30T20:52:45Z",
+  "built_at_utc": "2026-04-30T23:17:50Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-04-30",
@@ -91,8 +91,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "morning",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -192,8 +192,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "morning",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -204,8 +204,8 @@
     {
       "date": "2026-04-30",
       "snapshot_type": "pre_close",
-      "snapshot_time_utc": "2026-04-30T20:52:42Z",
-      "model_version": "06bd5cd#phase10c",
+      "snapshot_time_utc": "2026-04-30T23:17:46Z",
+      "model_version": "8bb6259#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
         "lineup_unconfirmed",
@@ -214,8 +214,8 @@
       "row_counts": {
         "fair_odds_board": 2458,
         "full_pmfs_wide": 97,
-        "market_comparison": 1678,
-        "publishable_edges": 1549
+        "market_comparison": 1492,
+        "publishable_edges": 1333
       },
       "books_seen": [
         "betmgm",
@@ -265,19 +265,19 @@
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 1052720
+          "size_bytes": 934015
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 86453
+          "size_bytes": 82570
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 972299
+          "size_bytes": 835644
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 84026
+          "size_bytes": 79235
         },
         {
           "name": "run_manifest.json",
@@ -290,12 +290,12 @@
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 1678,
+        "rows": 1492,
         "monetization_status_summary": {
-          "needs_affiliate_mapping": 1678
+          "needs_affiliate_mapping": 1492
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "pre_close",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -309,6 +309,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": "woo_afternoon_refresh",
-  "finality_status_override": "PROVISIONAL_EARLY_MARKET"
+  "snapshot_type_label": null,
+  "finality_status_override": null
 }
