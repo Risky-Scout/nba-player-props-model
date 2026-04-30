@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-04-30T16:28:23Z",
+  "built_at_utc": "2026-04-30T19:44:00Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-04-30",
@@ -91,7 +91,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -192,7 +192,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -203,9 +203,9 @@
     },
     {
       "date": "2026-04-30",
-      "snapshot_type": "morning",
-      "snapshot_time_utc": "2026-04-30T16:28:21Z",
-      "model_version": "52b994a#phase10c",
+      "snapshot_type": "pre_close",
+      "snapshot_time_utc": "2026-04-30T19:43:58Z",
+      "model_version": "b4c0a9b#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
         "lineup_unconfirmed",
@@ -214,8 +214,8 @@
       "row_counts": {
         "fair_odds_board": 2458,
         "full_pmfs_wide": 97,
-        "market_comparison": 1671,
-        "publishable_edges": 1596
+        "market_comparison": 1672,
+        "publishable_edges": 1564
       },
       "books_seen": [
         "betmgm",
@@ -237,64 +237,64 @@
       "files": [
         {
           "name": "fair_odds_board.csv",
-          "size_bytes": 1404600
+          "size_bytes": 1409516
         },
         {
           "name": "fair_odds_board.parquet",
-          "size_bytes": 84296
+          "size_bytes": 84306
         },
         {
           "name": "fair_odds_board.jsonl",
-          "size_bytes": 3337201
+          "size_bytes": 3342117
         },
         {
           "name": "full_pmfs_wide.csv",
-          "size_bytes": 99499
+          "size_bytes": 99693
         },
         {
           "name": "full_pmfs_wide.parquet",
-          "size_bytes": 75971
+          "size_bytes": 75981
         },
         {
           "name": "full_pmfs_outcome_level.csv",
-          "size_bytes": 870048
+          "size_bytes": 876314
         },
         {
           "name": "full_pmfs_outcome_level.parquet",
-          "size_bytes": 33787
+          "size_bytes": 33797
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 1045057
+          "size_bytes": 1048647
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 85894
+          "size_bytes": 86210
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 998260
+          "size_bytes": 981706
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 84260
+          "size_bytes": 84114
         },
         {
           "name": "run_manifest.json",
-          "size_bytes": 4376
+          "size_bytes": 4381
         },
         {
           "name": "README.md",
-          "size_bytes": 3133
+          "size_bytes": 3135
         }
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 1671,
+        "rows": 1672,
         "monetization_status_summary": {
-          "needs_affiliate_mapping": 1671
+          "needs_affiliate_mapping": 1672
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -309,6 +309,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": "woo_morning_monetization",
+  "snapshot_type_label": "woo_afternoon_refresh",
   "finality_status_override": "PROVISIONAL_EARLY_MARKET"
 }
