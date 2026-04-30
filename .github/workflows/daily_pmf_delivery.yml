@@ -13,8 +13,13 @@ name: NBA PMF Delivery — Daily Pipeline
 #   1. scripts/refresh_daily_inputs.py            (us+us2 odds + freshness manifest)
 #   2. scripts/predict.py                         (morning + full_day, --predict only)
 #   3. scripts/build_daily_pmf_delivery.py        (snapshot=mode)
-#   4. scripts/score_daily_pmf_delivery_after_game.py  (after_game / full_day)
-#   5. scripts/build_deliveries_index.py          (always, last)
+#   4. scripts/build_derek_forward_feed.py        (morning -> --snapshot morning,
+#                                                  pre_close/close_lock -> --snapshot lineup,
+#                                                  after_game -> --snapshot both;
+#                                                  honestly writes lineup_snapshot_status.json
+#                                                  when no lineup-locked package exists)
+#   5. scripts/score_daily_pmf_delivery_after_game.py  (after_game / full_day)
+#   6. scripts/build_deliveries_index.py          (always, last)
 #
 # Secrets are referenced exclusively as env vars; never echoed.
 #   - ODDS_API_KEY  required for live odds fetch

@@ -56,6 +56,22 @@ AFTER_GAME_LINKS = [
     ("after_game_status.json",
      "after_game_scoring/after_game_status.json"),
 ]
+FORWARD_FEED_LINKS = [
+    ("FEED_README.md", "derek_forward_feed/FEED_README.md"),
+    ("feed_manifest.json", "derek_forward_feed/feed_manifest.json"),
+    ("morning_snapshot.csv", "derek_forward_feed/morning_snapshot.csv"),
+    ("morning_snapshot.parquet", "derek_forward_feed/morning_snapshot.parquet"),
+    ("morning_snapshot.jsonl", "derek_forward_feed/morning_snapshot.jsonl"),
+    ("latest_available_snapshot.csv",
+     "derek_forward_feed/latest_available_snapshot.csv"),
+    ("latest_available_snapshot.parquet",
+     "derek_forward_feed/latest_available_snapshot.parquet"),
+    ("lineup_snapshot.csv", "derek_forward_feed/lineup_snapshot.csv"),
+    ("lineup_snapshot.parquet", "derek_forward_feed/lineup_snapshot.parquet"),
+    ("lineup_snapshot.jsonl", "derek_forward_feed/lineup_snapshot.jsonl"),
+    ("lineup_snapshot_status.json",
+     "derek_forward_feed/lineup_snapshot_status.json"),
+]
 
 
 def _now_utc_iso() -> str:
@@ -87,6 +103,7 @@ def _row_for_date(date: str) -> dict:
     woo = base / "wizard_of_odds"
     derek = base / "pmf_model_review_package"
     after = base / "after_game_scoring"
+    forward = base / "derek_forward_feed"
     pred = PRED_DIR / f"all_props_{date}.parquet"
 
     manifest_path = woo / "run_manifest.json"
@@ -130,17 +147,38 @@ def _row_for_date(date: str) -> dict:
         classification = "NOT_DELIVERABLE_READY"
         reason = "wizard_of_odds/run_manifest.json present but unreadable"
 
+    # Forward feed (Phase 12C).
+    forward_manifest_path = forward / "feed_manifest.json"
+    forward_manifest = None
+    if forward_manifest_path.exists():
+        try:
+            forward_manifest = json.loads(forward_manifest_path.read_text())
+        except Exception as e:
+            forward_manifest = {"_read_error": repr(e)}
+
+    if not forward.exists():
+        forward_feed_status = "absent"
+    elif isinstance(forward_manifest, dict) and forward_manifest.get("morning"):
+        forward_feed_status = "morning_present"
+        if forward_manifest.get("lineup"):
+            forward_feed_status = "lineup_present"
+    else:
+        forward_feed_status = "incomplete"
+
     return {
         "date": date,
         "classification": classification,
         "reason": reason,
         "manifest": manifest,
         "after_status": after_status,
+        "forward_manifest": forward_manifest,
+        "forward_feed_status": forward_feed_status,
         "exists": {
             "predictions": pred.exists(),
             "derek": derek.exists(),
             "woo": woo.exists(),
             "after_game": after.exists(),
+            "forward": forward.exists(),
         },
     }
 
@@ -151,6 +189,12 @@ def _row_metrics(row: dict) -> dict:
     qr = m.get("quality_rollup") or {}
     od = _safe_get(m, "sources", "odds_snapshot", default={}) or {}
     fm = m.get("freshness_manifest") or {}
+    fwd = row.get("forward_manifest") or {}
+    fwd_morning = fwd.get("morning") or {}
+    fwd_lineup = fwd.get("lineup") or {}
+    fwd_lineup_status = fwd.get("lineup_status") or {}
+    fwd_latest = fwd.get("latest_available_snapshot") or {}
+    fwd_latest_files = fwd_latest.get("files") or {}
     return {
         "props": rc.get("full_pmfs_wide"),
         "outcome_rows": (rc.get("full_pmfs_wide") and rc.get("full_pmfs_wide") * "?")
@@ -165,6 +209,17 @@ def _row_metrics(row: dict) -> dict:
         "lineup_freshness_rollup": qr.get("lineup_freshness_status"),
         "tov_status": m.get("tov_status"),
         "model_version": m.get("model_version"),
+        "forward_feed_status": row.get("forward_feed_status"),
+        "morning_snapshot_rows": fwd_morning.get("rows"),
+        "lineup_snapshot_status": (
+            "present" if fwd_lineup.get("rows") is not None
+            else fwd_lineup_status.get("status")
+        ),
+        "lineup_snapshot_rows": fwd_lineup.get("rows"),
+        "latest_available_snapshot_rows": fwd_latest_files.get("rows"),
+        "latest_available_snapshot_points_to": fwd_latest.get("points_to"),
+        "finality_status": m.get("finality_status"),
+        "blockers": ", ".join(m.get("finality_blocker_codes") or []) or None,
     }
 
 
@@ -193,8 +248,8 @@ def _build_readme(rows: list[dict]) -> str:
                "**PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS** · "
                "**NOT_DELIVERABLE_READY**.\n\n")
 
-    out.append("| date | classification | props | fair_odds | market_comparison | publishable_edges | market_coverage | injury_fresh | tov_status | after_game | model_version |\n")
-    out.append("|---|---|---:|---:|---:|---:|---|---|---|---|---|\n")
+    out.append("| date | classification | props | fair_odds | market_comparison | publishable_edges | market_coverage | injury_fresh | tov_status | forward_feed | morning_rows | lineup_status | latest_rows | after_game | model_version |\n")
+    out.append("|---|---|---:|---:|---:|---:|---|---|---|---|---:|---|---:|---|---|\n")
     for r in rows:
         m = _row_metrics(r)
         out.append(
@@ -206,6 +261,10 @@ def _build_readme(rows: list[dict]) -> str:
             f"`{m['market_coverage'] or '—'}` | "
             f"`{m['injury_freshness'] or '—'}` | "
             f"`{m['tov_status'] or '—'}` | "
+            f"`{m['forward_feed_status'] or '—'}` | "
+            f"{m['morning_snapshot_rows'] if m['morning_snapshot_rows'] is not None else '—'} | "
+            f"`{m['lineup_snapshot_status'] or '—'}` | "
+            f"{m['latest_available_snapshot_rows'] if m['latest_available_snapshot_rows'] is not None else '—'} | "
             f"`{r['after_status']}` | "
             f"`{m['model_version'] or '—'}` |\n"
         )
@@ -221,6 +280,26 @@ def _build_readme(rows: list[dict]) -> str:
             for label, rel in DEREK_LINKS:
                 target = base / rel
                 out.append(f"- {_md_link(label, target, base=DEL_DIR)}\n")
+            out.append("\n")
+        if r["exists"].get("forward"):
+            m = _row_metrics(r)
+            out.append("**Derek forward feed (PMF snapshots)**")
+            details = []
+            if m["morning_snapshot_rows"] is not None:
+                details.append(f"morning rows={m['morning_snapshot_rows']}")
+            if m["lineup_snapshot_status"]:
+                details.append(f"lineup={m['lineup_snapshot_status']}")
+            if m["latest_available_snapshot_points_to"]:
+                details.append(
+                    f"latest→{m['latest_available_snapshot_points_to']}"
+                )
+            if details:
+                out.append(" — " + " · ".join(details))
+            out.append("\n\n")
+            for label, rel in FORWARD_FEED_LINKS:
+                target = base / rel
+                if target.exists():
+                    out.append(f"- {_md_link(label, target, base=DEL_DIR)}\n")
             out.append("\n")
         if r["exists"]["woo"]:
             out.append("**Wizard of Odds**\n\n")
@@ -275,6 +354,8 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
                  '<th>props</th><th>fair_odds</th><th>market_comparison</th>'
                  '<th>publishable_edges</th><th>coverage</th>'
                  '<th>injury_fresh</th><th>tov_status</th>'
+                 '<th>forward_feed</th><th>morning_rows</th>'
+                 '<th>lineup_status</th><th>latest_rows</th>'
                  '<th>after_game</th><th>model_version</th></tr>\n')
     for r in rows:
         m = _row_metrics(r)
@@ -293,6 +374,10 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
             f"<td><code>{m['market_coverage'] or '&mdash;'}</code></td>"
             f"<td><code>{m['injury_freshness'] or '&mdash;'}</code></td>"
             f"<td><code>{m['tov_status'] or '&mdash;'}</code></td>"
+            f"<td><code>{m['forward_feed_status'] or '&mdash;'}</code></td>"
+            f"<td class=right>{m['morning_snapshot_rows'] if m['morning_snapshot_rows'] is not None else '&mdash;'}</td>"
+            f"<td><code>{m['lineup_snapshot_status'] or '&mdash;'}</code></td>"
+            f"<td class=right>{m['latest_available_snapshot_rows'] if m['latest_available_snapshot_rows'] is not None else '&mdash;'}</td>"
             f"<td><code>{r['after_status']}</code></td>"
             f"<td><code>{m['model_version'] or '&mdash;'}</code></td>"
             f"</tr>\n")
@@ -311,6 +396,24 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
             body.append(" &middot; ".join(
                 f'<a href="{(base / rel).relative_to(DEL_DIR)}">{label}</a>'
                 for label, rel in DEREK_LINKS
+                if (base / rel).exists()))
+            body.append("</p>\n")
+        if r["exists"].get("forward"):
+            mm = _row_metrics(r)
+            extras = []
+            if mm["morning_snapshot_rows"] is not None:
+                extras.append(f"morning rows={mm['morning_snapshot_rows']}")
+            if mm["lineup_snapshot_status"]:
+                extras.append(f"lineup={mm['lineup_snapshot_status']}")
+            if mm["latest_available_snapshot_points_to"]:
+                extras.append(
+                    f"latest&rarr;{mm['latest_available_snapshot_points_to']}"
+                )
+            extra_str = (" (" + " &middot; ".join(extras) + ")") if extras else ""
+            body.append(f"<p><b>Derek forward feed</b>{extra_str} ")
+            body.append(" &middot; ".join(
+                f'<a href="{(base / rel).relative_to(DEL_DIR)}">{label}</a>'
+                for label, rel in FORWARD_FEED_LINKS
                 if (base / rel).exists()))
             body.append("</p>\n")
         if r["exists"]["woo"]:

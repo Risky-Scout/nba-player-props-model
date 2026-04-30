@@ -41,6 +41,7 @@ SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
 PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
+DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -107,6 +108,19 @@ def _refresh_index() -> int:
     return _run(cmd, allow_fail=True, label="refresh deliveries index")
 
 
+def _derek_feed(date: str, *, snapshot: str) -> int:
+    """Phase 12C: build Derek's forward-looking PMF feed for the date.
+
+    `morning` snapshot is built whenever the canonical model_only.parquet
+    exists. `lineup` snapshot is honestly skipped (with a status JSON)
+    when no pre_close/close_lock package is on disk; the builder never
+    fabricates a lineup snapshot."""
+    if not DEREK_FEED.exists():
+        return 0
+    cmd = [PYTHON, str(DEREK_FEED), "--date", date, "--snapshot", snapshot]
+    return _run(cmd, allow_fail=True, label=f"derek forward feed ({snapshot})")
+
+
 # ── Mode dispatchers ──────────────────────────────────────────────────────
 
 
@@ -118,6 +132,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
               regions=regions)
     _stat_grid(date)
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical)
+    _derek_feed(date, snapshot="morning")
     _refresh_index()
     return 0
 
@@ -128,6 +143,7 @@ def run_pre_close(date: str, *, regions: list[str],
               regions=regions)
     _stat_grid(date)
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical)
+    _derek_feed(date, snapshot="lineup")
     _refresh_index()
     return 0
 
@@ -138,6 +154,7 @@ def run_close_lock(date: str, *, regions: list[str],
               regions=regions)
     _stat_grid(date)
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical)
+    _derek_feed(date, snapshot="lineup")
     _refresh_index()
     return 0
 
@@ -146,6 +163,10 @@ def run_after_game(date: str) -> int:
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=True,
               regions=["us"])
     _score(date)
+    # Preserve any existing forward-feed files; rebuild the snapshot
+    # pointer so latest_available_snapshot reflects the freshest snapshot
+    # on disk. If neither morning nor lineup sources exist this no-ops.
+    _derek_feed(date, snapshot="both")
     _refresh_index()
     return 0
 

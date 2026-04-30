@@ -1,15 +1,15 @@
 # Deliveries
-_Index regenerated 2026-04-30T08:41:10Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-04-30T13:43:22Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
 Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS** · **NOT_DELIVERABLE_READY**.
 
-| date | classification | props | fair_odds | market_comparison | publishable_edges | market_coverage | injury_fresh | tov_status | after_game | model_version |
-|---|---|---:|---:|---:|---:|---|---|---|---|---|
-| **2026-04-27** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 158 | 3229 | 346 | 312 | `full` | `very_stale` | `present` | `pending_outcomes` | `113c7b5#phase10c` |
-| **2026-04-28** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `n/a` | `—` |
-| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `scored` | `113c7b5#phase10c` |
+| date | classification | props | fair_odds | market_comparison | publishable_edges | market_coverage | injury_fresh | tov_status | forward_feed | morning_rows | lineup_status | latest_rows | after_game | model_version |
+|---|---|---:|---:|---:|---:|---|---|---|---|---:|---|---:|---|---|
+| **2026-04-27** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 158 | 3229 | 346 | 312 | `full` | `very_stale` | `present` | `morning_present` | 464 | `pending_lineup_snapshot` | 464 | `pending_outcomes` | `113c7b5#phase10c` |
+| **2026-04-28** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
+| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `morning_present` | 1528 | `pending_lineup_snapshot` | 1528 | `scored` | `113c7b5#phase10c` |
 
 ## Per-date links
 
@@ -26,6 +26,17 @@ _injury_very_stale, role_bucket_missing_
 - [06_OUTCOME_LEVEL_PROBABILITIES.csv](2026-04-27/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv)
 - [machine_readable/model_only.parquet](2026-04-27/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-04-27/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
+
+**Derek forward feed (PMF snapshots)** — morning rows=464 · lineup=pending_lineup_snapshot · latest→morning
+
+- [FEED_README.md](2026-04-27/derek_forward_feed/FEED_README.md)
+- [feed_manifest.json](2026-04-27/derek_forward_feed/feed_manifest.json)
+- [morning_snapshot.csv](2026-04-27/derek_forward_feed/morning_snapshot.csv)
+- [morning_snapshot.parquet](2026-04-27/derek_forward_feed/morning_snapshot.parquet)
+- [morning_snapshot.jsonl](2026-04-27/derek_forward_feed/morning_snapshot.jsonl)
+- [latest_available_snapshot.csv](2026-04-27/derek_forward_feed/latest_available_snapshot.csv)
+- [latest_available_snapshot.parquet](2026-04-27/derek_forward_feed/latest_available_snapshot.parquet)
+- [lineup_snapshot_status.json](2026-04-27/derek_forward_feed/lineup_snapshot_status.json)
 
 **Wizard of Odds**
 
@@ -68,6 +79,17 @@ _injury_very_stale, role_bucket_missing_
 - [06_OUTCOME_LEVEL_PROBABILITIES.csv](2026-04-29/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv)
 - [machine_readable/model_only.parquet](2026-04-29/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-04-29/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
+
+**Derek forward feed (PMF snapshots)** — morning rows=1528 · lineup=pending_lineup_snapshot · latest→morning
+
+- [FEED_README.md](2026-04-29/derek_forward_feed/FEED_README.md)
+- [feed_manifest.json](2026-04-29/derek_forward_feed/feed_manifest.json)
+- [morning_snapshot.csv](2026-04-29/derek_forward_feed/morning_snapshot.csv)
+- [morning_snapshot.parquet](2026-04-29/derek_forward_feed/morning_snapshot.parquet)
+- [morning_snapshot.jsonl](2026-04-29/derek_forward_feed/morning_snapshot.jsonl)
+- [latest_available_snapshot.csv](2026-04-29/derek_forward_feed/latest_available_snapshot.csv)
+- [latest_available_snapshot.parquet](2026-04-29/derek_forward_feed/latest_available_snapshot.parquet)
+- [lineup_snapshot_status.json](2026-04-29/derek_forward_feed/lineup_snapshot_status.json)
 
 **Wizard of Odds**
 
