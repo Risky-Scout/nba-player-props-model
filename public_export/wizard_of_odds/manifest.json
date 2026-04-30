@@ -1,8 +1,8 @@
 {
-  "built_at_utc": "2026-04-30T15:03:20Z",
+  "built_at_utc": "2026-04-30T16:28:23Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
-  "latest_date": "2026-04-29",
+  "latest_date": "2026-04-30",
   "dates": [
     {
       "date": "2026-04-27",
@@ -91,8 +91,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "morning",
-        "finality_status_public": "provisional",
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -192,8 +192,110 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "morning",
-        "finality_status_public": "provisional",
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "files": {
+          "csv": "monetization_view.csv",
+          "parquet": "monetization_view.parquet",
+          "jsonl": "monetization_view.jsonl"
+        }
+      }
+    },
+    {
+      "date": "2026-04-30",
+      "snapshot_type": "morning",
+      "snapshot_time_utc": "2026-04-30T16:28:21Z",
+      "model_version": "52b994a#phase10c",
+      "finality_status": "provisional",
+      "finality_blocker_codes": [
+        "lineup_unconfirmed",
+        "missing_stats:tov"
+      ],
+      "row_counts": {
+        "fair_odds_board": 2458,
+        "full_pmfs_wide": 97,
+        "market_comparison": 1671,
+        "publishable_edges": 1596
+      },
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betparx",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl",
+        "williamhill_us"
+      ],
+      "tov_status": "missing_from_prediction_source",
+      "files": [
+        {
+          "name": "fair_odds_board.csv",
+          "size_bytes": 1404600
+        },
+        {
+          "name": "fair_odds_board.parquet",
+          "size_bytes": 84296
+        },
+        {
+          "name": "fair_odds_board.jsonl",
+          "size_bytes": 3337201
+        },
+        {
+          "name": "full_pmfs_wide.csv",
+          "size_bytes": 99499
+        },
+        {
+          "name": "full_pmfs_wide.parquet",
+          "size_bytes": 75971
+        },
+        {
+          "name": "full_pmfs_outcome_level.csv",
+          "size_bytes": 870048
+        },
+        {
+          "name": "full_pmfs_outcome_level.parquet",
+          "size_bytes": 33787
+        },
+        {
+          "name": "market_comparison.csv",
+          "size_bytes": 1045057
+        },
+        {
+          "name": "market_comparison.parquet",
+          "size_bytes": 85894
+        },
+        {
+          "name": "publishable_edges.csv",
+          "size_bytes": 998260
+        },
+        {
+          "name": "publishable_edges.parquet",
+          "size_bytes": 84260
+        },
+        {
+          "name": "run_manifest.json",
+          "size_bytes": 4376
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 3133
+        }
+      ],
+      "missing_files": [],
+      "monetization": {
+        "rows": 1671,
+        "monetization_status_summary": {
+          "needs_affiliate_mapping": 1671
+        },
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -207,6 +309,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": null,
-  "finality_status_override": null
+  "snapshot_type_label": "woo_morning_monetization",
+  "finality_status_override": "PROVISIONAL_EARLY_MARKET"
 }
