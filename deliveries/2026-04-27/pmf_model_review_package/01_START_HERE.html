@@ -16,18 +16,17 @@ th,td{padding:0.3rem 0.6rem;border:1px solid #ddd;text-align:left;font-size:0.92
 th{background:#f0f0f0}
 </style></head><body><h1>START HERE — PMF Model Review</h1>
 <p><b>Delivery date:</b> 2026-04-27 &nbsp;&nbsp;
-<b>Rows:</b> 114</p>
+<b>Rows:</b> 158</p>
 
 <div class="callout"><b>Run status — 2026-04-27 — snapshot morning</b><br>
 status: <b>PROVISIONAL</b> &middot; safe to use, with the caveats below<br>
-props: <b>114</b> &middot; books: <b>8</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>very_stale</b><br>
-role provenance: derived_from_projected_minutes: 114<br>
-model: <code>bb723eb#phase10c</code>
+props: <b>158</b> &middot; books: <b>8</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>very_stale</b><br>
+role provenance: derived_from_projected_minutes: 114, missing: 44<br>
+model: <code>113c7b5#phase10c</code>
 <br><br>
 <b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>
 - <code>injury_very_stale</code> — data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.
-- <code>lineup_unconfirmed</code> — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
-- <code>missing_stats:tov</code> — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
+- <code>role_bucket_missing</code> — role_bucket could not be derived for at least one row (mp_bucket absent in predictions).
 </div>
 
 <div class="callout">

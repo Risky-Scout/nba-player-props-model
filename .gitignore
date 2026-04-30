@@ -20,6 +20,7 @@ Thumbs.db
 config.php
 *.bak
 data/training_table.parquet
+data/dunks_and_threes/
 artifacts/models/feature_analysis_report.json
 
 # Claude Code

@@ -340,6 +340,66 @@ def _odds_commence_lookup(date: str) -> dict[int, str]:
     return out
 
 
+def _stat_grid_rows(date: str) -> list[dict]:
+    """If `predictions/stat_grid_{date}.parquet` exists (Phase-12 Part G),
+    return its rows as canonical-schema dicts. These rows carry model-only
+    PMFs for stats whose markets BDL does not sell — most importantly
+    TOV. Returns [] when the file is absent so the canonical build still
+    succeeds with whatever stats predictions/all_props supplies."""
+    p = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+    if not p.exists():
+        return []
+    grid = pd.read_parquet(p)
+    if grid.empty:
+        return []
+
+    ta_map = _team_id_to_abbr_map()
+    commence_map = _odds_commence_lookup(date)
+
+    out: list[dict] = []
+    for _, r in grid.iterrows():
+        away_abbr, home_abbr = _parse_game_string(r.get("game"))
+        team_abbr = (ta_map.get(int(r["team_id"]))
+                     if pd.notna(r.get("team_id")) else None)
+        if team_abbr is not None and home_abbr is not None:
+            is_home = (team_abbr == home_abbr)
+            opponent = away_abbr if is_home else home_abbr
+        else:
+            is_home, opponent = bool(r.get("is_home", False)), None
+        gid = int(r["game_id"]) if pd.notna(r.get("game_id")) else None
+        out.append({
+            "player_id": int(r["player_id"]) if pd.notna(r.get("player_id")) else None,
+            "player_name": r.get("player_name"),
+            "team_abbr": team_abbr,
+            "team_id": int(r["team_id"]) if pd.notna(r.get("team_id")) else None,
+            "opponent": opponent,
+            "is_home": is_home,
+            "game_id": gid,
+            "game": r.get("game"),
+            "game_start_et": commence_map.get(gid) if gid is not None else None,
+            "stat": r.get("stat"),
+            # No mp_bucket → derive role only when we trust the source.
+            "role_bucket": None,
+            "role_source": "phase12_stat_grid",
+            "mp_bucket": None,
+            "usage_bucket": None,
+            "minutes_mean": None,
+            "minutes_q50": None,
+            "p_inactive_used": None,
+            "support_min": 0,
+            "support_max": (int(r["support_max"])
+                              if pd.notna(r.get("support_max")) else None),
+            "line": None,
+            "market_fair_over_prob": None,
+            "market_source": None,
+            "market_offered_side": "MODEL_ONLY",
+            "market_offered_odds": None,
+            "pmf_source": f"stat_grid:{r.get('model_version','phase8_pmf_cal')}",
+            "pmf_active": _normalize_pmf_json_string(r.get("pmf")),
+        })
+    return out
+
+
 def build_canonical_from_predictions(predictions_path: Path, *,
                                        date: str,
                                        canonical_dir: Path) -> Path:
@@ -349,6 +409,12 @@ def build_canonical_from_predictions(predictions_path: Path, *,
 
     The predictions file emits one row per (player, stat, side); we keep
     the first PMF per (player, stat) since both sides share the PMF.
+
+    Phase 12 Part G: when `predictions/stat_grid_{date}.parquet` exists,
+    its model-only rows (TOV in particular) are appended after the
+    market-driven rows so the canonical includes stats that BDL does
+    not sell as markets. Stat-grid rows are tagged
+    `pmf_source="stat_grid:..."` and `market_offered_side="MODEL_ONLY"`.
     """
     if not predictions_path.exists():
         raise SystemExit(f"predictions parquet missing: {predictions_path}")
@@ -414,6 +480,27 @@ def build_canonical_from_predictions(predictions_path: Path, *,
                             if r.get("cal_applied") else "predict.py:raw"),
             "pmf_active": _normalize_pmf_json_string(r.get("pmf")),
         })
+
+    # Phase 12 Part G: append model-only stat-grid rows (e.g. TOV) when
+    # predictions/stat_grid_{date}.parquet is present. We dedupe so a
+    # market row is never overwritten by a model-only row for the same
+    # (player_id, stat).
+    grid_rows = _stat_grid_rows(date)
+    seen_keys = {(r["player_id"], r["stat"]) for r in rows}
+    appended_stats: set[str] = set()
+    appended = 0
+    for gr in grid_rows:
+        key = (gr["player_id"], gr["stat"])
+        if key in seen_keys:
+            continue
+        rows.append(gr)
+        seen_keys.add(key)
+        appended += 1
+        appended_stats.add(str(gr["stat"]))
+    if appended:
+        print(f"  + appended {appended} stat-grid model-only rows "
+              f"(stats: {sorted(appended_stats)})")
+
     df = pd.DataFrame(rows)
     canonical_dir.mkdir(parents=True, exist_ok=True)
     pq_path = canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"

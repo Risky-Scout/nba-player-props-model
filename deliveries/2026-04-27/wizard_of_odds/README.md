@@ -4,20 +4,19 @@
 
 **PROVISIONAL** — safe to use, with the caveats below
 
-- props: **114**
+- props: **158**
 - books: **8**
 - market coverage: **full**
 - injury freshness: **very_stale**
-- role provenance: `derived_from_projected_minutes`: 114
-- model: `bb723eb#phase10c`
+- role provenance: `derived_from_projected_minutes`: 114, `missing`: 44
+- model: `113c7b5#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
 - `injury_very_stale` — data/player_availability_asof.parquet age > 12 hr; predictions were produced against stale availability.
-- `lineup_unconfirmed` — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
-- `missing_stats:tov` — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
+- `role_bucket_missing` — role_bucket could not be derived for at least one row (mp_bucket absent in predictions).
 
 ---
 
@@ -36,15 +35,15 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['injury_very_stale', 'lineup_unconfirmed', 'missing_stats:tov']`
+- **finality_blockers**: `['injury_very_stale', 'role_bucket_missing']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
 - **books_seen**: `8`
 - **freshness.overall_status**: `partial`
 - **availability_freshness_status**: `very_stale`
-- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 114}`
-- **tov_status**: `missing_from_prediction_source`
-- **row counts**: fair_odds_board=2877, full_pmfs_wide=114, market_comparison=346, publishable_edges=312
+- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 114, 'missing': 44}`
+- **tov_status**: `present`
+- **row counts**: fair_odds_board=3229, full_pmfs_wide=158, market_comparison=346, publishable_edges=312
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

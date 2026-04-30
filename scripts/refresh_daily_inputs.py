@@ -1,18 +1,26 @@
 """Refresh daily inputs and emit a freshness manifest.
 
 Single orchestrator the daily runner calls before
-`scripts/build_daily_pmf_delivery.py`. It does three things:
+`scripts/build_daily_pmf_delivery.py`. It does five things:
 
-  1. Fetches today's NBA player-prop odds from the Odds API for the
+  1. Refreshes finalized BDL box scores into
+     `data/player_game_stats.parquet` via
+     `scripts/refresh_bdl_player_game_stats.py`. Only games whose BDL
+     status is ``Final`` are ingested — partial / in-progress rows are
+     dropped. Skipped when `--no-bdl-refresh` is passed.
+  2. Fetches today's Dunks & Threes player / team predictions via
+     `scripts/fetch_dunks_and_threes.py`. Skipped when `--no-dnt-fetch`
+     is passed.
+  3. Fetches today's NBA player-prop odds from the Odds API for the
      requested regions (default `us` and `us2`) via
      `scripts/oddsapi_nba_props.py live-snapshot`.
-  2. Optionally re-runs the prediction export
+  4. Optionally re-runs the prediction export
      (`scripts/predict.py`) when `--refresh-predictions` is set.
      By default we leave the existing predictions alone — the CI
      pipeline produces them earlier in the morning.
-  3. Inspects every input the delivery consumes (predictions,
+  5. Inspects every input the delivery consumes (predictions,
      availability table, model artifacts, finals box-score parquet,
-     odds snapshots) and writes a single
+     odds snapshots, D&T pulls) and writes a single
      `data/freshness_manifest/{date}.json` capturing path / mtime /
      status for each.
 
@@ -33,6 +41,8 @@ CLI:
         [--snapshot-type morning_7am] \
         [--max-events 20] \
         [--no-odds-fetch] \
+        [--no-bdl-refresh] \
+        [--no-dnt-fetch] \
         [--refresh-predictions]
 """
 from __future__ import annotations
@@ -49,6 +59,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ODDS_PROCESSED_DIR = REPO_ROOT / "data" / "odds_api" / "processed"
 FRESHNESS_DIR = REPO_ROOT / "data" / "freshness_manifest"
+DNT_RAW_DIR = REPO_ROOT / "data" / "dunks_and_threes"
 
 SUPPORTED_STATS = ("pts", "reb", "ast", "tov", "fg3m")
 
@@ -91,6 +102,130 @@ def _classify_age(age_hours: float | None, *, fresh_h: float = 3.0,
     if age_hours <= stale_h:
         return "stale"
     return "very_stale"
+
+
+# ── BDL refresh ──────────────────────────────────────────────────────────
+
+
+def _run_bdl_refresh(*, date: str) -> dict:
+    """Invoke `scripts/refresh_bdl_player_game_stats.py` once.
+
+    Returns a status dict — never raises; failures are recorded so the
+    freshness manifest reflects them. Default window is
+    `[latest_in_parquet+1, --date]`. We pass an explicit `--end-date`
+    so a stale clock cannot widen the window past the slate."""
+    cmd = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "refresh_bdl_player_game_stats.py"),
+        "--end-date", date,
+    ]
+    started_at = _now_utc_iso()
+    print("  → BDL refresh (player_game_stats)")
+    try:
+        proc = subprocess.run(cmd, cwd=str(REPO_ROOT), check=False,
+                              capture_output=True, text=True, timeout=600)
+    except subprocess.TimeoutExpired:
+        return {"started_at_utc": started_at,
+                "ended_at_utc": _now_utc_iso(),
+                "exit_code": None, "status": "timeout",
+                "stderr_tail": "subprocess timed out after 600s"}
+    out_tail = (proc.stdout or "").splitlines()[-12:]
+    err_tail = (proc.stderr or "").splitlines()[-6:]
+    for ln in out_tail:
+        print(f"    {ln}")
+    # exit_code 0 = wrote, 1 = empty window or no rows, 2 = no key.
+    if proc.returncode == 0:
+        status = "ok"
+    elif proc.returncode == 1:
+        status = "no_new_finals"
+    else:
+        status = "fail"
+    return {
+        "started_at_utc": started_at,
+        "ended_at_utc": _now_utc_iso(),
+        "exit_code": int(proc.returncode),
+        "status": status,
+        "stdout_tail": out_tail,
+        "stderr_tail": err_tail,
+    }
+
+
+# ── Dunks & Threes fetch ──────────────────────────────────────────────────
+
+
+def _run_dnt_fetch(*, date: str) -> dict:
+    """Invoke `scripts/fetch_dunks_and_threes.py` once."""
+    cmd = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "fetch_dunks_and_threes.py"),
+        "--date", date,
+    ]
+    started_at = _now_utc_iso()
+    print("  → Dunks & Threes fetch")
+    try:
+        proc = subprocess.run(cmd, cwd=str(REPO_ROOT), check=False,
+                              capture_output=True, text=True, timeout=300)
+    except subprocess.TimeoutExpired:
+        return {"started_at_utc": started_at,
+                "ended_at_utc": _now_utc_iso(),
+                "exit_code": None, "status": "timeout",
+                "stderr_tail": "subprocess timed out after 300s"}
+    out_tail = (proc.stdout or "").splitlines()[-12:]
+    err_tail = (proc.stderr or "").splitlines()[-6:]
+    for ln in out_tail:
+        print(f"    {ln}")
+    status = "ok" if proc.returncode == 0 else "fail"
+    return {
+        "started_at_utc": started_at,
+        "ended_at_utc": _now_utc_iso(),
+        "exit_code": int(proc.returncode),
+        "status": status,
+        "stdout_tail": out_tail,
+        "stderr_tail": err_tail,
+    }
+
+
+def _scan_dnt_for_date(date: str) -> dict:
+    """Inspect `data/dunks_and_threes/{date}/` and report per-endpoint
+    presence + row counts (read from each endpoint's JSON file)."""
+    base = DNT_RAW_DIR / date
+    summary: dict = {
+        "path": str(base.relative_to(REPO_ROOT)) if base.exists() else None,
+        "exists": base.exists(),
+        "endpoints": [],
+        "manifest": None,
+    }
+    if not base.exists():
+        return summary
+    for ep in ("epm", "team-epm", "game-predictions", "game-predictions-box"):
+        fp = base / f"{ep}.json"
+        entry = {
+            "endpoint": ep,
+            "path": str(fp.relative_to(REPO_ROOT)) if fp.exists() else None,
+            "exists": fp.exists(),
+            "mtime_utc": _file_mtime_iso_utc(fp),
+            "rows": None,
+        }
+        if fp.exists():
+            try:
+                payload = json.loads(fp.read_text())
+                if isinstance(payload, list):
+                    entry["rows"] = len(payload)
+                elif isinstance(payload, dict):
+                    for k in ("data", "rows", "results"):
+                        if isinstance(payload.get(k), list):
+                            entry["rows"] = len(payload[k])
+                            break
+            except Exception as e:
+                entry["error"] = repr(e)
+        summary["endpoints"].append(entry)
+    mp = base / "_fetch_manifest.json"
+    if mp.exists():
+        try:
+            summary["manifest"] = json.loads(mp.read_text())
+        except Exception:
+            summary["manifest"] = {"error": "manifest decode failed"}
+    return summary
 
 
 # ── Odds fetch ────────────────────────────────────────────────────────────
@@ -319,6 +454,10 @@ def main() -> int:
     ap.add_argument("--max-events", type=int, default=20)
     ap.add_argument("--no-odds-fetch", action="store_true",
                      help="Skip the live odds fetch entirely")
+    ap.add_argument("--no-bdl-refresh", action="store_true",
+                     help="Skip the BDL player_game_stats refresh")
+    ap.add_argument("--no-dnt-fetch", action="store_true",
+                     help="Skip the Dunks & Threes fetch")
     ap.add_argument("--refresh-predictions", action="store_true",
                      help="Re-run scripts/predict.py for --date")
     ap.add_argument("--dry-run", action="store_true")
@@ -331,7 +470,30 @@ def main() -> int:
           f"max_events={args.max_events}")
     print("=" * 72)
 
-    # 1. Odds fetch (one call per region group).
+    # 1. BDL refresh — pull finalized box scores into player_game_stats.
+    bdl_refresh_summary: dict | None = None
+    if args.no_bdl_refresh:
+        print("  bdl-refresh: SKIPPED (--no-bdl-refresh)")
+        bdl_refresh_summary = {"status": "skipped"}
+    elif not os.environ.get("BDL_API_KEY", "").strip():
+        print("  WARN: BDL_API_KEY unset; skipping BDL refresh.")
+        bdl_refresh_summary = {"status": "skipped:no_api_key"}
+    else:
+        bdl_refresh_summary = _run_bdl_refresh(date=delivery_date)
+
+    # 2. Dunks & Threes fetch.
+    dnt_run: dict | None = None
+    if args.no_dnt_fetch:
+        print("  dnt-fetch: SKIPPED (--no-dnt-fetch)")
+        dnt_run = {"status": "skipped"}
+    elif not (os.environ.get("DUNKS_AND_THREES_API_KEY", "").strip()
+              or os.environ.get("DUNKS_API_KEY", "").strip()):
+        print("  WARN: DUNKS_*_API_KEY unset; skipping D&T fetch.")
+        dnt_run = {"status": "skipped:no_api_key"}
+    else:
+        dnt_run = _run_dnt_fetch(date=delivery_date)
+
+    # 3. Odds fetch (one call per region group).
     odds_runs: list[dict] = []
     if args.no_odds_fetch:
         print("  odds-fetch: SKIPPED (--no-odds-fetch)")
@@ -353,18 +515,19 @@ def main() -> int:
             else:
                 odds_status_summary = "partial"
 
-    # 2. Optional predictions refresh.
+    # 4. Optional predictions refresh.
     predictions_refresh: dict | None = None
     if args.refresh_predictions:
         print("  refreshing predictions (scripts/predict.py)")
         predictions_refresh = _maybe_refresh_predictions(delivery_date)
 
-    # 3. Status sweep.
+    # 5. Status sweep.
     pred_status = _predictions_status(delivery_date)
     avail_status = _availability_status()
     artifacts = _model_artifacts_status()
     finals = _finals_status(delivery_date)
     odds_files = _scan_processed_odds(delivery_date)
+    dnt_status = _scan_dnt_for_date(delivery_date)
 
     # Aggregate book / stat coverage across all per-region snapshots.
     seen_books: set[str] = set()
@@ -405,6 +568,11 @@ def main() -> int:
         "availability_table": avail_status,
         "model_artifacts": artifacts,
         "finals": finals,
+        "bdl_refresh": bdl_refresh_summary,
+        "dunks_and_threes": {
+            "fetch_run": dnt_run,
+            "files": dnt_status,
+        },
         "overall_status": overall,
         "tov_status": pred_status["tov_status"],
     }
@@ -415,6 +583,10 @@ def main() -> int:
     print()
     print(f"wrote {out.relative_to(REPO_ROOT)}")
     print(f"  overall_status         : {overall}")
+    print(f"  bdl_refresh.status     : "
+          f"{(bdl_refresh_summary or {}).get('status')}")
+    print(f"  dnt.status             : "
+          f"{(dnt_run or {}).get('status')}")
     print(f"  odds.status            : {odds_status_summary}")
     print(f"  odds.books_seen        : {sorted(seen_books)}")
     print(f"  odds.market_coverage   : {market_coverage_status}")

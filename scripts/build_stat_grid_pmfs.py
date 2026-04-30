@@ -1,0 +1,426 @@
+"""Generate model-only PMFs for the player-stat grid for a given date.
+
+Phase 12 Part G. Produces TOV (and on demand, every other supported stat)
+PMFs for every player in tonight's slate, **independent of whether BDL
+sells a market for that stat**. BDL does not sell turnovers, so the
+production pipeline (`scripts/predict.py`) never emits TOV rows; this
+script closes that gap.
+
+The output is consumed by `scripts/build_daily_pmf_delivery.py`, which
+merges the TOV rows into the canonical MODEL_ONLY parquet under
+`deliveries/{date}/canonical_source/`.
+
+Design
+------
+We reuse the production calibrators and feature builders. We never
+fabricate. Specifically:
+
+  - The slate's (player_id, game_id) universe comes from
+    `predictions/all_props_{date}.parquet` (the same set the existing
+    delivery is built on).
+  - For each (player, game) we rebuild the same minutes distribution
+    and feature row that `scripts/predict.py` would build (exact module
+    calls — no shortcut).
+  - We invoke `nba_props_model.pipelines.pmf_predict.build_prop_pmfs()`
+    which returns a dict of `PropPMF` keyed by stat. That helper applies
+    the role-aware Phase-8 calibrator (`pmf_cal_role_tov.pkl`) when
+    present. The failed Phase 10D / 10D.2 overlays live in
+    `artifacts/phase10d*` and are NOT loaded by this code path.
+
+Hard rules (mirroring `docs/daily_pmf_delivery_spec.md`):
+  - Model-only PMFs are canonical.
+  - No market anchoring.
+  - No fabrication: a player without a feature row is dropped.
+  - TOV-status tag: `current_phase8`.
+
+CLI:
+    python scripts/build_stat_grid_pmfs.py --date 2026-04-29
+    python scripts/build_stat_grid_pmfs.py --date 2026-04-29 \
+        --stats tov pts reb ast fg3m
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import sys
+import warnings
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Iterable
+
+import numpy as np
+import pandas as pd
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+# Silence sklearn/numpy chatter that the prediction modules emit.
+warnings.filterwarnings("ignore")
+
+from nba_props_model.data.bdl_client import (  # noqa: E402
+    get_games, get_game_odds,
+    get_injuries, get_advanced_stats_v2,
+    build_game_context_map, build_injury_map,
+    get_nba_injury_report, merge_injury_sources,
+    enrich_game_context_with_snapshots,
+)
+from nba_props_model.features.engineering import (  # noqa: E402
+    build_player_game_features,
+    add_interaction_features,
+    ALL_TARGETS,
+)
+from nba_props_model.models.minutes import minutes_distribution  # noqa: E402
+from nba_props_model.features.availability_asof import (  # noqa: E402
+    load_availability_table as _load_availability_table,
+    AvailabilityBuilder as _AvailabilityBuilder,
+)
+from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
+
+PRED_DIR = REPO_ROOT / "predictions"
+DATA_DIR = REPO_ROOT / "data"
+
+_AVAILABILITY_COLS = (
+    "prob_active", "days_since_last_played", "is_returning_from_absence",
+    "minutes_restriction_flag", "num_teammates_out_total",
+    "vacated_minutes_guard", "vacated_minutes_wing", "vacated_minutes_big",
+    "teammate_out_count_guard", "teammate_out_count_wing",
+    "teammate_out_count_big", "vacated_fga_total",
+)
+_INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
+
+# We default to TOV only — that is the gap the production export leaves.
+# The flag accepts any stat in build_prop_pmfs's output keyset.
+DEFAULT_STATS = ("tov",)
+ALLOWED_STATS = ("pts", "reb", "ast", "tov", "fg3m", "stl", "blk", "stocks")
+
+
+def _now_utc_iso() -> str:
+    return (datetime.now(timezone.utc).isoformat(timespec="seconds")
+            .replace("+00:00", "Z"))
+
+
+def _fg3m_hurdle_model():
+    """Best-effort load of the FG3M hurdle model. Returns None if the
+    artifact directory is absent — fg3m is then simply dropped from the
+    grid (its PMF won't be computed). For TOV-only runs this never
+    matters."""
+    try:
+        from nba_props_model.models.fg3m_hurdle import FG3MHurdleModel
+        return FG3MHurdleModel.load_default()
+    except Exception:
+        return None
+
+
+def _pmf_to_dict(pmf: np.ndarray) -> dict:
+    """Serialize a PMF as `{int_value: prob}` so it round-trips through
+    parquet/jsonl/csv without numpy quirks."""
+    arr = np.asarray(pmf, dtype=float).ravel()
+    s = arr.sum()
+    if s > 0 and np.isfinite(s):
+        arr = arr / s
+    return {int(k): float(v) for k, v in enumerate(arr) if v > 0.0}
+
+
+def _pmf_summary(pmf: np.ndarray) -> dict:
+    arr = np.asarray(pmf, dtype=float).ravel()
+    s = float(arr.sum())
+    if s > 0 and np.isfinite(s):
+        norm = arr / s
+    else:
+        norm = arr
+    K = len(norm)
+    ks = np.arange(K)
+    mean = float((norm * ks).sum())
+    cdf = np.cumsum(norm)
+    median = int(np.searchsorted(cdf, 0.5)) if K > 0 else 0
+    mode = int(np.argmax(norm)) if K > 0 else 0
+    return {"mean": mean, "median": median, "mode": mode,
+            "support_max": int(K - 1) if K > 0 else 0,
+            "pmf_sum": s}
+
+
+def _slate_keys_from_all_props(all_props_path: Path) -> list[tuple[int, int]]:
+    """Read the existing all_props parquet and return the unique
+    `(player_id, game_id)` slate. Drops rows with NaN keys."""
+    df = pd.read_parquet(all_props_path, columns=["player_id", "game_id"])
+    df = df.dropna(subset=["player_id", "game_id"]).copy()
+    df["player_id"] = df["player_id"].astype(int)
+    df["game_id"] = df["game_id"].astype(int)
+    pairs = set(zip(df["player_id"].tolist(), df["game_id"].tolist()))
+    return sorted(pairs)
+
+
+def _build_pipeline_state(target_date: str) -> dict:
+    """Mirror predict.py's setup just enough to compute one
+    minutes_distribution + feature_row per (player, game). Returns a
+    dict of state objects used by the per-player loop."""
+    print("  loading historical inputs…")
+    stats_path = DATA_DIR / "player_game_stats.parquet"
+    adv_path = DATA_DIR / "advanced_stats.parquet"
+    if not stats_path.exists():
+        raise SystemExit(f"missing: {stats_path}")
+    stats_df = pd.read_parquet(stats_path)
+    adv_df = pd.read_parquet(adv_path) if adv_path.exists() else pd.DataFrame()
+
+    adv_by_player: dict[int, list] = {}
+    if not adv_df.empty:
+        for pid, grp in adv_df.groupby("player_id"):
+            adv_by_player[int(pid)] = grp.sort_values("game_date").to_dict("records")
+
+    print(f"  fetching BDL games for {target_date}…")
+    games = get_games(start_date=target_date, end_date=target_date)
+    print(f"    {len(games)} games")
+
+    today_odds_raw = get_game_odds(dates=[target_date])
+    ctx_map = build_game_context_map(today_odds_raw) if today_odds_raw else {}
+    ctx_map = enrich_game_context_with_snapshots(ctx_map, games, target_date)
+
+    print("  fetching injuries (BDL + NBA official)…")
+    injury_raw = get_injuries()
+    injury_map = build_injury_map(injury_raw) if injury_raw else {}
+    nba_report = get_nba_injury_report()
+    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
+    inactive_ids = {
+        int(pid) for pid, info in injury_map.items()
+        if str(info.get("status", "")).lower().strip() in _INACTIVE_STATUSES
+    }
+    print(f"    injury_map={len(injury_map)} inactive={len(inactive_ids)}")
+
+    # Availability lookup (for the state-aware minutes model).
+    availability_lookup: dict[tuple[int, str], dict] = {}
+    availability_builder = None
+    try:
+        av_df = _load_availability_table()
+        today_mask = av_df["game_date"].astype(str).str[:10] == target_date
+        av_today = av_df[today_mask]
+        if av_today.empty:
+            availability_builder = _AvailabilityBuilder.from_data_dir()
+        else:
+            for r in av_today.itertuples(index=False):
+                availability_lookup[(int(r.player_id), str(r.game_date))] = {
+                    c: getattr(r, c, None) for c in _AVAILABILITY_COLS
+                }
+    except FileNotFoundError:
+        availability_builder = None
+
+    games_by_id = {int(g["id"]): g for g in games if g.get("id")}
+
+    return {
+        "stats_df": stats_df,
+        "adv_by_player": adv_by_player,
+        "games_by_id": games_by_id,
+        "ctx_map": ctx_map,
+        "injury_map": injury_map,
+        "inactive_player_ids": inactive_ids,
+        "availability_lookup": availability_lookup,
+        "availability_builder": availability_builder,
+    }
+
+
+def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
+                            state: dict, fg3m_model, stats: list[str]) -> list[dict]:
+    """Compute PMFs for one (player, game). Returns list of canonical
+    delivery rows — one per stat in `stats` — or an empty list if the
+    feature build / minutes model fails."""
+    if player_id in state["inactive_player_ids"]:
+        return []
+    game = state["games_by_id"].get(gid)
+    if not game:
+        return []
+    home_id = (game.get("home_team") or {}).get("id") or game.get("home_team_id")
+    vis_id = (game.get("visitor_team") or {}).get("id") or game.get("visitor_team_id")
+    home_nm = (game.get("home_team") or {}).get("full_name", "")
+    vis_nm = (game.get("visitor_team") or {}).get("full_name", "")
+    glabel = f"{vis_nm} @ {home_nm}"
+    ctx = state["ctx_map"].get(gid, {})
+
+    pdata = state["stats_df"][state["stats_df"]["player_id"] == player_id].copy()
+    if pdata.empty:
+        return []
+    pdata["game_date"] = pd.to_datetime(pdata["game_date"]).dt.strftime("%Y-%m-%d")
+    if len(pdata[pdata["season"] == 2025]) < 5:
+        # Mirror predict.py's MIN_GAMES_SEASON gate (5).
+        return []
+
+    team_id = int(pdata.iloc[-1]["team_id"] or 0)
+    is_home = int(team_id == home_id)
+    opp_id = vis_id if is_home else home_id
+
+    padv = sorted(
+        state["adv_by_player"].get(player_id, []),
+        key=lambda x: x.get("game_date", pd.Timestamp("2000")),
+    )
+    padv_prior = [
+        r for r in padv
+        if pd.Timestamp(r.get("game_date", pd.Timestamp("2000")))
+        < pd.Timestamp(target_date)
+    ]
+
+    try:
+        base = build_player_game_features(
+            player_id=player_id, prior_stats=pdata, prior_adv=padv_prior,
+            game_context=ctx, is_home=bool(is_home),
+            target_date=target_date, team_id=team_id,
+            all_stats_df=state["stats_df"], injury_map=state["injury_map"],
+            opp_team_id=opp_id,
+        )
+    except Exception:
+        return []
+
+    avail = None
+    if state["availability_lookup"]:
+        avail = state["availability_lookup"].get((player_id, target_date))
+    elif state["availability_builder"] is not None:
+        try:
+            pairs = pd.DataFrame([{
+                "player_id": player_id, "team_id": team_id,
+                "game_date": target_date,
+            }])
+            fts = state["availability_builder"].features_for(pairs)
+            if len(fts):
+                avail = {c: fts.iloc[0].get(c) for c in _AVAILABILITY_COLS}
+        except Exception:
+            avail = None
+
+    try:
+        mp_dist = minutes_distribution(
+            prior_stats=pdata, game_context=ctx,
+            is_home=bool(is_home), target_date=target_date, team_id=team_id,
+            all_stats_df=state["stats_df"], injury_map=state["injury_map"],
+            availability=avail,
+        )
+    except Exception:
+        return []
+    if mp_dist is None:
+        return []
+
+    # Build the PMF dict for this player. The interaction features added
+    # in predict.py are per-stat; build_prop_pmfs only needs the base
+    # feature row (it pulls per-stat sub-features internally).
+    rng = np.random.default_rng(hash(("stat_grid", player_id, gid)) & 0xFFFFFFFF)
+    try:
+        pmf_pack = build_prop_pmfs(
+            minutes_dist=mp_dist, feature_row=base,
+            fg3m_hurdle_model=fg3m_model, rng=rng,
+        )
+    except Exception:
+        return []
+
+    player_name = str(pdata.iloc[-1].get("player_name", f"Player {player_id}"))
+    out_rows: list[dict] = []
+    for stat in stats:
+        prop = pmf_pack.get(stat)
+        if prop is None or prop.pmf is None:
+            continue
+        s = _pmf_summary(prop.pmf)
+        out_rows.append({
+            "player_id": int(player_id),
+            "player_name": player_name,
+            "team_id": int(team_id) if team_id else None,
+            "game_id": int(gid),
+            "game": glabel,
+            "is_home": bool(is_home),
+            "opp_team_id": int(opp_id) if opp_id else None,
+            "stat": stat,
+            "side": "MODEL_ONLY",
+            "line": None,
+            "odds": None,
+            "model_version": prop.model_version,
+            "calibrated": bool(prop.calibrated),
+            "pmf": json.dumps(_pmf_to_dict(prop.pmf)),
+            "pmf_summary_mean": s["mean"],
+            "pmf_summary_median": s["median"],
+            "pmf_summary_mode": s["mode"],
+            "support_max": s["support_max"],
+            "pmf_sum_error": float(abs(s["pmf_sum"] - 1.0)),
+            "tov_status": (
+                "current_phase8" if stat == "tov" else None
+            ),
+            "tov_status_reason": (
+                "Phase 10D/10D.2 overlay failed independent validation; "
+                "see docs/phase11_tov_structural_refit_plan.md"
+                if stat == "tov" else None
+            ),
+            "line_is_real": False,
+            "scored_at_utc": _now_utc_iso(),
+        })
+    return out_rows
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--date", required=True,
+                     help="YYYY-MM-DD slate date (US/Eastern)")
+    ap.add_argument("--stats", nargs="+", default=list(DEFAULT_STATS),
+                     choices=list(ALLOWED_STATS),
+                     help=f"stats to emit (default: {DEFAULT_STATS}; the "
+                           "full grid is available via "
+                           "--stats pts reb ast tov fg3m stl blk stocks)")
+    ap.add_argument("--all-props",
+                     default=None,
+                     help=("path to predictions/all_props_{date}.parquet; "
+                            "default auto-resolves under predictions/"))
+    ap.add_argument("--out",
+                     default=None,
+                     help=("output parquet path; "
+                            "default predictions/stat_grid_{date}.parquet"))
+    args = ap.parse_args()
+
+    target_date = args.date
+    if not os.environ.get("BDL_API_KEY", "").strip():
+        print("FATAL: BDL_API_KEY not set", file=sys.stderr)
+        return 2
+
+    all_props_path = Path(
+        args.all_props or PRED_DIR / f"all_props_{target_date}.parquet"
+    )
+    if not all_props_path.exists():
+        print(f"FATAL: {all_props_path} missing — run predict.py first")
+        return 1
+
+    out_path = Path(args.out or PRED_DIR / f"stat_grid_{target_date}.parquet")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    print("=" * 72)
+    print(f"build_stat_grid_pmfs — date={target_date} stats={args.stats}")
+    print(f"  slate source: {all_props_path.relative_to(REPO_ROOT)}")
+    print(f"  output       : {out_path.relative_to(REPO_ROOT)}")
+    print("=" * 72)
+
+    keys = _slate_keys_from_all_props(all_props_path)
+    print(f"  slate (player_id, game_id) pairs: {len(keys)}")
+    if not keys:
+        print("  WARN: empty slate — nothing to compute.")
+        return 1
+
+    state = _build_pipeline_state(target_date)
+    fg3m_model = _fg3m_hurdle_model() if "fg3m" in args.stats else None
+
+    rows: list[dict] = []
+    skipped = 0
+    for pid, gid in keys:
+        produced = _row_for_player_game(
+            pid, gid, target_date=target_date, state=state,
+            fg3m_model=fg3m_model, stats=args.stats,
+        )
+        if not produced:
+            skipped += 1
+            continue
+        rows.extend(produced)
+
+    print(f"\n  produced rows: {len(rows)}")
+    print(f"  skipped (player, game): {skipped}")
+    if not rows:
+        print("  WARN: no rows produced — leaving output untouched.")
+        return 1
+
+    df = pd.DataFrame(rows)
+    print(f"  per-stat counts:\n{df.groupby('stat').size().to_string()}")
+    df.to_parquet(out_path, index=False)
+    print(f"\nwrote {out_path.relative_to(REPO_ROOT)}  ({_now_utc_iso()})")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

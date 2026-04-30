@@ -39,6 +39,7 @@ REFRESH = REPO_ROOT / "scripts" / "refresh_daily_inputs.py"
 BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
 SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
 PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
+STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
 
 
@@ -76,6 +77,17 @@ def _predict(date: str) -> int:
     return _run(cmd, allow_fail=True, label=f"predict {date}")
 
 
+def _stat_grid(date: str) -> int:
+    """Phase 12 Part G: emit `predictions/stat_grid_{date}.parquet` so
+    the canonical build can include TOV (and any other model-only stats
+    BDL doesn't sell). Allowed to fail — the canonical build still works
+    without TOV when this step is skipped."""
+    if not STAT_GRID.exists():
+        return 0
+    cmd = [PYTHON, str(STAT_GRID), "--date", date]
+    return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
+
+
 def _build(date: str, *, snapshot: str, rebuild_canonical: bool) -> int:
     cmd = [PYTHON, str(BUILD), "--date", date, "--snapshot", snapshot]
     if rebuild_canonical:
@@ -104,6 +116,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
         _predict(date)
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
+    _stat_grid(date)
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical)
     _refresh_index()
     return 0
@@ -113,6 +126,7 @@ def run_pre_close(date: str, *, regions: list[str],
                     rebuild_canonical: bool) -> int:
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
+    _stat_grid(date)
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical)
     _refresh_index()
     return 0
@@ -122,6 +136,7 @@ def run_close_lock(date: str, *, regions: list[str],
                      rebuild_canonical: bool) -> int:
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
+    _stat_grid(date)
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical)
     _refresh_index()
     return 0
