@@ -396,18 +396,21 @@ def build(
         dst = out_dir / date
         copy_result = _copy_files(src, dst)
         rm = _read_manifest(src)
-        try:
-            monet = _write_monetization_view(
-                src_dir=src,
-                dst_dir=dst,
-                run_manifest=rm,
-                snapshot_type_label=snapshot_type_label,
-                finality_status_override=finality_status_override,
-                affiliate_cfg=affiliate_cfg,
-            )
-        except Exception as e:  # pragma: no cover — defensive
-            print(f"  monetization_view ({date}): skipped — {e!r}", file=sys.stderr)
-            monet = {"rows": 0, "error": repr(e)}
+        # Phase 12F — do **not** swallow exceptions here. The previous
+        # `except Exception` catch silently turned `ModuleNotFoundError:
+        # pandas` into a "skipped" monetization_view, which produced
+        # incomplete public exports in CI. The function already handles
+        # the only expected no-op case (missing market_comparison.parquet)
+        # via an early return; anything else is a real bug and must
+        # surface.
+        monet = _write_monetization_view(
+            src_dir=src,
+            dst_dir=dst,
+            run_manifest=rm,
+            snapshot_type_label=snapshot_type_label,
+            finality_status_override=finality_status_override,
+            affiliate_cfg=affiliate_cfg,
+        )
         summaries.append(
             _date_summary(date, src, copy_result, monetization=monet)
         )

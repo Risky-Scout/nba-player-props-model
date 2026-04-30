@@ -139,6 +139,45 @@ date with a `wizard_of_odds/run_manifest.json`"; it is also the
 default when `--date` is omitted, but the flag is accepted so
 workflows and runbooks can spell out intent.
 
+### Manual deploy from GitHub Actions (workflow_dispatch)
+
+In **Actions → Wizard of Odds — FTP Deploy → Run workflow**, the
+default inputs are the production-deploy settings:
+
+| input         | default | when to override                                    |
+|---------------|---------|-----------------------------------------------------|
+| `check_only`  | `false` | Set `true` to run a no-upload login/`cwd` test.     |
+| `walk_only`   | `false` | Set `true` to walk local files only (no FTP at all).|
+| `allow_plain` | `true`  | Set `false` once the target enables AUTH TLS.       |
+
+Required secrets (configured at repo → Settings → Secrets → Actions):
+
+- `WOO_FTP_HOST`
+- `WOO_FTP_USER`
+- `WOO_FTP_PASSWORD`
+- `WOO_FTP_REMOTE_DIR` — must equal the path the WoO operator
+  configured (currently `/odds-scanner/predictions/`).
+
+A preflight step in the workflow exits non-zero with the message
+`Missing WOO_FTP_REMOTE_DIR secret; expected /odds-scanner/predictions/`
+if the remote-dir secret is empty, before any login attempt.
+
+### Phase 12F — root cause of the previous failures
+
+The `wizard_of_odds_ftp_deploy.yml` workflow was missing a
+`pip install` step. `build_wizard_of_odds_public_export.py` imports
+pandas inside `_write_monetization_view`; without it the build
+silently dropped the `monetization_view.csv` files (the catch in
+`build()` swallowed the `ModuleNotFoundError`), and the verifier then
+correctly failed with `latest/monetization_view.csv exists`. Fixed in
+Phase 12F by:
+
+1. Adding `pip install pandas pyarrow numpy` to the deploy workflow.
+2. Removing the silent-skip catch in `build()` so future dependency
+   regressions fail loudly during the build step instead of leaving
+   an incomplete export to the verifier.
+3. Adding the explicit secrets preflight described above.
+
 ## Public URLs
 
 - Public mirror landing page: served from the FTP target's
