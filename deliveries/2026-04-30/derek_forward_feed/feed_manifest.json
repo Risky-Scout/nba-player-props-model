@@ -1,25 +1,25 @@
 {
   "delivery_date": "2026-04-30",
-  "built_at_utc": "2026-04-30T23:17:49Z",
+  "built_at_utc": "2026-04-30T23:34:45Z",
   "snapshot": "lineup",
   "morning": null,
   "lineup": {
     "snapshot_type": "near_tip",
-    "snapshot_time_utc": "2026-04-30T23:17:46Z",
-    "rows": 1482,
+    "snapshot_time_utc": "2026-04-30T23:34:43Z",
+    "rows": 1372,
     "model_only_rows_used": 97,
-    "market_rows_referenced": 1492,
+    "market_rows_referenced": 1382,
     "files": {
       "csv": "deliveries/2026-04-30/derek_forward_feed/lineup_snapshot.csv",
       "parquet": "deliveries/2026-04-30/derek_forward_feed/lineup_snapshot.parquet",
-      "rows": 1482,
+      "rows": 1372,
       "jsonl": "deliveries/2026-04-30/derek_forward_feed/lineup_snapshot.jsonl"
     },
     "model_only_source": "deliveries/2026-04-30/pmf_model_review_package/machine_readable/model_only.parquet",
     "market_comparison_source": "deliveries/2026-04-30/wizard_of_odds/market_comparison.parquet",
     "run_manifest_source": "deliveries/2026-04-30/wizard_of_odds/run_manifest.json",
     "freshness_manifest_source": "data/freshness_manifest/2026-04-30.json",
-    "rows_with_market": 1452,
+    "rows_with_market": 1342,
     "rows_model_only": 30,
     "tov_rows": 0
   },
@@ -28,14 +28,14 @@
     "snapshot_type_emitted": "near_tip",
     "lineup_freshness_rollup": "projected=97",
     "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
-    "checked_at_utc": "2026-04-30T23:17:49Z"
+    "checked_at_utc": "2026-04-30T23:34:45Z"
   },
   "latest_available_snapshot": {
     "points_to": "lineup",
     "files": {
       "csv": "deliveries/2026-04-30/derek_forward_feed/latest_available_snapshot.csv",
       "parquet": "deliveries/2026-04-30/derek_forward_feed/latest_available_snapshot.parquet",
-      "rows": 1482
+      "rows": 1372
     }
   },
   "schema": {
