@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-04-30T01:55:52Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-04-30T08:41:10Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -9,7 +9,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 |---|---|---:|---:|---:|---:|---|---|---|---|---|
 | **2026-04-27** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 158 | 3229 | 346 | 312 | `full` | `very_stale` | `present` | `pending_outcomes` | `113c7b5#phase10c` |
 | **2026-04-28** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `n/a` | `—` |
-| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `pending_outcomes` | `113c7b5#phase10c` |
+| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `scored` | `113c7b5#phase10c` |
 
 ## Per-date links
 
@@ -79,12 +79,12 @@ _injury_very_stale, role_bucket_missing_
 - [publishable_edges.csv](2026-04-29/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-04-29/wizard_of_odds/run_manifest.json)
 
-**After-game scoring** (`pending_outcomes`)
+**After-game scoring** (`scored`)
 
 - [after_game_summary.md](2026-04-29/after_game_scoring/after_game_summary.md)
-- ~~after_game_scoring.csv~~
-- ~~calibration_by_stat.csv~~
-- ~~calibration_by_role_bucket.csv~~
+- [after_game_scoring.csv](2026-04-29/after_game_scoring/after_game_scoring.csv)
+- [calibration_by_stat.csv](2026-04-29/after_game_scoring/calibration_by_stat.csv)
+- [calibration_by_role_bucket.csv](2026-04-29/after_game_scoring/calibration_by_role_bucket.csv)
 - ~~clv_by_stat.csv~~
 - ~~clv_by_book.csv~~
 - [after_game_status.json](2026-04-29/after_game_scoring/after_game_status.json)
