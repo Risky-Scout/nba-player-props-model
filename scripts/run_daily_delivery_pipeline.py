@@ -29,11 +29,21 @@ import argparse
 import os
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PYTHON = sys.executable
+
+# Phase 12D — first publishable scheduled run is at earliest tipoff − 35
+# minutes (default 22:25 UTC during NBA playoffs). Refreshes fire every
+# 15 minutes through the slate. The cron schedule itself is the primary
+# timing control; the gate below skips runs that have no game tipoff
+# anywhere in [now − 15 min, now + 45 min] when schedule data is on
+# disk. When schedule data is unavailable (e.g. fresh GitHub Actions
+# runner before refresh_daily_inputs.py runs), the gate is permissive.
+TIPOFF_WINDOW_PRE_MIN = 45
+TIPOFF_WINDOW_POST_MIN = 15
 
 REFRESH = REPO_ROOT / "scripts" / "refresh_daily_inputs.py"
 BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
@@ -121,6 +131,90 @@ def _derek_feed(date: str, *, snapshot: str) -> int:
     return _run(cmd, allow_fail=True, label=f"derek forward feed ({snapshot})")
 
 
+def _load_tipoffs_utc(date: str) -> list[datetime]:
+    """Best-effort load of today's tipoff times in UTC. Reads from
+    `data/odds_api/processed/{date}/*.parquet` (commence_time_utc), then
+    `data/historical_game_odds.parquet` (commence_time) as fallback.
+    Returns an empty list if no schedule data is on disk."""
+    try:
+        import pandas as pd
+    except ImportError:
+        return []
+
+    odds_dir = REPO_ROOT / "data" / "odds_api" / "processed" / date
+    if odds_dir.exists():
+        files = sorted(odds_dir.glob("*.parquet"))
+        if files:
+            try:
+                df = pd.read_parquet(files[-1], columns=["commence_time_utc"])
+                vals = pd.to_datetime(
+                    df["commence_time_utc"].dropna().unique(),
+                    utc=True, errors="coerce")
+                return [v.to_pydatetime() for v in vals if v is not None]
+            except Exception as e:  # pragma: no cover — defensive
+                print(f"  [gate] could not read {files[-1].name}: {e!r}")
+
+    fallback = REPO_ROOT / "data" / "historical_game_odds.parquet"
+    if fallback.exists():
+        try:
+            df = pd.read_parquet(
+                fallback, columns=["game_date", "commence_time"])
+            df = df[df["game_date"].astype(str) == date]
+            vals = pd.to_datetime(
+                df["commence_time"].dropna().unique(),
+                utc=True, errors="coerce")
+            return [v.to_pydatetime() for v in vals if v is not None]
+        except Exception as e:  # pragma: no cover — defensive
+            print(f"  [gate] could not read historical_game_odds: {e!r}")
+
+    return []
+
+
+def _check_tipoff_window(
+    date: str,
+    *,
+    mode: str,
+    force: bool,
+    now: datetime | None = None,
+) -> tuple[bool, str]:
+    """Return (proceed, reason). Schedule-driven gate that suppresses
+    blind rebuilds when no game tipoff is within [now − 15, now + 45]
+    minutes for the date.
+
+    The gate is opt-in by mode: it only applies to lineup-refresh modes
+    (`pre_close`, `close_lock`). `morning`, `after_game`, and
+    `full_day` always proceed. When schedule data isn't on disk yet
+    (fresh CI checkout pre-refresh), the gate is permissive — the cron
+    schedule is the primary timing control."""
+    if force:
+        return True, "force-run override"
+    if mode in {"morning", "after_game", "full_day"}:
+        return True, f"mode={mode} skips tipoff gate"
+
+    tipoffs = _load_tipoffs_utc(date)
+    if not tipoffs:
+        return True, "no schedule data on disk; cron-only enforcement"
+
+    now = now or datetime.now(timezone.utc)
+    window_start = now - timedelta(minutes=TIPOFF_WINDOW_POST_MIN)
+    window_end = now + timedelta(minutes=TIPOFF_WINDOW_PRE_MIN)
+    in_window = [t for t in tipoffs if window_start <= t <= window_end]
+    if in_window:
+        return (
+            True,
+            f"{len(in_window)} tipoff(s) in [-{TIPOFF_WINDOW_POST_MIN},"
+            f"+{TIPOFF_WINDOW_PRE_MIN}] min window",
+        )
+    earliest = min(tipoffs)
+    return (
+        False,
+        f"now={now.isoformat(timespec='seconds')} earliest_tipoff="
+        f"{earliest.isoformat(timespec='seconds')} — no games in "
+        f"[-{TIPOFF_WINDOW_POST_MIN},+{TIPOFF_WINDOW_PRE_MIN}] min "
+        "window",
+    )
+
+
 # ── Mode dispatchers ──────────────────────────────────────────────────────
 
 
@@ -197,14 +291,24 @@ def main() -> int:
     ap.add_argument("--predict", action="store_true",
                      help="run scripts/predict.py before refresh in "
                            "morning / full_day modes (requires BDL_API_KEY)")
+    ap.add_argument("--force-run", action="store_true",
+                     help="bypass the tipoff-window gate (Phase 12D); used "
+                           "for manual backfills outside the lineup window")
     args = ap.parse_args()
 
     print("=" * 72)
     print(f"daily delivery pipeline — date={args.date}  mode={args.mode}")
     print(f"  regions={args.regions}  rebuild_canonical={args.rebuild_canonical}"
-          f"  predict={args.predict}")
+          f"  predict={args.predict}  force_run={args.force_run}")
     print(f"  started_at_utc={datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')}")
     print("=" * 72)
+
+    proceed, reason = _check_tipoff_window(
+        args.date, mode=args.mode, force=args.force_run)
+    print(f"[gate] proceed={proceed}  reason={reason}")
+    if not proceed:
+        print("No games in lineup-refresh window; nothing to publish.")
+        return 0
 
     if args.mode == "morning":
         return run_morning(args.date, regions=args.regions,

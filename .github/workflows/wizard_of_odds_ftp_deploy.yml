@@ -1,6 +1,15 @@
 name: Wizard of Odds — FTP Deploy
 
-# Phase 12B — publish public_export/wizard_of_odds/ to the WoO FTP portal.
+# Phase 12B/12D — publish public_export/wizard_of_odds/ to the WoO FTP
+# portal after the daily PMF delivery has produced a near-lineup or
+# close-lock snapshot. The morning cron was retired in Phase 12D so
+# this workflow no longer publishes morning-only files; deploys now
+# follow:
+#   - pre_close runs (every 15 min from 22:25 UTC through 03:10 UTC),
+#   - close_lock run at 03:25 UTC,
+#   - after_game run at 06:30 UTC (re-uploads unchanged public files;
+#     harmless and keeps the public mirror current with any scoring
+#     updates that touch the public export).
 #
 # Triggers:
 #   - workflow_dispatch (manual)

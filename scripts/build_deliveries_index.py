@@ -319,6 +319,17 @@ def _build_readme(rows: list[dict]) -> str:
             if status_md.exists():
                 out.append(f"See [`STATUS.md`]({date}/STATUS.md) for the "
                             f"cause and the required-to-resolve checklist.\n\n")
+    out.append("\n## Schedule (Phase 12D)\n\n")
+    out.append("- First publishable scheduled run: **`pre_close` at 22:25 UTC "
+               "(6:25 PM ET)** — earliest tipoff − 35 min default during NBA playoffs.\n")
+    out.append("- Lineup refresh: every 15 minutes from 22:40 UTC through 03:10 UTC.\n")
+    out.append("- Late close-lock snapshot: 03:25 UTC.\n")
+    out.append("- After-game scoring: 06:30 UTC (yesterday's slate).\n")
+    out.append("- Derek should archive `derek_forward_feed/latest_available_snapshot.csv` "
+               "after the near-lineup run; the Wizard of Odds public mirror updates after "
+               "every successful pre_close and close_lock deploy.\n")
+    out.append("- The morning cron was retired; `morning` mode remains available manually "
+               "via `workflow_dispatch` for backfills.\n")
     out.append("\n## Honest framing\n\n")
     out.append("- All emitted PMFs are **model-only**; market columns are reference only.\n")
     out.append("- TOV PMFs (when emitted) come from Phase 8 calibrators — "
@@ -385,6 +396,14 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
     body.append('<div class="callout">All PMFs are model-only. TOV PMFs (when '
                 "emitted) come from Phase 8 calibrators — no Phase 10D / 10D.2 "
                 "overlay is wired into production.</div>\n")
+    body.append('<div class="callout"><b>Schedule (Phase 12D):</b> first '
+                'publishable scheduled run is <code>pre_close</code> at 22:25 UTC '
+                '(6:25&nbsp;PM ET, earliest tipoff &minus;&nbsp;35&nbsp;min default). '
+                'Lineup refreshes every 15&nbsp;min through 03:10&nbsp;UTC, '
+                'late close-lock at 03:25&nbsp;UTC, after-game scoring at '
+                '06:30&nbsp;UTC. The morning cron was retired; '
+                '<code>morning</code> mode remains available via '
+                'workflow_dispatch for backfills.</div>\n')
     for r in rows:
         date = r["date"]
         base = DEL_DIR / date

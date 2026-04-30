@@ -636,6 +636,25 @@ def _lineup_snapshot_present(date: str) -> bool:
     return rm.get("snapshot_type") in {"pre_close", "close_lock", "lineup"}
 
 
+def _resolve_lineup_snapshot_type(date: str) -> tuple[str, str | None]:
+    """Phase 12D — when the upstream wizard_of_odds package is a
+    pre_close / close_lock build but BDL has not yet posted confirmed
+    lineups, the Derek snapshot should be labelled `near_tip` (with the
+    honest lineup_freshness_status), not `lineup`. Returns (snapshot_type,
+    lineup_freshness_rollup_summary)."""
+    base = DEL_DIR / date
+    rm = _read_json(base / "wizard_of_odds" / "run_manifest.json") or {}
+    qr = rm.get("quality_rollup") or {}
+    rollup = qr.get("lineup_freshness_status") or {}
+    if not isinstance(rollup, dict):
+        return ("near_tip", None)
+    statuses = set(rollup.keys())
+    summary = ",".join(f"{k}={v}" for k, v in rollup.items())
+    if "confirmed_bdl" in statuses or "confirmed" in statuses:
+        return ("lineup", summary)
+    return ("near_tip", summary)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--date", required=True, help="delivery date YYYY-MM-DD")
@@ -685,11 +704,39 @@ def main() -> int:
 
     if args.snapshot in {"lineup", "both"}:
         if _lineup_snapshot_present(args.date):
+            snapshot_type_value, lineup_rollup = _resolve_lineup_snapshot_type(
+                args.date)
             lineup_entry = build_snapshot(
                 date=args.date,
                 snapshot_label="lineup",
-                snapshot_type_value="lineup",
+                snapshot_type_value=snapshot_type_value,
                 out_dir=out_dir,
+            )
+            # Always write a status file alongside the lineup snapshot so
+            # Derek can see at a glance whether lineups were confirmed.
+            lineup_status_payload = {
+                "status": (
+                    "confirmed_lineup_snapshot"
+                    if snapshot_type_value == "lineup"
+                    else "near_tip_projected_lineup_snapshot"
+                ),
+                "snapshot_type_emitted": snapshot_type_value,
+                "lineup_freshness_rollup": lineup_rollup,
+                "reason": (
+                    "Confirmed BDL lineup data was present in the upstream "
+                    "wizard_of_odds package."
+                    if snapshot_type_value == "lineup"
+                    else "Upstream wizard_of_odds package contains projected "
+                    "(not BDL-confirmed) lineup data; snapshot labelled "
+                    "near_tip to keep Derek's archive honest."
+                ),
+                "checked_at_utc": _now_utc_iso(),
+            }
+            (out_dir / "lineup_snapshot_status.json").write_text(
+                json.dumps(lineup_status_payload, indent=2)
+            )
+            print(
+                f"  lineup: emitted as snapshot_type={snapshot_type_value!r}"
             )
         else:
             lineup_status_payload = {

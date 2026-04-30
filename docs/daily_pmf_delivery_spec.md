@@ -357,14 +357,29 @@ scripts/score_daily_pmf_delivery_after_game.py
                                        after_game_*.* to both folders
 ```
 
-The workflow runs four jobs per day on a UTC cron:
+The workflow runs scheduled jobs on a UTC cron. Phase 12D retired the
+morning cron — the first publishable scheduled run is now
+`pre_close` at 22:25 UTC (6:25 PM ET during NBA playoffs), defined as
+the earliest expected tipoff minus 35 minutes. `pre_close` then
+refreshes every 15 minutes through 03:10 UTC so later-game lineup and
+inactive updates flow into the feed. A late `close_lock` snapshot
+fires at 03:25 UTC, and `after_game` scoring fires at 06:30 UTC for
+yesterday's slate.
 
-| job          | UTC cron     | snapshot      |
-|--------------|--------------|---------------|
-| `morning`    | `30 13 * * *` | `morning`     |
-| `pre_close`  | `30 22 * * *` | `pre_close`   |
-| `close_lock` | `50 23 * * *` | `close_lock`  |
-| `after_game` | `30 6 * * *`  | `after_game`  |
+| job          | UTC cron                                 | snapshot      |
+|--------------|------------------------------------------|---------------|
+| `pre_close`  | `25 22 * * *` (first publishable run)    | `pre_close`   |
+| `pre_close`  | `40,55 22 * * *`                          | `pre_close`   |
+| `pre_close`  | `10,25,40,55 23,0,1,2 * * *`              | `pre_close`   |
+| `pre_close`  | `10 3 * * *` (final pre-close refresh)   | `pre_close`   |
+| `close_lock` | `25 3 * * *`                              | `close_lock`  |
+| `after_game` | `30 6 * * *`                              | `after_game`  |
+| `morning`    | (retired in Phase 12D — manual-only)     | `morning`     |
+
+`scripts/run_daily_delivery_pipeline.py` further gates pre_close /
+close_lock runs to a [now − 15, now + 45] minute window around any
+tipoff for the date, when schedule data is on disk; pass
+`--force-run` to bypass the gate during manual backfills.
 
 Only `deliveries/{date}/{canonical_source,pmf_model_review_package,wizard_of_odds}/`
 are staged in CI commits. `data/odds_api/`, `data/freshness_manifest/`,

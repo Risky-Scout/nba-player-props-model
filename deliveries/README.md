@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-04-30T13:43:22Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-04-30T14:12:27Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -111,6 +111,15 @@ _injury_very_stale, role_bucket_missing_
 - ~~clv_by_book.csv~~
 - [after_game_status.json](2026-04-29/after_game_scoring/after_game_status.json)
 
+
+## Schedule (Phase 12D)
+
+- First publishable scheduled run: **`pre_close` at 22:25 UTC (6:25 PM ET)** — earliest tipoff − 35 min default during NBA playoffs.
+- Lineup refresh: every 15 minutes from 22:40 UTC through 03:10 UTC.
+- Late close-lock snapshot: 03:25 UTC.
+- After-game scoring: 06:30 UTC (yesterday's slate).
+- Derek should archive `derek_forward_feed/latest_available_snapshot.csv` after the near-lineup run; the Wizard of Odds public mirror updates after every successful pre_close and close_lock deploy.
+- The morning cron was retired; `morning` mode remains available manually via `workflow_dispatch` for backfills.
 
 ## Honest framing
 

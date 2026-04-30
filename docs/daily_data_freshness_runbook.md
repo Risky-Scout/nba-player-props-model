@@ -204,6 +204,24 @@ shared imports — either can be rerun independently for forensics.
   schema, validation gates, finality rollup).
 - `docs/phase11_tov_structural_refit_plan.md` — why TOV is the only
   expected-missing supported stat today.
-- `.github/workflows/daily_pmf_delivery.yml` — the four scheduled jobs
-  (`morning`, `pre_close`, `close_lock`, `after_game`) that drive this
-  pipeline in CI.
+- `.github/workflows/daily_pmf_delivery.yml` — the scheduled jobs that
+  drive this pipeline in CI. Phase 12D retired the morning cron; the
+  first publishable scheduled run is now `pre_close` at 22:25 UTC
+  (6:25 PM ET during NBA playoffs — earliest tipoff − 35 min default),
+  with `pre_close` refreshes every 15 min through 03:10 UTC, a late
+  `close_lock` run at 03:25 UTC, and `after_game` scoring at 06:30 UTC.
+  The `morning` job remains available manually via `workflow_dispatch`
+  for backfill runs.
+
+## 8. Schedule-driven gating (Phase 12D)
+
+`scripts/run_daily_delivery_pipeline.py` reads
+`data/odds_api/processed/{date}/*.parquet` (or
+`data/historical_game_odds.parquet` as fallback) to determine the
+slate's tipoff times and skips runs where no game tipoff falls within
+[now − 15 min, now + 45 min]. Pass `--force-run` to bypass the gate
+for manual backfills outside the lineup window. When schedule data
+isn't yet on disk (fresh CI checkout before
+`refresh_daily_inputs.py`), the gate is permissive — the cron schedule
+is the primary timing control, and a single missed gate-check costs at
+most one extra Odds API request, never a fabricated PMF.
