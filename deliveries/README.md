@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-04-30T14:12:27Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-04-30T14:29:45Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -112,14 +112,27 @@ _injury_very_stale, role_bucket_missing_
 - [after_game_status.json](2026-04-29/after_game_scoring/after_game_status.json)
 
 
-## Schedule (Phase 12D)
+## Schedule (Phase 12D-amend)
 
-- First publishable scheduled run: **`pre_close` at 22:25 UTC (6:25 PM ET)** — earliest tipoff − 35 min default during NBA playoffs.
-- Lineup refresh: every 15 minutes from 22:40 UTC through 03:10 UTC.
-- Late close-lock snapshot: 03:25 UTC.
-- After-game scoring: 06:30 UTC (yesterday's slate).
-- Derek should archive `derek_forward_feed/latest_available_snapshot.csv` after the near-lineup run; the Wizard of Odds public mirror updates after every successful pre_close and close_lock deploy.
-- The morning cron was retired; `morning` mode remains available manually via `workflow_dispatch` for backfills.
+Derek's evaluation feed and WoO's monetization feed run on separate clocks.
+
+**WoO monetization feed (public, affiliate-friendly):**
+
+- 15:00 UTC / 11:00 AM ET — `woo_morning_monetization` (`finality_status_public=PROVISIONAL_EARLY_MARKET`)
+- 18:00 UTC / 2:00 PM ET — `woo_afternoon_refresh`
+- 20:00 UTC / 4:00 PM ET — `woo_afternoon_refresh`
+- Refreshed automatically alongside every `derek_near_lineup` and `close_lock` run.
+
+**Derek evaluation feed:**
+
+- 22:25 UTC / 6:25 PM ET — `derek_near_lineup` first publishable evaluation snapshot (earliest tipoff − 35 min default during NBA playoffs).
+- Every 15 min from 22:40 UTC through 03:10 UTC — `derek_near_lineup` refresh as lineups confirm.
+- 03:25 UTC — `close_lock` final lineup/market lock.
+- 06:30 UTC — `after_game` scoring (yesterday's slate).
+
+- Derek should archive `derek_forward_feed/latest_available_snapshot.csv` after the near-lineup run.
+- The morning cron was retired in Phase 12D; `morning` mode remains available manually via `workflow_dispatch` for backfills.
+- Affiliate URLs in the public WoO export are never fabricated — absent mapping ⇒ `monetization_status=needs_affiliate_mapping`. See `docs/wizardofodds_public_export_runbook.md`.
 
 ## Honest framing
 

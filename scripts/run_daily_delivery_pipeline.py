@@ -7,20 +7,39 @@ can invoke a full snapshot run with a single command.
 
 Modes
 -----
-    morning      refresh inputs, run predictions if `--predict`, build delivery
-                 with `--snapshot morning`, then refresh deliveries/README.md.
-    pre_close    refresh inputs, build delivery with `--snapshot pre_close`,
-                 refresh index. (No predict — predictions stay morning-of.)
-    close_lock   refresh inputs (close_or_lock odds capture), build delivery
-                 with `--snapshot close_lock`, refresh index.
-    after_game   skip odds fetch, run after-game scorer, refresh index.
-    full_day     morning → pre_close → close_lock → after_game in sequence.
+    woo_morning_monetization   first WoO public run of the day. Refresh inputs,
+                               build canonical delivery (snapshot=morning), build
+                               public WoO export with snapshot_type_label=
+                               woo_morning_monetization and finality_status_override=
+                               PROVISIONAL_EARLY_MARKET, refresh index. Never
+                               touches Derek's evaluation feed.
+    woo_afternoon_refresh      mid-afternoon WoO public refresh. Same as above
+                               but with snapshot=pre_close and snapshot_type_label=
+                               woo_afternoon_refresh. Never touches Derek's feed.
+    derek_near_lineup          Derek's first evaluation-grade snapshot. Refresh
+                               inputs, build delivery (snapshot=pre_close), build
+                               Derek forward feed (--snapshot lineup), refresh
+                               public WoO export with the lineup-aware snapshot.
+    close_lock                 final lineup/market lock. Build delivery
+                               (snapshot=close_lock), refresh Derek feed and WoO
+                               public export.
+    after_game                 skip odds fetch, run after-game scorer, refresh
+                               Derek latest_available_snapshot pointer.
+    morning                    legacy/backfill morning run; manual-only since
+                               Phase 12D.
+    pre_close                  alias for derek_near_lineup retained for
+                               backwards compatibility.
+    full_day                   morning → derek_near_lineup → close_lock →
+                               after_game in sequence (manual full backfill).
 
 Hard rules echoed from the spec:
 - Never logs the API key (predict.py / refresh use os.environ directly).
 - Never wires Phase 10D / 10D.2 TOV overlays.
 - Never market-anchors model-only PMFs.
 - Never fabricates predictions, injuries, lineups, role buckets, or odds.
+- Never fabricates affiliate links — when config/wizardofodds_affiliate_links.json
+  is missing or has no entry for a book, monetization_status=needs_affiliate_mapping
+  and the URL fields stay blank.
 - Never stages data/odds_api/, data/freshness_manifest/, artifacts/, logs.
 """
 from __future__ import annotations
@@ -52,6 +71,7 @@ PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
 DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
+WOO_EXPORT = REPO_ROOT / "scripts" / "build_wizard_of_odds_public_export.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -131,6 +151,43 @@ def _derek_feed(date: str, *, snapshot: str) -> int:
     return _run(cmd, allow_fail=True, label=f"derek forward feed ({snapshot})")
 
 
+def _woo_export(
+    *,
+    snapshot_type_label: str | None,
+    finality_status_override: str | None,
+    only_date: str | None = None,
+) -> int:
+    """Phase 12D-amend: build the public Wizard of Odds export folder.
+
+    The public export is the monetization feed; it runs earlier in the
+    day than Derek's evaluation feed. `--snapshot-type-label` and
+    `--finality-status-override` are used by the WoO morning/afternoon
+    runs to label the public output as PROVISIONAL_EARLY_MARKET. For
+    derek_near_lineup / close_lock the wrapper omits the overrides so
+    the public export inherits the canonical run_manifest values.
+
+    The FTP deploy is triggered separately via the
+    wizard_of_odds_ftp_deploy.yml workflow_run hook; the wrapper does
+    not deploy directly so credentials remain isolated to that job."""
+    if not WOO_EXPORT.exists():
+        return 0
+    cmd = [PYTHON, str(WOO_EXPORT)]
+    if only_date:
+        cmd.extend(["--date", only_date])
+    if snapshot_type_label:
+        cmd.extend(["--snapshot-type-label", snapshot_type_label])
+    if finality_status_override:
+        cmd.extend(["--finality-status-override", finality_status_override])
+    label_bits = [snapshot_type_label or "default"]
+    if finality_status_override:
+        label_bits.append(finality_status_override)
+    return _run(
+        cmd,
+        allow_fail=True,
+        label=f"woo public export ({'/'.join(label_bits)})",
+    )
+
+
 def _load_tipoffs_utc(date: str) -> list[datetime]:
     """Best-effort load of today's tipoff times in UTC. Reads from
     `data/odds_api/processed/{date}/*.parquet` (commence_time_utc), then
@@ -188,7 +245,17 @@ def _check_tipoff_window(
     schedule is the primary timing control."""
     if force:
         return True, "force-run override"
-    if mode in {"morning", "after_game", "full_day"}:
+    # WoO monetization runs and morning backfills are scheduled at fixed
+    # clock times; they're intentionally allowed to fire ahead of any
+    # game's tipoff. Only Derek's near-lineup / close-lock evaluation
+    # snapshots are gated on the tipoff window.
+    if mode in {
+        "morning",
+        "woo_morning_monetization",
+        "woo_afternoon_refresh",
+        "after_game",
+        "full_day",
+    }:
         return True, f"mode={mode} skips tipoff gate"
 
     tipoffs = _load_tipoffs_utc(date)
@@ -220,6 +287,10 @@ def _check_tipoff_window(
 
 def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
                   do_predict: bool) -> int:
+    """Manual-only legacy backfill (Phase 12D retired the morning cron).
+    Builds the canonical morning delivery and Derek's morning snapshot,
+    but **does not** publish a WoO public export — the WoO monetization
+    feed has its own scheduled lifecycle starting at 15:00 UTC."""
     if do_predict:
         _predict(date)
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
@@ -231,13 +302,70 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     return 0
 
 
-def run_pre_close(date: str, *, regions: list[str],
-                    rebuild_canonical: bool) -> int:
+def run_woo_morning_monetization(
+    date: str, *, regions: list[str], rebuild_canonical: bool,
+    do_predict: bool,
+) -> int:
+    """Phase 12D-amend mode 1 — first WoO public run of the day.
+
+    Builds the canonical morning delivery, then the public WoO export
+    stamped with snapshot_type_public=woo_morning_monetization and
+    finality_status_public=PROVISIONAL_EARLY_MARKET. Does not touch
+    Derek's evaluation feed — that runs later, near lineup time."""
+    if do_predict:
+        _predict(date)
+    _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
+              regions=regions)
+    _stat_grid(date)
+    _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical)
+    _woo_export(
+        snapshot_type_label="woo_morning_monetization",
+        finality_status_override="PROVISIONAL_EARLY_MARKET",
+    )
+    _refresh_index()
+    return 0
+
+
+def run_woo_afternoon_refresh(
+    date: str, *, regions: list[str], rebuild_canonical: bool,
+) -> int:
+    """Phase 12D-amend mode 2 — mid-afternoon WoO public refresh.
+
+    Refreshes odds and rebuilds the canonical pre_close package, then
+    re-publishes the WoO public export. Still tagged
+    PROVISIONAL_EARLY_MARKET because lineups typically aren't confirmed
+    yet. Does not touch Derek's evaluation feed."""
+    _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
+              regions=regions)
+    _stat_grid(date)
+    _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical)
+    _woo_export(
+        snapshot_type_label="woo_afternoon_refresh",
+        finality_status_override="PROVISIONAL_EARLY_MARKET",
+    )
+    _refresh_index()
+    return 0
+
+
+def run_derek_near_lineup(
+    date: str, *, regions: list[str], rebuild_canonical: bool,
+) -> int:
+    """Phase 12D-amend mode 3 — Derek's first evaluation-grade snapshot.
+
+    Refreshes odds, rebuilds the canonical pre_close package, builds
+    Derek's forward feed (`--snapshot lineup`), and re-publishes the
+    WoO public export so the monetization feed picks up the
+    lineup-aware data. The WoO export inherits the canonical run
+    manifest's snapshot_type / finality_status (no override)."""
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _stat_grid(date)
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical)
     _derek_feed(date, snapshot="lineup")
+    _woo_export(
+        snapshot_type_label=None,
+        finality_status_override=None,
+    )
     _refresh_index()
     return 0
 
@@ -249,6 +377,10 @@ def run_close_lock(date: str, *, regions: list[str],
     _stat_grid(date)
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical)
     _derek_feed(date, snapshot="lineup")
+    _woo_export(
+        snapshot_type_label=None,
+        finality_status_override=None,
+    )
     _refresh_index()
     return 0
 
@@ -267,9 +399,16 @@ def run_after_game(date: str) -> int:
 
 def run_full_day(date: str, *, regions: list[str],
                    rebuild_canonical: bool, do_predict: bool) -> int:
-    run_morning(date, regions=regions, rebuild_canonical=rebuild_canonical,
-                  do_predict=do_predict)
-    run_pre_close(date, regions=regions, rebuild_canonical=False)
+    run_woo_morning_monetization(
+        date, regions=regions, rebuild_canonical=rebuild_canonical,
+        do_predict=do_predict,
+    )
+    run_woo_afternoon_refresh(
+        date, regions=regions, rebuild_canonical=False,
+    )
+    run_derek_near_lineup(
+        date, regions=regions, rebuild_canonical=False,
+    )
     run_close_lock(date, regions=regions, rebuild_canonical=False)
     run_after_game(date)
     return 0
@@ -282,9 +421,21 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--date", required=True,
                      help="delivery calendar date YYYY-MM-DD (US/Eastern)")
-    ap.add_argument("--mode", required=True,
-                     choices=["morning", "pre_close", "close_lock",
-                              "after_game", "full_day"])
+    ap.add_argument(
+        "--mode",
+        required=True,
+        choices=[
+            "woo_morning_monetization",
+            "woo_afternoon_refresh",
+            "derek_near_lineup",
+            "close_lock",
+            "after_game",
+            "full_day",
+            # legacy aliases
+            "morning",
+            "pre_close",
+        ],
+    )
     ap.add_argument("--regions", nargs="+", default=["us", "us2"])
     ap.add_argument("--rebuild-canonical", action="store_true",
                      help="passes through to build_daily_pmf_delivery.py")
@@ -314,9 +465,24 @@ def main() -> int:
         return run_morning(args.date, regions=args.regions,
                             rebuild_canonical=args.rebuild_canonical,
                             do_predict=args.predict)
-    if args.mode == "pre_close":
-        return run_pre_close(args.date, regions=args.regions,
-                              rebuild_canonical=args.rebuild_canonical)
+    if args.mode == "woo_morning_monetization":
+        return run_woo_morning_monetization(
+            args.date, regions=args.regions,
+            rebuild_canonical=args.rebuild_canonical,
+            do_predict=args.predict,
+        )
+    if args.mode == "woo_afternoon_refresh":
+        return run_woo_afternoon_refresh(
+            args.date, regions=args.regions,
+            rebuild_canonical=args.rebuild_canonical,
+        )
+    # `pre_close` is retained as an alias for `derek_near_lineup` so
+    # existing CI configs and operators don't break mid-flight.
+    if args.mode in {"derek_near_lineup", "pre_close"}:
+        return run_derek_near_lineup(
+            args.date, regions=args.regions,
+            rebuild_canonical=args.rebuild_canonical,
+        )
     if args.mode == "close_lock":
         return run_close_lock(args.date, regions=args.regions,
                                 rebuild_canonical=args.rebuild_canonical)

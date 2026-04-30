@@ -1,54 +1,57 @@
 name: NBA PMF Delivery — Daily Pipeline
 
-# Phase 12D — first publishable run is near-lineup, not morning. The
-# old morning job (13:30 UTC / 8:30 AM ET) has been retired; the slate
-# is now refreshed every 15 minutes from 22:25 UTC through 03:10 UTC
-# so later-game lineup / inactive updates are captured. Snapshot
-# lifecycle is documented in docs/daily_pmf_delivery_spec.md and
-# orchestrated by scripts/run_daily_delivery_pipeline.py:
+# Phase 12D-amend — Derek's evaluation feed and WoO's monetization feed
+# now have separate scheduled lifecycles:
 #
-#   22:25 UTC = 6:25 PM ET  pre_close    (first publishable run during
-#                                          NBA playoffs — earliest
-#                                          tipoff − 35 min default)
-#   22:40,55 / 23:10..02:55 / 03:10 UTC  pre_close (every 15 min refresh)
-#   03:25 UTC = 11:25 PM ET pre_close → close_lock late-slate snapshot
-#   06:30 UTC = 2:30 AM  ET after_game   (post-final scoring of yesterday)
+#   15:00 UTC = 11:00 AM ET (EDT)  woo_morning_monetization
+#                                  first WoO public run of the day; monetization-
+#                                  oriented; PROVISIONAL_EARLY_MARKET; lineups
+#                                  not yet confirmed.
+#   18:00 UTC = 2:00 PM ET         woo_afternoon_refresh
+#   20:00 UTC = 4:00 PM ET         woo_afternoon_refresh
+#   22:25 UTC = 6:25 PM ET         derek_near_lineup (earliest tipoff − 35 min
+#                                  default during NBA playoffs); also refreshes
+#                                  the WoO public export.
+#   22:40 UTC ... 03:10 UTC every 15 min  derek_near_lineup
+#   03:25 UTC = 11:25 PM ET        close_lock (final lineup/market lock)
+#   06:30 UTC = 2:30 AM ET         after_game (post-final scoring)
 #
-# The wrapper invokes (in order, per mode):
-#   1. scripts/refresh_daily_inputs.py            (us+us2 odds + freshness manifest)
-#   2. scripts/predict.py                         (morning + full_day, --predict only)
-#   3. scripts/build_daily_pmf_delivery.py        (snapshot=mode)
-#   4. scripts/build_derek_forward_feed.py        (morning -> --snapshot morning,
-#                                                  pre_close/close_lock -> --snapshot lineup,
-#                                                  after_game -> --snapshot both;
-#                                                  honestly writes lineup_snapshot_status.json
-#                                                  when no lineup-locked package exists)
-#   5. scripts/score_daily_pmf_delivery_after_game.py  (after_game / full_day)
-#   6. scripts/build_deliveries_index.py          (always, last)
-#
-# Secrets are referenced exclusively as env vars; never echoed.
-#   - ODDS_API_KEY  required for live odds fetch
-#   - BDL_API_KEY   required for live BDL injury / lineup / box-score fetch
-#                   (predict.py degrades gracefully when missing — the
-#                    wrapper's --predict flag is opt-in)
+# Wrapper invocations (per scripts/run_daily_delivery_pipeline.py):
+#   1. scripts/refresh_daily_inputs.py      (us+us2 odds + freshness manifest)
+#   2. scripts/predict.py                   (woo_morning_monetization /
+#                                            morning / full_day, --predict only)
+#   3. scripts/build_daily_pmf_delivery.py  (snapshot=mode-specific)
+#   4. scripts/build_derek_forward_feed.py  (derek_near_lineup, close_lock,
+#                                            after_game)
+#   5. scripts/build_wizard_of_odds_public_export.py
+#                                           (woo_*, derek_near_lineup,
+#                                            close_lock; with monetization
+#                                            labels for woo_* runs)
+#   6. scripts/score_daily_pmf_delivery_after_game.py  (after_game)
+#   7. scripts/build_deliveries_index.py    (always, last)
 #
 # Hard rules echoed by every job:
-#   - never log ODDS_API_KEY or BDL_API_KEY
-#   - never stage data/odds_api/, data/freshness_manifest/, artifacts/, logs
+#   - never log ODDS_API_KEY, BDL_API_KEY, or affiliate config secrets
+#   - never stage data/odds_api/, data/freshness_manifest/, artifacts/, logs,
 #     dashboards, scratch files, or failed Phase 10D / 10D.2 reports
 #   - never wire the failed Phase 10D / 10D.2 TOV overlays
+#   - never fabricate affiliate URLs (when config/wizardofodds_affiliate_links.json
+#     is absent or has no mapping for a book, monetization_status=
+#     needs_affiliate_mapping and the URL fields stay blank)
 
 on:
   schedule:
-    # First near-lineup run (default playoff fallback for "earliest
-    # tipoff − 35 min").
+    # WoO monetization (early/afternoon).
+    - cron: '0 15 * * *'
+    - cron: '0 18 * * *'
+    - cron: '0 20 * * *'
+    # Derek near-lineup window — first publishable evaluation snapshot
+    # at 22:25 UTC, then every 15 min through 03:10 UTC.
     - cron: '25 22 * * *'
-    # Every 15 minutes through the slate. Cron splits below keep the
-    # entries minimal and explicit.
     - cron: '40,55 22 * * *'
     - cron: '10,25,40,55 23,0,1,2 * * *'
     - cron: '10 3 * * *'
-    # Late-slate close lock.
+    # Late close lock.
     - cron: '25 3 * * *'
     # After-game scoring (yesterday's slate).
     - cron: '30 6 * * *'
@@ -57,10 +60,12 @@ on:
       mode:
         description: "Wrapper mode"
         required: true
-        default: pre_close
+        default: derek_near_lineup
         type: choice
         options:
-          - pre_close
+          - woo_morning_monetization
+          - woo_afternoon_refresh
+          - derek_near_lineup
           - close_lock
           - after_game
           - full_day
@@ -70,13 +75,13 @@ on:
         required: false
         default: ""
       run_predict:
-        description: "Run scripts/predict.py before refresh (morning/full_day only). Requires BDL_API_KEY."
+        description: "Run scripts/predict.py before refresh (woo_morning_monetization / morning / full_day only). Requires BDL_API_KEY."
         required: false
         default: "false"
         type: choice
         options: ["false", "true"]
       force_run:
-        description: "Bypass tipoff-window gate and force the run"
+        description: "Bypass the tipoff-window gate (used for manual backfills outside the lineup window)"
         required: false
         default: "false"
         type: choice
@@ -88,9 +93,6 @@ env:
 jobs:
 
   # ── Morning (manual-only since Phase 12D) ────────────────────────────────
-  # Retained for backfill / one-off catch-up via workflow_dispatch. The
-  # morning cron has been retired; first publishable scheduled run is
-  # the 22:25 UTC pre_close job below.
   morning:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -137,19 +139,128 @@ jobs:
           git config user.email "props-bot@wizardofodds.com"
           git add deliveries/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
-                  deliveries/index.html
+                  deliveries/index.html \
+                  public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "morning delivery ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
 
-  # ── Pre-close (first publishable run + every-15-min lineup refresh) ──────
-  pre_close:
+  # ── WoO morning monetization (15:00 UTC = 11 AM ET) ──────────────────────
+  woo_morning_monetization:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization') ||
+      github.event.schedule == '0 15 * * *'
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      - name: Resolve delivery date
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
+            echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run delivery pipeline (woo_morning_monetization)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          PREDICT_FLAG=""
+          if [ "${{ github.event.inputs.run_predict }}" = "true" ]; then
+            PREDICT_FLAG="--predict"
+          fi
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_FLAG="--force-run"
+          fi
+          python scripts/run_daily_delivery_pipeline.py \
+            --date ${{ steps.d.outputs.date }} \
+            --mode woo_morning_monetization \
+            --regions us us2 \
+            --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
+      - name: Stage and commit approved files
+        run: |
+          git config user.name "Props Bot"
+          git config user.email "props-bot@wizardofodds.com"
+          git add deliveries/${{ steps.d.outputs.date }} \
+                  deliveries/README.md \
+                  deliveries/index.html \
+                  public_export/wizard_of_odds || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit -m "woo_morning_monetization ${{ steps.d.outputs.date }}"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
+
+  # ── WoO afternoon refresh (18:00 + 20:00 UTC) ────────────────────────────
+  woo_afternoon_refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'pre_close') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_afternoon_refresh') ||
+      github.event.schedule == '0 18 * * *' ||
+      github.event.schedule == '0 20 * * *'
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      - name: Resolve delivery date
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
+            echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run delivery pipeline (woo_afternoon_refresh)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_FLAG="--force-run"
+          fi
+          python scripts/run_daily_delivery_pipeline.py \
+            --date ${{ steps.d.outputs.date }} \
+            --mode woo_afternoon_refresh \
+            --regions us us2 $FORCE_FLAG
+      - name: Stage and commit
+        run: |
+          git config user.name "Props Bot"
+          git config user.email "props-bot@wizardofodds.com"
+          git add deliveries/${{ steps.d.outputs.date }} \
+                  deliveries/README.md \
+                  deliveries/index.html \
+                  public_export/wizard_of_odds || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit -m "woo_afternoon_refresh ${{ steps.d.outputs.date }}"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
+
+  # ── Derek near-lineup (first publishable Derek snapshot + every-15 refresh) ──
+  derek_near_lineup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'derek_near_lineup') ||
       github.event.schedule == '25 22 * * *' ||
       github.event.schedule == '40,55 22 * * *' ||
       github.event.schedule == '10,25,40,55 23,0,1,2 * * *' ||
@@ -171,7 +282,7 @@ jobs:
           else
             echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
-      - name: Run delivery pipeline (pre_close)
+      - name: Run delivery pipeline (derek_near_lineup)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -182,7 +293,7 @@ jobs:
           fi
           python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
-            --mode pre_close \
+            --mode derek_near_lineup \
             --regions us us2 $FORCE_FLAG
       - name: Stage and commit
         run: |
@@ -190,9 +301,10 @@ jobs:
           git config user.email "props-bot@wizardofodds.com"
           git add deliveries/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
-                  deliveries/index.html
+                  deliveries/index.html \
+                  public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "pre_close delivery ${{ steps.d.outputs.date }}"
+            git commit -m "derek_near_lineup ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
@@ -240,7 +352,8 @@ jobs:
           git config user.email "props-bot@wizardofodds.com"
           git add deliveries/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
-                  deliveries/index.html
+                  deliveries/index.html \
+                  public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "close_lock delivery ${{ steps.d.outputs.date }}"
           for i in 1 2 3; do

@@ -357,29 +357,33 @@ scripts/score_daily_pmf_delivery_after_game.py
                                        after_game_*.* to both folders
 ```
 
-The workflow runs scheduled jobs on a UTC cron. Phase 12D retired the
-morning cron — the first publishable scheduled run is now
-`pre_close` at 22:25 UTC (6:25 PM ET during NBA playoffs), defined as
-the earliest expected tipoff minus 35 minutes. `pre_close` then
-refreshes every 15 minutes through 03:10 UTC so later-game lineup and
-inactive updates flow into the feed. A late `close_lock` snapshot
-fires at 03:25 UTC, and `after_game` scoring fires at 06:30 UTC for
-yesterday's slate.
+Phase 12D-amend split Derek's evaluation feed and the Wizard of Odds
+public **monetization** feed into separate scheduled lifecycles.
+WoO's first run is at 11 AM ET so users can see model predictions and
+click affiliate odds buttons earlier in the day; Derek's first
+publishable evaluation snapshot remains at earliest tipoff − 35 min.
 
-| job          | UTC cron                                 | snapshot      |
-|--------------|------------------------------------------|---------------|
-| `pre_close`  | `25 22 * * *` (first publishable run)    | `pre_close`   |
-| `pre_close`  | `40,55 22 * * *`                          | `pre_close`   |
-| `pre_close`  | `10,25,40,55 23,0,1,2 * * *`              | `pre_close`   |
-| `pre_close`  | `10 3 * * *` (final pre-close refresh)   | `pre_close`   |
-| `close_lock` | `25 3 * * *`                              | `close_lock`  |
-| `after_game` | `30 6 * * *`                              | `after_game`  |
-| `morning`    | (retired in Phase 12D — manual-only)     | `morning`     |
+| job                          | UTC cron                                 | wrapper mode                  | finality_status_public         |
+|------------------------------|------------------------------------------|-------------------------------|--------------------------------|
+| `woo_morning_monetization`   | `0 15 * * *`                              | `woo_morning_monetization`    | `PROVISIONAL_EARLY_MARKET`     |
+| `woo_afternoon_refresh`      | `0 18 * * *` and `0 20 * * *`             | `woo_afternoon_refresh`       | `PROVISIONAL_EARLY_MARKET`     |
+| `derek_near_lineup` (first)  | `25 22 * * *`                             | `derek_near_lineup`           | inherited from run_manifest    |
+| `derek_near_lineup` (refresh)| `40,55 22 * * *`                          | `derek_near_lineup`           | inherited from run_manifest    |
+| `derek_near_lineup` (refresh)| `10,25,40,55 23,0,1,2 * * *`              | `derek_near_lineup`           | inherited from run_manifest    |
+| `derek_near_lineup` (refresh)| `10 3 * * *`                              | `derek_near_lineup`           | inherited from run_manifest    |
+| `close_lock`                 | `25 3 * * *`                              | `close_lock`                  | inherited from run_manifest    |
+| `after_game`                 | `30 6 * * *`                              | `after_game`                  | inherited from run_manifest    |
+| `morning` (legacy)           | (retired — manual-only)                   | `morning`                     | inherited from run_manifest    |
 
-`scripts/run_daily_delivery_pipeline.py` further gates pre_close /
-close_lock runs to a [now − 15, now + 45] minute window around any
-tipoff for the date, when schedule data is on disk; pass
-`--force-run` to bypass the gate during manual backfills.
+`scripts/run_daily_delivery_pipeline.py` gates `derek_near_lineup` /
+`close_lock` runs to a `[now − 15, now + 45]` minute window around any
+tipoff for the date, when schedule data is on disk. WoO morning /
+afternoon runs deliberately bypass the gate so the public monetization
+feed publishes on its own clock. Pass `--force-run` to bypass the gate
+during manual backfills.
+
+The `morning` and `pre_close` modes are kept as backwards-compatible
+aliases (`pre_close` → `derek_near_lineup`).
 
 Only `deliveries/{date}/{canonical_source,pmf_model_review_package,wizard_of_odds}/`
 are staged in CI commits. `data/odds_api/`, `data/freshness_manifest/`,

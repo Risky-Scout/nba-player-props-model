@@ -6,6 +6,27 @@ for FTP upload to the WoO portal. Only model-only PMF artifacts and their manife
 are published. Internal Derek review packages, canonical source dumps, and after-game
 scratch are intentionally excluded.
 
+Phase 12D-amend — the public export is the **monetization** feed. It runs earlier in
+the day than Derek's evaluation feed so users can see model predictions, click
+affiliate odds buttons, and enter the sportsbook funnel before lineups confirm.
+This script enriches each date with a `monetization_view` (csv / parquet / jsonl)
+that joins market_comparison rows with optional affiliate links from
+``config/wizardofodds_affiliate_links.json``. When the affiliate config is absent
+or has no mapping for a book, ``monetization_status`` is set to
+``needs_affiliate_mapping`` and ``affiliate_url`` / ``odds_button_url`` stay blank
+— affiliate links are never fabricated.
+
+CLI flags relevant to the monetization lifecycle:
+    --snapshot-type-label     stamps every monetization_view row's snapshot_type
+                              (e.g. ``woo_morning_monetization``); falls back to
+                              the run_manifest snapshot_type when omitted.
+    --finality-status-override
+                              stamps every monetization_view row's finality_status
+                              (e.g. ``PROVISIONAL_EARLY_MARKET``); falls back to the
+                              run_manifest finality_status when omitted.
+    --affiliate-config        path override; default
+                              ``config/wizardofodds_affiliate_links.json``.
+
 Layout produced under ``public_export/wizard_of_odds/`` (configurable via --out-dir):
 
     public_export/wizard_of_odds/
@@ -19,6 +40,7 @@ Layout produced under ``public_export/wizard_of_odds/`` (configurable via --out-
             full_pmfs_outcome_level.{csv,parquet}
             market_comparison.{csv,parquet}
             publishable_edges.{csv,parquet}
+            monetization_view.{csv,parquet,jsonl}      # Phase 12D-amend
             run_manifest.json
             README.md
 
@@ -38,6 +60,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DELIVERIES = REPO_ROOT / "deliveries"
 DEFAULT_OUT = REPO_ROOT / "public_export" / "wizard_of_odds"
+DEFAULT_AFFILIATE_CONFIG = REPO_ROOT / "config" / "wizardofodds_affiliate_links.json"
 
 PUBLIC_FILES = [
     "fair_odds_board.csv",
@@ -55,7 +78,11 @@ PUBLIC_FILES = [
     "README.md",
 ]
 
-FINALITY_RANK = {"final": 2, "provisional": 1}
+FINALITY_RANK = {
+    "final": 3,
+    "provisional": 2,
+    "PROVISIONAL_EARLY_MARKET": 1,
+}
 
 
 def _iso_utc(dt: datetime | None = None) -> str:
@@ -103,9 +130,157 @@ def _read_manifest(src_dir: Path) -> dict:
         return {}
 
 
-def _date_summary(date: str, src_dir: Path, copy_result: dict) -> dict:
-    rm = _read_manifest(src_dir)
+def _load_affiliate_config(path: Path) -> dict:
+    """Load the WoO affiliate-link config. Schema (all keys optional):
+
+        {
+          "version": 1,
+          "default_button_label": "Bet at <book>",
+          "books": {
+            "draftkings": {
+              "affiliate_url": "https://aff.example/dk?subid={market_key}",
+              "odds_button_url": "https://aff.example/dk-odds?subid={market_key}",
+              "active": true
+            },
+            ...
+          }
+        }
+
+    The script never fabricates URLs — when a book has no entry (or the
+    file is absent) ``monetization_status=needs_affiliate_mapping`` and
+    both URL fields stay null."""
+    if not path.exists():
+        return {"_present": False, "books": {}}
+    try:
+        data = json.loads(path.read_text())
+    except Exception as e:
+        return {"_present": False, "_error": repr(e), "books": {}}
+    if not isinstance(data, dict):
+        return {"_present": False, "books": {}}
+    data.setdefault("books", {})
+    data["_present"] = True
+    return data
+
+
+def _affiliate_for_book(book: str, affiliate_cfg: dict) -> dict:
+    """Return {affiliate_url, odds_button_url, monetization_status} for a
+    book. Never fabricates URLs."""
+    cfg_present = bool(affiliate_cfg.get("_present"))
+    books = affiliate_cfg.get("books") or {}
+    entry = books.get(book) if isinstance(books, dict) else None
+    if (
+        cfg_present
+        and isinstance(entry, dict)
+        and entry.get("active", True)
+        and (entry.get("affiliate_url") or entry.get("odds_button_url"))
+    ):
+        return {
+            "affiliate_url": entry.get("affiliate_url"),
+            "odds_button_url": entry.get("odds_button_url"),
+            "monetization_status": "active",
+        }
     return {
+        "affiliate_url": None,
+        "odds_button_url": None,
+        "monetization_status": "needs_affiliate_mapping",
+    }
+
+
+def _write_monetization_view(
+    *,
+    src_dir: Path,
+    dst_dir: Path,
+    run_manifest: dict,
+    snapshot_type_label: str | None,
+    finality_status_override: str | None,
+    affiliate_cfg: dict,
+) -> dict:
+    """Emit `monetization_view.{csv,parquet,jsonl}` for the date.
+
+    Source is the canonical `market_comparison.parquet`. Per-row enrichment:
+    affiliate_url, odds_button_url, monetization_status, snapshot_type,
+    snapshot_time_utc, finality_status, plus quality/freshness flags
+    inherited from the run manifest. PMF columns are passed through
+    unchanged — public output remains model-only."""
+    import csv as _csv
+    import pandas as pd
+
+    src_path = src_dir / "market_comparison.parquet"
+    if not src_path.exists():
+        return {
+            "rows": 0,
+            "monetization_status_summary": {},
+            "missing_source": "market_comparison.parquet",
+        }
+    df = pd.read_parquet(src_path).copy()
+
+    snapshot_type_value = (
+        snapshot_type_label or run_manifest.get("snapshot_type") or "unknown"
+    )
+    finality_value = (
+        finality_status_override
+        or run_manifest.get("finality_status")
+        or "unknown"
+    )
+    snapshot_time_utc = run_manifest.get("snapshot_time_utc")
+    qr = run_manifest.get("quality_rollup") or {}
+    fm = run_manifest.get("freshness_manifest") or {}
+
+    def _aff(book: str | None) -> dict:
+        return _affiliate_for_book(str(book) if book else "", affiliate_cfg)
+
+    aff_rows = [_aff(b) for b in df.get("book", pd.Series([None] * len(df)))]
+    df["affiliate_url"] = [r["affiliate_url"] for r in aff_rows]
+    df["odds_button_url"] = [r["odds_button_url"] for r in aff_rows]
+    df["monetization_status"] = [r["monetization_status"] for r in aff_rows]
+    df["snapshot_type_public"] = snapshot_type_value
+    df["snapshot_time_utc_public"] = snapshot_time_utc
+    df["finality_status_public"] = finality_value
+    df["lineup_freshness_rollup"] = json.dumps(
+        qr.get("lineup_freshness_status") or {}, sort_keys=True
+    )
+    df["availability_freshness_status"] = fm.get("availability_freshness_status")
+    df["odds_freshness_status"] = (
+        fm.get("odds_status")
+        if isinstance(fm, dict)
+        else None
+    )
+
+    csv_path = dst_dir / "monetization_view.csv"
+    parquet_path = dst_dir / "monetization_view.parquet"
+    jsonl_path = dst_dir / "monetization_view.jsonl"
+    df.to_csv(csv_path, index=False, quoting=_csv.QUOTE_MINIMAL)
+    df.to_parquet(parquet_path, index=False)
+    with jsonl_path.open("w") as f:
+        for r in df.to_dict(orient="records"):
+            clean = {k: (None if (isinstance(v, float) and pd.isna(v)) else v) for k, v in r.items()}
+            f.write(json.dumps(clean, default=str) + "\n")
+
+    summary: dict[str, int] = {}
+    for s in df["monetization_status"]:
+        summary[s] = summary.get(s, 0) + 1
+    return {
+        "rows": int(len(df)),
+        "monetization_status_summary": summary,
+        "snapshot_type_public": snapshot_type_value,
+        "finality_status_public": finality_value,
+        "files": {
+            "csv": csv_path.name,
+            "parquet": parquet_path.name,
+            "jsonl": jsonl_path.name,
+        },
+    }
+
+
+def _date_summary(
+    date: str,
+    src_dir: Path,
+    copy_result: dict,
+    *,
+    monetization: dict | None = None,
+) -> dict:
+    rm = _read_manifest(src_dir)
+    out = {
         "date": date,
         "snapshot_type": rm.get("snapshot_type"),
         "snapshot_time_utc": rm.get("snapshot_time_utc"),
@@ -120,6 +295,9 @@ def _date_summary(date: str, src_dir: Path, copy_result: dict) -> dict:
         "files": copy_result["copied"],
         "missing_files": copy_result["missing"],
     }
+    if monetization is not None:
+        out["monetization"] = monetization
+    return out
 
 
 def _pick_latest(summaries: list[dict]) -> str | None:
@@ -186,6 +364,10 @@ def build(
     out_dir: Path,
     only_dates: list[str] | None,
     keep_existing: bool,
+    *,
+    snapshot_type_label: str | None = None,
+    finality_status_override: str | None = None,
+    affiliate_config_path: Path | None = None,
 ) -> dict:
     dates = _list_delivery_dates(deliveries_root)
     if only_dates:
@@ -204,12 +386,31 @@ def build(
                 child.unlink()
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    affiliate_cfg = _load_affiliate_config(
+        affiliate_config_path or DEFAULT_AFFILIATE_CONFIG
+    )
+
     summaries: list[dict] = []
     for date in dates:
         src = deliveries_root / date / "wizard_of_odds"
         dst = out_dir / date
         copy_result = _copy_files(src, dst)
-        summaries.append(_date_summary(date, src, copy_result))
+        rm = _read_manifest(src)
+        try:
+            monet = _write_monetization_view(
+                src_dir=src,
+                dst_dir=dst,
+                run_manifest=rm,
+                snapshot_type_label=snapshot_type_label,
+                finality_status_override=finality_status_override,
+                affiliate_cfg=affiliate_cfg,
+            )
+        except Exception as e:  # pragma: no cover — defensive
+            print(f"  monetization_view ({date}): skipped — {e!r}", file=sys.stderr)
+            monet = {"rows": 0, "error": repr(e)}
+        summaries.append(
+            _date_summary(date, src, copy_result, monetization=monet)
+        )
 
     latest_date = _pick_latest(summaries)
     latest_dir = out_dir / "latest"
@@ -224,6 +425,20 @@ def build(
         "out_dir": str(out_dir.relative_to(REPO_ROOT)),
         "latest_date": latest_date,
         "dates": summaries,
+        "affiliate_config": {
+            "path": str(
+                (affiliate_config_path or DEFAULT_AFFILIATE_CONFIG)
+                .relative_to(REPO_ROOT)
+            ),
+            "present": bool(affiliate_cfg.get("_present")),
+            "books_mapped": (
+                sorted(affiliate_cfg.get("books", {}).keys())
+                if affiliate_cfg.get("_present")
+                else []
+            ),
+        },
+        "snapshot_type_label": snapshot_type_label,
+        "finality_status_override": finality_status_override,
     }
     (out_dir / "manifest.json").write_text(json.dumps(top, indent=2) + "\n")
     (out_dir / "index.html").write_text(_render_index_html(top))
@@ -255,6 +470,29 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="do not wipe existing date dirs in out-dir before writing",
     )
+    ap.add_argument(
+        "--snapshot-type-label",
+        default=None,
+        help="stamp the public monetization_view's snapshot_type_public column "
+        "(e.g. woo_morning_monetization). Falls back to the run_manifest "
+        "snapshot_type when omitted.",
+    )
+    ap.add_argument(
+        "--finality-status-override",
+        default=None,
+        help="stamp the public monetization_view's finality_status_public "
+        "column (e.g. PROVISIONAL_EARLY_MARKET). Falls back to the "
+        "run_manifest finality_status when omitted.",
+    )
+    ap.add_argument(
+        "--affiliate-config",
+        type=Path,
+        default=None,
+        help="path to wizardofodds_affiliate_links.json (default: "
+        "config/wizardofodds_affiliate_links.json). Affiliate URLs are "
+        "never fabricated: when the file is absent or a book has no "
+        "mapping, monetization_status=needs_affiliate_mapping.",
+    )
     args = ap.parse_args(argv)
 
     top = build(
@@ -262,10 +500,31 @@ def main(argv: list[str] | None = None) -> int:
         out_dir=args.out_dir.resolve(),
         only_dates=args.date,
         keep_existing=args.keep_existing,
+        snapshot_type_label=args.snapshot_type_label,
+        finality_status_override=args.finality_status_override,
+        affiliate_config_path=(
+            args.affiliate_config.resolve()
+            if args.affiliate_config else None
+        ),
     )
     print(
         f"public_export wrote {len(top['dates'])} date(s); latest={top['latest_date']}; "
         f"out_dir={top['out_dir']}"
+    )
+    if top["dates"]:
+        for s in top["dates"]:
+            m = s.get("monetization") or {}
+            ms = m.get("monetization_status_summary") or {}
+            print(
+                f"  {s['date']}: monetization rows={m.get('rows', 0)}  "
+                f"snapshot_type_public={m.get('snapshot_type_public')}  "
+                f"finality_status_public={m.get('finality_status_public')}  "
+                f"status={ms}"
+            )
+    aff = top.get("affiliate_config") or {}
+    print(
+        f"  affiliate_config present={aff.get('present')} "
+        f"books_mapped={aff.get('books_mapped')}"
     )
     return 0
 

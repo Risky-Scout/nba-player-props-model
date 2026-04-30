@@ -205,23 +205,29 @@ shared imports — either can be rerun independently for forensics.
 - `docs/phase11_tov_structural_refit_plan.md` — why TOV is the only
   expected-missing supported stat today.
 - `.github/workflows/daily_pmf_delivery.yml` — the scheduled jobs that
-  drive this pipeline in CI. Phase 12D retired the morning cron; the
-  first publishable scheduled run is now `pre_close` at 22:25 UTC
-  (6:25 PM ET during NBA playoffs — earliest tipoff − 35 min default),
-  with `pre_close` refreshes every 15 min through 03:10 UTC, a late
-  `close_lock` run at 03:25 UTC, and `after_game` scoring at 06:30 UTC.
-  The `morning` job remains available manually via `workflow_dispatch`
-  for backfill runs.
+  drive this pipeline in CI. Phase 12D retired the morning cron and
+  Phase 12D-amend split the schedule into two lifecycles: WoO's
+  monetization feed (15:00 / 18:00 / 20:00 UTC) and Derek's evaluation
+  feed (22:25 UTC first run, every-15-min refresh through 03:10 UTC,
+  03:25 UTC close lock). After-game scoring stays at 06:30 UTC. The
+  `morning` job remains manual-only.
 
 ## 8. Schedule-driven gating (Phase 12D)
 
 `scripts/run_daily_delivery_pipeline.py` reads
 `data/odds_api/processed/{date}/*.parquet` (or
 `data/historical_game_odds.parquet` as fallback) to determine the
-slate's tipoff times and skips runs where no game tipoff falls within
-[now − 15 min, now + 45 min]. Pass `--force-run` to bypass the gate
-for manual backfills outside the lineup window. When schedule data
-isn't yet on disk (fresh CI checkout before
-`refresh_daily_inputs.py`), the gate is permissive — the cron schedule
-is the primary timing control, and a single missed gate-check costs at
-most one extra Odds API request, never a fabricated PMF.
+slate's tipoff times and skips `derek_near_lineup` / `close_lock`
+runs where no game tipoff falls within `[now − 15 min, now + 45 min]`.
+Pass `--force-run` to bypass the gate for manual backfills outside the
+lineup window. When schedule data isn't yet on disk (fresh CI checkout
+before `refresh_daily_inputs.py`), the gate is permissive — the cron
+schedule is the primary timing control, and a single missed gate-check
+costs at most one extra Odds API request, never a fabricated PMF.
+
+The WoO monetization runs (`woo_morning_monetization`,
+`woo_afternoon_refresh`) **deliberately bypass the gate** — the
+public-facing feed publishes on its own clock so users can see model
+predictions and click affiliate odds buttons earlier in the day, with
+`finality_status_public=PROVISIONAL_EARLY_MARKET` until lineups
+confirm.

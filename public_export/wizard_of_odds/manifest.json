@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-04-30T03:27:38Z",
+  "built_at_utc": "2026-04-30T14:23:32Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-04-29",
@@ -85,7 +85,20 @@
           "size_bytes": 3113
         }
       ],
-      "missing_files": []
+      "missing_files": [],
+      "monetization": {
+        "rows": 346,
+        "monetization_status_summary": {
+          "needs_affiliate_mapping": 346
+        },
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "files": {
+          "csv": "monetization_view.csv",
+          "parquet": "monetization_view.parquet",
+          "jsonl": "monetization_view.jsonl"
+        }
+      }
     },
     {
       "date": "2026-04-29",
@@ -166,14 +179,34 @@
         },
         {
           "name": "run_manifest.json",
-          "size_bytes": 4234
+          "size_bytes": 4521
         },
         {
           "name": "README.md",
           "size_bytes": 3115
         }
       ],
-      "missing_files": []
+      "missing_files": [],
+      "monetization": {
+        "rows": 1508,
+        "monetization_status_summary": {
+          "needs_affiliate_mapping": 1508
+        },
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "files": {
+          "csv": "monetization_view.csv",
+          "parquet": "monetization_view.parquet",
+          "jsonl": "monetization_view.jsonl"
+        }
+      }
     }
-  ]
+  ],
+  "affiliate_config": {
+    "path": "config/wizardofodds_affiliate_links.json",
+    "present": false,
+    "books_mapped": []
+  },
+  "snapshot_type_label": "woo_morning_monetization",
+  "finality_status_override": "PROVISIONAL_EARLY_MARKET"
 }

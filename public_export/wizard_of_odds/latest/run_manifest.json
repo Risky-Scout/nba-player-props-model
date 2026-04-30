@@ -149,5 +149,15 @@
       "derived_from_projected_minutes": 104,
       "missing": 39
     }
+  },
+  "after_game": {
+    "status": "scored",
+    "scored_at_utc": "2026-04-30T08:41:10Z",
+    "n_scored_pmf_rows": 32,
+    "n_scored_market_rows": 448,
+    "n_clv_rows": 0,
+    "nll_mean": 2.968398206560905,
+    "rps_mean": 0.0748356494491593,
+    "abs_mean_error": 2.1095992261943883
   }
 }

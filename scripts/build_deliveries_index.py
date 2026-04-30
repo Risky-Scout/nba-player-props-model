@@ -319,17 +319,30 @@ def _build_readme(rows: list[dict]) -> str:
             if status_md.exists():
                 out.append(f"See [`STATUS.md`]({date}/STATUS.md) for the "
                             f"cause and the required-to-resolve checklist.\n\n")
-    out.append("\n## Schedule (Phase 12D)\n\n")
-    out.append("- First publishable scheduled run: **`pre_close` at 22:25 UTC "
-               "(6:25 PM ET)** — earliest tipoff − 35 min default during NBA playoffs.\n")
-    out.append("- Lineup refresh: every 15 minutes from 22:40 UTC through 03:10 UTC.\n")
-    out.append("- Late close-lock snapshot: 03:25 UTC.\n")
-    out.append("- After-game scoring: 06:30 UTC (yesterday's slate).\n")
+    out.append("\n## Schedule (Phase 12D-amend)\n\n")
+    out.append("Derek's evaluation feed and WoO's monetization feed run on "
+               "separate clocks.\n\n")
+    out.append("**WoO monetization feed (public, affiliate-friendly):**\n\n")
+    out.append("- 15:00 UTC / 11:00 AM ET — `woo_morning_monetization` "
+               "(`finality_status_public=PROVISIONAL_EARLY_MARKET`)\n")
+    out.append("- 18:00 UTC / 2:00 PM ET — `woo_afternoon_refresh`\n")
+    out.append("- 20:00 UTC / 4:00 PM ET — `woo_afternoon_refresh`\n")
+    out.append("- Refreshed automatically alongside every `derek_near_lineup` "
+               "and `close_lock` run.\n\n")
+    out.append("**Derek evaluation feed:**\n\n")
+    out.append("- 22:25 UTC / 6:25 PM ET — `derek_near_lineup` first publishable "
+               "evaluation snapshot (earliest tipoff − 35 min default during NBA playoffs).\n")
+    out.append("- Every 15 min from 22:40 UTC through 03:10 UTC — `derek_near_lineup` "
+               "refresh as lineups confirm.\n")
+    out.append("- 03:25 UTC — `close_lock` final lineup/market lock.\n")
+    out.append("- 06:30 UTC — `after_game` scoring (yesterday's slate).\n\n")
     out.append("- Derek should archive `derek_forward_feed/latest_available_snapshot.csv` "
-               "after the near-lineup run; the Wizard of Odds public mirror updates after "
-               "every successful pre_close and close_lock deploy.\n")
-    out.append("- The morning cron was retired; `morning` mode remains available manually "
-               "via `workflow_dispatch` for backfills.\n")
+               "after the near-lineup run.\n")
+    out.append("- The morning cron was retired in Phase 12D; `morning` mode remains "
+               "available manually via `workflow_dispatch` for backfills.\n")
+    out.append("- Affiliate URLs in the public WoO export are never fabricated — "
+               "absent mapping ⇒ `monetization_status=needs_affiliate_mapping`. "
+               "See `docs/wizardofodds_public_export_runbook.md`.\n")
     out.append("\n## Honest framing\n\n")
     out.append("- All emitted PMFs are **model-only**; market columns are reference only.\n")
     out.append("- TOV PMFs (when emitted) come from Phase 8 calibrators — "
@@ -396,14 +409,19 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
     body.append('<div class="callout">All PMFs are model-only. TOV PMFs (when '
                 "emitted) come from Phase 8 calibrators — no Phase 10D / 10D.2 "
                 "overlay is wired into production.</div>\n")
-    body.append('<div class="callout"><b>Schedule (Phase 12D):</b> first '
-                'publishable scheduled run is <code>pre_close</code> at 22:25 UTC '
-                '(6:25&nbsp;PM ET, earliest tipoff &minus;&nbsp;35&nbsp;min default). '
-                'Lineup refreshes every 15&nbsp;min through 03:10&nbsp;UTC, '
-                'late close-lock at 03:25&nbsp;UTC, after-game scoring at '
-                '06:30&nbsp;UTC. The morning cron was retired; '
-                '<code>morning</code> mode remains available via '
-                'workflow_dispatch for backfills.</div>\n')
+    body.append('<div class="callout"><b>Schedule (Phase 12D-amend):</b> '
+                'Derek and WoO run on separate clocks. '
+                '<b>WoO monetization</b> (public): <code>woo_morning_monetization</code> '
+                '15:00&nbsp;UTC (11&nbsp;AM&nbsp;ET) plus '
+                '<code>woo_afternoon_refresh</code> at 18:00 and 20:00&nbsp;UTC '
+                '(<code>finality_status_public=PROVISIONAL_EARLY_MARKET</code>). '
+                '<b>Derek evaluation</b>: <code>derek_near_lineup</code> first '
+                'snapshot at 22:25&nbsp;UTC (6:25&nbsp;PM ET, earliest tipoff &minus;&nbsp;35&nbsp;min '
+                'default), refreshing every 15&nbsp;min through 03:10&nbsp;UTC, '
+                'with a late <code>close_lock</code> at 03:25&nbsp;UTC and '
+                '<code>after_game</code> scoring at 06:30&nbsp;UTC. '
+                'Affiliate URLs in the public feed are never fabricated; '
+                'see <code>docs/wizardofodds_public_export_runbook.md</code>.</div>\n')
     for r in rows:
         date = r["date"]
         base = DEL_DIR / date
