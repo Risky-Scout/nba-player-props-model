@@ -328,35 +328,67 @@ def main(argv: list[str] | None = None) -> int:
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "logs").mkdir(exist_ok=True)
 
+    # Phase 13H: write run_context.json EARLY so subprocesses (especially
+    # the promotion script) can read the run's identity / phase13g context
+    # before the final run_manifest is written at the end.
+    write_json_atomic(
+        run_dir / "run_context.json",
+        {
+            "schema_version": "1.0",
+            "as_of_date": as_of,
+            "started_at_utc": started_at,
+            "code_commit": git_commit(),
+            "training_run_id": training_run_id,
+            "dry_run": bool(args.dry_run),
+            "no_promote": bool(args.no_promote),
+            "phase13g": phase13g_ctx,
+        },
+    )
+
     def _stamp(name: str, base_dir: Path) -> None:
         _stamp_phase13g_fields(base_dir / name, phase13g_ctx)
 
-    # 1. Outcome refresh (best-effort).
+    # 1. Phase 13H: refresh completed-game source data + verify completeness.
+    #    This produces source_data_refresh_manifest.json + source_completeness_manifest.json
+    #    under the run_dir. On a fresh runner with BDL_API_KEY set, the
+    #    refresh fetches finalized box-scores through the target date.
     if not args.skip_outcome_refresh:
-        bdl_script = REPO_ROOT / "scripts" / "refresh_bdl_player_game_stats.py"
-        if bdl_script.exists():
-            steps.append(
-                _step(
-                    "outcome_refresh",
-                    [
-                        sys.executable,
-                        str(bdl_script.relative_to(REPO_ROOT)),
-                        "--end-date",
-                        as_of,
-                    ],
-                    run_dir,
-                )
+        steps.append(
+            _step(
+                "source_data_refresh",
+                [
+                    sys.executable,
+                    "scripts/refresh_completed_game_data.py",
+                    "--target-date",
+                    as_of,
+                    "--skip-if-fresh",
+                ],
+                run_dir,
             )
-            # Outcome refresh failures are advisory (BDL may rate-limit, etc).
-            # Readiness check below will catch real data gaps.
-        else:
-            steps.append(
-                {
-                    "name": "outcome_refresh",
-                    "skipped": True,
-                    "reason": "refresh_bdl_player_game_stats.py not found",
-                }
-            )
+        )
+        # Strict completeness gate (Phase 13H).
+        complete_step = _step(
+            "previous_day_source_completeness",
+            [
+                sys.executable,
+                "scripts/verify_previous_day_source_completeness.py",
+                "--target-date",
+                as_of,
+            ],
+            run_dir,
+        )
+        steps.append(complete_step)
+        if complete_step.get("exit_code", 1) != 0 and not args.dry_run:
+            halted_reason = "previous_day_source_incomplete"
+            final_status = "halted_no_promotion"
+    else:
+        steps.append(
+            {
+                "name": "source_data_refresh",
+                "skipped": True,
+                "reason": "--skip-outcome-refresh was set",
+            }
+        )
 
     # 2. Readiness check.
     steps.append(
@@ -496,6 +528,21 @@ def main(argv: list[str] | None = None) -> int:
             ch_promo = challenger_dir(as_of) / "promotion_manifest.json"
             if ch_promo.exists():
                 shutil.copy2(ch_promo, run_dir / "promotion_manifest.json")
+            # Phase 13H: if promotion succeeded, stamp the latest delivery
+            # manifests with the new champion's metadata so the dependency
+            # verifier can prove Derek/WoO are anchored on this champion.
+            try:
+                pm = read_json(ch_promo) if ch_promo.exists() else {}
+            except Exception:
+                pm = {}
+            if pm.get("promoted"):
+                steps.append(
+                    _step(
+                        "stamp_delivery_champion_metadata",
+                        [sys.executable, "scripts/stamp_delivery_champion_metadata.py"],
+                        run_dir,
+                    )
+                )
 
     # 6a. Phase 13G: stamp every sub-manifest with target_policy / target_date_et /
     #     stale_fallback_used / training_run_id so downstream verifiers see a

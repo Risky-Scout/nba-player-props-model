@@ -261,12 +261,20 @@ def score_pmfs_from_oof(
         return {"error": f"oof parquet missing: {oof_p}", "by_stat": {}}
 
     df = pd.read_parquet(oof_p)
-    # Build the holdout window strictly before as_of_date.
     df["game_date"] = pd.to_datetime(df["game_date"])
     cutoff = pd.Timestamp(as_of_date)
-    holdout_start = cutoff - pd.Timedelta(days=holdout_days)
+    # Phase 13H: when the OOF universe stops short of cutoff (typical when
+    # cutoff is "yesterday" but OOF was last refreshed by phase8.yml days
+    # earlier), clamp the upper bound to the OOF's own max date. This is
+    # still leakage-safe by construction — every row in OOF is the
+    # walk-forward fold's validation set, generated on data strictly before
+    # the row's date — and the cutoff filter is preserved as min(cutoff,
+    # oof_max).
+    oof_max = df["game_date"].max()
+    upper = min(cutoff, oof_max)
+    holdout_start = upper - pd.Timedelta(days=holdout_days)
     holdout = df[
-        (df["game_date"] >= holdout_start) & (df["game_date"] <= cutoff)
+        (df["game_date"] >= holdout_start) & (df["game_date"] <= upper)
     ].copy()
 
     metrics = metrics_placeholder()
@@ -477,17 +485,19 @@ def evaluate_gates(
         # Phase 13D: real numeric comparison. Tolerances are conservative.
         # NLL / RPS / p0: challenger may not be worse by more than 1% relative.
         # mean_bias: absolute value may not grow by more than 0.05.
+        cm_nll = cm.get("nll") or 0.0
+        cm_rps = cm.get("rps") or 0.0
         gates.append(
             _compare_gate("nll_improves_or_non_worse",
                           chm.get("nll"), cm.get("nll"),
                           lower_is_better=True,
-                          tolerance=abs(cm.get("nll", 0.0)) * 0.01)
+                          tolerance=abs(cm_nll) * 0.01)
         )
         gates.append(
             _compare_gate("rps_improves_or_non_worse",
                           chm.get("rps"), cm.get("rps"),
                           lower_is_better=True,
-                          tolerance=abs(cm.get("rps", 0.0)) * 0.01)
+                          tolerance=abs(cm_rps) * 0.01)
         )
         # Calibration error proxy: p0 calibration overall.
         gates.append(
@@ -515,11 +525,12 @@ def evaluate_gates(
         # TOV: NLL must not regress.
         ch_tov = chm.get("tov", {}) or {}
         cm_tov = cm.get("tov", {}) or {}
+        cm_tov_nll = cm_tov.get("nll") or 0.0
         gates.append(
             _compare_gate("tov_does_not_regress",
                           ch_tov.get("nll"), cm_tov.get("nll"),
                           lower_is_better=True,
-                          tolerance=abs(cm_tov.get("nll", 0.0)) * 0.02)
+                          tolerance=abs(cm_tov_nll) * 0.02)
         )
         # Role bucket gates: starter/core must not regress; bench/fringe/rotation
         # may degrade slightly.

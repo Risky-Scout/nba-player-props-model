@@ -290,7 +290,10 @@ def check_no_dirty_production_files(report: HealthReport) -> None:
         "src/nba_props_model/pipelines/predict.py",
         "src/nba_props_model/pipelines/train.py",
         "src/nba_props_model/calibration/pmf_calibration.py",
-        "artifacts/models/registry/champion_pointer.json",
+        # Phase 13H: champion_pointer.json is intentionally updated by the
+        # nightly promotion path. It being dirty post-promotion is expected
+        # and gets committed by the workflow's commit step. Do NOT count it
+        # as "stale production drift."
     )
     bad = [f for f in dirty if any(f == p or f.startswith(p) for p in prod_prefixes)]
     report.add(

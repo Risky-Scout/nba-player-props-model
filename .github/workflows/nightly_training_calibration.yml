@@ -39,11 +39,11 @@ on:
         type: choice
         options: ["false", "true"]
       no_promote:
-        description: "Run all stages but never promote, even if gates pass."
+        description: "Phase 13H: manual workflow_dispatch defaults to no_promote=true so operators can validate without changing production. Scheduled cron uses no_promote=false."
         required: false
-        default: "false"
+        default: "true"
         type: choice
-        options: ["false", "true"]
+        options: ["true", "false"]
       allow_stale_safe_date:
         description: "Phase 13G: if yesterday-in-ET data is incomplete, fall back to the latest complete date. Default off — strict halt on incomplete previous day."
         required: false
@@ -138,6 +138,9 @@ jobs:
           if [ "${{ github.event.inputs.dry }}" = "true" ]; then
             DRY_FLAG="--dry-run"
           fi
+          # Phase 13H: scheduled cron defaults to allow promotion;
+          # workflow_dispatch input default is no_promote=true. Empty input
+          # means scheduled run → no flag → promotion allowed.
           NO_PROMOTE_FLAG=""
           if [ "${{ github.event.inputs.no_promote }}" = "true" ]; then
             NO_PROMOTE_FLAG="--no-promote"
@@ -197,6 +200,13 @@ jobs:
             artifacts/nightly_training/*/previous_day_no_leakage.md
             artifacts/automation_health/derek_woo_champion_dependency.json
             artifacts/automation_health/derek_woo_champion_dependency.md
+            artifacts/automation_health/champion_pointer_metadata.json
+            artifacts/automation_health/champion_pointer_metadata.md
+            artifacts/nightly_training/*/source_data_refresh_manifest.json
+            artifacts/nightly_training/*/source_data_refresh_report.md
+            artifacts/nightly_training/*/source_completeness_manifest.json
+            artifacts/nightly_training/*/source_completeness_report.md
+            artifacts/nightly_training/*/run_context.json
 
       - name: Fail workflow if any step failed
         if: |

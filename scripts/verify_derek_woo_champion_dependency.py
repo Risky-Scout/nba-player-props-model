@@ -285,57 +285,142 @@ def check_latest_delivery_after_champion_promotion(
 
 
 def check_delivery_records_champion_id(report: DependencyReport, pointer: dict) -> None:
-    """Best-effort: if the latest delivery's run_manifest exposes
-    champion_model_id (or equivalent), confirm it matches the active pointer.
-    Treated as advisory pass when not yet stamped — production stamping is a
-    follow-up of Phase 13G in the delivery scripts themselves."""
+    """Phase 13H strict: when the active champion has rich metadata
+    (``champion_model_id`` populated), the latest delivery's manifests must
+    have been stamped via ``scripts/stamp_delivery_champion_metadata.py`` and
+    must match the active pointer field-for-field on:
+
+      - champion_model_id
+      - trained_through_date
+      - calibrated_through_date
+
+    Falls back to advisory (Phase 13G semantics) when the champion is still
+    a bootstrap pointer with no rich fields — the bootstrap pointer can
+    never be stamped because the per-stat trained_through_date is unknown.
+    """
     latest = _latest_delivery_date()
+    pointer_id = pointer.get("champion_model_id") or pointer.get("model_version")
+    pointer_trained = pointer.get("trained_through_date")
+    pointer_calibrated = pointer.get("calibrated_through_date")
+    is_bootstrap = pointer.get("champion_model_id") is None
+
     if not latest:
         report.add("delivery_records_champion_id", True, "no deliveries to check (advisory)")
         return
-    candidates = [
-        DELIVERIES_DIR / latest / "wizard_of_odds" / "run_manifest.json",
-        DELIVERIES_DIR / latest / "derek_forward_feed" / "feed_manifest.json",
-    ]
-    found_match = False
-    found_any_id_field = False
-    pointer_id = (pointer or {}).get("model_version")
-    seen: dict[str, str | None] = {}
-    for cand in candidates:
+
+    candidates = {
+        "woo": DELIVERIES_DIR / latest / "wizard_of_odds" / "run_manifest.json",
+        "derek": DELIVERIES_DIR / latest / "derek_forward_feed" / "feed_manifest.json",
+    }
+    seen: dict[str, dict] = {}
+    for label, cand in candidates.items():
         if not cand.exists():
             continue
         try:
             m = read_json(cand)
         except Exception:
             continue
-        for key in ("champion_model_id", "champion_model_version", "model_version", "model_id"):
-            v = m.get(key)
-            if v is not None:
-                seen[f"{cand.relative_to(REPO_ROOT)}::{key}"] = v
-                found_any_id_field = True
-                if v == pointer_id:
-                    found_match = True
-    report.facts["delivery_manifest_id_fields"] = seen or None
-    if not found_any_id_field:
+        seen[label] = {
+            "path": str(cand.relative_to(REPO_ROOT)),
+            "champion_model_id": m.get("champion_model_id"),
+            "trained_through_date": m.get("trained_through_date"),
+            "calibrated_through_date": m.get("calibrated_through_date"),
+            "model_source": m.get("model_source"),
+            "no_challenger_artifacts_used": m.get("no_challenger_artifacts_used"),
+            "model_version": m.get("model_version"),  # legacy field
+        }
+    report.facts["delivery_manifest_stamped"] = seen
+
+    if is_bootstrap:
+        # Bootstrap pointer has no rich fields to compare against. Pass with
+        # advisory note — this gate becomes strict after first real promotion.
         report.add(
             "delivery_records_champion_id",
             True,
-            "no champion_model_id field in delivery manifests yet (advisory; "
-            "stamping production scripts is a follow-up).",
+            "active champion is bootstrap pointer (no rich metadata yet); "
+            "delivery stamp comparison deferred until first real promotion (advisory).",
         )
         return
-    # The existing production deliveries record a model_version field with a
-    # different identifier format (git-commit#phase tag) than the champion
-    # pointer's model_version (training_meta version). Both are valid
-    # identifiers for the same artifact set; format-alignment is a Phase
-    # 13H follow-up. For Phase 13G we require ONLY that the delivery
-    # *records some model identifier* — the absence of an identifier would
-    # be a real regression; a different format is a documented follow-up.
+
+    # Strict mode (post-promotion).
+    failures: list[str] = []
+    for side in ("woo", "derek"):
+        if side not in seen:
+            failures.append(f"{side}_manifest_missing")
+            continue
+        s = seen[side]
+        if s.get("champion_model_id") != pointer_id:
+            failures.append(
+                f"{side}_champion_model_id_mismatch (delivery={s.get('champion_model_id')!r} "
+                f"pointer={pointer_id!r})"
+            )
+        if pointer_trained and s.get("trained_through_date") != pointer_trained:
+            failures.append(
+                f"{side}_trained_through_date_mismatch (delivery={s.get('trained_through_date')!r} "
+                f"pointer={pointer_trained!r})"
+            )
+        if pointer_calibrated and s.get("calibrated_through_date") != pointer_calibrated:
+            failures.append(
+                f"{side}_calibrated_through_date_mismatch (delivery={s.get('calibrated_through_date')!r} "
+                f"pointer={pointer_calibrated!r})"
+            )
+        if s.get("no_challenger_artifacts_used") is not True:
+            failures.append(
+                f"{side}_no_challenger_artifacts_used_not_true (={s.get('no_challenger_artifacts_used')!r})"
+            )
     report.add(
-        "delivery_records_champion_id",
-        found_any_id_field,
-        f"pointer_model_version={pointer_id!r} delivery_records={list(seen.values())} "
-        f"format_match={found_match} (format-alignment is a Phase 13H follow-up)",
+        "delivery_records_champion_id_strict",
+        not failures,
+        "ok" if not failures else f"failures={failures[:6]}",
+    )
+
+
+def check_delivery_does_not_use_stale_calibrators(report: DependencyReport, pointer: dict) -> None:
+    """Phase 13H: confirm no champion calibrator on disk is from a different
+    promoted-version than the one named in champion_pointer.
+
+    We re-derive the per-stat sha256 of the calibrators in champion_artifact_dir
+    and confirm they match what was recorded at promotion time in
+    pointer.data_hashes (when present). If the pointer doesn't yet expose
+    per-stat hashes (Phase 13H bootstrap), pass with advisory note.
+    """
+    rel = pointer.get("champion_artifact_dir") or pointer.get("model_dir") or "artifacts/models"
+    cdir = (REPO_ROOT / rel).resolve()
+    pointer_hashes = (pointer.get("data_hashes") or {}).get("champion_pickle_files") or []
+
+    actual: dict[str, str] = {}
+    for stat in ("pts", "reb", "ast", "fg3m", "tov"):
+        p = cdir / f"pmf_cal_role_{stat}.pkl"
+        if p.exists():
+            actual[stat] = sha256_file(p)[:16]
+    report.facts["champion_calibrator_actual_sha_prefixes"] = actual
+
+    if not pointer_hashes:
+        report.add(
+            "delivery_does_not_use_stale_calibrators",
+            True,
+            "no per-stat hashes in pointer.data_hashes; deferred until first real promotion (advisory)",
+        )
+        return
+
+    # When pointer carries hashes, reconcile.
+    declared = {}
+    for rec in pointer_hashes:
+        path = rec.get("path") if isinstance(rec, dict) else None
+        sha = rec.get("sha256") if isinstance(rec, dict) else None
+        if not path or not sha:
+            continue
+        for stat in ("pts", "reb", "ast", "fg3m", "tov"):
+            if path.endswith(f"pmf_cal_role_{stat}.pkl"):
+                declared[stat] = sha[:16]
+    drift = []
+    for stat, sha in actual.items():
+        if stat in declared and declared[stat] != sha:
+            drift.append(f"{stat}: declared={declared[stat]} actual={sha}")
+    report.add(
+        "delivery_does_not_use_stale_calibrators",
+        not drift,
+        "ok" if not drift else f"drift={drift[:5]}",
     )
 
 
@@ -364,6 +449,7 @@ def main(argv: list[str] | None = None) -> int:
         check_delivery_scripts_use_champion_path(report, pointer)
         check_latest_delivery_after_champion_promotion(report, pointer)
         check_delivery_records_champion_id(report, pointer)
+        check_delivery_does_not_use_stale_calibrators(report, pointer)
 
     payload = report.to_dict()
     write_json_atomic(HEALTH_DIR / "derek_woo_champion_dependency.json", payload)

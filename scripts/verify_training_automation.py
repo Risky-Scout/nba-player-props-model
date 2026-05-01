@@ -709,23 +709,36 @@ def main(argv: list[str] | None = None) -> int:
         print("TRAINING_AUTOMATION_VERIFICATION_PASS")
         if mode == "real_training":
             print("TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS")
-            # Phase 13G: chain the strict no-leakage + Derek/WoO dependency
-            # verifiers and print their PASS lines too. Each sub-verifier
-            # writes its own structured artifact under the same date.
+            # Phase 13G + 13H: chain strict no-leakage + champion-pointer
+            # metadata + Derek/WoO dependency + source-completeness verifiers.
+            # Each sub-verifier writes its own structured artifact under the
+            # same date and prints its own PASS line.
             import subprocess
-            ok_leak = subprocess.run(
-                [sys.executable, "scripts/verify_previous_day_no_leakage.py",
-                 "--as-of-date", as_of],
-                cwd=REPO_ROOT, check=False,
-            ).returncode == 0
-            ok_dep = subprocess.run(
-                [sys.executable, "scripts/verify_derek_woo_champion_dependency.py"],
-                cwd=REPO_ROOT, check=False,
-            ).returncode == 0
-            if not ok_leak:
-                # The sub-verifier already printed its FAILED line + reasons.
-                return 1
-            if not ok_dep:
+            sub_ok = True
+            for cmd, label in (
+                (
+                    [sys.executable, "scripts/verify_previous_day_source_completeness.py",
+                     "--target-date", as_of],
+                    "previous_day_source_completeness",
+                ),
+                (
+                    [sys.executable, "scripts/verify_previous_day_no_leakage.py",
+                     "--as-of-date", as_of],
+                    "previous_day_no_leakage",
+                ),
+                (
+                    [sys.executable, "scripts/verify_champion_pointer_metadata.py"],
+                    "champion_pointer_metadata",
+                ),
+                (
+                    [sys.executable, "scripts/verify_derek_woo_champion_dependency.py"],
+                    "derek_woo_champion_dependency",
+                ),
+            ):
+                rc = subprocess.run(cmd, cwd=REPO_ROOT, check=False).returncode
+                if rc != 0:
+                    sub_ok = False
+            if not sub_ok:
                 return 1
         elif mode == "dry_run":
             print("TRAINING_AUTOMATION_DRY_RUN_VERIFICATION_PASS")
