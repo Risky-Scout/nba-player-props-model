@@ -1,13 +1,65 @@
 {
+  "calibrated_through_date": "2026-04-30",
+  "calibration_manifest_path": "artifacts/models/challengers/2026-04-30/calibration_manifest.json",
+  "calibration_run_id": "nightly-20260501T124701",
   "calibrator_version": "phase8-role-bucket",
-  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
-  "created_at_utc": "2026-04-30T22:30:59+00:00",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_calibrator_paths": {
+    "ast": "artifacts/models/pmf_cal_role_ast.pkl",
+    "fg3m": "artifacts/models/pmf_cal_role_fg3m.pkl",
+    "pts": "artifacts/models/pmf_cal_role_pts.pkl",
+    "reb": "artifacts/models/pmf_cal_role_reb.pkl",
+    "tov": "artifacts/models/pmf_cal_role_tov.pkl"
+  },
+  "champion_model_id": "challenger-2026-04-30",
+  "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+  "created_at_utc": "2026-05-01T12:48:39+00:00",
+  "data_hashes": {
+    "challenger_pickle_files": [
+      {
+        "path": "artifacts/models/challengers/2026-04-30/pmf_cal_role_ast.pkl",
+        "sha256": "58a6548670ca48f720848704622e311740d9d0f54664c9c0e1be4ba6c149500c"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-04-30/pmf_cal_role_fg3m.pkl",
+        "sha256": "95a7e24bf892f92b60d550a2211d8eaa029b430d38fde5b8855530776b6b2039"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-04-30/pmf_cal_role_pts.pkl",
+        "sha256": "25d4677746bb6f23d92a8492cedbb9045f7475cb86a18c0f9fbaa2bad6c0a893"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-04-30/pmf_cal_role_reb.pkl",
+        "sha256": "f221abf92cbb4973993eaa283c89f158b6d715f1b89b2483285d67ceb586a933"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-04-30/pmf_cal_role_tov.pkl",
+        "sha256": "a19b28ca69c63e1e9bae652bc1e3978828c04bf7aa4c139b21e97046a3cfb10c"
+      }
+    ],
+    "fold_aggregate_sha256": "49f7228ab26d21abcfa6476ece92005e79374643c52fc371220cb2d1c2c4f380",
+    "training_table_sha256": null
+  },
+  "dry_run_calibration": false,
+  "dry_run_training": false,
+  "leakage_checks_passed": true,
   "model_dir": "artifacts/models",
-  "model_version": "2026-03-09-v12",
-  "notes": "Phase 13A bootstrap. Records the existing production artifacts at artifacts/models/ as the current champion. No retraining performed; production read paths unchanged.",
+  "model_version": "challenger-2026-04-30",
+  "no_future_rows_verified": true,
+  "no_partial_rows_verified": true,
+  "notes": "Promoted via scripts/promote_challenger_if_validated.py.",
   "phase10d_overlays_in_use": false,
-  "promoted_at_utc": "2026-04-30T22:30:59+00:00",
-  "schema_version": "1.0",
+  "previous_model_version": "2026-03-09-v12",
+  "previous_pointer_backup": "artifacts/models/champion/v_20260501T124839p0000/champion_pointer.previous.json",
+  "promoted_at_utc": "2026-05-01T12:48:39+00:00",
+  "promoted_from_challenger_dir": "artifacts/models/challengers/2026-04-30",
+  "promoted_from_challenger_id": "challenger-2026-04-30",
+  "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
+  "promotion_decision_path": "artifacts/models/challengers/2026-04-30/promotion_decision.json",
+  "resolved_training_cutoff_date": "2026-04-30",
+  "schema_version": "1.1",
+  "source_completeness_manifest_path": "artifacts/nightly_training/2026-04-30/source_completeness_manifest.json",
+  "source_data_refresh_manifest_path": "artifacts/nightly_training/2026-04-30/source_data_refresh_manifest.json",
   "supported_stats": [
     "pts",
     "reb",
@@ -16,5 +68,13 @@
     "tov",
     "stl",
     "blk"
-  ]
+  ],
+  "target_date_et": "2026-04-30",
+  "target_policy": "manual_override",
+  "train_manifest_path": "artifacts/models/challengers/2026-04-30/train_manifest.json",
+  "trained_through_date": "2026-04-30",
+  "training_input_manifest_path": "artifacts/nightly_training/2026-04-30/training_inputs_manifest.json",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_report_path": "artifacts/models/challengers/2026-04-30/validation_report.json",
+  "validation_run_id": "nightly-20260501T124701"
 }

@@ -1,0 +1,18 @@
+{
+  "as_of_date": "2026-04-30",
+  "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+  "dry_run": false,
+  "no_promote": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-04-30",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-04-30",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260501T124701"
+  },
+  "schema_version": "1.0",
+  "started_at_utc": "2026-05-01T12:47:01+00:00",
+  "training_run_id": "nightly-20260501T124701"
+}

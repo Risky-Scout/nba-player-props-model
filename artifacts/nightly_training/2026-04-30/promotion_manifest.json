@@ -1,0 +1,12 @@
+{
+  "as_of_date": "2026-04-30",
+  "backup_dir": "artifacts/models/champion/v_20260501T124839p0000",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "champion_pointer_sha256_after_swap": "ce691fe085d0daee5c7eab9bf4066081588fc080d2407b1ea2952abb67cfd831",
+  "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+  "from_version": "2026-03-09-v12",
+  "promoted": true,
+  "promoted_at_utc": "2026-05-01T12:48:39+00:00",
+  "schema_version": "1.0",
+  "to_version": "challenger-2026-04-30"
+}
