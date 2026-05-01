@@ -9,7 +9,7 @@ you how to run, inspect, recover, and (eventually) extend the system.
 | --- | --- |
 | What runs nightly? | `.github/workflows/nightly_training_calibration.yml` at **09:30 UTC** |
 | What does it do today? | Dry-run challenger snapshot of champion → all gates fail "no improvement" → no promotion → champion unchanged |
-| What about real retraining? | **Blocked.** See `docs/phase13b_real_training_blockers.md` |
+| What about real retraining? | **Blocked.** Authoritative analysis: `docs/phase13c_real_training_blockers.md` (Phase 13B's analysis was superseded — daily-training in this codebase is `scripts/calibrate_pmf.py`, not `pipelines/train.py`). |
 | Can it disrupt Derek/WoO deliveries? | No. 14:30 UTC promotion cutoff guards the 15:00 UTC WoO publish window |
 | Where is the current champion recorded? | `artifacts/models/registry/champion_pointer.json` |
 | How do I check the system is healthy? | `python3 scripts/verify_daily_automation_health.py` → must print `DAILY_AUTOMATION_HEALTH_PASS` |
@@ -85,12 +85,19 @@ python3 scripts/run_nightly_training_and_calibration.py \
 
 ### Path C — Real training (blocked)
 
-What it would do: build a real challenger model and calibrators in
+What it would do: build real challenger calibrators (and per-fold partial
+refits of minutes / rate / hurdle / fg3m) in
 `artifacts/models/challengers/<date>/`, score both sides on a leakage-safe
 holdout, and promote if the gates pass. This path is intentionally
 unimplemented; `_train_full_candidate()` raises `NotImplementedError` and the
-calibrator falls back the same way. See `docs/phase13b_real_training_blockers.md`
-for the specific code modifications required to unblock it.
+calibration script's real path falls back the same way.
+
+The real surface that needs to be unblocked is `scripts/calibrate_pmf.py`
+(plus a small downstream patch in
+`src/nba_props_model/calibration/pmf_calibration.py` so the final-fit step
+respects the output-dir override). See
+`docs/phase13c_real_training_blockers.md` for the corrected analysis,
+acceptance criteria for Phase 13D, and the ~335 LOC of changes required.
 
 ## Inspecting a run
 

@@ -1,5 +1,14 @@
 # Phase 13B — Real Training & Calibration Blockers
 
+> **SUPERSEDED by `docs/phase13c_real_training_blockers.md`.** Phase 13C
+> reread the production code and found that the framing below — "daily
+> training = full retrain via `pipelines/train.py`" — is the wrong target
+> for this codebase. The actual daily-training surface production was built
+> around is `scripts/calibrate_pmf.py` (per-fold partial-refit + final
+> calibration). This document is kept for historical context. The Phase 13C
+> doc replaces it as the source of truth for what needs to be unblocked
+> and how.
+
 **Status:** Real nightly retraining is **NOT** wired. The Phase 13A framework
 remains in place and runs in `--dry-run` mode (challenger snapshots the current
 champion). This document records the precise blockers and the minimal,
