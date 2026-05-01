@@ -20,11 +20,10 @@
     "no_challenger_artifacts_used",
     "stamp_code_commit"
   ],
-  "files_missing": [
-    "/home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-01/derek_forward_feed/feed_manifest.json"
-  ],
+  "files_missing": [],
   "files_stamped": [
-    "deliveries/2026-05-01/wizard_of_odds/run_manifest.json"
+    "deliveries/2026-05-01/wizard_of_odds/run_manifest.json",
+    "deliveries/2026-05-01/derek_forward_feed/feed_manifest.json"
   ],
   "no_prediction_values_modified": true,
   "results": [
@@ -34,9 +33,9 @@
       "stamped": true
     },
     {
-      "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-01/derek_forward_feed/feed_manifest.json",
-      "reason": "missing",
-      "stamped": false
+      "path": "deliveries/2026-05-01/derek_forward_feed/feed_manifest.json",
+      "sidecar": "deliveries/2026-05-01/derek_forward_feed/feed_manifest.champion_stamp.json",
+      "stamped": true
     }
   ],
   "schema_version": "1.0",
@@ -47,12 +46,12 @@
     "champion_model_id": "challenger-2026-04-30",
     "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
     "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-    "metadata_stamped_at_utc": "2026-05-01T20:44:08+00:00",
+    "metadata_stamped_at_utc": "2026-05-01T23:15:10+00:00",
     "model_source": "champion_pointer",
     "no_challenger_artifacts_used": true,
-    "output_generated_at_utc": "2026-05-01T20:44:08+00:00",
+    "output_generated_at_utc": "2026-05-01T23:15:10+00:00",
     "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
-    "stamp_code_commit": "a3560d86b4ab0a67647bb9124dbac720c5a2baee",
+    "stamp_code_commit": "2d6f3400568c9dcc73193b0c600566799c91ba75",
     "trained_through_date": "2026-04-30",
     "training_run_id": "nightly-20260501T124701",
     "validation_run_id": "nightly-20260501T124701"
