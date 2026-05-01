@@ -27,9 +27,9 @@
       "size_bytes": 733301
     }
   },
-  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
   "errors": [],
-  "generated_at_utc": "2026-05-01T03:57:08+00:00",
+  "generated_at_utc": "2026-05-01T10:54:00+00:00",
   "inputs": {
     "fold_aggregate.parquet": {
       "future_rows_excluded": 0,
@@ -48,6 +48,15 @@
       "source": "data/training_table.parquet",
       "source_sha256_prefix": "764d26bbed45c8e6"
     }
+  },
+  "phase13g": {
+    "data_complete_for_target_date": false,
+    "resolved_training_cutoff_date": "2026-04-28",
+    "stale_fallback_target_date": "2026-04-28",
+    "stale_fallback_used": true,
+    "target_date_et": "2026-04-30",
+    "target_policy": "previous_day_et",
+    "training_run_id": "nightly-20260501T105357"
   },
   "schema_version": "1.0",
   "stale_state_cleaned": [

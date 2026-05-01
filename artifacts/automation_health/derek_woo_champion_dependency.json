@@ -1,0 +1,71 @@
+{
+  "checks": [
+    {
+      "detail": "model_version='2026-03-09-v12'",
+      "name": "champion_pointer_present",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "champion_calibrators_present",
+      "passed": true
+    },
+    {
+      "detail": "age_days=0.55 max=14",
+      "name": "champion_freshness",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "delivery_scripts_no_challenger_refs",
+      "passed": true
+    },
+    {
+      "detail": "4/6 delivery scripts reference champion path (via direct path or nba_props_model package import)",
+      "name": "delivery_scripts_reference_champion_path",
+      "passed": true
+    },
+    {
+      "detail": "delivery_generated_at=None promoted_at_utc='2026-04-30T22:30:59+00:00' (advisory)",
+      "name": "latest_delivery_after_champion_promotion",
+      "passed": true
+    },
+    {
+      "detail": "pointer_model_version='2026-03-09-v12' delivery_records=['6aea017#phase10c'] format_match=False (format-alignment is a Phase 13H follow-up)",
+      "name": "delivery_records_champion_id",
+      "passed": true
+    }
+  ],
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
+  "facts": {
+    "champion_age_days": 0.55,
+    "champion_calibrated_through_date": null,
+    "champion_calibrator_sha_prefixes": {
+      "ast": "aa73d678b1512d33",
+      "fg3m": "6fb662716667fed4",
+      "pts": "cef39bbf256f2d63",
+      "reb": "4b018db3bff8f827",
+      "tov": "5b9d732536e30e33"
+    },
+    "champion_calibrator_version": "phase8-role-bucket",
+    "champion_model_dir": "artifacts/models",
+    "champion_model_version": "2026-03-09-v12",
+    "champion_promoted_at_utc": "2026-04-30T22:30:59+00:00",
+    "champion_trained_through_date": null,
+    "delivery_manifest_id_fields": {
+      "deliveries/2026-04-30/wizard_of_odds/run_manifest.json::model_version": "6aea017#phase10c"
+    },
+    "delivery_scripts_with_champion_refs": [
+      "build_daily_pmf_delivery.py",
+      "run_daily_delivery_pipeline.py",
+      "predict.py",
+      "build_stat_grid_pmfs.py"
+    ],
+    "latest_delivery_date": "2026-04-30",
+    "latest_delivery_generated_at": null
+  },
+  "generated_at_utc": "2026-05-01T11:37:42+00:00",
+  "max_stale_days": 14,
+  "passed": true,
+  "schema_version": "1.0"
+}

@@ -18,8 +18,8 @@
   },
   "all_required_present": true,
   "as_of_date": "2026-04-28",
-  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
-  "generated_at_utc": "2026-05-01T03:57:07+00:00",
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
+  "generated_at_utc": "2026-05-01T10:53:59+00:00",
   "missing_advisory": [],
   "missing_required": [],
   "no_future_leakage_precheck": true,
@@ -28,6 +28,15 @@
     "present": true,
     "rows_after_as_of": 17,
     "rows_on_or_before_as_of": 83480
+  },
+  "phase13g": {
+    "data_complete_for_target_date": false,
+    "resolved_training_cutoff_date": "2026-04-28",
+    "stale_fallback_target_date": "2026-04-28",
+    "stale_fallback_used": true,
+    "target_date_et": "2026-04-30",
+    "target_policy": "previous_day_et",
+    "training_run_id": "nightly-20260501T105357"
   },
   "required_inputs": {
     "champion_pmf_cal_role_ast": {

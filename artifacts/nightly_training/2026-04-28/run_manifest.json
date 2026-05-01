@@ -1,12 +1,21 @@
 {
   "as_of_date": "2026-04-28",
-  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
   "dry_run": false,
   "final_status": "ok",
-  "finished_at_utc": "2026-05-01T03:57:35+00:00",
+  "finished_at_utc": "2026-05-01T10:54:28+00:00",
   "halted_reason": null,
   "no_promote": true,
   "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": false,
+    "resolved_training_cutoff_date": "2026-04-28",
+    "stale_fallback_target_date": "2026-04-28",
+    "stale_fallback_used": true,
+    "target_date_et": "2026-04-30",
+    "target_policy": "previous_day_et",
+    "training_run_id": "nightly-20260501T105357"
+  },
   "promotion_summary": {
     "from_version": null,
     "promoted": false,
@@ -19,16 +28,17 @@
     "derek_compat_smoke": true,
     "woo_compat_smoke": true
   },
-  "started_at_utc": "2026-05-01T03:57:04+00:00",
+  "started_at_utc": "2026-05-01T10:53:57+00:00",
   "steps": [
     {
       "command": [
         "/Library/Developer/CommandLineTools/usr/bin/python3",
-        "scripts/resolve_latest_safe_training_date.py"
+        "scripts/resolve_previous_day_et_target.py",
+        "--allow-stale-safe-date"
       ],
       "exit_code": 0,
-      "log_path": "artifacts/nightly_training/logs/resolve_latest_safe_date.log",
-      "name": "resolve_latest_safe_date",
+      "log_path": "artifacts/nightly_training/logs/resolve_previous_day_et_target.log",
+      "name": "resolve_previous_day_et_target",
       "tail": "2026-04-28"
     },
     {
@@ -110,5 +120,6 @@
       "reason": "--no-promote was set",
       "skipped": true
     }
-  ]
+  ],
+  "training_run_id": "nightly-20260501T105357"
 }

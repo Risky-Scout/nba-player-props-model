@@ -1,8 +1,8 @@
 # PMF calibration run
 
-**Run at:** 2026-05-01T03:57:33.187402Z
+**Run at:** 2026-05-01T10:54:25.256294Z
 **Folds:** 15 walk-forward, 28-day validation, 365-day minimum training window.
-**Production artifact backup:** `/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/archive/aggregate_only_20260501_035711`
+**Production artifact backup:** `/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/archive/aggregate_only_20260501_105404`
 
 ## Per-stat result
 

@@ -8,7 +8,7 @@
 
 ## Steps
 
-- **resolve_latest_safe_date**: exit_code=0 log=artifacts/nightly_training/logs/resolve_latest_safe_date.log
+- **resolve_previous_day_et_target**: exit_code=0 log=artifacts/nightly_training/logs/resolve_previous_day_et_target.log
 - **readiness**: exit_code=0 log=artifacts/nightly_training/2026-04-28/logs/readiness.log
 - **training_input_preflight**: exit_code=0 log=artifacts/nightly_training/2026-04-28/logs/training_input_preflight.log
 - **prepare_training_inputs**: exit_code=0 log=artifacts/nightly_training/2026-04-28/logs/prepare_training_inputs.log

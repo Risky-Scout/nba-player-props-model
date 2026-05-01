@@ -2,7 +2,7 @@
   "as_of_date": "2026-04-28",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+    "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -213,7 +213,7 @@
     },
     "model_version": "2026-03-09-v12"
   },
-  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -287,8 +287,17 @@
       "name": "no_phase10d_overlays_referenced"
     }
   ],
-  "generated_at_utc": "2026-05-01T03:57:35+00:00",
+  "generated_at_utc": "2026-05-01T10:54:27+00:00",
   "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": false,
+    "resolved_training_cutoff_date": "2026-04-28",
+    "stale_fallback_target_date": "2026-04-28",
+    "stale_fallback_used": true,
+    "target_date_et": "2026-04-30",
+    "target_policy": "previous_day_et",
+    "training_run_id": "nightly-20260501T105357"
+  },
   "pmf_validity": {
     "checked_files": 1,
     "issues": [],

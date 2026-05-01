@@ -1,0 +1,22 @@
+{
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
+  "completeness": {
+    "data_complete_for_target_date": false,
+    "freshness_manifest_for_target": null,
+    "input_path": "data/player_game_stats.parquet",
+    "input_present": true,
+    "max_outcome_date_in_file": "2026-04-29",
+    "max_outcome_meets_target": false,
+    "rows_for_target": 0,
+    "rows_for_target_meets_floor": false,
+    "target_date_et": "2026-04-30"
+  },
+  "generated_at_utc": "2026-05-01T10:53:58+00:00",
+  "halted_reason": null,
+  "resolved_training_cutoff_date": "2026-04-28",
+  "schema_version": "1.0",
+  "stale_fallback_target_date": "2026-04-28",
+  "stale_fallback_used": true,
+  "target_date_et": "2026-04-30",
+  "target_policy": "previous_day_et"
+}

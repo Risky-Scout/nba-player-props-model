@@ -11,7 +11,7 @@
       "--output-dir",
       "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-04-28"
     ],
-    "calibrate_pmf_elapsed_seconds": 23.2,
+    "calibrate_pmf_elapsed_seconds": 22.7,
     "calibrate_pmf_log": "artifacts/models/challengers/2026-04-28/calibrate_pmf.log",
     "challenger_kind": "real-aggregate-mode-from-rolling-oof",
     "files": [
@@ -44,18 +44,27 @@
     "training_table_sha256": "764d26bbed45c8e6bc4efe044e1f356a5c541535ca07aebe0925cd5a141d6574",
     "training_table_snapshot": "artifacts/models/challengers/2026-04-28/training/training_table.parquet"
   },
-  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
   "dry_run": false,
-  "finished_at_utc": "2026-05-01T03:57:33+00:00",
+  "finished_at_utc": "2026-05-01T10:54:25+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": false,
+    "resolved_training_cutoff_date": "2026-04-28",
+    "stale_fallback_target_date": "2026-04-28",
+    "stale_fallback_used": true,
+    "target_date_et": "2026-04-30",
+    "target_policy": "previous_day_et",
+    "training_run_id": "nightly-20260501T105357"
+  },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
     "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
     "model_version": "2026-03-09-v12"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-01T03:57:10+00:00",
+  "started_at_utc": "2026-05-01T10:54:02+00:00",
   "stats_trained": [
     "pts",
     "reb",
@@ -70,7 +79,7 @@
     "aggregate_oof_future_rows_excluded": null,
     "aggregate_oof_rows_after_cutoff": 247625,
     "aggregate_oof_rows_pre_cutoff": 247625,
-    "calibrate_pmf_elapsed_seconds": 23.2,
+    "calibrate_pmf_elapsed_seconds": 22.7,
     "future_rows_excluded": 17,
     "max_date": "2026-04-28",
     "min_date": "2023-10-24",

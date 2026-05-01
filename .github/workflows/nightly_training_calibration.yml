@@ -44,6 +44,12 @@ on:
         default: "false"
         type: choice
         options: ["false", "true"]
+      allow_stale_safe_date:
+        description: "Phase 13G: if yesterday-in-ET data is incomplete, fall back to the latest complete date. Default off — strict halt on incomplete previous day."
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 env:
   PYTHON_VERSION: "3.11"
@@ -74,26 +80,39 @@ jobs:
         run: |
           python scripts/_bootstrap_champion_registry.py
 
-      - name: Resolve latest safe as_of_date
+      - name: Resolve previous-day-ET target (Phase 13G strict)
         id: d
         run: |
-          # Phase 13F: scheduled runs auto-resolve the latest safe finalized
-          # date. workflow_dispatch may override via the as_of_date input.
+          # Phase 13G: scheduled runs use the strict previous-day-ET resolver.
+          # If yesterday-in-ET data is incomplete, the resolver exits 1 and
+          # the workflow halts cleanly with halted_reason=previous_day_data_not_ready.
+          # workflow_dispatch may override via the as_of_date input or set
+          # allow_stale_safe_date=true to fall back to the latest complete date.
           if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
             DATE="${{ github.event.inputs.as_of_date }}"
             echo "manual override: as_of_date=$DATE"
           else
-            DATE=$(python scripts/resolve_latest_safe_training_date.py)
-            if [ -z "$DATE" ]; then
-              echo "::error::resolver returned no safe date"
-              exit 1
+            STALE_FLAG=""
+            if [ "${{ github.event.inputs.allow_stale_safe_date }}" = "true" ]; then
+              STALE_FLAG="--allow-stale-safe-date"
             fi
-            echo "resolved as_of_date=$DATE"
+            if DATE=$(python scripts/resolve_previous_day_et_target.py $STALE_FLAG 2>/tmp/resolver.err); then
+              echo "resolved cutoff_date=$DATE"
+            else
+              echo "::error::previous-day-ET resolver halted; data not ready"
+              cat /tmp/resolver.err || true
+              cat artifacts/nightly_training/previous_day_et_target.json || true
+              # Surface the halt as a job failure but still let artifact upload run.
+              echo "halted=true" >> "$GITHUB_OUTPUT"
+              echo "date=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
           fi
           echo "date=$DATE" >> "$GITHUB_OUTPUT"
 
       - name: Training input preflight
         id: preflight
+        if: steps.d.outputs.date != ''
         continue-on-error: true
         run: |
           python scripts/check_training_inputs.py \
@@ -101,7 +120,7 @@ jobs:
 
       - name: Prepare scoped training inputs
         id: prepare
-        if: steps.preflight.outcome == 'success'
+        if: steps.d.outputs.date != '' && steps.preflight.outcome == 'success'
         continue-on-error: true
         run: |
           python scripts/prepare_training_inputs.py \
@@ -109,7 +128,7 @@ jobs:
 
       - name: Run nightly training + calibration
         id: run_nightly
-        if: steps.preflight.outcome == 'success' && steps.prepare.outcome == 'success'
+        if: steps.d.outputs.date != '' && steps.preflight.outcome == 'success' && steps.prepare.outcome == 'success'
         continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -123,14 +142,25 @@ jobs:
           if [ "${{ github.event.inputs.no_promote }}" = "true" ]; then
             NO_PROMOTE_FLAG="--no-promote"
           fi
+          STALE_FLAG=""
+          if [ "${{ github.event.inputs.allow_stale_safe_date }}" = "true" ]; then
+            STALE_FLAG="--allow-stale-safe-date"
+          fi
           python scripts/run_nightly_training_and_calibration.py \
             --as-of-date ${{ steps.d.outputs.date }} \
-            $DRY_FLAG $NO_PROMOTE_FLAG
+            $DRY_FLAG $NO_PROMOTE_FLAG $STALE_FLAG
 
       - name: Run automation verification suite
         id: verify
+        if: steps.d.outputs.date != ''
         continue-on-error: true
         run: |
+          # Phase 13G: this script chains the previous-day no-leakage and
+          # Derek/WoO champion-dependency verifiers and prints all four
+          # PASS lines (TRAINING_AUTOMATION_VERIFICATION_PASS,
+          # TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS,
+          # PREVIOUS_DAY_NO_LEAKAGE_VERIFICATION_PASS,
+          # DEREK_WOO_CHAMPION_DEPENDENCY_PASS) on success.
           python scripts/verify_training_automation.py \
             --as-of-date ${{ steps.d.outputs.date }}
 
@@ -162,9 +192,15 @@ jobs:
             artifacts/models/challengers/*/promotion_decision.json
             artifacts/models/challengers/*/promotion_manifest.json
             artifacts/models/challengers/*/training_input_preflight.json
+            artifacts/nightly_training/previous_day_et_target.json
+            artifacts/nightly_training/*/previous_day_no_leakage.json
+            artifacts/nightly_training/*/previous_day_no_leakage.md
+            artifacts/automation_health/derek_woo_champion_dependency.json
+            artifacts/automation_health/derek_woo_champion_dependency.md
 
       - name: Fail workflow if any step failed
         if: |
+          steps.d.outputs.date == '' ||
           steps.preflight.outcome != 'success' ||
           steps.prepare.outcome != 'success' ||
           steps.run_nightly.outcome != 'success' ||
@@ -172,11 +208,16 @@ jobs:
           steps.health.outcome != 'success'
         run: |
           echo "::error::A nightly training step failed. See uploaded artifacts."
+          echo "resolver_date=${{ steps.d.outputs.date }}"
           echo "preflight=${{ steps.preflight.outcome }}"
           echo "prepare=${{ steps.prepare.outcome }}"
           echo "run_nightly=${{ steps.run_nightly.outcome }}"
           echo "verify=${{ steps.verify.outcome }}"
           echo "health=${{ steps.health.outcome }}"
+          # Phase 13G: an empty date means the strict resolver halted with
+          # halted_reason=previous_day_data_not_ready. That is the CORRECT
+          # safe behavior on days where yesterday-in-ET is incomplete; the
+          # workflow still fails red so the operator notices.
           exit 1
 
       - name: Stage and commit registry + manifests (Joseph Shackelford authorship)
