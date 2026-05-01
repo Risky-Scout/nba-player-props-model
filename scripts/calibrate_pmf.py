@@ -146,6 +146,11 @@ _PATCHED_MODULES = (
     "nba_props_model.models.sparse_hurdle",
     "nba_props_model.calibration.stat_side_platt",
     "nba_props_model.calibration.residual_centering",
+    # Phase 13D: include pmf_calibration so its joblib.dump(MODEL_DIR / ...)
+    # in fit_all() respects the --output-dir override during nightly
+    # challenger runs. No-op for production runs (the swap restores the
+    # original immediately).
+    "nba_props_model.calibration.pmf_calibration",
 )
 
 
@@ -843,6 +848,35 @@ def main() -> None:
         "--aggregate-oofs", default=None,
         help="Directory of fold_*.parquet files to stack in aggregate mode.",
     )
+    # Phase 13D: nightly-challenger-only flags. All default to None so
+    # production phase8.yml runs are unchanged.
+    parser.add_argument(
+        "--as-of-date", default=None,
+        help=(
+            "Inclusive upper bound on game_date for all loaded data "
+            "(YYYY-MM-DD). Required for nightly challenger runs to enforce "
+            "no-future-leakage. Default: no filter (production behavior)."
+        ),
+    )
+    parser.add_argument(
+        "--output-dir", default=None,
+        help=(
+            "Directory for final pmf_cal_role_*.pkl, oof_pmfs.parquet, and "
+            "pmf_cal_meta.json. When set, the production backup at MODEL_DIR/"
+            "../archive/ is skipped (no production to disrupt). Default: "
+            "production paths (overwrites champion calibrators)."
+        ),
+    )
+    parser.add_argument(
+        "--training-table-path", default=None,
+        help=(
+            "Path to a scoped training_table.parquet snapshot. Default: "
+            "data/training_table.parquet (shared production baseline). "
+            "Nightly challenger runs should pass a copy under "
+            "artifacts/models/challengers/<date>/ so the production baseline "
+            "is never overwritten."
+        ),
+    )
     args = parser.parse_args()
     if args.fold_index is not None and args.emit_fold_oof is None:
         parser.error("--fold-index requires --emit-fold-oof")
@@ -936,21 +970,41 @@ def main() -> None:
         agg_backup = MODEL_DIR.parent / "archive" / (
             "aggregate_only_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
         )
-        _fit_final_calibrators_and_emit_report(
-            per_fold_results=agg_per_fold_results,
-            fold_bounds=agg_fold_bounds,
-            folds=agg_fold_bounds,
-            full_data_backup=agg_backup,
-            start=start,
-            fold_days=args.fold_days,
-        )
+        # Phase 13D: same output-dir swap pattern as the non-aggregate path.
+        agg_swap_originals: dict[str, Path] | None = None
+        agg_oof_dir: Path | None = None
+        if args.output_dir:
+            out_path = Path(args.output_dir).resolve()
+            out_path.mkdir(parents=True, exist_ok=True)
+            agg_swap_originals = _swap_model_dir(out_path)
+            agg_oof_dir = out_path
+        try:
+            _fit_final_calibrators_and_emit_report(
+                per_fold_results=agg_per_fold_results,
+                fold_bounds=agg_fold_bounds,
+                folds=agg_fold_bounds,
+                full_data_backup=agg_backup,
+                start=start,
+                fold_days=args.fold_days,
+                oof_output_dir=agg_oof_dir,
+            )
+        finally:
+            if agg_swap_originals is not None:
+                _restore_model_dir(agg_swap_originals)
         return
 
     stats_df = pd.read_parquet(DATA_DIR / "player_game_stats.parquet")
     stats_df["game_date"] = stats_df["game_date"].astype(str).str[:10]
     availability_df = pd.read_parquet(DATA_DIR / "player_availability_asof.parquet")
     availability_df["game_date"] = availability_df["game_date"].astype(str).str[:10]
-    training_df = pd.read_parquet(DATA_DIR / "training_table.parquet")
+    # Phase 13D: --training-table-path lets nightly challenger runs read a
+    # scoped snapshot under the challenger directory rather than the shared
+    # production baseline at data/training_table.parquet.
+    training_table_src = (
+        Path(args.training_table_path) if args.training_table_path
+        else (DATA_DIR / "training_table.parquet")
+    )
+    training_df = pd.read_parquet(training_table_src)
     training_df["game_date"] = training_df["game_date"].astype(str).str[:10]
     # Precompute the game_date Timestamp values once as a LOCAL Series.
     # Held by index alignment for boolean masking against training_df.
@@ -960,8 +1014,35 @@ def main() -> None:
     training_game_date_ts = pd.to_datetime(training_df["game_date"])
     logger.info(
         f"Loaded: stats={len(stats_df):,}  avail={len(availability_df):,}  "
-        f"training={len(training_df):,}"
+        f"training={len(training_df):,}  src={training_table_src}"
     )
+
+    # Phase 13D: --as-of-date filter — enforces leakage-safety for nightly
+    # challenger runs. Default (None) preserves production behavior.
+    if args.as_of_date:
+        cutoff = pd.Timestamp(args.as_of_date)
+        pre_stats = len(stats_df)
+        pre_avail = len(availability_df)
+        pre_train = len(training_df)
+        stats_df = stats_df[pd.to_datetime(stats_df["game_date"]) <= cutoff].reset_index(drop=True)
+        availability_df = availability_df[
+            pd.to_datetime(availability_df["game_date"]) <= cutoff
+        ].reset_index(drop=True)
+        training_mask = (training_game_date_ts <= cutoff).to_numpy()
+        training_df = training_df[training_mask].reset_index(drop=True)
+        training_game_date_ts = pd.to_datetime(training_df["game_date"])
+        logger.info(
+            f"--as-of-date={args.as_of_date}: filtered "
+            f"stats {pre_stats:,}->{len(stats_df):,}, "
+            f"availability {pre_avail:,}->{len(availability_df):,}, "
+            f"training {pre_train:,}->{len(training_df):,}"
+        )
+        if stats_df.empty or training_df.empty:
+            logger.error(
+                f"--as-of-date={args.as_of_date} left no usable rows "
+                f"(stats={len(stats_df)}, training={len(training_df)}). Aborting."
+            )
+            sys.exit(1)
 
     all_dates = pd.to_datetime(stats_df["game_date"])
     folds = make_walk_forward_folds(
@@ -988,14 +1069,24 @@ def main() -> None:
         )
 
     # Back up existing production artifacts before any dir-swap churn.
-    full_data_backup = MODEL_DIR.parent / "archive" / (
-        "pre_calibrate_pmf_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    )
-    full_data_backup.mkdir(parents=True, exist_ok=True)
-    for f in MODEL_DIR.iterdir():
-        if f.is_file():
-            shutil.copy2(f, full_data_backup / f.name)
-    logger.info(f"Production artifacts backed up to {full_data_backup}")
+    # Phase 13D: skip when --output-dir is set — challenger runs do not
+    # touch production MODEL_DIR, so there is nothing to back up.
+    if args.output_dir is None:
+        full_data_backup = MODEL_DIR.parent / "archive" / (
+            "pre_calibrate_pmf_" + datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        )
+        full_data_backup.mkdir(parents=True, exist_ok=True)
+        for f in MODEL_DIR.iterdir():
+            if f.is_file():
+                shutil.copy2(f, full_data_backup / f.name)
+        logger.info(f"Production artifacts backed up to {full_data_backup}")
+    else:
+        full_data_backup = Path(args.output_dir).resolve()
+        full_data_backup.mkdir(parents=True, exist_ok=True)
+        logger.info(
+            f"--output-dir set; production backup skipped. Final calibrators "
+            f"will be written to {full_data_backup}"
+        )
 
     temp_root = Path(args.temp_root) if args.temp_root else Path(tempfile.mkdtemp(prefix="pmf_cal_"))
     logger.info(f"Per-fold artifact temp root: {temp_root}")
@@ -1112,14 +1203,29 @@ def main() -> None:
             logger.info("--skip-final-fit: exiting without final calibrator fit")
             return
 
-    _fit_final_calibrators_and_emit_report(
-        per_fold_results=per_fold_results,
-        fold_bounds=fold_bounds,
-        folds=folds,
-        full_data_backup=full_data_backup,
-        start=start,
-        fold_days=args.fold_days,
-    )
+    # Phase 13D: when --output-dir is set, swap MODEL_DIR for the final fit
+    # so pmf_cal_role_*.pkl + pmf_cal_meta.json land in the challenger
+    # directory rather than overwriting production artifacts.
+    final_swap_originals: dict[str, Path] | None = None
+    final_oof_dir: Path | None = None
+    if args.output_dir:
+        out_path = Path(args.output_dir).resolve()
+        out_path.mkdir(parents=True, exist_ok=True)
+        final_swap_originals = _swap_model_dir(out_path)
+        final_oof_dir = out_path
+    try:
+        _fit_final_calibrators_and_emit_report(
+            per_fold_results=per_fold_results,
+            fold_bounds=fold_bounds,
+            folds=folds,
+            full_data_backup=full_data_backup,
+            start=start,
+            fold_days=args.fold_days,
+            oof_output_dir=final_oof_dir,
+        )
+    finally:
+        if final_swap_originals is not None:
+            _restore_model_dir(final_swap_originals)
 
 
 def _fit_final_calibrators_and_emit_report(
@@ -1129,6 +1235,7 @@ def _fit_final_calibrators_and_emit_report(
     full_data_backup: Path,
     start: float,
     fold_days: int,
+    oof_output_dir: Path | None = None,
 ) -> None:
     # Determine whether per-fold results uniformly carry pmf_active.
     # This single flag drives BOTH the OOF parquet emission (omit the
@@ -1183,7 +1290,15 @@ def _fit_final_calibrators_and_emit_report(
                     row["pmf_active"] = r["pmf_active"]
                 oof_rows.append(row)
     oof_df = pd.DataFrame(oof_rows)
-    oof_path = DATA_DIR / "oof_pmfs.parquet"
+    # Phase 13D: nightly challenger runs scope the OOF parquet to their
+    # output_dir so the shared production data/oof_pmfs.parquet is not
+    # overwritten. Default keeps production behavior.
+    oof_path = (
+        (oof_output_dir / "oof_pmfs.parquet")
+        if oof_output_dir is not None
+        else (DATA_DIR / "oof_pmfs.parquet")
+    )
+    oof_path.parent.mkdir(parents=True, exist_ok=True)
     oof_df.to_parquet(oof_path, index=False)
     logger.info(f"OOF PMF universe persisted to {oof_path} ({len(oof_df):,} rows)")
 
@@ -1266,7 +1381,13 @@ def _fit_final_calibrators_and_emit_report(
         )
 
     # Persist a top-level run report.
-    run_report = REPO_ROOT / "artifacts" / "docs" / "pmf_calibration_run.md"
+    # Phase 13D: when oof_output_dir is set (challenger run), keep the
+    # human-readable run report inside the challenger directory so no
+    # production-adjacent path is touched.
+    if oof_output_dir is not None:
+        run_report = oof_output_dir / "pmf_calibration_run.md"
+    else:
+        run_report = REPO_ROOT / "artifacts" / "docs" / "pmf_calibration_run.md"
     run_report.parent.mkdir(parents=True, exist_ok=True)
     lines = [
         "# PMF calibration run",

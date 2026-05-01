@@ -136,17 +136,164 @@ def _train_dry_run(as_of_date: str, out_dir: Path) -> dict:
     }
 
 
-def _train_full_candidate(as_of_date: str, out_dir: Path) -> dict:  # pragma: no cover
-    """Placeholder for the eventual real training run.
+def _train_full_candidate(as_of_date: str, out_dir: Path) -> dict:
+    """Phase 13D: real challenger training via scripts/calibrate_pmf.py
+    aggregate-mode.
 
-    Wiring point: call into the existing rate-model / hurdle / minutes training
-    code via ``src/nba_props_model/...`` once a leakage-safe training driver
-    exists. Until then, we explicitly raise to prevent silent fake-training.
+    In this codebase, "daily training" = role-aware PMF calibration via
+    ``pmf_calibration.fit_all`` against the rolling OOF universe at
+    ``data/oof_pmfs.parquet``. The heavy per-fold partial-refit (minutes /
+    rate / hurdle / fg3m per fold) belongs to the periodic full refresh
+    (``phase8.yml`` workflow), not to the nightly path: a single fold's
+    worth of fresh OOF (~28 days, ~4k rows/stat) is too narrow for
+    ``fit_all``'s internal walk-forward (which requires the OOF span to
+    exceed ``min_train_days`` = 365 days).
+
+    Daily challenger pattern:
+      1. Snapshot ``data/training_table.parquet`` and ``data/oof_pmfs.parquet``
+         to the challenger dir (the production baselines are never modified).
+      2. Apply the ``--as-of-date`` cutoff inside calibrate_pmf so any OOF
+         rows newer than ``as_of_date`` are filtered out — leakage-safe.
+      3. Run ``calibrate_pmf.py --aggregate-mode`` against the snapshot,
+         with ``--output-dir`` pointing at the challenger dir. fit_all
+         consumes the rolling OOF and produces fresh ``pmf_cal_role_*.pkl``
+         + ``pmf_cal_meta.json`` in the challenger dir. Per-fold refit is
+         skipped — runtime is ~30-60s.
+      4. Hash all scoped artifacts and record paths in ``train_manifest.json``.
+
+    The full per-fold refresh path remains available via the existing
+    ``phase8.yml`` workflow and via ``calibrate_pmf.py`` without
+    ``--aggregate-mode``; it is invoked manually on a periodic cadence.
+
+    Returns a dict shaped for ``train_manifest.json`` consumption.
     """
-    raise NotImplementedError(
-        "Full candidate training is not yet wired. Use --dry-run; the full path "
-        "will be enabled once a leakage-safe training driver is in place."
-    )
+    import shutil
+    import subprocess
+    import time
+
+    started_at = utcnow_iso()
+    pointer = load_champion_pointer()
+
+    # 1a. Snapshot training_table.parquet (kept for traceability even though
+    #     aggregate-mode does not re-read it).
+    src_table = REPO_ROOT / "data" / "training_table.parquet"
+    if not src_table.exists():
+        raise FileNotFoundError(
+            f"data/training_table.parquet missing at {src_table}. Run "
+            "scripts/train.py --build-table-only first (requires BDL_API_KEY)."
+        )
+    train_subdir = out_dir / "training"
+    train_subdir.mkdir(parents=True, exist_ok=True)
+    scoped_table = train_subdir / "training_table.parquet"
+    shutil.copy2(src_table, scoped_table)
+    scoped_table_hash = sha256_file(scoped_table)
+
+    # 1b. Snapshot data/oof_pmfs.parquet into the challenger's
+    #     aggregate-input dir, applying the --as-of-date cutoff so no OOF
+    #     row newer than as_of_date enters the calibration. The file name
+    #     must match calibrate_pmf.py's `fold_*.parquet` glob to be picked
+    #     up by --aggregate-mode.
+    src_oof = REPO_ROOT / "data" / "oof_pmfs.parquet"
+    if not src_oof.exists():
+        raise FileNotFoundError(
+            f"data/oof_pmfs.parquet missing at {src_oof}. The rolling OOF "
+            "universe is required for daily challenger calibration. Run "
+            "scripts/calibrate_pmf.py without --aggregate-mode at least once "
+            "to populate it (this is what phase8.yml does)."
+        )
+    aggregate_dir = out_dir / "aggregate_input"
+    aggregate_dir.mkdir(parents=True, exist_ok=True)
+    fold_aggregate_path = aggregate_dir / "fold_aggregate.parquet"
+    try:
+        import pandas as pd
+        oof_df = pd.read_parquet(src_oof)
+        cutoff = pd.Timestamp(as_of_date)
+        pre_rows = len(oof_df)
+        oof_df["game_date"] = pd.to_datetime(oof_df["game_date"])
+        future_rows_excluded = int((oof_df["game_date"] > cutoff).sum())
+        oof_filtered = oof_df[oof_df["game_date"] <= cutoff].reset_index(drop=True)
+        oof_filtered.to_parquet(fold_aggregate_path, index=False)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Failed to snapshot/filter data/oof_pmfs.parquet: {exc}"
+        ) from exc
+    fold_aggregate_hash = sha256_file(fold_aggregate_path)
+
+    # 2-3. Invoke calibrate_pmf.py in aggregate-mode. Output redirects to
+    #      out_dir; production paths are untouched.
+    log_path = out_dir / "calibrate_pmf.log"
+    cmd = [
+        "python3",
+        "scripts/calibrate_pmf.py",
+        "--core-props-only",
+        "--aggregate-mode",
+        "--aggregate-oofs",
+        str(aggregate_dir.resolve()),
+        "--output-dir",
+        str(out_dir.resolve()),
+    ]
+    t0 = time.perf_counter()
+    with log_path.open("w", encoding="utf-8") as f:
+        f.write(f"$ {' '.join(cmd)}\n\n")
+        f.flush()
+        proc = subprocess.run(
+            cmd,
+            cwd=REPO_ROOT,
+            stdout=f,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+    elapsed_s = time.perf_counter() - t0
+
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"calibrate_pmf.py exited {proc.returncode} after {elapsed_s:.1f}s. "
+            f"See log: {log_path.relative_to(REPO_ROOT)}"
+        )
+
+    # 4. Inventory the produced challenger artifacts and record hashes.
+    pickles = sorted(out_dir.glob("*.pkl"))
+    pickle_records = [
+        {"path": str(p.relative_to(REPO_ROOT)), "sha256": sha256_file(p)}
+        for p in pickles
+    ]
+    oof_path = out_dir / "oof_pmfs.parquet"
+    cal_meta_path = out_dir / "pmf_cal_meta.json"
+
+    summary = _summarize_training_window(parse_date(as_of_date))
+    summary["model_version"] = f"challenger-{as_of_date}"
+    summary["calibrate_pmf_elapsed_seconds"] = round(elapsed_s, 1)
+    summary["aggregate_oof_rows_after_cutoff"] = int(len(oof_filtered))
+    summary["aggregate_oof_rows_pre_cutoff"] = int(pre_rows)
+    summary["aggregate_oof_future_rows_excluded"] = future_rows_excluded
+
+    artifacts = {
+        "challenger_kind": "real-aggregate-mode-from-rolling-oof",
+        "model_dir_reference": str(out_dir.relative_to(REPO_ROOT)),
+        "training_table_snapshot": str(scoped_table.relative_to(REPO_ROOT)),
+        "training_table_sha256": scoped_table_hash,
+        "fold_aggregate_input": str(fold_aggregate_path.relative_to(REPO_ROOT)),
+        "fold_aggregate_sha256": fold_aggregate_hash,
+        "calibrate_pmf_cmd": cmd,
+        "calibrate_pmf_log": str(log_path.relative_to(REPO_ROOT)),
+        "calibrate_pmf_elapsed_seconds": round(elapsed_s, 1),
+        "files": pickle_records,
+        "oof_pmfs_parquet": (
+            str(oof_path.relative_to(REPO_ROOT)) if oof_path.exists() else None
+        ),
+        "pmf_cal_meta_json": (
+            str(cal_meta_path.relative_to(REPO_ROOT)) if cal_meta_path.exists() else None
+        ),
+    }
+    return {
+        "summary": summary,
+        "artifacts": artifacts,
+        "pointer_seen": {
+            "model_version": pointer.get("model_version"),
+            "calibrator_version": pointer.get("calibrator_version"),
+            "code_commit": pointer.get("code_commit"),
+        },
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

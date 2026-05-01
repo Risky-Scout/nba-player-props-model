@@ -1,0 +1,19 @@
+{
+  "as_of_date": "2026-04-15",
+  "calibrator_version": "to-be-fitted",
+  "code_commit": "d120889c1b2f3ddd65a3d8875a0f3f5db6eae674",
+  "dry_run": false,
+  "model_dir_reference": "artifacts/models/challengers/2026-04-15",
+  "model_version": "challenger-2026-04-15",
+  "schema_version": "1.0",
+  "stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ],
+  "warnings": []
+}

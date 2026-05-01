@@ -8,8 +8,10 @@ you how to run, inspect, recover, and (eventually) extend the system.
 | Question | Answer |
 | --- | --- |
 | What runs nightly? | `.github/workflows/nightly_training_calibration.yml` at **09:30 UTC** |
-| What does it do today? | Dry-run challenger snapshot of champion → all gates fail "no improvement" → no promotion → champion unchanged |
-| What about real retraining? | **Blocked.** Authoritative analysis: `docs/phase13c_real_training_blockers.md` (Phase 13B's analysis was superseded — daily-training in this codebase is `scripts/calibrate_pmf.py`, not `pipelines/train.py`). |
+| What does it do today? | **Real challenger calibration via aggregate-mode** — `scripts/calibrate_pmf.py --aggregate-mode` reads the rolling OOF universe at `data/oof_pmfs.parquet` (snapshotted into the challenger dir, filtered to `game_date <= as_of_date`), runs `pmf_calibration.fit_all` with the `--output-dir` swap, and produces fresh `pmf_cal_role_<stat>.pkl` files in `artifacts/models/challengers/<date>/`. The validator scores both sides on a leakage-safe holdout window. Promotion only happens when all gates pass and the clock is before 14:30 UTC. |
+| Why aggregate-mode rather than per-fold refit? | A single 28-day fold's OOF (`--max-folds 1`) is too narrow for `fit_all`'s internal walk-forward (which needs the OOF span to exceed `min_train_days = 365`). The full per-fold refit (~17 min/fold + 14 folds) belongs to the periodic full refresh via `phase8.yml`, not to the daily nightly path. The daily challenger picks up new OOF rows accumulated by those periodic runs. |
+| Dry-run still available? | Yes — workflow_dispatch with `dry=true` snapshots the champion and exercises the pipeline without retraining. |
+| Real training verified? | Yes — Phase 13D's first real run on `--as-of-date 2026-04-15` printed `TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS`. |
 | Can it disrupt Derek/WoO deliveries? | No. 14:30 UTC promotion cutoff guards the 15:00 UTC WoO publish window |
 | Where is the current champion recorded? | `artifacts/models/registry/champion_pointer.json` |
 | How do I check the system is healthy? | `python3 scripts/verify_daily_automation_health.py` → must print `DAILY_AUTOMATION_HEALTH_PASS` |
@@ -83,21 +85,49 @@ python3 scripts/run_nightly_training_and_calibration.py \
     --no-promote
 ```
 
-### Path C — Real training (blocked)
+### Path C — Real training (Phase 13D, wired)
 
-What it would do: build real challenger calibrators (and per-fold partial
-refits of minutes / rate / hurdle / fg3m) in
-`artifacts/models/challengers/<date>/`, score both sides on a leakage-safe
-holdout, and promote if the gates pass. This path is intentionally
-unimplemented; `_train_full_candidate()` raises `NotImplementedError` and the
-calibration script's real path falls back the same way.
+```
+python3 scripts/run_nightly_training_and_calibration.py \
+    --as-of-date 2026-04-15 \
+    --no-dry-run \
+    --no-promote
+python3 scripts/verify_training_automation.py --as-of-date 2026-04-15
+# → TRAINING_AUTOMATION_VERIFICATION_PASS
+# → TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS  (when real artifacts produced)
+```
 
-The real surface that needs to be unblocked is `scripts/calibrate_pmf.py`
-(plus a small downstream patch in
-`src/nba_props_model/calibration/pmf_calibration.py` so the final-fit step
-respects the output-dir override). See
-`docs/phase13c_real_training_blockers.md` for the corrected analysis,
-acceptance criteria for Phase 13D, and the ~335 LOC of changes required.
+What happens:
+
+1. `train_daily_challenger_model.py --no-dry-run` snapshots
+   `data/training_table.parquet` → `artifacts/models/challengers/<date>/training/training_table.parquet`
+   (hashed in `train_manifest.json`), then invokes
+   `scripts/calibrate_pmf.py` with:
+   - `--as-of-date <date>` (filters every loaded dataframe to `game_date <= date` — recorded as `future_rows_excluded` in the manifest).
+   - `--output-dir artifacts/models/challengers/<date>/` (production backup at `MODEL_DIR/../archive/` is skipped; final calibrators land in the challenger dir).
+   - `--training-table-path <scoped snapshot>` (so `data/training_table.parquet` is never overwritten).
+   - `--core-props-only --max-folds 1` (~5–15 min runtime per fold for the daily nightly scope).
+2. `calibrate_daily_challenger_pmfs.py --no-dry-run` verifies the artifacts produced in step 1 and writes `calibration_manifest.json` (per-stat support flags, calibrator pickle hashes, OOF parquet pointer).
+3. `validate_champion_vs_challenger.py` loads `pmf_cal_role_<stat>.pkl` from both the champion (`artifacts/models/`) and the challenger (`<challenger_dir>/`), applies each side's calibrators to the OOF parquet's last 28 days strictly before `as_of_date`, and computes real NLL / RPS / p0_error / mean_bias overall, by stat, and by role bucket. PMF validity is enforced (sum-to-1 ±1e-6, non-negative, finite).
+4. Promotion gates compare real numbers; in `--no-promote` mode the gates evaluate but no atomic pointer swap occurs, so the champion is unchanged.
+
+Artifacts produced under `artifacts/models/challengers/<date>/`:
+
+```
+training/training_table.parquet     # scoped snapshot (gitignored)
+oof_pmfs.parquet                    # OOF PMFs + outcomes for the fold (gitignored)
+pmf_cal_role_<stat>.pkl             # per-stat role-aware calibrator (gitignored)
+pmf_cal_meta.json                   # calibration meta (committed)
+train_manifest.json                 # paths + hashes + excluded-future-rows
+calibration_manifest.json           # per-stat support + hashes
+validation_report.json              # real metrics, gate outcomes
+promotion_decision.json             # promote=true|false + reasons
+calibrate_pmf.log                   # subprocess log (gitignored)
+```
+
+Stats covered by calibrate_pmf.py with `--core-props-only`: `pts`, `reb`, `ast`,
+`fg3m`, `tov`. STL / BLK are not in the OOF universe and are recorded as
+`unsupported` in `calibration_manifest.json::stat_support`.
 
 ## Inspecting a run
 

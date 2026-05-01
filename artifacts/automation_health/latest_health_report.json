@@ -61,7 +61,7 @@
       "passed": true
     },
     {
-      "detail": "files_scanned=175 hits=[]",
+      "detail": "files_scanned=189 hits=[]",
       "name": "no_secrets_in_outputs",
       "passed": true
     },
@@ -81,8 +81,8 @@
       "passed": true
     }
   ],
-  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
-  "generated_at_utc": "2026-05-01T00:29:13+00:00",
+  "code_commit": "d120889c1b2f3ddd65a3d8875a0f3f5db6eae674",
+  "generated_at_utc": "2026-05-01T02:41:01+00:00",
   "overall_pass": true,
   "schema_version": "1.0"
 }

@@ -1,5 +1,22 @@
 # Phase 13C — Real Training Blockers (Updated Analysis)
 
+> **RESOLVED in Phase 13D.** All five blockers documented below were fixed in
+> commit landing the patches to `scripts/calibrate_pmf.py` (added
+> `--as-of-date`, `--output-dir`, `--training-table-path`; extended
+> `_PATCHED_MODULES` to cover `pmf_calibration`; redirected the OOF parquet
+> + run report writes when `--output-dir` is set), the wiring of the
+> challenger trainer to invoke calibrate_pmf in aggregate-mode against the
+> rolling OOF universe, and the real PMF scoring helper in
+> `scripts/validate_champion_vs_challenger.py`. The first end-to-end real
+> run on `--as-of-date 2026-04-15` printed `TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS`,
+> produced 5 fresh `pmf_cal_role_<stat>.pkl` files in the challenger dir,
+> kept the champion pointer unchanged under `--no-promote`, and held all
+> production paths clean. The scheduled workflow was flipped to
+> `dry_run=false` by default.
+>
+> The historical analysis below is preserved for traceability of the
+> reasoning that led to the resolution.
+
 **Status:** Real nightly retraining is **still NOT live**. Phase 13C reread the
 production training and calibration code in detail and found two new things:
 

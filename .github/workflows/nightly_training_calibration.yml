@@ -33,11 +33,11 @@ on:
         required: false
         default: ""
       dry:
-        description: "Dry-run mode (challenger snapshots champion; no retraining). Recommended until full training driver is wired."
+        description: "Dry-run mode (challenger snapshots champion; no retraining). Default OFF since Phase 13D — real challenger calibration runs by default. Set to true to fall back to dry-run."
         required: false
-        default: "true"
+        default: "false"
         type: choice
-        options: ["true", "false"]
+        options: ["false", "true"]
       no_promote:
         description: "Run all stages but never promote, even if gates pass."
         required: false
@@ -89,9 +89,10 @@ jobs:
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          DRY_FLAG="--dry-run"
-          if [ "${{ github.event.inputs.dry }}" = "false" ]; then
-            DRY_FLAG="--no-dry-run"
+          # Phase 13D: default is real training. dry=true falls back to dry-run.
+          DRY_FLAG="--no-dry-run"
+          if [ "${{ github.event.inputs.dry }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
           fi
           NO_PROMOTE_FLAG=""
           if [ "${{ github.event.inputs.no_promote }}" = "true" ]; then

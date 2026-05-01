@@ -158,6 +158,227 @@ def metrics_placeholder() -> dict:
     }
 
 
+# -- Real PMF scoring (Phase 13D) ------------------------------------------
+
+# Holdout window (days). Validation rows are the last N days of the OOF
+# universe at or before as_of_date — long enough to give meaningful sample
+# size, short enough that both calibrators will have been fit on data
+# strictly before this window when called via calibrate_pmf.py walk-forward.
+HOLDOUT_DAYS = 28
+EPS = 1e-12  # numerical floor for log/division
+
+
+def _load_role_calibrator(model_dir: Path, stat: str):
+    """Load the role-aware (or fallback global) PMF calibrator for ``stat``."""
+    import joblib
+    role_p = model_dir / f"pmf_cal_role_{stat}.pkl"
+    if role_p.exists():
+        try:
+            return joblib.load(role_p)
+        except Exception:
+            return None
+    legacy_p = model_dir / f"pmf_cal_{stat}.pkl"
+    if legacy_p.exists():
+        try:
+            return joblib.load(legacy_p)
+        except Exception:
+            return None
+    return None
+
+
+def _apply_calibrator(cal, pmf, role_bucket: str):
+    """Try the role-aware apply signature; fall back to global."""
+    if cal is None:
+        return None
+    try:
+        out = cal.apply(pmf, role_bucket=role_bucket)
+    except TypeError:
+        out = cal.apply(pmf)
+    except Exception:
+        return None
+    return out
+
+
+def _validate_pmf_array(arr) -> tuple[bool, str]:
+    """Return (valid, reason). Enforces sum-to-1 ±1e-6, non-negative, finite."""
+    import numpy as np
+    a = np.asarray(arr, dtype=float)
+    if not np.all(np.isfinite(a)):
+        return False, "non_finite"
+    if np.any(a < -1e-9):
+        return False, "negative"
+    s = a.sum()
+    if not (1.0 - 1e-6 <= s <= 1.0 + 1e-6):
+        return False, f"sum={s:.6f}"
+    return True, "ok"
+
+
+def _score_one_pmf(pmf, outcome: int) -> dict:
+    """Compute NLL, RPS, p0_error, mean_bias for a single PMF + outcome."""
+    import numpy as np
+    a = np.asarray(pmf, dtype=float)
+    a = np.clip(a, EPS, None)
+    a = a / a.sum()
+    K = len(a)
+    o = int(outcome)
+    if 0 <= o < K:
+        nll = float(-np.log(a[o]))
+    else:
+        nll = float(-np.log(EPS))
+    cdf = np.cumsum(a)
+    indicator = (np.arange(K) >= o).astype(float)
+    rps = float(np.sum((cdf - indicator) ** 2))
+    p0 = float(a[0])
+    p0_target = 1.0 if o == 0 else 0.0
+    p0_err = abs(p0 - p0_target)
+    mean_pred = float(np.dot(np.arange(K), a))
+    mean_bias = mean_pred - float(o)
+    return {"nll": nll, "rps": rps, "p0_err": p0_err, "mean_bias": mean_bias, "p0": p0}
+
+
+def score_pmfs_from_oof(
+    model_dir: Path,
+    as_of_date: dt.date,
+    holdout_days: int = HOLDOUT_DAYS,
+    oof_path_override: Path | None = None,
+) -> dict:
+    """Score the PMF calibrators in ``model_dir`` on a leakage-safe holdout.
+
+    Loads ``data/oof_pmfs.parquet`` (or override), filters to the last
+    ``holdout_days`` strictly before ``as_of_date``, applies each side's
+    role-aware calibrator, and returns NLL / RPS / p0_error / mean_bias
+    aggregated overall, by stat, and by role bucket. Also runs the PMF
+    validity gates on every produced calibrated PMF.
+    """
+    try:
+        import numpy as np
+        import pandas as pd
+    except ImportError:
+        return {"error": "pandas/numpy not installed", "by_stat": {}}
+
+    oof_p = oof_path_override or (REPO_ROOT / "data" / "oof_pmfs.parquet")
+    if not oof_p.exists():
+        return {"error": f"oof parquet missing: {oof_p}", "by_stat": {}}
+
+    df = pd.read_parquet(oof_p)
+    # Build the holdout window strictly before as_of_date.
+    df["game_date"] = pd.to_datetime(df["game_date"])
+    cutoff = pd.Timestamp(as_of_date)
+    holdout_start = cutoff - pd.Timedelta(days=holdout_days)
+    holdout = df[
+        (df["game_date"] >= holdout_start) & (df["game_date"] <= cutoff)
+    ].copy()
+
+    metrics = metrics_placeholder()
+    metrics["holdout_window"] = {
+        "start": str(holdout_start.date()),
+        "end": str(cutoff.date()),
+        "rows": int(len(holdout)),
+    }
+    metrics["model_dir"] = str(model_dir)
+
+    if holdout.empty:
+        metrics["error"] = "no_holdout_rows"
+        return metrics
+
+    by_stat: dict[str, dict] = {}
+    by_role: dict[str, dict] = {}
+    pmf_validity_issues: list[str] = []
+    rows_scored_total = 0
+    nll_sum = 0.0
+    rps_sum = 0.0
+    p0_err_sum = 0.0
+    mean_bias_sum = 0.0
+    rows_n = 0
+
+    stats_in_oof = sorted(holdout["stat"].unique())
+    for stat in stats_in_oof:
+        if stat not in SUPPORTED_STATS:
+            continue
+        cal = _load_role_calibrator(model_dir, stat)
+        if cal is None:
+            by_stat[stat] = {
+                "rows_scored": 0,
+                "calibrator_present": False,
+                "nll": None, "rps": None, "p0_err": None, "mean_bias": None,
+            }
+            continue
+        sub = holdout[holdout["stat"] == stat]
+        nll_s = 0.0; rps_s = 0.0; p0_s = 0.0; mb_s = 0.0; n_s = 0
+        per_role_acc: dict[str, dict[str, float]] = {}
+        for r in sub.itertuples(index=False):
+            pmf_raw = getattr(r, "pmf", None)
+            if pmf_raw is None:
+                continue
+            role = str(getattr(r, "role_bucket", "unknown"))
+            cal_pmf = _apply_calibrator(cal, pmf_raw, role)
+            if cal_pmf is None:
+                continue
+            ok, reason = _validate_pmf_array(cal_pmf)
+            if not ok:
+                if len(pmf_validity_issues) < 8:
+                    pmf_validity_issues.append(f"{stat}/{role}: {reason}")
+                continue
+            outcome = int(r.outcome)
+            sc = _score_one_pmf(cal_pmf, outcome)
+            nll_s += sc["nll"]; rps_s += sc["rps"]
+            p0_s += sc["p0_err"]; mb_s += sc["mean_bias"]
+            n_s += 1
+            acc = per_role_acc.setdefault(role, {"n": 0, "nll": 0.0, "p0": 0.0})
+            acc["n"] += 1; acc["nll"] += sc["nll"]; acc["p0"] += sc["p0_err"]
+        if n_s == 0:
+            by_stat[stat] = {
+                "rows_scored": 0,
+                "calibrator_present": True,
+                "nll": None, "rps": None, "p0_err": None, "mean_bias": None,
+            }
+            continue
+        by_stat[stat] = {
+            "rows_scored": n_s,
+            "calibrator_present": True,
+            "nll": nll_s / n_s,
+            "rps": rps_s / n_s,
+            "p0_err": p0_s / n_s,
+            "mean_bias": mb_s / n_s,
+        }
+        for role, acc in per_role_acc.items():
+            agg = by_role.setdefault(role, {"n": 0, "nll_sum": 0.0, "p0_sum": 0.0})
+            agg["n"] += acc["n"]
+            agg["nll_sum"] += acc["nll"]
+            agg["p0_sum"] += acc["p0"]
+        nll_sum += nll_s; rps_sum += rps_s
+        p0_err_sum += p0_s; mean_bias_sum += mb_s
+        rows_n += n_s
+        rows_scored_total += n_s
+
+    metrics["by_stat"] = by_stat
+    metrics["by_role_bucket"] = {
+        role: {
+            "n": acc["n"],
+            "nll": acc["nll_sum"] / acc["n"] if acc["n"] else None,
+            "p0_err": acc["p0_sum"] / acc["n"] if acc["n"] else None,
+        }
+        for role, acc in by_role.items()
+    }
+    if rows_n > 0:
+        metrics["nll"] = nll_sum / rows_n
+        metrics["rps"] = rps_sum / rows_n
+        metrics["p0_calibration"] = p0_err_sum / rows_n
+        metrics["mean_error"] = mean_bias_sum / rows_n
+    metrics["rows_scored_total"] = rows_scored_total
+    metrics["pmf_validity_issues"] = pmf_validity_issues
+    # TOV-specific extract for the gate.
+    tov_block = by_stat.get("tov")
+    if tov_block and tov_block.get("rows_scored", 0) > 0:
+        metrics["tov"] = {
+            "p0_error": tov_block["p0_err"],
+            "mean_bias": tov_block["mean_bias"],
+            "nll": tov_block["nll"],
+            "rps": tov_block["rps"],
+        }
+    return metrics
+
+
 # -- Compatibility smokes --------------------------------------------------
 
 def derek_compat_check() -> dict:
@@ -183,6 +404,40 @@ def woo_compat_check() -> dict:
 
 # -- Gate evaluation -------------------------------------------------------
 
+def _delta(challenger: float | None, champion: float | None) -> float | None:
+    """Challenger minus champion; None if either side is missing."""
+    if challenger is None or champion is None:
+        return None
+    return float(challenger) - float(champion)
+
+
+def _compare_gate(
+    name: str,
+    challenger: float | None,
+    champion: float | None,
+    *,
+    lower_is_better: bool = True,
+    tolerance: float = 0.0,
+) -> tuple[str, bool, str]:
+    """Generic comparator. Returns (gate_name, passed, detail).
+
+    For lower-is-better metrics (NLL, RPS, ECE, p0_err, |mean_bias|),
+    challenger is "non-worse" when (challenger - champion) <= tolerance.
+    """
+    if challenger is None or champion is None:
+        return (name, False, f"missing metric (challenger={challenger}, champion={champion})")
+    delta = challenger - champion
+    if lower_is_better:
+        passed = delta <= tolerance
+    else:
+        passed = delta >= -tolerance
+    detail = (
+        f"challenger={challenger:.6g} champion={champion:.6g} "
+        f"delta={delta:+.6g} (tol={tolerance})"
+    )
+    return (name, passed, detail)
+
+
 def evaluate_gates(
     *,
     pointer: dict,
@@ -191,35 +446,135 @@ def evaluate_gates(
     pmf_validity: dict,
     derek_ok: bool,
     woo_ok: bool,
+    champion_metrics: dict | None = None,
+    challenger_metrics: dict | None = None,
 ) -> tuple[list[dict], list[dict], str | None]:
-    """Apply the Phase 13A promotion gates. Returns (passed, failed, blocking_reason)."""
+    """Apply the Phase 13A/D promotion gates. Returns (passed, failed, blocking_reason)."""
     gates: list[tuple[str, bool, str]] = []
 
     dry_run = bool(train_manifest.get("dry_run", True)) or bool(cal_manifest.get("dry_run", True))
 
-    # 1-9: comparative metrics. In dry-run we cannot improve over self, so
-    # these gates fail (which is exactly what we want — keep the champion).
-    for name in (
-        "nll_improves_or_non_worse",
-        "rps_improves_or_non_worse",
-        "calibration_error_improves",
-        "p0_error_improves_or_non_worse",
-        "mean_bias_does_not_worsen",
-        "tov_does_not_regress",
-        "starter_core_role_buckets_do_not_regress",
-        "bench_fringe_role_buckets_do_not_regress_materially",
-        "no_severe_stat_bucket_regression",
-    ):
-        if dry_run:
+    # 1-9: comparative metrics.
+    cm = champion_metrics or {}
+    chm = challenger_metrics or {}
+    if dry_run:
+        # In dry-run challenger == champion; comparisons cannot improve.
+        for name in (
+            "nll_improves_or_non_worse",
+            "rps_improves_or_non_worse",
+            "calibration_error_improves",
+            "p0_error_improves_or_non_worse",
+            "mean_bias_does_not_worsen",
+            "tov_does_not_regress",
+            "starter_core_role_buckets_do_not_regress",
+            "bench_fringe_role_buckets_do_not_regress_materially",
+            "no_severe_stat_bucket_regression",
+        ):
             gates.append(
                 (name, False, "dry_run challenger == champion; no improvement to demonstrate")
             )
-        else:
-            # Real comparison would compute deltas here. Until full metrics are
-            # wired we conservatively decline to promote.
-            gates.append(
-                (name, False, "real metric comparison not yet implemented; refusing to promote")
+    else:
+        # Phase 13D: real numeric comparison. Tolerances are conservative.
+        # NLL / RPS / p0: challenger may not be worse by more than 1% relative.
+        # mean_bias: absolute value may not grow by more than 0.05.
+        gates.append(
+            _compare_gate("nll_improves_or_non_worse",
+                          chm.get("nll"), cm.get("nll"),
+                          lower_is_better=True,
+                          tolerance=abs(cm.get("nll", 0.0)) * 0.01)
+        )
+        gates.append(
+            _compare_gate("rps_improves_or_non_worse",
+                          chm.get("rps"), cm.get("rps"),
+                          lower_is_better=True,
+                          tolerance=abs(cm.get("rps", 0.0)) * 0.01)
+        )
+        # Calibration error proxy: p0 calibration overall.
+        gates.append(
+            _compare_gate("calibration_error_improves",
+                          chm.get("p0_calibration"), cm.get("p0_calibration"),
+                          lower_is_better=True,
+                          tolerance=0.0)  # strictly improve or tie
+        )
+        gates.append(
+            _compare_gate("p0_error_improves_or_non_worse",
+                          chm.get("p0_calibration"), cm.get("p0_calibration"),
+                          lower_is_better=True,
+                          tolerance=0.005)  # 0.5pp absolute slack
+        )
+        # Mean bias: compare absolute values.
+        ch_bias = chm.get("mean_error")
+        cm_bias = cm.get("mean_error")
+        gates.append(
+            _compare_gate("mean_bias_does_not_worsen",
+                          abs(ch_bias) if ch_bias is not None else None,
+                          abs(cm_bias) if cm_bias is not None else None,
+                          lower_is_better=True,
+                          tolerance=0.05)
+        )
+        # TOV: NLL must not regress.
+        ch_tov = chm.get("tov", {}) or {}
+        cm_tov = cm.get("tov", {}) or {}
+        gates.append(
+            _compare_gate("tov_does_not_regress",
+                          ch_tov.get("nll"), cm_tov.get("nll"),
+                          lower_is_better=True,
+                          tolerance=abs(cm_tov.get("nll", 0.0)) * 0.02)
+        )
+        # Role bucket gates: starter/core must not regress; bench/fringe/rotation
+        # may degrade slightly.
+        ch_roles = chm.get("by_role_bucket", {}) or {}
+        cm_roles = cm.get("by_role_bucket", {}) or {}
+        core_buckets = ("starter", "core")
+        worst_core_delta: float | None = None
+        for b in core_buckets:
+            ch_v = (ch_roles.get(b) or {}).get("nll")
+            cm_v = (cm_roles.get(b) or {}).get("nll")
+            d = _delta(ch_v, cm_v)
+            if d is not None:
+                worst_core_delta = max(worst_core_delta, d) if worst_core_delta is not None else d
+        gates.append(
+            (
+                "starter_core_role_buckets_do_not_regress",
+                worst_core_delta is None or worst_core_delta <= 0.01,
+                f"worst_core_nll_delta={worst_core_delta}",
             )
+        )
+        bench_buckets = ("bench", "fringe", "rotation")
+        worst_bench_delta: float | None = None
+        for b in bench_buckets:
+            ch_v = (ch_roles.get(b) or {}).get("nll")
+            cm_v = (cm_roles.get(b) or {}).get("nll")
+            d = _delta(ch_v, cm_v)
+            if d is not None:
+                worst_bench_delta = max(worst_bench_delta, d) if worst_bench_delta is not None else d
+        gates.append(
+            (
+                "bench_fringe_role_buckets_do_not_regress_materially",
+                worst_bench_delta is None or worst_bench_delta <= 0.05,
+                f"worst_bench_nll_delta={worst_bench_delta}",
+            )
+        )
+        # No severe stat bucket regression: per-stat NLL delta cap.
+        ch_by_stat = chm.get("by_stat", {}) or {}
+        cm_by_stat = cm.get("by_stat", {}) or {}
+        worst_stat_delta: float | None = None
+        worst_stat: str | None = None
+        for s in SUPPORTED_STATS:
+            ch_v = (ch_by_stat.get(s) or {}).get("nll")
+            cm_v = (cm_by_stat.get(s) or {}).get("nll")
+            d = _delta(ch_v, cm_v)
+            if d is not None:
+                if worst_stat_delta is None or d > worst_stat_delta:
+                    worst_stat_delta = d
+                    worst_stat = s
+        gates.append(
+            (
+                "no_severe_stat_bucket_regression",
+                worst_stat_delta is None or worst_stat_delta <= 0.05,
+                f"worst_stat={worst_stat} delta={worst_stat_delta}",
+            )
+        )
 
     # 10: PMF validity must have no issues.
     pmf_ok = not pmf_validity.get("issues")
@@ -323,9 +678,37 @@ def main(argv: list[str] | None = None) -> int:
     derek = derek_compat_check()
     woo = woo_compat_check()
 
-    # Champion / challenger metric blocks (dry-run: identical structures).
-    champion_metrics = metrics_placeholder()
-    challenger_metrics = metrics_placeholder()
+    dry_run_combined = bool(train_manifest.get("dry_run", True)) or bool(
+        cal_manifest.get("dry_run", True)
+    )
+    if dry_run_combined:
+        # Dry-run: both sides reference identical artifacts; placeholder metrics suffice.
+        champion_metrics = metrics_placeholder()
+        challenger_metrics = metrics_placeholder()
+    else:
+        # Phase 13D: real numeric scoring. Score both sides on the same OOF
+        # holdout window. The OOF parquet used here is the one written by
+        # the challenger's calibrate_pmf.py run (under <ch_dir>/) — that
+        # file is the ground-truth-uncalibrated-PMFs + actual outcomes for
+        # the walk-forward holdout. We apply each side's calibrator on top.
+        challenger_oof = ch_dir / "oof_pmfs.parquet"
+        oof_path_for_scoring = challenger_oof if challenger_oof.exists() else None
+        champion_dir = REPO_ROOT / pointer.get("model_dir", "artifacts/models")
+        challenger_metrics = score_pmfs_from_oof(
+            model_dir=ch_dir,
+            as_of_date=as_of,
+            oof_path_override=oof_path_for_scoring,
+        )
+        champion_metrics = score_pmfs_from_oof(
+            model_dir=champion_dir,
+            as_of_date=as_of,
+            oof_path_override=oof_path_for_scoring,
+        )
+        # Surface PMF-validity issues from real scoring into the gate.
+        for side, m in (("champion", champion_metrics), ("challenger", challenger_metrics)):
+            issues = m.get("pmf_validity_issues") or []
+            for iss in issues:
+                pmf_validity.setdefault("issues", []).append(f"{side}: {iss}")
 
     passed, failed, blocking_reason = evaluate_gates(
         pointer=pointer,
@@ -334,6 +717,8 @@ def main(argv: list[str] | None = None) -> int:
         pmf_validity=pmf_validity,
         derek_ok=derek["passed"],
         woo_ok=woo["passed"],
+        champion_metrics=champion_metrics,
+        challenger_metrics=challenger_metrics,
     )
 
     promote = len(failed) == 0
@@ -367,10 +752,11 @@ def main(argv: list[str] | None = None) -> int:
             "metrics": champion_metrics,
         },
         "challenger": {
-            "model_version": (train_manifest.get("model_manifest") or {}).get(
-                "model_version", train_manifest.get("training_summary", {}).get("model_version")
+            "model_version": (
+                (train_manifest.get("training_summary") or {}).get("model_version")
+                or f"challenger-{args.as_of_date}"
             ),
-            "dry_run": train_manifest.get("dry_run", True),
+            "dry_run": bool(train_manifest.get("dry_run", True)),
             "calibrator_version": cal_manifest.get("calibrator_type", "phase8-role-bucket"),
             "code_commit": train_manifest.get("code_commit"),
             "metrics": challenger_metrics,

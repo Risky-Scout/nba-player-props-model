@@ -147,12 +147,97 @@ def _calibrate_dry_run(as_of: dt.date, ch_dir: Path) -> dict:
     }
 
 
-def _calibrate_full(as_of: dt.date, ch_dir: Path) -> dict:  # pragma: no cover
-    raise NotImplementedError(
-        "Full PMF calibration is not yet wired. Use --dry-run; the full path "
-        "will be enabled once a rolling/walk-forward calibration driver is "
-        "available end-to-end."
-    )
+def _calibrate_full(as_of: dt.date, ch_dir: Path) -> dict:
+    """Phase 13D: real PMF calibration for the daily challenger.
+
+    The training step (``scripts/train_daily_challenger_model.py
+    --no-dry-run``) already invokes ``scripts/calibrate_pmf.py`` with the
+    full walk-forward partial-refit + role-aware calibration pipeline. By
+    the time this script runs, ``ch_dir`` should already contain
+    ``pmf_cal_role_*.pkl``, ``pmf_cal_meta.json``, and
+    ``oof_pmfs.parquet``. This step verifies, hashes, and reports.
+
+    If the training step did not produce calibrators (because, e.g., its
+    invocation was skipped or a stat had insufficient OOF rows), every
+    affected stat is recorded as ``unsupported`` here and the validation
+    gates are responsible for blocking promotion.
+    """
+    pickles = sorted(ch_dir.glob("pmf_cal_role_*.pkl"))
+    pickle_records = [
+        {
+            "stat": p.stem.replace("pmf_cal_role_", ""),
+            "path": str(p),
+            "sha256_prefix": "",  # filled below
+        }
+        for p in pickles
+    ]
+    # Hash each calibrator pickle for traceability.
+    from nba_props_model.training_automation import sha256_file as _sha
+    for rec in pickle_records:
+        rec["sha256_prefix"] = _sha(Path(rec["path"]))[:16]
+
+    cal_meta_path = ch_dir / "pmf_cal_meta.json"
+    cal_meta = read_json(cal_meta_path) if cal_meta_path.exists() else {}
+
+    samples_by_stat, role_breakdown = _samples_by_stat_and_role(as_of)
+    window = _calibration_window(as_of)
+
+    # Stat-level support: a stat is supported if its calibrator exists AND
+    # cal_meta marks it fitted=true. Stl/blk are not in OOF, so they remain
+    # advisory. Tov gets full diagnostics (p0_error, mean_bias, NLL, RPS) —
+    # but those are computed by the validator, not here.
+    fitted_in_meta = (cal_meta.get("stats") or {})
+    stat_support: dict[str, dict] = {}
+    for stat in SUPPORTED_STATS:
+        cal_pkl = ch_dir / f"pmf_cal_role_{stat}.pkl"
+        present = cal_pkl.exists()
+        meta_fitted = bool(fitted_in_meta.get(stat, {}).get("fitted", False))
+        stat_support[stat] = {
+            "calibrator_pickle_present": present,
+            "fitted_in_meta": meta_fitted,
+            "supported": bool(present and meta_fitted),
+            "reason_if_unsupported": (
+                None
+                if present and meta_fitted
+                else fitted_in_meta.get(stat, {}).get("reason", "no_oof_or_pickle")
+            ),
+        }
+
+    # TOV diagnostics scaffold remains in the manifest; numeric values are
+    # computed by validate_champion_vs_challenger.py from real OOF outcomes.
+    tov_diagnostics = {
+        "p0_error": None,
+        "mean_bias": None,
+        "nll": None,
+        "rps": None,
+        "role_bucket_calibration": None,
+        "notes": "Real numeric diagnostics computed by validate_champion_vs_challenger.py.",
+    }
+
+    return {
+        "calibrator_kind": "real-walk-forward-from-calibrate-pmf",
+        "calibration_window": window,
+        "samples_by_stat": samples_by_stat,
+        "samples_by_role_bucket": role_breakdown,
+        "shrinkage_floor_samples": SHRINKAGE_FLOOR,
+        "shrinkage_applied": {
+            s: bool(samples_by_stat.get(s, 0) < SHRINKAGE_FLOOR)
+            for s in SUPPORTED_STATS
+        },
+        "tov_diagnostics": tov_diagnostics,
+        "stat_support": stat_support,
+        "calibrator_pickles": pickle_records,
+        "pmf_cal_meta_json": (
+            str(cal_meta_path.relative_to(REPO_ROOT))
+            if cal_meta_path.exists()
+            else None
+        ),
+        "oof_pmfs_parquet": (
+            str((ch_dir / "oof_pmfs.parquet").relative_to(REPO_ROOT))
+            if (ch_dir / "oof_pmfs.parquet").exists()
+            else None
+        ),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
