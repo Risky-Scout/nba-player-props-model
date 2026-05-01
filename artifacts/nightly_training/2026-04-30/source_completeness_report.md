@@ -9,7 +9,7 @@
 
 | Check | Pass | Detail |
 | --- | --- | --- |
-| source_refresh_manifest_present | yes | status=ok finished_at=2026-05-01T12:47:04+00:00 |
+| source_refresh_manifest_present | yes | status=ok finished_at=2026-05-01T15:33:13+00:00 |
 | source_parquet_exists | yes | data/player_game_stats.parquet |
 | max_game_date_covers_target | yes | max_game_date=2026-04-30 target=2026-04-30 |
 | no_rows_after_target_date | yes | rows_after_target=0 |

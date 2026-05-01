@@ -1,6 +1,6 @@
 # Training Automation Verification — 2026-04-30
 
-- generated_at_utc: 2026-05-01T12:48:42+00:00
+- generated_at_utc: 2026-05-01T15:34:48+00:00
 - mode: **real_training**
 - overall_pass: **True**
 
@@ -19,7 +19,7 @@
 | promotion_log_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/promotion_log.csv |
 | nightly_run_manifest_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-04-30/run_manifest.json |
 | smoke_test_report_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-04-30/smoke_test_report.json |
-| champion_pointer_updated_when_promote_true | yes | pointer.model_version='challenger-2026-04-30' manifest.to_version='challenger-2026-04-30' |
+| champion_pointer_unchanged_when_promote_false | yes | pointer model_version present and unchanged (promote was false) |
 | pmf_validity_passed | yes | issues=[] |
 | derek_compat_smoke_passed | yes | {"build_derek_forward_feed.py_present": true, "challenger_dir_referenced": false, "champion_pointer_used_only": true} |
 | woo_compat_smoke_passed | yes | {"build_wizard_of_odds_public_export.py_present": true, "challenger_dir_referenced": false, "champion_pointer_used_only": true} |

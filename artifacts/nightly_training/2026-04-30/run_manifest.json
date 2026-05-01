@@ -1,11 +1,11 @@
 {
   "as_of_date": "2026-04-30",
-  "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+  "code_commit": "a56e67b6c73c1c3b3b46e81e64255984788aa31a",
   "dry_run": false,
   "final_status": "ok",
-  "finished_at_utc": "2026-05-01T12:48:40+00:00",
+  "finished_at_utc": "2026-05-01T15:34:47+00:00",
   "halted_reason": null,
-  "no_promote": false,
+  "no_promote": true,
   "phase10d_overlays_in_use": false,
   "phase13g": {
     "data_complete_for_target_date": null,
@@ -14,7 +14,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-04-30",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260501T124701"
+    "training_run_id": "nightly-20260501T153310"
   },
   "promotion_summary": {
     "from_version": "2026-03-09-v12",
@@ -28,7 +28,7 @@
     "derek_compat_smoke": true,
     "woo_compat_smoke": true
   },
-  "started_at_utc": "2026-05-01T12:47:01+00:00",
+  "started_at_utc": "2026-05-01T15:33:10+00:00",
   "steps": [
     {
       "command": [
@@ -120,6 +120,20 @@
     {
       "command": [
         "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/build_rolling_market_benchmark.py",
+        "--as-of-date",
+        "2026-04-30",
+        "--window-days",
+        "28"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-04-30/logs/rolling_market_benchmark.log",
+      "name": "rolling_market_benchmark",
+      "tail": "  rows_total=1265 dates_included=1 delta_logloss=-0.0262 delta_brier=-0.0114"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
         "scripts/validate_champion_vs_challenger.py",
         "--as-of-date",
         "2026-04-30"
@@ -130,27 +144,10 @@
       "tail": "}"
     },
     {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
-        "scripts/promote_challenger_if_validated.py",
-        "--as-of-date",
-        "2026-04-30"
-      ],
-      "exit_code": 0,
-      "log_path": "artifacts/nightly_training/2026-04-30/logs/promote.log",
       "name": "promote",
-      "tail": "}"
-    },
-    {
-      "command": [
-        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
-        "scripts/stamp_delivery_champion_metadata.py"
-      ],
-      "exit_code": 0,
-      "log_path": "artifacts/nightly_training/2026-04-30/logs/stamp_delivery_champion_metadata.log",
-      "name": "stamp_delivery_champion_metadata",
-      "tail": "}"
+      "reason": "--no-promote was set",
+      "skipped": true
     }
   ],
-  "training_run_id": "nightly-20260501T124701"
+  "training_run_id": "nightly-20260501T153310"
 }

@@ -2,14 +2,14 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-01T12:48:38+00:00 |
-| Promote | YES |
-| Reason | all_gates_passed |
-| Champion model_version | 2026-03-09-v12 |
+| Generated (UTC) | 2026-05-01T15:34:47+00:00 |
+| Promote | no |
+| Reason | gate_failed:promotion_clock_safe |
+| Champion model_version | challenger-2026-04-30 |
 | Challenger dry_run | False |
 | PMF validity issues | 0 |
-| Gates passed | 16 |
-| Gates failed | 0 |
+| Gates passed | 19 |
+| Gates failed | 1 |
 
 ## Gates passed
 
@@ -27,9 +27,12 @@
 - sufficient_calibration_samples: total_samples_in_calibration_window=187410
 - derek_feed_compatibility: ok
 - woo_export_compatibility: ok
-- promotion_clock_safe: before 14:30 UTC
 - no_phase10d_overlays_referenced: ok
+- market_benchmark_available: rows_total=1265 dates_included=1
+- market_logloss_non_inferior_or_better: delta_logloss=-0.026200275407755876 tolerance=0.005 (negative favors model)
+- market_brier_non_inferior_or_better: delta_brier=-0.011425686035537822 tolerance=0.005 (negative favors model)
+- no_severe_market_stat_bucket_regression: ok
 
 ## Gates failed
 
-- (none)
+- promotion_clock_safe: AT OR AFTER 14:30 UTC — too close to WoO run

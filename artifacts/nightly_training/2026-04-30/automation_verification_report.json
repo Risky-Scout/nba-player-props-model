@@ -57,8 +57,8 @@
       "passed": true
     },
     {
-      "detail": "pointer.model_version='challenger-2026-04-30' manifest.to_version='challenger-2026-04-30'",
-      "name": "champion_pointer_updated_when_promote_true",
+      "detail": "pointer model_version present and unchanged (promote was false)",
+      "name": "champion_pointer_unchanged_when_promote_false",
       "passed": true
     },
     {
@@ -167,7 +167,7 @@
       "passed": true
     }
   ],
-  "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+  "code_commit": "a56e67b6c73c1c3b3b46e81e64255984788aa31a",
   "failure_simulation": {
     "pointer_unchanged": true,
     "post_pointer_sha256": "ce691fe085d0daee5c7eab9bf4066081588fc080d2407b1ea2952abb67cfd831",
@@ -175,7 +175,7 @@
     "promote_script_exit_code": 0,
     "promotion_marker_promoted_field": false
   },
-  "generated_at_utc": "2026-05-01T12:48:42+00:00",
+  "generated_at_utc": "2026-05-01T15:34:48+00:00",
   "mode": "real_training",
   "mode_details": {
     "calibration_manifest_dry_run": false,

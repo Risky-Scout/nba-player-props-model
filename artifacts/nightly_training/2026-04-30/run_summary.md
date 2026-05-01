@@ -3,7 +3,7 @@
 - final_status: **ok**
 - halted_reason: (none)
 - dry_run: False
-- no_promote: False
+- no_promote: True
 - promoted: True
 
 ## Steps
@@ -15,9 +15,9 @@
 - **prepare_training_inputs**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/prepare_training_inputs.log
 - **train_challenger**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/train_challenger.log
 - **calibrate_challenger**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/calibrate_challenger.log
+- **rolling_market_benchmark**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/rolling_market_benchmark.log
 - **validate**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/validate.log
-- **promote**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/promote.log
-- **stamp_delivery_champion_metadata**: exit_code=0 log=artifacts/nightly_training/2026-04-30/logs/stamp_delivery_champion_metadata.log
+- **promote**: skipped (--no-promote was set)
 
 ## Smoke Tests
 

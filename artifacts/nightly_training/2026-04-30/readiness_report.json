@@ -62,7 +62,7 @@
       "severity": "blocking"
     }
   ],
-  "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+  "code_commit": "a56e67b6c73c1c3b3b46e81e64255984788aa31a",
   "counts": {
     "per_stat_rows_through_as_of": {
       "ast": 83568,
@@ -85,7 +85,7 @@
       "stl": "stl"
     }
   },
-  "generated_at_utc": "2026-05-01T12:47:07+00:00",
+  "generated_at_utc": "2026-05-01T15:33:16+00:00",
   "overall_pass": true,
   "schema_version": "1.0"
 }
