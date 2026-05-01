@@ -1,6 +1,7 @@
 # Training Automation Verification — 2026-04-29
 
-- generated_at_utc: 2026-04-30T22:54:37+00:00
+- generated_at_utc: 2026-05-01T00:30:22+00:00
+- mode: **dry_run**
 - overall_pass: **True**
 
 ## Checks
@@ -37,6 +38,16 @@
 | promotion_uses_atomic_pointer_update | yes |  |
 | failure_mode_keeps_champion_unchanged | yes | pre=7dd4bbd1c7fc post=7dd4bbd1c7fc |
 | no_forbidden_files_staged | yes | staged_violations=[] |
+
+## Mode details
+
+```
+{
+  "train_manifest_dry_run": true,
+  "calibration_manifest_dry_run": true,
+  "challenger_pickle_count": 0
+}
+```
 
 ## Failure-mode simulation
 

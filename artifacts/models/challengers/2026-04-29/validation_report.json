@@ -2,7 +2,7 @@
   "as_of_date": "2026-04-29",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+    "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
     "dry_run": true,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -125,7 +125,7 @@
     },
     "model_version": "2026-03-09-v12"
   },
-  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -168,10 +168,6 @@
     {
       "detail": "dry_run challenger == champion; no improvement to demonstrate",
       "name": "no_severe_stat_bucket_regression"
-    },
-    {
-      "detail": "AT OR AFTER 14:30 UTC \u2014 too close to WoO run",
-      "name": "promotion_clock_safe"
     }
   ],
   "gates_passed": [
@@ -196,11 +192,15 @@
       "name": "woo_export_compatibility"
     },
     {
+      "detail": "before 14:30 UTC",
+      "name": "promotion_clock_safe"
+    },
+    {
       "detail": "ok",
       "name": "no_phase10d_overlays_referenced"
     }
   ],
-  "generated_at_utc": "2026-04-30T22:49:24+00:00",
+  "generated_at_utc": "2026-05-01T00:30:21+00:00",
   "phase10d_overlays_in_use": false,
   "pmf_validity": {
     "checked_files": 1,

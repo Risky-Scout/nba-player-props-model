@@ -1,0 +1,88 @@
+{
+  "checks": [
+    {
+      "detail": "all required files present",
+      "name": "woo_latest_export_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_date='2026-04-30' latest_delivery_date='2026-04-30'",
+      "name": "woo_latest_manifest_date_matches_latest_delivery",
+      "passed": true
+    },
+    {
+      "detail": "candidates=['scripts/verify_wizard_of_odds_public_export.py']",
+      "name": "woo_export_verifier_present",
+      "passed": true
+    },
+    {
+      "detail": "WoO FTP deploy workflow",
+      "name": "workflow_present_wizard_of_odds_ftp_deploy.yml",
+      "passed": true
+    },
+    {
+      "detail": "Daily delivery workflow",
+      "name": "workflow_present_daily_pmf_delivery.yml",
+      "passed": true
+    },
+    {
+      "detail": "Nightly training workflow",
+      "name": "workflow_present_nightly_training_calibration.yml",
+      "passed": true
+    },
+    {
+      "detail": "scripts/build_derek_forward_feed.py",
+      "name": "derek_forward_feed_builder_present",
+      "passed": true
+    },
+    {
+      "detail": "daily_pmf_delivery.yml references Derek",
+      "name": "daily_workflow_references_derek",
+      "passed": true
+    },
+    {
+      "detail": "daily_pmf_delivery.yml references both WoO modes",
+      "name": "daily_workflow_references_woo_modes",
+      "passed": true
+    },
+    {
+      "detail": "well-formed",
+      "name": "champion_pointer_present",
+      "passed": true
+    },
+    {
+      "detail": "overlap_slots=[] cutoff_constants_present=True",
+      "name": "training_cron_no_overlap_with_delivery",
+      "passed": true
+    },
+    {
+      "detail": "clean",
+      "name": "no_dirty_production_files",
+      "passed": true
+    },
+    {
+      "detail": "files_scanned=175 hits=[]",
+      "name": "no_secrets_in_outputs",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/derek_forward_feed exists=True",
+      "name": "latest_derek_for_latest_date",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/wizard_of_odds exists=True",
+      "name": "latest_woo_for_latest_date",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "delivery_does_not_reference_challengers",
+      "passed": true
+    }
+  ],
+  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
+  "generated_at_utc": "2026-05-01T00:29:13+00:00",
+  "overall_pass": true,
+  "schema_version": "1.0"
+}

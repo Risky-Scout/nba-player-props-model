@@ -2,14 +2,14 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-04-30T22:49:24+00:00 |
+| Generated (UTC) | 2026-05-01T00:30:21+00:00 |
 | Promote | no |
 | Reason | gate_failed:nll_improves_or_non_worse |
 | Champion model_version | 2026-03-09-v12 |
 | Challenger dry_run | True |
 | PMF validity issues | 0 |
-| Gates passed | 6 |
-| Gates failed | 10 |
+| Gates passed | 7 |
+| Gates failed | 9 |
 
 ## Gates passed
 
@@ -18,6 +18,7 @@
 - sufficient_calibration_samples: total_samples_in_calibration_window=187812
 - derek_feed_compatibility: ok
 - woo_export_compatibility: ok
+- promotion_clock_safe: before 14:30 UTC
 - no_phase10d_overlays_referenced: ok
 
 ## Gates failed
@@ -31,4 +32,3 @@
 - starter_core_role_buckets_do_not_regress: dry_run challenger == champion; no improvement to demonstrate
 - bench_fringe_role_buckets_do_not_regress_materially: dry_run challenger == champion; no improvement to demonstrate
 - no_severe_stat_bucket_regression: dry_run challenger == champion; no improvement to demonstrate
-- promotion_clock_safe: AT OR AFTER 14:30 UTC — too close to WoO run

@@ -212,7 +212,11 @@ def main(argv: list[str] | None = None) -> int:
             train_cmd.append("--dry-run")
         else:
             train_cmd.append("--no-dry-run")
-        steps.append(_step("train_challenger", train_cmd, run_dir))
+        train_step = _step("train_challenger", train_cmd, run_dir)
+        steps.append(train_step)
+        if train_step.get("exit_code", 1) != 0:
+            halted_reason = "training_failed"
+            final_status = "halted_no_promotion"
 
     # 4. Calibrate challenger.
     if final_status == "ok":
@@ -226,7 +230,11 @@ def main(argv: list[str] | None = None) -> int:
             cal_cmd.append("--dry-run")
         else:
             cal_cmd.append("--no-dry-run")
-        steps.append(_step("calibrate_challenger", cal_cmd, run_dir))
+        cal_step = _step("calibrate_challenger", cal_cmd, run_dir)
+        steps.append(cal_step)
+        if cal_step.get("exit_code", 1) != 0:
+            halted_reason = "calibration_failed"
+            final_status = "halted_no_promotion"
 
     # 5. Validate.
     if final_status == "ok":

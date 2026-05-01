@@ -1,11 +1,11 @@
 {
   "as_of_date": "2026-04-29",
-  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
   "dry_run": true,
-  "final_status": "halted_no_promotion",
-  "finished_at_utc": "2026-04-30T22:49:24+00:00",
-  "halted_reason": "promotion_clock_cutoff",
-  "no_promote": false,
+  "final_status": "ok",
+  "finished_at_utc": "2026-05-01T00:30:21+00:00",
+  "halted_reason": null,
+  "no_promote": true,
   "phase10d_overlays_in_use": false,
   "promotion_summary": {
     "from_version": null,
@@ -19,7 +19,7 @@
     "derek_compat_smoke": true,
     "woo_compat_smoke": true
   },
-  "started_at_utc": "2026-04-30T22:49:20+00:00",
+  "started_at_utc": "2026-05-01T00:30:17+00:00",
   "steps": [
     {
       "command": [
@@ -73,7 +73,7 @@
     },
     {
       "name": "promote",
-      "reason": "promotion_clock_unsafe_at_or_after_14:30_utc",
+      "reason": "--no-promote was set",
       "skipped": true
     }
   ]

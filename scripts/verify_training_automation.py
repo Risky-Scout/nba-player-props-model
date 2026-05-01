@@ -501,14 +501,86 @@ def check_no_raw_data_or_zips_staged(report: Report) -> None:
     )
 
 
+def detect_mode(as_of: str) -> tuple[str, dict]:
+    """Inspect the day's manifests and decide whether this run was dry-run or real.
+
+    Returns ("dry_run" | "real_training" | "unknown", details_dict).
+    """
+    train_path = challenger_dir(as_of) / "train_manifest.json"
+    cal_path = challenger_dir(as_of) / "calibration_manifest.json"
+    details: dict = {
+        "train_manifest_dry_run": None,
+        "calibration_manifest_dry_run": None,
+        "challenger_pickle_count": 0,
+    }
+    if train_path.exists():
+        details["train_manifest_dry_run"] = read_json(train_path).get("dry_run")
+    if cal_path.exists():
+        details["calibration_manifest_dry_run"] = read_json(cal_path).get("dry_run")
+    cdir = challenger_dir(as_of)
+    if cdir.exists():
+        details["challenger_pickle_count"] = len(list(cdir.glob("*.pkl")))
+
+    train_dry = details["train_manifest_dry_run"]
+    cal_dry = details["calibration_manifest_dry_run"]
+    if train_dry is None or cal_dry is None:
+        return "unknown", details
+    if train_dry is False and cal_dry is False:
+        return "real_training", details
+    if train_dry is True and cal_dry is True:
+        return "dry_run", details
+    # Mixed mode — treat as unknown so the verifier flags it.
+    return "unknown", details
+
+
+def check_real_training_artifacts(report: Report, as_of: str, details: dict) -> None:
+    """Additional checks that must pass when train/cal report dry_run=false.
+
+    These are gated by mode: in dry-run they are skipped (recorded as advisory
+    yes-checks); in real-training mode they are required.
+    """
+    cdir = challenger_dir(as_of)
+    pickle_count = details["challenger_pickle_count"]
+    report.add(
+        "real_training_challenger_pickles_present",
+        pickle_count > 0,
+        f"challenger_pickles={pickle_count} (must be > 0 when dry_run=false)",
+    )
+    # Validation report's challenger.dry_run must be false.
+    vp = cdir / "validation_report.json"
+    if vp.exists():
+        v = read_json(vp)
+        ch_dry = v.get("challenger", {}).get("dry_run")
+        report.add(
+            "real_training_validation_scored_real_artifacts",
+            ch_dry is False,
+            f"validation_report.challenger.dry_run={ch_dry}",
+        )
+        # Real metrics: at least NLL or RPS must be non-null on both sides.
+        ch_metrics = v.get("challenger", {}).get("metrics", {}) or {}
+        cm_metrics = v.get("champion", {}).get("metrics", {}) or {}
+        any_nonnull = any(ch_metrics.get(k) is not None for k in ("nll", "rps", "ece"))
+        any_nonnull_c = any(cm_metrics.get(k) is not None for k in ("nll", "rps", "ece"))
+        report.add(
+            "real_training_metrics_computed",
+            any_nonnull and any_nonnull_c,
+            f"challenger_has_metric={any_nonnull} champion_has_metric={any_nonnull_c}",
+        )
+    else:
+        report.add("real_training_validation_scored_real_artifacts", False, "no validation_report.json")
+        report.add("real_training_metrics_computed", False, "no validation_report.json")
+
+
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="Verify Phase 13A nightly automation.")
+    p = argparse.ArgumentParser(description="Verify Phase 13A/13B nightly automation.")
     p.add_argument("--as-of-date", required=True, help="YYYY-MM-DD")
     args = p.parse_args(argv)
 
     as_of = parse_date(args.as_of_date).isoformat()
     out_dir = nightly_run_dir(as_of)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    mode, mode_details = detect_mode(as_of)
 
     report = Report(
         as_of_date=as_of,
@@ -526,13 +598,19 @@ def main(argv: list[str] | None = None) -> int:
     check_isolation(report)
     check_failure_mode_simulation(report, as_of)
     check_no_raw_data_or_zips_staged(report)
+    if mode == "real_training":
+        check_real_training_artifacts(report, as_of, mode_details)
 
-    write_json_atomic(out_dir / "automation_verification_report.json", report.to_dict())
+    report_dict = report.to_dict()
+    report_dict["mode"] = mode
+    report_dict["mode_details"] = mode_details
+    write_json_atomic(out_dir / "automation_verification_report.json", report_dict)
 
     md_lines = [
         f"# Training Automation Verification — {as_of}",
         "",
         f"- generated_at_utc: {report.generated_at_utc}",
+        f"- mode: **{mode}**",
         f"- overall_pass: **{report.passed}**",
         "",
         "## Checks",
@@ -543,6 +621,7 @@ def main(argv: list[str] | None = None) -> int:
     for c in report.checks:
         safe_detail = c.detail.replace("|", "\\|")
         md_lines.append(f"| {c.name} | {'yes' if c.passed else 'NO'} | {safe_detail} |")
+    md_lines += ["", "## Mode details", "", "```", json.dumps(mode_details, indent=2), "```"]
     if report.failure_simulation:
         md_lines += ["", "## Failure-mode simulation", "", "```",
                      json.dumps(report.failure_simulation, indent=2), "```"]
@@ -551,11 +630,20 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if report.passed:
+        # Backwards-compatible line for any existing automation that greps for
+        # the Phase 13A success string. The mode-specific line follows.
         print("TRAINING_AUTOMATION_VERIFICATION_PASS")
+        if mode == "real_training":
+            print("TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS")
+        elif mode == "dry_run":
+            print("TRAINING_AUTOMATION_DRY_RUN_VERIFICATION_PASS")
+        else:
+            print(f"TRAINING_AUTOMATION_MODE_UNKNOWN ({mode_details})")
+            return 1
         return 0
 
     failed = [c for c in report.checks if not c.passed]
-    print("VERIFICATION FAILED")
+    print(f"VERIFICATION FAILED (mode={mode})")
     for c in failed:
         print(f"  - {c.name}: {c.detail}")
     return 1

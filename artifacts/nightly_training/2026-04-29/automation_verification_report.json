@@ -152,7 +152,7 @@
       "passed": true
     }
   ],
-  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
   "failure_simulation": {
     "pointer_unchanged": true,
     "post_pointer_sha256": "7dd4bbd1c7fccdaed7303d6ced3d420f2d230b0d688b8bf699722967ea16916e",
@@ -160,7 +160,13 @@
     "promote_script_exit_code": 0,
     "promotion_marker_promoted_field": false
   },
-  "generated_at_utc": "2026-04-30T22:54:37+00:00",
+  "generated_at_utc": "2026-05-01T00:30:22+00:00",
+  "mode": "dry_run",
+  "mode_details": {
+    "calibration_manifest_dry_run": true,
+    "challenger_pickle_count": 0,
+    "train_manifest_dry_run": true
+  },
   "overall_pass": true,
   "schema_version": "1.0"
 }

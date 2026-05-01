@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-04-29",
   "calibrator_version": "to-be-fitted",
-  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
   "dry_run": true,
   "model_dir_reference": "artifacts/models",
   "model_version": "challenger-2026-04-29-dryrun",

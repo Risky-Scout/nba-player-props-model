@@ -114,7 +114,7 @@
       "rps": null
     }
   },
-  "code_commit": "53286fea7054921ce9e5ecdfc2d995acdb353c67",
+  "code_commit": "3b1b490eb3cd55877e68c0ec8416dc1124ef513e",
   "gates_failed": [
     "nll_improves_or_non_worse",
     "rps_improves_or_non_worse",
@@ -124,8 +124,7 @@
     "tov_does_not_regress",
     "starter_core_role_buckets_do_not_regress",
     "bench_fringe_role_buckets_do_not_regress_materially",
-    "no_severe_stat_bucket_regression",
-    "promotion_clock_safe"
+    "no_severe_stat_bucket_regression"
   ],
   "gates_passed": [
     "pmf_validity",
@@ -133,9 +132,10 @@
     "sufficient_calibration_samples",
     "derek_feed_compatibility",
     "woo_export_compatibility",
+    "promotion_clock_safe",
     "no_phase10d_overlays_referenced"
   ],
-  "generated_at_utc": "2026-04-30T22:49:24+00:00",
+  "generated_at_utc": "2026-05-01T00:30:21+00:00",
   "promote": false,
   "reason": "gate_failed:nll_improves_or_non_worse",
   "schema_version": "1.0",
