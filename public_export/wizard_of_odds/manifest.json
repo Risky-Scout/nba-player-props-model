@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-01T23:15:09Z",
+  "built_at_utc": "2026-05-01T23:35:24Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-05-01",
@@ -306,8 +306,8 @@
     {
       "date": "2026-05-01",
       "snapshot_type": "pre_close",
-      "snapshot_time_utc": "2026-05-01T23:15:06Z",
-      "model_version": "2d6f340#phase10c",
+      "snapshot_time_utc": "2026-05-01T23:35:20Z",
+      "model_version": "f496f12#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
         "lineup_unconfirmed",
@@ -316,8 +316,8 @@
       "row_counts": {
         "fair_odds_board": 2519,
         "full_pmfs_wide": 95,
-        "market_comparison": 1372,
-        "publishable_edges": 1291
+        "market_comparison": 1202,
+        "publishable_edges": 1142
       },
       "books_seen": [
         "betmgm",
@@ -367,19 +367,19 @@
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 866649
+          "size_bytes": 759886
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 78953
+          "size_bytes": 76251
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 814489
+          "size_bytes": 721313
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 77433
+          "size_bytes": 74512
         },
         {
           "name": "run_manifest.json",
@@ -392,9 +392,9 @@
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 1372,
+        "rows": 1202,
         "monetization_status_summary": {
-          "needs_affiliate_mapping": 1372
+          "needs_affiliate_mapping": 1202
         },
         "snapshot_type_public": "pre_close",
         "finality_status_public": "provisional",
