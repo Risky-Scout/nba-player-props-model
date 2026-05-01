@@ -1,0 +1,912 @@
+{
+  "date": "2026-05-01",
+  "generated_at": "2026-05-01T14:17:17.517692",
+  "props": [
+    {
+      "player_name": "Scottie Barnes",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.0,
+      "model_prob": 0.7464,
+      "market_prob": 0.5288,
+      "ev": 0.9555,
+      "edge": 0.2176,
+      "fair_odds_over": 294,
+      "fair_odds_under": -294,
+      "pmf_median": 0,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 194,
+        "under_odds": 162,
+        "best_odds": 162
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5033,
+          "fair_odds": -101,
+          "display_prob": "50.3%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3256,
+          "fair_odds": 207,
+          "display_prob": "32.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1477,
+          "fair_odds": 577,
+          "display_prob": "14.8%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Evan Mobley",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7844,
+      "market_prob": 0.4312,
+      "ev": 0.8825,
+      "edge": 0.3532,
+      "fair_odds_over": 364,
+      "fair_odds_under": -364,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -122,
+        "under_odds": 140,
+        "best_odds": 140
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.3777,
+          "fair_odds": 165,
+          "display_prob": "37.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4067,
+          "fair_odds": 146,
+          "display_prob": "40.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1573,
+          "fair_odds": 536,
+          "display_prob": "15.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0067,
+          "fair_odds": 14825,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0072,
+          "fair_odds": 13789,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0079,
+          "fair_odds": 12558,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0064,
+          "fair_odds": 15525,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0067,
+          "fair_odds": 14825,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0082,
+          "fair_odds": 12095,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0073,
+          "fair_odds": 13599,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0079,
+          "fair_odds": 12558,
+          "display_prob": "0.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jamal Cain",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 3.5,
+      "model_prob": 0.7298,
+      "market_prob": 0.423,
+      "ev": 0.6638,
+      "edge": 0.3068,
+      "fair_odds_over": 270,
+      "fair_odds_under": -270,
+      "pmf_median": 2,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -149,
+        "under_odds": 128,
+        "best_odds": 128
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1347,
+          "fair_odds": 642,
+          "display_prob": "13.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2094,
+          "fair_odds": 378,
+          "display_prob": "20.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.216,
+          "fair_odds": 363,
+          "display_prob": "21.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1696,
+          "fair_odds": 490,
+          "display_prob": "17.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.112,
+          "fair_odds": 793,
+          "display_prob": "11.2%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0697,
+          "fair_odds": 1335,
+          "display_prob": "7.0%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0369,
+          "fair_odds": 2610,
+          "display_prob": "3.7%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0257,
+          "fair_odds": 3791,
+          "display_prob": "2.6%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0109,
+          "fair_odds": 9074,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0071,
+          "fair_odds": 13985,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Donovan Mitchell",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.735,
+      "market_prob": 0.4432,
+      "ev": 0.6024,
+      "edge": 0.2918,
+      "fair_odds_over": 277,
+      "fair_odds_under": -277,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -136,
+        "under_odds": 118,
+        "best_odds": 118
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1766,
+          "fair_odds": 466,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3162,
+          "fair_odds": 216,
+          "display_prob": "31.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2423,
+          "fair_odds": 313,
+          "display_prob": "24.2%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1439,
+          "fair_odds": 595,
+          "display_prob": "14.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0592,
+          "fair_odds": 1589,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0385,
+          "fair_odds": 2497,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Deandre Ayton",
+      "game": "Los Angeles Lakers @ Houston Rockets",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 8.5,
+      "model_prob": 0.7585,
+      "market_prob": 0.474,
+      "ev": 0.5549,
+      "edge": 0.2845,
+      "fair_odds_over": 314,
+      "fair_odds_under": -314,
+      "pmf_median": 6,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -118,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0222,
+          "fair_odds": 4405,
+          "display_prob": "2.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0356,
+          "fair_odds": 2709,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0638,
+          "fair_odds": 1467,
+          "display_prob": "6.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0909,
+          "fair_odds": 1000,
+          "display_prob": "9.1%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.101,
+          "fair_odds": 890,
+          "display_prob": "10.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1282,
+          "fair_odds": 680,
+          "display_prob": "12.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1212,
+          "fair_odds": 725,
+          "display_prob": "12.1%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.1081,
+          "fair_odds": 825,
+          "display_prob": "10.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0874,
+          "fair_odds": 1044,
+          "display_prob": "8.7%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0725,
+          "fair_odds": 1279,
+          "display_prob": "7.2%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0549,
+          "fair_odds": 1721,
+          "display_prob": "5.5%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0425,
+          "fair_odds": 2253,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0245,
+          "fair_odds": 3982,
+          "display_prob": "2.5%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0169,
+          "fair_odds": 5817,
+          "display_prob": "1.7%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0106,
+          "fair_odds": 9334,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0087,
+          "fair_odds": 11394,
+          "display_prob": "0.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jabari Smith Jr.",
+      "game": "Los Angeles Lakers @ Houston Rockets",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6738,
+      "market_prob": 0.417,
+      "ev": 0.5498,
+      "edge": 0.2568,
+      "fair_odds_over": 207,
+      "fair_odds_under": -207,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -155,
+        "under_odds": 130,
+        "best_odds": 130
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6738,
+          "fair_odds": -207,
+          "display_prob": "67.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2096,
+          "fair_odds": 377,
+          "display_prob": "21.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.087,
+          "fair_odds": 1049,
+          "display_prob": "8.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "James Harden",
+      "game": "Cleveland Cavaliers @ Toronto Raptors",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7899,
+      "market_prob": 0.5688,
+      "ev": 0.5212,
+      "edge": 0.2211,
+      "fair_odds_over": 376,
+      "fair_odds_under": -376,
+      "pmf_median": 0,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 154,
+        "under_odds": -108,
+        "best_odds": -108
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5312,
+          "fair_odds": -113,
+          "display_prob": "53.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2586,
+          "fair_odds": 287,
+          "display_prob": "25.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1238,
+          "fair_odds": 708,
+          "display_prob": "12.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0446,
+          "fair_odds": 2142,
+          "display_prob": "4.5%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0059,
+          "fair_odds": 16849,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0055,
+          "fair_odds": 18082,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0052,
+          "fair_odds": 19131,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0069,
+          "fair_odds": 14393,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0063,
+          "fair_odds": 15773,
+          "display_prob": "0.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Alperen Sengun",
+      "game": "Los Angeles Lakers @ Houston Rockets",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 5.5,
+      "model_prob": 0.6721,
+      "market_prob": 0.433,
+      "ev": 0.4785,
+      "edge": 0.2391,
+      "fair_odds_over": 205,
+      "fair_odds_under": -205,
+      "pmf_median": 4,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -147,
+        "under_odds": 120,
+        "best_odds": 120
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0437,
+          "fair_odds": 2188,
+          "display_prob": "4.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0669,
+          "fair_odds": 1395,
+          "display_prob": "6.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1031,
+          "fair_odds": 870,
+          "display_prob": "10.3%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1375,
+          "fair_odds": 627,
+          "display_prob": "13.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1543,
+          "fair_odds": 548,
+          "display_prob": "15.4%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1665,
+          "fair_odds": 501,
+          "display_prob": "16.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1168,
+          "fair_odds": 756,
+          "display_prob": "11.7%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0907,
+          "fair_odds": 1003,
+          "display_prob": "9.1%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0561,
+          "fair_odds": 1683,
+          "display_prob": "5.6%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0286,
+          "fair_odds": 3397,
+          "display_prob": "2.9%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0159,
+          "fair_odds": 6189,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0106,
+          "fair_odds": 9334,
+          "display_prob": "1.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Austin Reaves",
+      "game": "Los Angeles Lakers @ Houston Rockets",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 5.5,
+      "model_prob": 0.7236,
+      "market_prob": 0.4733,
+      "ev": 0.4762,
+      "edge": 0.2503,
+      "fair_odds_over": 262,
+      "fair_odds_under": -262,
+      "pmf_median": 4,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -120,
+        "under_odds": 104,
+        "best_odds": 104
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.056,
+          "fair_odds": 1686,
+          "display_prob": "5.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0914,
+          "fair_odds": 994,
+          "display_prob": "9.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1209,
+          "fair_odds": 727,
+          "display_prob": "12.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1603,
+          "fair_odds": 524,
+          "display_prob": "16.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.155,
+          "fair_odds": 545,
+          "display_prob": "15.5%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.14,
+          "fair_odds": 614,
+          "display_prob": "14.0%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1102,
+          "fair_odds": 807,
+          "display_prob": "11.0%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0679,
+          "fair_odds": 1373,
+          "display_prob": "6.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0459,
+          "fair_odds": 2079,
+          "display_prob": "4.6%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0237,
+          "fair_odds": 4119,
+          "display_prob": "2.4%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0142,
+          "fair_odds": 6942,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0077,
+          "fair_odds": 12887,
+          "display_prob": "0.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Suggs",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6208,
+      "market_prob": 0.4182,
+      "ev": 0.3968,
+      "edge": 0.2026,
+      "fair_odds_over": 164,
+      "fair_odds_under": -164,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -162,
+        "under_odds": 125,
+        "best_odds": 125
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6208,
+          "fair_odds": -164,
+          "display_prob": "62.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2475,
+          "fair_odds": 304,
+          "display_prob": "24.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0964,
+          "fair_odds": 937,
+          "display_prob": "9.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Ausar Thompson",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 1.5,
+      "model_prob": 0.6247,
+      "market_prob": 0.4368,
+      "ev": 0.3805,
+      "edge": 0.1879,
+      "fair_odds_over": -166,
+      "fair_odds_under": 166,
+      "pmf_median": 2,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 121,
+        "under_odds": -140,
+        "best_odds": 121
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1015,
+          "fair_odds": 885,
+          "display_prob": "10.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2738,
+          "fair_odds": 265,
+          "display_prob": "27.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1777,
+          "fair_odds": 463,
+          "display_prob": "17.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1941,
+          "fair_odds": 415,
+          "display_prob": "19.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1687,
+          "fair_odds": 493,
+          "display_prob": "16.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0139,
+          "fair_odds": 7094,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0142,
+          "fair_odds": 6942,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0126,
+          "fair_odds": 7837,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.013,
+          "fair_odds": 7592,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0164,
+          "fair_odds": 5998,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0142,
+          "fair_odds": 6942,
+          "display_prob": "1.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Duren",
+      "game": "Detroit Pistons @ Orlando Magic",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6398,
+      "market_prob": 0.4354,
+      "ev": 0.3756,
+      "edge": 0.2044,
+      "fair_odds_over": 178,
+      "fair_odds_under": -178,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -152,
+        "under_odds": 115,
+        "best_odds": 115
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6398,
+          "fair_odds": -178,
+          "display_prob": "64.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.263,
+          "fair_odds": 280,
+          "display_prob": "26.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0642,
+          "fair_odds": 1458,
+          "display_prob": "6.4%"
+        }
+      ]
+    }
+  ]
+}
