@@ -1,0 +1,140 @@
+{
+  "checks": [
+    {
+      "detail": "deliveries/2026-04-30/after_game_scoring/after_game_scoring.{parquet,csv}",
+      "name": "after_game_scoring_artifact_exists",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/after_game_scoring/after_game_summary.md",
+      "name": "after_game_summary_md_exists",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/wizard_of_odds/after_game_clv_and_scoring.md",
+      "name": "woo_after_game_clv_and_scoring_md_exists",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/pmf_model_review_package/run_manifest.json",
+      "name": "pmf_model_review_package_run_manifest_exists",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "model_performance_md_not_stale_when_scored",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "pmf_review_manifest_matches_champion_pointer",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/after_game_scoring/expected_target_stats_coverage.json",
+      "name": "expected_target_stats_coverage_exists",
+      "passed": true
+    },
+    {
+      "detail": "all_accounted=True missing_undocumented=[]",
+      "name": "expected_stats_scored_or_documented_blocked",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-04-30/after_game_scoring/model_vs_market_scoring.json",
+      "name": "model_vs_market_scoring_exists",
+      "passed": true
+    },
+    {
+      "detail": "found in MODEL_PERFORMANCE_AND_CALIBRATION.md or after_game_summary.md",
+      "name": "model_vs_market_section_visible",
+      "passed": true
+    },
+    {
+      "detail": "all expected prediction files present",
+      "name": "no_prediction_files_destroyed",
+      "passed": true
+    },
+    {
+      "detail": "champion_model_id='challenger-2026-04-30'",
+      "name": "woo_manifest_matches_champion_pointer",
+      "passed": true
+    },
+    {
+      "detail": "champion_model_id='challenger-2026-04-30'",
+      "name": "derek_manifest_matches_champion_pointer",
+      "passed": true
+    }
+  ],
+  "code_commit": "9a58a82526e8407572619f7d337b47543860cb26",
+  "delivery_date": "2026-04-30",
+  "facts": {
+    "champion_pointer": {
+      "calibrated_through_date": "2026-04-30",
+      "champion_model_id": "challenger-2026-04-30",
+      "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+      "trained_through_date": "2026-04-30"
+    },
+    "expected_target_stats_coverage": {
+      "all_accounted": true,
+      "all_actually_scored": false,
+      "documented_blocked_target_stats": [
+        "tov"
+      ],
+      "expected_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov"
+      ],
+      "missing_target_stats": [],
+      "scored_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m"
+      ]
+    },
+    "model_vs_market": {
+      "minimum_sample_passed": true,
+      "overall": {
+        "delta_brier": -0.011425686035537818,
+        "delta_logloss": -0.026200275407755876,
+        "market_brier": 0.22990380043087913,
+        "market_logloss": 0.651120914792373,
+        "model_brier": 0.21847811439534132,
+        "model_logloss": 0.6249206393846171,
+        "n": 1265
+      },
+      "rows_paired": 1265,
+      "rows_total": 1265
+    },
+    "pmf_review_manifest": {
+      "after_game_status": "scored",
+      "calibrated_through_date": "2026-04-30",
+      "champion_model_id": "challenger-2026-04-30",
+      "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+      "expected_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov"
+      ],
+      "missing_target_stats": [],
+      "scored_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m"
+      ],
+      "scoring_status": "scored",
+      "trained_through_date": "2026-04-30"
+    },
+    "prediction_files_missing": []
+  },
+  "generated_at_utc": "2026-05-01T15:16:17+00:00",
+  "passed": true,
+  "schema_version": "1.0"
+}

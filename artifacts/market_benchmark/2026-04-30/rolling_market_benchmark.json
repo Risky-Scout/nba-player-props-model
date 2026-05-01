@@ -1,0 +1,157 @@
+{
+  "as_of_date": "2026-04-30",
+  "by_edge_bucket": [],
+  "by_role_bucket": [
+    {
+      "delta_brier": 0.026169392856637906,
+      "delta_logloss": 0.05744040532349793,
+      "market_brier": 0.2566656943796794,
+      "market_logloss": 0.7056118535454518,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2828350872363173,
+      "model_logloss": 0.7630522588689495,
+      "n": 70,
+      "role_bucket": "bench"
+    },
+    {
+      "delta_brier": 0.043910409992585,
+      "delta_logloss": 0.09325923298909897,
+      "market_brier": 0.21649851826959338,
+      "market_logloss": 0.6217567327096969,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2604089282621784,
+      "model_logloss": 0.7150159656987959,
+      "n": 179,
+      "role_bucket": "rotation"
+    },
+    {
+      "delta_brier": -0.02376507256259125,
+      "delta_logloss": -0.05300942861073304,
+      "market_brier": 0.23042172654353082,
+      "market_logloss": 0.6525400318003292,
+      "minimum_sample_passed": true,
+      "model_brier": 0.20665665398093958,
+      "model_logloss": 0.5995306031895961,
+      "n": 1016,
+      "role_bucket": "starter"
+    }
+  ],
+  "by_stat": [
+    {
+      "delta_brier": -0.04684957768715959,
+      "delta_logloss": -0.11089429823628562,
+      "market_brier": 0.22813180749900844,
+      "market_logloss": 0.6478115247138765,
+      "minimum_sample_passed": true,
+      "model_brier": 0.18128222981184883,
+      "model_logloss": 0.5369172264775909,
+      "n": 189,
+      "stat": "ast"
+    },
+    {
+      "delta_brier": 0.01839593600781443,
+      "delta_logloss": 0.04342033005052513,
+      "market_brier": 0.20978746977525137,
+      "market_logloss": 0.6085169323102642,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2281834057830658,
+      "model_logloss": 0.6519372623607893,
+      "n": 232,
+      "stat": "fg3m"
+    },
+    {
+      "delta_brier": -0.01752414336594753,
+      "delta_logloss": -0.03667932881288989,
+      "market_brier": 0.23317117840102314,
+      "market_logloss": 0.657478850696802,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2156470350350756,
+      "model_logloss": 0.6207995218839122,
+      "n": 479,
+      "stat": "pts"
+    },
+    {
+      "delta_brier": -0.004034835982482909,
+      "delta_logloss": -0.012845052313700745,
+      "market_brier": 0.23931974927616742,
+      "market_logloss": 0.6715706335936428,
+      "minimum_sample_passed": true,
+      "model_brier": 0.23528491329368445,
+      "model_logloss": 0.6587255812799419,
+      "n": 365,
+      "stat": "reb"
+    }
+  ],
+  "code_commit": "9a58a82526e8407572619f7d337b47543860cb26",
+  "dates_included": [
+    "2026-04-30"
+  ],
+  "dates_missing": [
+    "2026-04-29",
+    "2026-04-28",
+    "2026-04-27",
+    "2026-04-26",
+    "2026-04-25",
+    "2026-04-24",
+    "2026-04-23",
+    "2026-04-22",
+    "2026-04-21",
+    "2026-04-20",
+    "2026-04-19",
+    "2026-04-18",
+    "2026-04-17",
+    "2026-04-16",
+    "2026-04-15",
+    "2026-04-14",
+    "2026-04-13",
+    "2026-04-12",
+    "2026-04-11",
+    "2026-04-10",
+    "2026-04-09",
+    "2026-04-08",
+    "2026-04-07",
+    "2026-04-06",
+    "2026-04-05",
+    "2026-04-04",
+    "2026-04-03"
+  ],
+  "delta_brier": -0.011425686035537822,
+  "delta_logloss": -0.026200275407755876,
+  "generated_at_utc": "2026-05-01T15:16:19+00:00",
+  "market_brier": 0.22990380043087913,
+  "market_logloss": 0.651120914792373,
+  "min_bucket_rows": 50,
+  "min_overall_rows": 500,
+  "minimum_sample_passed": true,
+  "minimum_sample_passed_per_stat": {
+    "ast": true,
+    "fg3m": true,
+    "pts": true,
+    "reb": true
+  },
+  "model_brier": 0.21847811439534132,
+  "model_logloss": 0.6249206393846171,
+  "per_slate_summaries": [
+    {
+      "date": "2026-04-30",
+      "overall": {
+        "delta_brier": -0.011425686035537818,
+        "delta_logloss": -0.026200275407755876,
+        "market_brier": 0.22990380043087913,
+        "market_logloss": 0.651120914792373,
+        "model_brier": 0.21847811439534132,
+        "model_logloss": 0.6249206393846171,
+        "n": 1265
+      },
+      "rows_paired": 1265,
+      "rows_total": 1265
+    }
+  ],
+  "rows_non_push": 1265,
+  "rows_total": 1265,
+  "schema_version": "1.0",
+  "status": "ok",
+  "window_days": 28,
+  "window_end": "2026-04-30",
+  "window_start": "2026-04-03"
+}

@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-01T13:16:44Z",
+  "built_at_utc": "2026-05-01T15:16:14Z",
   "calibrated_through_date": "2026-04-30",
   "calibration_run_id": "nightly-20260501T124701",
   "champion_artifact_dir": "artifacts/models",
@@ -36,13 +36,13 @@
     "tov_rows": 0
   },
   "lineup_status": {
-    "checked_at_utc": "2026-05-01T13:16:44Z",
+    "checked_at_utc": "2026-05-01T15:16:13Z",
     "lineup_freshness_rollup": "projected=97",
     "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
     "snapshot_type_emitted": "near_tip",
     "status": "near_tip_projected_lineup_snapshot"
   },
-  "metadata_stamped_at_utc": "2026-05-01T13:16:46+00:00",
+  "metadata_stamped_at_utc": "2026-05-01T15:16:20+00:00",
   "model_source": "champion_pointer",
   "morning": {
     "files": {
@@ -65,7 +65,7 @@
     "tov_rows": 0
   },
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-05-01T13:16:46+00:00",
+  "output_generated_at_utc": "2026-05-01T15:16:20+00:00",
   "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
@@ -226,7 +226,7 @@
     ]
   },
   "snapshot": "both",
-  "stamp_code_commit": "99e7bbc1c4e81c52df5bb9faa5b097ea9ff5921e",
+  "stamp_code_commit": "9a58a82526e8407572619f7d337b47543860cb26",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"

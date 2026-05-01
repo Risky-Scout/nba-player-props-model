@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-01T13:16:44Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-01T15:16:14Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
