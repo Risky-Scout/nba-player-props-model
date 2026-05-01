@@ -261,7 +261,13 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "phase13a nightly training run ${{ steps.d.outputs.date }}"
+              -m "phase13h nightly training run ${{ steps.d.outputs.date }}"
+          # Phase 13H: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) that we explicitly do
+          # NOT commit from the nightly workflow. Discard those working-tree
+          # changes before rebase so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
+          git clean -fd artifacts/nightly_training/${{ steps.d.outputs.date }}/logs 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
