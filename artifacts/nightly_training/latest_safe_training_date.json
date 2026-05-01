@@ -1,0 +1,19 @@
+{
+  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "floor_rows": 50,
+  "generated_at_utc": "2026-05-01T03:57:05+00:00",
+  "input_path": "data/player_game_stats.parquet",
+  "input_present": true,
+  "max_outcome_date": "2026-04-29",
+  "no_future_leakage_precheck": true,
+  "rejected_dates": [
+    {
+      "date": "2026-04-29",
+      "reason": "rows<50_likely_partial",
+      "rows": 17
+    }
+  ],
+  "resolved_as_of_date": "2026-04-28",
+  "schema_version": "1.0",
+  "today_utc": "2026-05-01"
+}

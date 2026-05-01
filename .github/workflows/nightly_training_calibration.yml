@@ -70,22 +70,47 @@ jobs:
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
 
-      - name: Resolve as_of_date
-        id: d
-        run: |
-          if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
-            echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
-          else
-            # Default = yesterday UTC (after-game scoring already ran at 06:30 UTC).
-            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d 2>/dev/null || \
-              date -u -v-1d +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Bootstrap champion registry (idempotent)
         run: |
           python scripts/_bootstrap_champion_registry.py
 
+      - name: Resolve latest safe as_of_date
+        id: d
+        run: |
+          # Phase 13F: scheduled runs auto-resolve the latest safe finalized
+          # date. workflow_dispatch may override via the as_of_date input.
+          if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
+            DATE="${{ github.event.inputs.as_of_date }}"
+            echo "manual override: as_of_date=$DATE"
+          else
+            DATE=$(python scripts/resolve_latest_safe_training_date.py)
+            if [ -z "$DATE" ]; then
+              echo "::error::resolver returned no safe date"
+              exit 1
+            fi
+            echo "resolved as_of_date=$DATE"
+          fi
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+
+      - name: Training input preflight
+        id: preflight
+        continue-on-error: true
+        run: |
+          python scripts/check_training_inputs.py \
+            --as-of-date ${{ steps.d.outputs.date }}
+
+      - name: Prepare scoped training inputs
+        id: prepare
+        if: steps.preflight.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python scripts/prepare_training_inputs.py \
+            --as-of-date ${{ steps.d.outputs.date }}
+
       - name: Run nightly training + calibration
+        id: run_nightly
+        if: steps.preflight.outcome == 'success' && steps.prepare.outcome == 'success'
+        continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
@@ -103,11 +128,65 @@ jobs:
             $DRY_FLAG $NO_PROMOTE_FLAG
 
       - name: Run automation verification suite
+        id: verify
+        continue-on-error: true
         run: |
           python scripts/verify_training_automation.py \
             --as-of-date ${{ steps.d.outputs.date }}
 
+      - name: Run daily automation health probe
+        id: health
+        continue-on-error: true
+        run: |
+          python scripts/verify_daily_automation_health.py
+
+      - name: Upload nightly training artifacts (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-training-${{ steps.d.outputs.date }}
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            artifacts/nightly_training/**/*.json
+            artifacts/nightly_training/**/*.md
+            artifacts/training_readiness/**/*.json
+            artifacts/training_readiness/**/*.md
+            artifacts/automation_health/**/*.json
+            artifacts/automation_health/**/*.md
+            artifacts/models/challengers/*/train_manifest.json
+            artifacts/models/challengers/*/calibration_manifest.json
+            artifacts/models/challengers/*/model_manifest.json
+            artifacts/models/challengers/*/validation_report.json
+            artifacts/models/challengers/*/validation_summary.md
+            artifacts/models/challengers/*/promotion_decision.json
+            artifacts/models/challengers/*/promotion_manifest.json
+            artifacts/models/challengers/*/training_input_preflight.json
+
+      - name: Fail workflow if any step failed
+        if: |
+          steps.preflight.outcome != 'success' ||
+          steps.prepare.outcome != 'success' ||
+          steps.run_nightly.outcome != 'success' ||
+          steps.verify.outcome != 'success' ||
+          steps.health.outcome != 'success'
+        run: |
+          echo "::error::A nightly training step failed. See uploaded artifacts."
+          echo "preflight=${{ steps.preflight.outcome }}"
+          echo "prepare=${{ steps.prepare.outcome }}"
+          echo "run_nightly=${{ steps.run_nightly.outcome }}"
+          echo "verify=${{ steps.verify.outcome }}"
+          echo "health=${{ steps.health.outcome }}"
+          exit 1
+
       - name: Stage and commit registry + manifests (Joseph Shackelford authorship)
+        # Phase 13F: only commit when the verifier confirmed a clean state.
+        # On failure paths the manifests are uploaded as workflow artifacts
+        # but NOT committed (they would otherwise pollute origin/main with
+        # halted-run state).
+        if: |
+          steps.run_nightly.outcome == 'success' &&
+          steps.verify.outcome == 'success'
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"

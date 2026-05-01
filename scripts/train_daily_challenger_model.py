@@ -175,48 +175,65 @@ def _train_full_candidate(as_of_date: str, out_dir: Path) -> dict:
     pointer = load_champion_pointer()
 
     # 1a. Snapshot training_table.parquet (kept for traceability even though
-    #     aggregate-mode does not re-read it).
+    #     aggregate-mode does not re-read it). Phase 13F: this file is
+    #     gitignored and may legitimately be absent on a fresh GitHub
+    #     runner. Aggregate-mode does not consume it, so we treat missing
+    #     as advisory and continue.
     src_table = REPO_ROOT / "data" / "training_table.parquet"
-    if not src_table.exists():
-        raise FileNotFoundError(
-            f"data/training_table.parquet missing at {src_table}. Run "
-            "scripts/train.py --build-table-only first (requires BDL_API_KEY)."
-        )
     train_subdir = out_dir / "training"
     train_subdir.mkdir(parents=True, exist_ok=True)
-    scoped_table = train_subdir / "training_table.parquet"
-    shutil.copy2(src_table, scoped_table)
-    scoped_table_hash = sha256_file(scoped_table)
+    scoped_table: Path | None = None
+    scoped_table_hash: str | None = None
+    if src_table.exists():
+        scoped_table = train_subdir / "training_table.parquet"
+        if not scoped_table.exists():
+            shutil.copy2(src_table, scoped_table)
+        scoped_table_hash = sha256_file(scoped_table)
 
-    # 1b. Snapshot data/oof_pmfs.parquet into the challenger's
-    #     aggregate-input dir, applying the --as-of-date cutoff so no OOF
-    #     row newer than as_of_date enters the calibration. The file name
-    #     must match calibrate_pmf.py's `fold_*.parquet` glob to be picked
-    #     up by --aggregate-mode.
-    src_oof = REPO_ROOT / "data" / "oof_pmfs.parquet"
-    if not src_oof.exists():
-        raise FileNotFoundError(
-            f"data/oof_pmfs.parquet missing at {src_oof}. The rolling OOF "
-            "universe is required for daily challenger calibration. Run "
-            "scripts/calibrate_pmf.py without --aggregate-mode at least once "
-            "to populate it (this is what phase8.yml does)."
-        )
+    # 1b. Locate the scoped OOF aggregate parquet. Phase 13F: the
+    #     orchestrator runs ``scripts/prepare_training_inputs.py`` first,
+    #     which writes the leakage-safe filtered OOF to
+    #     <ch_dir>/aggregate_input/fold_aggregate.parquet. If that file is
+    #     already present we use it directly (no re-filter); otherwise we
+    #     fall back to creating it inline for backwards compatibility with
+    #     standalone trainer invocations.
     aggregate_dir = out_dir / "aggregate_input"
     aggregate_dir.mkdir(parents=True, exist_ok=True)
     fold_aggregate_path = aggregate_dir / "fold_aggregate.parquet"
-    try:
-        import pandas as pd
-        oof_df = pd.read_parquet(src_oof)
-        cutoff = pd.Timestamp(as_of_date)
-        pre_rows = len(oof_df)
-        oof_df["game_date"] = pd.to_datetime(oof_df["game_date"])
-        future_rows_excluded = int((oof_df["game_date"] > cutoff).sum())
-        oof_filtered = oof_df[oof_df["game_date"] <= cutoff].reset_index(drop=True)
-        oof_filtered.to_parquet(fold_aggregate_path, index=False)
-    except Exception as exc:
-        raise RuntimeError(
-            f"Failed to snapshot/filter data/oof_pmfs.parquet: {exc}"
-        ) from exc
+    pre_rows = 0
+    future_rows_excluded = 0
+    if not fold_aggregate_path.exists():
+        src_oof = REPO_ROOT / "data" / "oof_pmfs.parquet"
+        if not src_oof.exists():
+            raise FileNotFoundError(
+                f"data/oof_pmfs.parquet missing at {src_oof}. The rolling OOF "
+                "universe is required for daily challenger calibration. The "
+                "preflight step (scripts/check_training_inputs.py) should have "
+                "caught this — re-run with prepare_training_inputs.py invoked "
+                "first, or restore the file from a phase8.yml run."
+            )
+        try:
+            import pandas as pd
+            oof_df = pd.read_parquet(src_oof)
+            cutoff = pd.Timestamp(as_of_date)
+            pre_rows = len(oof_df)
+            oof_df["game_date"] = pd.to_datetime(oof_df["game_date"])
+            future_rows_excluded = int((oof_df["game_date"] > cutoff).sum())
+            oof_filtered = oof_df[oof_df["game_date"] <= cutoff].reset_index(drop=True)
+            oof_filtered.to_parquet(fold_aggregate_path, index=False)
+        except Exception as exc:
+            raise RuntimeError(
+                f"Failed to snapshot/filter data/oof_pmfs.parquet: {exc}"
+            ) from exc
+    else:
+        # Pull pre/post counts from the prepared file for the manifest.
+        try:
+            import pandas as pd
+            df_check = pd.read_parquet(fold_aggregate_path, columns=["game_date"])
+            pre_rows = int(len(df_check))
+            future_rows_excluded = 0  # prepare_training_inputs already filtered
+        except Exception:
+            pass
     fold_aggregate_hash = sha256_file(fold_aggregate_path)
 
     # 2-3. Invoke calibrate_pmf.py in aggregate-mode. Output redirects to
@@ -263,14 +280,27 @@ def _train_full_candidate(as_of_date: str, out_dir: Path) -> dict:
     summary = _summarize_training_window(parse_date(as_of_date))
     summary["model_version"] = f"challenger-{as_of_date}"
     summary["calibrate_pmf_elapsed_seconds"] = round(elapsed_s, 1)
-    summary["aggregate_oof_rows_after_cutoff"] = int(len(oof_filtered))
-    summary["aggregate_oof_rows_pre_cutoff"] = int(pre_rows)
-    summary["aggregate_oof_future_rows_excluded"] = future_rows_excluded
+    # Phase 13F: when prepare_training_inputs already filtered the OOF, we
+    # report the filtered row count from the file itself; the source
+    # pre-cutoff count and excluded-future count are recorded in the
+    # nightly run dir's training_inputs_manifest.json.
+    try:
+        import pandas as _pd
+        rows_after_cutoff = int(len(_pd.read_parquet(fold_aggregate_path, columns=["game_date"])))
+    except Exception:
+        rows_after_cutoff = 0
+    summary["aggregate_oof_rows_after_cutoff"] = rows_after_cutoff
+    summary["aggregate_oof_rows_pre_cutoff"] = int(pre_rows) if pre_rows else None
+    summary["aggregate_oof_future_rows_excluded"] = (
+        int(future_rows_excluded) if future_rows_excluded else None
+    )
 
     artifacts = {
         "challenger_kind": "real-aggregate-mode-from-rolling-oof",
         "model_dir_reference": str(out_dir.relative_to(REPO_ROOT)),
-        "training_table_snapshot": str(scoped_table.relative_to(REPO_ROOT)),
+        "training_table_snapshot": (
+            str(scoped_table.relative_to(REPO_ROOT)) if scoped_table is not None else None
+        ),
         "training_table_sha256": scoped_table_hash,
         "fold_aggregate_input": str(fold_aggregate_path.relative_to(REPO_ROOT)),
         "fold_aggregate_sha256": fold_aggregate_hash,

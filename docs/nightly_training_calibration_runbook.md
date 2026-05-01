@@ -9,12 +9,79 @@ you how to run, inspect, recover, and (eventually) extend the system.
 | --- | --- |
 | What runs nightly? | `.github/workflows/nightly_training_calibration.yml` at **09:30 UTC** |
 | What does it do today? | **Real challenger calibration via aggregate-mode** — `scripts/calibrate_pmf.py --aggregate-mode` reads the rolling OOF universe at `data/oof_pmfs.parquet` (snapshotted into the challenger dir, filtered to `game_date <= as_of_date`), runs `pmf_calibration.fit_all` with the `--output-dir` swap, and produces fresh `pmf_cal_role_<stat>.pkl` files in `artifacts/models/challengers/<date>/`. The validator scores both sides on a leakage-safe holdout window. Promotion only happens when all gates pass and the clock is before 14:30 UTC. |
+| as_of_date selection? | **Phase 13F: auto-resolved by default.** `scripts/resolve_latest_safe_training_date.py` reads `data/player_game_stats.parquet` (tracked in git, available on every checkout) and picks the most recent finalized-outcome date with at least 50 player-game rows. Today (UTC) is always rejected — games may still be in progress. workflow_dispatch may override via the `as_of_date` input. |
 | Why aggregate-mode rather than per-fold refit? | A single 28-day fold's OOF (`--max-folds 1`) is too narrow for `fit_all`'s internal walk-forward (which needs the OOF span to exceed `min_train_days = 365`). The full per-fold refit (~17 min/fold + 14 folds) belongs to the periodic full refresh via `phase8.yml`, not to the daily nightly path. The daily challenger picks up new OOF rows accumulated by those periodic runs. |
 | Dry-run still available? | Yes — workflow_dispatch with `dry=true` snapshots the champion and exercises the pipeline without retraining. |
 | Real training verified? | Yes — Phase 13D's first real run on `--as-of-date 2026-04-15` printed `TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS`. |
 | Can it disrupt Derek/WoO deliveries? | No. 14:30 UTC promotion cutoff guards the 15:00 UTC WoO publish window |
 | Where is the current champion recorded? | `artifacts/models/registry/champion_pointer.json` |
 | How do I check the system is healthy? | `python3 scripts/verify_daily_automation_health.py` → must print `DAILY_AUTOMATION_HEALTH_PASS` |
+
+## GitHub runner input requirements (Phase 13F)
+
+The scheduled workflow runs on a clean GitHub runner with no prior state.
+The pipeline depends on a small set of inputs. Each input is either tracked
+in git (available on every checkout) or gitignored (built / hydrated as part
+of the run). The orchestrator runs `scripts/check_training_inputs.py` as a
+preflight; missing required inputs halt the run cleanly with
+`halted_reason=training_inputs_missing` and the verifier prints
+`TRAINING_AUTOMATION_REAL_TRAINING_FAILED_INPUTS_MISSING`.
+
+| Input | Required? | Source on a fresh runner |
+| --- | --- | --- |
+| `data/player_game_stats.parquet` | required | tracked in git |
+| `data/player_availability_asof.parquet` | required | tracked in git |
+| `data/advanced_stats.parquet` | advisory | tracked in git |
+| `data/oof_pmfs.parquet` | **required** | tracked in git (refreshed by `phase8.yml`) |
+| `artifacts/models/pmf_cal_role_<stat>.pkl` | required | tracked in git |
+| `artifacts/models/registry/champion_pointer.json` | required | tracked in git |
+| `data/training_table.parquet` | **advisory** | gitignored — daily aggregate-mode does NOT consume it; the periodic `phase8.yml` full refresh builds it via `scripts/train.py --build-table-only` (needs `BDL_API_KEY`) |
+
+The aggregate-mode daily path runs `pmf_calibration.fit_all` against
+`data/oof_pmfs.parquet`. `data/training_table.parquet` is only consumed by
+the periodic full per-fold refit (multi-hour, runs in `phase8.yml`), which
+refreshes the rolling OOF universe.
+
+### Pipeline order on every run
+
+1. Resolve as_of_date (`scripts/resolve_latest_safe_training_date.py`) —
+   inspects `data/player_game_stats.parquet`, picks the latest finalized
+   date, rejects today UTC and partial slates.
+2. Bootstrap champion registry (idempotent).
+3. Training input preflight (`scripts/check_training_inputs.py`) — required
+   inputs must all exist.
+4. Prepare scoped training inputs (`scripts/prepare_training_inputs.py`) —
+   cleans stale per-challenger state, snapshots OOF into the challenger
+   dir, applies the as-of-date cutoff.
+5. Run nightly training + calibration.
+6. Verify training automation (mode-aware, prints one of `*_VERIFICATION_PASS`
+   or `*_FAILED_*` lines).
+7. Run daily automation health probe.
+8. Upload all manifests as workflow artifacts (always, even on failure).
+9. Commit registry + manifests **only** if everything succeeded.
+
+### How to inspect failed artifacts
+
+After a failed scheduled run, download the workflow artifact bundle named
+`nightly-training-<date>` from the GitHub Actions UI. It contains every
+manifest and summary the run produced — including `training_input_preflight.json`,
+`run_manifest.json`, `validation_report.json`, and the verifier's
+`automation_verification_report.json`. The mode classification in
+`automation_verification_report.json` tells you exactly what happened:
+
+- `real_training_failed_inputs_missing` — required input absent on the runner.
+- `real_training_failed_readiness` — readiness checker rejected the as-of-date.
+- `real_training_failed` — training or calibration crashed; see step logs.
+- `real_training` — successful real run.
+- `dry_run` — workflow_dispatch with `dry=true`.
+
+### How to re-run safely
+
+To repair after a failure, use workflow_dispatch with `no_promote=true` —
+that runs the full pipeline including verification but blocks the atomic
+champion-pointer swap. Once the verifier prints
+`TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS`, re-run with
+`no_promote=false` to allow promotion.
 
 ## Timing schedule (UTC)
 

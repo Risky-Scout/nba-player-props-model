@@ -1,7 +1,7 @@
 # Daily Automation Health Probe
 
-- generated_at_utc: 2026-05-01T02:41:01+00:00
-- code_commit: d120889c1b2f
+- generated_at_utc: 2026-05-01T03:57:38+00:00
+- code_commit: 8371d0db98ee
 - latest_delivery_date_seen: 2026-04-30
 - overall_pass: **True**
 
@@ -21,7 +21,7 @@
 | champion_pointer_present | yes | well-formed |
 | training_cron_no_overlap_with_delivery | yes | overlap_slots=[] cutoff_constants_present=True |
 | no_dirty_production_files | yes | clean |
-| no_secrets_in_outputs | yes | files_scanned=189 hits=[] |
+| no_secrets_in_outputs | yes | files_scanned=209 hits=[] |
 | latest_derek_for_latest_date | yes | deliveries/2026-04-30/derek_forward_feed exists=True |
 | latest_woo_for_latest_date | yes | deliveries/2026-04-30/wizard_of_odds exists=True |
 | delivery_does_not_reference_challengers | yes | ok |

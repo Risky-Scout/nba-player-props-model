@@ -30,6 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from nba_props_model.training_automation import (  # noqa: E402
+    NIGHTLY_TRAINING_DIR,
     challenger_dir,
     git_commit,
     is_past_promotion_cutoff,
@@ -125,9 +126,33 @@ def _smoke_woo(run_dir: Path) -> dict:
     }
 
 
+def _resolve_as_of_date_via_resolver(run_dir: Path) -> tuple[str | None, dict]:
+    """Phase 13F: when --as-of-date is omitted, call the resolver to pick the
+    latest safe completed-game date. Returns (date_str_or_None, step_record)."""
+    cmd = [sys.executable, "scripts/resolve_latest_safe_training_date.py"]
+    step = _step("resolve_latest_safe_date", cmd, run_dir)
+    if step.get("exit_code", 1) != 0:
+        return None, step
+    # Resolver writes JSON to artifacts/nightly_training/latest_safe_training_date.json
+    payload_path = NIGHTLY_TRAINING_DIR / "latest_safe_training_date.json"
+    if not payload_path.exists():
+        step["error"] = "resolver did not write latest_safe_training_date.json"
+        return None, step
+    payload = read_json(payload_path)
+    return payload.get("resolved_as_of_date"), step
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Nightly training + calibration orchestrator.")
-    p.add_argument("--as-of-date", required=True, help="YYYY-MM-DD")
+    p.add_argument(
+        "--as-of-date",
+        default=None,
+        help=(
+            "YYYY-MM-DD. If omitted, runs scripts/resolve_latest_safe_training_date.py "
+            "and uses the latest finalized-outcome date that satisfies the safety "
+            "floor (today UTC is always rejected)."
+        ),
+    )
     p.add_argument(
         "--dry-run",
         action="store_true",
@@ -147,15 +172,59 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = p.parse_args(argv)
 
-    as_of = parse_date(args.as_of_date).isoformat()
-    run_dir = nightly_run_dir(as_of)
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "logs").mkdir(exist_ok=True)
-
     started_at = utcnow_iso()
     steps: list[dict] = []
     final_status = "ok"
     halted_reason: str | None = None
+
+    # 0. Phase 13F: resolve as_of_date if not supplied. This step writes a
+    #    pre-run record under artifacts/nightly_training/ even before we
+    #    have a per-date run_dir.
+    if args.as_of_date is None or not str(args.as_of_date).strip():
+        NIGHTLY_TRAINING_DIR.mkdir(parents=True, exist_ok=True)
+        bootstrap_dir = NIGHTLY_TRAINING_DIR
+        bootstrap_dir.mkdir(parents=True, exist_ok=True)
+        (bootstrap_dir / "logs").mkdir(exist_ok=True)
+        # Use NIGHTLY_TRAINING_DIR as a stand-in run_dir for the resolver step.
+        resolved, resolver_step = _resolve_as_of_date_via_resolver(bootstrap_dir)
+        steps.append(resolver_step)
+        if not resolved:
+            # Cannot proceed without a date. Write a top-level run manifest
+            # under nightly_training/<UNRESOLVED>/ so the workflow's artifact
+            # upload still picks up the failure record.
+            unresolved_dir = NIGHTLY_TRAINING_DIR / "_unresolved"
+            unresolved_dir.mkdir(parents=True, exist_ok=True)
+            write_json_atomic(
+                unresolved_dir / "run_manifest.json",
+                {
+                    "schema_version": "1.0",
+                    "started_at_utc": started_at,
+                    "finished_at_utc": utcnow_iso(),
+                    "code_commit": git_commit(),
+                    "final_status": "halted_no_promotion",
+                    "halted_reason": "no_safe_as_of_date_resolved",
+                    "steps": steps,
+                },
+            )
+            print(
+                json.dumps(
+                    {
+                        "as_of_date": None,
+                        "final_status": "halted_no_promotion",
+                        "halted_reason": "no_safe_as_of_date_resolved",
+                        "promoted": False,
+                        "run_dir": str(unresolved_dir.relative_to(REPO_ROOT)),
+                    },
+                    indent=2,
+                )
+            )
+            return 0
+        args.as_of_date = resolved
+
+    as_of = parse_date(args.as_of_date).isoformat()
+    run_dir = nightly_run_dir(as_of)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "logs").mkdir(exist_ok=True)
 
     # 1. Outcome refresh (best-effort).
     if not args.skip_outcome_refresh:
@@ -199,6 +268,35 @@ def main(argv: list[str] | None = None) -> int:
     # Copy readiness report into the run dir for one-stop auditing.
     if readiness_report_path.exists():
         shutil.copy2(readiness_report_path, run_dir / "readiness_report.json")
+
+    # 2a. Phase 13F: training input preflight. Required inputs absent here
+    #     means the runner cannot do real training — halt cleanly so the
+    #     verifier can report TRAINING_AUTOMATION_REAL_TRAINING_FAILED_INPUTS_MISSING.
+    if final_status == "ok" and not args.dry_run:
+        preflight = _step(
+            "training_input_preflight",
+            [sys.executable, "scripts/check_training_inputs.py", "--as-of-date", as_of],
+            run_dir,
+        )
+        steps.append(preflight)
+        if preflight.get("exit_code", 1) != 0:
+            halted_reason = "training_inputs_missing"
+            final_status = "halted_no_promotion"
+
+    # 2b. Phase 13F: prepare scoped, leakage-safe training inputs. Cleans
+    #     stale per-challenger state from a previous run on the same date
+    #     so the verifier never sees mixed-mode (train_dry_run=false +
+    #     calibration_dry_run=true) artifacts.
+    if final_status == "ok" and not args.dry_run:
+        prepare = _step(
+            "prepare_training_inputs",
+            [sys.executable, "scripts/prepare_training_inputs.py", "--as-of-date", as_of],
+            run_dir,
+        )
+        steps.append(prepare)
+        if prepare.get("exit_code", 1) != 0:
+            halted_reason = "training_inputs_prepare_failed"
+            final_status = "halted_no_promotion"
 
     # 3. Train challenger.
     if final_status == "ok":

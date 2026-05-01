@@ -1,0 +1,56 @@
+{
+  "as_of_date": "2026-04-28",
+  "champion_calibrators": {
+    "ast": {
+      "path": "artifacts/models/pmf_cal_role_ast.pkl",
+      "sha256_prefix": "aa73d678b1512d33",
+      "size_bytes": 732597
+    },
+    "fg3m": {
+      "path": "artifacts/models/pmf_cal_role_fg3m.pkl",
+      "sha256_prefix": "6fb662716667fed4",
+      "size_bytes": 699597
+    },
+    "pts": {
+      "path": "artifacts/models/pmf_cal_role_pts.pkl",
+      "sha256_prefix": "cef39bbf256f2d63",
+      "size_bytes": 727613
+    },
+    "reb": {
+      "path": "artifacts/models/pmf_cal_role_reb.pkl",
+      "sha256_prefix": "4b018db3bff8f827",
+      "size_bytes": 732349
+    },
+    "tov": {
+      "path": "artifacts/models/pmf_cal_role_tov.pkl",
+      "sha256_prefix": "5b9d732536e30e33",
+      "size_bytes": 733301
+    }
+  },
+  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "errors": [],
+  "generated_at_utc": "2026-05-01T03:57:08+00:00",
+  "inputs": {
+    "fold_aggregate.parquet": {
+      "future_rows_excluded": 0,
+      "rows_after_cutoff": 247625,
+      "rows_pre_cutoff": 247625,
+      "scoped_path": "artifacts/models/challengers/2026-04-28/aggregate_input/fold_aggregate.parquet",
+      "scoped_sha256_prefix": "e549ea59a960418a",
+      "source": "data/oof_pmfs.parquet",
+      "source_sha256_prefix": "ff55f41fc7e91447"
+    },
+    "training_table.parquet": {
+      "advisory_only": true,
+      "consumed_by_aggregate_mode": false,
+      "scoped_path": "artifacts/models/challengers/2026-04-28/training/training_table.parquet",
+      "size_bytes": 318769968,
+      "source": "data/training_table.parquet",
+      "source_sha256_prefix": "764d26bbed45c8e6"
+    }
+  },
+  "schema_version": "1.0",
+  "stale_state_cleaned": [
+    "aggregate_input/"
+  ]
+}

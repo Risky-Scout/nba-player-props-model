@@ -1,0 +1,230 @@
+{
+  "as_of_date": "2026-04-28",
+  "challenger_metrics": {
+    "brier_logloss_at_market": null,
+    "by_line_bucket": {},
+    "by_role_bucket": {
+      "bench": {
+        "n": 115,
+        "nll": 2.2003156399340087,
+        "p0_err": 0.4527452523845877
+      },
+      "core": {
+        "n": 280,
+        "nll": 2.1291285355532272,
+        "p0_err": 0.18707628146383395
+      },
+      "fringe": {
+        "n": 50,
+        "nll": 1.4051547563661861,
+        "p0_err": 0.3919246889801077
+      },
+      "inactive_risk": {
+        "n": 60,
+        "nll": 1.1721896226958568,
+        "p0_err": 0.3973185719785324
+      },
+      "rotation": {
+        "n": 180,
+        "nll": 2.028964531442744,
+        "p0_err": 0.306508244251166
+      },
+      "starter": {
+        "n": 100,
+        "nll": 2.23280311107935,
+        "p0_err": 0.15416409164582723
+      }
+    },
+    "by_stat": {
+      "ast": {
+        "calibrator_present": true,
+        "mean_bias": 0.2141426433920633,
+        "nll": 1.580142317851942,
+        "p0_err": 0.3050602474319563,
+        "rows_scored": 157,
+        "rps": 0.7932384697132735
+      },
+      "fg3m": {
+        "calibrator_present": true,
+        "mean_bias": 0.4219804914891785,
+        "nll": 2.262733084187851,
+        "p0_err": 0.31282089172147387,
+        "rows_scored": 157,
+        "rps": 0.504792014904793
+      },
+      "pts": {
+        "calibrator_present": true,
+        "mean_bias": 0.7312792006265548,
+        "nll": 2.8626870623481206,
+        "p0_err": 0.18302568316191486,
+        "rows_scored": 157,
+        "rps": 2.972284254532201
+      },
+      "reb": {
+        "calibrator_present": true,
+        "mean_bias": 0.1015196436637156,
+        "nll": 2.0597625385370546,
+        "p0_err": 0.21989936880157113,
+        "rows_scored": 157,
+        "rps": 1.2552053557540492
+      },
+      "tov": {
+        "calibrator_present": true,
+        "mean_bias": 0.027324463108637412,
+        "nll": 1.2873841085081765,
+        "p0_err": 0.3707244122691416,
+        "rows_scored": 157,
+        "rps": 0.531651907576816
+      }
+    },
+    "clv": null,
+    "ece": null,
+    "edge_buckets": null,
+    "holdout_window": {
+      "end": "2026-04-28",
+      "rows": 785,
+      "start": "2026-03-31"
+    },
+    "market_comparison": null,
+    "mean_error": 0.2992492884560299,
+    "median_error": null,
+    "model_dir": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-04-28",
+    "nll": 2.010541822286629,
+    "p0_calibration": 0.27830612067721155,
+    "pmf_validity_issues": [],
+    "rows_scored_total": 785,
+    "rps": 1.2114344004962267,
+    "tov": {
+      "mean_bias": 0.027324463108637412,
+      "nll": 1.2873841085081765,
+      "p0_error": 0.3707244122691416,
+      "rps": 0.531651907576816
+    }
+  },
+  "champion_metrics": {
+    "brier_logloss_at_market": null,
+    "by_line_bucket": {},
+    "by_role_bucket": {
+      "bench": {
+        "n": 115,
+        "nll": 2.2003156399340087,
+        "p0_err": 0.4527452523845877
+      },
+      "core": {
+        "n": 280,
+        "nll": 2.1291285355532272,
+        "p0_err": 0.18707628146383395
+      },
+      "fringe": {
+        "n": 50,
+        "nll": 1.4051547563661861,
+        "p0_err": 0.3919246889801077
+      },
+      "inactive_risk": {
+        "n": 60,
+        "nll": 1.1721896226958568,
+        "p0_err": 0.3973185719785324
+      },
+      "rotation": {
+        "n": 180,
+        "nll": 2.028964531442744,
+        "p0_err": 0.306508244251166
+      },
+      "starter": {
+        "n": 100,
+        "nll": 2.23280311107935,
+        "p0_err": 0.15416409164582723
+      }
+    },
+    "by_stat": {
+      "ast": {
+        "calibrator_present": true,
+        "mean_bias": 0.2141426433920633,
+        "nll": 1.580142317851942,
+        "p0_err": 0.3050602474319563,
+        "rows_scored": 157,
+        "rps": 0.7932384697132735
+      },
+      "fg3m": {
+        "calibrator_present": true,
+        "mean_bias": 0.4219804914891785,
+        "nll": 2.262733084187851,
+        "p0_err": 0.31282089172147387,
+        "rows_scored": 157,
+        "rps": 0.504792014904793
+      },
+      "pts": {
+        "calibrator_present": true,
+        "mean_bias": 0.7312792006265548,
+        "nll": 2.8626870623481206,
+        "p0_err": 0.18302568316191486,
+        "rows_scored": 157,
+        "rps": 2.972284254532201
+      },
+      "reb": {
+        "calibrator_present": true,
+        "mean_bias": 0.1015196436637156,
+        "nll": 2.0597625385370546,
+        "p0_err": 0.21989936880157113,
+        "rows_scored": 157,
+        "rps": 1.2552053557540492
+      },
+      "tov": {
+        "calibrator_present": true,
+        "mean_bias": 0.027324463108637412,
+        "nll": 1.2873841085081765,
+        "p0_err": 0.3707244122691416,
+        "rows_scored": 157,
+        "rps": 0.531651907576816
+      }
+    },
+    "clv": null,
+    "ece": null,
+    "edge_buckets": null,
+    "holdout_window": {
+      "end": "2026-04-28",
+      "rows": 785,
+      "start": "2026-03-31"
+    },
+    "market_comparison": null,
+    "mean_error": 0.2992492884560299,
+    "median_error": null,
+    "model_dir": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models",
+    "nll": 2.010541822286629,
+    "p0_calibration": 0.27830612067721155,
+    "pmf_validity_issues": [],
+    "rows_scored_total": 785,
+    "rps": 1.2114344004962267,
+    "tov": {
+      "mean_bias": 0.027324463108637412,
+      "nll": 1.2873841085081765,
+      "p0_error": 0.3707244122691416,
+      "rps": 0.531651907576816
+    }
+  },
+  "code_commit": "8371d0db98ee2c80b638aaa98a29cab9514c614f",
+  "gates_failed": [],
+  "gates_passed": [
+    "nll_improves_or_non_worse",
+    "rps_improves_or_non_worse",
+    "calibration_error_improves",
+    "p0_error_improves_or_non_worse",
+    "mean_bias_does_not_worsen",
+    "tov_does_not_regress",
+    "starter_core_role_buckets_do_not_regress",
+    "bench_fringe_role_buckets_do_not_regress_materially",
+    "no_severe_stat_bucket_regression",
+    "pmf_validity",
+    "no_future_leakage",
+    "sufficient_calibration_samples",
+    "derek_feed_compatibility",
+    "woo_export_compatibility",
+    "promotion_clock_safe",
+    "no_phase10d_overlays_referenced"
+  ],
+  "generated_at_utc": "2026-05-01T03:57:35+00:00",
+  "promote": true,
+  "reason": "all_gates_passed",
+  "schema_version": "1.0",
+  "warnings": []
+}

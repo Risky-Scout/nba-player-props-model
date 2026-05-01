@@ -502,34 +502,88 @@ def check_no_raw_data_or_zips_staged(report: Report) -> None:
 
 
 def detect_mode(as_of: str) -> tuple[str, dict]:
-    """Inspect the day's manifests and decide whether this run was dry-run or real.
+    """Inspect the day's manifests and decide what mode this run was in.
 
-    Returns ("dry_run" | "real_training" | "unknown", details_dict).
+    Returns one of:
+      - "dry_run": both manifests dry_run=true.
+      - "real_training": both manifests dry_run=false AND challenger pickles exist.
+      - "real_training_failed_inputs_missing": train tried real (dry_run=false)
+        but produced no pickles AND/OR the run halted with
+        halted_reason=training_inputs_missing or training_failed.
+      - "real_training_failed": train_manifest dry_run=false but
+        validation/promotion artifacts are missing (training crashed).
+      - "unknown": train_manifest itself is missing entirely.
+
+    Phase 13F: the previous "unknown" classification used to fire on the
+    legitimately-failed real run case (train wrote dry_run=false, calibration
+    inherited stale dry_run=true from a previous run on the same date) — that
+    pattern is now classified as ``real_training_failed_inputs_missing`` so
+    the verifier can print a clear blocker line instead of opaque MODE_UNKNOWN.
     """
     train_path = challenger_dir(as_of) / "train_manifest.json"
     cal_path = challenger_dir(as_of) / "calibration_manifest.json"
+    run_path = nightly_run_dir(as_of) / "run_manifest.json"
     details: dict = {
         "train_manifest_dry_run": None,
         "calibration_manifest_dry_run": None,
         "challenger_pickle_count": 0,
+        "run_manifest_halted_reason": None,
+        "run_manifest_final_status": None,
+        "train_manifest_status": None,
     }
     if train_path.exists():
-        details["train_manifest_dry_run"] = read_json(train_path).get("dry_run")
+        tm = read_json(train_path)
+        details["train_manifest_dry_run"] = tm.get("dry_run")
+        details["train_manifest_status"] = tm.get("status")
     if cal_path.exists():
         details["calibration_manifest_dry_run"] = read_json(cal_path).get("dry_run")
     cdir = challenger_dir(as_of)
     if cdir.exists():
-        details["challenger_pickle_count"] = len(list(cdir.glob("*.pkl")))
+        details["challenger_pickle_count"] = len(list(cdir.glob("pmf_cal_role_*.pkl")))
+    if run_path.exists():
+        rm = read_json(run_path)
+        details["run_manifest_halted_reason"] = rm.get("halted_reason")
+        details["run_manifest_final_status"] = rm.get("final_status")
 
     train_dry = details["train_manifest_dry_run"]
     cal_dry = details["calibration_manifest_dry_run"]
-    if train_dry is None or cal_dry is None:
+    pickles = details["challenger_pickle_count"]
+    halted = details["run_manifest_halted_reason"]
+    train_status = details["train_manifest_status"]
+
+    # Halted runs always classify by halted_reason — never "unknown".
+    if halted in ("training_inputs_missing", "training_inputs_prepare_failed"):
+        return "real_training_failed_inputs_missing", details
+    if halted in ("readiness_failed",):
+        return "real_training_failed_readiness", details
+    if halted == "training_failed":
+        return "real_training_failed", details
+    if halted == "calibration_failed":
+        return "real_training_failed", details
+
+    # Train manifest entirely absent → unknown (could be aborted before training).
+    if train_dry is None:
         return "unknown", details
-    if train_dry is False and cal_dry is False:
-        return "real_training", details
-    if train_dry is True and cal_dry is True:
+
+    # Train ran but reported error / not-implemented → real-training failed.
+    if train_status in ("error", "not_implemented"):
+        return "real_training_failed", details
+
+    # Real-training success requires train_dry=false AND pickles produced AND
+    # calibration also non-dry. If train tried real but no pickles landed,
+    # classify as inputs_missing (the most likely failure mode on a clean runner).
+    if train_dry is False:
+        if pickles == 0:
+            return "real_training_failed_inputs_missing", details
+        if cal_dry is False:
+            return "real_training", details
+        # train_dry=false, pickles present, but cal_dry=true → mixed (e.g.
+        # stale cal manifest from a previous local run that wasn't cleaned).
+        return "real_training_failed", details
+
+    # train_dry=true: dry-run mode (cal_dry should also be true for clean state).
+    if cal_dry is True:
         return "dry_run", details
-    # Mixed mode — treat as unknown so the verifier flags it.
     return "unknown", details
 
 
@@ -629,6 +683,26 @@ def main(argv: list[str] | None = None) -> int:
         "\n".join(md_lines) + "\n", encoding="utf-8"
     )
 
+    # Phase 13F: clear, machine-greppable status lines per detected mode.
+    # Failure modes always print a SPECIFIC blocker line and exit 1; only
+    # the two genuine success paths print *_VERIFICATION_PASS.
+    if mode == "real_training_failed_inputs_missing":
+        print("TRAINING_AUTOMATION_REAL_TRAINING_FAILED_INPUTS_MISSING")
+        print(f"  halted_reason={mode_details.get('run_manifest_halted_reason')!r}")
+        print(f"  challenger_pickles={mode_details.get('challenger_pickle_count')}")
+        print(f"  train_manifest_dry_run={mode_details.get('train_manifest_dry_run')}")
+        print(f"  calibration_manifest_dry_run={mode_details.get('calibration_manifest_dry_run')}")
+        return 1
+    if mode == "real_training_failed_readiness":
+        print("TRAINING_AUTOMATION_REAL_TRAINING_FAILED_READINESS")
+        return 1
+    if mode == "real_training_failed":
+        print("TRAINING_AUTOMATION_REAL_TRAINING_FAILED")
+        print(f"  halted_reason={mode_details.get('run_manifest_halted_reason')!r}")
+        print(f"  train_manifest_status={mode_details.get('train_manifest_status')!r}")
+        print(f"  challenger_pickles={mode_details.get('challenger_pickle_count')}")
+        return 1
+
     if report.passed:
         # Backwards-compatible line for any existing automation that greps for
         # the Phase 13A success string. The mode-specific line follows.
@@ -638,7 +712,8 @@ def main(argv: list[str] | None = None) -> int:
         elif mode == "dry_run":
             print("TRAINING_AUTOMATION_DRY_RUN_VERIFICATION_PASS")
         else:
-            print(f"TRAINING_AUTOMATION_MODE_UNKNOWN ({mode_details})")
+            print("TRAINING_AUTOMATION_MODE_UNKNOWN")
+            print(f"  details={mode_details}")
             return 1
         return 0
 
