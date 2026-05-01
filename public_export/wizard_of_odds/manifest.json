@@ -1,8 +1,8 @@
 {
-  "built_at_utc": "2026-04-30T23:34:46Z",
+  "built_at_utc": "2026-05-01T16:03:20Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
-  "latest_date": "2026-04-30",
+  "latest_date": "2026-05-01",
   "dates": [
     {
       "date": "2026-04-27",
@@ -91,8 +91,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "morning",
-        "finality_status_public": "provisional",
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -192,8 +192,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "morning",
-        "finality_status_public": "provisional",
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -281,7 +281,7 @@
         },
         {
           "name": "run_manifest.json",
-          "size_bytes": 4381
+          "size_bytes": 5467
         },
         {
           "name": "README.md",
@@ -294,8 +294,110 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1382
         },
-        "snapshot_type_public": "pre_close",
-        "finality_status_public": "provisional",
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "files": {
+          "csv": "monetization_view.csv",
+          "parquet": "monetization_view.parquet",
+          "jsonl": "monetization_view.jsonl"
+        }
+      }
+    },
+    {
+      "date": "2026-05-01",
+      "snapshot_type": "morning",
+      "snapshot_time_utc": "2026-05-01T16:03:18Z",
+      "model_version": "4cb9286#phase10c",
+      "finality_status": "provisional",
+      "finality_blocker_codes": [
+        "lineup_unconfirmed",
+        "missing_stats:tov"
+      ],
+      "row_counts": {
+        "fair_odds_board": 2519,
+        "full_pmfs_wide": 95,
+        "market_comparison": 1528,
+        "publishable_edges": 1472
+      },
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betparx",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl",
+        "williamhill_us"
+      ],
+      "tov_status": "missing_from_prediction_source",
+      "files": [
+        {
+          "name": "fair_odds_board.csv",
+          "size_bytes": 1447420
+        },
+        {
+          "name": "fair_odds_board.parquet",
+          "size_bytes": 84697
+        },
+        {
+          "name": "fair_odds_board.jsonl",
+          "size_bytes": 3424614
+        },
+        {
+          "name": "full_pmfs_wide.csv",
+          "size_bytes": 98788
+        },
+        {
+          "name": "full_pmfs_wide.parquet",
+          "size_bytes": 77477
+        },
+        {
+          "name": "full_pmfs_outcome_level.csv",
+          "size_bytes": 859664
+        },
+        {
+          "name": "full_pmfs_outcome_level.parquet",
+          "size_bytes": 33602
+        },
+        {
+          "name": "market_comparison.csv",
+          "size_bytes": 962779
+        },
+        {
+          "name": "market_comparison.parquet",
+          "size_bytes": 82461
+        },
+        {
+          "name": "publishable_edges.csv",
+          "size_bytes": 926471
+        },
+        {
+          "name": "publishable_edges.parquet",
+          "size_bytes": 81095
+        },
+        {
+          "name": "run_manifest.json",
+          "size_bytes": 4375
+        },
+        {
+          "name": "README.md",
+          "size_bytes": 3133
+        }
+      ],
+      "missing_files": [],
+      "monetization": {
+        "rows": 1528,
+        "monetization_status_summary": {
+          "needs_affiliate_mapping": 1528
+        },
+        "snapshot_type_public": "woo_morning_monetization",
+        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -309,6 +411,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": null,
-  "finality_status_override": null
+  "snapshot_type_label": "woo_morning_monetization",
+  "finality_status_override": "PROVISIONAL_EARLY_MARKET"
 }
