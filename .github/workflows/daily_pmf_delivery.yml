@@ -483,6 +483,13 @@ jobs:
           # are produced even on machines where the wrapper short-circuits.
           python scripts/score_daily_pmf_delivery_after_game.py \
             --date ${{ steps.d.outputs.date }}
+      - name: Phase 13K — stamp Derek/WoO/PMF-review manifests
+        # Stamp BEFORE consistency verification so the verifier sees a
+        # consistent state. The Stage-and-commit step below still re-runs
+        # stamping + Derek/WoO dependency check idempotently, which is fine.
+        run: |
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
       - name: Phase 13K — after-game package consistency
         run: |
           python scripts/verify_after_game_scoring_package_consistency.py \
