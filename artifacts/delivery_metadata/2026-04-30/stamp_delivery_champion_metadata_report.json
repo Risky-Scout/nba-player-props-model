@@ -1,0 +1,61 @@
+{
+  "calibrated_through_date": "2026-04-30",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+  "delivery_date": "2026-04-30",
+  "fields_written": [
+    "model_source",
+    "champion_model_id",
+    "champion_artifact_dir",
+    "trained_through_date",
+    "calibrated_through_date",
+    "training_run_id",
+    "calibration_run_id",
+    "validation_run_id",
+    "promotion_decision_id",
+    "champion_pointer_path",
+    "champion_pointer_hash",
+    "output_generated_at_utc",
+    "metadata_stamped_at_utc",
+    "no_challenger_artifacts_used",
+    "stamp_code_commit"
+  ],
+  "files_missing": [],
+  "files_stamped": [
+    "deliveries/2026-04-30/wizard_of_odds/run_manifest.json",
+    "deliveries/2026-04-30/derek_forward_feed/feed_manifest.json"
+  ],
+  "no_prediction_values_modified": true,
+  "results": [
+    {
+      "path": "deliveries/2026-04-30/wizard_of_odds/run_manifest.json",
+      "sidecar": "deliveries/2026-04-30/wizard_of_odds/run_manifest.champion_stamp.json",
+      "stamped": true
+    },
+    {
+      "path": "deliveries/2026-04-30/derek_forward_feed/feed_manifest.json",
+      "sidecar": "deliveries/2026-04-30/derek_forward_feed/feed_manifest.champion_stamp.json",
+      "stamped": true
+    }
+  ],
+  "schema_version": "1.0",
+  "stamp": {
+    "calibrated_through_date": "2026-04-30",
+    "calibration_run_id": "nightly-20260501T124701",
+    "champion_artifact_dir": "artifacts/models",
+    "champion_model_id": "challenger-2026-04-30",
+    "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+    "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+    "metadata_stamped_at_utc": "2026-05-01T13:16:46+00:00",
+    "model_source": "champion_pointer",
+    "no_challenger_artifacts_used": true,
+    "output_generated_at_utc": "2026-05-01T13:16:46+00:00",
+    "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
+    "stamp_code_commit": "99e7bbc1c4e81c52df5bb9faa5b097ea9ff5921e",
+    "trained_through_date": "2026-04-30",
+    "training_run_id": "nightly-20260501T124701",
+    "validation_run_id": "nightly-20260501T124701"
+  },
+  "status": "ok",
+  "trained_through_date": "2026-04-30"
+}
