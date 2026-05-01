@@ -446,6 +446,24 @@ def _compare_gate(
     return (name, passed, detail)
 
 
+def _load_rolling_market_benchmark(as_of_date: str) -> dict | None:
+    """Phase 13K: load the rolling market benchmark for ``as_of_date`` if
+    present. Returns the JSON payload or None when missing."""
+    p = (
+        REPO_ROOT
+        / "artifacts"
+        / "market_benchmark"
+        / as_of_date
+        / "rolling_market_benchmark.json"
+    )
+    if not p.exists():
+        return None
+    try:
+        return read_json(p)
+    except Exception:
+        return None
+
+
 def evaluate_gates(
     *,
     pointer: dict,
@@ -456,6 +474,8 @@ def evaluate_gates(
     woo_ok: bool,
     champion_metrics: dict | None = None,
     challenger_metrics: dict | None = None,
+    market_benchmark: dict | None = None,
+    allow_missing_market_benchmark: bool = False,
 ) -> tuple[list[dict], list[dict], str | None]:
     """Apply the Phase 13A/D promotion gates. Returns (passed, failed, blocking_reason)."""
     gates: list[tuple[str, bool, str]] = []
@@ -644,6 +664,84 @@ def evaluate_gates(
         )
     )
 
+    # ── Phase 13K: rolling model-vs-market benchmark gates ─────────────
+    # Hard when sample threshold is met; explicit insufficient_sample
+    # failure when not — never silent pass. allow_missing_market_benchmark
+    # is an opt-in operator override (e.g. for backfill runs).
+    if market_benchmark is None:
+        if allow_missing_market_benchmark:
+            gates.append((
+                "market_benchmark_available",
+                True,
+                "missing benchmark, but --allow-missing-market-benchmark is set",
+            ))
+        else:
+            gates.append((
+                "market_benchmark_available",
+                False,
+                "rolling market benchmark JSON not produced for this date",
+            ))
+    else:
+        gates.append((
+            "market_benchmark_available",
+            True,
+            f"rows_total={market_benchmark.get('rows_total')} "
+            f"dates_included={len(market_benchmark.get('dates_included') or [])}",
+        ))
+        sample_passed = bool(market_benchmark.get("minimum_sample_passed"))
+        delta_ll = market_benchmark.get("delta_logloss")
+        delta_brier = market_benchmark.get("delta_brier")
+        # Non-inferior tolerances (model may be slightly worse than market and
+        # still pass on a noisy 28-day window). Lower-is-better; positive
+        # delta = model worse than market.
+        ll_tol = 0.005   # 0.5 abs nats
+        brier_tol = 0.005  # 0.5 abs Brier
+        if not sample_passed:
+            gates.append((
+                "market_logloss_non_inferior_or_better",
+                False,
+                f"insufficient_sample (rows_total={market_benchmark.get('rows_total')}, "
+                f"min_required={market_benchmark.get('min_overall_rows')})",
+            ))
+            gates.append((
+                "market_brier_non_inferior_or_better",
+                False,
+                "insufficient_sample (see market_logloss_non_inferior_or_better)",
+            ))
+            gates.append((
+                "no_severe_market_stat_bucket_regression",
+                False,
+                "insufficient_sample",
+            ))
+        else:
+            gates.append((
+                "market_logloss_non_inferior_or_better",
+                delta_ll is not None and delta_ll <= ll_tol,
+                f"delta_logloss={delta_ll} tolerance={ll_tol} (negative favors model)",
+            ))
+            gates.append((
+                "market_brier_non_inferior_or_better",
+                delta_brier is not None and delta_brier <= brier_tol,
+                f"delta_brier={delta_brier} tolerance={brier_tol} (negative favors model)",
+            ))
+            # Per-stat severe regression: any stat with delta_logloss > 0.05.
+            severe_stat = None
+            severe_delta = None
+            for r in (market_benchmark.get("by_stat") or []):
+                if not r.get("minimum_sample_passed"):
+                    continue
+                d = r.get("delta_logloss")
+                if d is None:
+                    continue
+                if d > 0.05 and (severe_delta is None or d > severe_delta):
+                    severe_stat, severe_delta = r.get("stat"), d
+            gates.append((
+                "no_severe_market_stat_bucket_regression",
+                severe_stat is None,
+                ("ok" if severe_stat is None
+                 else f"severe market regression on {severe_stat}: delta_logloss={severe_delta:+.4f}"),
+            ))
+
     passed = [{"name": n, "detail": d} for n, ok, d in gates if ok]
     failed = [{"name": n, "detail": d} for n, ok, d in gates if not ok]
 
@@ -658,6 +756,16 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Validate champion vs challenger.")
     p.add_argument("--as-of-date", required=True, help="YYYY-MM-DD")
     p.add_argument("--challenger-dir", help="Override challenger dir")
+    p.add_argument(
+        "--allow-missing-market-benchmark",
+        action="store_true",
+        help=(
+            "Phase 13K: opt-in operator override that lets validation proceed "
+            "without a rolling market benchmark file. Combined with --no-promote "
+            "this is safe for backfill / soak runs. The scheduled workflow does "
+            "NOT pass this flag — missing benchmark is a hard fail by default."
+        ),
+    )
     args = p.parse_args(argv)
 
     as_of = parse_date(args.as_of_date)
@@ -721,6 +829,8 @@ def main(argv: list[str] | None = None) -> int:
             for iss in issues:
                 pmf_validity.setdefault("issues", []).append(f"{side}: {iss}")
 
+    # Phase 13K: load rolling market benchmark for the same as_of_date.
+    market_benchmark = _load_rolling_market_benchmark(args.as_of_date)
     passed, failed, blocking_reason = evaluate_gates(
         pointer=pointer,
         train_manifest=train_manifest,
@@ -730,6 +840,8 @@ def main(argv: list[str] | None = None) -> int:
         woo_ok=woo["passed"],
         champion_metrics=champion_metrics,
         challenger_metrics=challenger_metrics,
+        market_benchmark=market_benchmark,
+        allow_missing_market_benchmark=bool(args.allow_missing_market_benchmark),
     )
 
     promote = len(failed) == 0
@@ -778,6 +890,17 @@ def main(argv: list[str] | None = None) -> int:
         "gates_passed": passed,
         "gates_failed": failed,
         "phase10d_overlays_in_use": False,
+        "market_benchmark": market_benchmark or None,
+        "market_benchmark_manifest_path": (
+            f"artifacts/market_benchmark/{args.as_of_date}/rolling_market_benchmark.json"
+            if market_benchmark is not None else None
+        ),
+        "market_gates_passed": [
+            g["name"] for g in passed if g["name"].startswith("market_") or g["name"].startswith("no_severe_market_")
+        ],
+        "market_gates_failed": [
+            g["name"] for g in failed if g["name"].startswith("market_") or g["name"].startswith("no_severe_market_")
+        ],
     }
     write_json_atomic(ch_dir / "validation_report.json", validation_report)
 
@@ -792,6 +915,17 @@ def main(argv: list[str] | None = None) -> int:
         "gates_failed": [g["name"] for g in failed],
         "champion_metrics": champion_metrics,
         "challenger_metrics": challenger_metrics,
+        "market_benchmark": market_benchmark or None,
+        "market_benchmark_manifest_path": (
+            f"artifacts/market_benchmark/{args.as_of_date}/rolling_market_benchmark.json"
+            if market_benchmark is not None else None
+        ),
+        "market_gates_passed": [
+            g["name"] for g in passed if g["name"].startswith("market_") or g["name"].startswith("no_severe_market_")
+        ],
+        "market_gates_failed": [
+            g["name"] for g in failed if g["name"].startswith("market_") or g["name"].startswith("no_severe_market_")
+        ],
         "warnings": [],
     }
     write_json_atomic(ch_dir / "promotion_decision.json", promotion_decision)

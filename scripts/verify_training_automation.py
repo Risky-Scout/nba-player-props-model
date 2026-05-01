@@ -734,6 +734,12 @@ def main(argv: list[str] | None = None) -> int:
                     [sys.executable, "scripts/verify_derek_woo_champion_dependency.py"],
                     "derek_woo_champion_dependency",
                 ),
+                # Phase 13K: rolling market benchmark for promotion-gate proof.
+                (
+                    [sys.executable, "scripts/build_rolling_market_benchmark.py",
+                     "--as-of-date", as_of, "--window-days", "28"],
+                    "rolling_market_benchmark",
+                ),
             ):
                 rc = subprocess.run(cmd, cwd=REPO_ROOT, check=False).returncode
                 if rc != 0:

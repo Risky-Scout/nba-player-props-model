@@ -471,6 +471,25 @@ def main(argv: list[str] | None = None) -> int:
             halted_reason = "calibration_failed"
             final_status = "halted_no_promotion"
 
+    # 4a. Phase 13K: build rolling model-vs-market benchmark from
+    #     deliveries/<date>/after_game_scoring/ artifacts.
+    if final_status == "ok":
+        bench_step = _step(
+            "rolling_market_benchmark",
+            [
+                sys.executable,
+                "scripts/build_rolling_market_benchmark.py",
+                "--as-of-date",
+                as_of,
+                "--window-days",
+                "28",
+            ],
+            run_dir,
+        )
+        steps.append(bench_step)
+        # Insufficient sample is a non-fatal warning at the orchestrator
+        # level; the validator's market gates handle the strict policy.
+
     # 5. Validate.
     if final_status == "ok":
         steps.append(
