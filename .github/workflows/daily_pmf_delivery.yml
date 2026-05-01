@@ -135,14 +135,30 @@ jobs:
             --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
       - name: Stage and commit approved files
         run: |
-          git config user.name "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Phase 13I: stamp Derek/WoO manifests with active champion metadata
+          # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
+          # require-both-sides=false because some delivery modes (woo_morning_monetization,
+          # woo_afternoon_refresh) only produce WoO; Derek is generated later in the day.
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }} \
+                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
                   public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "morning delivery ${{ steps.d.outputs.date }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (morning)"
+          # Phase 13I: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
+          # Discard those working-tree changes so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
@@ -191,14 +207,30 @@ jobs:
             --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
       - name: Stage and commit approved files
         run: |
-          git config user.name "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Phase 13I: stamp Derek/WoO manifests with active champion metadata
+          # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
+          # require-both-sides=false because some delivery modes (woo_morning_monetization,
+          # woo_afternoon_refresh) only produce WoO; Derek is generated later in the day.
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }} \
+                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
                   public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "woo_morning_monetization ${{ steps.d.outputs.date }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (woo_morning_monetization)"
+          # Phase 13I: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
+          # Discard those working-tree changes so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
@@ -243,14 +275,30 @@ jobs:
             --regions us us2 $FORCE_FLAG
       - name: Stage and commit
         run: |
-          git config user.name "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Phase 13I: stamp Derek/WoO manifests with active champion metadata
+          # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
+          # require-both-sides=false because some delivery modes (woo_morning_monetization,
+          # woo_afternoon_refresh) only produce WoO; Derek is generated later in the day.
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }} \
+                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
                   public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "woo_afternoon_refresh ${{ steps.d.outputs.date }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (woo_afternoon_refresh)"
+          # Phase 13I: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
+          # Discard those working-tree changes so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
@@ -297,14 +345,30 @@ jobs:
             --regions us us2 $FORCE_FLAG
       - name: Stage and commit
         run: |
-          git config user.name "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Phase 13I: stamp Derek/WoO manifests with active champion metadata
+          # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
+          # require-both-sides=false because some delivery modes (woo_morning_monetization,
+          # woo_afternoon_refresh) only produce WoO; Derek is generated later in the day.
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }} \
+                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
                   public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "derek_near_lineup ${{ steps.d.outputs.date }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (derek_near_lineup)"
+          # Phase 13I: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
+          # Discard those working-tree changes so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
@@ -348,14 +412,30 @@ jobs:
             --regions us us2 $FORCE_FLAG
       - name: Stage and commit
         run: |
-          git config user.name "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Phase 13I: stamp Derek/WoO manifests with active champion metadata
+          # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
+          # require-both-sides=false because some delivery modes (woo_morning_monetization,
+          # woo_afternoon_refresh) only produce WoO; Derek is generated later in the day.
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }} \
+                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
                   public_export/wizard_of_odds || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "close_lock delivery ${{ steps.d.outputs.date }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (close_lock)"
+          # Phase 13I: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
+          # Discard those working-tree changes so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
@@ -394,13 +474,29 @@ jobs:
             --mode after_game
       - name: Stage and commit
         run: |
-          git config user.name "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Phase 13I: stamp Derek/WoO manifests with active champion metadata
+          # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
+          # require-both-sides=false because some delivery modes (woo_morning_monetization,
+          # woo_afternoon_refresh) only produce WoO; Derek is generated later in the day.
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }} \
+                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "after_game scoring ${{ steps.d.outputs.date }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (after_game)"
+          # Phase 13I: BDL refresh and other steps mutate tracked files
+          # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
+          # Discard those working-tree changes so `git pull --rebase` can proceed.
+          git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done

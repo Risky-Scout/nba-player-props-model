@@ -284,33 +284,50 @@ def check_latest_delivery_after_champion_promotion(
     )
 
 
-def check_delivery_records_champion_id(report: DependencyReport, pointer: dict) -> None:
-    """Phase 13H strict: when the active champion has rich metadata
-    (``champion_model_id`` populated), the latest delivery's manifests must
+def check_delivery_records_champion_id(
+    report: DependencyReport,
+    pointer: dict,
+    delivery_date: str | None = None,
+    require_both_sides: bool = True,
+) -> None:
+    """Phase 13H/13I strict: when the active champion has rich metadata
+    (``champion_model_id`` populated), the named delivery's manifests must
     have been stamped via ``scripts/stamp_delivery_champion_metadata.py`` and
     must match the active pointer field-for-field on:
 
       - champion_model_id
       - trained_through_date
       - calibrated_through_date
+      - champion_pointer_hash (Phase 13I)
 
-    Falls back to advisory (Phase 13G semantics) when the champion is still
-    a bootstrap pointer with no rich fields — the bootstrap pointer can
-    never be stamped because the per-stat trained_through_date is unknown.
+    ``require_both_sides`` controls whether absence of either Derek or WoO
+    is itself a failure. The nightly training workflow keeps it True (yesterday
+    is fully baked by the next morning); the daily delivery workflow's
+    intermediate jobs (woo_morning_monetization, etc.) pass False because
+    Derek is generated later in the day.
+
+    Falls back to advisory (Phase 13G semantics) ONLY when the champion is
+    still a bootstrap pointer with no rich fields. After the first real
+    promotion this gate is strict.
     """
-    latest = _latest_delivery_date()
+    target = delivery_date or _latest_delivery_date()
     pointer_id = pointer.get("champion_model_id") or pointer.get("model_version")
     pointer_trained = pointer.get("trained_through_date")
     pointer_calibrated = pointer.get("calibrated_through_date")
+    pointer_hash = (
+        sha256_file(CHAMPION_POINTER_PATH)[:32] if CHAMPION_POINTER_PATH.exists() else None
+    )
     is_bootstrap = pointer.get("champion_model_id") is None
+    report.facts["delivery_date_checked"] = target
+    report.facts["champion_pointer_hash"] = pointer_hash
 
-    if not latest:
+    if not target:
         report.add("delivery_records_champion_id", True, "no deliveries to check (advisory)")
         return
 
     candidates = {
-        "woo": DELIVERIES_DIR / latest / "wizard_of_odds" / "run_manifest.json",
-        "derek": DELIVERIES_DIR / latest / "derek_forward_feed" / "feed_manifest.json",
+        "woo": DELIVERIES_DIR / target / "wizard_of_odds" / "run_manifest.json",
+        "derek": DELIVERIES_DIR / target / "derek_forward_feed" / "feed_manifest.json",
     }
     seen: dict[str, dict] = {}
     for label, cand in candidates.items():
@@ -325,6 +342,7 @@ def check_delivery_records_champion_id(report: DependencyReport, pointer: dict) 
             "champion_model_id": m.get("champion_model_id"),
             "trained_through_date": m.get("trained_through_date"),
             "calibrated_through_date": m.get("calibrated_through_date"),
+            "champion_pointer_hash": m.get("champion_pointer_hash"),
             "model_source": m.get("model_source"),
             "no_challenger_artifacts_used": m.get("no_challenger_artifacts_used"),
             "model_version": m.get("model_version"),  # legacy field
@@ -332,8 +350,6 @@ def check_delivery_records_champion_id(report: DependencyReport, pointer: dict) 
     report.facts["delivery_manifest_stamped"] = seen
 
     if is_bootstrap:
-        # Bootstrap pointer has no rich fields to compare against. Pass with
-        # advisory note — this gate becomes strict after first real promotion.
         report.add(
             "delivery_records_champion_id",
             True,
@@ -342,11 +358,11 @@ def check_delivery_records_champion_id(report: DependencyReport, pointer: dict) 
         )
         return
 
-    # Strict mode (post-promotion).
     failures: list[str] = []
     for side in ("woo", "derek"):
         if side not in seen:
-            failures.append(f"{side}_manifest_missing")
+            if require_both_sides:
+                failures.append(f"{side}_manifest_missing")
             continue
         s = seen[side]
         if s.get("champion_model_id") != pointer_id:
@@ -367,6 +383,11 @@ def check_delivery_records_champion_id(report: DependencyReport, pointer: dict) 
         if s.get("no_challenger_artifacts_used") is not True:
             failures.append(
                 f"{side}_no_challenger_artifacts_used_not_true (={s.get('no_challenger_artifacts_used')!r})"
+            )
+        if pointer_hash and s.get("champion_pointer_hash") != pointer_hash:
+            failures.append(
+                f"{side}_champion_pointer_hash_mismatch (delivery={s.get('champion_pointer_hash')!r} "
+                f"pointer={pointer_hash!r})"
             )
     report.add(
         "delivery_records_champion_id_strict",
@@ -432,7 +453,25 @@ def main(argv: list[str] | None = None) -> int:
         default=14,
         help="Maximum allowed age (days) of the active champion's promoted_at_utc.",
     )
+    p.add_argument(
+        "--delivery-date",
+        default=None,
+        help=(
+            "YYYY-MM-DD; default = latest delivery date. "
+            "Phase 13I: daily delivery workflow passes the explicit date."
+        ),
+    )
+    p.add_argument(
+        "--require-both-sides",
+        default="true",
+        choices=["true", "false"],
+        help=(
+            "Whether absence of either Derek or WoO manifest is a failure "
+            "(default true; daily delivery's WoO-only jobs pass false)."
+        ),
+    )
     args = p.parse_args(argv)
+    require_both = args.require_both_sides == "true"
 
     HEALTH_DIR.mkdir(parents=True, exist_ok=True)
     report = DependencyReport(
@@ -448,7 +487,9 @@ def main(argv: list[str] | None = None) -> int:
         check_delivery_scripts_no_challenger_refs(report)
         check_delivery_scripts_use_champion_path(report, pointer)
         check_latest_delivery_after_champion_promotion(report, pointer)
-        check_delivery_records_champion_id(report, pointer)
+        check_delivery_records_champion_id(
+            report, pointer, delivery_date=args.delivery_date, require_both_sides=require_both
+        )
         check_delivery_does_not_use_stale_calibrators(report, pointer)
 
     payload = report.to_dict()
