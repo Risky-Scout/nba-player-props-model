@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-01T23:35:23Z",
+  "built_at_utc": "2026-05-02T08:09:39Z",
   "calibrated_through_date": "2026-04-30",
   "calibration_run_id": "nightly-20260501T124701",
   "champion_artifact_dir": "artifacts/models",
@@ -36,17 +36,36 @@
     "tov_rows": 0
   },
   "lineup_status": {
-    "checked_at_utc": "2026-05-01T23:35:23Z",
+    "checked_at_utc": "2026-05-02T08:09:39Z",
     "lineup_freshness_rollup": "projected=95",
     "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
     "snapshot_type_emitted": "near_tip",
     "status": "near_tip_projected_lineup_snapshot"
   },
-  "metadata_stamped_at_utc": "2026-05-01T23:35:25+00:00",
+  "metadata_stamped_at_utc": "2026-05-02T08:09:45+00:00",
   "model_source": "champion_pointer",
-  "morning": null,
+  "morning": {
+    "files": {
+      "csv": "deliveries/2026-05-01/derek_forward_feed/morning_snapshot.csv",
+      "jsonl": "deliveries/2026-05-01/derek_forward_feed/morning_snapshot.jsonl",
+      "parquet": "deliveries/2026-05-01/derek_forward_feed/morning_snapshot.parquet",
+      "rows": 1199
+    },
+    "freshness_manifest_source": "data/freshness_manifest/2026-05-01.json",
+    "market_comparison_source": "deliveries/2026-05-01/wizard_of_odds/market_comparison.parquet",
+    "market_rows_referenced": 1202,
+    "model_only_rows_used": 95,
+    "model_only_source": "deliveries/2026-05-01/pmf_model_review_package/machine_readable/model_only.parquet",
+    "rows": 1199,
+    "rows_model_only": 34,
+    "rows_with_market": 1165,
+    "run_manifest_source": "deliveries/2026-05-01/wizard_of_odds/run_manifest.json",
+    "snapshot_time_utc": "2026-05-01T23:35:20Z",
+    "snapshot_type": "morning",
+    "tov_rows": 0
+  },
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-05-01T23:35:25+00:00",
+  "output_generated_at_utc": "2026-05-02T08:09:45+00:00",
   "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
@@ -206,8 +225,8 @@
       "pmf_sum_error"
     ]
   },
-  "snapshot": "lineup",
-  "stamp_code_commit": "f496f121dbeda5f1665afd3bbfa03b317c07ae09",
+  "snapshot": "both",
+  "stamp_code_commit": "2d701c5d29417d432aa8c683d6614d0d6146e2c1",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"
