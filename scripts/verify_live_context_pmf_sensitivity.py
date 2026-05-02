@@ -168,6 +168,7 @@ def main(argv=None) -> int:
     has_phase13o_cols_in_lists = False
     pmf_response_proven = False
     pmf_response_detail = ""
+    pmf_response_prefix = None
     challengers_root = REPO_ROOT / "artifacts" / "models" / "challengers"
     inspected = 0
     if challengers_root.exists():
@@ -176,11 +177,20 @@ def main(argv=None) -> int:
         except Exception:
             joblib = None
         if joblib is not None:
+            # Prefer the Phase 13Q contextual challenger when present;
+            # fall back to Phase 13P live_context.
+            phase13q_dirs = sorted(d for d in challengers_root.iterdir()
+                                    if d.is_dir() and d.name.endswith("_contextual"))
             phase13p_dirs = sorted(d for d in challengers_root.iterdir()
                                     if d.is_dir() and d.name.endswith("_live_context"))
+            challenger_dirs = []
+            for d in phase13q_dirs:
+                challenger_dirs.append((d, "phase13q"))
             for d in phase13p_dirs:
-                feat_pkl = d / "phase13p_minutes_adjustment_features.pkl"
-                model_pkl = d / "phase13p_minutes_adjustment_model.pkl"
+                challenger_dirs.append((d, "phase13p"))
+            for d, prefix in challenger_dirs:
+                feat_pkl = d / f"{prefix}_minutes_adjustment_features.pkl"
+                model_pkl = d / f"{prefix}_minutes_adjustment_model.pkl"
                 if not (feat_pkl.exists() and model_pkl.exists()):
                     continue
                 inspected += 1
@@ -231,6 +241,21 @@ def main(argv=None) -> int:
                                 v.append(15.0 if scenario == "B" else 0.0)
                             elif c == "starter_proxy_lagged":
                                 v.append(1.0)
+                            # Phase 13Q game-context features.
+                            elif c == "is_home":
+                                v.append(1.0)
+                            elif c == "rest_days":
+                                v.append(2.0 if scenario == "B" else 3.0)
+                            elif c == "is_back_to_back":
+                                v.append(0.0)
+                            elif c == "is_three_in_four":
+                                v.append(0.0)
+                            elif c == "season_game_number":
+                                v.append(40.0)
+                            elif c == "season_game_number_norm":
+                                v.append(40.0 / 82.0)
+                            elif c == "opponent_team_id_hash":
+                                v.append(7.0)
                             else:
                                 v.append(0.0)
                         return v
@@ -243,6 +268,7 @@ def main(argv=None) -> int:
                         f"scenario_A={pred_a:.4f} scenario_B={pred_b:.4f} "
                         f"abs_diff={abs(pred_a - pred_b):.4f}"
                     )
+                    pmf_response_prefix = prefix
                     if pmf_response_proven:
                         break
                 except Exception as exc:
@@ -286,6 +312,8 @@ def main(argv=None) -> int:
     if has_phase13o_cols_in_lists and pmf_response_proven:
         print("PHASE13O_PMF_SENSITIVITY_PASS")
         print("PHASE13P_PMF_SENSITIVITY_PASS")
+        if pmf_response_prefix == "phase13q":
+            print("PHASE13Q_PMF_SENSITIVITY_PASS")
         print(f"  {pmf_response_detail}")
         return 0
     if has_phase13o_cols_in_lists and not pmf_response_proven:

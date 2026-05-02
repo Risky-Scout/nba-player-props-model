@@ -61,7 +61,10 @@ def main(argv=None) -> int:
         target_dirs.append(Path(args.challenger_dir))
     elif challengers_root.exists():
         target_dirs = sorted(d for d in challengers_root.iterdir()
-                             if d.is_dir() and d.name.endswith("_live_context"))
+                             if d.is_dir() and (
+                                 d.name.endswith("_live_context")
+                                 or d.name.endswith("_contextual")
+                             ))
     if not target_dirs:
         print("PHASE13P_NO_LEAKAGE_FAILED", file=sys.stderr)
         print("  reason: no live-context challenger directories found",
@@ -94,7 +97,11 @@ def main(argv=None) -> int:
         # Inspect saved feature list files for forbidden columns.
         leakage_columns_seen = set()
         files_checked = 0
-        for f in d.glob("phase13p_*_adjustment_features.pkl"):
+        feat_files = (
+            list(d.glob("phase13p_*_adjustment_features.pkl"))
+            + list(d.glob("phase13q_*_adjustment_features.pkl"))
+        )
+        for f in feat_files:
             files_checked += 1
             try:
                 cols = joblib.load(f)

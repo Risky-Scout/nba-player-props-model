@@ -1,0 +1,149 @@
+name: Phase 13Q — Contextual PMF Engine (train + validate, no-promote)
+
+# Trains the Phase 13Q additive contextual challenger (Phase 13P live-
+# context features + game-context features: rest, b2b, three-in-four,
+# season game number, home/away, opponent_team_id_hash) and runs the
+# verifiers. Does NOT auto-promote — promotion stays owned by the
+# existing nightly pipeline + promote_challenger_if_validated.py.
+#
+# Hard rules:
+#   - No edits to wizard_of_odds/, derek_forward_feed/,
+#     pmf_model_review_package/, canonical_source/.
+#   - Auto-commit ONLY artifacts/models/challengers/<date>_contextual/
+#     and artifacts/phase13p/ + artifacts/phase13q/. Champion pointer untouched.
+#   - Author: Joseph Shackelford <josephshack@gmail.com>.
+
+on:
+  workflow_dispatch:
+    inputs:
+      as_of_date:
+        description: "YYYY-MM-DD (train through this date inclusive)."
+        required: false
+        default: ""
+      dry_run:
+        description: "Skip writing model artifacts; produce manifest only"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  phase13q_contextual_challenger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: phase13q-contextual-${{ github.event.inputs.as_of_date || 'today' }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy joblib scikit-learn
+
+      - name: Resolve as-of date
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
+            echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Phase 13Q training started
+        run: |
+          echo "PHASE13Q_TRAINING_STARTED"
+          echo "  as_of_date=${{ steps.d.outputs.date }}"
+
+      - name: Build Phase 13O live-context training dataset (input)
+        id: build_dataset
+        continue-on-error: true
+        run: |
+          python scripts/build_live_context_training_dataset.py \
+            --as-of-date ${{ steps.d.outputs.date }}
+
+      - name: Train Phase 13Q contextual challenger
+        id: train_challenger
+        continue-on-error: true
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY="--dry-run"
+          fi
+          python scripts/train_contextual_challenger.py \
+            --as-of-date ${{ steps.d.outputs.date }} \
+            $DRY
+
+      - name: Verify feature lists include phase13q columns
+        id: verify_feature_lists
+        continue-on-error: true
+        run: |
+          python scripts/verify_live_context_feature_training.py \
+            --feature-set-id phase13q_contextual_pmf_engine_v1
+
+      - name: Verify PMF sensitivity (4 cases)
+        id: verify_sensitivity
+        continue-on-error: true
+        run: |
+          python scripts/verify_live_context_pmf_sensitivity.py
+
+      - name: Verify Phase 13P/Q no-leakage
+        id: verify_no_leakage
+        continue-on-error: true
+        run: |
+          python scripts/verify_phase13p_no_leakage.py
+
+      - name: Verify Phase 13P/Q validation gates
+        id: verify_validation_gates
+        continue-on-error: true
+        run: |
+          python scripts/verify_phase13p_validation_gates.py
+
+      - name: Phase 13L no-breakage
+        id: verify_no_break
+        continue-on-error: true
+        run: |
+          python scripts/verify_phase13l_no_breakage.py
+
+      - name: Upload Phase 13Q artifacts (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase13q-contextual-${{ steps.d.outputs.date }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            artifacts/models/challengers/${{ steps.d.outputs.date }}_contextual/**
+            artifacts/phase13p/**
+
+      - name: Commit Phase 13Q artifacts (Joseph Shackelford authorship)
+        if: |
+          steps.train_challenger.outcome == 'success'
+        run: |
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add artifacts/models/challengers/${{ steps.d.outputs.date }}_contextual \
+                  artifacts/phase13p || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "phase13q: contextual challenger ${{ steps.d.outputs.date }}"
+          git checkout -- . 2>/dev/null || true
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
+
+      - name: Fail workflow if any required step failed
+        if: |
+          steps.train_challenger.outcome != 'success' ||
+          steps.verify_no_leakage.outcome != 'success' ||
+          steps.verify_no_break.outcome != 'success'
+        run: |
+          echo "::error::A Phase 13Q step failed."
+          exit 1

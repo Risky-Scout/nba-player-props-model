@@ -246,6 +246,7 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
     p13p_trainer = REPO_ROOT / "scripts" / "train_live_context_challenger.py"
     p13p_no_leakage = REPO_ROOT / "scripts" / "verify_phase13p_no_leakage.py"
     p13p_gates = REPO_ROOT / "scripts" / "verify_phase13p_validation_gates.py"
+    p13q_trainer = REPO_ROOT / "scripts" / "train_contextual_challenger.py"
     needed = {
         runner: (
             'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
@@ -318,6 +319,17 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
             "PHASE13P_VALIDATION_GATES_PASS",
             "PHASE13P_VALIDATION_GATES_FAILED",
             "SAFE_NONINFERIORITY_THRESHOLD",
+            "PHASE13Q_VALIDATION_GATES_PASS",
+        ),
+        p13q_trainer: (
+            "PHASE13Q_CONTEXTUAL_CHALLENGER_TRAINER_READY_PASS",
+            "PHASE13Q_CONTEXTUAL_CHALLENGER_TRAINING_PASS",
+            "phase13q_contextual_pmf_engine_v1",
+            "GAME_CONTEXT_FEATURES",
+            "is_back_to_back",
+            "is_three_in_four",
+            "season_game_number",
+            "no_same_game_performance_predictors",
         ),
     }
     for path, tokens in needed.items():

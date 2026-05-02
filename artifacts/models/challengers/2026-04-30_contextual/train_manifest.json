@@ -1,0 +1,155 @@
+{
+  "as_of_date": "2026-04-30",
+  "calibrated_through_date": "2026-04-30",
+  "challenger_suffix": "contextual",
+  "code_commit": "7b1e2ff202873abb2a2e36da7d4353970d8bdbf8",
+  "feature_columns": [
+    "is_actionable",
+    "is_confirmed_out",
+    "is_inactive",
+    "is_doubtful",
+    "is_questionable",
+    "is_probable",
+    "injury_status_encoded",
+    "availability_status_encoded",
+    "injury_features_missing",
+    "num_teammates_out_total",
+    "num_teammates_out_guard",
+    "num_teammates_out_wing",
+    "num_teammates_out_big",
+    "vacated_minutes_total",
+    "vacated_minutes_guard",
+    "vacated_minutes_wing",
+    "vacated_minutes_big",
+    "vacated_fga_total",
+    "vacated_features_missing",
+    "starter_proxy_lagged",
+    "is_home",
+    "rest_days",
+    "is_back_to_back",
+    "is_three_in_four",
+    "season_game_number",
+    "season_game_number_norm",
+    "opponent_team_id_hash"
+  ],
+  "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "fitted_targets": [
+    "minutes",
+    "pts",
+    "reb",
+    "ast",
+    "tov",
+    "stl",
+    "blk",
+    "fg3m"
+  ],
+  "game_context_features_present": [
+    "is_home",
+    "rest_days",
+    "is_back_to_back",
+    "is_three_in_four",
+    "season_game_number",
+    "season_game_number_norm",
+    "opponent_team_id_hash"
+  ],
+  "generated_at_utc": "2026-05-02T20:56:52+00:00",
+  "historical_lineup_source": "official_boxscore_starter_proxy",
+  "historical_lineup_source_safe_for_training": true,
+  "historical_lineup_timestamp_limited": true,
+  "injury_availability_source_safe_for_training": true,
+  "lineup_history_note": "starter_proxy_lagged is pre-game knowable (lagged minutes); no same-game performance outcomes used as predictors. rest_days / is_back_to_back / is_three_in_four / season_game_number / is_home / opponent_team_id_hash are all derived from schedule and prior games \u2014 no future / no same-game performance.",
+  "lineup_injury_context_upstream_of_pmf": true,
+  "live_context_features_enabled": true,
+  "metrics_per_target": {
+    "ast": {
+      "baseline_mse": 0.009784958557354347,
+      "challenger_mse": 0.00978640606718549,
+      "coef_l2_norm": 0.005004373987581898,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "ast",
+      "rel_improvement": -0.00014793213713268905
+    },
+    "blk": {
+      "baseline_mse": 0.0026321415571078657,
+      "challenger_mse": 0.002631675087679004,
+      "coef_l2_norm": 0.001452138513633663,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "blk",
+      "rel_improvement": 0.00017722049469649152
+    },
+    "fg3m": {
+      "baseline_mse": 0.005502988218827539,
+      "challenger_mse": 0.00550015106766496,
+      "coef_l2_norm": 0.002792419730705856,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "fg3m",
+      "rel_improvement": 0.0005155655527068869
+    },
+    "minutes": {
+      "baseline_mse": 212.1885990356406,
+      "challenger_mse": 141.23082747503668,
+      "coef_l2_norm": 16.053481257635795,
+      "n_test": 16225,
+      "n_train": 64900,
+      "name": "minutes",
+      "rel_improvement": 0.3344089733524533
+    },
+    "pts": {
+      "baseline_mse": 0.09579145948728934,
+      "challenger_mse": 0.09576588577633036,
+      "coef_l2_norm": 0.01259313389650983,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "pts",
+      "rel_improvement": 0.00026697276663146033
+    },
+    "reb": {
+      "baseline_mse": 0.024062400682203285,
+      "challenger_mse": 0.024064395101697434,
+      "coef_l2_norm": 0.0033934689507711226,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "reb",
+      "rel_improvement": -8.28853080991427e-05
+    },
+    "stl": {
+      "baseline_mse": 0.0041117365746255186,
+      "challenger_mse": 0.004111951420921502,
+      "coef_l2_norm": 0.0017480173186353453,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "stl",
+      "rel_improvement": -5.2251960232308785e-05
+    },
+    "tov": {
+      "baseline_mse": 0.007438589026869024,
+      "challenger_mse": 0.007438154381128885,
+      "coef_l2_norm": 0.0021406388851286364,
+      "n_test": 15762,
+      "n_train": 63047,
+      "name": "tov",
+      "rel_improvement": 5.843120766169493e-05
+    }
+  },
+  "no_leakage_verified": true,
+  "no_same_game_performance_predictors": true,
+  "phase": "13Q",
+  "rows_used": 81125,
+  "schema_version": "1.0",
+  "source_hashes": {
+    "live_context_features_parquet": "c9c3c763c2cab917e7ae7197f7e725ec",
+    "player_game_stats_parquet": "6c8549f7ac3eea1b93a7fa36fc166a51"
+  },
+  "source_paths": {
+    "live_context_features_parquet": "data/live_context_features.parquet",
+    "player_game_stats_parquet": "data/player_game_stats.parquet"
+  },
+  "trained_through_date": "2026-04-30",
+  "trained_with_game_context_features": true,
+  "trained_with_injury_availability_features": true,
+  "trained_with_lineup_status_features": true,
+  "trained_with_vacated_opportunity_features": true
+}

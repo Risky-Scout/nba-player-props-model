@@ -39,7 +39,10 @@ def main(argv=None) -> int:
         targets_dirs.append(Path(args.challenger_dir))
     elif challengers_root.exists():
         targets_dirs = sorted(d for d in challengers_root.iterdir()
-                              if d.is_dir() and d.name.endswith("_live_context"))
+                              if d.is_dir() and (
+                                  d.name.endswith("_live_context")
+                                  or d.name.endswith("_contextual")
+                              ))
     if not targets_dirs:
         print("PHASE13P_VALIDATION_GATES_FAILED", file=sys.stderr)
         print("  reason: no live-context challenger directories found", file=sys.stderr)
@@ -99,10 +102,14 @@ def main(argv=None) -> int:
 
     if issues:
         print("PHASE13P_VALIDATION_GATES_FAILED", file=sys.stderr)
+        print("PHASE13Q_VALIDATION_GATES_FAILED", file=sys.stderr)
         for i in issues:
             print(f"  - {i}", file=sys.stderr)
         return 1
     print("PHASE13P_VALIDATION_GATES_PASS")
+    # Emit Phase 13Q pass line if any contextual challenger is included.
+    if any(d.name.endswith("_contextual") for d in targets_dirs):
+        print("PHASE13Q_VALIDATION_GATES_PASS")
     print(
         f"  challengers={len(targets_dirs)}  any_positive={any_positive}  "
         f"safe_noninferiority_threshold={SAFE_NONINFERIORITY_THRESHOLD:+.4%}"
