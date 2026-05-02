@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-02T19:10:52Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-02T20:33:50Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -12,7 +12,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `morning_present` | 1528 | `pending_lineup_snapshot` | 1528 | `scored` | `113c7b5#phase10c` |
 | **2026-04-30** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 97 | 2458 | 1382 | 1205 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1372 | `present` | 1372 | `scored` | `6aea017#phase10c` |
 | **2026-05-01** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 95 | 2519 | 1202 | 1142 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1199 | `present` | 1199 | `scored` | `f496f12#phase10c` |
-| **2026-05-02** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 29 | 660 | 478 | 421 | `full` | `fresh` | `missing_from_prediction_source` | `absent` | — | `—` | — | `n/a` | `e064c03#phase10c` |
+| **2026-05-02** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 29 | 660 | 474 | 387 | `full` | `fresh` | `missing_from_prediction_source` | `absent` | — | `—` | — | `n/a` | `555f92a#phase10c` |
 
 ## Per-date links
 
