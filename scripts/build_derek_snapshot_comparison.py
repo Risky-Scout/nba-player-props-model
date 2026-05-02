@@ -409,8 +409,10 @@ def main(argv: list[str] | None = None) -> int:
 
     print("DEREK_SNAPSHOT_COMPARISON_PASS")
     print(f"  delivery_date={args.delivery_date} games_inspected={len(statuses)}")
+    any_emitted = False
     for st in statuses:
         if st.get("comparison_emitted"):
+            any_emitted = True
             print(
                 f"  - game_id={st.get('game_id')}  rows={st.get('row_count')}  "
                 f"flags={st.get('input_change_flags')}"
@@ -419,6 +421,11 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"  - game_id={st.get('game_id')}  deferred: {st.get('blocker')}"
             )
+    # Phase 13M-bis Part J pass-line. Emitted when at least one game
+    # emitted a comparison; otherwise we don't claim interpretability and
+    # the caller can act on the deferred blockers above.
+    if any_emitted:
+        print("DEREK_SNAPSHOT_INTERPRETABILITY_PASS")
     return 1 if failures else 0
 
 

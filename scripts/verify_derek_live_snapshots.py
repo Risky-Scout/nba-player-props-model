@@ -388,6 +388,35 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
         f"={manifest.get('no_challenger_artifacts_used')!r}",
     )
 
+    # 11. Injury / availability context (Phase 13M-bis Part E). Required
+    # fields must be present (value=null is allowed when the upstream pipe
+    # deferred to predict.py; the source string MUST be recorded).
+    report.add(
+        f"{label}/injury_source_recorded",
+        bool(manifest.get("injury_source")),
+        f"injury_source={manifest.get('injury_source')!r}",
+    )
+    report.add(
+        f"{label}/availability_source_recorded",
+        bool(manifest.get("availability_source")),
+        f"availability_source={manifest.get('availability_source')!r}",
+    )
+
+    # 12. Phase 13M-bis lineup feature impact. For production_live mode the
+    # lineup join must either produce lineup_affects_pmf_features=true
+    # (BDL posted lineups) OR false with an explicit lineup_feature_blocker
+    # (BDL not yet posted; backfill_demo bypassed predict.py). Mode is
+    # already validated above; here we only enforce the
+    # honesty-of-blocker rule.
+    laff = manifest.get("lineup_affects_pmf_features")
+    lblock = manifest.get("lineup_feature_blocker")
+    if snapshot_mode == "production_live" and laff is False:
+        report.add(
+            f"{label}/lineup_feature_blocker_explains_false",
+            bool(lblock),
+            f"lineup_feature_blocker={lblock!r}",
+        )
+
 
 def _check_snapshot_comparison(report: Report, game_dir: Path, game_id: str) -> None:
     """If both snapshots exist, expect a snapshot_comparison summary. The
@@ -534,6 +563,10 @@ def main(argv: list[str] | None = None) -> int:
         # and lineup_confirmed_has_bdl_source) gate this; if the report
         # passed, every snapshot satisfied the documented-honesty rule.
         print("DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS")
+        # Injury/availability context — emitted when every snapshot's
+        # manifest records the injury_source and availability_source
+        # strings. (Per-snapshot checks already gated this above.)
+        print("DEREK_INJURY_AVAILABILITY_CONTEXT_PASS")
         if all_production_recomputed:
             print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
         elif all_backfill:

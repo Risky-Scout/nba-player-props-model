@@ -141,6 +141,12 @@ jobs:
             --snapshot-type close_lock \
             $STALE_FLAG $MAX_FLAG $FORCE_FLAG
 
+      - name: Verify predict.py Derek-mode CLI + lineup-context fixture
+        id: verify_predict_lineup
+        continue-on-error: true
+        run: |
+          python scripts/verify_predict_lineup_context.py
+
       - name: Verify Derek live champion model ready (production-live gate)
         id: verify_champion
         continue-on-error: true
@@ -178,6 +184,13 @@ jobs:
         run: |
           python scripts/score_derek_live_snapshots_after_game.py \
             --delivery-date ${{ steps.d.outputs.date }} || true
+
+      - name: Build rolling Derek snapshot benchmark (28-day window)
+        id: rolling_benchmark
+        continue-on-error: true
+        run: |
+          python scripts/build_rolling_derek_snapshot_benchmark.py \
+            --as-of-date ${{ steps.d.outputs.date }} --window-days 28 || true
 
       - name: Upload Derek live snapshot artifacts (always)
         if: always()

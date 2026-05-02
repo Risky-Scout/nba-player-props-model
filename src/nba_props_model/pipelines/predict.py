@@ -563,7 +563,236 @@ def print_sgp_summary(sgps: list):
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
-def main():
+def _derek_live_args(argv):
+    """Parse Phase 13M-bis Derek live-snapshot CLI args.
+
+    Returns an argparse.Namespace whose ``derek_live_snapshot`` is True
+    only when the caller explicitly opted in. All other fields default to
+    None so that pre-13M default callers (WoO/daily/canonical) see the
+    exact same code path as before.
+    """
+    import argparse
+    p = argparse.ArgumentParser(
+        prog="predict",
+        description="NBA Props Model — daily prediction pipeline.",
+        add_help=True,
+    )
+    p.add_argument("--derek-live-snapshot", action="store_true",
+                   help="Phase 13M-bis Derek per-game live snapshot mode.")
+    p.add_argument("--target-date", default=None,
+                   help="YYYY-MM-DD; overrides date.today() in Derek mode.")
+    p.add_argument("--delivery-date", default=None,
+                   help="YYYY-MM-DD; alias for --target-date.")
+    p.add_argument("--game-id", default=None,
+                   help="Filter slate to one game_id (Derek mode).")
+    p.add_argument("--lineup-context", default=None,
+                   help="Path to BDL lineup parquet (Derek mode).")
+    p.add_argument("--snapshot-output-dir", default=None,
+                   help="Where to write derek_live_predictions.parquet.")
+    p.add_argument("--snapshot-type", default=None,
+                   choices=[None, "t_minus_25", "close_lock"],
+                   help="Snapshot type (Derek mode).")
+    p.add_argument("--snapshot-run-id", default=None,
+                   help="Per-snapshot identifier (Derek mode).")
+    p.add_argument("--validate-args-and-exit", action="store_true",
+                   help=("Parse args, validate Derek-mode constraints, print "
+                         "PREDICT_DEREK_LIVE_ARGS_PASS, then exit without "
+                         "running prediction. Used by fixture verifier."))
+    args, _unknown = p.parse_known_args(argv or [])
+    return args
+
+
+def _validate_derek_args(args):
+    """Return (ok, reason) for Derek-mode args. Pre-13M callers (no
+    --derek-live-snapshot) always pass."""
+    if not args.derek_live_snapshot:
+        return True, ""
+    missing = []
+    if not (args.target_date or args.delivery_date):
+        missing.append("--target-date or --delivery-date")
+    if not args.game_id:
+        missing.append("--game-id")
+    if not args.snapshot_output_dir:
+        missing.append("--snapshot-output-dir")
+    if not args.snapshot_type:
+        missing.append("--snapshot-type")
+    if missing:
+        return False, f"missing required Derek args: {missing}"
+    return True, ""
+
+
+def _join_lineup_context_into_rows(rows, lineup_path, game_id_filter):
+    """Phase 13M-bis lineup-context join.
+
+    Adds these columns to each row in `rows` (mutates in place AND returns
+    a new list pointer for safety):
+
+        bdl_lineup_present, current_starter, confirmed_starter,
+        confirmed_bench, lineup_position, lineup_source, lineup_confirmed,
+        role_source, role_bucket_pre_lineup, role_bucket_post_lineup,
+        lineup_context_supplied, lineup_affects_pmf_features
+
+    Returns (rows, integration_summary). Summary includes the counts the
+    snapshot manifest needs:
+      lineup_feature_columns_added (list[str])
+      role_bucket_changed_count
+      starter_flag_changed_count
+      minutes_projection_conflict_count
+      lineup_rows_joined
+      lineup_blocker (str — empty when join succeeded)
+    """
+    import pandas as pd
+    columns_added = [
+        "bdl_lineup_present", "current_starter", "confirmed_starter",
+        "confirmed_bench", "lineup_position", "lineup_source",
+        "lineup_confirmed", "role_source", "role_bucket_pre_lineup",
+        "role_bucket_post_lineup", "lineup_context_supplied",
+        "lineup_affects_pmf_features",
+    ]
+    # Initialize defaults on every row so the dataframe shape is stable
+    # even when the lineup join finds nothing.
+    for r in rows:
+        r.setdefault("bdl_lineup_present", False)
+        r.setdefault("current_starter", None)
+        r.setdefault("confirmed_starter", False)
+        r.setdefault("confirmed_bench", False)
+        r.setdefault("lineup_position", None)
+        r.setdefault("lineup_source", None)
+        r.setdefault("lineup_confirmed", False)
+        r.setdefault("role_source", "projected_minutes")
+        r.setdefault("role_bucket_pre_lineup", r.get("role_bucket"))
+        r.setdefault("role_bucket_post_lineup", r.get("role_bucket"))
+        r.setdefault("lineup_context_supplied", bool(lineup_path))
+        r.setdefault("lineup_affects_pmf_features", False)
+
+    summary = {
+        "lineup_feature_columns_added": columns_added,
+        "role_bucket_changed_count": 0,
+        "starter_flag_changed_count": 0,
+        "minutes_projection_conflict_count": 0,
+        "lineup_rows_joined": 0,
+        "lineup_blocker": "",
+    }
+    if not lineup_path:
+        summary["lineup_blocker"] = "no --lineup-context path supplied"
+        return rows, summary
+    p = Path(lineup_path)
+    if not p.exists():
+        summary["lineup_blocker"] = f"lineup-context file not found: {lineup_path}"
+        return rows, summary
+    try:
+        ldf = pd.read_parquet(p)
+    except Exception as exc:
+        summary["lineup_blocker"] = f"failed to read lineup parquet: {exc}"
+        return rows, summary
+    if "player_id" not in ldf.columns or "starter" not in ldf.columns:
+        summary["lineup_blocker"] = (
+            f"lineup parquet missing required columns "
+            f"(player_id/starter); got {list(ldf.columns)}"
+        )
+        return rows, summary
+    # Normalize join keys.
+    ldf = ldf.copy()
+    ldf["player_id"] = ldf["player_id"].astype("Int64")
+    if "game_id" in ldf.columns:
+        ldf["game_id"] = ldf["game_id"].astype(str)
+    # Build a (game_id, player_id) → row dict.
+    by_key: dict = {}
+    for _, lr in ldf.iterrows():
+        gid = str(lr.get("game_id")) if "game_id" in ldf.columns else None
+        pid = lr.get("player_id")
+        try:
+            pid_i = int(pid) if pid is not None else None
+        except Exception:
+            pid_i = None
+        if pid_i is None:
+            continue
+        key = (gid, pid_i) if gid is not None else (None, pid_i)
+        by_key[key] = lr.to_dict()
+
+    # All starter rows in this lineup (used to flag starter changes).
+    confirmed_total = sum(1 for v in by_key.values() if bool(v.get("starter")))
+
+    for r in rows:
+        try:
+            pid_i = int(r.get("player_id"))
+        except Exception:
+            continue
+        gid = str(r.get("game_id")) if r.get("game_id") is not None else None
+        if game_id_filter and gid is not None and gid != str(game_id_filter):
+            # Don't even attempt the join for rows outside the filter — the
+            # caller may have already filtered, but be defensive.
+            continue
+        match = by_key.get((gid, pid_i)) or by_key.get((None, pid_i))
+        if not match:
+            continue
+        starter = bool(match.get("starter"))
+        r["bdl_lineup_present"] = True
+        r["current_starter"] = starter
+        r["confirmed_starter"] = starter
+        r["confirmed_bench"] = (not starter)
+        r["lineup_position"] = match.get("lineup_position") or match.get("position")
+        r["lineup_source"] = match.get("source") or "balldontlie_v1_lineups"
+        r["lineup_confirmed"] = True
+        r["role_source"] = "confirmed_bdl_lineup"
+        # Conservative documented role rule (Phase 13M-bis Part D):
+        # if a confirmed starter previously had a non-starter role bucket,
+        # mark the post-lineup bucket as "starter_promoted" and increment
+        # the change counter. We do NOT silently overwrite; the original
+        # is preserved in role_bucket_pre_lineup. Calibrator selection
+        # downstream may use role_bucket_post_lineup if the calibrator
+        # supports the new bucket label; otherwise it falls back to
+        # role_bucket as before.
+        pre = r.get("role_bucket_pre_lineup")
+        if starter and pre not in (None, "starter", "starter_promoted"):
+            r["role_bucket_post_lineup"] = "starter_promoted"
+            summary["role_bucket_changed_count"] += 1
+        elif (not starter) and pre == "starter":
+            r["role_bucket_post_lineup"] = "bench_demoted"
+            summary["role_bucket_changed_count"] += 1
+        # Minutes-projection conflict heuristic: confirmed starter with
+        # exp_mp < 18, or confirmed bench with exp_mp >= 30.
+        exp_mp = r.get("exp_mp")
+        if exp_mp is not None:
+            try:
+                emp = float(exp_mp)
+                if (starter and emp < 18) or ((not starter) and emp >= 30):
+                    summary["minutes_projection_conflict_count"] += 1
+            except Exception:
+                pass
+        summary["starter_flag_changed_count"] += 1
+        summary["lineup_rows_joined"] += 1
+        r["lineup_affects_pmf_features"] = True
+
+    if summary["lineup_rows_joined"] == 0:
+        summary["lineup_blocker"] = (
+            "lineup parquet had no rows that matched any prediction "
+            "(player_id, game_id) — confirmed lineup may not yet be posted"
+        )
+    return rows, summary
+
+
+def main(argv=None):
+    args = _derek_live_args(argv)
+    derek = bool(args.derek_live_snapshot)
+
+    # Validate Derek-mode args. Pre-13M callers (derek=False) always pass.
+    ok, reason = _validate_derek_args(args)
+    if derek and not ok:
+        print("PREDICT_DEREK_LIVE_ARGS_FAILED", file=sys.stderr)
+        print(f"  reason: {reason}", file=sys.stderr)
+        return 1
+
+    if args.validate_args_and_exit:
+        # Fixture-friendly fast path: confirm CLI surface, skip prediction.
+        print("PREDICT_DEREK_LIVE_ARGS_PASS")
+        if derek:
+            print(f"  derek_live_snapshot=True game_id={args.game_id!r} "
+                  f"target_date={args.target_date or args.delivery_date!r} "
+                  f"snapshot_type={args.snapshot_type!r} "
+                  f"snapshot_output_dir={args.snapshot_output_dir!r}")
+        return 0
+
     logger.info("=" * 60)
     logger.info("NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15")
     logger.info("=" * 60)
@@ -571,7 +800,25 @@ def main():
     if not _get_api_key():
         sys.exit("BDL_API_KEY not set.")
 
-    target_date = date.today().strftime("%Y-%m-%d")
+    # Phase 13M-bis: target_date can be overridden in Derek live-snapshot
+    # mode; default callers (no --derek-live-snapshot) keep the legacy
+    # date.today() path verbatim.
+    if derek:
+        target_date = (args.target_date or args.delivery_date)
+        derek_game_id_filter = str(args.game_id) if args.game_id else None
+        derek_lineup_path = args.lineup_context
+        derek_snapshot_output_dir = (
+            Path(args.snapshot_output_dir) if args.snapshot_output_dir else None
+        )
+        print("PREDICT_DEREK_LIVE_ARGS_PASS")
+        print(f"  target_date={target_date} game_id={derek_game_id_filter} "
+              f"snapshot_type={args.snapshot_type} "
+              f"snapshot_run_id={args.snapshot_run_id}")
+    else:
+        target_date = date.today().strftime("%Y-%m-%d")
+        derek_game_id_filter = None
+        derek_lineup_path = None
+        derek_snapshot_output_dir = None
     logger.info(f"Target date: {target_date}")
 
     logger.info("Loading models...")
@@ -732,7 +979,16 @@ def main():
     games = get_games(start_date=target_date, end_date=target_date)
     if not games:
         logger.warning("No games today.")
-        return
+        return 0
+    # Phase 13M-bis: filter slate to one game in Derek live-snapshot mode.
+    if derek and derek_game_id_filter:
+        games = [g for g in games if str(g.get("id")) == derek_game_id_filter]
+        if not games:
+            logger.warning(
+                f"Derek live-snapshot: game_id={derek_game_id_filter!r} not "
+                "found in today's slate."
+            )
+            return 1
     logger.info(f"  {len(games)} games")
 
     today_odds_raw = get_game_odds(dates=[target_date])
@@ -1059,6 +1315,69 @@ def main():
                             }
                         )({int(k): float(v) for k, v in enumerate(_pmf_arr)}),
                     })
+
+    # Phase 13M-bis: in Derek live-snapshot mode, route the prediction
+    # output to the per-snapshot directory instead of the canonical
+    # predictions/all_props_<date>.parquet (which WoO/daily callers own).
+    if derek and derek_snapshot_output_dir is not None:
+        all_rows = [dict(x) for x in all_singles]
+        all_rows, lineup_summary = _join_lineup_context_into_rows(
+            all_rows, derek_lineup_path, derek_game_id_filter,
+        )
+        derek_snapshot_output_dir.mkdir(parents=True, exist_ok=True)
+        out_parquet = derek_snapshot_output_dir / "derek_live_predictions.parquet"
+        # Reuse the JSON-safe parquet writer used by save_all_props_snapshot.
+        df = pd.DataFrame(all_rows).copy()
+        def _jsonify(x):
+            if isinstance(x, (dict, list, tuple, set)):
+                return json.dumps(x, default=str)
+            return x
+        for col in df.columns:
+            if df[col].map(lambda x: isinstance(x, (dict, list, tuple, set))).any():
+                df[col] = df[col].map(_jsonify)
+        df.to_parquet(out_parquet, index=False)
+        # Write a minimal sidecar json so the runner can recover the
+        # integration summary without re-parsing the parquet.
+        sidecar = derek_snapshot_output_dir / "derek_live_predictions_summary.json"
+        sidecar.write_text(
+            json.dumps(
+                {
+                    "schema_version": "1.0",
+                    "target_date": target_date,
+                    "game_id": derek_game_id_filter,
+                    "snapshot_type": args.snapshot_type,
+                    "snapshot_run_id": args.snapshot_run_id,
+                    "row_count": int(len(df)),
+                    "lineup_context_supplied": bool(derek_lineup_path),
+                    "lineup_affects_pmf_features": (
+                        lineup_summary["lineup_rows_joined"] > 0
+                    ),
+                    "lineup_integration_summary": lineup_summary,
+                    "derek_live_predictions_parquet": str(out_parquet),
+                },
+                indent=2,
+                sort_keys=True,
+                default=str,
+            ),
+            encoding="utf-8",
+        )
+        if lineup_summary["lineup_rows_joined"] > 0:
+            print("PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS")
+            print(
+                f"  rows_joined={lineup_summary['lineup_rows_joined']}  "
+                f"role_changes={lineup_summary['role_bucket_changed_count']}  "
+                f"starter_flags_set={lineup_summary['starter_flag_changed_count']}  "
+                f"minutes_conflicts={lineup_summary['minutes_projection_conflict_count']}"
+            )
+        else:
+            # Non-failure: no rows joined typically means BDL has not
+            # posted lineups yet. The runner is expected to surface this
+            # as lineup_blocker without aborting the snapshot.
+            print("PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PENDING")
+            print(f"  blocker: {lineup_summary['lineup_blocker']!r}")
+        # Skip the WoO/canonical side-effects — we are NOT the daily
+        # delivery; we are a Derek-only snapshot writer.
+        return 0
 
     save_all_props_snapshot([dict(x) for x in all_singles], target_date)
     # ── fg3m per-player gate ─────────────────────────────────────────

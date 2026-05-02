@@ -403,7 +403,8 @@ def _build_snapshot_manifest(*,
                                confirmed_out_count: int,
                                non_actionable_count: int,
                                active_players_projected: int,
-                               lineup_status: dict | None,
+                               lineup_status,
+                               lineup_integration_summary=None,
                               ) -> dict:
     target_offset = SNAPSHOT_OFFSETS_MINUTES[snapshot_type]
     target_iso = None
@@ -514,17 +515,53 @@ def _build_snapshot_manifest(*,
         "starters_by_team": (lineup_status or {}).get("starter_count_by_team") or {},
         "bench_count_by_team": (lineup_status or {}).get("bench_count_by_team") or {},
         "unmapped_lineup_players": (lineup_status or {}).get("unmapped_players") or [],
-        # Lineup feature wiring honesty. predict.py does not yet consume
-        # lineup context (Phase 13M-bis scope). We persist the lineup status
-        # next to the snapshot so downstream tooling can inspect it, but the
-        # PMF features are NOT (yet) influenced by confirmed-starter context.
-        "lineup_context_supplied": bool(lineup_status),
-        "lineup_affects_pmf_features": False,
-        "lineup_feature_blocker": (
-            "predict.py does not yet accept --lineup-context; lineup status "
-            "is recorded as snapshot metadata and will inform Phase 13M-bis "
-            "feature engineering, but does not currently change PMF features."
+        # Phase 13M-bis lineup feature wiring. predict.py now accepts
+        # --lineup-context and joins BDL lineup rows into the prediction
+        # dataframe (current_starter, role_source=confirmed_bdl_lineup, etc.).
+        # `lineup_affects_pmf_features` is true iff at least one row was
+        # actually joined for THIS snapshot. When zero rows joined (BDL
+        # not yet posted lineups, mismatched IDs, no lineup_context passed)
+        # the integration summary's lineup_blocker explains why.
+        "lineup_context_supplied": bool(
+            (lineup_integration_summary or {}).get("lineup_context_supplied")
+            or bool(lineup_status)
         ),
+        "lineup_affects_pmf_features": bool(
+            (lineup_integration_summary or {})
+                .get("lineup_affects_pmf_features", False)
+        ),
+        "lineup_feature_blocker": (
+            (
+                (lineup_integration_summary or {})
+                .get("lineup_integration_summary", {}) or {}
+            ).get("lineup_blocker")
+            or (
+                "" if (lineup_integration_summary or {})
+                        .get("lineup_affects_pmf_features")
+                else (
+                    "no lineup rows joined into prediction state for this "
+                    "snapshot — see derek_live_predictions_summary.json for "
+                    "the exact blocker (typical: BDL has not posted lineups "
+                    "yet, or backfill_demo mode bypassed predict.py)."
+                )
+            )
+        ),
+        "lineup_feature_columns_added": (
+            (lineup_integration_summary or {})
+            .get("lineup_integration_summary", {}) or {}
+        ).get("lineup_feature_columns_added", []),
+        "role_bucket_changed_count": (
+            (lineup_integration_summary or {})
+            .get("lineup_integration_summary", {}) or {}
+        ).get("role_bucket_changed_count", 0),
+        "starter_flag_changed_count": (
+            (lineup_integration_summary or {})
+            .get("lineup_integration_summary", {}) or {}
+        ).get("starter_flag_changed_count", 0),
+        "minutes_projection_conflict_count": (
+            (lineup_integration_summary or {})
+            .get("lineup_integration_summary", {}) or {}
+        ).get("minutes_projection_conflict_count", 0),
         "odds_source": "Odds-API (consumed by build_daily_pmf_delivery + predict.py upstream)",
         "odds_fetched_at_utc": pmf_generated_at,
         "market_snapshot_type": snapshot_type,
@@ -630,21 +667,141 @@ def main(argv: list[str] | None = None) -> int:
                 print("DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS")
             return 0
 
-    # Ensure fresh predictions parquet.
-    parquet, predict_info = _ensure_fresh_predictions(
-        target_date=args.delivery_date,
-        run_started_at=run_started,
-        allow_backfill=bool(args.allow_backfill_test),
-    )
-    if predict_info.get("error"):
-        print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
-        print(f"  reason: {predict_info['error']}", file=sys.stderr)
-        return 1
+    # Phase 13M-bis: in production-live mode, fetch BDL lineups FIRST so we
+    # can pass --lineup-context to predict.py. In backfill_demo mode the
+    # BDL fetch still runs (after the canonical reuse) for honest lineup
+    # status recording — see further below.
+    lineup_status_early = None
+    lineup_parquet_path = None
+    if not args.allow_backfill_test:
+        lineup_status_early = _fetch_lineup_status_for_snapshot(
+            delivery_date=args.delivery_date,
+            game_id=str(args.game_id),
+            allow_backfill=False,
+        )
+        # Locate the normalized parquet emitted by fetch_bdl_game_lineups.py.
+        candidate = (
+            REPO_ROOT / "artifacts" / "live_lineups" / args.delivery_date
+            / str(args.game_id) / "bdl_lineups_normalized.parquet"
+        )
+        if candidate.exists():
+            lineup_parquet_path = candidate
 
-    # Filter to game.
+    # Ensure fresh predictions. Two modes:
+    #   - backfill_demo (--allow-backfill-test): reuse canonical
+    #     predictions/all_props_<date>.parquet, then filter to game.
+    #   - production_live: invoke predict.py with --derek-live-snapshot and
+    #     consume the per-snapshot derek_live_predictions.parquet directly.
+    out_root_pre = (
+        DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
+        / str(args.game_id) / args.snapshot_type
+    )
+    if args.allow_backfill_test:
+        parquet, predict_info = _ensure_fresh_predictions(
+            target_date=args.delivery_date,
+            run_started_at=run_started,
+            allow_backfill=True,
+        )
+        if predict_info.get("error"):
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(f"  reason: {predict_info['error']}", file=sys.stderr)
+            return 1
+        try:
+            sub = _filter_to_game(parquet, args.game_id)
+        except Exception as exc:
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(f"  reason: filter_to_game_failed:{exc}", file=sys.stderr)
+            return 1
+        lineup_integration_summary = None
+    else:
+        # Production-live: invoke predict.py with Derek live args.
+        out_root_pre.mkdir(parents=True, exist_ok=True)
+        predict_run_id = (
+            f"derek-snapshot-{args.snapshot_type}-{args.game_id}-"
+            f"{run_started.strftime('%Y%m%dT%H%M%S')}"
+        )
+        cmd = [
+            sys.executable, "scripts/predict.py",
+            "--derek-live-snapshot",
+            "--target-date", args.delivery_date,
+            "--game-id", str(args.game_id),
+            "--snapshot-output-dir", str(out_root_pre.relative_to(REPO_ROOT)),
+            "--snapshot-type", args.snapshot_type,
+            "--snapshot-run-id", predict_run_id,
+        ]
+        if lineup_parquet_path is not None:
+            cmd += ["--lineup-context", str(lineup_parquet_path.relative_to(REPO_ROOT))]
+        log_dir = REPO_ROOT / "artifacts" / "derek_live_snapshots" / args.delivery_date
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / (
+            f"predict_{args.snapshot_type}_{args.game_id}_"
+            f"{run_started.strftime('%Y%m%dT%H%M%S')}.log"
+        )
+        t0 = time.perf_counter()
+        with log_path.open("w", encoding="utf-8") as f:
+            f.write(f"$ {' '.join(cmd)}\n\n")
+            f.flush()
+            proc = subprocess.run(
+                cmd, cwd=REPO_ROOT, stdout=f, stderr=subprocess.STDOUT,
+                check=False, env={**os.environ},
+            )
+        elapsed = time.perf_counter() - t0
+        live_predictions_parquet = out_root_pre / "derek_live_predictions.parquet"
+        live_predictions_summary = out_root_pre / "derek_live_predictions_summary.json"
+        predict_info = {
+            "predictions_parquet_path": str(
+                live_predictions_parquet.relative_to(REPO_ROOT)
+            ),
+            "predict_invocation": {
+                "command": cmd,
+                "exit_code": proc.returncode,
+                "elapsed_seconds": round(elapsed, 1),
+                "log_path": str(log_path.relative_to(REPO_ROOT)),
+            },
+        }
+        if proc.returncode != 0 or not live_predictions_parquet.exists():
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(
+                f"  reason: predict.py exit={proc.returncode}; "
+                f"see log: {log_path.relative_to(REPO_ROOT)}",
+                file=sys.stderr,
+            )
+            return 1
+        # Read integration summary to surface in manifest.
+        lineup_integration_summary = None
+        if live_predictions_summary.exists():
+            try:
+                lineup_integration_summary = json.loads(
+                    live_predictions_summary.read_text(encoding="utf-8")
+                )
+            except Exception:
+                lineup_integration_summary = None
+        try:
+            import pandas as pd
+            sub = pd.read_parquet(live_predictions_parquet)
+            if "game_id" in sub.columns:
+                sub = sub[sub["game_id"].astype(str) == str(args.game_id)].copy()
+        except Exception as exc:
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(f"  reason: failed to read derek_live_predictions: {exc}",
+                  file=sys.stderr)
+            return 1
+        # In production-live, mark the predict_invocation as backfill-NOT.
+        predict_info["backfill_reused_canonical"] = False
+        # Use derek live predictions parquet path for the manifest hash.
+        parquet = live_predictions_parquet
+
+    # Production-live filter no-op (predict.py already filtered) — fall through
+    # to the rest of the snapshot pipeline. For backfill we already have sub.
+    if False:
+        # Placeholder so the diff is small; the real flow continues below.
+        pass
+
+    # The legacy filter_to_game error handler (now only triggers in
+    # backfill_demo path; production-live path returned earlier on failure).
     try:
-        sub = _filter_to_game(parquet, args.game_id)
-    except Exception as exc:
+        _ = sub  # name in scope
+    except NameError as exc:
         print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
         print(f"  reason: filter_to_game_failed:{exc}", file=sys.stderr)
         return 1
@@ -671,18 +828,18 @@ def main(argv: list[str] | None = None) -> int:
     if "game_start_time" in sub.columns and sub["game_start_time"].notna().any():
         game_start_time_utc = str(sub["game_start_time"].dropna().iloc[0])
 
-    # Phase 13M: fetch BDL confirmed lineups for the target game and persist
-    # the per-game lineup_status. Failure to fetch is non-fatal in backfill
-    # mode (we still ship the snapshot with lineup_blocker recorded). In
-    # production-live mode it is also non-fatal — the snapshot proceeds with
-    # lineup_confirmed=false and an honest blocker, matching the spec
-    # ("Do not fabricate lineups" + "lineup_confirmed=false with exact
-    # blocker when unavailable/partial").
-    lineup_status = _fetch_lineup_status_for_snapshot(
-        delivery_date=args.delivery_date,
-        game_id=str(args.game_id),
-        allow_backfill=bool(args.allow_backfill_test),
-    )
+    # Phase 13M: BDL confirmed-lineup status. In production-live mode the
+    # fetch already ran upstream (so we could pass --lineup-context to
+    # predict.py); reuse that result. In backfill_demo mode we still
+    # invoke the fetch here for honest lineup_status recording.
+    if args.allow_backfill_test:
+        lineup_status = _fetch_lineup_status_for_snapshot(
+            delivery_date=args.delivery_date,
+            game_id=str(args.game_id),
+            allow_backfill=True,
+        )
+    else:
+        lineup_status = lineup_status_early
 
     # Predict_info carries champion verification results for the manifest.
     predict_info["champion_metadata_verified"] = champion_metadata_verified
@@ -710,6 +867,7 @@ def main(argv: list[str] | None = None) -> int:
         non_actionable_count=non_actionable,
         active_players_projected=active_players,
         lineup_status=lineup_status,
+        lineup_integration_summary=lineup_integration_summary,
     )
     write_json_atomic(out_root / "snapshot_manifest.json", manifest)
 

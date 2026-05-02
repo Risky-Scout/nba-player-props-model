@@ -238,16 +238,27 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
     """
     runner = REPO_ROOT / "scripts" / "run_derek_live_game_snapshot.py"
     verifier = REPO_ROOT / "scripts" / "verify_derek_live_snapshots.py"
+    predict_pipeline = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
     needed = {
         runner: (
             'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
             "champion_metadata_verified",
             "lineup_feature_blocker",
+            "--derek-live-snapshot",
+            "lineup_integration_summary",
         ),
         verifier: (
             "DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS",
             "all_production_recomputed",
             "DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS",
+            "DEREK_INJURY_AVAILABILITY_CONTEXT_PASS",
+        ),
+        predict_pipeline: (
+            "_derek_live_args",
+            "_join_lineup_context_into_rows",
+            "PREDICT_DEREK_LIVE_ARGS_PASS",
+            "PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS",
+            "derek_live_predictions.parquet",
         ),
     }
     for path, tokens in needed.items():

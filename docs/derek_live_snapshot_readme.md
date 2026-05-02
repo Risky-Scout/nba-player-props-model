@@ -50,24 +50,54 @@ infrastructure proof, not production-live recomputation.
 Pass line: ``DEREK_LIVE_CHAMPION_MODEL_READY_PASS``.
 Fail line: ``DEREK_LIVE_CHAMPION_MODEL_READY_FAILED``.
 
-## Lineup recomputation status (honest)
+## Lineup recomputation status (Phase 13M-bis update)
 
-Phase 13M wires BDL lineup *fetch + persistence + manifest recording*
-into the runner. It does **not** yet wire confirmed-starter context into
-``predict.py`` PMF feature engineering. Every snapshot manifest therefore
-records:
+Phase 13M-bis closes the BDL→prediction gap. ``scripts/predict.py`` now
+accepts these flags (gated by ``--derek-live-snapshot``):
 
+- ``--target-date YYYY-MM-DD``    — overrides ``date.today()`` in Derek mode
+- ``--delivery-date YYYY-MM-DD``  — alias for ``--target-date``
+- ``--game-id GAME_ID``           — filters slate to one game
+- ``--lineup-context PATH``       — BDL normalized parquet to join in
+- ``--snapshot-output-dir PATH``  — where ``derek_live_predictions.parquet`` is written
+- ``--snapshot-type t_minus_25|close_lock``
+- ``--snapshot-run-id RUN_ID``
+- ``--validate-args-and-exit``    — fixture-friendly fast path
+
+Default invocation (no flags) is byte-identical to pre-13M behavior, so
+WoO/daily/canonical callers are not affected.
+
+Lineup context join (``_join_lineup_context_into_rows``):
+- Adds 12 columns to every prediction row: ``bdl_lineup_present``,
+  ``current_starter``, ``confirmed_starter``, ``confirmed_bench``,
+  ``lineup_position``, ``lineup_source``, ``lineup_confirmed``,
+  ``role_source``, ``role_bucket_pre_lineup``, ``role_bucket_post_lineup``,
+  ``lineup_context_supplied``, ``lineup_affects_pmf_features``.
+- Conservative documented role rule: confirmed starter who previously
+  had a non-starter ``role_bucket`` gets ``role_bucket_post_lineup="starter_promoted"``;
+  confirmed bench who previously had ``role_bucket="starter"`` gets
+  ``"bench_demoted"``. Original ``role_bucket`` is preserved in
+  ``role_bucket_pre_lineup``.
+- Minutes-projection conflict heuristic flags confirmed starters with
+  ``exp_mp<18`` and confirmed benches with ``exp_mp>=30`` for review;
+  the runner does NOT auto-overwrite minutes.
+
+When BDL lineups have not posted yet (typical pre-window state), the
+join finds zero matches and ``lineup_affects_pmf_features=false`` with
+the exact blocker:
 ```
-"lineup_context_supplied": true        # we fetched and persisted BDL lineups
-"lineup_affects_pmf_features": false   # PMF features not yet influenced by lineups
-"lineup_feature_blocker": "predict.py does not yet accept --lineup-context;
-    lineup status is recorded as snapshot metadata and will inform Phase
-    13M-bis feature engineering, but does not currently change PMF features."
+"lineup parquet had no rows that matched any prediction (player_id, game_id) —
+ confirmed lineup may not yet be posted"
 ```
+Production-live snapshots still ship with ``pmfs_recomputed=true`` (predict.py
+ran fresh) — they just don't claim lineup-aware PMFs until BDL posts.
 
-This is the honest infrastructure-first half of the change. Snapshot
-metadata + comparison reports are immediately usable; PMF features that
-react to confirmed-starter status are deferred to Phase 13M-bis.
+Fixture proof (``scripts/verify_predict_lineup_context.py``):
+emits ``PREDICT_DEREK_LIVE_ARGS_PASS``,
+``PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS``,
+``PREDICT_LINEUP_CONTEXT_FIXTURE_PASS`` against synthetic
+prediction rows + lineup parquet. This is code-path proof, not a claim
+that production-live actually ran during a real NBA window.
 
 ## What changed
 
