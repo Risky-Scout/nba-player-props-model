@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-02T08:09:39Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-02T15:55:46Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -12,6 +12,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `morning_present` | 1528 | `pending_lineup_snapshot` | 1528 | `scored` | `113c7b5#phase10c` |
 | **2026-04-30** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 97 | 2458 | 1382 | 1205 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1372 | `present` | 1372 | `scored` | `6aea017#phase10c` |
 | **2026-05-01** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 95 | 2519 | 1202 | 1142 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1199 | `present` | 1199 | `scored` | `f496f12#phase10c` |
+| **2026-05-02** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 29 | 660 | 507 | 446 | `full` | `fresh` | `missing_from_prediction_source` | `absent` | — | `—` | — | `n/a` | `cf844d9#phase10c` |
 
 ## Per-date links
 
@@ -208,6 +209,30 @@ _lineup_unconfirmed, missing_stats:tov_
 - ~~clv_by_stat.csv~~
 - ~~clv_by_book.csv~~
 - [after_game_status.json](2026-05-01/after_game_scoring/after_game_status.json)
+
+### 2026-05-02 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed, missing_stats:tov_
+
+**Derek (PMF model review)**
+
+- [01_START_HERE.html](2026-05-02/pmf_model_review_package/01_START_HERE.html)
+- [03_PMF_DISTRIBUTION_VIEWER.html](2026-05-02/pmf_model_review_package/03_PMF_DISTRIBUTION_VIEWER.html)
+- [04_PROP_SUMMARY.csv](2026-05-02/pmf_model_review_package/04_PROP_SUMMARY.csv)
+- [05_FULL_PMF_WIDE.csv](2026-05-02/pmf_model_review_package/05_FULL_PMF_WIDE.csv)
+- [06_OUTCOME_LEVEL_PROBABILITIES.csv](2026-05-02/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv)
+- [machine_readable/model_only.parquet](2026-05-02/pmf_model_review_package/machine_readable/model_only.parquet)
+- [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-02/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
+
+**Wizard of Odds**
+
+- [README.md](2026-05-02/wizard_of_odds/README.md)
+- [fair_odds_board.csv](2026-05-02/wizard_of_odds/fair_odds_board.csv)
+- [full_pmfs_wide.csv](2026-05-02/wizard_of_odds/full_pmfs_wide.csv)
+- [full_pmfs_outcome_level.csv](2026-05-02/wizard_of_odds/full_pmfs_outcome_level.csv)
+- [market_comparison.csv](2026-05-02/wizard_of_odds/market_comparison.csv)
+- [publishable_edges.csv](2026-05-02/wizard_of_odds/publishable_edges.csv)
+- [run_manifest.json](2026-05-02/wizard_of_odds/run_manifest.json)
 
 
 ## Schedule (Phase 12D-amend)

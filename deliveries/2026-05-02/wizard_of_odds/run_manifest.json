@@ -1,21 +1,11 @@
 {
-  "after_game": {
-    "abs_mean_error": 3.41463990714902,
-    "n_clv_rows": 0,
-    "n_scored_market_rows": 1202,
-    "n_scored_pmf_rows": 69,
-    "nll_mean": 2.252878256793083,
-    "rps_mean": 0.09094835115641269,
-    "scored_at_utc": "2026-05-02T08:09:40Z",
-    "status": "scored"
-  },
   "calibrated_through_date": "2026-04-30",
   "calibration_run_id": "nightly-20260501T124701",
   "champion_artifact_dir": "artifacts/models",
   "champion_model_id": "challenger-2026-04-30",
   "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-  "delivery_date": "2026-05-01",
+  "delivery_date": "2026-05-02",
   "finality_blocker_codes": [
     "lineup_unconfirmed",
     "missing_stats:tov"
@@ -51,69 +41,69 @@
       "hardrockbet_fl",
       "williamhill_us"
     ],
-    "built_at_utc": "2026-05-01T23:35:05Z",
+    "built_at_utc": "2026-05-02T15:55:33Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "not_ready",
-    "path": "data/freshness_manifest/2026-05-01.json",
-    "predictions_mtime_utc": "2026-05-01T23:33:48.380197Z",
+    "path": "data/freshness_manifest/2026-05-02.json",
+    "predictions_mtime_utc": "2026-05-02T15:54:32.257961Z",
     "regions_requested": [
       "us",
       "us2"
     ],
     "role_freshness_status_rollup": {
-      "derived_from_projected_minutes": 95
+      "derived_from_projected_minutes": 29
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-02T08:09:45+00:00",
+  "metadata_stamped_at_utc": "2026-05-02T15:55:47+00:00",
   "model_source": "champion_pointer",
-  "model_version": "f496f12#phase10c",
+  "model_version": "cf844d9#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-02T08:09:45+00:00",
+  "output_generated_at_utc": "2026-05-02T15:55:47+00:00",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
-  "pipeline_run_id": "bbe85166-f1e2-4322-aa12-6b66ebd78815",
+  "pipeline_run_id": "0044d88b-65c6-481c-a656-5471788ea45e",
   "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
   "quality_rollup": {
     "calibration_confidence": {
-      "high": 87,
-      "medium": 8
+      "high": 25,
+      "medium": 4
     },
     "injury_freshness_status": {
-      "fresh": 95
+      "fresh": 29
     },
     "lineup_freshness_status": {
-      "projected": 95
+      "projected": 29
     },
     "market_coverage_status": {
-      "full": 95
+      "full": 29
     },
     "pmf_sum_error_max": 2.220446049250313e-16,
     "pmf_valid_ok_pct": 1.0,
     "role_freshness_status": {
-      "derived_from_projected_minutes": 95
+      "derived_from_projected_minutes": 29
     }
   },
   "row_counts": {
-    "fair_odds_board": 2519,
-    "full_pmfs_wide": 95,
-    "market_comparison": 1202,
-    "publishable_edges": 1142
+    "fair_odds_board": 660,
+    "full_pmfs_wide": 29,
+    "market_comparison": 507,
+    "publishable_edges": 446
   },
-  "snapshot_time_utc": "2026-05-01T23:35:20Z",
-  "snapshot_type": "pre_close",
+  "snapshot_time_utc": "2026-05-02T15:55:44Z",
+  "snapshot_type": "morning",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-01T23:33:48.205197Z",
+      "mtime_utc": "2026-05-02T15:54:32.050957Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
-      "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-01T23:33:48.346197Z",
-      "path": "deliveries/2026-05-01/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "a0c6b30465eae8bf41b458ea28cbd3b0f90a6131c56ec2b533f2bdc1c0c20dad"
+      "auto_built_from_predictions": true,
+      "mtime_utc": "2026-05-02T15:55:44.593605Z",
+      "path": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "sha256": "32f983f38e23030ef4a2e50edf081ce17a7886f381f41392919051b95dd6281a"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -134,15 +124,15 @@
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-01T23:35:05.395253Z",
-      "path": "data/odds_api/processed/2026-05-01/odds_pairs_live_slate_close_or_lock_2026-05-01T233443Z.parquet"
+      "mtime_utc": "2026-05-02T15:55:33.096062Z",
+      "path": "data/odds_api/processed/2026-05-02/odds_pairs_live_slate_morning_7am_2026-05-02T155518Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-01T23:33:48.380197Z",
-      "path": "predictions/all_props_2026-05-01.parquet"
+      "mtime_utc": "2026-05-02T15:54:32.257961Z",
+      "path": "predictions/all_props_2026-05-02.parquet"
     }
   },
-  "stamp_code_commit": "2d701c5d29417d432aa8c683d6614d0d6146e2c1",
+  "stamp_code_commit": "cf844d9a2d4f6c467607b845f15cd7cd3c8d1d93",
   "target_stats": {
     "expected": [
       "pts",
