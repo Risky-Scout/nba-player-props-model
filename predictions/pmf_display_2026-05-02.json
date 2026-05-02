@@ -1,0 +1,288 @@
+{
+  "date": "2026-05-02",
+  "generated_at": "2026-05-02T14:10:33.449882",
+  "props": [
+    {
+      "player_name": "Nikola Vucevic",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.8146,
+      "market_prob": 0.5434,
+      "ev": 0.4715,
+      "edge": 0.2712,
+      "fair_odds_over": -439,
+      "fair_odds_under": 439,
+      "pmf_median": 1,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -124,
+        "under_odds": 115,
+        "best_odds": -124
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1854,
+          "fair_odds": 439,
+          "display_prob": "18.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3198,
+          "fair_odds": 213,
+          "display_prob": "32.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2389,
+          "fair_odds": 319,
+          "display_prob": "23.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1394,
+          "fair_odds": 617,
+          "display_prob": "13.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0558,
+          "fair_odds": 1692,
+          "display_prob": "5.6%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0375,
+          "fair_odds": 2567,
+          "display_prob": "3.8%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Tyrese Maxey",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.6424,
+      "market_prob": 0.4324,
+      "ev": 0.4453,
+      "edge": 0.21,
+      "fair_odds_over": 180,
+      "fair_odds_under": -180,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -140,
+        "under_odds": 125,
+        "best_odds": 125
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1128,
+          "fair_odds": 787,
+          "display_prob": "11.3%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2716,
+          "fair_odds": 268,
+          "display_prob": "27.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.258,
+          "fair_odds": 288,
+          "display_prob": "25.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1769,
+          "fair_odds": 465,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0906,
+          "fair_odds": 1004,
+          "display_prob": "9.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0357,
+          "fair_odds": 2701,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0311,
+          "fair_odds": 3115,
+          "display_prob": "3.1%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Tyrese Maxey",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 6.5,
+      "model_prob": 0.7755,
+      "market_prob": 0.526,
+      "ev": 0.4327,
+      "edge": 0.2495,
+      "fair_odds_over": 345,
+      "fair_odds_under": -345,
+      "pmf_median": 5,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": 105,
+        "under_odds": -118,
+        "best_odds": -118
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0412,
+          "fair_odds": 2327,
+          "display_prob": "4.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0648,
+          "fair_odds": 1443,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1009,
+          "fair_odds": 891,
+          "display_prob": "10.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1315,
+          "fair_odds": 660,
+          "display_prob": "13.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1522,
+          "fair_odds": 557,
+          "display_prob": "15.2%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.155,
+          "fair_odds": 545,
+          "display_prob": "15.5%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.13,
+          "fair_odds": 669,
+          "display_prob": "13.0%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0888,
+          "fair_odds": 1026,
+          "display_prob": "8.9%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0572,
+          "fair_odds": 1648,
+          "display_prob": "5.7%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0368,
+          "fair_odds": 2617,
+          "display_prob": "3.7%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0196,
+          "fair_odds": 5002,
+          "display_prob": "2.0%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0114,
+          "fair_odds": 8672,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0058,
+          "fair_odds": 17141,
+          "display_prob": "0.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Neemias Queta",
+      "game": "Philadelphia 76ers @ Boston Celtics",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.814,
+      "market_prob": 0.6405,
+      "ev": 0.2791,
+      "edge": 0.1735,
+      "fair_odds_over": 438,
+      "fair_odds_under": -438,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 180,
+        "under_odds": -175,
+        "best_odds": -175
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.814,
+          "fair_odds": -438,
+          "display_prob": "81.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1533,
+          "fair_odds": 552,
+          "display_prob": "15.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0162,
+          "fair_odds": 6073,
+          "display_prob": "1.6%"
+        }
+      ]
+    }
+  ]
+}
