@@ -1,5 +1,5 @@
 {
-  "code_commit": "a053fc55f475c5dd83c7858d7f6a96f698d75d4a",
+  "code_commit": "0056e3fa8ab93f01186453721ad744415c06bdec",
   "decisions": [
     {
       "decision": "fired_ok",
@@ -21,7 +21,7 @@
     }
   ],
   "delivery_date": "2026-05-01",
-  "now_utc": "2026-05-02T06:36:07Z",
+  "now_utc": "2026-05-02T10:31:51Z",
   "schedule_rows": 3,
   "schema_version": "1.0",
   "snapshot_type": "t_minus_25",

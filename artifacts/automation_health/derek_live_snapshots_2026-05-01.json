@@ -11,14 +11,14 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T06:36:08Z finished=2026-05-02T06:36:08Z",
+      "detail": "started=2026-05-02T10:31:52Z finished=2026-05-02T10:31:52Z",
       "name": "21681995/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
     {
-      "detail": "pmf_source='unknown' allow_backfill_test=True",
+      "detail": "pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True",
       "name": "21681995/t_minus_25/pmf_source_backfill_acceptable",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "rows=33",
@@ -61,14 +61,14 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T06:36:10Z finished=2026-05-02T06:36:10Z",
+      "detail": "started=2026-05-02T10:31:53Z finished=2026-05-02T10:31:54Z",
       "name": "21681996/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
     {
-      "detail": "pmf_source='unknown' allow_backfill_test=True",
+      "detail": "pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True",
       "name": "21681996/t_minus_25/pmf_source_backfill_acceptable",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "rows=33",
@@ -111,14 +111,14 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T06:36:11Z finished=2026-05-02T06:36:11Z",
+      "detail": "started=2026-05-02T10:31:55Z finished=2026-05-02T10:31:55Z",
       "name": "21684812/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
     {
-      "detail": "pmf_source='unknown' allow_backfill_test=True",
+      "detail": "pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True",
       "name": "21684812/t_minus_25/pmf_source_backfill_acceptable",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "rows=29",
@@ -156,13 +156,13 @@
       "passed": true
     }
   ],
-  "code_commit": "a053fc55f475c5dd83c7858d7f6a96f698d75d4a",
+  "code_commit": "0056e3fa8ab93f01186453721ad744415c06bdec",
   "delivery_date": "2026-05-01",
   "facts": {
     "game_count": 3,
     "snapshot_count": 3
   },
-  "generated_at_utc": "2026-05-02T06:36:12+00:00",
-  "passed": false,
+  "generated_at_utc": "2026-05-02T10:31:56+00:00",
+  "passed": true,
   "schema_version": "1.0"
 }

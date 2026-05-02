@@ -1,7 +1,7 @@
 # Derek Live Snapshots — 2026-05-01
 
-- generated_at_utc: 2026-05-02T06:36:12+00:00
-- passed: **False**
+- generated_at_utc: 2026-05-02T10:31:56+00:00
+- passed: **True**
 - snapshot_count: 3 across 3 game folders
 
 ## Checks
@@ -10,8 +10,8 @@
 | --- | --- | --- |
 | derek_game_snapshots_dir_present | yes | deliveries/2026-05-01/derek_game_snapshots |
 | 21681995/t_minus_25/required_outputs_present | yes | ok |
-| 21681995/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T06:36:08Z finished=2026-05-02T06:36:08Z |
-| 21681995/t_minus_25/pmf_source_backfill_acceptable | NO | pmf_source='unknown' allow_backfill_test=True |
+| 21681995/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T10:31:52Z finished=2026-05-02T10:31:52Z |
+| 21681995/t_minus_25/pmf_source_backfill_acceptable | yes | pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True |
 | 21681995/t_minus_25/pmf_row_count_positive | yes | rows=33 |
 | 21681995/t_minus_25/pmf_validity_sample | yes | sample_n=5 issues=[] |
 | 21681995/t_minus_25/market_comparison_present | yes | rows=33 |
@@ -20,8 +20,8 @@
 | 21681995/t_minus_25/no_post_tip_data_used | yes | =True |
 | 21681995/t_minus_25/no_challenger_artifacts_used | yes | =True |
 | 21681996/t_minus_25/required_outputs_present | yes | ok |
-| 21681996/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T06:36:10Z finished=2026-05-02T06:36:10Z |
-| 21681996/t_minus_25/pmf_source_backfill_acceptable | NO | pmf_source='unknown' allow_backfill_test=True |
+| 21681996/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T10:31:53Z finished=2026-05-02T10:31:54Z |
+| 21681996/t_minus_25/pmf_source_backfill_acceptable | yes | pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True |
 | 21681996/t_minus_25/pmf_row_count_positive | yes | rows=33 |
 | 21681996/t_minus_25/pmf_validity_sample | yes | sample_n=5 issues=[] |
 | 21681996/t_minus_25/market_comparison_present | yes | rows=33 |
@@ -30,8 +30,8 @@
 | 21681996/t_minus_25/no_post_tip_data_used | yes | =True |
 | 21681996/t_minus_25/no_challenger_artifacts_used | yes | =True |
 | 21684812/t_minus_25/required_outputs_present | yes | ok |
-| 21684812/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T06:36:11Z finished=2026-05-02T06:36:11Z |
-| 21684812/t_minus_25/pmf_source_backfill_acceptable | NO | pmf_source='unknown' allow_backfill_test=True |
+| 21684812/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T10:31:55Z finished=2026-05-02T10:31:55Z |
+| 21684812/t_minus_25/pmf_source_backfill_acceptable | yes | pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True |
 | 21684812/t_minus_25/pmf_row_count_positive | yes | rows=29 |
 | 21684812/t_minus_25/pmf_validity_sample | yes | sample_n=5 issues=[] |
 | 21684812/t_minus_25/market_comparison_present | yes | rows=29 |

@@ -1,16 +1,16 @@
 # Derek live snapshot — 2026-05-01 game 21684812 (t_minus_25)
 
 - snapshot_type: **t_minus_25**
-- pmf_source: **unknown**
+- pmf_source: **live_snapshot_reused_canonical**
 - pmfs_recomputed: **False**
 - champion_model_id: `challenger-2026-04-30`
 - trained_through_date: `2026-04-30`
 - calibrated_through_date: `2026-04-30`
 - game_start_time_utc: `None`
 - snapshot_target_time_utc: `None`
-- actual_run_started_at_utc: `2026-05-02T06:36:11Z`
-- actual_run_finished_at_utc: `2026-05-02T06:36:11Z`
-- pmf_generated_at_utc: `2026-05-02T06:35:48Z`
+- actual_run_started_at_utc: `2026-05-02T10:31:55Z`
+- actual_run_finished_at_utc: `2026-05-02T10:31:55Z`
+- pmf_generated_at_utc: `2026-05-02T10:31:28Z`
 - props_emitted: 29
 - market_rows: 29
 - active_players_projected: 13
