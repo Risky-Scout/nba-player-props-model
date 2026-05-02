@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "phase": "13O",
+  "audited_at_commit": "15c01dc",
+  "generated_at_utc": "2026-05-02T15:00:00Z",
+  "verdict": "lineup_context_is_post_pmf_metadata_today",
+  "answers": {
+    "1_training_dataframe_built_at": "src/nba_props_model/pipelines/train.py + features/engineering.py:build_player_game_features",
+    "2_feature_columns_selected_at": "src/nba_props_model/features/engineering.py (saved as features_<stat>.pkl, rate_<stat>_features.pkl)",
+    "3_trained_feature_lists_saved_at": "artifacts/models/{features_<stat>,rate_<stat>_features,hurdle_<stat>_features}.pkl",
+    "4_feature_lists_loaded_at": "src/nba_props_model/pipelines/predict.py:load_models()",
+    "5_minutes_model_features": ["availability dict from player_availability_asof.parquet (prob_active, days_since_last_played, num_teammates_out_total, vacated_minutes_*) — NO lineup/starter input"],
+    "6_rate_model_features": ["pts_per_min_mean_last10", "adv_usage_percentage_mean_last10", "mp_mean_last10", "starter_out_flag", "primary_creator_out_flag", "center_out_flag", "(none BDL-lineup-derived)"],
+    "7_pmf_simulation_features": ["same as rate models — _pmf_build_for_stat receives feature_row=base_ix"],
+    "8_pmf_calibration_features": ["role_bucket (minutes-driven), NOT role_bucket_post_lineup"],
+    "9_lineup_features_in_trained_lists": false,
+    "10_injury_features_in_trained_lists": "partial — binary out_flags only; vacated_* in MONITOR (not gates)",
+    "11_teammate_out_features_in_trained_lists": "available historically; in MONITOR not gates",
+    "12_lineup_enters_before_minutes_prediction": false,
+    "13_lineup_enters_only_after_prediction": true,
+    "14_changing_lineup_changes_pmf": false,
+    "15_changing_injury_changes_pmf": "partial — availability features influence minutes prior; INACTIVE_STATUSES filter excludes confirmed-out; is_actionable is post-PMF metadata",
+    "16_required_upstream_insertion_points": [
+      "build_player_game_features() must accept lineup_context dict",
+      "minutes_distribution() must accept lineup context",
+      "rate/quantile/hurdle models retrained with new feature columns",
+      "features_<stat>.pkl lists must include them",
+      "calibration buckets must accept role_bucket_post_lineup",
+      "prediction must use new feature lists"
+    ]
+  },
+  "historical_data_availability": {
+    "bdl_v2_lineups": {"coverage": "2026-04-30 to 2026-05-01 only", "rows": 0, "trainable": false, "notes": "BDL endpoint observed empty for past games; forward-collectable only"},
+    "player_availability_asof_parquet": {"coverage": "2023-10-24+", "rows": 82627, "trainable": true, "trainable_columns": ["prob_active", "num_teammates_out_total", "vacated_minutes_*", "vacated_fga_total", "teammate_out_count_*"]},
+    "nba_injury_reports_parquet": {"coverage": "2025-10-22+", "rows": 32548, "trainable": true, "timestamped_for_asof_join": true, "trainable_columns": ["current_status", "dnp_injury", "dnp_rest", "dnp_coach_decision"]},
+    "player_game_stats_parquet_did_start": {"present": false, "trainable": false}
+  },
+  "implications": [
+    "lineup_confirmed feature must be False for all historical rows (no BDL data available)",
+    "injury/availability/vacated features ARE trainable historically",
+    "no_future_leakage requires asof joins on injury_reports + availability_asof",
+    "PMF sensitivity to lineup change cannot pass today — requires retrained challenger that includes the new features in saved feature lists",
+    "Path B retraining must dispatch a separate workflow to avoid touching nightly cron"
+  ],
+  "pass_line": "PHASE13O_FEATURE_FLOW_AUDIT_PASS"
+}

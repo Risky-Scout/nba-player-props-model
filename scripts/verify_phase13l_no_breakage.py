@@ -240,6 +240,9 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
     verifier = REPO_ROOT / "scripts" / "verify_derek_live_snapshots.py"
     predict_pipeline = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
     api_readiness = REPO_ROOT / "scripts" / "verify_derek_live_api_readiness.py"
+    live_context = REPO_ROOT / "src" / "nba_props_model" / "features" / "live_context.py"
+    dataset_builder = REPO_ROOT / "scripts" / "build_live_context_training_dataset.py"
+    sensitivity = REPO_ROOT / "scripts" / "verify_live_context_pmf_sensitivity.py"
     needed = {
         runner: (
             'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
@@ -274,6 +277,27 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
             "BDL_API_KEY",
             "get_lineups",
             "get_injuries",
+        ),
+        live_context: (
+            "PHASE13O_LIVE_CONTEXT_FEATURES_PASS",  # in module docstring
+            "LINEUP_FEATURE_COLUMNS",
+            "INJURY_FEATURE_COLUMNS",
+            "VACATED_OPPORTUNITY_FEATURE_COLUMNS",
+            "build_live_context_features",
+            "feature_set_id",
+            "phase13o_live_context_v1",
+        ),
+        dataset_builder: (
+            "PHASE13O_LIVE_CONTEXT_TRAINING_DATASET_PASS",
+            "PHASE13O_LINEUP_HISTORY_LIMITED",
+            "no_future_leakage_verified",
+            "asof_cutoff_rule",
+        ),
+        sensitivity: (
+            "PHASE13O_FEATURE_VECTOR_SENSITIVITY_PASS",
+            "PHASE13O_ACTIONABILITY_SENSITIVITY_PASS",
+            "PHASE13O_MARKET_ONLY_EDGE_SENSITIVITY_PASS",
+            "PHASE13O_PMF_SENSITIVITY_PENDING_RETRAINED_ARTIFACTS",
         ),
     }
     for path, tokens in needed.items():

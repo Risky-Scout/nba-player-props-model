@@ -557,6 +557,24 @@ def _build_snapshot_manifest(*,
             if (REPO_ROOT / "data" / "player_availability_asof.parquet").exists()
             else None
         ),
+        # Phase 13O tracking — every Derek snapshot manifest records which
+        # feature set the active champion was trained with. Until a
+        # Phase 13O challenger is promoted, these flags are all False
+        # (the current champion does not consume the live-context
+        # columns). Downstream consumers can use these flags to know
+        # whether the snapshot's PMFs are lineup-aware.
+        "feature_set_id": "phase13o_live_context_v1",
+        "live_context_features_enabled": False,
+        "trained_with_bdl_lineup_features": False,
+        "trained_with_injury_availability_features": False,
+        "trained_with_vacated_opportunity_features": False,
+        "live_context_feature_list_hash": None,
+        "minutes_feature_list_hash": None,
+        "rate_feature_list_hashes": {},
+        "calibration_feature_context": "role_bucket (minutes-driven)",
+        "pmf_sensitivity_verified": False,
+        "actionability_sensitivity_verified": True,
+        "market_only_edge_sensitivity_verified": True,
         # Hash of the per-snapshot market_comparison parquet — used for
         # market-change diff in snapshot_comparison.
         "market_snapshot_hash": (

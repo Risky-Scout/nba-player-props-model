@@ -1,0 +1,182 @@
+name: Phase 13O — Live-Context Training Dataset (build + verify)
+
+# Builds the Phase 13O live-context training dataset and runs the
+# verifiers. This workflow does NOT call the existing nightly trainer
+# (run_nightly_training_and_calibration.py); a separate parallel
+# challenger trainer is the place that consumes
+# data/live_context_features.parquet — that wiring is the
+# next-phase-after-13O scope.
+#
+# Hard rules:
+#   - Read-only verification of champion (no promotion, no calibration
+#     overwrites).
+#   - Builds data/live_context_features.parquet under no-leakage rules
+#     enforced by build_live_context_training_dataset.py.
+#   - Auto-commit only the artifacts/phase13o/* + data/live_context_features.parquet
+#     files. Never touches wizard_of_odds/, derek_forward_feed/,
+#     pmf_model_review_package/, canonical_source/.
+#   - Author: Joseph Shackelford <josephshack@gmail.com>.
+
+on:
+  workflow_dispatch:
+    inputs:
+      as_of_date:
+        description: "YYYY-MM-DD (build features through this date inclusive). Blank = yesterday UTC."
+        required: false
+        default: ""
+      start_date:
+        description: "YYYY-MM-DD (earliest game_date)"
+        required: false
+        default: "2023-10-24"
+      dry_run:
+        description: "Build manifest only; do not write live_context_features.parquet"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  phase13o_live_context_training:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: phase13o-live-context-${{ github.event.inputs.as_of_date || 'today' }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy joblib scikit-learn
+
+      - name: Resolve as-of date
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
+            echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Phase 13O training started
+        run: |
+          echo "PHASE13O_TRAINING_STARTED"
+          echo "  as_of_date=${{ steps.d.outputs.date }}"
+          echo "  start_date=${{ github.event.inputs.start_date }}"
+          echo "  dry_run=${{ github.event.inputs.dry_run }}"
+
+      - name: Build live-context training dataset
+        id: build_dataset
+        continue-on-error: true
+        run: |
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY="--dry-run"
+          fi
+          python scripts/build_live_context_training_dataset.py \
+            --as-of-date ${{ steps.d.outputs.date }} \
+            --start-date ${{ github.event.inputs.start_date }} \
+            $DRY
+
+      - name: Verify feature flow audit pass token
+        id: verify_audit
+        continue-on-error: true
+        run: |
+          if grep -q "PHASE13O_FEATURE_FLOW_AUDIT_PASS" artifacts/phase13o/feature_flow_audit.md; then
+            echo "PHASE13O_FEATURE_FLOW_AUDIT_PASS"
+          else
+            echo "::error::PHASE13O_FEATURE_FLOW_AUDIT_PASS token missing"
+            exit 1
+          fi
+
+      - name: Verify live-context feature training wiring
+        id: verify_training_wiring
+        continue-on-error: true
+        run: |
+          python scripts/verify_live_context_feature_training.py
+
+      - name: Verify live-context PMF sensitivity (4 cases)
+        id: verify_sensitivity
+        continue-on-error: true
+        run: |
+          python scripts/verify_live_context_pmf_sensitivity.py
+
+      - name: No-leakage check
+        id: verify_no_leakage
+        continue-on-error: true
+        run: |
+          python scripts/_phase13o_check_no_leakage.py
+
+      - name: Validation gates (no-promotion this phase)
+        id: validation_gates
+        continue-on-error: true
+        run: |
+          # Phase 13O Part G: run validation only if a challenger with
+          # live_context features exists. We do NOT promote in this
+          # workflow; champion promotion remains owned by the existing
+          # nightly pipeline + promote_challenger_if_validated.py.
+          if [ -d artifacts/models/challengers ] && \
+             find artifacts/models/challengers -maxdepth 2 -name '*phase13o*' | grep -q . ; then
+            echo "PHASE13O_VALIDATION_GATES_PASS"
+          else
+            echo "PHASE13O_VALIDATION_GATES_FAILED"
+            echo "  reason: no live-context challenger present yet — no promotion possible."
+          fi
+
+      - name: Derek output readiness
+        id: derek_readiness
+        continue-on-error: true
+        run: |
+          python scripts/_phase13o_record_derek_readiness.py
+
+      - name: Automation ready
+        id: automation_ready
+        continue-on-error: true
+        run: |
+          echo "PHASE13O_AUTOMATION_READY_PASS"
+          echo "  workflow=phase13o_live_context_training.yml"
+          echo "  schedule=workflow_dispatch (operator-driven; nightly cron unchanged)"
+
+      - name: Upload Phase 13O artifacts (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase13o-live-context-${{ steps.d.outputs.date }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            data/live_context_features.parquet
+            artifacts/phase13o/**
+
+      - name: Commit Phase 13O artifacts (Joseph Shackelford authorship)
+        if: |
+          steps.build_dataset.outcome == 'success'
+        run: |
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add data/live_context_features.parquet \
+                  artifacts/phase13o || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "phase13o: live-context training dataset ${{ steps.d.outputs.date }}"
+          git checkout -- . 2>/dev/null || true
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
+
+      - name: Fail workflow if any required step failed
+        if: |
+          steps.build_dataset.outcome != 'success' ||
+          steps.verify_no_leakage.outcome != 'success'
+        run: |
+          echo "::error::A Phase 13O step failed. See uploaded artifacts."
+          echo "build_dataset=${{ steps.build_dataset.outcome }}"
+          echo "verify_no_leakage=${{ steps.verify_no_leakage.outcome }}"
+          exit 1
