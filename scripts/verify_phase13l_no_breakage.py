@@ -239,6 +239,7 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
     runner = REPO_ROOT / "scripts" / "run_derek_live_game_snapshot.py"
     verifier = REPO_ROOT / "scripts" / "verify_derek_live_snapshots.py"
     predict_pipeline = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
+    api_readiness = REPO_ROOT / "scripts" / "verify_derek_live_api_readiness.py"
     needed = {
         runner: (
             'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
@@ -246,12 +247,20 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
             "lineup_feature_blocker",
             "--derek-live-snapshot",
             "lineup_integration_summary",
+            # Phase 13N tokens.
+            "lineup_source_equivalence_verified",
+            "injury_availability_hash",
+            "market_snapshot_hash",
+            "lineup_context.parquet",
+            "injury_availability_context.parquet",
+            "prediction_input_audit.parquet",
         ),
         verifier: (
             "DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS",
             "all_production_recomputed",
             "DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS",
             "DEREK_INJURY_AVAILABILITY_CONTEXT_PASS",
+            "BDL_LINEUPS_FETCH_PASS",
         ),
         predict_pipeline: (
             "_derek_live_args",
@@ -259,6 +268,12 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
             "PREDICT_DEREK_LIVE_ARGS_PASS",
             "PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS",
             "derek_live_predictions.parquet",
+        ),
+        api_readiness: (
+            "DEREK_LIVE_API_READINESS_PASS",
+            "BDL_API_KEY",
+            "get_lineups",
+            "get_injuries",
         ),
     }
     for path, tokens in needed.items():

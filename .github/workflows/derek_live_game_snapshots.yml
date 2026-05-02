@@ -141,6 +141,15 @@ jobs:
             --snapshot-type close_lock \
             $STALE_FLAG $MAX_FLAG $FORCE_FLAG
 
+      - name: Verify Derek live API readiness
+        id: verify_api_readiness
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python scripts/verify_derek_live_api_readiness.py
+
       - name: Verify predict.py Derek-mode CLI + lineup-context fixture
         id: verify_predict_lineup
         continue-on-error: true
@@ -205,6 +214,7 @@ jobs:
             artifacts/live_lineups/${{ steps.d.outputs.date }}/**
             artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.*
             artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.*
+            artifacts/automation_health/derek_live_api_readiness.*
             artifacts/automation_health/phase13l_no_breakage.*
 
       - name: Stage and commit Derek-only files (Joseph Shackelford authorship)

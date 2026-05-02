@@ -64,6 +64,18 @@ REQUIRED_OUTPUTS = (
     "market_comparison.parquet",
 )
 
+# Phase 13N Part I additions — emitted by every snapshot from 13N forward.
+# Pre-13N manifests don't carry them, so this is checked separately and
+# downgraded to "advisory" when the manifest predates the schema.
+PHASE13N_OUTPUTS = (
+    "lineup_context.csv",
+    "lineup_context.parquet",
+    "injury_availability_context.csv",
+    "injury_availability_context.parquet",
+    "prediction_input_audit.csv",
+    "prediction_input_audit.parquet",
+)
+
 
 @dataclass
 class Check:
@@ -162,6 +174,13 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
     )
     if missing:
         return
+    # Phase 13N additional outputs — emitted by 13N+ runner. Older
+    # backfill manifests pre-date these files, so this check is advisory
+    # (never fails the report) but records the fact.
+    p13n_missing = [f for f in PHASE13N_OUTPUTS if not (snap_dir / f).exists()]
+    report.facts.setdefault("phase13n_outputs_status", []).append(
+        {"label": label, "missing": p13n_missing}
+    )
 
     manifest = read_json(snap_dir / "snapshot_manifest.json")
 
@@ -567,6 +586,19 @@ def main(argv: list[str] | None = None) -> int:
         # manifest records the injury_source and availability_source
         # strings. (Per-snapshot checks already gated this above.)
         print("DEREK_INJURY_AVAILABILITY_CONTEXT_PASS")
+        # BDL_LINEUPS_FETCH_PASS — emitted when at least one game has a
+        # persisted lineup_status.json under artifacts/live_lineups/.
+        # The fetch wrapper writes this even on empty BDL responses (BDL
+        # has not posted lineups yet), so the pass is a "fetch wrapper
+        # ran" signal, not "lineups confirmed".
+        live_lineups_dir = (
+            REPO_ROOT / "artifacts" / "live_lineups" / args.delivery_date
+        )
+        if live_lineups_dir.exists() and any(
+            (d / "lineup_status.json").exists()
+            for d in live_lineups_dir.iterdir() if d.is_dir()
+        ):
+            print("BDL_LINEUPS_FETCH_PASS")
         if all_production_recomputed:
             print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
         elif all_backfill:

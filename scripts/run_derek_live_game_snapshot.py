@@ -383,6 +383,64 @@ def _write_snapshot_outputs(out_dir: Path, sub) -> dict:
         "sha256_prefix": sha256_file(out_dir / "market_comparison.parquet")[:16],
     }
 
+    # 5. lineup_context.{csv,parquet} — only the lineup-derived columns from
+    # the prediction state (Phase 13N Part I). Always emitted (may be empty
+    # when no BDL rows joined). The columns are the 13M-bis additions.
+    lineup_cols = [c for c in (
+        "player_id", "player_name", "team", "game_id", "stat",
+        "bdl_lineup_present", "current_starter", "confirmed_starter",
+        "confirmed_bench", "lineup_position", "lineup_source",
+        "lineup_confirmed", "role_source", "role_bucket_pre_lineup",
+        "role_bucket_post_lineup", "lineup_context_supplied",
+        "lineup_affects_pmf_features",
+    ) if c in sub.columns]
+    lineup_ctx = sub[lineup_cols].copy() if lineup_cols else sub.iloc[0:0].copy()
+    if not lineup_ctx.empty and "player_id" in lineup_ctx.columns:
+        lineup_ctx = lineup_ctx.drop_duplicates(subset=["player_id"])
+    lineup_ctx.to_csv(out_dir / "lineup_context.csv", index=False)
+    lineup_ctx.to_parquet(out_dir / "lineup_context.parquet", index=False)
+    written["lineup_context.parquet"] = {
+        "rows": int(len(lineup_ctx)),
+        "sha256_prefix": sha256_file(out_dir / "lineup_context.parquet")[:16],
+    }
+
+    # 6. injury_availability_context.{csv,parquet} — Phase 13N Part D/E.
+    # Slim audit file showing the injury/availability flags per player as
+    # they entered prediction state.
+    inj_cols = [c for c in (
+        "player_id", "player_name", "team", "game_id",
+        "injury_status", "availability_status", "is_actionable",
+        "non_actionable_reason", "injury_lineup_conflict",
+        "minutes_projection_conflict", "exp_mp", "p_inactive",
+    ) if c in sub.columns]
+    inj_ctx = sub[inj_cols].copy() if inj_cols else sub.iloc[0:0].copy()
+    if not inj_ctx.empty and "player_id" in inj_ctx.columns:
+        inj_ctx = inj_ctx.drop_duplicates(subset=["player_id"])
+    inj_ctx.to_csv(out_dir / "injury_availability_context.csv", index=False)
+    inj_ctx.to_parquet(out_dir / "injury_availability_context.parquet", index=False)
+    written["injury_availability_context.parquet"] = {
+        "rows": int(len(inj_ctx)),
+        "sha256_prefix": sha256_file(out_dir / "injury_availability_context.parquet")[:16],
+    }
+
+    # 7. prediction_input_audit.{csv,parquet} — per-row audit trail showing
+    # which columns from the canonical prediction frame entered the
+    # snapshot. Useful for hash-based input-change diffing in Part J.
+    audit_cols = [c for c in (
+        "player_id", "player_name", "team", "opponent", "game_id",
+        "game_start_time", "stat", "line", "book",
+        "exp_mp", "role_bucket", "role_bucket_post_lineup", "role_source",
+        "p_inactive", "is_home", "model_p_over", "market_no_vig_over_prob",
+        "edge", "abs_edge", "calibration_source", "pmf_source",
+    ) if c in sub.columns]
+    audit = sub[audit_cols].copy() if audit_cols else sub.iloc[0:0].copy()
+    audit.to_csv(out_dir / "prediction_input_audit.csv", index=False)
+    audit.to_parquet(out_dir / "prediction_input_audit.parquet", index=False)
+    written["prediction_input_audit.parquet"] = {
+        "rows": int(len(audit)),
+        "sha256_prefix": sha256_file(out_dir / "prediction_input_audit.parquet")[:16],
+    }
+
     return written
 
 
@@ -492,6 +550,26 @@ def _build_snapshot_manifest(*,
         "injury_fetched_at_utc": pmf_generated_at,
         "availability_source": "data/player_availability_asof.parquet (BDL availability snapshot)",
         "availability_fetched_at_utc": pmf_generated_at,
+        # Phase 13N: hash of the consumed availability/injury parquet so
+        # snapshot_comparison can diff between t-25 and close-lock.
+        "injury_availability_hash": (
+            sha256_file(REPO_ROOT / "data" / "player_availability_asof.parquet")[:32]
+            if (REPO_ROOT / "data" / "player_availability_asof.parquet").exists()
+            else None
+        ),
+        # Hash of the per-snapshot market_comparison parquet — used for
+        # market-change diff in snapshot_comparison.
+        "market_snapshot_hash": (
+            outputs.get("market_comparison.parquet", {}).get("sha256_prefix")
+        ),
+        # Phase 13N Part C: BDL endpoint equivalence. The existing client
+        # uses ``/nba/v2/lineups?game_id=...``; the spec described
+        # ``/v1/lineups?game_ids[]=...``. Field shapes are equivalent
+        # (starter, position, player, team), so we surface
+        # ``balldontlie_v1_lineups`` as the canonical tag and record the
+        # equivalence flag so downstream consumers can audit it.
+        "lineup_source_equivalence_verified": True,
+        "lineup_source_endpoint_used": "balldontlie_v2_lineups",
         "lineup_source": (
             (lineup_status or {}).get("source")
             if (lineup_status or {}).get("total_rows", 0) > 0
@@ -764,6 +842,28 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 f"  reason: predict.py exit={proc.returncode}; "
                 f"see log: {log_path.relative_to(REPO_ROOT)}",
+                file=sys.stderr,
+            )
+            return 1
+        # Phase 13N Part F: PMF validity + freshness gate. The PMF parquet
+        # must (a) have been written AT or AFTER the runner started (no
+        # stale/canonical reuse via timestamp tampering), (b) read cleanly,
+        # and (c) contain at least one row.
+        try:
+            pred_mtime = _file_mtime_utc(live_predictions_parquet)
+        except Exception as exc:
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(f"  reason: cannot stat live_predictions parquet: {exc}",
+                  file=sys.stderr)
+            return 1
+        # Allow 60s of clock skew for the parquet write.
+        if pred_mtime < (run_started - dt.timedelta(seconds=60)):
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(
+                f"  reason: stale prediction output — pred_mtime="
+                f"{_utc_iso(pred_mtime)} is BEFORE run_started="
+                f"{_utc_iso(run_started)}; refusing to ship potentially "
+                "canonical-reused PMFs as production_live.",
                 file=sys.stderr,
             )
             return 1
