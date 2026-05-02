@@ -158,39 +158,96 @@ def main(argv=None) -> int:
             "Case 4: market change leaked into live-context feature vector"
         )
 
-    # ── PMF sensitivity result. We need to inspect saved feature lists
-    #    to know whether the model would actually consume the new columns.
+    # ── Phase 13P PMF sensitivity. We exercise the actual fitted
+    #    challenger models (if a Phase 13P challenger directory exists)
+    #    by computing minutes_adjustment for the same player in two
+    #    scenarios that differ only on the lineup/injury features. If
+    #    the predicted adjustment differs, that proves the trained
+    #    artifacts respond to live-context inputs upstream of any PMF
+    #    construction in production.
     has_phase13o_cols_in_lists = False
-    expected_subset = {
-        "lineup_confirmed", "confirmed_starter",
-        "role_source_confirmed_lineup", "role_bucket_post_lineup_encoded",
-        "injury_status_encoded", "injury_lineup_conflict",
-    }
-    models_dir = REPO_ROOT / "artifacts" / "models"
+    pmf_response_proven = False
+    pmf_response_detail = ""
+    challengers_root = REPO_ROOT / "artifacts" / "models" / "challengers"
     inspected = 0
-    if models_dir.exists():
+    if challengers_root.exists():
         try:
             import joblib
         except Exception:
             joblib = None
         if joblib is not None:
-            for sub in ("features_pts.pkl", "features_reb.pkl",
-                        "features_ast.pkl", "rate_pts_features.pkl"):
-                f = models_dir / sub
-                if f.exists():
-                    inspected += 1
-                    try:
-                        cols = joblib.load(f)
-                        col_set = (
-                            set(cols) if isinstance(cols, (list, tuple))
-                            else set(cols.tolist()) if hasattr(cols, "tolist")
-                            else set()
-                        )
-                        if col_set & expected_subset:
-                            has_phase13o_cols_in_lists = True
-                            break
-                    except Exception:
-                        continue
+            phase13p_dirs = sorted(d for d in challengers_root.iterdir()
+                                    if d.is_dir() and d.name.endswith("_live_context"))
+            for d in phase13p_dirs:
+                feat_pkl = d / "phase13p_minutes_adjustment_features.pkl"
+                model_pkl = d / "phase13p_minutes_adjustment_model.pkl"
+                if not (feat_pkl.exists() and model_pkl.exists()):
+                    continue
+                inspected += 1
+                try:
+                    feature_cols = joblib.load(feat_pkl)
+                    model = joblib.load(model_pkl)
+                    if isinstance(feature_cols, (list, tuple)):
+                        cols_list = list(feature_cols)
+                    else:
+                        cols_list = list(feature_cols)
+                    has_phase13o_cols_in_lists = True
+                    # Build two synthetic feature vectors that differ only
+                    # on injury status. Vector A: probable / no teammates
+                    # out. Vector B: questionable + 2 starters out (vacated
+                    # minutes 60).
+                    def vec(scenario):
+                        v = []
+                        for c in cols_list:
+                            if c == "is_actionable":
+                                v.append(1.0)
+                            elif c == "is_confirmed_out":
+                                v.append(0.0)
+                            elif c == "is_inactive":
+                                v.append(0.0)
+                            elif c == "is_doubtful":
+                                v.append(0.0)
+                            elif c == "is_questionable":
+                                v.append(1.0 if scenario == "B" else 0.0)
+                            elif c == "is_probable":
+                                v.append(0.0 if scenario == "B" else 1.0)
+                            elif c == "injury_status_encoded":
+                                v.append(3.0 if scenario == "B" else 2.0)
+                            elif c == "availability_status_encoded":
+                                v.append(3.0 if scenario == "B" else 2.0)
+                            elif c == "injury_features_missing":
+                                v.append(0.0)
+                            elif c == "vacated_features_missing":
+                                v.append(0.0)
+                            elif c == "num_teammates_out_total":
+                                v.append(2.0 if scenario == "B" else 0.0)
+                            elif c.startswith("num_teammates_out_"):
+                                v.append(1.0 if scenario == "B" else 0.0)
+                            elif c == "vacated_minutes_total":
+                                v.append(60.0 if scenario == "B" else 0.0)
+                            elif c.startswith("vacated_minutes_"):
+                                v.append(20.0 if scenario == "B" else 0.0)
+                            elif c == "vacated_fga_total":
+                                v.append(15.0 if scenario == "B" else 0.0)
+                            elif c == "starter_proxy_lagged":
+                                v.append(1.0)
+                            else:
+                                v.append(0.0)
+                        return v
+                    import numpy as np
+                    pred_a = float(model.predict(np.array([vec("A")]))[0])
+                    pred_b = float(model.predict(np.array([vec("B")]))[0])
+                    pmf_response_proven = abs(pred_a - pred_b) > 1e-3
+                    pmf_response_detail = (
+                        f"challenger={d.name} minutes_adjustment "
+                        f"scenario_A={pred_a:.4f} scenario_B={pred_b:.4f} "
+                        f"abs_diff={abs(pred_a - pred_b):.4f}"
+                    )
+                    if pmf_response_proven:
+                        break
+                except Exception as exc:
+                    pmf_response_detail = f"failed to exercise model: {exc}"
+                    continue
 
     out_dir = REPO_ROOT / "artifacts" / "phase13o"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -226,9 +283,18 @@ def main(argv=None) -> int:
         for i in issues:
             print(f"  - {i}", file=sys.stderr)
         return 1
-    if has_phase13o_cols_in_lists:
+    if has_phase13o_cols_in_lists and pmf_response_proven:
         print("PHASE13O_PMF_SENSITIVITY_PASS")
+        print("PHASE13P_PMF_SENSITIVITY_PASS")
+        print(f"  {pmf_response_detail}")
         return 0
+    if has_phase13o_cols_in_lists and not pmf_response_proven:
+        # Trained artifacts exist but fail to move under controlled
+        # input change — that IS a real failure (not a pending state).
+        print("PHASE13P_PMF_SENSITIVITY_FAILED", file=sys.stderr)
+        print(f"  {pmf_response_detail or 'no challenger artifacts could be exercised'}",
+              file=sys.stderr)
+        return 1
     # Honest pending state — wiring is correct, no retrained model yet.
     print("PHASE13O_PMF_SENSITIVITY_PENDING_RETRAINED_ARTIFACTS")
     print(

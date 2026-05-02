@@ -1,0 +1,42 @@
+{
+  "any_positive_improvement": true,
+  "facts": {
+    "2026-04-30_live_context": {
+      "ast": {
+        "n_test": 16225,
+        "rel_improvement": 6.225007292240725e-06
+      },
+      "blk": {
+        "n_test": 16225,
+        "rel_improvement": -6.963623097030635e-05
+      },
+      "fg3m": {
+        "n_test": 16225,
+        "rel_improvement": 0.0001985737739773216
+      },
+      "minutes": {
+        "n_test": 16225,
+        "rel_improvement": 0.01201286851666347
+      },
+      "pts": {
+        "n_test": 16225,
+        "rel_improvement": 0.0001943651516763824
+      },
+      "reb": {
+        "n_test": 16225,
+        "rel_improvement": -1.0277346558390834e-05
+      },
+      "stl": {
+        "n_test": 16225,
+        "rel_improvement": -5.3355312525543015e-05
+      },
+      "tov": {
+        "n_test": 16225,
+        "rel_improvement": 4.75474512061343e-05
+      }
+    }
+  },
+  "issues": [],
+  "safe_noninferiority_threshold": -0.005,
+  "schema_version": "1.0"
+}

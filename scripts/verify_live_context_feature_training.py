@@ -78,11 +78,19 @@ def main(argv=None) -> int:
     # already exist in some saved feature lists — they are NOT a Phase 13O
     # signal.
     expected_subset = {
+        # Phase 13O / 13P column names that are NOT shared with the
+        # pre-existing availability feature names. Matching any one of
+        # these in a saved feature list proves the trainer consumed the
+        # live-context feature module.
         "lineup_confirmed", "confirmed_starter", "confirmed_bench",
         "role_source_confirmed_lineup", "role_bucket_post_lineup_encoded",
         "starter_changed_from_projection", "lineup_features_missing",
         "injury_status_encoded", "availability_status_encoded",
         "injury_lineup_conflict",
+        # Phase 13P trainer specifically introduces these:
+        "starter_proxy_lagged", "is_actionable", "is_confirmed_out",
+        "is_inactive", "is_doubtful", "is_questionable", "is_probable",
+        "injury_features_missing", "vacated_features_missing",
     }
     feature_list_files = []
     if models_dir.exists():
@@ -94,6 +102,13 @@ def main(argv=None) -> int:
             f = models_dir / sub
             if f.exists():
                 feature_list_files.append(f)
+    # Phase 13P additive challenger feature lists.
+    challengers_root = models_dir / "challengers"
+    if challengers_root.exists():
+        for d in challengers_root.iterdir():
+            if d.is_dir() and d.name.endswith("_live_context"):
+                for f in d.glob("phase13p_*_adjustment_features.pkl"):
+                    feature_list_files.append(f)
     feature_list_status: dict = {}
     has_any_live_context = False
     for f in feature_list_files:
@@ -143,6 +158,19 @@ def main(argv=None) -> int:
         print("PHASE13O_LIVE_CONTEXT_FEATURE_TRAINING_PASS")
         print("  every wiring expectation passed; saved feature lists DO "
               "include live-context columns (post-retraining state)")
+        # Phase 13P-specific PASS: at least one Phase 13P challenger
+        # feature list file was inspected and contained live-context
+        # columns. The Phase 13P trainer writes these under
+        # artifacts/models/challengers/<date>_live_context/.
+        phase13p_count = sum(
+            1 for k in feature_list_status
+            if "_live_context" in k and "phase13p_" in k
+            and "live_context_present" in feature_list_status[k]
+            and feature_list_status[k]["live_context_present"]
+        )
+        if phase13p_count > 0:
+            print("PHASE13P_LIVE_CONTEXT_FEATURE_LISTS_PASS")
+            print(f"  phase13p feature list files with live-context columns: {phase13p_count}")
         return 0
 
     # Honest pre-retraining state — wiring is correct, saved feature

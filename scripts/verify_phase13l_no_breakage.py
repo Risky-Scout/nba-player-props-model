@@ -243,6 +243,9 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
     live_context = REPO_ROOT / "src" / "nba_props_model" / "features" / "live_context.py"
     dataset_builder = REPO_ROOT / "scripts" / "build_live_context_training_dataset.py"
     sensitivity = REPO_ROOT / "scripts" / "verify_live_context_pmf_sensitivity.py"
+    p13p_trainer = REPO_ROOT / "scripts" / "train_live_context_challenger.py"
+    p13p_no_leakage = REPO_ROOT / "scripts" / "verify_phase13p_no_leakage.py"
+    p13p_gates = REPO_ROOT / "scripts" / "verify_phase13p_validation_gates.py"
     needed = {
         runner: (
             'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
@@ -298,6 +301,23 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
             "PHASE13O_ACTIONABILITY_SENSITIVITY_PASS",
             "PHASE13O_MARKET_ONLY_EDGE_SENSITIVITY_PASS",
             "PHASE13O_PMF_SENSITIVITY_PENDING_RETRAINED_ARTIFACTS",
+            "PHASE13P_PMF_SENSITIVITY_PASS",  # post-13P pass line
+        ),
+        p13p_trainer: (
+            "PHASE13P_LIVE_CONTEXT_CHALLENGER_TRAINER_READY_PASS",
+            "PHASE13P_LIVE_CONTEXT_CHALLENGER_TRAINING_PASS",
+            "phase13p_lineup_injury_driver_v1",
+            "starter_proxy_lagged",
+            "no_same_game_performance_predictors",
+        ),
+        p13p_no_leakage: (
+            "PHASE13P_NO_LEAKAGE_PASS",
+            "FORBIDDEN_PREDICTOR_COLUMNS",
+        ),
+        p13p_gates: (
+            "PHASE13P_VALIDATION_GATES_PASS",
+            "PHASE13P_VALIDATION_GATES_FAILED",
+            "SAFE_NONINFERIORITY_THRESHOLD",
         ),
     }
     for path, tokens in needed.items():
