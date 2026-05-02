@@ -1,0 +1,30 @@
+{
+  "case_results": {
+    "case_1_no_change": {
+      "feature_vector_hash_a": "3a19d1323f56943c",
+      "feature_vector_hash_b": "3a19d1323f56943c",
+      "vectors_equal": true
+    },
+    "case_2_lineup_change": {
+      "feature_vector_hash_post": "4e1749b0ddca3465",
+      "feature_vector_hash_pre": "3a19d1323f56943c",
+      "post_row_lineup_confirmed": true,
+      "post_row_role_source_confirmed_lineup": true,
+      "vectors_changed": true
+    },
+    "case_3_injury_out": {
+      "injury_lineup_conflict": true,
+      "is_actionable": false,
+      "is_confirmed_out": true
+    },
+    "case_4_market_only": {
+      "feature_vector_hash_m1": "3a19d1323f56943c",
+      "feature_vector_hash_m2": "3a19d1323f56943c",
+      "live_context_vectors_equal": true
+    }
+  },
+  "feature_lists_consume_phase13o_cols": false,
+  "feature_lists_inspected": 4,
+  "feature_set_id": "phase13o_live_context_v1",
+  "issues": []
+}

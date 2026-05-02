@@ -1,0 +1,53 @@
+{
+  "any_feature_list_includes_live_context": false,
+  "feature_list_files_inspected": 11,
+  "feature_list_status": {
+    "artifacts/models/features_ast.pkl": {
+      "live_context_present": [],
+      "total_features": 39
+    },
+    "artifacts/models/features_blk.pkl": {
+      "live_context_present": [],
+      "total_features": 40
+    },
+    "artifacts/models/features_fg3m.pkl": {
+      "live_context_present": [],
+      "total_features": 43
+    },
+    "artifacts/models/features_pts.pkl": {
+      "live_context_present": [],
+      "total_features": 45
+    },
+    "artifacts/models/features_reb.pkl": {
+      "live_context_present": [],
+      "total_features": 51
+    },
+    "artifacts/models/features_stl.pkl": {
+      "live_context_present": [],
+      "total_features": 41
+    },
+    "artifacts/models/features_tov.pkl": {
+      "live_context_present": [],
+      "total_features": 31
+    },
+    "artifacts/models/rate_ast_features.pkl": {
+      "live_context_present": [],
+      "total_features": 606
+    },
+    "artifacts/models/rate_pts_features.pkl": {
+      "live_context_present": [],
+      "total_features": 606
+    },
+    "artifacts/models/rate_reb_features.pkl": {
+      "live_context_present": [],
+      "total_features": 606
+    },
+    "artifacts/models/rate_tov_features.pkl": {
+      "live_context_present": [],
+      "total_features": 606
+    }
+  },
+  "feature_set_id": "phase13o_live_context_v1",
+  "issues": [],
+  "live_context_module_ok": true
+}
