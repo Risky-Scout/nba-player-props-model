@@ -11,13 +11,43 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T10:31:52Z finished=2026-05-02T10:31:52Z",
+      "detail": "started=2026-05-02T12:28:22Z finished=2026-05-02T12:28:22Z",
       "name": "21681995/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
     {
-      "detail": "pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True",
-      "name": "21681995/t_minus_25/pmf_source_backfill_acceptable",
+      "detail": "snapshot_mode='backfill_demo'",
+      "name": "21681995/t_minus_25/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='backfill_demo' allow_backfill_test=True",
+      "name": "21681995/t_minus_25/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False",
+      "name": "21681995/t_minus_25/backfill_demo_pmf_source_is_reused_canonical",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-t_minus_25-21681995-20260502T122822'",
+      "name": "21681995/t_minus_25/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='03b6e1036baa6a6202cbeb83f7847b702b5a905e'",
+      "name": "21681995/t_minus_25/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-05-02T12:27:59Z'",
+      "name": "21681995/t_minus_25/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='a53b2423e4181720'",
+      "name": "21681995/t_minus_25/manifest_field_present:pmf_output_hash",
       "passed": true
     },
     {
@@ -61,13 +91,43 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T10:31:53Z finished=2026-05-02T10:31:54Z",
+      "detail": "started=2026-05-02T12:28:24Z finished=2026-05-02T12:28:24Z",
       "name": "21681996/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
     {
-      "detail": "pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True",
-      "name": "21681996/t_minus_25/pmf_source_backfill_acceptable",
+      "detail": "snapshot_mode='backfill_demo'",
+      "name": "21681996/t_minus_25/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='backfill_demo' allow_backfill_test=True",
+      "name": "21681996/t_minus_25/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False",
+      "name": "21681996/t_minus_25/backfill_demo_pmf_source_is_reused_canonical",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-t_minus_25-21681996-20260502T122824'",
+      "name": "21681996/t_minus_25/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='03b6e1036baa6a6202cbeb83f7847b702b5a905e'",
+      "name": "21681996/t_minus_25/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-05-02T12:27:59Z'",
+      "name": "21681996/t_minus_25/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='8b75168f45315515'",
+      "name": "21681996/t_minus_25/manifest_field_present:pmf_output_hash",
       "passed": true
     },
     {
@@ -111,13 +171,43 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T10:31:55Z finished=2026-05-02T10:31:55Z",
+      "detail": "started=2026-05-02T12:28:25Z finished=2026-05-02T12:28:25Z",
       "name": "21684812/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
     {
-      "detail": "pmf_source='live_snapshot_reused_canonical' allow_backfill_test=True",
-      "name": "21684812/t_minus_25/pmf_source_backfill_acceptable",
+      "detail": "snapshot_mode='backfill_demo'",
+      "name": "21684812/t_minus_25/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='backfill_demo' allow_backfill_test=True",
+      "name": "21684812/t_minus_25/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False",
+      "name": "21684812/t_minus_25/backfill_demo_pmf_source_is_reused_canonical",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-t_minus_25-21684812-20260502T122825'",
+      "name": "21684812/t_minus_25/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='03b6e1036baa6a6202cbeb83f7847b702b5a905e'",
+      "name": "21684812/t_minus_25/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-05-02T12:27:59Z'",
+      "name": "21684812/t_minus_25/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='8095175e23dffc1b'",
+      "name": "21684812/t_minus_25/manifest_field_present:pmf_output_hash",
       "passed": true
     },
     {
@@ -156,13 +246,19 @@
       "passed": true
     }
   ],
-  "code_commit": "0056e3fa8ab93f01186453721ad744415c06bdec",
+  "code_commit": "03b6e1036baa6a6202cbeb83f7847b702b5a905e",
   "delivery_date": "2026-05-01",
   "facts": {
     "game_count": 3,
+    "mode_counts": {
+      "backfill_demo": 3,
+      "production_live": 0,
+      "unknown": 0
+    },
+    "recomputed_snapshot_count": 0,
     "snapshot_count": 3
   },
-  "generated_at_utc": "2026-05-02T10:31:56+00:00",
+  "generated_at_utc": "2026-05-02T12:28:27+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
