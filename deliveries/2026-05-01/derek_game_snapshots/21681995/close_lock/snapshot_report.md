@@ -9,9 +9,9 @@
 - calibrated_through_date: `2026-04-30`
 - game_start_time_utc: `None`
 - snapshot_target_time_utc: `None`
-- actual_run_started_at_utc: `2026-05-02T13:12:43Z`
-- actual_run_finished_at_utc: `2026-05-02T13:12:45Z`
-- pmf_generated_at_utc: `2026-05-02T13:12:13Z`
+- actual_run_started_at_utc: `2026-05-02T13:43:55Z`
+- actual_run_finished_at_utc: `2026-05-02T13:43:58Z`
+- pmf_generated_at_utc: `2026-05-02T13:43:25Z`
 - props_emitted: 33
 - market_rows: 33
 - active_players_projected: 14
@@ -19,7 +19,7 @@
 ## Lineup status
 
 - lineup_source: `None`
-- lineup_fetched_at_utc: `2026-05-02T13:12:44Z`
+- lineup_fetched_at_utc: `2026-05-02T13:43:56Z`
 - lineup_confirmed: **False**
 - lineup_complete: `unavailable`
 - lineup_aware: **False**
@@ -29,7 +29,7 @@
 - starters_by_team: `{}`
 - lineup_context_supplied: **True**
 - lineup_affects_pmf_features: **False**
-- lineup_feature_blocker: 'predict.py does not yet accept --lineup-context; lineup status is recorded as snapshot metadata and will inform Phase 13M-bis feature engineering, but does not currently change PMF features.'
+- lineup_feature_blocker: 'no lineup rows joined into prediction state for this snapshot — see derek_live_predictions_summary.json for the exact blocker (typical: BDL has not posted lineups yet, or backfill_demo mode bypassed predict.py).'
 
 ## Champion model
 

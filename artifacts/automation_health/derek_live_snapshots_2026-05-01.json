@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:12:34Z finished=2026-05-02T13:12:35Z",
+      "detail": "started=2026-05-02T13:43:47Z finished=2026-05-02T13:43:48Z",
       "name": "21681995/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
@@ -31,17 +31,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-t_minus_25-21681995-20260502T131234'",
+      "detail": "value='derek-snapshot-t_minus_25-21681995-20260502T134347'",
       "name": "21681995/t_minus_25/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='52ca1c80dd5671b33e1a770876198d030dd9b015'",
+      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
       "name": "21681995/t_minus_25/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:12:13Z'",
+      "detail": "value='2026-05-02T13:43:25Z'",
       "name": "21681995/t_minus_25/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -96,12 +96,22 @@
       "passed": true
     },
     {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21681995/t_minus_25/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21681995/t_minus_25/availability_source_recorded",
+      "passed": true
+    },
+    {
       "detail": "ok",
       "name": "21681995/close_lock/required_outputs_present",
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:12:43Z finished=2026-05-02T13:12:45Z",
+      "detail": "started=2026-05-02T13:43:55Z finished=2026-05-02T13:43:58Z",
       "name": "21681995/close_lock/run_timestamps_recorded",
       "passed": true
     },
@@ -121,17 +131,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-close_lock-21681995-20260502T131243'",
+      "detail": "value='derek-snapshot-close_lock-21681995-20260502T134355'",
       "name": "21681995/close_lock/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='52ca1c80dd5671b33e1a770876198d030dd9b015'",
+      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
       "name": "21681995/close_lock/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:12:13Z'",
+      "detail": "value='2026-05-02T13:43:25Z'",
       "name": "21681995/close_lock/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -186,6 +196,16 @@
       "passed": true
     },
     {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21681995/close_lock/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21681995/close_lock/availability_source_recorded",
+      "passed": true
+    },
+    {
       "detail": "advisory: comparison emitter is Phase 13L-bis scope; both snapshots present.",
       "name": "21681995/snapshot_comparison_emitted_when_both_present",
       "passed": true
@@ -196,7 +216,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:12:37Z finished=2026-05-02T13:12:38Z",
+      "detail": "started=2026-05-02T13:43:49Z finished=2026-05-02T13:43:50Z",
       "name": "21681996/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
@@ -216,17 +236,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-t_minus_25-21681996-20260502T131237'",
+      "detail": "value='derek-snapshot-t_minus_25-21681996-20260502T134349'",
       "name": "21681996/t_minus_25/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='52ca1c80dd5671b33e1a770876198d030dd9b015'",
+      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
       "name": "21681996/t_minus_25/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:12:13Z'",
+      "detail": "value='2026-05-02T13:43:25Z'",
       "name": "21681996/t_minus_25/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -281,12 +301,22 @@
       "passed": true
     },
     {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21681996/t_minus_25/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21681996/t_minus_25/availability_source_recorded",
+      "passed": true
+    },
+    {
       "detail": "ok",
       "name": "21681996/close_lock/required_outputs_present",
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:12:46Z finished=2026-05-02T13:12:47Z",
+      "detail": "started=2026-05-02T13:43:59Z finished=2026-05-02T13:44:00Z",
       "name": "21681996/close_lock/run_timestamps_recorded",
       "passed": true
     },
@@ -306,17 +336,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-close_lock-21681996-20260502T131246'",
+      "detail": "value='derek-snapshot-close_lock-21681996-20260502T134359'",
       "name": "21681996/close_lock/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='52ca1c80dd5671b33e1a770876198d030dd9b015'",
+      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
       "name": "21681996/close_lock/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:12:13Z'",
+      "detail": "value='2026-05-02T13:43:25Z'",
       "name": "21681996/close_lock/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -371,6 +401,16 @@
       "passed": true
     },
     {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21681996/close_lock/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21681996/close_lock/availability_source_recorded",
+      "passed": true
+    },
+    {
       "detail": "advisory: comparison emitter is Phase 13L-bis scope; both snapshots present.",
       "name": "21681996/snapshot_comparison_emitted_when_both_present",
       "passed": true
@@ -381,7 +421,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:12:39Z finished=2026-05-02T13:12:41Z",
+      "detail": "started=2026-05-02T13:43:51Z finished=2026-05-02T13:43:53Z",
       "name": "21684812/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
@@ -401,17 +441,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-t_minus_25-21684812-20260502T131239'",
+      "detail": "value='derek-snapshot-t_minus_25-21684812-20260502T134351'",
       "name": "21684812/t_minus_25/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='52ca1c80dd5671b33e1a770876198d030dd9b015'",
+      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
       "name": "21684812/t_minus_25/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:12:13Z'",
+      "detail": "value='2026-05-02T13:43:25Z'",
       "name": "21684812/t_minus_25/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -466,12 +506,22 @@
       "passed": true
     },
     {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21684812/t_minus_25/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21684812/t_minus_25/availability_source_recorded",
+      "passed": true
+    },
+    {
       "detail": "ok",
       "name": "21684812/close_lock/required_outputs_present",
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:12:48Z finished=2026-05-02T13:12:50Z",
+      "detail": "started=2026-05-02T13:44:01Z finished=2026-05-02T13:44:03Z",
       "name": "21684812/close_lock/run_timestamps_recorded",
       "passed": true
     },
@@ -491,17 +541,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-close_lock-21684812-20260502T131248'",
+      "detail": "value='derek-snapshot-close_lock-21684812-20260502T134401'",
       "name": "21684812/close_lock/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='52ca1c80dd5671b33e1a770876198d030dd9b015'",
+      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
       "name": "21684812/close_lock/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:12:13Z'",
+      "detail": "value='2026-05-02T13:43:25Z'",
       "name": "21684812/close_lock/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -556,12 +606,22 @@
       "passed": true
     },
     {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21684812/close_lock/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21684812/close_lock/availability_source_recorded",
+      "passed": true
+    },
+    {
       "detail": "advisory: comparison emitter is Phase 13L-bis scope; both snapshots present.",
       "name": "21684812/snapshot_comparison_emitted_when_both_present",
       "passed": true
     }
   ],
-  "code_commit": "52ca1c80dd5671b33e1a770876198d030dd9b015",
+  "code_commit": "9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75",
   "delivery_date": "2026-05-01",
   "facts": {
     "game_count": 3,
@@ -578,7 +638,7 @@
     "recomputed_snapshot_count": 0,
     "snapshot_count": 6
   },
-  "generated_at_utc": "2026-05-02T13:12:54+00:00",
+  "generated_at_utc": "2026-05-02T13:44:10+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

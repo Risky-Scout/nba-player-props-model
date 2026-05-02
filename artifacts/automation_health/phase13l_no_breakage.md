@@ -1,6 +1,6 @@
 # Phase 13L No-Breakage Verification
 
-- generated_at_utc: 2026-05-02T13:12:55+00:00
+- generated_at_utc: 2026-05-02T13:44:11+00:00
 - passed: **True**
 
 ## Checks
@@ -32,6 +32,14 @@
 | phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "backfill_demo" if allow_backfill  | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::champion_metadata_verified | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::lineup_feature_blocker | yes | ok |
+| phase13_correction_token:run_derek_live_game_snapshot.py::--derek-live-snapshot | yes | ok |
+| phase13_correction_token:run_derek_live_game_snapshot.py::lineup_integration_summary | yes | ok |
 | phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS | yes | ok |
 | phase13_correction_token:verify_derek_live_snapshots.py::all_production_recomputed | yes | ok |
 | phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS | yes | ok |
+| phase13_correction_token:verify_derek_live_snapshots.py::DEREK_INJURY_AVAILABILITY_CONTEXT_PASS | yes | ok |
+| phase13_correction_token:predict.py::_derek_live_args | yes | ok |
+| phase13_correction_token:predict.py::_join_lineup_context_into_rows | yes | ok |
+| phase13_correction_token:predict.py::PREDICT_DEREK_LIVE_ARGS_PASS | yes | ok |
+| phase13_correction_token:predict.py::PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS | yes | ok |
+| phase13_correction_token:predict.py::derek_live_predictions.parquet | yes | ok |

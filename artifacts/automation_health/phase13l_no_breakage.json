@@ -127,6 +127,16 @@
     },
     {
       "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::--derek-live-snapshot",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::lineup_integration_summary",
+      "passed": true
+    },
+    {
+      "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS",
       "passed": true
     },
@@ -139,9 +149,39 @@
       "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS",
       "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_INJURY_AVAILABILITY_CONTEXT_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:predict.py::_derek_live_args",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:predict.py::_join_lineup_context_into_rows",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:predict.py::PREDICT_DEREK_LIVE_ARGS_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:predict.py::PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:predict.py::derek_live_predictions.parquet",
+      "passed": true
     }
   ],
-  "code_commit": "52ca1c80dd5671b33e1a770876198d030dd9b015",
+  "code_commit": "9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "challenger-2026-04-30",
@@ -149,7 +189,7 @@
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-02T13:12:55+00:00",
+  "generated_at_utc": "2026-05-02T13:44:11+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
