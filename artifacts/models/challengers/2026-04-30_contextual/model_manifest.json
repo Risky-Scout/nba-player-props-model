@@ -1,6 +1,6 @@
 {
   "challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
-  "code_commit": "7b1e2ff202873abb2a2e36da7d4353970d8bdbf8",
+  "code_commit": "e223cfd91e2e3eb5ca08a607ba0ff22a126938d7",
   "feature_set_id": "phase13q_contextual_pmf_engine_v1",
   "fitted_targets": [
     "minutes",

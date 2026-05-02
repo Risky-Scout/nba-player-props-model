@@ -1,10 +1,18 @@
 {
   "checked_dirs": [
+    "artifacts/models/challengers/2026-04-30_contextual",
     "artifacts/models/challengers/2026-04-30_live_context"
   ],
   "facts": {
+    "2026-04-30_contextual/calibrated_through_date": "2026-04-30",
+    "2026-04-30_contextual/feature_files_checked": 8,
+    "2026-04-30_contextual/historical_lineup_source": "official_boxscore_starter_proxy",
+    "2026-04-30_contextual/historical_lineup_source_safe_for_training": true,
+    "2026-04-30_contextual/leakage_columns_seen": [],
+    "2026-04-30_contextual/no_same_game_performance_predictors": true,
+    "2026-04-30_contextual/trained_through_date": "2026-04-30",
     "2026-04-30_live_context/calibrated_through_date": "2026-04-30",
-    "2026-04-30_live_context/feature_files_checked": 8,
+    "2026-04-30_live_context/feature_files_checked": 0,
     "2026-04-30_live_context/historical_lineup_source": "official_boxscore_starter_proxy",
     "2026-04-30_live_context/historical_lineup_source_safe_for_training": true,
     "2026-04-30_live_context/leakage_columns_seen": [],

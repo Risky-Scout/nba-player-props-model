@@ -1,6 +1,40 @@
 {
   "any_positive_improvement": true,
   "facts": {
+    "2026-04-30_contextual": {
+      "ast": {
+        "n_test": 15762,
+        "rel_improvement": -0.00014793213713286637
+      },
+      "blk": {
+        "n_test": 15762,
+        "rel_improvement": 0.00017722049469665627
+      },
+      "fg3m": {
+        "n_test": 15762,
+        "rel_improvement": 0.0005155655527067293
+      },
+      "minutes": {
+        "n_test": 16225,
+        "rel_improvement": 0.3344089733524524
+      },
+      "pts": {
+        "n_test": 15762,
+        "rel_improvement": 0.0002669727666316052
+      },
+      "reb": {
+        "n_test": 15762,
+        "rel_improvement": -8.288530809928689e-05
+      },
+      "stl": {
+        "n_test": 15762,
+        "rel_improvement": -5.225196023209784e-05
+      },
+      "tov": {
+        "n_test": 15762,
+        "rel_improvement": 5.843120766169493e-05
+      }
+    },
     "2026-04-30_live_context": {
       "ast": {
         "n_test": 16225,
