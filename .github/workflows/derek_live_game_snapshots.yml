@@ -1,0 +1,195 @@
+name: Derek — Per-Game Live PMF Snapshots (T-25 / Close-Lock)
+
+# Phase 13L. Derek-only per-game live snapshots. Independent of WoO and
+# nightly training/calibration. Never modifies wizard_of_odds/ or
+# pmf_model_review_package/ outputs.
+#
+# Hard rules echoed by every job:
+#   - Champion comes only from artifacts/models/registry/champion_pointer.json.
+#   - PMFs must be recomputed for live snapshots (predict.py invocation
+#     during the run, OR --allow-backfill-test for testing on a non-today date).
+#   - Confirmed-lineup status is recorded honestly. Phase 13L does NOT
+#     wire a confirmed-lineup source; manifests carry
+#     lineup_confirmed=false / lineup_blocker="no confirmed lineup source wired".
+#   - No post-tip data is used in pre-game snapshots.
+#   - Derek-only outputs land in deliveries/<date>/derek_game_snapshots/<game_id>/<snapshot_type>/.
+#   - Commit author: Joseph Shackelford <josephshack@gmail.com>.
+
+on:
+  schedule:
+    # Game windows in UTC. Derek-only — does not run when no slate exists.
+    # NBA games typically tip 23:00–02:00 UTC. Run every 10 min through that
+    # window so per-game t-25 / close-lock targets land inside their
+    # execution windows. Each cron firing checks the schedule and only
+    # invokes the runner for games that are actually due.
+    - cron: '0,10,20,30,40,50 22,23,0,1,2,3 * * *'
+  workflow_dispatch:
+    inputs:
+      delivery_date:
+        description: "YYYY-MM-DD; blank = today UTC"
+        required: false
+        default: ""
+      snapshot_type:
+        description: "Which snapshot to dispatch"
+        required: false
+        default: "t_minus_25"
+        type: choice
+        options: ["t_minus_25", "close_lock"]
+      allow_backfill_test:
+        description: "Skip wall-clock window check (for manual testing)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      max_games:
+        description: "Limit games dispatched (testing)"
+        required: false
+        default: ""
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  derek_live_snapshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    concurrency:
+      group: derek-live-snapshots-${{ github.event.inputs.delivery_date || 'today' }}-${{ github.event.inputs.snapshot_type || 't_minus_25' }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy requests joblib scikit-learn
+
+      - name: Resolve delivery date
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
+            echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve snapshot type
+        id: s
+        run: |
+          # workflow_dispatch input wins; cron schedule fans out across both.
+          INPUT_TYPE="${{ github.event.inputs.snapshot_type }}"
+          if [ -z "$INPUT_TYPE" ]; then
+            INPUT_TYPE="both"
+          fi
+          echo "type=$INPUT_TYPE" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch t_minus_25
+        id: dispatch_t25
+        if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both'
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          STALE_FLAG=""
+          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
+            STALE_FLAG="--allow-backfill-test"
+          fi
+          MAX_FLAG=""
+          if [ -n "${{ github.event.inputs.max_games }}" ]; then
+            MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
+          fi
+          python scripts/dispatch_derek_live_game_snapshots.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --snapshot-type t_minus_25 \
+            $STALE_FLAG $MAX_FLAG
+
+      - name: Dispatch close_lock
+        id: dispatch_cl
+        if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both'
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          STALE_FLAG=""
+          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
+            STALE_FLAG="--allow-backfill-test"
+          fi
+          MAX_FLAG=""
+          if [ -n "${{ github.event.inputs.max_games }}" ]; then
+            MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
+          fi
+          python scripts/dispatch_derek_live_game_snapshots.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --snapshot-type close_lock \
+            $STALE_FLAG $MAX_FLAG
+
+      - name: Verify Derek live snapshots
+        id: verify_derek
+        continue-on-error: true
+        run: |
+          python scripts/verify_derek_live_snapshots.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Verify Phase 13L no-breakage
+        id: verify_no_break
+        continue-on-error: true
+        run: |
+          python scripts/verify_phase13l_no_breakage.py
+
+      - name: Upload Derek live snapshot artifacts (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: derek-live-snapshots-${{ steps.d.outputs.date }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots/**
+            artifacts/derek_live_snapshots/${{ steps.d.outputs.date }}/**
+            artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.*
+            artifacts/automation_health/phase13l_no_breakage.*
+
+      - name: Stage and commit Derek-only files (Joseph Shackelford authorship)
+        # Commit only the Derek per-game snapshot folder and the dispatcher
+        # report. NEVER touch wizard_of_odds/, derek_forward_feed/,
+        # pmf_model_review_package/, canonical_source/, data/, or model
+        # artifacts. The verify steps above do not gate the commit — even
+        # partial dispatch (some games skipped due to window) should
+        # persist the snapshots that DID run.
+        if: |
+          steps.dispatch_t25.outcome == 'success' ||
+          steps.dispatch_cl.outcome == 'success'
+        run: |
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
+                  artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
+                  artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/phase13l_no_breakage.json \
+                  artifacts/automation_health/phase13l_no_breakage.md || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "phase13l derek live snapshots ${{ steps.d.outputs.date }}"
+          # Discard any tracked-file working-tree changes (e.g. BDL refresh
+          # side-effects on data/player_game_stats.parquet) so pull --rebase
+          # can proceed cleanly.
+          git checkout -- . 2>/dev/null || true
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
+
+      - name: Fail workflow if any required step failed
+        if: |
+          steps.verify_derek.outcome != 'success' ||
+          steps.verify_no_break.outcome != 'success'
+        run: |
+          echo "::error::A Phase 13L verifier failed. See uploaded artifacts."
+          echo "verify_derek=${{ steps.verify_derek.outcome }}"
+          echo "verify_no_break=${{ steps.verify_no_break.outcome }}"
+          exit 1
