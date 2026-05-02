@@ -80,15 +80,40 @@ scripts**. The verifier `scripts/verify_phase13l_no_breakage.py` enforces that
 the new pipeline never writes under `wizard_of_odds/`, `derek_forward_feed/`,
 `pmf_model_review_package/`, or `canonical_source/`.
 
+## Snapshot modes
+
+Every snapshot manifest declares its **`snapshot_mode`** explicitly:
+
+- **`production_live`** — the runner invoked `scripts/predict.py` itself
+  during this snapshot's window and got a clean exit. Manifest carries
+  `pmfs_recomputed=true`, `pmf_source=live_snapshot_recomputed`,
+  `pmf_recomputation_predict_invocation_succeeded=true`. This is the only
+  mode that proves true live PMF recomputation.
+- **`backfill_demo`** — the runner ran with `--allow-backfill-test` (or
+  workflow input `allow_backfill_test=true`) and reused an existing
+  canonical `predictions/all_props_<date>.parquet`. Manifest carries
+  `pmfs_recomputed=false`, `pmf_source=live_snapshot_reused_canonical`.
+  This is **infrastructure proof only** — it verifies the snapshot
+  pipeline plumbing, not live recomputation.
+
+Production cron and normal `workflow_dispatch` runs are **production_live**.
+Canonical reuse is allowed only with the explicit `--allow-backfill-test`
+flag. In production-live mode, if predict.py cannot be invoked
+successfully, the runner exits 1 with `DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED`
+rather than silently falling back to canonical reuse.
+
 ## Key fields recorded per snapshot manifest
 
 | Field | Meaning |
 | --- | --- |
-| `pmfs_recomputed` | `true` when predict.py ran during the snapshot; `false` only in `--allow-backfill-test` mode |
-| `pmf_source` | `live_snapshot_recomputed` for production, `live_snapshot_reused_canonical` for backfill |
+| `snapshot_mode` | `production_live` or `backfill_demo` (see above) |
+| `pmfs_recomputed` | `true` only when predict.py was invoked by THIS runner with exit 0 |
+| `pmf_source` | `live_snapshot_recomputed` (production_live) or `live_snapshot_reused_canonical` (backfill_demo) |
+| `pmf_recomputation_predict_invocation_succeeded` | `true` iff this runner ran predict.py and it exited 0 |
+| `pmf_recomputation_backfill_reused_canonical` | `true` iff the runner reused an existing canonical parquet |
 | `prediction_run_id` | Per-snapshot run identifier |
 | `prediction_code_commit` | Git SHA at snapshot time |
-| `pmf_generated_at_utc` | mtime of the predictions parquet — must be ≥ run_started_at |
+| `pmf_generated_at_utc` | mtime of the predictions parquet — must be ≥ run_started_at in production_live |
 | `input_manifest_hash` | SHA-256 prefix of the consumed `predictions/all_props_<date>.parquet` |
 | `pmf_output_hash` | SHA-256 prefix of the snapshot's `full_pmf_wide.parquet` |
 | `champion_*` | Mirrors `artifacts/models/registry/champion_pointer.json` rich fields |
@@ -135,14 +160,32 @@ python3 scripts/verify_derek_live_snapshots.py --delivery-date 2026-05-01
 cat artifacts/derek_live_snapshots/2026-05-01/dispatch_t_minus_25.json | jq .
 ```
 
-## Failure-mode signals
+## Pass-line signals
 
-| PASS line | Meaning |
-| --- | --- |
-| `DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS` | Runner produced a valid per-game per-snapshot package |
-| `DEREK_LIVE_SNAPSHOT_DISPATCH_PASS` | Dispatcher fired all due games for the requested snapshot type |
-| `DEREK_LIVE_SNAPSHOTS_PASS` | All snapshots in the date have valid manifests + champion match + lineup honesty + PMF validity |
-| `PHASE13L_NO_BREAKAGE_PASS` | Phase 13K PASS-line tokens still present, workflows still valid YAML, champion_pointer rich fields intact, no Phase 13L pollution of protected delivery sub-folders |
+| PASS line | Owner | Meaning |
+| --- | --- | --- |
+| `DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS` | runner + verifier | Emitted by the runner ONLY when its snapshot is `production_live` with `pmfs_recomputed=true`. Emitted by the verifier ONLY when EVERY snapshot in the delivery date is `production_live` + recomputed. Never emitted for any backfill/demo snapshot. |
+| `DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS` | runner + verifier | Emitted in place of the recomputed-pass-line when the snapshot or collection is `backfill_demo`. Means: pipeline plumbing verified; live recomputation NOT proven. |
+| `DEREK_LIVE_SNAPSHOT_DISPATCH_PASS` | dispatcher | Dispatcher fired all due games for the requested snapshot type |
+| `DEREK_LIVE_SNAPSHOTS_PASS` | verifier | All snapshots in the date have valid manifests + mode/source consistency + champion match + lineup honesty + PMF validity. Mode-agnostic — emitted for both production_live and backfill_demo collections. |
+| `PHASE13L_NO_BREAKAGE_PASS` | no-breakage verifier | Phase 13K PASS-line tokens still present, workflows still valid YAML, champion_pointer rich fields intact, no Phase 13L pollution of protected delivery sub-folders |
+| `DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED` | runner | Production-live mode could not invoke predict.py (e.g. target_date != today, predict.py exit != 0, predictions parquet missing). The runner refuses to silently reuse canonical PMFs in production-live mode. |
+
+## What Phase 13L has and has not proven
+
+- **Proven (backfill_demo on 2026-05-01 and 2026-04-30):** snapshot
+  pipeline plumbing — dispatcher fan-out, runner per-game artifact
+  emission, snapshot_manifest schema, verifier integrity checks,
+  GitHub Actions workflow wiring, champion-pointer linkage.
+- **Not yet proven:** true production-live recomputation. That requires
+  a scheduled or workflow-dispatched **production_live** run that
+  produces `pmfs_recomputed=true` / `pmf_source=live_snapshot_recomputed`
+  on a real NBA slate during a live game window. Until that run lands,
+  the recomputed-pass-line cannot be honestly emitted.
+- **Still not wired:** confirmed-lineup source. Every snapshot manifest
+  carries `lineup_confirmed=false` /
+  `lineup_blocker="no confirmed lineup source wired"` until a future
+  phase wires a real source.
 
 ## Deferred to Phase 13L-bis
 

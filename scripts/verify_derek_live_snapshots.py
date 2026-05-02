@@ -6,11 +6,23 @@ runs in PRE-OUTCOMES mode): scoring/calibration/rolling-benchmark checks
 are deferred until 13L-bis once outcomes exist for snapshots taken under
 this pipeline.
 
+Pass-line semantics:
+    DEREK_LIVE_SNAPSHOTS_PASS — every check passes for every snapshot.
+        (Mode-agnostic: emitted for both production_live and backfill_demo
+        snapshot collections that pass.)
+    DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS — additionally emitted ONLY
+        when EVERY snapshot is snapshot_mode=production_live AND
+        pmfs_recomputed=true AND pmf_source=live_snapshot_recomputed.
+        Never emitted if any snapshot reuses canonical PMFs.
+    DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS — additionally
+        emitted when every snapshot is snapshot_mode=backfill_demo AND
+        pmf_source=live_snapshot_reused_canonical (i.e. infrastructure
+        proof, not live recomputation).
+
 Usage:
     python3 scripts/verify_derek_live_snapshots.py --delivery-date YYYY-MM-DD
 
-Pass line:  DEREK_LIVE_SNAPSHOTS_PASS
-Fail line:  DEREK_LIVE_SNAPSHOTS_FAILED
+Fail line: DEREK_LIVE_SNAPSHOTS_FAILED
 """
 from __future__ import annotations
 
@@ -178,23 +190,61 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
         f"finished={manifest.get('actual_run_finished_at_utc')}",
     )
 
-    # 4. PMFs recomputed flag — production runs must be true; backfill mode
-    #    is allowed to be false but must record reused-canonical explicitly.
+    # 4. snapshot_mode + PMF source consistency. Mode is the source of truth
+    #    for what kind of snapshot this is and what proof is required.
     pmfs_recomputed = bool(manifest.get("pmfs_recomputed"))
-    backfill = bool(manifest.get("allow_backfill_test"))
+    backfill_flag = bool(manifest.get("allow_backfill_test"))
     pmf_source = manifest.get("pmf_source")
-    if backfill:
-        ok = pmf_source in ("live_snapshot_recomputed", "live_snapshot_reused_canonical")
-        report.add(
-            f"{label}/pmf_source_backfill_acceptable",
-            ok,
-            f"pmf_source={pmf_source!r} allow_backfill_test={backfill}",
+    snapshot_mode = manifest.get("snapshot_mode")
+    if snapshot_mode is None:
+        # Backwards compatibility for pre-correction manifests: infer from
+        # allow_backfill_test. Record this inference explicitly so the fact
+        # is audit-visible.
+        snapshot_mode = "backfill_demo" if backfill_flag else "production_live"
+        report.facts.setdefault("inferred_snapshot_modes", []).append(
+            f"{label}: inferred {snapshot_mode!r} (manifest pre-dates snapshot_mode field)"
         )
-    else:
+    report.add(
+        f"{label}/snapshot_mode_valid",
+        snapshot_mode in ("production_live", "backfill_demo"),
+        f"snapshot_mode={snapshot_mode!r}",
+    )
+    # The mode and the backfill flag must agree.
+    expected_backfill = (snapshot_mode == "backfill_demo")
+    report.add(
+        f"{label}/snapshot_mode_matches_allow_backfill_test",
+        backfill_flag == expected_backfill,
+        f"snapshot_mode={snapshot_mode!r} allow_backfill_test={backfill_flag}",
+    )
+    if snapshot_mode == "production_live":
+        # Production-live REQUIRES recomputation. Reusing canonical PMFs is
+        # a hard fail in this mode.
         report.add(
-            f"{label}/pmfs_recomputed_in_production",
-            pmfs_recomputed and pmf_source == "live_snapshot_recomputed",
+            f"{label}/production_live_pmfs_recomputed",
+            pmfs_recomputed is True and pmf_source == "live_snapshot_recomputed",
             f"pmfs_recomputed={pmfs_recomputed} pmf_source={pmf_source!r}",
+        )
+        report.add(
+            f"{label}/production_live_predict_invocation_proof",
+            bool(manifest.get("pmf_recomputation_predict_invocation_succeeded")),
+            "predict.py invocation proof must be recorded",
+        )
+    elif snapshot_mode == "backfill_demo":
+        # Backfill/demo mode reuses canonical and is ONLY infrastructure proof.
+        report.add(
+            f"{label}/backfill_demo_pmf_source_is_reused_canonical",
+            pmf_source == "live_snapshot_reused_canonical" and pmfs_recomputed is False,
+            f"pmf_source={pmf_source!r} pmfs_recomputed={pmfs_recomputed}",
+        )
+    # Snapshot manifests must record core provenance regardless of mode.
+    for required_field in (
+        "prediction_run_id", "prediction_code_commit",
+        "pmf_generated_at_utc", "pmf_output_hash",
+    ):
+        report.add(
+            f"{label}/manifest_field_present:{required_field}",
+            manifest.get(required_field) not in (None, ""),
+            f"value={manifest.get(required_field)!r}",
         )
 
     # 5. PMF generation timestamp within run window (when not backfill).
@@ -345,6 +395,8 @@ def main(argv: list[str] | None = None) -> int:
     games = [d for d in sorted(base.iterdir()) if d.is_dir()]
     report.facts["game_count"] = len(games)
     snapshot_count = 0
+    mode_counts: dict[str, int] = {"production_live": 0, "backfill_demo": 0, "unknown": 0}
+    recomputed_count = 0
     for game_dir in games:
         gid = game_dir.name
         for snap_type in SNAPSHOT_TYPES:
@@ -352,8 +404,29 @@ def main(argv: list[str] | None = None) -> int:
             if snap_dir.exists():
                 snapshot_count += 1
                 _check_snapshot(report, snap_dir, gid, snap_type, pointer)
+                # Classify the snapshot for the top-level pass-line decision.
+                mpath = snap_dir / "snapshot_manifest.json"
+                if mpath.exists():
+                    try:
+                        m = read_json(mpath)
+                    except Exception:
+                        m = {}
+                    sm = m.get("snapshot_mode") or (
+                        "backfill_demo" if m.get("allow_backfill_test") else "production_live"
+                    )
+                    mode_counts[sm if sm in mode_counts else "unknown"] = (
+                        mode_counts.get(sm if sm in mode_counts else "unknown", 0) + 1
+                    )
+                    if (
+                        sm == "production_live"
+                        and m.get("pmfs_recomputed") is True
+                        and m.get("pmf_source") == "live_snapshot_recomputed"
+                    ):
+                        recomputed_count += 1
         _check_snapshot_comparison(report, game_dir, gid)
     report.facts["snapshot_count"] = snapshot_count
+    report.facts["mode_counts"] = mode_counts
+    report.facts["recomputed_snapshot_count"] = recomputed_count
 
     if snapshot_count == 0:
         report.add(
@@ -387,8 +460,39 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if report.passed:
+        # Mode-aware top-level pass-line summary.
+        # DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS — only when EVERY snapshot
+        # is production_live AND recomputed. ANY backfill_demo snapshot
+        # disqualifies emission of the recomputed pass line.
+        # DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS — only when EVERY
+        # snapshot is backfill_demo (infrastructure proof, not live recompute).
+        all_production_recomputed = (
+            snapshot_count > 0
+            and mode_counts.get("production_live", 0) == snapshot_count
+            and recomputed_count == snapshot_count
+        )
+        all_backfill = (
+            snapshot_count > 0
+            and mode_counts.get("backfill_demo", 0) == snapshot_count
+        )
         print("DEREK_LIVE_SNAPSHOTS_PASS")
         print(f"  delivery_date={args.delivery_date} snapshots={snapshot_count}")
+        print(
+            f"  mode_counts={mode_counts}  recomputed={recomputed_count}"
+        )
+        if all_production_recomputed:
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
+        elif all_backfill:
+            print("DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS")
+        else:
+            # Mixed mode: snapshots passed individually but the collection
+            # contains both modes. Refuse to emit either summary line; the
+            # caller must investigate.
+            print(
+                "  note: mixed-mode snapshot collection — neither "
+                "DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS nor "
+                "DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS emitted."
+            )
         return 0
     print("DEREK_LIVE_SNAPSHOTS_FAILED", file=sys.stderr)
     for c in report.checks:

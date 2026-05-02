@@ -4,17 +4,23 @@ Generates a Derek-only per-game snapshot at either ``t_minus_25`` or
 ``close_lock`` by:
 
 1. Loading the active champion from ``artifacts/models/registry/champion_pointer.json``.
-2. Invoking ``scripts/predict.py`` (slate-wide; predict.py uses ``date.today()``)
-   if a fresh predictions parquet does not already exist for the snapshot's
-   run window. The PMF source is required to have been generated AT or AFTER
-   the snapshot run started — copying older canonical PMFs is forbidden.
+2. Resolving snapshot_mode:
+   - ``production_live`` (default): MUST invoke ``scripts/predict.py`` and
+     succeed. Reusing a pre-existing predictions parquet, even one that is
+     fresh on disk, is NOT permitted. predict.py is hardcoded to
+     ``date.today()`` so target_date must equal today UTC.
+   - ``backfill_demo`` (``--allow-backfill-test``): reuses the existing
+     ``predictions/all_props_<date>.parquet`` (canonical reuse) and records
+     ``pmf_source=live_snapshot_reused_canonical`` /
+     ``pmfs_recomputed=false``. Used for infrastructure proof on historical
+     dates that predict.py cannot regenerate.
 3. Filtering the slate-wide predictions to the target ``game_id``.
 4. Writing the Derek-only per-game per-snapshot package under
    ``deliveries/<date>/derek_game_snapshots/<game_id>/<snapshot_type>/``.
-5. Recording a snapshot_manifest.json with full provenance fields and
-   PMF-recomputation proof (``pmf_source=live_snapshot_recomputed``,
-   prediction_run_id, prediction_code_commit, pmf_generated_at_utc,
-   input_manifest_hash, pmf_output_hash).
+5. Recording a snapshot_manifest.json with snapshot_mode and full
+   provenance — production_live runs carry pmfs_recomputed=true /
+   pmf_source=live_snapshot_recomputed; backfill_demo runs carry
+   pmfs_recomputed=false / pmf_source=live_snapshot_reused_canonical.
 6. Recording confirmed-lineup status honestly — when no confirmed lineup
    source is wired, manifest carries ``lineup_confirmed=false``,
    ``lineup_aware=false``, ``lineup_blocker="no confirmed lineup source wired"``.
@@ -26,7 +32,9 @@ Usage:
         --delivery-date YYYY-MM-DD --game-id GAME_ID --snapshot-type close_lock \\
         --allow-backfill-test
 
-Pass line:  DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS
+Pass lines:
+    DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS    (production_live + recomputed)
+    DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS  (backfill_demo)
 Fail line:  DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED
 """
 from __future__ import annotations
@@ -113,42 +121,23 @@ def _ensure_fresh_predictions(target_date: str, run_started_at: dt.datetime,
         "pre_existing": parquet.exists(),
     }
 
-    needs_run = True
-    fresh_existing = False
     if parquet.exists():
         mtime = _file_mtime_utc(parquet)
         info["pre_existing_mtime_utc"] = _utc_iso(mtime)
-        # Considered fresh if the parquet was written WITHIN PMF_FRESHNESS_SECONDS
-        # before the runner started (covers the case of dispatcher fanning out
-        # snapshots for several games off a single shared predict.py run, OR
-        # an upstream pipeline regenerated predictions just before this run).
         age_s = (run_started_at - mtime).total_seconds()
         info["pre_existing_age_seconds"] = age_s
-        if -5.0 <= age_s <= PMF_FRESHNESS_SECONDS:
-            needs_run = False
-            fresh_existing = True
-            info["reason_no_predict_invocation"] = (
-                f"existing predictions parquet is fresh "
-                f"(age {age_s:.0f}s <= {PMF_FRESHNESS_SECONDS}s)"
+
+    # Backfill / demo mode: predict.py uses date.today() and cannot re-run
+    # for a historical date, so reuse the existing canonical parquet and
+    # mark it explicitly. snapshot_mode=backfill_demo + pmfs_recomputed=false
+    # downstream.
+    if allow_backfill:
+        if not parquet.exists():
+            info["error"] = (
+                f"backfill mode requested but predictions/all_props_{target_date}.parquet "
+                "does not exist; cannot reuse canonical."
             )
-
-    # Fresh existing parquet path. Two sub-cases:
-    #   - non-backfill: treat as dispatcher fan-out / upstream-just-ran
-    #     (manifest will mark live_snapshot_recomputed=true).
-    #   - backfill: still treat as reused canonical (honest — this runner did
-    #     not invoke predict.py).
-    if not needs_run:
-        if allow_backfill:
-            info["backfill_reused_canonical"] = True
-        else:
-            info["fresh_canonical_dispatcher_reused"] = True
-        return parquet, info
-
-    # Backfill mode + stale parquet: do not re-run predict.py for a historical
-    # date because predict.py uses date.today() and would generate today's
-    # predictions (which would not match target_date). Use existing parquet
-    # only and record the divergence clearly.
-    if allow_backfill and needs_run:
+            return parquet, info
         info["backfill_reused_canonical"] = True
         info["reason_no_predict_invocation"] = (
             "allow-backfill-test: predict.py uses date.today() and cannot "
@@ -157,52 +146,51 @@ def _ensure_fresh_predictions(target_date: str, run_started_at: dt.datetime,
         )
         return parquet, info
 
-    if needs_run:
-        # Real recomputation: invoke predict.py end-to-end. predict.py only
-        # ever writes today's predictions; if target_date != today, this
-        # branch only runs in non-backfill mode AND the user explicitly
-        # asked for that date, which is a misconfig (caller should have
-        # set --allow-backfill-test). Guard with a clear error.
-        today = _utcnow().strftime("%Y-%m-%d")
-        if target_date != today:
-            info["error"] = (
-                f"target_date={target_date} != today_utc={today} and "
-                "--allow-backfill-test was not set; predict.py cannot "
-                "generate predictions for a non-today date."
-            )
-            return parquet, info
-        cmd = [sys.executable, str(PREDICT_SCRIPT.relative_to(REPO_ROOT))]
-        # Write subprocess log to nightly_training-style logs dir for audit.
-        log_dir = REPO_ROOT / "artifacts" / "derek_live_snapshots" / target_date
-        log_dir.mkdir(parents=True, exist_ok=True)
-        log_path = log_dir / f"predict_{run_started_at.strftime('%Y%m%dT%H%M%S')}.log"
-        t0 = time.perf_counter()
-        with log_path.open("w", encoding="utf-8") as f:
-            f.write(f"$ {' '.join(cmd)}\n\n")
-            f.flush()
-            proc = subprocess.run(
-                cmd, cwd=REPO_ROOT, stdout=f, stderr=subprocess.STDOUT,
-                check=False, env={**os.environ},
-            )
-        elapsed = time.perf_counter() - t0
-        info["predict_invocation"] = {
-            "command": cmd,
-            "exit_code": proc.returncode,
-            "elapsed_seconds": round(elapsed, 1),
-            "log_path": str(log_path.relative_to(REPO_ROOT)),
-        }
-        if proc.returncode != 0:
-            info["error"] = (
-                f"predict.py exited {proc.returncode} after {elapsed:.1f}s; "
-                f"see log: {log_path.relative_to(REPO_ROOT)}"
-            )
-            return parquet, info
-        if not parquet.exists():
-            info["error"] = (
-                f"predict.py succeeded but predictions parquet not found at {parquet}"
-            )
-            return parquet, info
-        info["fresh_mtime_utc"] = _utc_iso(_file_mtime_utc(parquet))
+    # Production-live mode: predict.py MUST be invoked by this runner. We do
+    # not accept "fresh canonical from upstream" as a substitute, because the
+    # runner cannot prove the upstream invocation belongs to this snapshot's
+    # window. predict.py only ever writes today's predictions, so target_date
+    # MUST equal today_utc.
+    today = _utcnow().strftime("%Y-%m-%d")
+    if target_date != today:
+        info["error"] = (
+            f"target_date={target_date} != today_utc={today} and "
+            "--allow-backfill-test was not set; predict.py cannot "
+            "generate predictions for a non-today date. In production-live "
+            "mode the runner refuses to silently reuse canonical PMFs."
+        )
+        return parquet, info
+    cmd = [sys.executable, str(PREDICT_SCRIPT.relative_to(REPO_ROOT))]
+    log_dir = REPO_ROOT / "artifacts" / "derek_live_snapshots" / target_date
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / f"predict_{run_started_at.strftime('%Y%m%dT%H%M%S')}.log"
+    t0 = time.perf_counter()
+    with log_path.open("w", encoding="utf-8") as f:
+        f.write(f"$ {' '.join(cmd)}\n\n")
+        f.flush()
+        proc = subprocess.run(
+            cmd, cwd=REPO_ROOT, stdout=f, stderr=subprocess.STDOUT,
+            check=False, env={**os.environ},
+        )
+    elapsed = time.perf_counter() - t0
+    info["predict_invocation"] = {
+        "command": cmd,
+        "exit_code": proc.returncode,
+        "elapsed_seconds": round(elapsed, 1),
+        "log_path": str(log_path.relative_to(REPO_ROOT)),
+    }
+    if proc.returncode != 0:
+        info["error"] = (
+            f"predict.py exited {proc.returncode} after {elapsed:.1f}s; "
+            f"see log: {log_path.relative_to(REPO_ROOT)}"
+        )
+        return parquet, info
+    if not parquet.exists():
+        info["error"] = (
+            f"predict.py succeeded but predictions parquet not found at {parquet}"
+        )
+        return parquet, info
+    info["fresh_mtime_utc"] = _utc_iso(_file_mtime_utc(parquet))
 
     return parquet, info
 
@@ -351,16 +339,21 @@ def _build_snapshot_manifest(*,
     invoked_predict_ok = bool(predict_info.get("predict_invocation") and
                                 (predict_info["predict_invocation"].get("exit_code") == 0))
     backfill_reused = bool(predict_info.get("backfill_reused_canonical"))
-    fresh_dispatcher_reused = bool(predict_info.get("fresh_canonical_dispatcher_reused"))
-    # pmfs_recomputed is true if EITHER this runner invoked predict.py
-    # successfully OR a fresh canonical predictions parquet (within the
-    # PMF_FRESHNESS_SECONDS window) was reused in non-backfill mode (the
-    # dispatcher fan-out / upstream-pipeline-just-ran case).
-    pmfs_recomputed = invoked_predict_ok or fresh_dispatcher_reused
-    pmf_source = (
-        "live_snapshot_recomputed" if pmfs_recomputed else
-        ("live_snapshot_reused_canonical" if backfill_reused else "unknown")
-    )
+    # pmfs_recomputed is true ONLY when this runner invoked predict.py and
+    # got a clean exit. Reusing a canonical parquet — even one that is fresh
+    # on disk — does not count as recomputation and the manifest must not
+    # claim it does. Snapshot_mode disambiguates the path.
+    pmfs_recomputed = invoked_predict_ok
+    snapshot_mode = "backfill_demo" if allow_backfill else "production_live"
+    if pmfs_recomputed:
+        pmf_source = "live_snapshot_recomputed"
+    elif backfill_reused:
+        pmf_source = "live_snapshot_reused_canonical"
+    else:
+        # Should never reach here: production-live mode without a successful
+        # predict.py invocation must have already returned an error from
+        # _ensure_fresh_predictions and short-circuited the caller.
+        pmf_source = "unknown"
 
     return {
         "schema_version": "1.0",
@@ -380,10 +373,10 @@ def _build_snapshot_manifest(*,
         "promotion_decision_id": pointer.get("promotion_decision_id"),
         "champion_pointer_path": str(CHAMPION_POINTER_PATH.relative_to(REPO_ROOT)),
         "champion_pointer_hash": pointer_hash,
+        "snapshot_mode": snapshot_mode,
         "pmfs_recomputed": pmfs_recomputed,
         "pmf_source": pmf_source,
         "pmf_recomputation_backfill_reused_canonical": backfill_reused,
-        "pmf_recomputation_fresh_canonical_dispatcher_reused": fresh_dispatcher_reused,
         "pmf_recomputation_predict_invocation_succeeded": invoked_predict_ok,
         "prediction_run_id": (
             f"derek-snapshot-{snapshot_type}-{game_id}-{_utc_iso(run_started_at).replace(':', '').replace('-', '')[:15]}"
@@ -462,6 +455,9 @@ def main(argv: list[str] | None = None) -> int:
     if out_root.exists() and not args.force:
         # Idempotent skip: a previous snapshot for this (date, game, type)
         # exists. The dispatcher controls --force when it is intentional.
+        # Replay the existing manifest's mode-appropriate pass line so the
+        # caller observes a consistent PASS even when this invocation was a
+        # no-op.
         existing_manifest = out_root / "snapshot_manifest.json"
         if existing_manifest.exists():
             print(
@@ -472,7 +468,14 @@ def main(argv: list[str] | None = None) -> int:
                     }
                 )
             )
-            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
+            try:
+                m = json.loads(existing_manifest.read_text(encoding="utf-8"))
+            except Exception:
+                m = {}
+            if m.get("snapshot_mode") == "production_live" and m.get("pmfs_recomputed") is True:
+                print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
+            else:
+                print("DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS")
             return 0
 
     # Ensure fresh predictions parquet.
@@ -544,6 +547,7 @@ def main(argv: list[str] | None = None) -> int:
         f"# Derek live snapshot — {args.delivery_date} game {args.game_id} ({args.snapshot_type})",
         "",
         f"- snapshot_type: **{args.snapshot_type}**",
+        f"- snapshot_mode: **{manifest['snapshot_mode']}**",
         f"- pmf_source: **{manifest['pmf_source']}**",
         f"- pmfs_recomputed: **{manifest['pmfs_recomputed']}**",
         f"- champion_model_id: `{manifest['champion_model_id']}`",
@@ -574,13 +578,17 @@ def main(argv: list[str] | None = None) -> int:
         md_lines.append(f"| {fname} | {rec.get('rows')} | `{rec.get('sha256_prefix')}` |")
     (out_root / "snapshot_report.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
 
-    print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
+    if manifest["snapshot_mode"] == "production_live" and manifest["pmfs_recomputed"] is True:
+        print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
+    else:
+        print("DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS")
     print(
         f"  delivery_date={args.delivery_date} game_id={args.game_id} "
         f"snapshot_type={args.snapshot_type}"
     )
     print(
-        f"  pmf_source={manifest['pmf_source']}  pmfs_recomputed={manifest['pmfs_recomputed']}"
+        f"  snapshot_mode={manifest['snapshot_mode']}  pmf_source={manifest['pmf_source']}  "
+        f"pmfs_recomputed={manifest['pmfs_recomputed']}"
     )
     print(
         f"  props_emitted={manifest['props_emitted']}  market_rows={manifest['market_rows']}"
