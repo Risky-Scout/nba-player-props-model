@@ -1,6 +1,6 @@
 {
   "challenger_dir": "artifacts/models/challengers/2026-04-30_live_context",
-  "code_commit": "c986d472393dec686156e101e08ac857528d609b",
+  "code_commit": "068b5b12dba6ac2c87d63f54b525f4433af004e3",
   "feature_set_id": "phase13p_lineup_injury_driver_v1",
   "fitted_targets": [
     "minutes",

@@ -20,19 +20,19 @@
       },
       "pts": {
         "n_test": 16225,
-        "rel_improvement": 0.0001943651516763824
+        "rel_improvement": 0.00019436515167652732
       },
       "reb": {
         "n_test": 16225,
-        "rel_improvement": -1.0277346558390834e-05
+        "rel_improvement": -1.0277346558247108e-05
       },
       "stl": {
         "n_test": 16225,
-        "rel_improvement": -5.3355312525543015e-05
+        "rel_improvement": -5.3355312525337843e-05
       },
       "tov": {
         "n_test": 16225,
-        "rel_improvement": 4.75474512061343e-05
+        "rel_improvement": 4.754745120601843e-05
       }
     }
   },
