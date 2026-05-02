@@ -1,9 +1,9 @@
 {
   "delivery_date": "2026-05-02",
-  "pipeline_run_id": "0044d88b-65c6-481c-a656-5471788ea45e",
-  "snapshot_type": "morning",
-  "snapshot_time_utc": "2026-05-02T15:55:44Z",
-  "model_version": "cf844d9#phase10c",
+  "pipeline_run_id": "aa00e267-09af-4c34-9507-01096ad86186",
+  "snapshot_type": "pre_close",
+  "snapshot_time_utc": "2026-05-02T19:10:50Z",
+  "model_version": "e064c03#phase10c",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
   "finality_status": "provisional",
   "finality_blocker_codes": [
@@ -52,22 +52,22 @@
   "sources": {
     "model_only_parquet": {
       "path": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "mtime_utc": "2026-05-02T15:55:44.593605Z",
+      "mtime_utc": "2026-05-02T19:09:26.398960Z",
       "sha256": "32f983f38e23030ef4a2e50edf081ce17a7886f381f41392919051b95dd6281a",
-      "auto_built_from_predictions": true
+      "auto_built_from_predictions": false
     },
     "predictions_parquet": {
       "path": "predictions/all_props_2026-05-02.parquet",
-      "mtime_utc": "2026-05-02T15:54:32.257961Z"
+      "mtime_utc": "2026-05-02T19:09:26.411519Z"
     },
     "availability_table": {
       "path": "data/player_availability_asof.parquet",
-      "mtime_utc": "2026-05-02T15:54:32.050957Z",
+      "mtime_utc": "2026-05-02T19:09:26.211519Z",
       "freshness_status": "fresh"
     },
     "odds_snapshot": {
-      "path": "data/odds_api/processed/2026-05-02/odds_pairs_live_slate_morning_7am_2026-05-02T155518Z.parquet",
-      "mtime_utc": "2026-05-02T15:55:33.096062Z",
+      "path": "data/odds_api/processed/2026-05-02/odds_pairs_live_slate_close_or_lock_2026-05-02T191018Z.parquet",
+      "mtime_utc": "2026-05-02T19:10:37.646746Z",
       "books_seen": [
         "betmgm",
         "betonlineag",
@@ -91,8 +91,8 @@
   "row_counts": {
     "fair_odds_board": 660,
     "full_pmfs_wide": 29,
-    "market_comparison": 507,
-    "publishable_edges": 446
+    "market_comparison": 478,
+    "publishable_edges": 421
   },
   "quality_rollup": {
     "pmf_valid_ok_pct": 1.0,
@@ -118,7 +118,7 @@
   "no_odds_fetch": false,
   "freshness_manifest": {
     "path": "data/freshness_manifest/2026-05-02.json",
-    "built_at_utc": "2026-05-02T15:55:33Z",
+    "built_at_utc": "2026-05-02T19:10:38Z",
     "overall_status": "not_ready",
     "odds_status": "ok",
     "regions_requested": [
@@ -142,7 +142,7 @@
       "williamhill_us"
     ],
     "tov_status": "missing_from_prediction_source",
-    "predictions_mtime_utc": "2026-05-02T15:54:32.257961Z",
+    "predictions_mtime_utc": "2026-05-02T19:09:26.411519Z",
     "availability_freshness_status": "fresh",
     "finals_finality_status": "finals_pending",
     "role_freshness_status_rollup": {
