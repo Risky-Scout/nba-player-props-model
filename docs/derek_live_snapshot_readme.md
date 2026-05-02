@@ -1,9 +1,73 @@
-# Derek Live Snapshot Pipeline (Phase 13L)
+# Derek Live Snapshot Pipeline (Phase 13L → 13M)
 
 This document describes Derek's per-game live snapshot pipeline. It is
 **additive** to the existing daily delivery and nightly training pipelines
 and does not modify Wizard of Odds outputs, the daily PMF review package,
 champion promotion, or nightly retraining.
+
+## Phase 13M additions in one paragraph
+
+Phase 13M wires BallDontLie confirmed lineups (BDL v2 ``/lineups``) into
+every Derek per-game snapshot, gates production-live runs on a verified
+non-leaky champion model (``trained_through_date <= delivery_date - 1``,
+no dry-run promotion), and adds two new interpretability artifacts —
+``snapshot_comparison.{csv,parquet,md}`` and
+``input_change_report.{json,md}`` — emitted whenever both ``t_minus_25``
+and ``close_lock`` snapshots exist for a game. After-game scoring is
+hooked into the workflow but writes ``pending_outcomes`` until real
+realized stats become available. Crucially, Phase 13M does **not** retrain
+or recalibrate the model during a snapshot; it loads the existing champion
+and refreshes only game-day inputs. No fabrication: if BDL has not
+posted lineups yet, ``lineup_confirmed=false`` and the manifest carries
+the exact blocker from BDL.
+
+## Critical training/calibration rule
+
+Production-live T-minus-25 and close-lock runs **must not retrain or
+recalibrate**. The runner:
+
+1. Loads ``artifacts/models/registry/champion_pointer.json``.
+2. Invokes ``scripts/verify_derek_live_champion_ready.py`` which checks:
+   - All rich fields present (``champion_model_id``,
+     ``trained_through_date``, ``calibrated_through_date``,
+     ``training_run_id``, ``calibration_run_id``, ``validation_run_id``,
+     ``promotion_decision_id``, ``promoted_at_utc``).
+   - ``trained_through_date <= delivery_date - 1 UTC day`` (same-day
+     training is leakage and is rejected).
+   - ``calibrated_through_date <= delivery_date - 1 UTC day``.
+   - ``calibrated_through_date >= trained_through_date``.
+   - ``leakage_checks_passed=true`` and ``no_future_rows_verified=true``
+     in the pointer (when those flags are present).
+   - ``promotion_decision_id`` does not contain "dry" or "synth".
+3. Refuses to start a production-live snapshot if the champion-readiness
+   gate fails.
+4. Records ``live_snapshot_retrained=false`` and
+   ``live_snapshot_recalibrated=false`` in every manifest (verifier-enforced).
+
+Backfill/demo runs (``--allow-backfill-test``) skip this gate — they are
+infrastructure proof, not production-live recomputation.
+
+Pass line: ``DEREK_LIVE_CHAMPION_MODEL_READY_PASS``.
+Fail line: ``DEREK_LIVE_CHAMPION_MODEL_READY_FAILED``.
+
+## Lineup recomputation status (honest)
+
+Phase 13M wires BDL lineup *fetch + persistence + manifest recording*
+into the runner. It does **not** yet wire confirmed-starter context into
+``predict.py`` PMF feature engineering. Every snapshot manifest therefore
+records:
+
+```
+"lineup_context_supplied": true        # we fetched and persisted BDL lineups
+"lineup_affects_pmf_features": false   # PMF features not yet influenced by lineups
+"lineup_feature_blocker": "predict.py does not yet accept --lineup-context;
+    lineup status is recorded as snapshot metadata and will inform Phase
+    13M-bis feature engineering, but does not currently change PMF features."
+```
+
+This is the honest infrastructure-first half of the change. Snapshot
+metadata + comparison reports are immediately usable; PMF features that
+react to confirmed-starter status are deferred to Phase 13M-bis.
 
 ## What changed
 

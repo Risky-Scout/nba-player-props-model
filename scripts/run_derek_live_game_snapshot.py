@@ -106,6 +106,90 @@ def _load_pointer() -> dict:
     return read_json(CHAMPION_POINTER_PATH)
 
 
+def _fetch_lineup_status_for_snapshot(*, delivery_date: str, game_id: str,
+                                        allow_backfill: bool) -> dict | None:
+    """Invoke fetch_bdl_game_lineups.py for one game and return the
+    persisted lineup_status dict, or None if the fetch failed for a reason
+    that does not warrant aborting the snapshot.
+
+    Returning None vs returning a status dict with lineup_confirmed=false:
+      - None: the fetch script could not run at all (e.g. BDL_API_KEY
+        missing in backfill_demo mode), so there is no live status file to
+        record. Manifest will fall back to "no confirmed lineup source
+        wired" wording.
+      - dict: the fetch ran and produced a status — even if
+        lineup_confirmed=false (no rows yet, partial, etc.). The blocker is
+        explicit and propagates to the manifest unmodified.
+    """
+    fetch_script = REPO_ROOT / "scripts" / "fetch_bdl_game_lineups.py"
+    status_path = (
+        REPO_ROOT / "artifacts" / "live_lineups" / delivery_date / str(game_id)
+        / "lineup_status.json"
+    )
+    if not os.environ.get("BDL_API_KEY", "").strip():
+        if allow_backfill:
+            return None
+        # In production-live mode an absent BDL key is a soft blocker — the
+        # snapshot can still ship (with lineup_confirmed=false) but the
+        # manifest should record the exact reason. Return a synthetic status
+        # so downstream code doesn't fall back to the legacy "no source
+        # wired" wording, which would be misleading.
+        return {
+            "schema_version": "1.0",
+            "delivery_date": delivery_date,
+            "game_id": str(game_id),
+            "source": "balldontlie_v1_lineups",
+            "fetched_at_utc": _utc_iso(_utcnow()),
+            "lineup_confirmed": False,
+            "lineup_complete": "fetch_failed",
+            "lineup_blocker": "BDL_API_KEY not set in runner environment",
+            "teams_present": [],
+            "starter_count_by_team": {},
+            "bench_count_by_team": {},
+            "total_rows": 0,
+            "starters": [],
+            "bench_players": [],
+            "unmapped_players": [],
+            "lineup_hash": "",
+        }
+    rc = subprocess.run(
+        [sys.executable, str(fetch_script.relative_to(REPO_ROOT)),
+         "--delivery-date", delivery_date,
+         "--game-id", str(game_id)],
+        cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+        env={**os.environ},
+    )
+    if not status_path.exists():
+        # Even on rc != 0 the fetch script writes a status file when it can.
+        # If it doesn't exist, persist a synthetic blocker so the manifest
+        # is still honest.
+        return {
+            "schema_version": "1.0",
+            "delivery_date": delivery_date,
+            "game_id": str(game_id),
+            "source": "balldontlie_v1_lineups",
+            "fetched_at_utc": _utc_iso(_utcnow()),
+            "lineup_confirmed": False,
+            "lineup_complete": "fetch_failed",
+            "lineup_blocker": (
+                f"fetch_bdl_game_lineups.py exit_code={rc.returncode} "
+                "and produced no lineup_status.json"
+            ),
+            "teams_present": [],
+            "starter_count_by_team": {},
+            "bench_count_by_team": {},
+            "total_rows": 0,
+            "starters": [],
+            "bench_players": [],
+            "unmapped_players": [],
+            "lineup_hash": "",
+        }
+    try:
+        return json.loads(status_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
 def _ensure_fresh_predictions(target_date: str, run_started_at: dt.datetime,
                                 allow_backfill: bool) -> tuple[Path, dict]:
     """Ensure ``predictions/all_props_{target_date}.parquet`` exists and was
@@ -319,6 +403,7 @@ def _build_snapshot_manifest(*,
                                confirmed_out_count: int,
                                non_actionable_count: int,
                                active_players_projected: int,
+                               lineup_status: dict | None,
                               ) -> dict:
     target_offset = SNAPSHOT_OFFSETS_MINUTES[snapshot_type]
     target_iso = None
@@ -389,20 +474,56 @@ def _build_snapshot_manifest(*,
         ),
         "predictions_parquet_path": predict_info.get("predictions_parquet_path"),
         "predict_invocation": predict_info.get("predict_invocation"),
-        # Inputs / lineup — Phase 13L honestly records that no confirmed
-        # lineup source is wired today.
+        # Champion model usage. Production-live runs MUST use a pre-promoted
+        # champion; this runner never retrains/recalibrates.
+        "live_snapshot_retrained": False,
+        "live_snapshot_recalibrated": False,
+        "champion_metadata_verified": (
+            predict_info.get("champion_metadata_verified") is True
+        ),
+        "no_leakage_champion_cutoff_verified": (
+            predict_info.get("no_leakage_champion_cutoff_verified") is True
+        ),
+        # Inputs / lineup. Phase 13M wires BDL confirmed lineups; if the
+        # fetch produced a usable response we surface it here, otherwise the
+        # blocker is recorded honestly.
         "injury_source": "data/nba_injury_reports.parquet (downstream of predict.py)",
         "injury_fetched_at_utc": pmf_generated_at,
         "availability_source": "data/player_availability_asof.parquet (BDL availability snapshot)",
         "availability_fetched_at_utc": pmf_generated_at,
-        "lineup_source": None,
-        "lineup_fetched_at_utc": None,
-        "lineup_confirmed": False,
-        "lineup_aware": False,
-        "lineup_confirmation_status": "no_confirmed_lineup_source_wired",
+        "lineup_source": (
+            (lineup_status or {}).get("source")
+            if (lineup_status or {}).get("total_rows", 0) > 0
+            else None
+        ),
+        "lineup_fetched_at_utc": (lineup_status or {}).get("fetched_at_utc"),
+        "lineup_confirmed": bool((lineup_status or {}).get("lineup_confirmed")),
+        "lineup_complete": (lineup_status or {}).get("lineup_complete"),
+        "lineup_aware": bool((lineup_status or {}).get("lineup_confirmed")),
+        "lineup_confirmation_status": (
+            "complete" if (lineup_status or {}).get("lineup_confirmed")
+            else (lineup_status or {}).get("lineup_complete")
+                 or "no_confirmed_lineup_source_wired"
+        ),
         "lineup_blocker": (
-            "no confirmed lineup source wired (Phase 13L Part E acknowledged blocker; "
-            "role_bucket is derived from projected minutes)."
+            (lineup_status or {}).get("lineup_blocker")
+            or ("no confirmed lineup source wired" if not lineup_status
+                else "")
+        ),
+        "lineup_hash": (lineup_status or {}).get("lineup_hash") or "",
+        "starters_by_team": (lineup_status or {}).get("starter_count_by_team") or {},
+        "bench_count_by_team": (lineup_status or {}).get("bench_count_by_team") or {},
+        "unmapped_lineup_players": (lineup_status or {}).get("unmapped_players") or [],
+        # Lineup feature wiring honesty. predict.py does not yet consume
+        # lineup context (Phase 13M-bis scope). We persist the lineup status
+        # next to the snapshot so downstream tooling can inspect it, but the
+        # PMF features are NOT (yet) influenced by confirmed-starter context.
+        "lineup_context_supplied": bool(lineup_status),
+        "lineup_affects_pmf_features": False,
+        "lineup_feature_blocker": (
+            "predict.py does not yet accept --lineup-context; lineup status "
+            "is recorded as snapshot metadata and will inform Phase 13M-bis "
+            "feature engineering, but does not currently change PMF features."
         ),
         "odds_source": "Odds-API (consumed by build_daily_pmf_delivery + predict.py upstream)",
         "odds_fetched_at_utc": pmf_generated_at,
@@ -447,6 +568,37 @@ def main(argv: list[str] | None = None) -> int:
         print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
         print("  reason: champion_pointer_missing", file=sys.stderr)
         return 1
+
+    # Phase 13M champion-readiness gate (Critical Training/Calibration Rule).
+    # Production-live runs MUST verify the champion is a real, leakage-clean
+    # promotion trained/calibrated through ≤ delivery_date - 1 day. Backfill
+    # mode skips this gate (it's allowed to run against historical pointers).
+    champion_metadata_verified = False
+    no_leakage_champion_cutoff_verified = False
+    if not args.allow_backfill_test:
+        rc = subprocess.run(
+            [
+                sys.executable,
+                str((REPO_ROOT / "scripts" / "verify_derek_live_champion_ready.py")
+                    .relative_to(REPO_ROOT)),
+                "--delivery-date", args.delivery_date,
+            ],
+            cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+            env={**os.environ},
+        )
+        champion_metadata_verified = (rc.returncode == 0)
+        no_leakage_champion_cutoff_verified = (rc.returncode == 0)
+        if rc.returncode != 0:
+            print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED", file=sys.stderr)
+            print(
+                "  reason: champion-readiness gate failed; refusing to run "
+                "production-live without a verified champion.",
+                file=sys.stderr,
+            )
+            tail = (rc.stdout or "") + (rc.stderr or "")
+            for line in tail.strip().splitlines()[-6:]:
+                print(f"  {line}", file=sys.stderr)
+            return 1
 
     out_root = (
         DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
@@ -519,6 +671,23 @@ def main(argv: list[str] | None = None) -> int:
     if "game_start_time" in sub.columns and sub["game_start_time"].notna().any():
         game_start_time_utc = str(sub["game_start_time"].dropna().iloc[0])
 
+    # Phase 13M: fetch BDL confirmed lineups for the target game and persist
+    # the per-game lineup_status. Failure to fetch is non-fatal in backfill
+    # mode (we still ship the snapshot with lineup_blocker recorded). In
+    # production-live mode it is also non-fatal — the snapshot proceeds with
+    # lineup_confirmed=false and an honest blocker, matching the spec
+    # ("Do not fabricate lineups" + "lineup_confirmed=false with exact
+    # blocker when unavailable/partial").
+    lineup_status = _fetch_lineup_status_for_snapshot(
+        delivery_date=args.delivery_date,
+        game_id=str(args.game_id),
+        allow_backfill=bool(args.allow_backfill_test),
+    )
+
+    # Predict_info carries champion verification results for the manifest.
+    predict_info["champion_metadata_verified"] = champion_metadata_verified
+    predict_info["no_leakage_champion_cutoff_verified"] = no_leakage_champion_cutoff_verified
+
     out_root.mkdir(parents=True, exist_ok=True)
     outputs = _write_snapshot_outputs(out_root, sub)
     run_finished = _utcnow()
@@ -540,6 +709,7 @@ def main(argv: list[str] | None = None) -> int:
         confirmed_out_count=confirmed_out,
         non_actionable_count=non_actionable,
         active_players_projected=active_players,
+        lineup_status=lineup_status,
     )
     write_json_atomic(out_root / "snapshot_manifest.json", manifest)
 
@@ -564,10 +734,25 @@ def main(argv: list[str] | None = None) -> int:
         "",
         "## Lineup status",
         "",
+        f"- lineup_source: `{manifest.get('lineup_source')}`",
+        f"- lineup_fetched_at_utc: `{manifest.get('lineup_fetched_at_utc')}`",
         f"- lineup_confirmed: **{manifest['lineup_confirmed']}**",
+        f"- lineup_complete: `{manifest.get('lineup_complete')}`",
         f"- lineup_aware: **{manifest['lineup_aware']}**",
         f"- lineup_confirmation_status: `{manifest['lineup_confirmation_status']}`",
-        f"- lineup_blocker: {manifest['lineup_blocker']}",
+        f"- lineup_blocker: {manifest['lineup_blocker']!r}",
+        f"- lineup_hash: `{manifest.get('lineup_hash')}`",
+        f"- starters_by_team: `{manifest.get('starters_by_team')}`",
+        f"- lineup_context_supplied: **{manifest.get('lineup_context_supplied')}**",
+        f"- lineup_affects_pmf_features: **{manifest.get('lineup_affects_pmf_features')}**",
+        f"- lineup_feature_blocker: {manifest.get('lineup_feature_blocker')!r}",
+        "",
+        "## Champion model",
+        "",
+        f"- champion_metadata_verified: **{manifest.get('champion_metadata_verified')}**",
+        f"- no_leakage_champion_cutoff_verified: **{manifest.get('no_leakage_champion_cutoff_verified')}**",
+        f"- live_snapshot_retrained: **{manifest.get('live_snapshot_retrained')}**",
+        f"- live_snapshot_recalibrated: **{manifest.get('live_snapshot_recalibrated')}**",
         "",
         "## Files",
         "",

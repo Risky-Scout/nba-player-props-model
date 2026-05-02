@@ -229,6 +229,27 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
             bool(manifest.get("pmf_recomputation_predict_invocation_succeeded")),
             "predict.py invocation proof must be recorded",
         )
+        # Champion gating fields must be true in production_live.
+        report.add(
+            f"{label}/champion_metadata_verified",
+            manifest.get("champion_metadata_verified") is True,
+            f"value={manifest.get('champion_metadata_verified')!r}",
+        )
+        report.add(
+            f"{label}/no_leakage_champion_cutoff_verified",
+            manifest.get("no_leakage_champion_cutoff_verified") is True,
+            f"value={manifest.get('no_leakage_champion_cutoff_verified')!r}",
+        )
+        report.add(
+            f"{label}/live_snapshot_did_not_retrain",
+            manifest.get("live_snapshot_retrained") is False,
+            f"live_snapshot_retrained={manifest.get('live_snapshot_retrained')!r}",
+        )
+        report.add(
+            f"{label}/live_snapshot_did_not_recalibrate",
+            manifest.get("live_snapshot_recalibrated") is False,
+            f"live_snapshot_recalibrated={manifest.get('live_snapshot_recalibrated')!r}",
+        )
     elif snapshot_mode == "backfill_demo":
         # Backfill/demo mode reuses canonical and is ONLY infrastructure proof.
         report.add(
@@ -314,6 +335,33 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
     # 9. Lineup status recorded honestly.
     lineup_confirmed = manifest.get("lineup_confirmed")
     lineup_blocker = manifest.get("lineup_blocker")
+    # Lineup context must be documented either way — confirmed_true must
+    # carry a BDL source + non-empty hash; confirmed_false must carry an
+    # explicit blocker.
+    lineup_source = manifest.get("lineup_source")
+    lineup_hash = manifest.get("lineup_hash")
+    if lineup_confirmed is True:
+        report.add(
+            f"{label}/lineup_confirmed_has_bdl_source",
+            lineup_source == "balldontlie_v1_lineups" and bool(lineup_hash),
+            f"lineup_source={lineup_source!r} lineup_hash={lineup_hash!r}",
+        )
+    else:
+        report.add(
+            f"{label}/lineup_blocker_documented_when_unconfirmed",
+            bool(lineup_blocker),
+            f"lineup_confirmed={lineup_confirmed!r} blocker={lineup_blocker!r}",
+        )
+    # lineup_affects_pmf_features and lineup_feature_blocker must always
+    # be recorded — if false, the blocker explains why.
+    if manifest.get("lineup_affects_pmf_features") is False:
+        report.add(
+            f"{label}/lineup_feature_blocker_documented",
+            bool(manifest.get("lineup_feature_blocker")),
+            "lineup_feature_blocker must be documented when "
+            "lineup_affects_pmf_features=false",
+        )
+    # Phase 13L back-compat: this block is preserved for old manifests.
     if lineup_confirmed is False:
         report.add(
             f"{label}/lineup_blocker_documented",
@@ -480,6 +528,12 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"  mode_counts={mode_counts}  recomputed={recomputed_count}"
         )
+        # Lineup context documentation — emitted whenever every snapshot
+        # carries either a BDL-confirmed lineup or an explicit blocker. The
+        # individual per-snapshot checks above (lineup_blocker_documented_*
+        # and lineup_confirmed_has_bdl_source) gate this; if the report
+        # passed, every snapshot satisfied the documented-honesty rule.
+        print("DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS")
         if all_production_recomputed:
             print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
         elif all_backfill:

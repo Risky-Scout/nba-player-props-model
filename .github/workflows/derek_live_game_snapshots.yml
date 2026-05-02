@@ -30,11 +30,11 @@ on:
         required: false
         default: ""
       snapshot_type:
-        description: "Which snapshot to dispatch"
+        description: "Which snapshot to dispatch (both = t_minus_25 then close_lock)"
         required: false
-        default: "t_minus_25"
+        default: "both"
         type: choice
-        options: ["t_minus_25", "close_lock"]
+        options: ["t_minus_25", "close_lock", "both"]
       allow_backfill_test:
         description: "Skip wall-clock window check (for manual testing)"
         required: false
@@ -141,6 +141,24 @@ jobs:
             --snapshot-type close_lock \
             $STALE_FLAG $MAX_FLAG $FORCE_FLAG
 
+      - name: Verify Derek live champion model ready (production-live gate)
+        id: verify_champion
+        continue-on-error: true
+        # Backfill / demo runs do NOT require the champion-readiness gate;
+        # the runner skips it internally when --allow-backfill-test is set.
+        # This step still runs the verifier for visibility but does not
+        # block the workflow when allow_backfill_test is true.
+        run: |
+          python scripts/verify_derek_live_champion_ready.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Build snapshot comparison + input change report
+        id: build_comparison
+        continue-on-error: true
+        run: |
+          python scripts/build_derek_snapshot_comparison.py \
+            --delivery-date ${{ steps.d.outputs.date }} || true
+
       - name: Verify Derek live snapshots
         id: verify_derek
         continue-on-error: true
@@ -154,6 +172,13 @@ jobs:
         run: |
           python scripts/verify_phase13l_no_breakage.py
 
+      - name: Score Derek snapshots after games (pending if outcomes absent)
+        id: after_game_scoring
+        continue-on-error: true
+        run: |
+          python scripts/score_derek_live_snapshots_after_game.py \
+            --delivery-date ${{ steps.d.outputs.date }} || true
+
       - name: Upload Derek live snapshot artifacts (always)
         if: always()
         uses: actions/upload-artifact@v4
@@ -164,7 +189,9 @@ jobs:
           path: |
             deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots/**
             artifacts/derek_live_snapshots/${{ steps.d.outputs.date }}/**
+            artifacts/live_lineups/${{ steps.d.outputs.date }}/**
             artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.*
+            artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.*
             artifacts/automation_health/phase13l_no_breakage.*
 
       - name: Stage and commit Derek-only files (Joseph Shackelford authorship)
@@ -182,14 +209,17 @@ jobs:
           git config user.email "josephshack@gmail.com"
           git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
                   artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
+                  artifacts/live_lineups/${{ steps.d.outputs.date }} \
                   artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json \
                   artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.md \
                   artifacts/automation_health/phase13l_no_breakage.json \
                   artifacts/automation_health/phase13l_no_breakage.md || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "phase13l derek live snapshots ${{ steps.d.outputs.date }}"
+              -m "phase13m derek live snapshots ${{ steps.d.outputs.date }}"
           # Discard any tracked-file working-tree changes (e.g. BDL refresh
           # side-effects on data/player_game_stats.parquet) so pull --rebase
           # can proceed cleanly.

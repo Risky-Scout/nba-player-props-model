@@ -222,6 +222,49 @@ def _check_woo_files_unchanged(report: Report) -> None:
     )
 
 
+def _check_phase13l_correction_semantics(report: Report) -> None:
+    """Phase 13L correction guarantees:
+      - run_derek_live_game_snapshot.py: snapshot_mode field is recorded, and
+        production-live pmfs_recomputed requires invoked_predict_ok.
+      - verify_derek_live_snapshots.py: emits
+        DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS for backfill
+        collections, and guards the recomputed-pass-line on
+        all_production_recomputed.
+    Phase 13M additions:
+      - Runner records lineup_source / lineup_blocker / champion_metadata_verified.
+      - Verifier emits DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS.
+    These are token-presence checks — a regression that removed the source
+    line would silently break the corrected pass-line semantics.
+    """
+    runner = REPO_ROOT / "scripts" / "run_derek_live_game_snapshot.py"
+    verifier = REPO_ROOT / "scripts" / "verify_derek_live_snapshots.py"
+    needed = {
+        runner: (
+            'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
+            "champion_metadata_verified",
+            "lineup_feature_blocker",
+        ),
+        verifier: (
+            "DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS",
+            "all_production_recomputed",
+            "DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS",
+        ),
+    }
+    for path, tokens in needed.items():
+        if not path.exists():
+            report.add(
+                f"phase13_correction_script_present:{path.name}", False, "missing"
+            )
+            continue
+        text = path.read_text(encoding="utf-8")
+        for tok in tokens:
+            report.add(
+                f"phase13_correction_token:{path.name}::{tok[:50]}",
+                tok in text,
+                "ok" if tok in text else f"missing token {tok!r}",
+            )
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Verify Phase 13L did not break prior systems.")
     p.parse_args(argv)
@@ -232,6 +275,7 @@ def main(argv: list[str] | None = None) -> int:
     _check_workflow_integrity(report)
     _check_champion_pointer(report)
     _check_woo_files_unchanged(report)
+    _check_phase13l_correction_semantics(report)
 
     payload = report.to_dict()
     write_json_atomic(HEALTH_DIR / "phase13l_no_breakage.json", payload)
