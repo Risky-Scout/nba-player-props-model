@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-02T20:33:50Z",
+  "built_at_utc": "2026-05-02T23:08:24Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-05-02",
@@ -91,8 +91,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "morning",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -192,8 +192,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "morning",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -294,8 +294,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1382
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "pre_close",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -396,8 +396,8 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1202
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "pre_close",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -408,8 +408,8 @@
     {
       "date": "2026-05-02",
       "snapshot_type": "pre_close",
-      "snapshot_time_utc": "2026-05-02T20:33:48Z",
-      "model_version": "555f92a#phase10c",
+      "snapshot_time_utc": "2026-05-02T23:08:22Z",
+      "model_version": "6eb011b#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
         "lineup_unconfirmed",
@@ -418,8 +418,8 @@
       "row_counts": {
         "fair_odds_board": 660,
         "full_pmfs_wide": 29,
-        "market_comparison": 474,
-        "publishable_edges": 387
+        "market_comparison": 386,
+        "publishable_edges": 287
       },
       "books_seen": [
         "betmgm",
@@ -469,19 +469,19 @@
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 292369
+          "size_bytes": 236204
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 50300
+          "size_bytes": 47853
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 239800
+          "size_bytes": 179077
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 48124
+          "size_bytes": 45241
         },
         {
           "name": "run_manifest.json",
@@ -494,12 +494,12 @@
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 474,
+        "rows": 386,
         "monetization_status_summary": {
-          "needs_affiliate_mapping": 474
+          "needs_affiliate_mapping": 386
         },
-        "snapshot_type_public": "woo_afternoon_refresh",
-        "finality_status_public": "PROVISIONAL_EARLY_MARKET",
+        "snapshot_type_public": "pre_close",
+        "finality_status_public": "provisional",
         "files": {
           "csv": "monetization_view.csv",
           "parquet": "monetization_view.parquet",
@@ -513,6 +513,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": "woo_afternoon_refresh",
-  "finality_status_override": "PROVISIONAL_EARLY_MARKET"
+  "snapshot_type_label": null,
+  "finality_status_override": null
 }
