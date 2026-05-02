@@ -1,0 +1,19 @@
+{
+  "bench_count_by_team": {},
+  "bench_players": [],
+  "delivery_date": "2026-05-01",
+  "fetched_at_utc": "2026-05-02T13:12:44Z",
+  "game_id": "21681995",
+  "game_start_time_utc": null,
+  "lineup_blocker": "no rows returned by BDL lineups endpoint (lineups not posted yet)",
+  "lineup_complete": "unavailable",
+  "lineup_confirmed": false,
+  "lineup_hash": "",
+  "schema_version": "1.0",
+  "source": "balldontlie_v1_lineups",
+  "starter_count_by_team": {},
+  "starters": [],
+  "teams_present": [],
+  "total_rows": 0,
+  "unmapped_players": []
+}

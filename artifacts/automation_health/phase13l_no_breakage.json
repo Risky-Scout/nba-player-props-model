@@ -109,9 +109,39 @@
       "detail": "ok",
       "name": "derek_live_snapshots_did_not_pollute_protected_dirs",
       "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = \"backfill_demo\" if allow_backfill ",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::champion_metadata_verified",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::lineup_feature_blocker",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_snapshots.py::all_production_recomputed",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LINEUP_CONTEXT_DOCUMENTED_PASS",
+      "passed": true
     }
   ],
-  "code_commit": "03b6e1036baa6a6202cbeb83f7847b702b5a905e",
+  "code_commit": "52ca1c80dd5671b33e1a770876198d030dd9b015",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "challenger-2026-04-30",
@@ -119,7 +149,7 @@
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-02T12:28:28+00:00",
+  "generated_at_utc": "2026-05-02T13:12:55+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

@@ -4,27 +4,27 @@
     {
       "decision": "fired_ok",
       "game_id": "21681995",
-      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21681995/t_minus_25",
+      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21681995/close_lock",
       "target_utc": null
     },
     {
       "decision": "fired_ok",
       "game_id": "21681996",
-      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21681996/t_minus_25",
+      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21681996/close_lock",
       "target_utc": null
     },
     {
       "decision": "fired_ok",
       "game_id": "21684812",
-      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21684812/t_minus_25",
+      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21684812/close_lock",
       "target_utc": null
     }
   ],
   "delivery_date": "2026-05-01",
-  "now_utc": "2026-05-02T13:12:33Z",
+  "now_utc": "2026-05-02T13:12:42Z",
   "schedule_rows": 3,
   "schema_version": "1.0",
-  "snapshot_type": "t_minus_25",
+  "snapshot_type": "close_lock",
   "summary": {
     "failures": 0,
     "fired": 3,

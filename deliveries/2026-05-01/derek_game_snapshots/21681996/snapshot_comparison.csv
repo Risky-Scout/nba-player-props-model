@@ -1,0 +1,34 @@
+player_id,player_name,stat,line,line_moved,lineup_changed,injury_availability_changed,prediction_input_changed,market_changed
+1028028519,Reed Sheppard,ast,4.5,False,False,False,False,False
+1028028519,Reed Sheppard,fg3m,3.5,False,False,False,False,False
+1028028519,Reed Sheppard,reb,2.5,False,False,False,False,False
+140,Kevin Durant,reb,3.5,False,False,False,False,False
+17553995,Austin Reaves,ast,5.5,False,False,False,False,False
+17553995,Austin Reaves,blk,0.5,False,False,False,False,False
+17553995,Austin Reaves,pts,23.5,False,False,False,False,False
+17553995,Austin Reaves,reb,3.5,False,False,False,False,False
+17896062,Alperen Sengun,ast,5.5,False,False,False,False,False
+17896062,Alperen Sengun,blk,1.5,False,False,False,False,False
+17896062,Alperen Sengun,reb,9.5,False,False,False,False,False
+22,Deandre Ayton,blk,1.5,False,False,False,False,False
+22,Deandre Ayton,pts,11.5,False,False,False,False,False
+22,Deandre Ayton,reb,8.5,False,False,False,False,False
+237,LeBron James,ast,7.5,False,False,False,False,False
+237,LeBron James,blk,0.5,False,False,False,False,False
+237,LeBron James,pts,22.5,False,False,False,False,False
+237,LeBron James,reb,6.5,False,False,False,False,False
+254,Luke Kennard,ast,2.5,False,False,False,False,False
+254,Luke Kennard,fg3m,1.5,False,False,False,False,False
+356,Josh Okogie,reb,2.5,False,False,False,False,False
+38017684,Jabari Smith Jr.,blk,0.5,False,False,False,False,False
+38017684,Jabari Smith Jr.,fg3m,2.5,False,False,False,False,False
+38017684,Jabari Smith Jr.,pts,17.5,False,False,False,False,False
+38017684,Jabari Smith Jr.,reb,7.5,False,False,False,False,False
+38017695,Tari Eason,blk,0.5,False,False,False,False,False
+38017695,Tari Eason,pts,13.5,False,False,False,False,False
+38017695,Tari Eason,reb,6.5,False,False,False,False,False
+420,Marcus Smart,ast,2.5,False,False,False,False,False
+56677825,Amen Thompson,ast,5.5,False,False,False,False,False
+56677825,Amen Thompson,reb,7.5,False,False,False,False,False
+666609,Rui Hachimura,pts,11.5,False,False,False,False,False
+666609,Rui Hachimura,reb,3.5,False,False,False,False,False

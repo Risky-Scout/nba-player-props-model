@@ -1,6 +1,6 @@
-# Derek live snapshot — 2026-05-01 game 21681996 (t_minus_25)
+# Derek live snapshot — 2026-05-01 game 21681996 (close_lock)
 
-- snapshot_type: **t_minus_25**
+- snapshot_type: **close_lock**
 - snapshot_mode: **backfill_demo**
 - pmf_source: **live_snapshot_reused_canonical**
 - pmfs_recomputed: **False**
@@ -9,8 +9,8 @@
 - calibrated_through_date: `2026-04-30`
 - game_start_time_utc: `None`
 - snapshot_target_time_utc: `None`
-- actual_run_started_at_utc: `2026-05-02T13:12:37Z`
-- actual_run_finished_at_utc: `2026-05-02T13:12:38Z`
+- actual_run_started_at_utc: `2026-05-02T13:12:46Z`
+- actual_run_finished_at_utc: `2026-05-02T13:12:47Z`
 - pmf_generated_at_utc: `2026-05-02T13:12:13Z`
 - props_emitted: 33
 - market_rows: 33
@@ -19,7 +19,7 @@
 ## Lineup status
 
 - lineup_source: `None`
-- lineup_fetched_at_utc: `2026-05-02T13:12:38Z`
+- lineup_fetched_at_utc: `2026-05-02T13:12:47Z`
 - lineup_confirmed: **False**
 - lineup_complete: `unavailable`
 - lineup_aware: **False**

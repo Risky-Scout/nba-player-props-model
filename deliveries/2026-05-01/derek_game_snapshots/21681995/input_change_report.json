@@ -1,0 +1,64 @@
+{
+  "close_lock_manifest_summary": {
+    "champion_metadata_verified": false,
+    "champion_model_id": "challenger-2026-04-30",
+    "input_manifest_hash": "1e3498255998e7c7b2239776c6287f42",
+    "lineup_blocker": "no rows returned by BDL lineups endpoint (lineups not posted yet)",
+    "lineup_complete": "unavailable",
+    "lineup_confirmed": false,
+    "lineup_hash": "",
+    "pmf_output_hash": "a53b2423e4181720",
+    "pmf_source": "live_snapshot_reused_canonical",
+    "pmfs_recomputed": false,
+    "snapshot_mode": "backfill_demo",
+    "starters_by_team": {}
+  },
+  "code_commit": "52ca1c80dd5671b33e1a770876198d030dd9b015",
+  "game_id": "21681995",
+  "generated_at_utc": "2026-05-02T13:12:52+00:00",
+  "input_change_flags": {
+    "injury_availability_changed": false,
+    "lineup_changed": false,
+    "market_changed": false,
+    "pmf_changed": false,
+    "prediction_input_changed": false
+  },
+  "input_hashes": {
+    "close_lock": {
+      "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+      "injury_availability_hash": "51bb57d476f2acda21832a8797fd417a",
+      "lineup_hash": "",
+      "market_hash": "e88bf544706887fb5ab414c6d70c5776",
+      "pmf_output_hash": "a53b2423e4181720",
+      "prediction_input_hash": "1e3498255998e7c7b2239776c6287f42"
+    },
+    "t_minus_25": {
+      "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+      "injury_availability_hash": "51bb57d476f2acda21832a8797fd417a",
+      "lineup_hash": "",
+      "market_hash": "e88bf544706887fb5ab414c6d70c5776",
+      "pmf_output_hash": "a53b2423e4181720",
+      "prediction_input_hash": "1e3498255998e7c7b2239776c6287f42"
+    }
+  },
+  "rows_inputs_changed_pmf_unchanged": [],
+  "rows_market_changed_pmf_unchanged": [],
+  "rows_pmf_changed_inputs_unchanged": [],
+  "schema_version": "1.0",
+  "t_minus_25_manifest_summary": {
+    "champion_metadata_verified": false,
+    "champion_model_id": "challenger-2026-04-30",
+    "input_manifest_hash": "1e3498255998e7c7b2239776c6287f42",
+    "lineup_blocker": "no rows returned by BDL lineups endpoint (lineups not posted yet)",
+    "lineup_complete": "unavailable",
+    "lineup_confirmed": false,
+    "lineup_hash": "",
+    "pmf_output_hash": "a53b2423e4181720",
+    "pmf_source": "live_snapshot_reused_canonical",
+    "pmfs_recomputed": false,
+    "snapshot_mode": "backfill_demo",
+    "starters_by_team": {}
+  },
+  "top_edge_movers": [],
+  "top_model_over_prob_movers": []
+}

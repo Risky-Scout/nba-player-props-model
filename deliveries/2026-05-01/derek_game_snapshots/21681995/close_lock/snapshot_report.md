@@ -1,6 +1,6 @@
-# Derek live snapshot — 2026-05-01 game 21681996 (t_minus_25)
+# Derek live snapshot — 2026-05-01 game 21681995 (close_lock)
 
-- snapshot_type: **t_minus_25**
+- snapshot_type: **close_lock**
 - snapshot_mode: **backfill_demo**
 - pmf_source: **live_snapshot_reused_canonical**
 - pmfs_recomputed: **False**
@@ -9,17 +9,17 @@
 - calibrated_through_date: `2026-04-30`
 - game_start_time_utc: `None`
 - snapshot_target_time_utc: `None`
-- actual_run_started_at_utc: `2026-05-02T13:12:37Z`
-- actual_run_finished_at_utc: `2026-05-02T13:12:38Z`
+- actual_run_started_at_utc: `2026-05-02T13:12:43Z`
+- actual_run_finished_at_utc: `2026-05-02T13:12:45Z`
 - pmf_generated_at_utc: `2026-05-02T13:12:13Z`
 - props_emitted: 33
 - market_rows: 33
-- active_players_projected: 13
+- active_players_projected: 14
 
 ## Lineup status
 
 - lineup_source: `None`
-- lineup_fetched_at_utc: `2026-05-02T13:12:38Z`
+- lineup_fetched_at_utc: `2026-05-02T13:12:44Z`
 - lineup_confirmed: **False**
 - lineup_complete: `unavailable`
 - lineup_aware: **False**
@@ -42,7 +42,7 @@
 
 | File | rows | sha256 |
 | --- | ---: | --- |
-| prop_summary.parquet | 33 | `67e99629dbdcf062` |
-| full_pmf_wide.parquet | 33 | `8b75168f45315515` |
-| outcome_level_probabilities.parquet | 33 | `ed55de6be5392388` |
-| market_comparison.parquet | 33 | `def0015164e4fd5f` |
+| prop_summary.parquet | 33 | `3982aadcb76327a5` |
+| full_pmf_wide.parquet | 33 | `a53b2423e4181720` |
+| outcome_level_probabilities.parquet | 33 | `aa0aed0f04c4cce3` |
+| market_comparison.parquet | 33 | `e88bf544706887fb` |

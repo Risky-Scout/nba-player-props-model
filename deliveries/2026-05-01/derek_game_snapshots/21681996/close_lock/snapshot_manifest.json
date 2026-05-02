@@ -1,7 +1,7 @@
 {
-  "active_players_projected": 14,
-  "actual_run_finished_at_utc": "2026-05-02T13:12:35Z",
-  "actual_run_started_at_utc": "2026-05-02T13:12:34Z",
+  "active_players_projected": 13,
+  "actual_run_finished_at_utc": "2026-05-02T13:12:47Z",
+  "actual_run_started_at_utc": "2026-05-02T13:12:46Z",
   "allow_backfill_test": true,
   "availability_fetched_at_utc": "2026-05-02T13:12:13Z",
   "availability_source": "data/player_availability_asof.parquet (BDL availability snapshot)",
@@ -13,7 +13,7 @@
   "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "delivery_date": "2026-05-01",
-  "game_id": "21681995",
+  "game_id": "21681996",
   "game_start_time_utc": null,
   "injury_fetched_at_utc": "2026-05-02T13:12:13Z",
   "injury_source": "data/nba_injury_reports.parquet (downstream of predict.py)",
@@ -26,13 +26,13 @@
   "lineup_confirmed": false,
   "lineup_context_supplied": true,
   "lineup_feature_blocker": "predict.py does not yet accept --lineup-context; lineup status is recorded as snapshot metadata and will inform Phase 13M-bis feature engineering, but does not currently change PMF features.",
-  "lineup_fetched_at_utc": "2026-05-02T13:12:35Z",
+  "lineup_fetched_at_utc": "2026-05-02T13:12:47Z",
   "lineup_hash": "",
   "lineup_source": null,
   "live_snapshot_recalibrated": false,
   "live_snapshot_retrained": false,
   "market_rows": 33,
-  "market_snapshot_type": "t_minus_25",
+  "market_snapshot_type": "close_lock",
   "no_challenger_artifacts_used": true,
   "no_leakage_champion_cutoff_verified": false,
   "no_post_tip_data_used": true,
@@ -41,39 +41,39 @@
   "outputs": {
     "full_pmf_wide.parquet": {
       "rows": 33,
-      "sha256_prefix": "a53b2423e4181720"
+      "sha256_prefix": "8b75168f45315515"
     },
     "market_comparison.parquet": {
       "rows": 33,
-      "sha256_prefix": "e88bf544706887fb"
+      "sha256_prefix": "def0015164e4fd5f"
     },
     "outcome_level_probabilities.parquet": {
       "rows": 33,
-      "sha256_prefix": "aa0aed0f04c4cce3"
+      "sha256_prefix": "ed55de6be5392388"
     },
     "prop_summary.parquet": {
       "rows": 33,
-      "sha256_prefix": "3982aadcb76327a5"
+      "sha256_prefix": "67e99629dbdcf062"
     }
   },
   "players_marked_non_actionable": 0,
   "players_removed_confirmed_out": 0,
   "pmf_generated_at_utc": "2026-05-02T13:12:13Z",
-  "pmf_output_hash": "a53b2423e4181720",
+  "pmf_output_hash": "8b75168f45315515",
   "pmf_recomputation_backfill_reused_canonical": true,
   "pmf_recomputation_predict_invocation_succeeded": false,
   "pmf_source": "live_snapshot_reused_canonical",
   "pmfs_recomputed": false,
   "predict_invocation": null,
   "prediction_code_commit": "52ca1c80dd5671b33e1a770876198d030dd9b015",
-  "prediction_run_id": "derek-snapshot-t_minus_25-21681995-20260502T131234",
+  "prediction_run_id": "derek-snapshot-close_lock-21681996-20260502T131246",
   "predictions_parquet_path": "predictions/all_props_2026-05-01.parquet",
   "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
   "props_emitted": 33,
   "schema_version": "1.0",
   "snapshot_mode": "backfill_demo",
   "snapshot_target_time_utc": null,
-  "snapshot_type": "t_minus_25",
+  "snapshot_type": "close_lock",
   "starters_by_team": {},
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",

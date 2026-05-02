@@ -9,19 +9,34 @@
 - calibrated_through_date: `2026-04-30`
 - game_start_time_utc: `None`
 - snapshot_target_time_utc: `None`
-- actual_run_started_at_utc: `2026-05-02T12:28:22Z`
-- actual_run_finished_at_utc: `2026-05-02T12:28:22Z`
-- pmf_generated_at_utc: `2026-05-02T12:27:59Z`
+- actual_run_started_at_utc: `2026-05-02T13:12:34Z`
+- actual_run_finished_at_utc: `2026-05-02T13:12:35Z`
+- pmf_generated_at_utc: `2026-05-02T13:12:13Z`
 - props_emitted: 33
 - market_rows: 33
 - active_players_projected: 14
 
 ## Lineup status
 
+- lineup_source: `None`
+- lineup_fetched_at_utc: `2026-05-02T13:12:35Z`
 - lineup_confirmed: **False**
+- lineup_complete: `unavailable`
 - lineup_aware: **False**
-- lineup_confirmation_status: `no_confirmed_lineup_source_wired`
-- lineup_blocker: no confirmed lineup source wired (Phase 13L Part E acknowledged blocker; role_bucket is derived from projected minutes).
+- lineup_confirmation_status: `unavailable`
+- lineup_blocker: 'no rows returned by BDL lineups endpoint (lineups not posted yet)'
+- lineup_hash: ``
+- starters_by_team: `{}`
+- lineup_context_supplied: **True**
+- lineup_affects_pmf_features: **False**
+- lineup_feature_blocker: 'predict.py does not yet accept --lineup-context; lineup status is recorded as snapshot metadata and will inform Phase 13M-bis feature engineering, but does not currently change PMF features.'
+
+## Champion model
+
+- champion_metadata_verified: **False**
+- no_leakage_champion_cutoff_verified: **False**
+- live_snapshot_retrained: **False**
+- live_snapshot_recalibrated: **False**
 
 ## Files
 
