@@ -114,28 +114,40 @@ def _ensure_fresh_predictions(target_date: str, run_started_at: dt.datetime,
     }
 
     needs_run = True
+    fresh_existing = False
     if parquet.exists():
         mtime = _file_mtime_utc(parquet)
         info["pre_existing_mtime_utc"] = _utc_iso(mtime)
         # Considered fresh if the parquet was written WITHIN PMF_FRESHNESS_SECONDS
         # before the runner started (covers the case of dispatcher fanning out
-        # snapshots for several games off a single shared predict.py run).
+        # snapshots for several games off a single shared predict.py run, OR
+        # an upstream pipeline regenerated predictions just before this run).
         age_s = (run_started_at - mtime).total_seconds()
         info["pre_existing_age_seconds"] = age_s
         if -5.0 <= age_s <= PMF_FRESHNESS_SECONDS:
             needs_run = False
+            fresh_existing = True
             info["reason_no_predict_invocation"] = (
                 f"existing predictions parquet is fresh "
                 f"(age {age_s:.0f}s <= {PMF_FRESHNESS_SECONDS}s)"
             )
 
-    # Backfill mode: do not re-run predict.py for a historical date because
-    # predict.py uses date.today() and would generate today's predictions
-    # (which would not match target_date). Use existing parquet only and
-    # record the divergence clearly. The runner's PMF-recomputation proof
-    # is downgraded but not silently — the manifest carries
-    # backfill_reused_canonical=true so the verifier can downgrade the
-    # PASS line semantically.
+    # Fresh existing parquet path. Two sub-cases:
+    #   - non-backfill: treat as dispatcher fan-out / upstream-just-ran
+    #     (manifest will mark live_snapshot_recomputed=true).
+    #   - backfill: still treat as reused canonical (honest — this runner did
+    #     not invoke predict.py).
+    if not needs_run:
+        if allow_backfill:
+            info["backfill_reused_canonical"] = True
+        else:
+            info["fresh_canonical_dispatcher_reused"] = True
+        return parquet, info
+
+    # Backfill mode + stale parquet: do not re-run predict.py for a historical
+    # date because predict.py uses date.today() and would generate today's
+    # predictions (which would not match target_date). Use existing parquet
+    # only and record the divergence clearly.
     if allow_backfill and needs_run:
         info["backfill_reused_canonical"] = True
         info["reason_no_predict_invocation"] = (
@@ -336,9 +348,15 @@ def _build_snapshot_manifest(*,
     pmf_generated_at = (
         _utc_iso(_file_mtime_utc(canonical_parquet)) if canonical_parquet.exists() else None
     )
-    pmfs_recomputed = bool(predict_info.get("predict_invocation") and
-                            (predict_info["predict_invocation"].get("exit_code") == 0))
+    invoked_predict_ok = bool(predict_info.get("predict_invocation") and
+                                (predict_info["predict_invocation"].get("exit_code") == 0))
     backfill_reused = bool(predict_info.get("backfill_reused_canonical"))
+    fresh_dispatcher_reused = bool(predict_info.get("fresh_canonical_dispatcher_reused"))
+    # pmfs_recomputed is true if EITHER this runner invoked predict.py
+    # successfully OR a fresh canonical predictions parquet (within the
+    # PMF_FRESHNESS_SECONDS window) was reused in non-backfill mode (the
+    # dispatcher fan-out / upstream-pipeline-just-ran case).
+    pmfs_recomputed = invoked_predict_ok or fresh_dispatcher_reused
     pmf_source = (
         "live_snapshot_recomputed" if pmfs_recomputed else
         ("live_snapshot_reused_canonical" if backfill_reused else "unknown")
@@ -365,6 +383,8 @@ def _build_snapshot_manifest(*,
         "pmfs_recomputed": pmfs_recomputed,
         "pmf_source": pmf_source,
         "pmf_recomputation_backfill_reused_canonical": backfill_reused,
+        "pmf_recomputation_fresh_canonical_dispatcher_reused": fresh_dispatcher_reused,
+        "pmf_recomputation_predict_invocation_succeeded": invoked_predict_ok,
         "prediction_run_id": (
             f"derek-snapshot-{snapshot_type}-{game_id}-{_utc_iso(run_started_at).replace(':', '').replace('-', '')[:15]}"
         ),

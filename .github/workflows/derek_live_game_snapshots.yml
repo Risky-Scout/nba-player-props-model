@@ -45,6 +45,12 @@ on:
         description: "Limit games dispatched (testing)"
         required: false
         default: ""
+      force:
+        description: "Overwrite existing snapshot folders (use to re-emit corrected manifests)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 env:
   PYTHON_VERSION: "3.11"
@@ -101,10 +107,14 @@ jobs:
           if [ -n "${{ github.event.inputs.max_games }}" ]; then
             MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
           fi
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            FORCE_FLAG="--force"
+          fi
           python scripts/dispatch_derek_live_game_snapshots.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --snapshot-type t_minus_25 \
-            $STALE_FLAG $MAX_FLAG
+            $STALE_FLAG $MAX_FLAG $FORCE_FLAG
 
       - name: Dispatch close_lock
         id: dispatch_cl
@@ -122,10 +132,14 @@ jobs:
           if [ -n "${{ github.event.inputs.max_games }}" ]; then
             MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
           fi
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            FORCE_FLAG="--force"
+          fi
           python scripts/dispatch_derek_live_game_snapshots.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --snapshot-type close_lock \
-            $STALE_FLAG $MAX_FLAG
+            $STALE_FLAG $MAX_FLAG $FORCE_FLAG
 
       - name: Verify Derek live snapshots
         id: verify_derek
