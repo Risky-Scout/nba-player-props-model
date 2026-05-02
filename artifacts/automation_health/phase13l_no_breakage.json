@@ -1,0 +1,125 @@
+{
+  "checks": [
+    {
+      "detail": "in scripts/verify_training_automation.py",
+      "name": "pass_token_present:TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_training_automation.py",
+      "name": "pass_token_present:TRAINING_AUTOMATION_DRY_RUN_VERIFICATION_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_previous_day_no_leakage.py",
+      "name": "pass_token_present:PREVIOUS_DAY_NO_LEAKAGE_VERIFICATION_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_previous_day_source_completeness.py",
+      "name": "pass_token_present:PREVIOUS_DAY_SOURCE_COMPLETENESS_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_champion_pointer_metadata.py",
+      "name": "pass_token_present:CHAMPION_POINTER_METADATA_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_derek_woo_champion_dependency.py",
+      "name": "pass_token_present:DEREK_WOO_CHAMPION_DEPENDENCY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/stamp_delivery_champion_metadata.py",
+      "name": "pass_token_present:DELIVERY_CHAMPION_METADATA_STAMP_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/score_daily_pmf_delivery_after_game.py",
+      "name": "pass_token_present:EXPECTED_TARGET_STATS_COVERAGE_ACCOUNTED_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/score_daily_pmf_delivery_after_game.py",
+      "name": "pass_token_present:MODEL_VS_MARKET_SCORING_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_after_game_scoring_package_consistency.py",
+      "name": "pass_token_present:AFTER_GAME_SCORING_PACKAGE_CONSISTENCY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/build_rolling_market_benchmark.py",
+      "name": "pass_token_present:ROLLING_MARKET_BENCHMARK_PASS",
+      "passed": true
+    },
+    {
+      "detail": "in scripts/verify_daily_automation_health.py",
+      "name": "pass_token_present:DAILY_AUTOMATION_HEALTH_PASS",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_present:.github/workflows/daily_pmf_delivery.yml",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_references:.github/workflows/daily_pmf_delivery.yml::stamp_delivery_champion_metadata.py",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_references:.github/workflows/daily_pmf_delivery.yml::verify_after_game_scoring_package_consistency.py",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_references:.github/workflows/daily_pmf_delivery.yml::build_rolling_market_benchmark.py",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_present:.github/workflows/nightly_training_calibration.yml",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_references:.github/workflows/nightly_training_calibration.yml::verify_training_automation.py",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_references:.github/workflows/nightly_training_calibration.yml::verify_daily_automation_health.py",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_references:.github/workflows/nightly_training_calibration.yml::resolve_previous_day_et_target.py",
+      "passed": true
+    },
+    {
+      "detail": "all rich fields present",
+      "name": "champion_pointer_rich_fields_present",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "derek_live_snapshots_did_not_pollute_protected_dirs",
+      "passed": true
+    }
+  ],
+  "code_commit": "a053fc55f475c5dd83c7858d7f6a96f698d75d4a",
+  "facts": {
+    "champion_pointer": {
+      "champion_model_id": "challenger-2026-04-30",
+      "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+      "schema_version": "1.1"
+    }
+  },
+  "generated_at_utc": "2026-05-02T06:36:14+00:00",
+  "passed": true,
+  "schema_version": "1.0"
+}

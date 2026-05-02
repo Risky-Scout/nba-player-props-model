@@ -1,0 +1,168 @@
+{
+  "checks": [
+    {
+      "detail": "deliveries/2026-05-01/derek_game_snapshots",
+      "name": "derek_game_snapshots_dir_present",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "21681995/t_minus_25/required_outputs_present",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-05-02T06:36:08Z finished=2026-05-02T06:36:08Z",
+      "name": "21681995/t_minus_25/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "pmf_source='unknown' allow_backfill_test=True",
+      "name": "21681995/t_minus_25/pmf_source_backfill_acceptable",
+      "passed": false
+    },
+    {
+      "detail": "rows=33",
+      "name": "21681995/t_minus_25/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21681995/t_minus_25/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=33",
+      "name": "21681995/t_minus_25/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-04-30' pointer='challenger-2026-04-30'",
+      "name": "21681995/t_minus_25/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='no confirmed lineup source wired (Phase 13L Part E acknowledged blocker; role_bucket is derived from projected minutes).'",
+      "name": "21681995/t_minus_25/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21681995/t_minus_25/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21681995/t_minus_25/no_challenger_artifacts_used",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "21681996/t_minus_25/required_outputs_present",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-05-02T06:36:10Z finished=2026-05-02T06:36:10Z",
+      "name": "21681996/t_minus_25/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "pmf_source='unknown' allow_backfill_test=True",
+      "name": "21681996/t_minus_25/pmf_source_backfill_acceptable",
+      "passed": false
+    },
+    {
+      "detail": "rows=33",
+      "name": "21681996/t_minus_25/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21681996/t_minus_25/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=33",
+      "name": "21681996/t_minus_25/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-04-30' pointer='challenger-2026-04-30'",
+      "name": "21681996/t_minus_25/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='no confirmed lineup source wired (Phase 13L Part E acknowledged blocker; role_bucket is derived from projected minutes).'",
+      "name": "21681996/t_minus_25/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21681996/t_minus_25/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21681996/t_minus_25/no_challenger_artifacts_used",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "21684812/t_minus_25/required_outputs_present",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-05-02T06:36:11Z finished=2026-05-02T06:36:11Z",
+      "name": "21684812/t_minus_25/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "pmf_source='unknown' allow_backfill_test=True",
+      "name": "21684812/t_minus_25/pmf_source_backfill_acceptable",
+      "passed": false
+    },
+    {
+      "detail": "rows=29",
+      "name": "21684812/t_minus_25/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21684812/t_minus_25/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=29",
+      "name": "21684812/t_minus_25/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-04-30' pointer='challenger-2026-04-30'",
+      "name": "21684812/t_minus_25/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='no confirmed lineup source wired (Phase 13L Part E acknowledged blocker; role_bucket is derived from projected minutes).'",
+      "name": "21684812/t_minus_25/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21684812/t_minus_25/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21684812/t_minus_25/no_challenger_artifacts_used",
+      "passed": true
+    }
+  ],
+  "code_commit": "a053fc55f475c5dd83c7858d7f6a96f698d75d4a",
+  "delivery_date": "2026-05-01",
+  "facts": {
+    "game_count": 3,
+    "snapshot_count": 3
+  },
+  "generated_at_utc": "2026-05-02T06:36:12+00:00",
+  "passed": false,
+  "schema_version": "1.0"
+}

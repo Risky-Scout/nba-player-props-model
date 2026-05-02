@@ -1,0 +1,68 @@
+{
+  "active_players_projected": 14,
+  "actual_run_finished_at_utc": "2026-05-02T06:36:08Z",
+  "actual_run_started_at_utc": "2026-05-02T06:36:08Z",
+  "allow_backfill_test": true,
+  "availability_fetched_at_utc": "2026-05-02T06:35:48Z",
+  "availability_source": "data/player_availability_asof.parquet (BDL availability snapshot)",
+  "calibrated_through_date": "2026-04-30",
+  "calibration_run_id": "nightly-20260501T124701",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "delivery_date": "2026-05-01",
+  "game_id": "21681995",
+  "game_start_time_utc": null,
+  "injury_fetched_at_utc": "2026-05-02T06:35:48Z",
+  "injury_source": "data/nba_injury_reports.parquet (downstream of predict.py)",
+  "input_manifest_hash": "1e3498255998e7c7b2239776c6287f42",
+  "lineup_aware": false,
+  "lineup_blocker": "no confirmed lineup source wired (Phase 13L Part E acknowledged blocker; role_bucket is derived from projected minutes).",
+  "lineup_confirmation_status": "no_confirmed_lineup_source_wired",
+  "lineup_confirmed": false,
+  "lineup_fetched_at_utc": null,
+  "lineup_source": null,
+  "market_rows": 33,
+  "market_snapshot_type": "t_minus_25",
+  "no_challenger_artifacts_used": true,
+  "no_post_tip_data_used": true,
+  "odds_fetched_at_utc": "2026-05-02T06:35:48Z",
+  "odds_source": "Odds-API (consumed by build_daily_pmf_delivery + predict.py upstream)",
+  "outputs": {
+    "full_pmf_wide.parquet": {
+      "rows": 33,
+      "sha256_prefix": "a53b2423e4181720"
+    },
+    "market_comparison.parquet": {
+      "rows": 33,
+      "sha256_prefix": "e88bf544706887fb"
+    },
+    "outcome_level_probabilities.parquet": {
+      "rows": 33,
+      "sha256_prefix": "aa0aed0f04c4cce3"
+    },
+    "prop_summary.parquet": {
+      "rows": 33,
+      "sha256_prefix": "3982aadcb76327a5"
+    }
+  },
+  "players_marked_non_actionable": 0,
+  "players_removed_confirmed_out": 0,
+  "pmf_generated_at_utc": "2026-05-02T06:35:48Z",
+  "pmf_output_hash": "a53b2423e4181720",
+  "pmf_recomputation_backfill_reused_canonical": false,
+  "pmf_source": "unknown",
+  "pmfs_recomputed": false,
+  "predict_invocation": null,
+  "prediction_code_commit": "a053fc55f475c5dd83c7858d7f6a96f698d75d4a",
+  "prediction_run_id": "derek-snapshot-t_minus_25-21681995-20260502T063608",
+  "predictions_parquet_path": "predictions/all_props_2026-05-01.parquet",
+  "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
+  "props_emitted": 33,
+  "schema_version": "1.0",
+  "snapshot_target_time_utc": null,
+  "snapshot_type": "t_minus_25",
+  "trained_through_date": "2026-04-30",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_run_id": "nightly-20260501T124701"
+}

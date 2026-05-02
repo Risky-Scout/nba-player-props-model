@@ -1,0 +1,34 @@
+{
+  "code_commit": "a053fc55f475c5dd83c7858d7f6a96f698d75d4a",
+  "decisions": [
+    {
+      "decision": "fired_ok",
+      "game_id": "21681995",
+      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21681995/t_minus_25",
+      "target_utc": null
+    },
+    {
+      "decision": "fired_ok",
+      "game_id": "21681996",
+      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21681996/t_minus_25",
+      "target_utc": null
+    },
+    {
+      "decision": "fired_ok",
+      "game_id": "21684812",
+      "tail": "  snapshot_dir=deliveries/2026-05-01/derek_game_snapshots/21684812/t_minus_25",
+      "target_utc": null
+    }
+  ],
+  "delivery_date": "2026-05-01",
+  "now_utc": "2026-05-02T06:36:07Z",
+  "schedule_rows": 3,
+  "schema_version": "1.0",
+  "snapshot_type": "t_minus_25",
+  "summary": {
+    "failures": 0,
+    "fired": 3,
+    "skipped_already_run": 0,
+    "skipped_window": 0
+  }
+}
