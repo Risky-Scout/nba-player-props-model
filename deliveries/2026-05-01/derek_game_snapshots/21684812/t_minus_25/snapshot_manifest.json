@@ -1,9 +1,9 @@
 {
   "active_players_projected": 13,
-  "actual_run_finished_at_utc": "2026-05-02T13:43:53Z",
-  "actual_run_started_at_utc": "2026-05-02T13:43:51Z",
+  "actual_run_finished_at_utc": "2026-05-02T14:54:30Z",
+  "actual_run_started_at_utc": "2026-05-02T14:54:29Z",
   "allow_backfill_test": true,
-  "availability_fetched_at_utc": "2026-05-02T13:43:25Z",
+  "availability_fetched_at_utc": "2026-05-02T14:53:59Z",
   "availability_source": "data/player_availability_asof.parquet (BDL availability snapshot)",
   "bench_count_by_team": {},
   "calibrated_through_date": "2026-04-30",
@@ -15,7 +15,8 @@
   "delivery_date": "2026-05-01",
   "game_id": "21684812",
   "game_start_time_utc": null,
-  "injury_fetched_at_utc": "2026-05-02T13:43:25Z",
+  "injury_availability_hash": "51bb57d476f2acda21832a8797fd417a",
+  "injury_fetched_at_utc": "2026-05-02T14:53:59Z",
   "injury_source": "data/nba_injury_reports.parquet (downstream of predict.py)",
   "input_manifest_hash": "1e3498255998e7c7b2239776c6287f42",
   "lineup_affects_pmf_features": false,
@@ -27,23 +28,34 @@
   "lineup_context_supplied": true,
   "lineup_feature_blocker": "no lineup rows joined into prediction state for this snapshot \u2014 see derek_live_predictions_summary.json for the exact blocker (typical: BDL has not posted lineups yet, or backfill_demo mode bypassed predict.py).",
   "lineup_feature_columns_added": [],
-  "lineup_fetched_at_utc": "2026-05-02T13:43:52Z",
+  "lineup_fetched_at_utc": "2026-05-02T14:54:30Z",
   "lineup_hash": "",
   "lineup_source": null,
+  "lineup_source_endpoint_used": "balldontlie_v2_lineups",
+  "lineup_source_equivalence_verified": true,
   "live_snapshot_recalibrated": false,
   "live_snapshot_retrained": false,
   "market_rows": 29,
+  "market_snapshot_hash": "de6c1fa5dc791bd0",
   "market_snapshot_type": "t_minus_25",
   "minutes_projection_conflict_count": 0,
   "no_challenger_artifacts_used": true,
   "no_leakage_champion_cutoff_verified": false,
   "no_post_tip_data_used": true,
-  "odds_fetched_at_utc": "2026-05-02T13:43:25Z",
+  "odds_fetched_at_utc": "2026-05-02T14:53:59Z",
   "odds_source": "Odds-API (consumed by build_daily_pmf_delivery + predict.py upstream)",
   "outputs": {
     "full_pmf_wide.parquet": {
       "rows": 29,
       "sha256_prefix": "8095175e23dffc1b"
+    },
+    "injury_availability_context.parquet": {
+      "rows": 13,
+      "sha256_prefix": "5cb44acbb24e1571"
+    },
+    "lineup_context.parquet": {
+      "rows": 13,
+      "sha256_prefix": "01a4b2d9d2e092ed"
     },
     "market_comparison.parquet": {
       "rows": 29,
@@ -53,6 +65,10 @@
       "rows": 29,
       "sha256_prefix": "1fd7352464cb4d54"
     },
+    "prediction_input_audit.parquet": {
+      "rows": 29,
+      "sha256_prefix": "3ae4f000b83c11ab"
+    },
     "prop_summary.parquet": {
       "rows": 29,
       "sha256_prefix": "3ae4f000b83c11ab"
@@ -60,15 +76,15 @@
   },
   "players_marked_non_actionable": 0,
   "players_removed_confirmed_out": 0,
-  "pmf_generated_at_utc": "2026-05-02T13:43:25Z",
+  "pmf_generated_at_utc": "2026-05-02T14:53:59Z",
   "pmf_output_hash": "8095175e23dffc1b",
   "pmf_recomputation_backfill_reused_canonical": true,
   "pmf_recomputation_predict_invocation_succeeded": false,
   "pmf_source": "live_snapshot_reused_canonical",
   "pmfs_recomputed": false,
   "predict_invocation": null,
-  "prediction_code_commit": "9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75",
-  "prediction_run_id": "derek-snapshot-t_minus_25-21684812-20260502T134351",
+  "prediction_code_commit": "a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e",
+  "prediction_run_id": "derek-snapshot-t_minus_25-21684812-20260502T145429",
   "predictions_parquet_path": "predictions/all_props_2026-05-01.parquet",
   "promotion_decision_id": "promotion-2026-04-30-20260501T124839",
   "props_emitted": 29,

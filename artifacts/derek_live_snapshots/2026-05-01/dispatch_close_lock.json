@@ -1,5 +1,5 @@
 {
-  "code_commit": "9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75",
+  "code_commit": "a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e",
   "decisions": [
     {
       "decision": "fired_ok",
@@ -21,7 +21,7 @@
     }
   ],
   "delivery_date": "2026-05-01",
-  "now_utc": "2026-05-02T13:43:54Z",
+  "now_utc": "2026-05-02T14:54:32Z",
   "schedule_rows": 3,
   "schema_version": "1.0",
   "snapshot_type": "close_lock",

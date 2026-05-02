@@ -9,9 +9,9 @@
 - calibrated_through_date: `2026-04-30`
 - game_start_time_utc: `None`
 - snapshot_target_time_utc: `None`
-- actual_run_started_at_utc: `2026-05-02T13:43:55Z`
-- actual_run_finished_at_utc: `2026-05-02T13:43:58Z`
-- pmf_generated_at_utc: `2026-05-02T13:43:25Z`
+- actual_run_started_at_utc: `2026-05-02T14:54:33Z`
+- actual_run_finished_at_utc: `2026-05-02T14:54:34Z`
+- pmf_generated_at_utc: `2026-05-02T14:53:59Z`
 - props_emitted: 33
 - market_rows: 33
 - active_players_projected: 14
@@ -19,7 +19,7 @@
 ## Lineup status
 
 - lineup_source: `None`
-- lineup_fetched_at_utc: `2026-05-02T13:43:56Z`
+- lineup_fetched_at_utc: `2026-05-02T14:54:34Z`
 - lineup_confirmed: **False**
 - lineup_complete: `unavailable`
 - lineup_aware: **False**
@@ -46,3 +46,6 @@
 | full_pmf_wide.parquet | 33 | `a53b2423e4181720` |
 | outcome_level_probabilities.parquet | 33 | `aa0aed0f04c4cce3` |
 | market_comparison.parquet | 33 | `e88bf544706887fb` |
+| lineup_context.parquet | 14 | `8528ca7800f54424` |
+| injury_availability_context.parquet | 14 | `ea5b6171ef462782` |
+| prediction_input_audit.parquet | 33 | `3982aadcb76327a5` |

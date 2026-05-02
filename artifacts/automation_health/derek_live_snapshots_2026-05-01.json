@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:43:47Z finished=2026-05-02T13:43:48Z",
+      "detail": "started=2026-05-02T14:54:23Z finished=2026-05-02T14:54:25Z",
       "name": "21681995/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
@@ -31,17 +31,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-t_minus_25-21681995-20260502T134347'",
+      "detail": "value='derek-snapshot-t_minus_25-21681995-20260502T145423'",
       "name": "21681995/t_minus_25/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
+      "detail": "value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e'",
       "name": "21681995/t_minus_25/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:43:25Z'",
+      "detail": "value='2026-05-02T14:53:59Z'",
       "name": "21681995/t_minus_25/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -111,7 +111,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:43:55Z finished=2026-05-02T13:43:58Z",
+      "detail": "started=2026-05-02T14:54:33Z finished=2026-05-02T14:54:34Z",
       "name": "21681995/close_lock/run_timestamps_recorded",
       "passed": true
     },
@@ -131,17 +131,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-close_lock-21681995-20260502T134355'",
+      "detail": "value='derek-snapshot-close_lock-21681995-20260502T145433'",
       "name": "21681995/close_lock/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
+      "detail": "value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e'",
       "name": "21681995/close_lock/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:43:25Z'",
+      "detail": "value='2026-05-02T14:53:59Z'",
       "name": "21681995/close_lock/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -216,7 +216,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:43:49Z finished=2026-05-02T13:43:50Z",
+      "detail": "started=2026-05-02T14:54:26Z finished=2026-05-02T14:54:27Z",
       "name": "21681996/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
@@ -236,17 +236,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-t_minus_25-21681996-20260502T134349'",
+      "detail": "value='derek-snapshot-t_minus_25-21681996-20260502T145426'",
       "name": "21681996/t_minus_25/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
+      "detail": "value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e'",
       "name": "21681996/t_minus_25/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:43:25Z'",
+      "detail": "value='2026-05-02T14:53:59Z'",
       "name": "21681996/t_minus_25/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -316,7 +316,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:43:59Z finished=2026-05-02T13:44:00Z",
+      "detail": "started=2026-05-02T14:54:36Z finished=2026-05-02T14:54:37Z",
       "name": "21681996/close_lock/run_timestamps_recorded",
       "passed": true
     },
@@ -336,17 +336,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-close_lock-21681996-20260502T134359'",
+      "detail": "value='derek-snapshot-close_lock-21681996-20260502T145436'",
       "name": "21681996/close_lock/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
+      "detail": "value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e'",
       "name": "21681996/close_lock/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:43:25Z'",
+      "detail": "value='2026-05-02T14:53:59Z'",
       "name": "21681996/close_lock/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -421,7 +421,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:43:51Z finished=2026-05-02T13:43:53Z",
+      "detail": "started=2026-05-02T14:54:29Z finished=2026-05-02T14:54:30Z",
       "name": "21684812/t_minus_25/run_timestamps_recorded",
       "passed": true
     },
@@ -441,17 +441,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-t_minus_25-21684812-20260502T134351'",
+      "detail": "value='derek-snapshot-t_minus_25-21684812-20260502T145429'",
       "name": "21684812/t_minus_25/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
+      "detail": "value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e'",
       "name": "21684812/t_minus_25/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:43:25Z'",
+      "detail": "value='2026-05-02T14:53:59Z'",
       "name": "21684812/t_minus_25/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -521,7 +521,7 @@
       "passed": true
     },
     {
-      "detail": "started=2026-05-02T13:44:01Z finished=2026-05-02T13:44:03Z",
+      "detail": "started=2026-05-02T14:54:38Z finished=2026-05-02T14:54:40Z",
       "name": "21684812/close_lock/run_timestamps_recorded",
       "passed": true
     },
@@ -541,17 +541,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-close_lock-21684812-20260502T134401'",
+      "detail": "value='derek-snapshot-close_lock-21684812-20260502T145438'",
       "name": "21684812/close_lock/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75'",
+      "detail": "value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e'",
       "name": "21684812/close_lock/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-02T13:43:25Z'",
+      "detail": "value='2026-05-02T14:53:59Z'",
       "name": "21684812/close_lock/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -621,7 +621,7 @@
       "passed": true
     }
   ],
-  "code_commit": "9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75",
+  "code_commit": "a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e",
   "delivery_date": "2026-05-01",
   "facts": {
     "game_count": 3,
@@ -635,10 +635,36 @@
       "production_live": 0,
       "unknown": 0
     },
+    "phase13n_outputs_status": [
+      {
+        "label": "21681995/t_minus_25",
+        "missing": []
+      },
+      {
+        "label": "21681995/close_lock",
+        "missing": []
+      },
+      {
+        "label": "21681996/t_minus_25",
+        "missing": []
+      },
+      {
+        "label": "21681996/close_lock",
+        "missing": []
+      },
+      {
+        "label": "21684812/t_minus_25",
+        "missing": []
+      },
+      {
+        "label": "21684812/close_lock",
+        "missing": []
+      }
+    ],
     "recomputed_snapshot_count": 0,
     "snapshot_count": 6
   },
-  "generated_at_utc": "2026-05-02T13:44:10+00:00",
+  "generated_at_utc": "2026-05-02T14:54:50+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

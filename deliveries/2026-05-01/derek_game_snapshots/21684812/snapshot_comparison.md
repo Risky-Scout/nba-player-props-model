@@ -1,6 +1,6 @@
 # Snapshot comparison — game 21684812
 
-- generated_at_utc: 2026-05-02T13:44:09+00:00
+- generated_at_utc: 2026-05-02T14:54:48+00:00
 - t_minus_25 manifest: `/home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-01/derek_game_snapshots/21684812/t_minus_25/snapshot_manifest.json`
 - close_lock manifest: `/home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-01/derek_game_snapshots/21684812/close_lock/snapshot_manifest.json`
 

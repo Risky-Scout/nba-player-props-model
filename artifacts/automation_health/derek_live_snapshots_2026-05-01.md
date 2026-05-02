@@ -1,6 +1,6 @@
 # Derek Live Snapshots — 2026-05-01
 
-- generated_at_utc: 2026-05-02T13:44:10+00:00
+- generated_at_utc: 2026-05-02T14:54:50+00:00
 - passed: **True**
 - snapshot_count: 6 across 3 game folders
 
@@ -10,13 +10,13 @@
 | --- | --- | --- |
 | derek_game_snapshots_dir_present | yes | deliveries/2026-05-01/derek_game_snapshots |
 | 21681995/t_minus_25/required_outputs_present | yes | ok |
-| 21681995/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T13:43:47Z finished=2026-05-02T13:43:48Z |
+| 21681995/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T14:54:23Z finished=2026-05-02T14:54:25Z |
 | 21681995/t_minus_25/snapshot_mode_valid | yes | snapshot_mode='backfill_demo' |
 | 21681995/t_minus_25/snapshot_mode_matches_allow_backfill_test | yes | snapshot_mode='backfill_demo' allow_backfill_test=True |
 | 21681995/t_minus_25/backfill_demo_pmf_source_is_reused_canonical | yes | pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False |
-| 21681995/t_minus_25/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-t_minus_25-21681995-20260502T134347' |
-| 21681995/t_minus_25/manifest_field_present:prediction_code_commit | yes | value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75' |
-| 21681995/t_minus_25/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T13:43:25Z' |
+| 21681995/t_minus_25/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-t_minus_25-21681995-20260502T145423' |
+| 21681995/t_minus_25/manifest_field_present:prediction_code_commit | yes | value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e' |
+| 21681995/t_minus_25/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T14:53:59Z' |
 | 21681995/t_minus_25/manifest_field_present:pmf_output_hash | yes | value='a53b2423e4181720' |
 | 21681995/t_minus_25/pmf_row_count_positive | yes | rows=33 |
 | 21681995/t_minus_25/pmf_validity_sample | yes | sample_n=5 issues=[] |
@@ -30,13 +30,13 @@
 | 21681995/t_minus_25/injury_source_recorded | yes | injury_source='data/nba_injury_reports.parquet (downstream of predict.py)' |
 | 21681995/t_minus_25/availability_source_recorded | yes | availability_source='data/player_availability_asof.parquet (BDL availability snapshot)' |
 | 21681995/close_lock/required_outputs_present | yes | ok |
-| 21681995/close_lock/run_timestamps_recorded | yes | started=2026-05-02T13:43:55Z finished=2026-05-02T13:43:58Z |
+| 21681995/close_lock/run_timestamps_recorded | yes | started=2026-05-02T14:54:33Z finished=2026-05-02T14:54:34Z |
 | 21681995/close_lock/snapshot_mode_valid | yes | snapshot_mode='backfill_demo' |
 | 21681995/close_lock/snapshot_mode_matches_allow_backfill_test | yes | snapshot_mode='backfill_demo' allow_backfill_test=True |
 | 21681995/close_lock/backfill_demo_pmf_source_is_reused_canonical | yes | pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False |
-| 21681995/close_lock/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-close_lock-21681995-20260502T134355' |
-| 21681995/close_lock/manifest_field_present:prediction_code_commit | yes | value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75' |
-| 21681995/close_lock/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T13:43:25Z' |
+| 21681995/close_lock/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-close_lock-21681995-20260502T145433' |
+| 21681995/close_lock/manifest_field_present:prediction_code_commit | yes | value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e' |
+| 21681995/close_lock/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T14:53:59Z' |
 | 21681995/close_lock/manifest_field_present:pmf_output_hash | yes | value='a53b2423e4181720' |
 | 21681995/close_lock/pmf_row_count_positive | yes | rows=33 |
 | 21681995/close_lock/pmf_validity_sample | yes | sample_n=5 issues=[] |
@@ -51,13 +51,13 @@
 | 21681995/close_lock/availability_source_recorded | yes | availability_source='data/player_availability_asof.parquet (BDL availability snapshot)' |
 | 21681995/snapshot_comparison_emitted_when_both_present | yes | advisory: comparison emitter is Phase 13L-bis scope; both snapshots present. |
 | 21681996/t_minus_25/required_outputs_present | yes | ok |
-| 21681996/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T13:43:49Z finished=2026-05-02T13:43:50Z |
+| 21681996/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T14:54:26Z finished=2026-05-02T14:54:27Z |
 | 21681996/t_minus_25/snapshot_mode_valid | yes | snapshot_mode='backfill_demo' |
 | 21681996/t_minus_25/snapshot_mode_matches_allow_backfill_test | yes | snapshot_mode='backfill_demo' allow_backfill_test=True |
 | 21681996/t_minus_25/backfill_demo_pmf_source_is_reused_canonical | yes | pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False |
-| 21681996/t_minus_25/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-t_minus_25-21681996-20260502T134349' |
-| 21681996/t_minus_25/manifest_field_present:prediction_code_commit | yes | value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75' |
-| 21681996/t_minus_25/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T13:43:25Z' |
+| 21681996/t_minus_25/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-t_minus_25-21681996-20260502T145426' |
+| 21681996/t_minus_25/manifest_field_present:prediction_code_commit | yes | value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e' |
+| 21681996/t_minus_25/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T14:53:59Z' |
 | 21681996/t_minus_25/manifest_field_present:pmf_output_hash | yes | value='8b75168f45315515' |
 | 21681996/t_minus_25/pmf_row_count_positive | yes | rows=33 |
 | 21681996/t_minus_25/pmf_validity_sample | yes | sample_n=5 issues=[] |
@@ -71,13 +71,13 @@
 | 21681996/t_minus_25/injury_source_recorded | yes | injury_source='data/nba_injury_reports.parquet (downstream of predict.py)' |
 | 21681996/t_minus_25/availability_source_recorded | yes | availability_source='data/player_availability_asof.parquet (BDL availability snapshot)' |
 | 21681996/close_lock/required_outputs_present | yes | ok |
-| 21681996/close_lock/run_timestamps_recorded | yes | started=2026-05-02T13:43:59Z finished=2026-05-02T13:44:00Z |
+| 21681996/close_lock/run_timestamps_recorded | yes | started=2026-05-02T14:54:36Z finished=2026-05-02T14:54:37Z |
 | 21681996/close_lock/snapshot_mode_valid | yes | snapshot_mode='backfill_demo' |
 | 21681996/close_lock/snapshot_mode_matches_allow_backfill_test | yes | snapshot_mode='backfill_demo' allow_backfill_test=True |
 | 21681996/close_lock/backfill_demo_pmf_source_is_reused_canonical | yes | pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False |
-| 21681996/close_lock/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-close_lock-21681996-20260502T134359' |
-| 21681996/close_lock/manifest_field_present:prediction_code_commit | yes | value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75' |
-| 21681996/close_lock/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T13:43:25Z' |
+| 21681996/close_lock/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-close_lock-21681996-20260502T145436' |
+| 21681996/close_lock/manifest_field_present:prediction_code_commit | yes | value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e' |
+| 21681996/close_lock/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T14:53:59Z' |
 | 21681996/close_lock/manifest_field_present:pmf_output_hash | yes | value='8b75168f45315515' |
 | 21681996/close_lock/pmf_row_count_positive | yes | rows=33 |
 | 21681996/close_lock/pmf_validity_sample | yes | sample_n=5 issues=[] |
@@ -92,13 +92,13 @@
 | 21681996/close_lock/availability_source_recorded | yes | availability_source='data/player_availability_asof.parquet (BDL availability snapshot)' |
 | 21681996/snapshot_comparison_emitted_when_both_present | yes | advisory: comparison emitter is Phase 13L-bis scope; both snapshots present. |
 | 21684812/t_minus_25/required_outputs_present | yes | ok |
-| 21684812/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T13:43:51Z finished=2026-05-02T13:43:53Z |
+| 21684812/t_minus_25/run_timestamps_recorded | yes | started=2026-05-02T14:54:29Z finished=2026-05-02T14:54:30Z |
 | 21684812/t_minus_25/snapshot_mode_valid | yes | snapshot_mode='backfill_demo' |
 | 21684812/t_minus_25/snapshot_mode_matches_allow_backfill_test | yes | snapshot_mode='backfill_demo' allow_backfill_test=True |
 | 21684812/t_minus_25/backfill_demo_pmf_source_is_reused_canonical | yes | pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False |
-| 21684812/t_minus_25/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-t_minus_25-21684812-20260502T134351' |
-| 21684812/t_minus_25/manifest_field_present:prediction_code_commit | yes | value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75' |
-| 21684812/t_minus_25/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T13:43:25Z' |
+| 21684812/t_minus_25/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-t_minus_25-21684812-20260502T145429' |
+| 21684812/t_minus_25/manifest_field_present:prediction_code_commit | yes | value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e' |
+| 21684812/t_minus_25/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T14:53:59Z' |
 | 21684812/t_minus_25/manifest_field_present:pmf_output_hash | yes | value='8095175e23dffc1b' |
 | 21684812/t_minus_25/pmf_row_count_positive | yes | rows=29 |
 | 21684812/t_minus_25/pmf_validity_sample | yes | sample_n=5 issues=[] |
@@ -112,13 +112,13 @@
 | 21684812/t_minus_25/injury_source_recorded | yes | injury_source='data/nba_injury_reports.parquet (downstream of predict.py)' |
 | 21684812/t_minus_25/availability_source_recorded | yes | availability_source='data/player_availability_asof.parquet (BDL availability snapshot)' |
 | 21684812/close_lock/required_outputs_present | yes | ok |
-| 21684812/close_lock/run_timestamps_recorded | yes | started=2026-05-02T13:44:01Z finished=2026-05-02T13:44:03Z |
+| 21684812/close_lock/run_timestamps_recorded | yes | started=2026-05-02T14:54:38Z finished=2026-05-02T14:54:40Z |
 | 21684812/close_lock/snapshot_mode_valid | yes | snapshot_mode='backfill_demo' |
 | 21684812/close_lock/snapshot_mode_matches_allow_backfill_test | yes | snapshot_mode='backfill_demo' allow_backfill_test=True |
 | 21684812/close_lock/backfill_demo_pmf_source_is_reused_canonical | yes | pmf_source='live_snapshot_reused_canonical' pmfs_recomputed=False |
-| 21684812/close_lock/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-close_lock-21684812-20260502T134401' |
-| 21684812/close_lock/manifest_field_present:prediction_code_commit | yes | value='9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75' |
-| 21684812/close_lock/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T13:43:25Z' |
+| 21684812/close_lock/manifest_field_present:prediction_run_id | yes | value='derek-snapshot-close_lock-21684812-20260502T145438' |
+| 21684812/close_lock/manifest_field_present:prediction_code_commit | yes | value='a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e' |
+| 21684812/close_lock/manifest_field_present:pmf_generated_at_utc | yes | value='2026-05-02T14:53:59Z' |
 | 21684812/close_lock/manifest_field_present:pmf_output_hash | yes | value='8095175e23dffc1b' |
 | 21684812/close_lock/pmf_row_count_positive | yes | rows=29 |
 | 21684812/close_lock/pmf_validity_sample | yes | sample_n=5 issues=[] |

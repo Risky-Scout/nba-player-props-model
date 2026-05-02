@@ -137,6 +137,36 @@
     },
     {
       "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::lineup_source_equivalence_verified",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::injury_availability_hash",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::market_snapshot_hash",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::lineup_context.parquet",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::injury_availability_context.parquet",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::prediction_input_audit.parquet",
+      "passed": true
+    },
+    {
+      "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_LIVE_SNAPSHOT_INFRASTRUCTURE_BACKFILL_PASS",
       "passed": true
     },
@@ -153,6 +183,11 @@
     {
       "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_snapshots.py::DEREK_INJURY_AVAILABILITY_CONTEXT_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_snapshots.py::BDL_LINEUPS_FETCH_PASS",
       "passed": true
     },
     {
@@ -179,9 +214,29 @@
       "detail": "ok",
       "name": "phase13_correction_token:predict.py::derek_live_predictions.parquet",
       "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_api_readiness.py::DEREK_LIVE_API_READINESS_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_api_readiness.py::BDL_API_KEY",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_api_readiness.py::get_lineups",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_derek_live_api_readiness.py::get_injuries",
+      "passed": true
     }
   ],
-  "code_commit": "9f7d887d2721edf3ab4dc7e5ef9513c4ccf74e75",
+  "code_commit": "a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "challenger-2026-04-30",
@@ -189,7 +244,7 @@
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-02T13:44:11+00:00",
+  "generated_at_utc": "2026-05-02T14:54:51+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
