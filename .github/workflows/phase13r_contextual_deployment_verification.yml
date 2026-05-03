@@ -98,12 +98,7 @@ jobs:
 
       - name: Promote contextual challenger
         id: promote
-        if: |
-          steps.verify_feature_lists.outcome == 'success' &&
-          steps.verify_predict_path.outcome == 'success' &&
-          steps.verify_sensitivity.outcome == 'success' &&
-          steps.verify_no_leakage.outcome == 'success' &&
-          steps.verify_no_break.outcome == 'success'
+        if: ${{ steps.verify_feature_lists.outcome == 'success' && steps.verify_predict_path.outcome == 'success' && steps.verify_sensitivity.outcome == 'success' && steps.verify_no_leakage.outcome == 'success' && steps.verify_no_break.outcome == 'success' }}
         continue-on-error: true
         run: |
           ARGS=""
@@ -136,14 +131,7 @@ jobs:
             artifacts/models/champion/v_phase13r_*/**
 
       - name: Commit Phase 13R artifacts (Joseph Shackelford authorship)
-        if: |
-          steps.audit.outcome == 'success' &&
-          steps.verify_feature_lists.outcome == 'success' &&
-          steps.verify_predict_path.outcome == 'success' &&
-          steps.verify_sensitivity.outcome == 'success' &&
-          steps.verify_no_leakage.outcome == 'success' &&
-          steps.verify_no_break.outcome == 'success' &&
-          steps.verify_deployment.outcome == 'success'
+        if: ${{ steps.audit.outcome == 'success' && steps.verify_feature_lists.outcome == 'success' && steps.verify_predict_path.outcome == 'success' && steps.verify_sensitivity.outcome == 'success' && steps.verify_no_leakage.outcome == 'success' && steps.verify_no_break.outcome == 'success' && steps.verify_deployment.outcome == 'success' }}
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
@@ -163,14 +151,7 @@ jobs:
           done
 
       - name: Fail workflow if any required step failed
-        if: |
-          steps.audit.outcome != 'success' ||
-          steps.verify_feature_lists.outcome != 'success' ||
-          steps.verify_predict_path.outcome != 'success' ||
-          steps.verify_sensitivity.outcome != 'success' ||
-          steps.verify_no_leakage.outcome != 'success' ||
-          steps.verify_no_break.outcome != 'success' ||
-          steps.verify_deployment.outcome != 'success'
+        if: ${{ steps.audit.outcome != 'success' || steps.verify_feature_lists.outcome != 'success' || steps.verify_predict_path.outcome != 'success' || steps.verify_sensitivity.outcome != 'success' || steps.verify_no_leakage.outcome != 'success' || steps.verify_no_break.outcome != 'success' || steps.verify_deployment.outcome != 'success' }}
         run: |
           echo "::error::A Phase 13R step failed."
           exit 1
