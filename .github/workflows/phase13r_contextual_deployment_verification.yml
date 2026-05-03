@@ -51,7 +51,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy joblib scikit-learn
+        run: pip install pandas pyarrow numpy joblib scikit-learn requests pyyaml
 
       - name: Phase 13R started
         run: |
