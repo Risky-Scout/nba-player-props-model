@@ -194,12 +194,26 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
     target_dt = _parse_iso(target_iso) if target_iso else None
     gs_dt = _parse_iso(gs_iso) if gs_iso else None
     if snapshot_type == "current_live":
+        # Phase 13Z — current_live snapshots that were generated POST-tip
+        # carry snapshot_validity_status=post_tip_stale_baseline. They
+        # are honest stale baselines, not pre-tip claims, so the
+        # target_pre_tip check is skipped for them. The dispatcher
+        # refuses to regenerate post-tip current_live going forward.
         if gs_dt and target_dt:
-            report.add(
-                f"{label}/current_live_target_pre_tip",
-                target_dt <= gs_dt,
-                f"target={target_iso} game_start={gs_iso}",
-            )
+            sv = manifest.get("snapshot_validity_status") or ""
+            if sv == "post_tip_stale_baseline":
+                report.add(
+                    f"{label}/current_live_post_tip_stale_baseline",
+                    True,
+                    f"target={target_iso} game_start={gs_iso} "
+                    "(no pre-tip claim made)",
+                )
+            else:
+                report.add(
+                    f"{label}/current_live_target_pre_tip",
+                    target_dt <= gs_dt,
+                    f"target={target_iso} game_start={gs_iso}",
+                )
     else:
         expected_offset = 25 if snapshot_type == "t_minus_25" else 5
         if gs_dt and target_dt:

@@ -302,8 +302,20 @@ def main(argv: list[str] | None = None) -> int:
 
         # Decide action based on state.
         action = "no_action"
+        # Phase 13Z — current_live for already-tipped games must NEVER
+        # regenerate (force or not). Old current_live snapshots stay as
+        # they are; we don't write a post-tip current_live with
+        # snapshot_target_time_utc=now > game_start.
+        already_tipped_current_live = (
+            args.snapshot_type == "current_live"
+            and sr.game_start_time_utc is not None
+            and sr.now_utc >= sr.game_start_time_utc
+        )
         if sr.state == "EXISTS":
-            if args.force:
+            if already_tipped_current_live:
+                action = "skipped_already_tipped"
+                skipped_window += 1
+            elif args.force:
                 action = "regenerate_force"
             else:
                 action = "skipped_already_run"

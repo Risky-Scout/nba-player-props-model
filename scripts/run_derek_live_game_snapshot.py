@@ -1584,17 +1584,27 @@ def _build_snapshot_manifest(*,
             else 0
         ),
         "snapshot_validity_status": (
-            "on_time_or_current_live"
-            if snapshot_type == "current_live"
+            # Phase 13Z — current_live generated post-tip is a stale
+            # baseline (the dispatcher refuses these going forward,
+            # but we mark anything older that slipped through).
+            "post_tip_stale_baseline"
+            if (snapshot_type == "current_live"
+                and game_start_time_utc and run_started_at
+                and run_started_at >= dt.datetime.fromisoformat(
+                    game_start_time_utc.replace("Z", "+00:00")))
             else (
-                "late_but_pre_tip"
-                if (game_start_time_utc and target_iso and run_started_at
-                    and (run_started_at -
-                          dt.datetime.fromisoformat(target_iso.replace("Z", "+00:00"))
-                         ).total_seconds() > 6 * 60
-                    and run_started_at < dt.datetime.fromisoformat(
-                        game_start_time_utc.replace("Z", "+00:00")))
-                else "on_time_or_current_live"
+                "on_time_or_current_live"
+                if snapshot_type == "current_live"
+                else (
+                    "late_but_pre_tip"
+                    if (game_start_time_utc and target_iso and run_started_at
+                        and (run_started_at -
+                              dt.datetime.fromisoformat(target_iso.replace("Z", "+00:00"))
+                             ).total_seconds() > 6 * 60
+                        and run_started_at < dt.datetime.fromisoformat(
+                            game_start_time_utc.replace("Z", "+00:00")))
+                    else "on_time_or_current_live"
+                )
             )
         ),
         "champion_model_id": pointer.get("champion_model_id") or pointer.get("model_version"),

@@ -177,7 +177,7 @@
   "snapshot_mode": "production_live_current",
   "snapshot_target_time_utc": "2026-05-03T20:38:19Z",
   "snapshot_type": "current_live",
-  "snapshot_validity_status": "on_time_or_current_live",
+  "snapshot_validity_status": "post_tip_stale_baseline",
   "starter_flag_changed_count": 0,
   "starters_by_team": {},
   "trained_through_date": "2026-04-30",
