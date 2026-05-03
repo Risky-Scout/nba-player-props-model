@@ -18,7 +18,7 @@ This is a best-available pre-tip baseline. BDL did not return confirmed lineup r
 - BDL_lineup_fetch_status: `no_rows_returned`
 - BDL_lineup_rows: **0**
 - BDL_lineup_endpoint: `balldontlie_v1_lineups`
-- BDL_lineup_fetched_at_utc: `2026-05-03T20:29:30Z`
+- BDL_lineup_fetched_at_utc: `2026-05-03T20:38:16Z`
 - BDL_injury_fetch_attempted: **True**
 - BDL_injury_fetch_status: `deferred_to_predict_pipeline`
 - BDL_injury_rows: **0**
