@@ -125,15 +125,15 @@
     "contextual_no_leakage_manifest_path": "artifacts/models/challengers/2026-04-30_contextual/no_leakage_manifest.json",
     "contextual_pmf_engine": true,
     "contextual_pmf_sensitivity_verified": true,
-    "contextual_promoted_at_utc": "2026-05-03T00:22:15+00:00",
-    "contextual_promoted_from_pointer_backup": "artifacts/models/champion/v_phase13r_20260503T002215p0000/champion_pointer.previous.json",
-    "contextual_promotion_decision_id": "contextual-promotion-2026-04-30_contextual-20260503T002215",
+    "contextual_promoted_at_utc": "2026-05-03T00:40:28+00:00",
+    "contextual_promoted_from_pointer_backup": "artifacts/models/champion/v_phase13r_20260503T004028p0000/champion_pointer.previous.json",
+    "contextual_promotion_decision_id": "contextual-promotion-2026-04-30_contextual-20260503T004028",
     "contextual_promotion_decision_path": "artifacts/models/challengers/2026-04-30_contextual/promotion_decision.json",
     "contextual_train_manifest_path": "artifacts/models/challengers/2026-04-30_contextual/train_manifest.json",
     "contextual_trained_through_date": "2026-04-30",
     "contextual_validation_report_path": "artifacts/phase13p/validation_gates_report.json",
     "feature_set_id": "phase13q_contextual_pmf_engine_v1",
-    "promotion_decision_id": "contextual-promotion-2026-04-30_contextual-20260503T002215",
+    "promotion_decision_id": "contextual-promotion-2026-04-30_contextual-20260503T004028",
     "validation_report_path": "artifacts/phase13p/validation_gates_report.json"
   },
   "expected_feature_set_id": "phase13q_contextual_pmf_engine_v1",
@@ -165,7 +165,7 @@
     "stl": 27,
     "tov": 27
   },
-  "generated_at_utc": "2026-05-03T00:40:25+00:00Z",
+  "generated_at_utc": "2026-05-03T01:31:53+00:00Z",
   "model_manifest_summary": {
     "challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
     "code_commit": "e223cfd91e2e3eb5ca08a607ba0ff22a126938d7",

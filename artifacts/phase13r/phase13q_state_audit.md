@@ -1,6 +1,6 @@
 # Phase 13Q State Audit (Phase 13R Part A)
 
-- generated_at_utc: 2026-05-03T00:40:25+00:00Z
+- generated_at_utc: 2026-05-03T01:31:53+00:00Z
 - challenger_dir: `artifacts/models/challengers/2026-04-30_contextual`
 - challenger_dir_resolution_reason: 'ok'
 - expected_feature_set_id: `phase13q_contextual_pmf_engine_v1`

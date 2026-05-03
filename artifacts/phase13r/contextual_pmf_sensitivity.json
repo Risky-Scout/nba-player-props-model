@@ -16,8 +16,8 @@
       "minutes_delta": -5.298435356220658
     },
     "case_3_teammate_out": {
-      "abs_diff_minutes_delta": 2.6240296851026095,
-      "minutes_delta_loaded": -7.922465041323267,
+      "abs_diff_minutes_delta": 2.624029685102606,
+      "minutes_delta_loaded": -7.922465041323264,
       "minutes_delta_quiet": -5.298435356220658,
       "num_teammates_out_total_loaded": 2.0,
       "num_teammates_out_total_quiet": 0.0,
@@ -26,8 +26,8 @@
     },
     "case_4_lineup_composition": {
       "abs_diff_minutes_delta": 3.0583996552748633,
-      "minutes_delta_a": -7.922465041323267,
-      "minutes_delta_b": -4.864065386048404,
+      "minutes_delta_a": -7.922465041323264,
+      "minutes_delta_b": -4.8640653860484,
       "vacated_minutes_guard_a": 25.0,
       "vacated_minutes_guard_b": 0.0,
       "vacated_minutes_total_a": 50.0,
