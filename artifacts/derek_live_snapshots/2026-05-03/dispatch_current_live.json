@@ -1,11 +1,11 @@
 {
-  "code_commit": "8f4daed41a2220c0f66a6d2b07c41d26ed7397d3",
+  "code_commit": "ada036f0f947a80f3fba25c4f5c7542cc653e4ba",
   "decisions": [
     {
       "decision": "skipped_already_run",
       "detail": "snapshot_manifest.json present",
       "game_id": "21682000",
-      "now_utc": "2026-05-03T20:59:07Z",
+      "now_utc": "2026-05-03T22:52:02Z",
       "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21682000/current_live",
       "state": "EXISTS",
       "target_utc": "2026-05-03T23:40:00Z"
@@ -14,7 +14,7 @@
       "decision": "skipped_already_tipped",
       "detail": "snapshot_manifest.json present",
       "game_id": "21684819",
-      "now_utc": "2026-05-03T20:59:07Z",
+      "now_utc": "2026-05-03T22:52:02Z",
       "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21684819/current_live",
       "state": "EXISTS",
       "target_utc": "2026-05-03T19:40:00Z"
@@ -22,7 +22,7 @@
   ],
   "delivery_date": "2026-05-03",
   "eligible_rows": 0,
-  "now_utc": "2026-05-03T20:59:07Z",
+  "now_utc": "2026-05-03T22:52:02Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
   "snapshot_type": "current_live",
