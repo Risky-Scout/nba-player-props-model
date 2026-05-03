@@ -1,0 +1,37 @@
+{
+  "code_commit": "6e00146af6e975559d7b400162b2fcd7f2c527ab",
+  "decisions": [
+    {
+      "decision": "fired_failed",
+      "exit_code": 1,
+      "game_id": "21682000",
+      "tail": [
+        "DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED",
+        "  reason: predict.py exit=2; see log: artifacts/derek_live_snapshots/2026-05-03/predict_current_live_21682000_20260503T160051.log"
+      ],
+      "target_utc": "2026-05-03T23:40:00Z"
+    },
+    {
+      "decision": "fired_failed",
+      "exit_code": 1,
+      "game_id": "21684819",
+      "tail": [
+        "DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED",
+        "  reason: predict.py exit=2; see log: artifacts/derek_live_snapshots/2026-05-03/predict_current_live_21684819_20260503T160056.log"
+      ],
+      "target_utc": "2026-05-03T19:40:00Z"
+    }
+  ],
+  "delivery_date": "2026-05-03",
+  "eligible_rows": 2,
+  "now_utc": "2026-05-03T16:00:50Z",
+  "schedule_rows": 2,
+  "schema_version": "1.0",
+  "snapshot_type": "current_live",
+  "summary": {
+    "failures": 2,
+    "fired": 0,
+    "skipped_already_run": 0,
+    "skipped_window": 0
+  }
+}

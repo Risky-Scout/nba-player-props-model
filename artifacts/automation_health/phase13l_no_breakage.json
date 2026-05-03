@@ -112,7 +112,17 @@
     },
     {
       "detail": "ok",
-      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = \"backfill_demo\" if allow_backfill ",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = \"backfill_demo\"",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = \"production_live_current\"",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = \"production_live\"",
       "passed": true
     },
     {
@@ -234,17 +244,192 @@
       "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_api_readiness.py::get_injuries",
       "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::PHASE13O_LIVE_CONTEXT_FEATURES_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::LINEUP_FEATURE_COLUMNS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::INJURY_FEATURE_COLUMNS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::VACATED_OPPORTUNITY_FEATURE_COLUMNS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::build_live_context_features",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::feature_set_id",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:live_context.py::phase13o_live_context_v1",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:build_live_context_training_dataset.py::PHASE13O_LIVE_CONTEXT_TRAINING_DATASET_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:build_live_context_training_dataset.py::PHASE13O_LINEUP_HISTORY_LIMITED",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:build_live_context_training_dataset.py::no_future_leakage_verified",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:build_live_context_training_dataset.py::asof_cutoff_rule",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_FEATURE_VECTOR_SENSITIVITY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_ACTIONABILITY_SENSITIVITY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_MARKET_ONLY_EDGE_SENSITIVITY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_PMF_SENSITIVITY_PENDING_RETRAINED_ARTIFAC",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13P_PMF_SENSITIVITY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_live_context_challenger.py::PHASE13P_LIVE_CONTEXT_CHALLENGER_TRAINER_READY_PAS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_live_context_challenger.py::PHASE13P_LIVE_CONTEXT_CHALLENGER_TRAINING_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_live_context_challenger.py::phase13p_lineup_injury_driver_v1",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_live_context_challenger.py::starter_proxy_lagged",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_live_context_challenger.py::no_same_game_performance_predictors",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_phase13p_no_leakage.py::PHASE13P_NO_LEAKAGE_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_phase13p_no_leakage.py::FORBIDDEN_PREDICTOR_COLUMNS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_phase13p_validation_gates.py::PHASE13P_VALIDATION_GATES_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_phase13p_validation_gates.py::PHASE13P_VALIDATION_GATES_FAILED",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_phase13p_validation_gates.py::SAFE_NONINFERIORITY_THRESHOLD",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:verify_phase13p_validation_gates.py::PHASE13Q_VALIDATION_GATES_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::PHASE13Q_CONTEXTUAL_CHALLENGER_TRAINER_READY_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::PHASE13Q_CONTEXTUAL_CHALLENGER_TRAINING_PASS",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::phase13q_contextual_pmf_engine_v1",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::GAME_CONTEXT_FEATURES",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::is_back_to_back",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::is_three_in_four",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::season_game_number",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "phase13_correction_token:train_contextual_challenger.py::no_same_game_performance_predictors",
+      "passed": true
     }
   ],
-  "code_commit": "a6f2d31abadc67b0a33d12a2de6fa35ee0795b7e",
+  "code_commit": "6e00146af6e975559d7b400162b2fcd7f2c527ab",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "challenger-2026-04-30",
-      "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+      "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-02T14:54:51+00:00",
+  "generated_at_utc": "2026-05-03T16:01:14+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

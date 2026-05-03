@@ -1,11 +1,11 @@
 {
   "added_columns": [],
   "delivery_date": "2026-05-03",
-  "generated_at_utc": "2026-05-03T15:56:17+00:00Z",
+  "generated_at_utc": "2026-05-03T16:00:47+00:00Z",
   "outcome": "pass",
-  "post_hash": "d216931468072358",
+  "post_hash": "50f6b74d8ed3f8f4",
   "post_rows": 69,
-  "pre_hash": "8709c170eed0704b",
+  "pre_hash": "d216931468072358",
   "pre_rows": 69,
   "resolved_count": 2,
   "resolved_games": [
@@ -15,8 +15,8 @@
   "rows_changed": false,
   "schema_version": "1.0",
   "telemetry": {
-    "bdl_api_key_present": false,
-    "bdl_live_games": 0,
+    "bdl_api_key_present": true,
+    "bdl_live_games": 2,
     "delivery_date": "2026-05-03",
     "from_predictions_count": 2,
     "odds_api_cached_events": 0,

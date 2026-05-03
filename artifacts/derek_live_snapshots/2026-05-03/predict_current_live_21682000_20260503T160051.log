@@ -1,0 +1,9 @@
+$ /opt/hostedtoolcache/Python/3.11.15/x64/bin/python scripts/predict.py --derek-live-snapshot --target-date 2026-05-03 --game-id 21682000 --snapshot-output-dir deliveries/2026-05-03/derek_game_snapshots/21682000/current_live --snapshot-type current_live --snapshot-run-id derek-snapshot-current_live-21682000-20260503T160051 --lineup-context artifacts/live_lineups/2026-05-03/21682000/bdl_lineups_normalized.parquet
+
+usage: predict [-h] [--derek-live-snapshot] [--target-date TARGET_DATE]
+               [--delivery-date DELIVERY_DATE] [--game-id GAME_ID]
+               [--lineup-context LINEUP_CONTEXT]
+               [--snapshot-output-dir SNAPSHOT_OUTPUT_DIR]
+               [--snapshot-type {None,t_minus_25,close_lock}]
+               [--snapshot-run-id SNAPSHOT_RUN_ID] [--validate-args-and-exit]
+predict: error: argument --snapshot-type: invalid choice: 'current_live' (choose from None, 't_minus_25', 'close_lock')

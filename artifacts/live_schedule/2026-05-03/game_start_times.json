@@ -1,6 +1,6 @@
 {
   "delivery_date": "2026-05-03",
-  "generated_at_utc": "2026-05-03T15:56:16+00:00Z",
+  "generated_at_utc": "2026-05-03T16:00:45+00:00Z",
   "records": [
     {
       "game_id": "21682000",
@@ -25,8 +25,8 @@
   ],
   "schema_version": "1.0",
   "telemetry": {
-    "bdl_api_key_present": false,
-    "bdl_live_games": 0,
+    "bdl_api_key_present": true,
+    "bdl_live_games": 2,
     "delivery_date": "2026-05-03",
     "from_predictions_count": 2,
     "odds_api_cached_events": 0,

@@ -1,14 +1,14 @@
 # Game start time resolution — 2026-05-03
 
-- generated_at_utc: 2026-05-03T15:56:16+00:00Z
+- generated_at_utc: 2026-05-03T16:00:45+00:00Z
 - predictions_unique_games: 2
 - resolved: **2**
 - unresolved: **0**
 - ODDS_API_KEY present: True
-- BDL_API_KEY present: False
+- BDL_API_KEY present: True
 - odds_api_cached_events: 0
 - odds_api_live_events: 5
-- bdl_live_games: 0
+- bdl_live_games: 2
 
 ## Per-game resolution
 

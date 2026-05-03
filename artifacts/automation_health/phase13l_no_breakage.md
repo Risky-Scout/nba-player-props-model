@@ -1,6 +1,6 @@
 # Phase 13L No-Breakage Verification
 
-- generated_at_utc: 2026-05-02T14:54:51+00:00
+- generated_at_utc: 2026-05-03T16:01:14+00:00
 - passed: **True**
 
 ## Checks
@@ -29,7 +29,9 @@
 | workflow_references:.github/workflows/nightly_training_calibration.yml::resolve_previous_day_et_target.py | yes | ok |
 | champion_pointer_rich_fields_present | yes | all rich fields present |
 | derek_live_snapshots_did_not_pollute_protected_dirs | yes | ok |
-| phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "backfill_demo" if allow_backfill  | yes | ok |
+| phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "backfill_demo" | yes | ok |
+| phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "production_live_current" | yes | ok |
+| phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "production_live" | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::champion_metadata_verified | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::lineup_feature_blocker | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::--derek-live-snapshot | yes | ok |
@@ -54,3 +56,38 @@
 | phase13_correction_token:verify_derek_live_api_readiness.py::BDL_API_KEY | yes | ok |
 | phase13_correction_token:verify_derek_live_api_readiness.py::get_lineups | yes | ok |
 | phase13_correction_token:verify_derek_live_api_readiness.py::get_injuries | yes | ok |
+| phase13_correction_token:live_context.py::PHASE13O_LIVE_CONTEXT_FEATURES_PASS | yes | ok |
+| phase13_correction_token:live_context.py::LINEUP_FEATURE_COLUMNS | yes | ok |
+| phase13_correction_token:live_context.py::INJURY_FEATURE_COLUMNS | yes | ok |
+| phase13_correction_token:live_context.py::VACATED_OPPORTUNITY_FEATURE_COLUMNS | yes | ok |
+| phase13_correction_token:live_context.py::build_live_context_features | yes | ok |
+| phase13_correction_token:live_context.py::feature_set_id | yes | ok |
+| phase13_correction_token:live_context.py::phase13o_live_context_v1 | yes | ok |
+| phase13_correction_token:build_live_context_training_dataset.py::PHASE13O_LIVE_CONTEXT_TRAINING_DATASET_PASS | yes | ok |
+| phase13_correction_token:build_live_context_training_dataset.py::PHASE13O_LINEUP_HISTORY_LIMITED | yes | ok |
+| phase13_correction_token:build_live_context_training_dataset.py::no_future_leakage_verified | yes | ok |
+| phase13_correction_token:build_live_context_training_dataset.py::asof_cutoff_rule | yes | ok |
+| phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_FEATURE_VECTOR_SENSITIVITY_PASS | yes | ok |
+| phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_ACTIONABILITY_SENSITIVITY_PASS | yes | ok |
+| phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_MARKET_ONLY_EDGE_SENSITIVITY_PASS | yes | ok |
+| phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13O_PMF_SENSITIVITY_PENDING_RETRAINED_ARTIFAC | yes | ok |
+| phase13_correction_token:verify_live_context_pmf_sensitivity.py::PHASE13P_PMF_SENSITIVITY_PASS | yes | ok |
+| phase13_correction_token:train_live_context_challenger.py::PHASE13P_LIVE_CONTEXT_CHALLENGER_TRAINER_READY_PAS | yes | ok |
+| phase13_correction_token:train_live_context_challenger.py::PHASE13P_LIVE_CONTEXT_CHALLENGER_TRAINING_PASS | yes | ok |
+| phase13_correction_token:train_live_context_challenger.py::phase13p_lineup_injury_driver_v1 | yes | ok |
+| phase13_correction_token:train_live_context_challenger.py::starter_proxy_lagged | yes | ok |
+| phase13_correction_token:train_live_context_challenger.py::no_same_game_performance_predictors | yes | ok |
+| phase13_correction_token:verify_phase13p_no_leakage.py::PHASE13P_NO_LEAKAGE_PASS | yes | ok |
+| phase13_correction_token:verify_phase13p_no_leakage.py::FORBIDDEN_PREDICTOR_COLUMNS | yes | ok |
+| phase13_correction_token:verify_phase13p_validation_gates.py::PHASE13P_VALIDATION_GATES_PASS | yes | ok |
+| phase13_correction_token:verify_phase13p_validation_gates.py::PHASE13P_VALIDATION_GATES_FAILED | yes | ok |
+| phase13_correction_token:verify_phase13p_validation_gates.py::SAFE_NONINFERIORITY_THRESHOLD | yes | ok |
+| phase13_correction_token:verify_phase13p_validation_gates.py::PHASE13Q_VALIDATION_GATES_PASS | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::PHASE13Q_CONTEXTUAL_CHALLENGER_TRAINER_READY_PASS | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::PHASE13Q_CONTEXTUAL_CHALLENGER_TRAINING_PASS | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::phase13q_contextual_pmf_engine_v1 | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::GAME_CONTEXT_FEATURES | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::is_back_to_back | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::is_three_in_four | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::season_game_number | yes | ok |
+| phase13_correction_token:train_contextual_challenger.py::no_same_game_performance_predictors | yes | ok |

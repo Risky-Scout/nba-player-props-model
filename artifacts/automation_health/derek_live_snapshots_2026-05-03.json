@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "detail": "deliveries/2026-05-03/derek_game_snapshots",
+      "name": "derek_game_snapshots_dir_present",
+      "passed": true
+    },
+    {
+      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
+      "name": "21682000/current_live/required_outputs_present",
+      "passed": false
+    },
+    {
+      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
+      "name": "21684819/current_live/required_outputs_present",
+      "passed": false
+    }
+  ],
+  "code_commit": "6e00146af6e975559d7b400162b2fcd7f2c527ab",
+  "delivery_date": "2026-05-03",
+  "facts": {
+    "game_count": 2,
+    "mode_counts": {
+      "backfill_demo": 0,
+      "production_live": 0,
+      "production_live_current": 0,
+      "unknown": 0
+    },
+    "recomputed_snapshot_count": 0,
+    "snapshot_count": 2
+  },
+  "generated_at_utc": "2026-05-03T16:01:12+00:00",
+  "passed": false,
+  "schema_version": "1.0"
+}

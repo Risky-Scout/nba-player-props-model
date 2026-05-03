@@ -1,0 +1,31 @@
+{
+  "code_commit": "6e00146af6e975559d7b400162b2fcd7f2c527ab",
+  "decisions": [
+    {
+      "decision": "skipped_window",
+      "due_reason": "target=2026-05-03T23:35:00Z window=(-5,-1)min now=2026-05-03T16:01:03Z \u2192 not_due",
+      "game_id": "21682000",
+      "now_utc": "2026-05-03T16:01:03Z",
+      "target_utc": "2026-05-03T23:35:00Z"
+    },
+    {
+      "decision": "skipped_window",
+      "due_reason": "target=2026-05-03T19:35:00Z window=(-5,-1)min now=2026-05-03T16:01:03Z \u2192 not_due",
+      "game_id": "21684819",
+      "now_utc": "2026-05-03T16:01:03Z",
+      "target_utc": "2026-05-03T19:35:00Z"
+    }
+  ],
+  "delivery_date": "2026-05-03",
+  "eligible_rows": 0,
+  "now_utc": "2026-05-03T16:01:03Z",
+  "schedule_rows": 2,
+  "schema_version": "1.0",
+  "snapshot_type": "close_lock",
+  "summary": {
+    "failures": 0,
+    "fired": 0,
+    "skipped_already_run": 0,
+    "skipped_window": 2
+  }
+}
