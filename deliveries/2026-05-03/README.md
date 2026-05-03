@@ -1,8 +1,19 @@
 # Derek delivery — 2026-05-03
 
-- generated_at_utc: 2026-05-03T19:07:54+00:00Z
+- generated_at_utc: 2026-05-03T19:29:07+00:00Z
 - delivery_date: **2026-05-03**
 - games: **2**
+
+## ⚠️ Read this first — current_live is a watchlist baseline
+
+The **current_live** package is an early baseline / watchlist package. Because BDL did not return confirmed lineup rows at this timestamp, **current_live edges are not labeled as confirmed-lineup recommendations**. The **T-minus-25** and **close-lock** snapshots are the near-tip packages intended for confirmed-lineup evaluation; they fire automatically inside their per-game windows.
+
+Every Derek market_comparison row carries an `edge_publish_status` column — values include `PUBLISH_BLOCKER`, `REVIEW_LARGE_EDGE`, `REVIEW_PUSH_LINE`, `WATCHLIST_NOT_CONFIRMED_LINEUP`, `ACTIONABLE_REVIEWED`. Calibration support per (stat / side / line / edge bucket) is captured in `calibration_support_status` and `calibration_bucket_n`.
+
+## Phase 13X audit reports
+
+- [Edge root-cause audit](../../artifacts/automation_health/derek_edge_root_cause_2026-05-03.md)
+- [Edge calibration audit](../../artifacts/automation_health/derek_edge_calibration_2026-05-03.md)
 
 ## What's in this delivery
 
