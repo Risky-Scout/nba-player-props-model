@@ -1,6 +1,6 @@
 # Daily model training / recalibration report — 2026-04-30
 
-- generated_at_utc: 2026-05-03T16:01:14+00:00Z
+- generated_at_utc: 2026-05-03T16:21:24+00:00Z
 
 ## Active champion
 

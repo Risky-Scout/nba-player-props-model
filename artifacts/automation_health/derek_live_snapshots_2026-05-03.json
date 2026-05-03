@@ -6,30 +6,280 @@
       "passed": true
     },
     {
-      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
+      "detail": "ok",
       "name": "21682000/current_live/required_outputs_present",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
+      "detail": "target=2026-05-03T16:21:06Z game_start=2026-05-03T23:40:00Z",
+      "name": "21682000/current_live/current_live_target_pre_tip",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-05-03T16:21:06Z finished=2026-05-03T16:21:10Z",
+      "name": "21682000/current_live/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live_current'",
+      "name": "21682000/current_live/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live_current' allow_backfill_test=False",
+      "name": "21682000/current_live/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmfs_recomputed=True pmf_source='live_snapshot_recomputed_canonical_current'",
+      "name": "21682000/current_live/production_live_pmfs_recomputed",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21682000/current_live/champion_metadata_verified",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21682000/current_live/no_leakage_champion_cutoff_verified",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_retrained=False",
+      "name": "21682000/current_live/live_snapshot_did_not_retrain",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_recalibrated=False",
+      "name": "21682000/current_live/live_snapshot_did_not_recalibrate",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-current_live-21682000-20260503T162106'",
+      "name": "21682000/current_live/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='0c7eae249e1e2f699759ddbe95c5469cfc90c743'",
+      "name": "21682000/current_live/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-05-03T16:21:02Z'",
+      "name": "21682000/current_live/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='0cfe3f67e070543b'",
+      "name": "21682000/current_live/manifest_field_present:pmf_output_hash",
+      "passed": true
+    },
+    {
+      "detail": "rows=36",
+      "name": "21682000/current_live/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21682000/current_live/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=36",
+      "name": "21682000/current_live/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-04-30' pointer='challenger-2026-04-30'",
+      "name": "21682000/current_live/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_confirmed=False blocker='no rows returned by BDL lineups endpoint (lineups not posted yet)'",
+      "name": "21682000/current_live/lineup_blocker_documented_when_unconfirmed",
+      "passed": true
+    },
+    {
+      "detail": "lineup_feature_blocker must be documented when lineup_affects_pmf_features=false",
+      "name": "21682000/current_live/lineup_feature_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='no rows returned by BDL lineups endpoint (lineups not posted yet)'",
+      "name": "21682000/current_live/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21682000/current_live/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "contextual_pmf_engine=True; no_challenger_artifacts_used=False",
+      "name": "21682000/current_live/contextual_pmf_engine_recorded",
+      "passed": true
+    },
+    {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21682000/current_live/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21682000/current_live/availability_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "ok",
       "name": "21684819/current_live/required_outputs_present",
-      "passed": false
+      "passed": true
+    },
+    {
+      "detail": "target=2026-05-03T16:21:11Z game_start=2026-05-03T19:40:00Z",
+      "name": "21684819/current_live/current_live_target_pre_tip",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-05-03T16:21:11Z finished=2026-05-03T16:21:13Z",
+      "name": "21684819/current_live/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live_current'",
+      "name": "21684819/current_live/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live_current' allow_backfill_test=False",
+      "name": "21684819/current_live/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmfs_recomputed=True pmf_source='live_snapshot_recomputed_canonical_current'",
+      "name": "21684819/current_live/production_live_pmfs_recomputed",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21684819/current_live/champion_metadata_verified",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21684819/current_live/no_leakage_champion_cutoff_verified",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_retrained=False",
+      "name": "21684819/current_live/live_snapshot_did_not_retrain",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_recalibrated=False",
+      "name": "21684819/current_live/live_snapshot_did_not_recalibrate",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-current_live-21684819-20260503T162111'",
+      "name": "21684819/current_live/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='0c7eae249e1e2f699759ddbe95c5469cfc90c743'",
+      "name": "21684819/current_live/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-05-03T16:21:02Z'",
+      "name": "21684819/current_live/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='ca0892f1ea46f93c'",
+      "name": "21684819/current_live/manifest_field_present:pmf_output_hash",
+      "passed": true
+    },
+    {
+      "detail": "rows=33",
+      "name": "21684819/current_live/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21684819/current_live/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=33",
+      "name": "21684819/current_live/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-04-30' pointer='challenger-2026-04-30'",
+      "name": "21684819/current_live/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_confirmed=False blocker='no rows returned by BDL lineups endpoint (lineups not posted yet)'",
+      "name": "21684819/current_live/lineup_blocker_documented_when_unconfirmed",
+      "passed": true
+    },
+    {
+      "detail": "lineup_feature_blocker must be documented when lineup_affects_pmf_features=false",
+      "name": "21684819/current_live/lineup_feature_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='no rows returned by BDL lineups endpoint (lineups not posted yet)'",
+      "name": "21684819/current_live/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21684819/current_live/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "contextual_pmf_engine=True; no_challenger_artifacts_used=False",
+      "name": "21684819/current_live/contextual_pmf_engine_recorded",
+      "passed": true
+    },
+    {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21684819/current_live/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21684819/current_live/availability_source_recorded",
+      "passed": true
     }
   ],
-  "code_commit": "6e00146af6e975559d7b400162b2fcd7f2c527ab",
+  "code_commit": "0c7eae249e1e2f699759ddbe95c5469cfc90c743",
   "delivery_date": "2026-05-03",
   "facts": {
     "game_count": 2,
     "mode_counts": {
       "backfill_demo": 0,
       "production_live": 0,
-      "production_live_current": 0,
+      "production_live_current": 2,
       "unknown": 0
     },
+    "phase13n_outputs_status": [
+      {
+        "label": "21682000/current_live",
+        "missing": []
+      },
+      {
+        "label": "21684819/current_live",
+        "missing": []
+      }
+    ],
     "recomputed_snapshot_count": 0,
     "snapshot_count": 2
   },
-  "generated_at_utc": "2026-05-03T16:01:12+00:00",
-  "passed": false,
+  "generated_at_utc": "2026-05-03T16:21:23+00:00",
+  "passed": true,
   "schema_version": "1.0"
 }
