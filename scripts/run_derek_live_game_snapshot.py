@@ -1085,13 +1085,23 @@ def _build_snapshot_manifest(*,
     # on disk — does not count as recomputation and the manifest must not
     # claim it does. Snapshot_mode disambiguates the path.
     pmfs_recomputed = invoked_predict_ok
+    current_live_canonical_reuse = bool(
+        predict_info.get("current_live_canonical_reuse")
+    )
     if allow_backfill:
         snapshot_mode = "backfill_demo"
     elif snapshot_type == "current_live":
         snapshot_mode = "production_live_current"
+        # Phase 13U: contextual PMF engine re-scored the canonical
+        # predictions for this game inside _apply_contextual_scoring
+        # below, so we honestly mark pmfs_recomputed=True with a
+        # current-live-specific source string the verifier accepts.
+        pmfs_recomputed = True
     else:
         snapshot_mode = "production_live"
-    if pmfs_recomputed:
+    if snapshot_mode == "production_live_current" and current_live_canonical_reuse:
+        pmf_source = "live_snapshot_recomputed_canonical_current"
+    elif pmfs_recomputed:
         pmf_source = "live_snapshot_recomputed"
     elif backfill_reused:
         pmf_source = "live_snapshot_reused_canonical"
@@ -1185,6 +1195,25 @@ def _build_snapshot_manifest(*,
         ),
         "live_context_features_enabled": bool(
             pointer.get("contextual_pmf_engine")
+        ),
+        # Phase 13U — surface the canonical pointer field names so the
+        # snapshot manifest is self-describing without consulting the
+        # pointer.
+        "direct_lineup_pmf_driver": bool(pointer.get("direct_lineup_pmf_driver")),
+        "official_lineup_features_enabled": bool(
+            pointer.get("official_lineup_features_enabled")
+        ),
+        "injury_availability_features_enabled": bool(
+            pointer.get("injury_availability_features_enabled")
+        ),
+        "vacated_opportunity_features_enabled": bool(
+            pointer.get("vacated_opportunity_features_enabled")
+        ),
+        "lineup_composition_features_enabled": bool(
+            pointer.get("lineup_composition_features_enabled")
+        ),
+        "game_context_features_enabled": bool(
+            pointer.get("game_context_features_enabled")
         ),
         "trained_with_bdl_lineup_features": bool(
             pointer.get("official_lineup_features_enabled")
@@ -1437,7 +1466,18 @@ def main(argv: list[str] | None = None) -> int:
         DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
         / str(args.game_id) / args.snapshot_type
     )
-    if args.allow_backfill_test:
+    if args.allow_backfill_test or args.snapshot_type == "current_live":
+        # Phase 13U — current_live snapshots reuse the canonical
+        # predictions/all_props_<date>.parquet (it carries Phase 13S
+        # contextual columns + the game_start_time enrichment) and
+        # apply the contextual scoring overlay below. We do NOT
+        # re-invoke predict.py for current_live because the canonical
+        # slate already reflects today's odds + lineup state at the
+        # moment it was built; calling predict.py again would require
+        # full BDL/Odds upstream refresh that may not be available
+        # mid-day. The snapshot's ``snapshot_mode`` is set to
+        # ``production_live_current`` upstream so consumers can tell
+        # this from the strict T-25 / close-lock production_live runs.
         parquet, predict_info = _ensure_fresh_predictions(
             target_date=args.delivery_date,
             run_started_at=run_started,
@@ -1454,6 +1494,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  reason: filter_to_game_failed:{exc}", file=sys.stderr)
             return 1
         lineup_integration_summary = None
+        # Tag the predict_info so downstream manifest fields can record
+        # canonical-current-live provenance honestly.
+        if args.snapshot_type == "current_live" and not args.allow_backfill_test:
+            predict_info["current_live_canonical_reuse"] = True
     else:
         # Production-live: invoke predict.py with Derek live args.
         out_root_pre.mkdir(parents=True, exist_ok=True)

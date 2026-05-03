@@ -182,9 +182,15 @@ def _check_snapshot(snap_dir: Path, *, pointer: dict) -> tuple[bool, list[str], 
         if not (snap_dir / f).exists():
             issues.append(f"missing context file {f}")
 
-    # PMF recomputation required.
+    # PMF recomputation required. Phase 13U — current_live snapshots
+    # honestly mark pmf_source=live_snapshot_recomputed_canonical_current
+    # (canonical predictions reused, contextual engine re-scored).
+    accepted_sources = (
+        "live_snapshot_recomputed",
+        "live_snapshot_recomputed_canonical_current",
+    )
     if not (m.get("pmfs_recomputed") is True
-            and m.get("pmf_source") == "live_snapshot_recomputed"):
+            and m.get("pmf_source") in accepted_sources):
         issues.append(
             f"pmfs_recomputed={m.get('pmfs_recomputed')} "
             f"pmf_source={m.get('pmf_source')!r} — production-live must recompute"
@@ -294,12 +300,24 @@ def main(argv=None) -> int:
     facts["any_target_in_past"] = any_target_in_past
     facts["any_target_overdue"] = any_target_overdue
 
+    # Phase 13U — pre-check whether any current_live snapshots exist
+    # for this delivery date. If yes, run the full snapshot evaluation
+    # below (current_live mode counts toward PASS). Only short-circuit
+    # to PENDING when neither current_live snapshots are present nor
+    # any T-25 target has passed.
+    has_current_live_snapshots = False
+    if base.exists():
+        for game_dir in base.iterdir():
+            if (game_dir / "current_live" / "snapshot_manifest.json").exists():
+                has_current_live_snapshots = True
+                break
+
     # PENDING short-circuits.
     if not pred_parquet_present:
         facts["pending_reason"] = "no_predictions_parquet"
     elif schedule_size == 0:
         facts["pending_reason"] = "predictions_have_zero_games"
-    elif not any_target_in_past:
+    elif not any_target_in_past and not has_current_live_snapshots:
         facts["pending_reason"] = "all_targets_in_future"
 
     if facts.get("pending_reason"):

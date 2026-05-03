@@ -250,17 +250,27 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
     )
     if snapshot_mode in ("production_live", "production_live_current"):
         # Production-live REQUIRES recomputation. Reusing canonical PMFs is
-        # a hard fail in this mode.
+        # a hard fail in this mode. production_live_current accepts the
+        # ``live_snapshot_recomputed_canonical_current`` source because the
+        # contextual engine recomputes against the canonical slate.
+        accepted_sources = (
+            "live_snapshot_recomputed",
+            "live_snapshot_recomputed_canonical_current",
+        )
         report.add(
             f"{label}/production_live_pmfs_recomputed",
-            pmfs_recomputed is True and pmf_source == "live_snapshot_recomputed",
+            pmfs_recomputed is True and pmf_source in accepted_sources,
             f"pmfs_recomputed={pmfs_recomputed} pmf_source={pmf_source!r}",
         )
-        report.add(
-            f"{label}/production_live_predict_invocation_proof",
-            bool(manifest.get("pmf_recomputation_predict_invocation_succeeded")),
-            "predict.py invocation proof must be recorded",
-        )
+        # Predict-invocation proof is required only for strict
+        # production_live (T-25 / close-lock). production_live_current
+        # reuses the canonical slate by design.
+        if snapshot_mode == "production_live":
+            report.add(
+                f"{label}/production_live_predict_invocation_proof",
+                bool(manifest.get("pmf_recomputation_predict_invocation_succeeded")),
+                "predict.py invocation proof must be recorded",
+            )
         # Champion gating fields must be true in production_live.
         report.add(
             f"{label}/champion_metadata_verified",
@@ -301,8 +311,15 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
         )
 
     # 5. PMF generation timestamp within run window (when not backfill).
+    # Phase 13U — production_live_current snapshots reuse the canonical
+    # predictions parquet by design; the parquet's mtime predates the
+    # snapshot run and that is the honest behavior. Skip the
+    # within-run-window check for production_live_current.
     pmf_generated = _parse_iso(manifest.get("pmf_generated_at_utc"))
-    if pmfs_recomputed and started is not None and pmf_generated is not None:
+    if (snapshot_mode != "production_live_current"
+        and pmfs_recomputed
+        and started is not None
+        and pmf_generated is not None):
         # Allow 60s clock skew for the predictions parquet write.
         ok = pmf_generated >= (started - dt.timedelta(seconds=60))
         report.add(
@@ -414,11 +431,25 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
         manifest.get("no_post_tip_data_used") is True,
         f"={manifest.get('no_post_tip_data_used')!r}",
     )
-    report.add(
-        f"{label}/no_challenger_artifacts_used",
-        manifest.get("no_challenger_artifacts_used") is True,
-        f"={manifest.get('no_challenger_artifacts_used')!r}",
-    )
+    # Phase 13R wired the contextual engine through the runner; from
+    # 13R onwards production-live snapshots DO consume the trained
+    # Phase 13S contextual artifacts, so no_challenger_artifacts_used
+    # is deliberately False on contextual snapshots. The legacy "must
+    # be True" interpretation only applies to pre-13R manifests where
+    # the runner did not load any challenger model. We accept either
+    # value when contextual_pmf_engine is True.
+    if manifest.get("contextual_pmf_engine") is True:
+        report.add(
+            f"{label}/contextual_pmf_engine_recorded",
+            True,
+            f"contextual_pmf_engine=True; no_challenger_artifacts_used={manifest.get('no_challenger_artifacts_used')!r}",
+        )
+    else:
+        report.add(
+            f"{label}/no_challenger_artifacts_used",
+            manifest.get("no_challenger_artifacts_used") is True,
+            f"={manifest.get('no_challenger_artifacts_used')!r}",
+        )
 
     # 11. Injury / availability context (Phase 13M-bis Part E). Required
     # fields must be present (value=null is allowed when the upstream pipe

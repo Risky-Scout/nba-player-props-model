@@ -590,8 +590,10 @@ def _derek_live_args(argv):
     p.add_argument("--snapshot-output-dir", default=None,
                    help="Where to write derek_live_predictions.parquet.")
     p.add_argument("--snapshot-type", default=None,
-                   choices=[None, "t_minus_25", "close_lock"],
-                   help="Snapshot type (Derek mode).")
+                   choices=[None, "current_live", "t_minus_25", "close_lock"],
+                   help="Snapshot type (Derek mode). Phase 13U adds "
+                        "current_live for pre-tip snapshots whose target "
+                        "is the actual run start time.")
     p.add_argument("--snapshot-run-id", default=None,
                    help="Per-snapshot identifier (Derek mode).")
     p.add_argument("--validate-args-and-exit", action="store_true",
