@@ -67,6 +67,11 @@
     },
     {
       "detail": "ok",
+      "name": "workflow_yaml_valid:.github/workflows/daily_pmf_delivery.yml",
+      "passed": true
+    },
+    {
+      "detail": "ok",
       "name": "workflow_references:.github/workflows/daily_pmf_delivery.yml::stamp_delivery_champion_metadata.py",
       "passed": true
     },
@@ -83,6 +88,11 @@
     {
       "detail": "",
       "name": "workflow_present:.github/workflows/nightly_training_calibration.yml",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "workflow_yaml_valid:.github/workflows/nightly_training_calibration.yml",
       "passed": true
     },
     {
@@ -421,7 +431,7 @@
       "passed": true
     }
   ],
-  "code_commit": "8f4daed41a2220c0f66a6d2b07c41d26ed7397d3",
+  "code_commit": "cd93eac354c7dbe0152ffe12f6b192702fa5d697",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "challenger-2026-04-30",
@@ -429,7 +439,7 @@
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-03T20:59:29+00:00",
+  "generated_at_utc": "2026-05-03T21:56:16+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
