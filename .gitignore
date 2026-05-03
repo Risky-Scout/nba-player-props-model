@@ -52,6 +52,12 @@ artifacts/models/challengers/**/*.parquet
 artifacts/models/champion/**/*.pkl
 artifacts/models/champion/**/*.parquet
 
+# Phase 13R — the Phase 13Q contextual challenger ships tiny (~4 KB)
+# Ridge-adjustment .pkl files under `<date>_contextual/`. They are the
+# canonical source of truth for the contextual PMF engine and must be
+# committed so CI verifiers can prove real model behavior.
+!artifacts/models/challengers/*_contextual/phase13q_*.pkl
+
 # Phase 13A — local-only run logs (verification reads them but they shouldn't ship)
 artifacts/nightly_training/**/logs/
 
