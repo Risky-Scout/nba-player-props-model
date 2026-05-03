@@ -1,6 +1,6 @@
 # Derek delivery — 2026-05-03
 
-- generated_at_utc: 2026-05-03T20:00:42+00:00Z
+- generated_at_utc: 2026-05-03T20:15:03+00:00Z
 - delivery_date: **2026-05-03**
 - games: **2**
 
@@ -46,7 +46,7 @@ Per-game live snapshot folders under `derek_game_snapshots/<game_id>/<snapshot_t
 
 ### Game 21682000
 
-- **current_live**: snapshot_mode=`production_live_current`, lineup_confirmed=**False**, pmfs_recomputed=**True**, props_emitted=36, feature_set_id=`phase13s_direct_lineup_injury_pmf_driver_v1`, game_start_time_utc=`2026-05-03T23:40:00Z`
+- **current_live**: status=**available**, snapshot_mode=`production_live_current`, lineup_confirmed=**False**, pmfs_recomputed=**True**, props_emitted=36, feature_set_id=`phase13s_direct_lineup_injury_pmf_driver_v1`, game_start_time_utc=`2026-05-03T23:40:00Z`
   - [snapshot_report.md](derek_game_snapshots/21682000/current_live/snapshot_report.md)
   - [prop_summary.csv](derek_game_snapshots/21682000/current_live/prop_summary.csv)
   - [full_pmf_wide.csv](derek_game_snapshots/21682000/current_live/full_pmf_wide.csv)
@@ -55,12 +55,12 @@ Per-game live snapshot folders under `derek_game_snapshots/<game_id>/<snapshot_t
   - [pmf_driver_decomposition.md](derek_game_snapshots/21682000/current_live/pmf_driver_decomposition.md)
   - [lineup_injury_impact_report.md](derek_game_snapshots/21682000/current_live/lineup_injury_impact_report.md)
   - [direct_lineup_impact_report.md](derek_game_snapshots/21682000/current_live/direct_lineup_impact_report.md)
-- **t_minus_25**: not generated (target window may be in the future or absent).
-- **close_lock**: not generated (target window may be in the future or absent).
+- **t_minus_25**: status=**pending_not_due**, snapshot_target_time_utc=`2026-05-03T23:15:00Z` (will fire automatically inside the cron window)
+- **close_lock**: status=**pending_not_due**, snapshot_target_time_utc=`2026-05-03T23:35:00Z` (will fire automatically inside the cron window)
 
 ### Game 21684819
 
-- **current_live**: snapshot_mode=`production_live_current`, lineup_confirmed=**False**, pmfs_recomputed=**True**, props_emitted=33, feature_set_id=`phase13s_direct_lineup_injury_pmf_driver_v1`, game_start_time_utc=`2026-05-03T19:40:00Z`
+- **current_live**: status=**available**, snapshot_mode=`production_live_current`, lineup_confirmed=**False**, pmfs_recomputed=**True**, props_emitted=33, feature_set_id=`phase13s_direct_lineup_injury_pmf_driver_v1`, game_start_time_utc=`2026-05-03T19:40:00Z`
   - [snapshot_report.md](derek_game_snapshots/21684819/current_live/snapshot_report.md)
   - [prop_summary.csv](derek_game_snapshots/21684819/current_live/prop_summary.csv)
   - [full_pmf_wide.csv](derek_game_snapshots/21684819/current_live/full_pmf_wide.csv)
@@ -69,8 +69,12 @@ Per-game live snapshot folders under `derek_game_snapshots/<game_id>/<snapshot_t
   - [pmf_driver_decomposition.md](derek_game_snapshots/21684819/current_live/pmf_driver_decomposition.md)
   - [lineup_injury_impact_report.md](derek_game_snapshots/21684819/current_live/lineup_injury_impact_report.md)
   - [direct_lineup_impact_report.md](derek_game_snapshots/21684819/current_live/direct_lineup_impact_report.md)
-- **t_minus_25**: not generated (target window may be in the future or absent).
-- **close_lock**: not generated (target window may be in the future or absent).
+- **t_minus_25**: status=**missed_post_tip**, snapshot_target_time_utc=`2026-05-03T19:15:00Z`, game_start_time_utc=`2026-05-03T19:40:00Z`, missed_reason=`post_tip_no_pretip_snapshot_was_generated`, no_fake_pretip_snapshot=**True**
+  - [missed_snapshot_report.md](derek_game_snapshots/21684819/t_minus_25/missed_snapshot_report.md)
+  - [missed_snapshot_manifest.json](derek_game_snapshots/21684819/t_minus_25/missed_snapshot_manifest.json)
+- **close_lock**: status=**missed_post_tip**, snapshot_target_time_utc=`2026-05-03T19:35:00Z`, game_start_time_utc=`2026-05-03T19:40:00Z`, missed_reason=`post_tip_no_pretip_snapshot_was_generated`, no_fake_pretip_snapshot=**True**
+  - [missed_snapshot_report.md](derek_game_snapshots/21684819/close_lock/missed_snapshot_report.md)
+  - [missed_snapshot_manifest.json](derek_game_snapshots/21684819/close_lock/missed_snapshot_manifest.json)
 
 ## Daily model report
 

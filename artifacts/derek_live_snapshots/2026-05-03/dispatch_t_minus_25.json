@@ -1,24 +1,28 @@
 {
-  "code_commit": "4e58ed30eaa908e70af8af0ae54a8c7fa3ef0b3f",
+  "code_commit": "5f56a528bb5d80b8f403fe399d87586538baa6be",
   "decisions": [
     {
-      "decision": "skipped_window",
-      "due_reason": "target=2026-05-03T23:15:00Z window=(-5,+7)min now=2026-05-03T20:00:27Z \u2192 not_due",
+      "decision": "skipped_not_due",
+      "detail": "now < target - 6min; will fire during the cron window starting at 2026-05-03T23:09:00+00:00",
       "game_id": "21682000",
-      "now_utc": "2026-05-03T20:00:27Z",
+      "now_utc": "2026-05-03T20:10:48Z",
+      "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21682000/t_minus_25",
+      "state": "NOT_DUE",
       "target_utc": "2026-05-03T23:15:00Z"
     },
     {
-      "decision": "skipped_window",
-      "due_reason": "target=2026-05-03T19:15:00Z window=(-5,+7)min now=2026-05-03T20:00:27Z \u2192 not_due",
+      "decision": "wrote_missed_post_tip_marker",
+      "detail": "game already tipped at 2026-05-03T19:40:00+00:00; do not fabricate pre-tip data \u2014 write missed_snapshot_manifest.json",
       "game_id": "21684819",
-      "now_utc": "2026-05-03T20:00:27Z",
+      "now_utc": "2026-05-03T20:10:48Z",
+      "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21684819/t_minus_25",
+      "state": "MISSED_POST_TIP",
       "target_utc": "2026-05-03T19:15:00Z"
     }
   ],
   "delivery_date": "2026-05-03",
   "eligible_rows": 0,
-  "now_utc": "2026-05-03T20:00:27Z",
+  "now_utc": "2026-05-03T20:10:48Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
   "snapshot_type": "t_minus_25",
@@ -26,6 +30,6 @@
     "failures": 0,
     "fired": 0,
     "skipped_already_run": 0,
-    "skipped_window": 2
+    "skipped_window": 1
   }
 }

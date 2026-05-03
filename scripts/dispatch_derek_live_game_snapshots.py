@@ -262,96 +262,129 @@ def main(argv: list[str] | None = None) -> int:
     if args.max_games:
         schedule = schedule[: args.max_games]
 
-    if args.snapshot_type == "t_minus_25":
-        window = T_MINUS_25_WINDOW
-    elif args.snapshot_type == "close_lock":
-        window = CLOSE_LOCK_WINDOW
-    else:
-        # current_live — eligibility is "game has not tipped yet".
-        # A symbolic window is used only for the per-game log line.
-        window = (-9999, 0)
+    # Phase 13Z — replace the ad-hoc window check with the shared
+    # snapshot state machine. The dispatcher generates on
+    # DUE_WINDOW + LATE_BUT_PRE_TIP (with force-flag promotion of
+    # current_live), writes missed_post_tip markers on MISSED_POST_TIP,
+    # and prints NOT_DUE only when now is genuinely before target -
+    # tolerance.
+    try:
+        from nba_props_model.derek import (
+            classify_snapshot_state, write_missed_marker,
+        )
+    except Exception as exc:
+        print("DEREK_LIVE_SNAPSHOT_DISPATCH_FAILED", file=sys.stderr)
+        print(f"  reason: state machine import failed: {exc}",
+              file=sys.stderr)
+        return 1
     eligible_rows = 0
+    missed_markers_written = 0
     for entry in schedule:
         game_id = entry["game_id"]
         gs_iso = entry.get("game_start_time")
-        gs = _parse_iso_to_utc(gs_iso)
-        target = _snapshot_target(gs, args.snapshot_type) if gs else None
-        if args.snapshot_type == "current_live":
-            # In-window iff the game has not tipped yet (pre-tip).
-            in_window = (
-                args.allow_backfill_test
-                or (gs is not None and now < gs)
-            )
-        else:
-            in_window = (
-                args.allow_backfill_test
-                or (target is not None and _is_in_window(now, target, window))
-            )
-        # Phase 13T+13U verbose per-game visibility.
-        if args.snapshot_type == "current_live":
-            if gs is None:
-                due_reason = "no_game_start_time"
-            elif now >= gs:
-                due_reason = (
-                    f"already_tipped (game_start_utc={_utc_iso(gs)} "
-                    f"now={_utc_iso(now)})"
-                )
-            else:
-                due_reason = (
-                    f"pre_tip (game_start_utc={_utc_iso(gs)} now={_utc_iso(now)})"
-                )
-        else:
-            due_reason = (
-                "in_window" if in_window
-                else ("no_game_start_time" if target is None
-                      else f"target={_utc_iso(target)} window=({window[0]:+d},{window[1]:+d})min "
-                           f"now={_utc_iso(now)} → not_due")
-            )
+        snap_dir = _snapshot_dir(delivery_date, game_id, args.snapshot_type)
+        snap_exists = (snap_dir / "snapshot_manifest.json").exists()
+        missed_marker_exists = (snap_dir / "missed_snapshot_manifest.json").exists()
+        sr = classify_snapshot_state(
+            now_utc=now,
+            game_start_time_utc=gs_iso,
+            snapshot_type=args.snapshot_type,
+            snapshot_exists=snap_exists,
+            missed_marker_exists=missed_marker_exists,
+        )
         team = entry.get("team")
         opponent = entry.get("opponent")
         gst_source = entry.get("game_start_time_source") or "predictions_parquet"
+        target_iso = (
+            sr.target_time_utc.replace(microsecond=0).isoformat()
+            .replace("+00:00", "Z") if sr.target_time_utc else None
+        )
+
+        # Decide action based on state.
+        action = "no_action"
+        if sr.state == "EXISTS":
+            if args.force:
+                action = "regenerate_force"
+            else:
+                action = "skipped_already_run"
+                skipped_already_run += 1
+        elif sr.state == "NOT_DUE":
+            action = "skipped_not_due"
+            skipped_window += 1
+        elif sr.state == "DUE_WINDOW":
+            action = "fire_due_window"
+        elif sr.state == "LATE_BUT_PRE_TIP":
+            # Recover the missed window if we are still pre-tip. This
+            # is the Phase 13Z fix for the 19:38 close_lock case.
+            action = "fire_late_but_pre_tip"
+        elif sr.state == "MISSED_POST_TIP":
+            if args.snapshot_type == "current_live":
+                # current_live after tip is just skipped — no fake
+                # post-tip baseline.
+                action = "skipped_already_tipped"
+                skipped_window += 1
+            else:
+                # T-25 / close-lock missed post-tip: write honest
+                # missed_post_tip marker rather than fabricate.
+                if not missed_marker_exists:
+                    write_missed_marker(
+                        snapshot_dir=snap_dir,
+                        delivery_date=delivery_date,
+                        game_id=str(game_id),
+                        snapshot_type=args.snapshot_type,
+                        state_result=sr,
+                    )
+                    missed_markers_written += 1
+                action = "wrote_missed_post_tip_marker"
+        elif sr.state == "INVALID_NO_START":
+            action = "skipped_invalid_no_start_time"
+            skipped_window += 1
+
         print(
             f"  game_id={game_id} team={team!r} opponent={opponent!r} "
             f"game_start_time={gs_iso!r} game_start_time_source={gst_source} "
             f"snapshot_type={args.snapshot_type} "
-            f"target_utc={_utc_iso(target) if target else None} "
-            f"due={in_window} reason={due_reason}"
+            f"target_utc={target_iso} now_utc={_utc_iso(now)} "
+            f"snapshot_exists={snap_exists} state={sr.state} "
+            f"action={action} output_path={snap_dir.relative_to(REPO_ROOT)} "
+            f"detail={sr.detail!r}"
         )
-        if _already_run(delivery_date, game_id, args.snapshot_type) and not args.force:
+
+        if action in ("skipped_already_run", "skipped_not_due",
+                      "skipped_already_tipped",
+                      "skipped_invalid_no_start_time",
+                      "wrote_missed_post_tip_marker"):
             decisions.append({
-                "game_id": game_id, "decision": "skipped_already_run",
-                "target_utc": _utc_iso(target) if target else None,
-                "due_reason": due_reason,
-            })
-            skipped_already_run += 1
-            continue
-        if not in_window:
-            decisions.append({
-                "game_id": game_id, "decision": "skipped_window",
-                "target_utc": _utc_iso(target) if target else None,
+                "game_id": game_id, "decision": action,
+                "target_utc": target_iso,
                 "now_utc": _utc_iso(now),
-                "due_reason": due_reason,
+                "state": sr.state,
+                "detail": sr.detail,
+                "snapshot_dir": str(snap_dir.relative_to(REPO_ROOT)),
             })
-            skipped_window += 1
             continue
+
         eligible_rows += 1
         rc, log = _run_snapshot(
             delivery_date, game_id, args.snapshot_type,
-            allow_backfill=bool(args.allow_backfill_test), force=args.force,
+            allow_backfill=bool(args.allow_backfill_test),
+            force=(args.force or action == "regenerate_force"),
         )
         if rc == 0:
             fired += 1
             decisions.append({
                 "game_id": game_id, "decision": "fired_ok",
-                "target_utc": _utc_iso(target) if target else None,
+                "target_utc": target_iso,
+                "state": sr.state, "action": action,
+                "snapshot_dir": str(snap_dir.relative_to(REPO_ROOT)),
                 "tail": log.strip().splitlines()[-1:][0] if log.strip() else "",
             })
         else:
             failures += 1
             decisions.append({
                 "game_id": game_id, "decision": "fired_failed",
-                "exit_code": rc,
-                "target_utc": _utc_iso(target) if target else None,
+                "exit_code": rc, "state": sr.state, "action": action,
+                "target_utc": target_iso,
                 "tail": log.strip().splitlines()[-3:],
             })
 
@@ -383,6 +416,11 @@ def main(argv: list[str] | None = None) -> int:
 
     print("DEREK_LIVE_SNAPSHOT_DISPATCH_PASS")
     print("DEREK_DISPATCHER_GAME_TIME_AWARE_PASS")
+    print("PHASE13Z_DISPATCHER_NEAR_TIP_FIX_PASS")
+    if missed_markers_written:
+        print(
+            f"  missed_post_tip_markers_written={missed_markers_written}"
+        )
     if eligible_rows == 0 and fired == 0:
         # Phase 13T — schedule had games but none were due in this
         # window. Emit the explicit pending token so the workflow's

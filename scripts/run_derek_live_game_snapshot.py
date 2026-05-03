@@ -1554,8 +1554,49 @@ def _build_snapshot_manifest(*,
         ),
         "snapshot_type": snapshot_type,
         "snapshot_target_time_utc": target_iso,
+        # Phase 13Z — surface "late but pre-tip" honestly when the
+        # dispatcher recovered a missed near-tip window.
+        "scheduled_target_time_utc": target_iso,
         "actual_run_started_at_utc": _utc_iso(run_started_at),
         "actual_run_finished_at_utc": _utc_iso(run_finished_at),
+        "actual_run_late": (
+            False if snapshot_type == "current_live"
+            else (
+                True
+                if (game_start_time_utc and target_iso
+                    and run_started_at and (
+                        (run_started_at -
+                         dt.datetime.fromisoformat(target_iso.replace("Z", "+00:00"))
+                        ).total_seconds() > 6 * 60
+                    )
+                    and run_started_at < dt.datetime.fromisoformat(
+                        game_start_time_utc.replace("Z", "+00:00"))
+                )
+                else False
+            )
+        ),
+        "late_seconds": (
+            int(max(0, (run_started_at -
+                          dt.datetime.fromisoformat(target_iso.replace("Z", "+00:00"))
+                         ).total_seconds()))
+            if (snapshot_type != "current_live" and target_iso
+                and run_started_at)
+            else 0
+        ),
+        "snapshot_validity_status": (
+            "on_time_or_current_live"
+            if snapshot_type == "current_live"
+            else (
+                "late_but_pre_tip"
+                if (game_start_time_utc and target_iso and run_started_at
+                    and (run_started_at -
+                          dt.datetime.fromisoformat(target_iso.replace("Z", "+00:00"))
+                         ).total_seconds() > 6 * 60
+                    and run_started_at < dt.datetime.fromisoformat(
+                        game_start_time_utc.replace("Z", "+00:00")))
+                else "on_time_or_current_live"
+            )
+        ),
         "champion_model_id": pointer.get("champion_model_id") or pointer.get("model_version"),
         "trained_through_date": pointer.get("trained_through_date"),
         "calibrated_through_date": pointer.get("calibrated_through_date"),

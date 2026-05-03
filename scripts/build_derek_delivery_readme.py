@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 
 def _utcnow_iso() -> str:
@@ -41,32 +42,122 @@ def main(argv=None) -> int:
         )
         return 0
 
-    # Collect per-game manifest summaries.
+    # Collect per-game manifest summaries. Phase 13Z — also resolve
+    # per-(game, snapshot_type) state via the shared state machine so
+    # the README shows explicit status (available / pending_not_due /
+    # late_but_pre_tip / missed_post_tip / blocked).
+    import datetime as _dt
+    try:
+        from nba_props_model.derek import classify_snapshot_state
+    except Exception:
+        classify_snapshot_state = None
+    now = _dt.datetime.now(_dt.timezone.utc)
+
     games: list[dict] = []
     for game_dir in sorted(derek.iterdir()):
         if not game_dir.is_dir():
             continue
         per_game: dict = {"game_id": game_dir.name, "types": {}}
+        # Try to resolve game_start_time from any present manifest.
+        gs_iso = None
+        for snap_type in ("current_live", "t_minus_25", "close_lock"):
+            mp = game_dir / snap_type / "snapshot_manifest.json"
+            mm = game_dir / snap_type / "missed_snapshot_manifest.json"
+            for cand in (mp, mm):
+                if cand.exists():
+                    try:
+                        m = json.loads(cand.read_text(encoding="utf-8"))
+                    except Exception:
+                        continue
+                    gs_iso = (
+                        m.get("game_start_time_utc")
+                        or m.get("game_start_time")
+                    )
+                    if gs_iso:
+                        break
+            if gs_iso:
+                break
+
         for snap_type in ("current_live", "t_minus_25", "close_lock"):
             sd = game_dir / snap_type
             mp = sd / "snapshot_manifest.json"
-            if not mp.exists():
-                per_game["types"][snap_type] = None
+            mm = sd / "missed_snapshot_manifest.json"
+            if mp.exists():
+                try:
+                    m = json.loads(mp.read_text(encoding="utf-8"))
+                except Exception:
+                    m = {}
+                actual_run_late = m.get("actual_run_late") or False
+                late_seconds = m.get("late_seconds") or 0
+                status = (
+                    "late_but_pre_tip" if actual_run_late else "available"
+                )
+                per_game["types"][snap_type] = {
+                    "snapshot_mode": m.get("snapshot_mode"),
+                    "lineup_confirmed": m.get("lineup_confirmed"),
+                    "BDL_lineup_fetch_status": m.get("BDL_lineup_fetch_status"),
+                    "BDL_injury_fetch_status": m.get("BDL_injury_fetch_status"),
+                    "pmfs_recomputed": m.get("pmfs_recomputed"),
+                    "feature_set_id": m.get("feature_set_id"),
+                    "props_emitted": m.get("props_emitted"),
+                    "game_start_time_utc": m.get("game_start_time_utc"),
+                    "status": status,
+                    "actual_run_late": actual_run_late,
+                    "late_seconds": late_seconds,
+                }
                 continue
-            try:
-                m = json.loads(mp.read_text(encoding="utf-8"))
-            except Exception:
-                m = {}
-            per_game["types"][snap_type] = {
-                "snapshot_mode": m.get("snapshot_mode"),
-                "lineup_confirmed": m.get("lineup_confirmed"),
-                "BDL_lineup_fetch_status": m.get("BDL_lineup_fetch_status"),
-                "BDL_injury_fetch_status": m.get("BDL_injury_fetch_status"),
-                "pmfs_recomputed": m.get("pmfs_recomputed"),
-                "feature_set_id": m.get("feature_set_id"),
-                "props_emitted": m.get("props_emitted"),
-                "game_start_time_utc": m.get("game_start_time_utc"),
-            }
+            if mm.exists():
+                try:
+                    m = json.loads(mm.read_text(encoding="utf-8"))
+                except Exception:
+                    m = {}
+                per_game["types"][snap_type] = {
+                    "status": "missed_post_tip",
+                    "missed_reason": m.get("missed_reason"),
+                    "snapshot_target_time_utc": m.get("snapshot_target_time_utc"),
+                    "game_start_time_utc": m.get("game_start_time_utc"),
+                    "no_fake_pretip_snapshot": m.get("no_fake_pretip_snapshot"),
+                }
+                continue
+            # Neither present — derive state from the state machine.
+            if classify_snapshot_state is not None and gs_iso:
+                sr = classify_snapshot_state(
+                    now_utc=now,
+                    game_start_time_utc=gs_iso,
+                    snapshot_type=snap_type,
+                    snapshot_exists=False,
+                )
+                target_iso = (
+                    sr.target_time_utc.replace(microsecond=0)
+                    .isoformat().replace("+00:00", "Z")
+                    if sr.target_time_utc else None
+                )
+                if sr.state == "NOT_DUE":
+                    per_game["types"][snap_type] = {
+                        "status": "pending_not_due",
+                        "snapshot_target_time_utc": target_iso,
+                    }
+                elif sr.state == "DUE_WINDOW":
+                    per_game["types"][snap_type] = {
+                        "status": "due_window_pending_dispatch",
+                        "snapshot_target_time_utc": target_iso,
+                    }
+                elif sr.state == "LATE_BUT_PRE_TIP":
+                    per_game["types"][snap_type] = {
+                        "status": "late_but_pre_tip_pending_dispatch",
+                        "snapshot_target_time_utc": target_iso,
+                    }
+                elif sr.state == "MISSED_POST_TIP":
+                    per_game["types"][snap_type] = {
+                        "status": "missed_post_tip_no_marker",
+                        "snapshot_target_time_utc": target_iso,
+                    }
+                else:
+                    per_game["types"][snap_type] = {
+                        "status": "blocked_invalid_no_start_time",
+                    }
+            else:
+                per_game["types"][snap_type] = {"status": "blocked_no_state"}
         games.append(per_game)
 
     # ── deliveries/<date>/README.md ─────────────────────────────────
@@ -149,49 +240,81 @@ def main(argv=None) -> int:
         readme.append(f"### Game {g['game_id']}")
         readme.append("")
         for snap_type in ("current_live", "t_minus_25", "close_lock"):
-            data = g["types"].get(snap_type)
-            if not data:
-                readme.append(
-                    f"- **{snap_type}**: not generated (target window may "
-                    "be in the future or absent)."
+            data = g["types"].get(snap_type) or {}
+            base_dir = f"derek_game_snapshots/{g['game_id']}/{snap_type}"
+            status = data.get("status") or "unknown"
+            if status in ("available", "late_but_pre_tip"):
+                tip = data.get("game_start_time_utc")
+                late_note = (
+                    f", actual_run_late=**True** ({data.get('late_seconds')}s late)"
+                    if status == "late_but_pre_tip" else ""
                 )
-                continue
-            tip = data.get("game_start_time_utc")
-            readme.append(
-                f"- **{snap_type}**: snapshot_mode=`{data.get('snapshot_mode')}`, "
-                f"lineup_confirmed=**{data.get('lineup_confirmed')}**, "
-                f"pmfs_recomputed=**{data.get('pmfs_recomputed')}**, "
-                f"props_emitted={data.get('props_emitted')}, "
-                f"feature_set_id=`{data.get('feature_set_id')}`, "
-                f"game_start_time_utc=`{tip}`"
-            )
-            base_dir = (
-                f"derek_game_snapshots/{g['game_id']}/{snap_type}"
-            )
-            readme.append(
-                f"  - [snapshot_report.md]({base_dir}/snapshot_report.md)"
-            )
-            readme.append(
-                f"  - [prop_summary.csv]({base_dir}/prop_summary.csv)"
-            )
-            readme.append(
-                f"  - [full_pmf_wide.csv]({base_dir}/full_pmf_wide.csv)"
-            )
-            readme.append(
-                f"  - [outcome_level_probabilities.csv]({base_dir}/outcome_level_probabilities.csv)"
-            )
-            readme.append(
-                f"  - [market_comparison.csv]({base_dir}/market_comparison.csv)"
-            )
-            readme.append(
-                f"  - [pmf_driver_decomposition.md]({base_dir}/pmf_driver_decomposition.md)"
-            )
-            readme.append(
-                f"  - [lineup_injury_impact_report.md]({base_dir}/lineup_injury_impact_report.md)"
-            )
-            readme.append(
-                f"  - [direct_lineup_impact_report.md]({base_dir}/direct_lineup_impact_report.md)"
-            )
+                readme.append(
+                    f"- **{snap_type}**: status=**{status}**, "
+                    f"snapshot_mode=`{data.get('snapshot_mode')}`, "
+                    f"lineup_confirmed=**{data.get('lineup_confirmed')}**, "
+                    f"pmfs_recomputed=**{data.get('pmfs_recomputed')}**, "
+                    f"props_emitted={data.get('props_emitted')}, "
+                    f"feature_set_id=`{data.get('feature_set_id')}`, "
+                    f"game_start_time_utc=`{tip}`{late_note}"
+                )
+                readme.append(
+                    f"  - [snapshot_report.md]({base_dir}/snapshot_report.md)"
+                )
+                readme.append(f"  - [prop_summary.csv]({base_dir}/prop_summary.csv)")
+                readme.append(f"  - [full_pmf_wide.csv]({base_dir}/full_pmf_wide.csv)")
+                readme.append(
+                    f"  - [outcome_level_probabilities.csv]({base_dir}/outcome_level_probabilities.csv)"
+                )
+                readme.append(f"  - [market_comparison.csv]({base_dir}/market_comparison.csv)")
+                readme.append(
+                    f"  - [pmf_driver_decomposition.md]({base_dir}/pmf_driver_decomposition.md)"
+                )
+                readme.append(
+                    f"  - [lineup_injury_impact_report.md]({base_dir}/lineup_injury_impact_report.md)"
+                )
+                readme.append(
+                    f"  - [direct_lineup_impact_report.md]({base_dir}/direct_lineup_impact_report.md)"
+                )
+            elif status == "pending_not_due":
+                readme.append(
+                    f"- **{snap_type}**: status=**pending_not_due**, "
+                    f"snapshot_target_time_utc="
+                    f"`{data.get('snapshot_target_time_utc')}` (will fire "
+                    "automatically inside the cron window)"
+                )
+            elif status in ("due_window_pending_dispatch",
+                            "late_but_pre_tip_pending_dispatch"):
+                readme.append(
+                    f"- **{snap_type}**: status=**{status}**, "
+                    f"snapshot_target_time_utc="
+                    f"`{data.get('snapshot_target_time_utc')}` "
+                    "(next dispatcher run will generate)"
+                )
+            elif status == "missed_post_tip":
+                readme.append(
+                    f"- **{snap_type}**: status=**missed_post_tip**, "
+                    f"snapshot_target_time_utc="
+                    f"`{data.get('snapshot_target_time_utc')}`, "
+                    f"game_start_time_utc=`{data.get('game_start_time_utc')}`, "
+                    f"missed_reason=`{data.get('missed_reason')}`, "
+                    "no_fake_pretip_snapshot=**True**"
+                )
+                readme.append(
+                    f"  - [missed_snapshot_report.md]({base_dir}/missed_snapshot_report.md)"
+                )
+                readme.append(
+                    f"  - [missed_snapshot_manifest.json]({base_dir}/missed_snapshot_manifest.json)"
+                )
+            elif status == "missed_post_tip_no_marker":
+                readme.append(
+                    f"- **{snap_type}**: status=**missed_post_tip_no_marker** "
+                    "(dispatcher will write the marker on next firing)"
+                )
+            else:
+                readme.append(
+                    f"- **{snap_type}**: status=**{status}**"
+                )
         readme.append("")
 
     readme.append("## Daily model report")
@@ -239,16 +362,26 @@ def main(argv=None) -> int:
     for g in games:
         cells: list[str] = []
         for snap_type in ("current_live", "t_minus_25", "close_lock"):
-            data = g["types"].get(snap_type)
-            if not data:
-                cells.append("not generated")
-            else:
+            data = g["types"].get(snap_type) or {}
+            status = data.get("status") or "unknown"
+            if status in ("available", "late_but_pre_tip"):
                 lc = "**confirmed**" if data.get("lineup_confirmed") else "baseline"
                 pmfs = "✓" if data.get("pmfs_recomputed") else "—"
+                tag = "available" if status == "available" else "late_but_pre_tip"
                 cells.append(
-                    f"[{lc}]({g['game_id']}/{snap_type}/snapshot_report.md) "
+                    f"[{tag} / {lc}]({g['game_id']}/{snap_type}/snapshot_report.md) "
                     f"({pmfs}, props={data.get('props_emitted')})"
                 )
+            elif status == "pending_not_due":
+                cells.append(
+                    f"pending_not_due (target={data.get('snapshot_target_time_utc')})"
+                )
+            elif status == "missed_post_tip":
+                cells.append(
+                    f"[missed_post_tip]({g['game_id']}/{snap_type}/missed_snapshot_report.md)"
+                )
+            else:
+                cells.append(status)
         snap_readme.append(
             "| " + g["game_id"] + " | " + " | ".join(cells) + " |"
         )
@@ -259,6 +392,7 @@ def main(argv=None) -> int:
     )
 
     print("PHASE13W_DEREK_GITHUB_INDEX_PASS")
+    print("PHASE13Z_DEREK_INDEX_STATUS_PASS")
     print(
         f"  delivery_date={args.delivery_date} games={len(games)} "
         f"readme={base.relative_to(REPO_ROOT)}/README.md"

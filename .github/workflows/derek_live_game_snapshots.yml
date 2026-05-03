@@ -403,6 +403,7 @@ jobs:
                   artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.json \
                   artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.md \
                   artifacts/automation_health/phase13x_woo_unchanged.json \
+                  artifacts/phase13z \
                   artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json \
                   artifacts/automation_health/phase13l_no_breakage.json \
                   artifacts/automation_health/phase13l_no_breakage.md \

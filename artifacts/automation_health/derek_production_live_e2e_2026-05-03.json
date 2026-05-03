@@ -6,11 +6,9 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-03",
-    "now_utc": "2026-05-03T20:00:43Z",
-    "overdue_missing_snapshots": [
-      "21684819/t_minus_25",
-      "21684819/close_lock"
-    ],
+    "now_utc": "2026-05-03T20:15:13Z",
+    "overdue_missing_snapshots": [],
+    "overdue_unresolved": [],
     "per_type_lines": [
       {
         "detail": "",
@@ -18,23 +16,23 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-03T20:00:43Z",
+        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-03T20:15:13Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-03T20:00:43Z",
+        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-03T20:15:13Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "CLOSE_LOCK"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-03T20:00:43Z missed_post_tip=true",
-        "outcome": "MISSED",
+        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-03T20:15:13Z  missed_snapshot_manifest.json present",
+        "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-03T20:00:43Z missed_post_tip=true",
-        "outcome": "MISSED",
+        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-03T20:15:13Z  missed_snapshot_manifest.json present",
+        "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "CLOSE_LOCK"
       }
     ],
@@ -82,9 +80,6 @@
     ],
     "schedule_size": 2
   },
-  "failed_reasons": [
-    "overdue_missing_snapshots=['21684819/t_minus_25', '21684819/close_lock']"
-  ],
-  "outcome": "failed",
+  "outcome": "pass",
   "schema_version": "1.0"
 }
