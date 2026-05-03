@@ -569,6 +569,17 @@ def main(argv: list[str] | None = None) -> int:
         gid = game_dir.name
         for snap_type in SNAPSHOT_TYPES:
             snap_dir = game_dir / snap_type
+            # Phase 13Z — folders that only contain a
+            # missed_snapshot_manifest.json (no PMF outputs) are honest
+            # MISSED_POST_TIP markers; skip them so the legacy
+            # required-outputs check doesn't fail the run.
+            if (snap_dir.exists()
+                and not (snap_dir / "snapshot_manifest.json").exists()
+                and (snap_dir / "missed_snapshot_manifest.json").exists()):
+                report.facts.setdefault("missed_post_tip_markers", []).append(
+                    f"{gid}/{snap_type}"
+                )
+                continue
             if snap_dir.exists():
                 snapshot_count += 1
                 _check_snapshot(report, snap_dir, gid, snap_type, pointer)
