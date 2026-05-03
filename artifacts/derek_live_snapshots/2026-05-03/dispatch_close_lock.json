@@ -1,11 +1,11 @@
 {
-  "code_commit": "2d8ce8f3da87b36dd9e71d26c2432e40735126f8",
+  "code_commit": "8f4daed41a2220c0f66a6d2b07c41d26ed7397d3",
   "decisions": [
     {
       "decision": "skipped_not_due",
       "detail": "now < target - 6min; will fire during the cron window starting at 2026-05-03T23:29:00+00:00",
       "game_id": "21682000",
-      "now_utc": "2026-05-03T20:54:12Z",
+      "now_utc": "2026-05-03T20:59:10Z",
       "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21682000/close_lock",
       "state": "NOT_DUE",
       "target_utc": "2026-05-03T23:35:00Z"
@@ -14,7 +14,7 @@
       "decision": "wrote_missed_post_tip_marker",
       "detail": "game already tipped at 2026-05-03T19:40:00+00:00; do not fabricate pre-tip data \u2014 write missed_snapshot_manifest.json",
       "game_id": "21684819",
-      "now_utc": "2026-05-03T20:54:12Z",
+      "now_utc": "2026-05-03T20:59:10Z",
       "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21684819/close_lock",
       "state": "MISSED_POST_TIP",
       "target_utc": "2026-05-03T19:35:00Z"
@@ -22,7 +22,7 @@
   ],
   "delivery_date": "2026-05-03",
   "eligible_rows": 0,
-  "now_utc": "2026-05-03T20:54:12Z",
+  "now_utc": "2026-05-03T20:59:10Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
   "snapshot_type": "close_lock",

@@ -1,6 +1,6 @@
 # Derek game snapshots — 2026-05-03
 
-- generated_at_utc: 2026-05-03T20:54:26+00:00Z
+- generated_at_utc: 2026-05-03T20:59:26+00:00Z
 - games: **2**
 
 Each subfolder is `<game_id>/<snapshot_type>/` and contains the full Phase 13S contextual snapshot fileset. See the parent [delivery README](../README.md) for snapshot-type definitions.
