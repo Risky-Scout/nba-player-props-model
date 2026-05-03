@@ -43,11 +43,20 @@ WING_POSITIONS = {"SF", "F"}
 BIG_POSITIONS = {"PF", "C", "F-C", "C-F"}
 
 
-def classify_role(*, position: str | None,
-                    usage_proxy: float, ast_per_min: float,
+def classify_role(*, position, usage_proxy: float, ast_per_min: float,
                     fg3_rate: float, reb_per_min: float) -> dict[str, bool]:
     """Return a dict of role flags for a teammate's lagged profile."""
-    pos = (position or "").upper()
+    if position is None:
+        pos = ""
+    elif isinstance(position, str):
+        pos = position.upper()
+    else:
+        try:
+            pos = str(position).upper()
+        except Exception:
+            pos = ""
+        if pos in ("NAN", "NONE"):
+            pos = ""
     return {
         "is_guard": pos in GUARD_POSITIONS,
         "is_wing": pos in WING_POSITIONS,
