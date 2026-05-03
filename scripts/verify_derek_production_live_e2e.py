@@ -511,17 +511,107 @@ def main(argv=None) -> int:
     if have_current_live_pass:
         per_type_lines.append(("PASS", "CURRENT_LIVE", ""))
 
-    # Required proof scripts — Phase 13W asserts these exist on disk
-    # and are runnable. Missing proof scripts is a hard fail.
+    # Required proof scripts — Phase 13W + 13X assert these exist on
+    # disk and are runnable. Missing proof scripts is a hard fail.
     proof_scripts_missing: list[str] = []
     for s in (
         "scripts/verify_bdl_fetch_proof_for_derek.py",
         "scripts/audit_contextual_delta_variation.py",
         "scripts/verify_daily_retrain_recalibration.py",
         "scripts/build_daily_model_training_report.py",
+        # Phase 13X — root cause + calibration + publishability + WoO.
+        "scripts/audit_derek_edge_root_cause.py",
+        "scripts/audit_derek_calibration_for_edge_buckets.py",
+        "scripts/apply_derek_edge_publishability.py",
+        "scripts/verify_phase13x_woo_unchanged.py",
     ):
         if not (REPO_ROOT / s).exists():
             proof_scripts_missing.append(s)
+
+    # Phase 13X — required audit reports for the delivery date.
+    required_phase13x_reports = (
+        f"artifacts/automation_health/derek_edge_root_cause_{args.delivery_date}.json",
+        f"artifacts/automation_health/derek_edge_root_cause_{args.delivery_date}.md",
+        f"artifacts/automation_health/derek_edge_calibration_{args.delivery_date}.json",
+    )
+    missing_reports: list[str] = []
+    for rel in required_phase13x_reports:
+        if not (REPO_ROOT / rel).exists():
+            missing_reports.append(rel)
+    facts["phase13x_reports_missing"] = missing_reports
+
+    # Phase 13X — every Derek market_comparison.parquet must carry the
+    # publishability + reasonability columns.
+    required_publish_cols = (
+        "edge_publish_status",
+        "edge_reasonability_status",
+        "push_line",
+        "push_prob",
+        "p0",
+        "pmf_mean",
+        "pmf_variance",
+        "model_prob_from_pmf",
+        "market_prob_recomputed",
+        "raw_edge_recomputed",
+        "ev_recomputed",
+        "large_edge_bucket",
+        "calibration_support_status",
+        "calibration_bucket_n",
+    )
+    publish_col_failures: list[str] = []
+    actionable_unconfirmed: list[str] = []
+    blocker_threshold_failures: list[str] = []
+    if base.exists():
+        try:
+            import pandas as pd
+            for game_dir in sorted(base.iterdir()):
+                if not game_dir.is_dir():
+                    continue
+                for snap_type in ("current_live", "t_minus_25", "close_lock"):
+                    sd = game_dir / snap_type
+                    mc = sd / "market_comparison.parquet"
+                    if not mc.exists():
+                        continue
+                    df = pd.read_parquet(mc)
+                    missing_cols = [c for c in required_publish_cols
+                                    if c not in df.columns]
+                    if missing_cols:
+                        publish_col_failures.append(
+                            f"{sd.relative_to(REPO_ROOT)}: missing columns "
+                            f"{missing_cols}"
+                        )
+                        continue
+                    # current_live without confirmed lineup must NEVER
+                    # have an ACTIONABLE_REVIEWED row.
+                    manifest = sd / "snapshot_manifest.json"
+                    m = {}
+                    if manifest.exists():
+                        try:
+                            m = json.loads(manifest.read_text(encoding="utf-8"))
+                        except Exception:
+                            m = {}
+                    if (m.get("snapshot_type") == "current_live"
+                        and not m.get("lineup_confirmed")):
+                        bad = df[df["edge_publish_status"] == "ACTIONABLE_REVIEWED"]
+                        if not bad.empty:
+                            actionable_unconfirmed.append(
+                                f"{sd.relative_to(REPO_ROOT)}: {len(bad)} "
+                                "rows ACTIONABLE_REVIEWED on unconfirmed-lineup current_live"
+                            )
+                    # |raw_edge| >= 0.30 must be PUBLISH_BLOCKER (or
+                    # documented).
+                    big = df[df["raw_edge"].abs() >= 0.30]
+                    bad = big[big["edge_publish_status"] != "PUBLISH_BLOCKER"]
+                    if not bad.empty:
+                        blocker_threshold_failures.append(
+                            f"{sd.relative_to(REPO_ROOT)}: {len(bad)} rows "
+                            "with |edge| >= 30pp not marked PUBLISH_BLOCKER"
+                        )
+        except Exception as exc:
+            publish_col_failures.append(f"phase13x column scan failed: {exc}")
+    facts["phase13x_publish_col_failures"] = publish_col_failures
+    facts["phase13x_actionable_unconfirmed_failures"] = actionable_unconfirmed
+    facts["phase13x_blocker_threshold_failures"] = blocker_threshold_failures
 
     # T-25 / close-lock per-game decisions.
     for ev in schedule_eval:
@@ -572,6 +662,19 @@ def main(argv=None) -> int:
         failed_reasons.append(
             f"proof_scripts_missing={proof_scripts_missing}"
         )
+    if missing_reports:
+        failed_reasons.append(
+            f"phase13x_reports_missing={missing_reports}"
+        )
+    if publish_col_failures:
+        for f in publish_col_failures:
+            failed_reasons.append(f"phase13x_publish_col: {f}")
+    if actionable_unconfirmed:
+        for f in actionable_unconfirmed:
+            failed_reasons.append(f"phase13x_actionable_unconfirmed: {f}")
+    if blocker_threshold_failures:
+        for f in blocker_threshold_failures:
+            failed_reasons.append(f"phase13x_blocker_threshold: {f}")
     if overdue_missing:
         failed_reasons.append(
             f"overdue_missing_snapshots={overdue_missing}"

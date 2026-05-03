@@ -256,6 +256,49 @@ jobs:
           python scripts/build_derek_delivery_readme.py \
             --delivery-date ${{ steps.d.outputs.date }}
 
+      - name: Audit Derek edge root-cause (Phase 13X)
+        id: audit_edge_rootcause
+        continue-on-error: true
+        run: |
+          python scripts/audit_derek_edge_root_cause.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Audit Derek edge calibration buckets (Phase 13X)
+        id: audit_edge_calibration
+        continue-on-error: true
+        run: |
+          AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
+          python scripts/audit_derek_calibration_for_edge_buckets.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --as-of-date "$AS_OF"
+
+      - name: Apply Derek edge publishability columns (Phase 13X)
+        id: apply_edge_publishability
+        continue-on-error: true
+        run: |
+          python scripts/apply_derek_edge_publishability.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Append edge reasonability to Derek reports (Phase 13X)
+        id: append_edge_reports
+        continue-on-error: true
+        run: |
+          python scripts/append_phase13x_edge_section_to_reports.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Rebuild Derek delivery README with Phase 13X notes
+        id: rebuild_readme
+        continue-on-error: true
+        run: |
+          python scripts/build_derek_delivery_readme.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Verify Wizard of Odds untouched (Phase 13X)
+        id: verify_woo_unchanged
+        continue-on-error: true
+        run: |
+          python scripts/verify_phase13x_woo_unchanged.py
+
       - name: Verify Derek production-live E2E (Phase 13T)
         id: verify_e2e
         continue-on-error: true
@@ -355,6 +398,11 @@ jobs:
                   artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md \
                   artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json \
                   artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/phase13x_woo_unchanged.json \
                   artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json \
                   artifacts/automation_health/phase13l_no_breakage.json \
                   artifacts/automation_health/phase13l_no_breakage.md \

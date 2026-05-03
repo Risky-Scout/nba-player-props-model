@@ -77,6 +77,33 @@ def main(argv=None) -> int:
         f"- delivery_date: **{args.delivery_date}**",
         f"- games: **{len(games)}**",
         "",
+        "## ⚠️ Read this first — current_live is a watchlist baseline",
+        "",
+        "The **current_live** package is an early baseline / watchlist "
+        "package. Because BDL did not return confirmed lineup rows at "
+        "this timestamp, **current_live edges are not labeled as "
+        "confirmed-lineup recommendations**. The **T-minus-25** and "
+        "**close-lock** snapshots are the near-tip packages intended "
+        "for confirmed-lineup evaluation; they fire automatically "
+        "inside their per-game windows.",
+        "",
+        "Every Derek market_comparison row carries an "
+        "`edge_publish_status` column — values include "
+        "`PUBLISH_BLOCKER`, `REVIEW_LARGE_EDGE`, `REVIEW_PUSH_LINE`, "
+        "`WATCHLIST_NOT_CONFIRMED_LINEUP`, `ACTIONABLE_REVIEWED`. "
+        "Calibration support per (stat / side / line / edge bucket) is "
+        "captured in `calibration_support_status` and "
+        "`calibration_bucket_n`.",
+        "",
+        "## Phase 13X audit reports",
+        "",
+        f"- [Edge root-cause audit]"
+        f"(../../artifacts/automation_health/derek_edge_root_cause_"
+        f"{args.delivery_date}.md)",
+        f"- [Edge calibration audit]"
+        f"(../../artifacts/automation_health/derek_edge_calibration_"
+        f"{args.delivery_date}.md)",
+        "",
         "## What's in this delivery",
         "",
         "Per-game live snapshot folders under "
