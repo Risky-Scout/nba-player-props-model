@@ -1,24 +1,17 @@
 name: Phase 13R — Contextual PMF Engine Deployment Verification
 
 # Hardens and proves the Phase 13Q contextual PMF engine is real,
-# wired, and safe to deploy. Runs (in order):
-#
-#   1. Phase 13Q state audit (read-only)
-#   2. PHASE13R contextual feature lists verifier
-#   3. PHASE13R contextual predict-path verifier
-#   4. PHASE13R contextual PMF sensitivity (6 cases)
-#   5. Phase 13Q no-leakage verifier
-#   6. Phase 13L no-breakage verifier
-#   7. Promote contextual challenger (only when validation gates pass)
-#   8. Phase 13R deployment + Derek output verifiers
+# wired, and safe to deploy. Each verifier step is hard-gated: a
+# verifier failure fails the job immediately. Promote + commit run
+# only when every verifier has passed.
 #
 # Hard rules:
 #   - Author for every commit: Joseph Shackelford <josephshack@gmail.com>.
 #   - No edits to wizard_of_odds/, derek_forward_feed/,
 #     pmf_model_review_package/, canonical_source/.
-#   - Auto-commit ONLY artifacts/phase13r/, artifacts/models/registry/
-#     champion_pointer.json, artifacts/models/champion/v_phase13r_*/,
-#     and the augmented contextual challenger directory.
+#   - Auto-commit ONLY artifacts/phase13r/, augmented contextual
+#     challenger files, champion_pointer.json, and v_phase13r_*
+#     pointer backups.
 
 on:
   workflow_dispatch:
@@ -67,39 +60,24 @@ jobs:
           ls artifacts/models/challengers/ || true
 
       - name: Phase 13Q state audit
-        id: audit
-        continue-on-error: true
         run: python scripts/_phase13r_write_state_audit.py
 
       - name: Verify contextual feature lists
-        id: verify_feature_lists
-        continue-on-error: true
         run: python scripts/verify_contextual_feature_lists.py
 
       - name: Verify contextual predict path
-        id: verify_predict_path
-        continue-on-error: true
         run: python scripts/verify_contextual_predict_path.py
 
       - name: Verify contextual PMF sensitivity (6 cases)
-        id: verify_sensitivity
-        continue-on-error: true
         run: python scripts/verify_contextual_pmf_sensitivity.py
 
       - name: Phase 13Q no-leakage
-        id: verify_no_leakage
-        continue-on-error: true
         run: python scripts/verify_phase13q_no_leakage.py
 
       - name: Phase 13L no-breakage
-        id: verify_no_break
-        continue-on-error: true
         run: python scripts/verify_phase13l_no_breakage.py
 
       - name: Promote contextual challenger
-        id: promote
-        if: ${{ steps.verify_feature_lists.outcome == 'success' && steps.verify_predict_path.outcome == 'success' && steps.verify_sensitivity.outcome == 'success' && steps.verify_no_leakage.outcome == 'success' && steps.verify_no_break.outcome == 'success' }}
-        continue-on-error: true
         run: |
           ARGS=""
           if [ -n "${{ github.event.inputs.challenger_dir }}" ]; then
@@ -114,8 +92,6 @@ jobs:
           python scripts/promote_contextual_challenger.py $ARGS
 
       - name: Verify deployment + Derek contextual outputs
-        id: verify_deployment
-        continue-on-error: true
         run: python scripts/verify_phase13r_deployment.py
 
       - name: Upload Phase 13R artifacts (always)
@@ -131,7 +107,6 @@ jobs:
             artifacts/models/champion/v_phase13r_*/**
 
       - name: Commit Phase 13R artifacts (Joseph Shackelford authorship)
-        if: ${{ steps.audit.outcome == 'success' && steps.verify_feature_lists.outcome == 'success' && steps.verify_predict_path.outcome == 'success' && steps.verify_sensitivity.outcome == 'success' && steps.verify_no_leakage.outcome == 'success' && steps.verify_no_break.outcome == 'success' && steps.verify_deployment.outcome == 'success' }}
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
@@ -149,9 +124,3 @@ jobs:
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5
           done
-
-      - name: Fail workflow if any required step failed
-        if: ${{ steps.audit.outcome != 'success' || steps.verify_feature_lists.outcome != 'success' || steps.verify_predict_path.outcome != 'success' || steps.verify_sensitivity.outcome != 'success' || steps.verify_no_leakage.outcome != 'success' || steps.verify_no_break.outcome != 'success' || steps.verify_deployment.outcome != 'success' }}
-        run: |
-          echo "::error::A Phase 13R step failed."
-          exit 1
