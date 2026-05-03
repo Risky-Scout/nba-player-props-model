@@ -1,19 +1,8 @@
 {
-  "expected_feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "expected_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
   "facts": {
     "2026-04-30_direct_lineup_contextual": {
-      "feature_list_hashes": {
-        "ast": "57b63afd927fef0c",
-        "blk": "57b63afd927fef0c",
-        "fg3m": "57b63afd927fef0c",
-        "minutes": "57b63afd927fef0c",
-        "pts": "57b63afd927fef0c",
-        "reb": "57b63afd927fef0c",
-        "stl": "57b63afd927fef0c",
-        "tov": "57b63afd927fef0c"
-      },
       "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
-      "feature_set_id_note": "observed='phase13s_direct_lineup_injury_pmf_driver_v1' expected='phase13q_contextual_pmf_engine_v1'",
       "fitted_targets": [
         "minutes",
         "pts",
@@ -24,7 +13,9 @@
         "blk",
         "fg3m"
       ],
+      "minutes_feature_count": 64,
       "path": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual",
+      "pkl_files_count": 16,
       "score_keys": [
         "minutes_delta",
         "rate_delta_ast",
@@ -39,22 +30,35 @@
   },
   "issues": [],
   "required_groups": {
+    "direct_lineup": [
+      "current_starter",
+      "confirmed_starter",
+      "confirmed_bench"
+    ],
     "game_context": [
       "is_home",
       "rest_days",
       "is_back_to_back",
-      "is_three_in_four",
       "season_game_number",
       "opponent_team_id_hash"
     ],
-    "injury_availability": [
+    "injury": [
       "is_actionable",
       "is_confirmed_out",
-      "injury_status_encoded",
-      "availability_status_encoded"
+      "injury_status_encoded"
     ],
-    "lineup_status": [
-      "starter_proxy_lagged"
+    "lineup_composition": [
+      "team_lineup_usage_competition_proxy",
+      "team_lineup_rebound_competition_proxy",
+      "team_confirmed_starters_count"
+    ],
+    "player_in_lineup_interaction": [
+      "player_usage_competition_proxy",
+      "player_rebound_competition_proxy"
+    ],
+    "starter_streak": [
+      "consecutive_starter_streak",
+      "recent_starter_rate_5"
     ],
     "vacated_opportunity": [
       "vacated_minutes_total",

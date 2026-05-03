@@ -1,0 +1,10 @@
+{
+  "delivery_date": "2026-04-30",
+  "facts": {
+    "outcomes_available": false,
+    "snapshot_manifests_found": 0
+  },
+  "reason": "no Derek snapshots found under deliveries/2026-04-30",
+  "schema_version": "1.0",
+  "scored": false
+}

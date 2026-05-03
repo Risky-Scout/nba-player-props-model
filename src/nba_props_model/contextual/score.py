@@ -226,14 +226,20 @@ def _hash_columns(cols: Iterable[str]) -> str:
 
 
 def load_contextual_engine(challenger_dir: Path,
-                            *, prefix: str = "phase13q",
+                            *, prefix: str | None = None,
                             require_minutes: bool = True) -> ContextualEngine:
-    """Load all available Phase 13Q adjustment models from ``challenger_dir``.
+    """Load all available contextual adjustment models from
+    ``challenger_dir``. Supports both Phase 13Q and Phase 13S file
+    naming conventions:
 
-    Raises ``FileNotFoundError`` if the manifest is missing or no fitted
-    targets can be loaded.
+      Phase 13Q: phase13q_<stat>_adjustment_model.pkl
+                 phase13q_<stat>_adjustment_features.pkl
+      Phase 13S: phase13s_<stat>_adjustment.pkl
+                 phase13s_<stat>_features.pkl
+
+    When ``prefix`` is None (default) the loader autodetects.
     """
-    import joblib  # local import to keep top-level light
+    import joblib
 
     challenger_dir = Path(challenger_dir)
     train_manifest_path = challenger_dir / "train_manifest.json"
@@ -250,30 +256,47 @@ def load_contextual_engine(challenger_dir: Path,
         except Exception:
             model_manifest = {}
 
+    candidate_layouts = [
+        ("phase13s", "phase13s_{stat}_features.pkl",
+         "phase13s_{stat}_adjustment.pkl"),
+        ("phase13q", "phase13q_{stat}_adjustment_features.pkl",
+         "phase13q_{stat}_adjustment_model.pkl"),
+    ]
+    if prefix is not None:
+        candidate_layouts = [
+            layout for layout in candidate_layouts if layout[0] == prefix
+        ]
+
     feature_lists: Dict[str, List[str]] = {}
     models: Dict[str, "object"] = {}
     feat_hashes: Dict[str, str] = {}
+    layout_used: str | None = None
 
-    for stat in ADJUSTMENT_TARGETS:
-        feat_pkl = challenger_dir / f"{prefix}_{stat}_adjustment_features.pkl"
-        model_pkl = challenger_dir / f"{prefix}_{stat}_adjustment_model.pkl"
-        if not (feat_pkl.exists() and model_pkl.exists()):
-            continue
-        try:
-            cols = list(joblib.load(feat_pkl))
-            mdl = joblib.load(model_pkl)
-        except Exception as exc:
-            raise RuntimeError(
-                f"failed to load {prefix}_{stat}_adjustment artifacts: {exc}"
-            ) from exc
-        feature_lists[stat] = cols
-        models[stat] = mdl
-        feat_hashes[stat] = _hash_columns(cols)
+    for layout_prefix, feat_template, model_template in candidate_layouts:
+        if any((challenger_dir / feat_template.format(stat=s)).exists()
+               for s in ADJUSTMENT_TARGETS):
+            layout_used = layout_prefix
+            for stat in ADJUSTMENT_TARGETS:
+                feat_pkl = challenger_dir / feat_template.format(stat=stat)
+                model_pkl = challenger_dir / model_template.format(stat=stat)
+                if not (feat_pkl.exists() and model_pkl.exists()):
+                    continue
+                try:
+                    cols = list(joblib.load(feat_pkl))
+                    mdl = joblib.load(model_pkl)
+                except Exception as exc:
+                    raise RuntimeError(
+                        f"failed to load {layout_prefix}_{stat} artifacts: {exc}"
+                    ) from exc
+                feature_lists[stat] = cols
+                models[stat] = mdl
+                feat_hashes[stat] = _hash_columns(cols)
+            break
 
     if require_minutes and "minutes" not in models:
         raise FileNotFoundError(
             f"contextual minutes model missing in {challenger_dir} "
-            f"({prefix}_minutes_adjustment_model.pkl)"
+            f"(checked layouts: {[l[0] for l in candidate_layouts]})"
         )
 
     return ContextualEngine(
@@ -317,23 +340,41 @@ def resolve_contextual_challenger_dir(repo_root: Path,
             return p, "ok"
         return None, f"contextual_challenger_dir referenced but missing: {contextual_dir}"
 
-    # Fallback: scan challengers/<date>_contextual. We always fall back
-    # so verifiers can exercise the trained artifacts before promotion;
-    # the returned reason carries the non-contextual pointer state so
-    # callers (Derek runner) can refuse to claim contextual when the
-    # active champion has not yet been promoted.
+    # Fallback: scan challengers/<date>_contextual or
+    # challengers/<date>_direct_lineup_contextual. Phase 13S directories
+    # take priority so once they exist we exercise the most recent
+    # trained artifacts. The returned reason carries the non-contextual
+    # pointer state so callers (Derek runner) can refuse to claim
+    # contextual when the active champion has not yet been promoted.
     challengers_root = repo_root / "artifacts" / "models" / "challengers"
     candidates: list[Path] = []
+    direct_candidates: list[Path] = []
     if challengers_root.exists():
-        candidates = sorted(
-            d for d in challengers_root.iterdir()
-            if d.is_dir() and d.name.endswith("_contextual")
-        )
-    if not fs_id.startswith("phase13q_") and not fs_id.startswith("phase13r_"):
-        if candidates:
-            return candidates[-1], (
-                f"contextual artifacts present at {candidates[-1].name} "
-                f"but champion_pointer.feature_set_id={fs_id!r} is not a "
+        for d in challengers_root.iterdir():
+            if not d.is_dir():
+                continue
+            if d.name.endswith("_direct_lineup_contextual"):
+                direct_candidates.append(d)
+            elif d.name.endswith("_contextual"):
+                candidates.append(d)
+        direct_candidates = sorted(direct_candidates)
+        candidates = sorted(candidates)
+
+    contextual_fs_prefixes = ("phase13q_", "phase13r_", "phase13s_")
+    is_contextual_pointer = fs_id.startswith(contextual_fs_prefixes)
+
+    # Pick the best candidate. Phase 13S direct-lineup wins when present.
+    chosen: Path | None = None
+    if direct_candidates:
+        chosen = direct_candidates[-1]
+    elif candidates:
+        chosen = candidates[-1]
+
+    if not is_contextual_pointer:
+        if chosen is not None:
+            return chosen, (
+                f"contextual artifacts present at {chosen.name} but "
+                f"champion_pointer.feature_set_id={fs_id!r} is not a "
                 "contextual feature set — promote the contextual challenger "
                 "before claiming contextual_pmf_engine in production"
             )
@@ -341,6 +382,6 @@ def resolve_contextual_challenger_dir(repo_root: Path,
             f"champion_pointer.feature_set_id={fs_id!r} is not a contextual "
             "feature set and no <date>_contextual challenger directory found"
         )
-    if candidates:
-        return candidates[-1], "ok"
+    if chosen is not None:
+        return chosen, "ok"
     return None, "no <date>_contextual challenger directory found"

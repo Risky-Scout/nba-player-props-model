@@ -67,6 +67,13 @@ def _find_challenger_dirs(arg_dir: str | None) -> list[Path]:
     root = REPO_ROOT / "artifacts" / "models" / "challengers"
     if not root.exists():
         return []
+    # Phase 13R-baseline verifier accepts Phase 13Q + 13S directories.
+    # When a Phase 13S direct-lineup challenger is present, exercise it
+    # (it's a strict superset of the Phase 13Q feature set).
+    direct = sorted(d for d in root.iterdir()
+                    if d.is_dir() and d.name.endswith("_direct_lineup_contextual"))
+    if direct:
+        return direct
     return sorted(d for d in root.iterdir()
                   if d.is_dir() and d.name.endswith("_contextual"))
 
@@ -99,10 +106,10 @@ def main(argv=None) -> int:
         d_facts["fitted_targets"] = list(engine.fitted_targets)
         d_facts["feature_list_hashes"] = dict(engine.feature_list_hashes)
 
-        if not engine.feature_set_id.startswith(("phase13q_", "phase13r_")):
+        if not engine.feature_set_id.startswith(("phase13q_", "phase13r_", "phase13s_")):
             issues.append(
                 f"{d.name}: feature_set_id={engine.feature_set_id!r} is not "
-                "a Phase 13Q/13R contextual feature set"
+                "a Phase 13Q/13R/13S contextual feature set"
             )
         if engine.feature_set_id not in (
             CONTEXTUAL_FEATURE_SET_ID,

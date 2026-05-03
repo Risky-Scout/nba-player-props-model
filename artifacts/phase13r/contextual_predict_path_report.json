@@ -9,8 +9,8 @@
   ],
   "facts": {
     "contextual_engine_load": {
-      "challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
-      "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+      "challenger_dir": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual",
+      "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
       "fitted_targets": [
         "minutes",
         "pts",

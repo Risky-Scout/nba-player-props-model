@@ -64,6 +64,7 @@ def main(argv=None) -> int:
         contextual_dirs = sorted(
             d for d in challengers_root.iterdir()
             if d.is_dir() and d.name.endswith("_contextual")
+            and not d.name.endswith("_direct_lineup_contextual")
         )
     if not contextual_dirs:
         issues.append("no <date>_contextual challenger directory found")

@@ -1,0 +1,15 @@
+{
+  "checked_dirs": [
+    "artifacts/models/challengers/2026-04-30_direct_lineup_contextual"
+  ],
+  "facts": {
+    "2026-04-30_direct_lineup_contextual/calibrated_through_date": "2026-04-30",
+    "2026-04-30_direct_lineup_contextual/feature_files_checked": 8,
+    "2026-04-30_direct_lineup_contextual/leakage_columns_seen": [],
+    "2026-04-30_direct_lineup_contextual/starter_proxy_safe_for_training": true,
+    "2026-04-30_direct_lineup_contextual/starter_proxy_used": true,
+    "2026-04-30_direct_lineup_contextual/trained_through_date": "2026-04-30"
+  },
+  "issues": [],
+  "schema_version": "1.0"
+}

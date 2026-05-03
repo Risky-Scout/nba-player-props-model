@@ -4,55 +4,55 @@
       "feature_vector_hash_post": "0f2dfaad991099b8",
       "feature_vector_hash_pre": "143b50b9edaffa97",
       "feature_vectors_changed": true,
-      "minutes_delta_post": -5.298435356220658,
-      "minutes_delta_pre": -5.298435356220658,
-      "pmf_mean_post": 21.361251715023474,
-      "pmf_mean_pre": 21.361251715023474
+      "minutes_delta_post": 26.37508166922111,
+      "minutes_delta_pre": 13.414485015926836,
+      "pmf_mean_post": 46.70006533537689,
+      "pmf_mean_pre": 36.33158801274147
     },
     "case_2_injury": {
       "injury_lineup_conflict": true,
       "is_actionable": false,
       "is_confirmed_out": true,
-      "minutes_delta": -5.298435356220658
+      "minutes_delta": 26.37508166922111
     },
     "case_3_teammate_out": {
-      "abs_diff_minutes_delta": 2.624029685102606,
-      "minutes_delta_loaded": -7.922465041323264,
-      "minutes_delta_quiet": -5.298435356220658,
+      "abs_diff_minutes_delta": 1.1660649548163988,
+      "minutes_delta_loaded": 25.20901671440471,
+      "minutes_delta_quiet": 26.37508166922111,
       "num_teammates_out_total_loaded": 2.0,
       "num_teammates_out_total_quiet": 0.0,
       "vacated_minutes_total_loaded": 50.0,
       "vacated_minutes_total_quiet": 0.0
     },
     "case_4_lineup_composition": {
-      "abs_diff_minutes_delta": 3.0583996552748633,
-      "minutes_delta_a": -7.922465041323264,
-      "minutes_delta_b": -4.8640653860484,
+      "abs_diff_minutes_delta": 1.5154035499029277,
+      "minutes_delta_a": 25.20901671440471,
+      "minutes_delta_b": 26.72442026430764,
       "vacated_minutes_guard_a": 25.0,
       "vacated_minutes_guard_b": 0.0,
       "vacated_minutes_total_a": 50.0,
       "vacated_minutes_total_b": 30.0
     },
     "case_5_market_only": {
-      "delta_hash_m1": "a80c2a5b59f30d9d",
-      "delta_hash_m2": "a80c2a5b59f30d9d",
+      "delta_hash_m1": "07fc9c1863940b97",
+      "delta_hash_m2": "07fc9c1863940b97",
       "feature_vector_hash_m1": "c7afad87127de79c",
       "feature_vector_hash_m2": "c7afad87127de79c",
       "feature_vectors_equal": true,
-      "minutes_delta_m1": -5.298435356220658,
-      "minutes_delta_m2": -5.298435356220658
+      "minutes_delta_m1": 10.09703636020062,
+      "minutes_delta_m2": 10.09703636020062
     },
     "case_6_no_change": {
-      "delta_hash_a": "a80c2a5b59f30d9d",
-      "delta_hash_b": "a80c2a5b59f30d9d",
+      "delta_hash_a": "07fc9c1863940b97",
+      "delta_hash_b": "07fc9c1863940b97",
       "deltas_equal": true,
       "feature_vector_hash_a": "c7afad87127de79c",
       "feature_vector_hash_b": "c7afad87127de79c",
       "feature_vectors_equal": true
     }
   },
-  "challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
-  "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "challenger_dir": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual",
+  "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
   "issues_per_case": {
     "case_1_lineup": [],
     "case_2_injury": [],

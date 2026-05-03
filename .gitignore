@@ -58,6 +58,11 @@ artifacts/models/champion/**/*.parquet
 # committed so CI verifiers can prove real model behavior.
 !artifacts/models/challengers/*_contextual/phase13q_*.pkl
 
+# Phase 13S — the direct-lineup contextual challenger ships tiny
+# (~4 KB) Ridge-adjustment .pkl files under
+# `<date>_direct_lineup_contextual/`. Same rule as Phase 13Q.
+!artifacts/models/challengers/*_direct_lineup_contextual/phase13s_*.pkl
+
 # Phase 13A — local-only run logs (verification reads them but they shouldn't ship)
 artifacts/nightly_training/**/logs/
 

@@ -8,10 +8,10 @@
     },
     "phase13p_no_leakage_returncode": 0,
     "phase13p_no_leakage_stderr_tail": "",
-    "phase13p_no_leakage_stdout_tail": "PHASE13P_NO_LEAKAGE_PASS\n  challengers_checked=2\n  - 2026-04-30_contextual: trained_through='2026-04-30'\n  - 2026-04-30_live_context: trained_through='2026-04-30'"
+    "phase13p_no_leakage_stdout_tail": "PHASE13P_NO_LEAKAGE_PASS\n  challengers_checked=3\n  - 2026-04-30_contextual: trained_through='2026-04-30'\n  - 2026-04-30_direct_lineup_contextual: trained_through='2026-04-30'\n  - 2026-04-30_live_context: trained_through='2026-04-30'"
   },
   "issues": [],
   "phase13p_verifier_stderr": "",
-  "phase13p_verifier_stdout": "PHASE13P_NO_LEAKAGE_PASS\n  challengers_checked=2\n  - 2026-04-30_contextual: trained_through='2026-04-30'\n  - 2026-04-30_live_context: trained_through='2026-04-30'\n",
+  "phase13p_verifier_stdout": "PHASE13P_NO_LEAKAGE_PASS\n  challengers_checked=3\n  - 2026-04-30_contextual: trained_through='2026-04-30'\n  - 2026-04-30_direct_lineup_contextual: trained_through='2026-04-30'\n  - 2026-04-30_live_context: trained_through='2026-04-30'\n",
   "schema_version": "1.0"
 }

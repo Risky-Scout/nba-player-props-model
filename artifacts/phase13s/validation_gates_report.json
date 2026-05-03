@@ -1,0 +1,43 @@
+{
+  "any_positive_improvement": true,
+  "facts": {
+    "2026-04-30_direct_lineup_contextual": {
+      "ast": {
+        "n_test": 15751,
+        "rel_improvement": 0.00010032873147916121
+      },
+      "blk": {
+        "n_test": 15751,
+        "rel_improvement": 0.00012893556651722722
+      },
+      "fg3m": {
+        "n_test": 15751,
+        "rel_improvement": 0.000408287009482784
+      },
+      "minutes": {
+        "n_test": 16225,
+        "rel_improvement": 0.6158182263485236
+      },
+      "pts": {
+        "n_test": 15751,
+        "rel_improvement": 0.0010156164669798424
+      },
+      "reb": {
+        "n_test": 15751,
+        "rel_improvement": -0.00048282862902499207
+      },
+      "stl": {
+        "n_test": 15751,
+        "rel_improvement": -0.00011225143014696582
+      },
+      "tov": {
+        "n_test": 15751,
+        "rel_improvement": 0.0007631485791821949
+      }
+    }
+  },
+  "issues": [],
+  "minutes_min_rel_improvement": 0.05,
+  "safe_noninferiority_threshold": -0.005,
+  "schema_version": "1.0"
+}

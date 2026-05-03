@@ -535,6 +535,143 @@ def _apply_contextual_scoring(sub, *, pointer: dict, out_root: Path) -> dict:
     summary["challenger_dir"] = str(challenger_dir.relative_to(REPO_ROOT))
     summary["fitted_targets"] = list(engine.fitted_targets)
 
+    # Phase 13S — when the active champion is the direct-lineup engine,
+    # populate direct lineup features (current_starter, confirmed_*,
+    # lineup_position_encoded, consecutive_starter_streak, ...) and
+    # team-aggregate composition features on every row before scoring.
+    if engine.feature_set_id.startswith("phase13s_"):
+        try:
+            from nba_props_model.features.direct_lineup_context import (
+                apply_direct_lineup_overlay,
+                DIRECT_LINEUP_FEATURE_COLUMNS,
+                LINEUP_COMPOSITION_FEATURE_COLUMNS,
+                PLAYER_IN_LINEUP_INTERACTION_COLUMNS,
+            )
+        except Exception as exc:
+            summary["contextual_blocker"] = (
+                f"phase13s overlay import failed: {exc}"
+            )
+            sub["contextual_blocker"] = summary["contextual_blocker"]
+            return summary
+
+        # Build per-row dicts in the order they appear in sub. The
+        # overlay mutates them in place; we then write them back.
+        bdl_rows = []
+        if "confirmed_starter" in sub.columns or "current_starter" in sub.columns:
+            for _, r in sub.iterrows():
+                cs = r.get("confirmed_starter")
+                if cs is None:
+                    cs = r.get("current_starter")
+                if cs is None:
+                    continue
+                try:
+                    pid = int(r.get("player_id"))
+                except Exception:
+                    continue
+                bdl_rows.append({
+                    "player_id": pid,
+                    "game_id": str(r.get("game_id")) if r.get("game_id") is not None else None,
+                    "starter": bool(cs),
+                    "lineup_position": r.get("lineup_position"),
+                })
+        # Lagged player profile lookup from the training dataset.
+        lps: dict = {}
+        team_profiles: dict = {}  # (team_id, game_id) → list of teammate profiles
+        try:
+            import pandas as pd
+            train_path = REPO_ROOT / "data" / "direct_lineup_context_features.parquet"
+            if train_path.exists():
+                train_df = pd.read_parquet(train_path)
+                latest = (
+                    train_df.sort_values("game_date")
+                    .groupby("player_id", as_index=False).tail(1)
+                )
+                for rec in latest.itertuples(index=False):
+                    lps[int(rec.player_id)] = {
+                        "prev_game_min": float(getattr(rec, "min", 0.0) or 0.0),
+                        "consecutive_starter_streak": float(
+                            getattr(rec, "consecutive_starter_streak", 0.0) or 0.0),
+                        "recent_starter_rate_5": float(
+                            getattr(rec, "recent_starter_rate_5", 0.0) or 0.0),
+                        "usage_proxy_lagged": float(
+                            getattr(rec, "usage_proxy_lagged", 0.0) or 0.0),
+                        "ast_per_min_lagged": float(
+                            getattr(rec, "ast_per_min_lagged", 0.0) or 0.0),
+                        "fg3_attempt_rate_lagged": float(
+                            getattr(rec, "fg3_attempt_rate_lagged", 0.0) or 0.0),
+                        "reb_per_min_lagged": float(
+                            getattr(rec, "reb_per_min_lagged", 0.0) or 0.0),
+                        "tov_per_min_lagged": float(
+                            getattr(rec, "tov_per_min_lagged", 0.0) or 0.0),
+                        "starter_proxy_lagged": float(
+                            getattr(rec, "starter_proxy_lagged", 0.0) or 0.0),
+                        "position": getattr(rec, "position", None),
+                    }
+        except Exception as exc:
+            summary["contextual_blocker"] = (
+                f"phase13s lagged lookup failed: {exc}"
+            )
+
+        rows_dicts = sub.to_dict(orient="records")
+        apply_direct_lineup_overlay(
+            rows_dicts, bdl_lineup_rows=bdl_rows, lagged_player_stats=lps,
+        )
+
+        # Team-aggregate composition features. Build per-team teammate
+        # lists from the slate's prediction rows joined with lagged
+        # profiles from the training table. ``expected_to_play`` =
+        # row's player has a non-zero exp_mp on this slate.
+        from nba_props_model.features.lineup_interactions import (
+            aggregate_team_lineup, player_in_lineup_interactions,
+        )
+        team_to_players: dict = {}
+        for r in rows_dicts:
+            try:
+                pid = int(r.get("player_id"))
+            except Exception:
+                continue
+            team = r.get("team") or r.get("team_abbr") or r.get("team_id")
+            if team is None:
+                continue
+            tm_profile = dict(lps.get(pid, {}))
+            tm_profile["player_id"] = pid
+            tm_profile["expected_to_play"] = float(r.get("exp_mp") or 0.0) > 0.0
+            team_to_players.setdefault(team, []).append(tm_profile)
+
+        for r in rows_dicts:
+            try:
+                pid = int(r.get("player_id"))
+            except Exception:
+                continue
+            team = r.get("team") or r.get("team_abbr") or r.get("team_id")
+            teammates = [
+                tm for tm in team_to_players.get(team, [])
+                if tm.get("player_id") != pid
+            ]
+            comp = aggregate_team_lineup(teammates)
+            for c, v in comp.items():
+                r[c] = v
+            inter = player_in_lineup_interactions(
+                player_row=lps.get(pid, {}), teammates=teammates,
+            )
+            for c, v in inter.items():
+                r[c] = v
+
+        # Write the overlaid rows back as new columns on sub.
+        overlay_cols = (
+            list(DIRECT_LINEUP_FEATURE_COLUMNS)
+            + list(LINEUP_COMPOSITION_FEATURE_COLUMNS)
+            + list(PLAYER_IN_LINEUP_INTERACTION_COLUMNS)
+        )
+        # Re-index by position; sub.iterrows() preserved order so
+        # rows_dicts is parallel.
+        sub_indices = list(sub.index)
+        for col in overlay_cols:
+            sub[col] = [d.get(col, 0.0) for d in rows_dicts]
+        # Stash the overlaid dicts back into sub for the row-iter step.
+        # Pandas already mirrored above; the per-row iteration below
+        # will re-read the columns via ``r.get(...)``.
+
     rate_delta_columns = []
     minutes_deltas = []
     rate_delta_records: dict[str, list[float]] = {}
@@ -704,6 +841,196 @@ def _apply_contextual_scoring(sub, *, pointer: dict, out_root: Path) -> dict:
     feat_audit.to_csv(out_root / "contextual_feature_audit.csv", index=False)
     feat_audit.to_parquet(out_root / "contextual_feature_audit.parquet", index=False)
     return summary
+
+
+def _write_derek_phase13s_sidecars(sub, *, contextual_summary: dict,
+                                    out_root: Path,
+                                    prior_snapshot_dir: Path | None) -> dict:
+    """Phase 13S Part J — emit the direct-lineup interpretability
+    sidecars that Derek consumes at T-minus-25 / close-lock.
+
+    Writes (always):
+        direct_lineup_impact_report.{json,md}
+        game_context.{csv,parquet}
+        input_change_report.{json,md}     (always; empty when no prior)
+
+    Writes (when ``prior_snapshot_dir`` is supplied and contains a
+    ``prop_summary.parquet``):
+        snapshot_comparison.{csv,parquet,md}
+    """
+    import numpy as np
+    import pandas as pd
+
+    out_root.mkdir(parents=True, exist_ok=True)
+    written: dict = {}
+
+    # ── direct_lineup_impact_report ────────────────────────────────
+    feature_set_id = contextual_summary.get("feature_set_id") or ""
+    is_phase13s = feature_set_id.startswith("phase13s_")
+    confirmed_starters = (
+        int((sub.get("confirmed_starter", pd.Series(dtype=float)).astype(float) >= 0.5).sum())
+        if "confirmed_starter" in sub.columns else 0
+    )
+    confirmed_benches = (
+        int((sub.get("confirmed_bench", pd.Series(dtype=float)).astype(float) >= 0.5).sum())
+        if "confirmed_bench" in sub.columns else 0
+    )
+    starter_changes = (
+        int((sub.get("starter_changed_from_projection", pd.Series(dtype=float))
+              .astype(float) >= 0.5).sum())
+        if "starter_changed_from_projection" in sub.columns else 0
+    )
+    bench_changes = (
+        int((sub.get("bench_changed_from_projection", pd.Series(dtype=float))
+              .astype(float) >= 0.5).sum())
+        if "bench_changed_from_projection" in sub.columns else 0
+    )
+    minutes_conflicts = (
+        int((sub.get("minutes_projection_conflict", pd.Series(dtype=float))
+              .astype(float) >= 0.5).sum())
+        if "minutes_projection_conflict" in sub.columns else 0
+    )
+    direct_payload = {
+        "schema_version": "1.0",
+        "feature_set_id": feature_set_id,
+        "is_phase13s_direct_driver": is_phase13s,
+        "rows_scored": contextual_summary.get("rows_scored", 0),
+        "minutes_delta_abs_mean": contextual_summary.get("minutes_delta_abs_mean", 0.0),
+        "minutes_delta_abs_max": contextual_summary.get("minutes_delta_abs_max", 0.0),
+        "confirmed_starters": confirmed_starters,
+        "confirmed_benches": confirmed_benches,
+        "starter_changed_from_projection": starter_changes,
+        "bench_changed_from_projection": bench_changes,
+        "minutes_projection_conflicts": minutes_conflicts,
+        "rate_delta_summary": contextual_summary.get("rate_delta_summary") or {},
+        "contextual_blocker": contextual_summary.get("contextual_blocker", ""),
+    }
+    (out_root / "direct_lineup_impact_report.json").write_text(
+        json.dumps(direct_payload, indent=2, sort_keys=True, default=str),
+        encoding="utf-8")
+    md = [
+        "# Direct lineup impact report (Phase 13S)",
+        "",
+        f"- feature_set_id: `{feature_set_id}`",
+        f"- is_phase13s_direct_driver: **{is_phase13s}**",
+        f"- rows_scored: **{direct_payload['rows_scored']}**",
+        f"- confirmed_starters: **{confirmed_starters}** "
+        f"  confirmed_benches: **{confirmed_benches}**",
+        f"- starter_changed_from_projection: **{starter_changes}**",
+        f"- bench_changed_from_projection: **{bench_changes}**",
+        f"- minutes_projection_conflicts: **{minutes_conflicts}**",
+        f"- minutes_delta_abs_mean: **{direct_payload['minutes_delta_abs_mean']:.4f}**",
+        f"- minutes_delta_abs_max: **{direct_payload['minutes_delta_abs_max']:.4f}**",
+    ]
+    (out_root / "direct_lineup_impact_report.md").write_text(
+        "\n".join(md) + "\n", encoding="utf-8")
+    written["direct_lineup_impact_report.json"] = {
+        "rows": 1,
+        "sha256_prefix": sha256_file(
+            out_root / "direct_lineup_impact_report.json")[:16],
+    }
+
+    # ── game_context.{csv,parquet} ─────────────────────────────────
+    gc_cols = [c for c in (
+        "player_id", "player_name", "team", "opponent",
+        "game_id", "game_start_time",
+        "is_home", "rest_days", "is_back_to_back", "is_three_in_four",
+        "season_game_number", "season_game_number_norm",
+        "opponent_team_id_hash",
+    ) if c in sub.columns]
+    gc = sub[gc_cols].copy() if gc_cols else sub.iloc[0:0].copy()
+    if not gc.empty and "player_id" in gc.columns:
+        gc = gc.drop_duplicates(subset=["player_id"])
+    gc.to_csv(out_root / "game_context.csv", index=False)
+    gc.to_parquet(out_root / "game_context.parquet", index=False)
+    written["game_context.parquet"] = {
+        "rows": int(len(gc)),
+        "sha256_prefix": sha256_file(out_root / "game_context.parquet")[:16],
+    }
+
+    # ── snapshot_comparison + input_change_report ─────────────────
+    input_change = {
+        "schema_version": "1.0",
+        "prior_snapshot_dir": (
+            str(prior_snapshot_dir.relative_to(REPO_ROOT))
+            if prior_snapshot_dir and prior_snapshot_dir.exists() else None
+        ),
+        "feature_change_count": 0,
+        "minutes_delta_change_count": 0,
+        "lineup_change_count": 0,
+        "injury_change_count": 0,
+        "market_only_change_count": 0,
+        "details": [],
+    }
+    if (prior_snapshot_dir and prior_snapshot_dir.exists()
+        and (prior_snapshot_dir / "prop_summary.parquet").exists()):
+        try:
+            prior = pd.read_parquet(prior_snapshot_dir / "prop_summary.parquet")
+        except Exception:
+            prior = None
+        if prior is not None and "player_id" in prior.columns:
+            cur_keys = sub[["player_id", "stat", "line"]].drop_duplicates() \
+                if all(c in sub.columns for c in ("player_id", "stat", "line")) else None
+            if cur_keys is not None:
+                merged = sub.merge(
+                    prior, on=["player_id", "stat", "line"],
+                    how="inner", suffixes=("_curr", "_prior"),
+                )
+                comp_path = out_root / "snapshot_comparison.parquet"
+                keep = [c for c in merged.columns if c in (
+                    "player_id", "player_name_curr", "stat", "line",
+                    "exp_mp_curr", "exp_mp_prior",
+                    "model_p_over_curr", "model_p_over_prior",
+                    "edge_curr", "edge_prior",
+                    "contextual_minutes_delta",
+                    "contextual_pmf_mean_baseline", "contextual_pmf_mean_post",
+                ) or c in merged.columns and c.startswith("market_")]
+                comp = merged[keep] if keep else merged
+                comp.to_csv(out_root / "snapshot_comparison.csv", index=False)
+                comp.to_parquet(comp_path, index=False)
+                written["snapshot_comparison.parquet"] = {
+                    "rows": int(len(comp)),
+                    "sha256_prefix": sha256_file(comp_path)[:16],
+                }
+                input_change["feature_change_count"] = int(len(comp))
+                # Minutes-delta change count from prior model_p_over.
+                if ("model_p_over_curr" in comp.columns
+                    and "model_p_over_prior" in comp.columns):
+                    diff = (comp["model_p_over_curr"].astype(float)
+                            - comp["model_p_over_prior"].astype(float)).abs()
+                    input_change["minutes_delta_change_count"] = int(
+                        (diff > 0.005).sum()
+                    )
+                comp_md = [
+                    "# Snapshot comparison",
+                    "",
+                    f"- prior_snapshot_dir: "
+                    f"`{prior_snapshot_dir.relative_to(REPO_ROOT)}`",
+                    f"- rows_compared: **{len(comp)}**",
+                    f"- model_p_over_changed_count: "
+                    f"**{input_change['minutes_delta_change_count']}**",
+                ]
+                (out_root / "snapshot_comparison.md").write_text(
+                    "\n".join(comp_md) + "\n", encoding="utf-8")
+
+    (out_root / "input_change_report.json").write_text(
+        json.dumps(input_change, indent=2, sort_keys=True, default=str),
+        encoding="utf-8")
+    icr_md = [
+        "# Input change report",
+        "",
+        f"- prior_snapshot_dir: `{input_change['prior_snapshot_dir']}`",
+        f"- feature_change_count: **{input_change['feature_change_count']}**",
+        f"- minutes_delta_change_count: "
+        f"**{input_change['minutes_delta_change_count']}**",
+        f"- lineup_change_count: **{input_change['lineup_change_count']}**",
+        f"- injury_change_count: **{input_change['injury_change_count']}**",
+        f"- market_only_change_count: "
+        f"**{input_change['market_only_change_count']}**",
+    ]
+    (out_root / "input_change_report.md").write_text(
+        "\n".join(icr_md) + "\n", encoding="utf-8")
+    return written
 
 
 def _build_snapshot_manifest(*,
@@ -1276,7 +1603,22 @@ def main(argv: list[str] | None = None) -> int:
     contextual_summary = _apply_contextual_scoring(
         sub, pointer=pointer, out_root=out_root,
     )
+    # Phase 13S — find a prior-snapshot directory (the t_minus_25 sister
+    # dir for a close_lock run; None when running t_minus_25 first).
+    prior_snapshot_dir = None
+    if args.snapshot_type == "close_lock":
+        sister = (
+            DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
+            / str(args.game_id) / "t_minus_25"
+        )
+        if sister.exists():
+            prior_snapshot_dir = sister
+    phase13s_outputs = _write_derek_phase13s_sidecars(
+        sub, contextual_summary=contextual_summary,
+        out_root=out_root, prior_snapshot_dir=prior_snapshot_dir,
+    )
     outputs = _write_snapshot_outputs(out_root, sub)
+    outputs.update(phase13s_outputs)
     if (out_root / "pmf_driver_decomposition.parquet").exists():
         outputs["pmf_driver_decomposition.parquet"] = {
             "rows": int((sub.get("contextual_pmf_applied", False) == True).sum()),
