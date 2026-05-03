@@ -1,0 +1,64 @@
+{
+  "expected_feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "facts": {
+    "2026-04-30_contextual": {
+      "feature_list_hashes": {
+        "ast": "3570548553fe5c92",
+        "blk": "3570548553fe5c92",
+        "fg3m": "3570548553fe5c92",
+        "minutes": "3570548553fe5c92",
+        "pts": "3570548553fe5c92",
+        "reb": "3570548553fe5c92",
+        "stl": "3570548553fe5c92",
+        "tov": "3570548553fe5c92"
+      },
+      "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+      "fitted_targets": [
+        "minutes",
+        "pts",
+        "reb",
+        "ast",
+        "tov",
+        "stl",
+        "blk",
+        "fg3m"
+      ],
+      "path": "artifacts/models/challengers/2026-04-30_contextual",
+      "score_keys": [
+        "minutes_delta",
+        "rate_delta_ast",
+        "rate_delta_blk",
+        "rate_delta_fg3m",
+        "rate_delta_pts",
+        "rate_delta_reb",
+        "rate_delta_stl",
+        "rate_delta_tov"
+      ]
+    }
+  },
+  "issues": [],
+  "required_groups": {
+    "game_context": [
+      "is_home",
+      "rest_days",
+      "is_back_to_back",
+      "is_three_in_four",
+      "season_game_number",
+      "opponent_team_id_hash"
+    ],
+    "injury_availability": [
+      "is_actionable",
+      "is_confirmed_out",
+      "injury_status_encoded",
+      "availability_status_encoded"
+    ],
+    "lineup_status": [
+      "starter_proxy_lagged"
+    ],
+    "vacated_opportunity": [
+      "vacated_minutes_total",
+      "num_teammates_out_total"
+    ]
+  },
+  "schema_version": "1.0"
+}

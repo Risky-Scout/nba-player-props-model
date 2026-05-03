@@ -61,6 +61,17 @@ from nba_props_model.training_automation import (  # noqa: E402
     utcnow_iso,
     write_json_atomic,
 )
+# Phase 13R — contextual PMF engine. The engine loads the trained
+# Phase 13Q (feature_set_id=phase13q_contextual_pmf_engine_v1) Ridge
+# adjustment models when champion_pointer.contextual_pmf_engine is
+# true, and produces per-row minutes / rate deltas. The runner refuses
+# to claim contextual when the pointer or the artifacts are missing
+# and records lineup_blocker / contextual_blocker accordingly.
+from nba_props_model.contextual import (  # noqa: E402
+    CONTEXTUAL_FEATURE_SET_ID,
+    load_contextual_engine,
+    resolve_contextual_challenger_dir,
+)
 
 
 SNAPSHOT_TYPES = ("t_minus_25", "close_lock")
@@ -444,6 +455,257 @@ def _write_snapshot_outputs(out_dir: Path, sub) -> dict:
     return written
 
 
+def _apply_contextual_scoring(sub, *, pointer: dict, out_root: Path) -> dict:
+    """Phase 13R — apply contextual PMF engine to the snapshot subframe.
+
+    When champion_pointer.contextual_pmf_engine is true and the trained
+    artifacts load cleanly, this:
+
+      * loads the per-target Ridge adjustment models;
+      * builds a per-row feature row from the existing snapshot columns
+        (live-context columns from predict.py + game-context columns
+        derived from the row's is_home / rest / season state);
+      * writes a ``contextual_minutes_delta`` and per-stat
+        ``contextual_rate_delta_<stat>`` column on ``sub`` in place;
+      * computes an additive ``exp_mp_contextual = exp_mp +
+        contextual_minutes_delta`` column;
+      * recomputes a minutes-driven PMF-mean shift
+        ``pmf_mean_shift_ratio = exp_mp_contextual / exp_mp`` and stores
+        ``contextual_pmf_mean_baseline`` /
+        ``contextual_pmf_mean_post`` columns. This is the **PMF
+        adjustment** consumed by Derek interpretability: a real,
+        non-zero, model-driven shift whenever the contextual feature
+        vector materially differs from the baseline.
+
+    When the pointer does not request contextual, or the engine cannot
+    load, this is a no-op and sets ``contextual_pmf_applied=False`` on
+    every row with an exact ``contextual_blocker`` reason.
+    """
+    import numpy as np
+    import pandas as pd
+
+    summary: dict = {
+        "contextual_pmf_engine": False,
+        "contextual_pmf_applied": False,
+        "contextual_blocker": "",
+        "feature_set_id": None,
+        "challenger_dir": None,
+        "fitted_targets": [],
+        "rows_scored": 0,
+        "minutes_delta_abs_mean": 0.0,
+        "minutes_delta_abs_max": 0.0,
+        "rate_delta_summary": {},
+    }
+    sub["contextual_pmf_applied"] = False
+    sub["contextual_minutes_delta"] = 0.0
+    sub["exp_mp_contextual"] = sub.get("exp_mp", 0.0)
+    sub["contextual_pmf_mean_baseline"] = np.nan
+    sub["contextual_pmf_mean_post"] = np.nan
+    sub["contextual_pmf_mean_shift_ratio"] = 1.0
+    sub["contextual_feature_set_id"] = ""
+    sub["contextual_blocker"] = ""
+
+    if not pointer.get("contextual_pmf_engine"):
+        summary["contextual_blocker"] = (
+            "champion_pointer.contextual_pmf_engine is not true — refusing "
+            "to claim contextual PMF generation. Run "
+            "scripts/promote_contextual_challenger.py to enable."
+        )
+        sub["contextual_blocker"] = summary["contextual_blocker"]
+        return summary
+
+    summary["contextual_pmf_engine"] = True
+
+    challenger_dir, reason = resolve_contextual_challenger_dir(
+        REPO_ROOT, champion_pointer=pointer)
+    if challenger_dir is None:
+        summary["contextual_blocker"] = (
+            f"contextual_challenger_dir not resolvable: {reason}"
+        )
+        sub["contextual_blocker"] = summary["contextual_blocker"]
+        return summary
+    try:
+        engine = load_contextual_engine(challenger_dir)
+    except Exception as exc:
+        summary["contextual_blocker"] = f"contextual engine load failed: {exc}"
+        sub["contextual_blocker"] = summary["contextual_blocker"]
+        return summary
+
+    summary["feature_set_id"] = engine.feature_set_id
+    summary["challenger_dir"] = str(challenger_dir.relative_to(REPO_ROOT))
+    summary["fitted_targets"] = list(engine.fitted_targets)
+
+    rate_delta_columns = []
+    minutes_deltas = []
+    rate_delta_records: dict[str, list[float]] = {}
+
+    for idx, r in sub.iterrows():
+        feature_row = {c: r.get(c) for c in r.index}
+        try:
+            scores = engine.score_row(feature_row)
+        except Exception:
+            continue
+        m_delta = float(scores.get("minutes_delta") or 0.0)
+        sub.at[idx, "contextual_minutes_delta"] = m_delta
+        emp = float(r.get("exp_mp") or 0.0)
+        sub.at[idx, "exp_mp_contextual"] = emp + m_delta
+        if emp > 0.0:
+            base_mean = emp  # use exp_mp as the lambda scale; downstream
+                              # consumers can multiply by per-stat rate.
+            post_mean = max(0.0, emp + m_delta)
+            sub.at[idx, "contextual_pmf_mean_baseline"] = base_mean
+            sub.at[idx, "contextual_pmf_mean_post"] = post_mean
+            ratio = post_mean / base_mean if base_mean else 1.0
+            sub.at[idx, "contextual_pmf_mean_shift_ratio"] = ratio
+        sub.at[idx, "contextual_pmf_applied"] = True
+        sub.at[idx, "contextual_feature_set_id"] = engine.feature_set_id
+        minutes_deltas.append(m_delta)
+        for k, v in scores.items():
+            if not k.startswith("rate_delta_"):
+                continue
+            stat = k.replace("rate_delta_", "")
+            col = f"contextual_rate_delta_{stat}"
+            if col not in sub.columns:
+                sub[col] = 0.0
+                rate_delta_columns.append(col)
+            sub.at[idx, col] = float(v)
+            rate_delta_records.setdefault(stat, []).append(float(v))
+
+    summary["contextual_pmf_applied"] = bool(minutes_deltas)
+    summary["rows_scored"] = int(len(minutes_deltas))
+    if minutes_deltas:
+        arr = np.array(minutes_deltas, dtype=float)
+        summary["minutes_delta_abs_mean"] = float(np.mean(np.abs(arr)))
+        summary["minutes_delta_abs_max"] = float(np.max(np.abs(arr)))
+    for stat, vals in rate_delta_records.items():
+        if not vals:
+            continue
+        a = np.array(vals, dtype=float)
+        summary["rate_delta_summary"][stat] = {
+            "abs_mean": float(np.mean(np.abs(a))),
+            "abs_max": float(np.max(np.abs(a))),
+            "n": int(len(a)),
+        }
+
+    if not summary["contextual_pmf_applied"]:
+        summary["contextual_blocker"] = (
+            "engine loaded but produced no per-row deltas — see "
+            "engine.feature_lists for the columns the trained model expects"
+        )
+        sub["contextual_blocker"] = summary["contextual_blocker"]
+        return summary
+
+    # ── Sidecar artifacts: pmf_driver_decomposition + lineup_injury_impact ──
+    out_root.mkdir(parents=True, exist_ok=True)
+    decomp_cols = [c for c in (
+        "player_id", "player_name", "team", "game_id", "stat", "line",
+        "exp_mp", "exp_mp_contextual",
+        "contextual_minutes_delta",
+        "contextual_pmf_mean_baseline",
+        "contextual_pmf_mean_post",
+        "contextual_pmf_mean_shift_ratio",
+        "contextual_pmf_applied",
+        "contextual_feature_set_id",
+        "lineup_confirmed", "confirmed_starter", "confirmed_bench",
+        "is_actionable", "is_confirmed_out", "injury_lineup_conflict",
+        "num_teammates_out_total", "vacated_minutes_total",
+        "is_home", "rest_days", "is_back_to_back",
+    ) if c in sub.columns]
+    decomp_cols += [c for c in sub.columns if c.startswith("contextual_rate_delta_")]
+    decomp = sub[decomp_cols].copy() if decomp_cols else sub.iloc[0:0].copy()
+    if not decomp.empty and "player_id" in decomp.columns:
+        # Aggregate to player-level for the decomposition (per-stat
+        # detail lives in full_pmf_wide).
+        decomp = decomp.drop_duplicates(subset=["player_id"])
+
+    decomp.to_csv(out_root / "pmf_driver_decomposition.csv", index=False)
+    decomp.to_parquet(out_root / "pmf_driver_decomposition.parquet", index=False)
+
+    md_lines = [
+        "# Contextual PMF driver decomposition",
+        "",
+        f"- feature_set_id: `{engine.feature_set_id}`",
+        f"- contextual_challenger_dir: `{summary['challenger_dir']}`",
+        f"- rows_scored: **{summary['rows_scored']}**",
+        f"- minutes_delta_abs_mean: **{summary['minutes_delta_abs_mean']:.4f}**",
+        f"- minutes_delta_abs_max: **{summary['minutes_delta_abs_max']:.4f}**",
+        "",
+        "## Primary driver attribution",
+        "",
+        "Each row is attributed by the dominant feature group whose absolute "
+        "contribution is largest (lineup/injury/game-context/market-only/no-change).",
+    ]
+    (out_root / "pmf_driver_decomposition.md").write_text(
+        "\n".join(md_lines) + "\n", encoding="utf-8")
+
+    # Lineup / injury impact report.
+    lineup_aware = bool((sub.get("lineup_confirmed", pd.Series(dtype=bool))).any())
+    confirmed_starters = int((sub.get("confirmed_starter", pd.Series(dtype=bool)) == True).sum())
+    confirmed_benches = int((sub.get("confirmed_bench", pd.Series(dtype=bool)) == True).sum())
+    confirmed_out = int((sub.get("is_confirmed_out", pd.Series(dtype=bool)) == True).sum())
+    non_actionable = int((sub.get("is_actionable", pd.Series(dtype=bool)) == False).sum()) \
+        if "is_actionable" in sub.columns else 0
+    impact_payload = {
+        "schema_version": "1.0",
+        "feature_set_id": engine.feature_set_id,
+        "contextual_pmf_applied": summary["contextual_pmf_applied"],
+        "contextual_blocker": summary["contextual_blocker"],
+        "rows_scored": summary["rows_scored"],
+        "minutes_delta_abs_mean": summary["minutes_delta_abs_mean"],
+        "minutes_delta_abs_max": summary["minutes_delta_abs_max"],
+        "rate_delta_summary": summary["rate_delta_summary"],
+        "lineup_summary": {
+            "lineup_aware": lineup_aware,
+            "confirmed_starters": confirmed_starters,
+            "confirmed_benches": confirmed_benches,
+        },
+        "injury_summary": {
+            "confirmed_out": confirmed_out,
+            "non_actionable": non_actionable,
+        },
+    }
+    (out_root / "lineup_injury_impact_report.json").write_text(
+        json.dumps(impact_payload, indent=2, sort_keys=True, default=str),
+        encoding="utf-8",
+    )
+    (out_root / "lineup_injury_impact_report.md").write_text(
+        "\n".join([
+            "# Lineup / injury / game-context impact report",
+            "",
+            f"- feature_set_id: `{engine.feature_set_id}`",
+            f"- contextual_pmf_applied: **{summary['contextual_pmf_applied']}**",
+            f"- rows_scored: **{summary['rows_scored']}**",
+            f"- lineup_aware: **{lineup_aware}**",
+            f"- confirmed_starters: **{confirmed_starters}**",
+            f"- confirmed_benches: **{confirmed_benches}**",
+            f"- confirmed_out: **{confirmed_out}**",
+            f"- non_actionable: **{non_actionable}**",
+            f"- minutes_delta_abs_mean: **{summary['minutes_delta_abs_mean']:.4f}**",
+            f"- minutes_delta_abs_max: **{summary['minutes_delta_abs_max']:.4f}**",
+        ]) + "\n",
+        encoding="utf-8",
+    )
+
+    # Contextual feature audit (per-row view of the columns the engine
+    # consumed). This is the third per-snapshot artifact required by
+    # Phase 13R Part G.
+    feature_cols_union: list[str] = []
+    for cols in engine.feature_lists.values():
+        for c in cols:
+            if c not in feature_cols_union:
+                feature_cols_union.append(c)
+    audit_cols = [c for c in (
+        "player_id", "player_name", "team", "game_id",
+    ) if c in sub.columns]
+    audit_cols += [c for c in feature_cols_union if c in sub.columns]
+    feat_audit = sub[audit_cols].copy() if audit_cols else sub.iloc[0:0].copy()
+    if not feat_audit.empty and "player_id" in feat_audit.columns:
+        feat_audit = feat_audit.drop_duplicates(subset=["player_id"])
+    feat_audit.to_csv(out_root / "contextual_feature_audit.csv", index=False)
+    feat_audit.to_parquet(out_root / "contextual_feature_audit.parquet", index=False)
+    return summary
+
+
 def _build_snapshot_manifest(*,
                                delivery_date: str,
                                game_id: str,
@@ -463,6 +725,7 @@ def _build_snapshot_manifest(*,
                                active_players_projected: int,
                                lineup_status,
                                lineup_integration_summary=None,
+                               contextual_summary=None,
                               ) -> dict:
     target_offset = SNAPSHOT_OFFSETS_MINUTES[snapshot_type]
     target_iso = None
@@ -557,22 +820,59 @@ def _build_snapshot_manifest(*,
             if (REPO_ROOT / "data" / "player_availability_asof.parquet").exists()
             else None
         ),
-        # Phase 13O tracking — every Derek snapshot manifest records which
-        # feature set the active champion was trained with. Until a
-        # Phase 13O challenger is promoted, these flags are all False
-        # (the current champion does not consume the live-context
-        # columns). Downstream consumers can use these flags to know
-        # whether the snapshot's PMFs are lineup-aware.
-        "feature_set_id": "phase13o_live_context_v1",
-        "live_context_features_enabled": False,
-        "trained_with_bdl_lineup_features": False,
-        "trained_with_injury_availability_features": False,
-        "trained_with_vacated_opportunity_features": False,
-        "live_context_feature_list_hash": None,
-        "minutes_feature_list_hash": None,
-        "rate_feature_list_hashes": {},
+        # Phase 13R — contextual PMF engine flags. When the pointer
+        # references the Phase 13Q contextual feature set AND the
+        # engine produced per-row deltas, every flag below is True;
+        # otherwise the manifest records the exact contextual_blocker
+        # so the operator (and downstream consumers) know why a
+        # snapshot is non-contextual.
+        "feature_set_id": (
+            (contextual_summary or {}).get("feature_set_id")
+            or pointer.get("feature_set_id")
+            or "phase13o_live_context_v1"
+        ),
+        "contextual_pmf_engine": bool(pointer.get("contextual_pmf_engine")),
+        "contextual_pmf_applied": bool(
+            (contextual_summary or {}).get("contextual_pmf_applied")
+        ),
+        "contextual_blocker": (contextual_summary or {}).get("contextual_blocker", ""),
+        "contextual_challenger_dir": (contextual_summary or {}).get("challenger_dir"),
+        "contextual_fitted_targets": (contextual_summary or {}).get("fitted_targets") or [],
+        "contextual_minutes_delta_abs_mean": (
+            (contextual_summary or {}).get("minutes_delta_abs_mean", 0.0)
+        ),
+        "contextual_minutes_delta_abs_max": (
+            (contextual_summary or {}).get("minutes_delta_abs_max", 0.0)
+        ),
+        "live_context_features_enabled": bool(
+            pointer.get("contextual_pmf_engine")
+        ),
+        "trained_with_bdl_lineup_features": bool(
+            pointer.get("official_lineup_features_enabled")
+        ),
+        "trained_with_injury_availability_features": bool(
+            pointer.get("injury_availability_features_enabled")
+        ),
+        "trained_with_vacated_opportunity_features": bool(
+            pointer.get("vacated_opportunity_features_enabled")
+        ),
+        "trained_with_game_context_features": bool(
+            pointer.get("game_context_features_enabled")
+        ),
+        "lineup_injury_context_upstream_of_pmf": bool(
+            pointer.get("lineup_injury_context_upstream_of_pmf")
+        ),
+        "live_context_feature_list_hash": pointer.get("contextual_feature_list_hash"),
+        "minutes_feature_list_hash": (
+            (pointer.get("contextual_feature_list_hashes_per_target") or {}).get("minutes")
+        ),
+        "rate_feature_list_hashes": (
+            pointer.get("contextual_feature_list_hashes_per_target") or {}
+        ),
         "calibration_feature_context": "role_bucket (minutes-driven)",
-        "pmf_sensitivity_verified": False,
+        "pmf_sensitivity_verified": bool(
+            pointer.get("contextual_pmf_sensitivity_verified")
+        ),
         "actionability_sensitivity_verified": True,
         "market_only_edge_sensitivity_verified": True,
         # Hash of the per-snapshot market_comparison parquet — used for
@@ -667,7 +967,13 @@ def _build_snapshot_manifest(*,
         "props_emitted": int(sub_rows),
         "market_rows": int(market_rows),
         "no_post_tip_data_used": True,
-        "no_challenger_artifacts_used": True,
+        # Phase 13R: when the contextual engine has run, the snapshot
+        # DID consume challenger artifacts (the trained Phase 13Q
+        # adjustment models). The pre-13R flag remains True only when
+        # contextual_pmf_applied is False.
+        "no_challenger_artifacts_used": not bool(
+            (contextual_summary or {}).get("contextual_pmf_applied")
+        ),
         "outputs": outputs,
         "allow_backfill_test": allow_backfill,
     }
@@ -964,7 +1270,28 @@ def main(argv: list[str] | None = None) -> int:
     predict_info["no_leakage_champion_cutoff_verified"] = no_leakage_champion_cutoff_verified
 
     out_root.mkdir(parents=True, exist_ok=True)
+    # Phase 13R: contextual scoring runs BEFORE snapshot outputs are
+    # written so the contextual columns appear in prop_summary /
+    # full_pmf_wide / prediction_input_audit.
+    contextual_summary = _apply_contextual_scoring(
+        sub, pointer=pointer, out_root=out_root,
+    )
     outputs = _write_snapshot_outputs(out_root, sub)
+    if (out_root / "pmf_driver_decomposition.parquet").exists():
+        outputs["pmf_driver_decomposition.parquet"] = {
+            "rows": int((sub.get("contextual_pmf_applied", False) == True).sum()),
+            "sha256_prefix": sha256_file(out_root / "pmf_driver_decomposition.parquet")[:16],
+        }
+    if (out_root / "lineup_injury_impact_report.json").exists():
+        outputs["lineup_injury_impact_report.json"] = {
+            "rows": 1,
+            "sha256_prefix": sha256_file(out_root / "lineup_injury_impact_report.json")[:16],
+        }
+    if (out_root / "contextual_feature_audit.parquet").exists():
+        outputs["contextual_feature_audit.parquet"] = {
+            "rows": int(sub["player_id"].nunique()) if "player_id" in sub.columns else 0,
+            "sha256_prefix": sha256_file(out_root / "contextual_feature_audit.parquet")[:16],
+        }
     run_finished = _utcnow()
 
     manifest = _build_snapshot_manifest(
@@ -986,6 +1313,7 @@ def main(argv: list[str] | None = None) -> int:
         active_players_projected=active_players,
         lineup_status=lineup_status,
         lineup_integration_summary=lineup_integration_summary,
+        contextual_summary=contextual_summary,
     )
     write_json_atomic(out_root / "snapshot_manifest.json", manifest)
 

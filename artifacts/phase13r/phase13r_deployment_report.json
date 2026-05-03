@@ -1,0 +1,113 @@
+{
+  "facts": {
+    "champion_pointer": {
+      "contextual_pmf_engine": true,
+      "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+      "missing_required_fields": []
+    },
+    "fixture_minutes_deltas": {
+      "player_100": -4.751328613663636,
+      "player_101": -7.375358298766248
+    },
+    "fixture_summary": {
+      "challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
+      "contextual_blocker": "",
+      "contextual_pmf_applied": true,
+      "contextual_pmf_engine": true,
+      "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+      "fitted_targets": [
+        "minutes",
+        "pts",
+        "reb",
+        "ast",
+        "tov",
+        "stl",
+        "blk",
+        "fg3m"
+      ],
+      "minutes_delta_abs_max": 7.375358298766248,
+      "minutes_delta_abs_mean": 6.063343456214942,
+      "rate_delta_summary": {
+        "ast": {
+          "abs_max": 0.0017682293689329572,
+          "abs_mean": 0.0016751203490387415,
+          "n": 2
+        },
+        "blk": {
+          "abs_max": 5.941398164085619e-05,
+          "abs_mean": 3.862583173790991e-05,
+          "n": 2
+        },
+        "fg3m": {
+          "abs_max": 0.0008955517309317267,
+          "abs_mean": 0.0008756531173097295,
+          "n": 2
+        },
+        "pts": {
+          "abs_max": 0.0024206175242449945,
+          "abs_mean": 0.00187398701876401,
+          "n": 2
+        },
+        "reb": {
+          "abs_max": 0.00032159524652924844,
+          "abs_mean": 0.0002846848551095922,
+          "n": 2
+        },
+        "stl": {
+          "abs_max": 0.00043940221456296893,
+          "abs_mean": 0.00026492468159739304,
+          "n": 2
+        },
+        "tov": {
+          "abs_max": 0.0002251923343499624,
+          "abs_mean": 0.00020936476134720904,
+          "n": 2
+        }
+      },
+      "rows_scored": 2
+    },
+    "scripts/build_daily_pmf_delivery.py": {
+      "forbidden_market_feature_patterns": [],
+      "forbidden_tokens": [],
+      "missing_tokens": [],
+      "present": true,
+      "role": "daily_delivery"
+    },
+    "scripts/predict.py": {
+      "forbidden_market_feature_patterns": [],
+      "forbidden_tokens": [],
+      "missing_tokens": [],
+      "present": true,
+      "role": "predict_cli"
+    },
+    "scripts/run_after_game_market_score.py": {
+      "present": false,
+      "role": "optional"
+    },
+    "scripts/run_after_game_market_score_pipeline.py": {
+      "present": false,
+      "role": "optional"
+    },
+    "scripts/run_after_game_score.py": {
+      "present": false,
+      "role": "optional"
+    },
+    "scripts/run_derek_live_game_snapshot.py": {
+      "forbidden_market_feature_patterns": [],
+      "forbidden_tokens": [],
+      "missing_tokens": [],
+      "present": true,
+      "role": "derek_live_snapshot"
+    },
+    "src/nba_props_model/pipelines/predict.py": {
+      "forbidden_market_feature_patterns": [],
+      "forbidden_tokens": [],
+      "missing_tokens": [],
+      "present": true,
+      "role": "predict_pipeline"
+    }
+  },
+  "issues_all_predict_paths": [],
+  "issues_derek_contextual_outputs": [],
+  "schema_version": "1.0"
+}

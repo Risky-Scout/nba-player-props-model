@@ -1,0 +1,176 @@
+name: Phase 13R — Contextual PMF Engine Deployment Verification
+
+# Hardens and proves the Phase 13Q contextual PMF engine is real,
+# wired, and safe to deploy. Runs (in order):
+#
+#   1. Phase 13Q state audit (read-only)
+#   2. PHASE13R contextual feature lists verifier
+#   3. PHASE13R contextual predict-path verifier
+#   4. PHASE13R contextual PMF sensitivity (6 cases)
+#   5. Phase 13Q no-leakage verifier
+#   6. Phase 13L no-breakage verifier
+#   7. Promote contextual challenger (only when validation gates pass)
+#   8. Phase 13R deployment + Derek output verifiers
+#
+# Hard rules:
+#   - Author for every commit: Joseph Shackelford <josephshack@gmail.com>.
+#   - No edits to wizard_of_odds/, derek_forward_feed/,
+#     pmf_model_review_package/, canonical_source/.
+#   - Auto-commit ONLY artifacts/phase13r/, artifacts/models/registry/
+#     champion_pointer.json, artifacts/models/champion/v_phase13r_*/,
+#     and the augmented contextual challenger directory.
+
+on:
+  workflow_dispatch:
+    inputs:
+      challenger_dir:
+        description: "Optional: path to a specific contextual challenger dir."
+        required: false
+        default: ""
+      force_promote:
+        description: "Force re-augment champion_pointer (overwrite existing contextual block)."
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      allow_future_trained_through:
+        description: "Allow promotion when trained_through_date is in the future."
+        required: false
+        default: "true"
+        type: choice
+        options: ["false", "true"]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  phase13r_contextual_deployment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: phase13r-contextual-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install pandas pyarrow numpy joblib scikit-learn
+
+      - name: Phase 13R started
+        run: |
+          echo "PHASE13R_DEPLOYMENT_STARTED"
+          git rev-parse HEAD
+          ls artifacts/models/challengers/ || true
+
+      - name: Phase 13Q state audit
+        id: audit
+        continue-on-error: true
+        run: python scripts/_phase13r_write_state_audit.py
+
+      - name: Verify contextual feature lists
+        id: verify_feature_lists
+        continue-on-error: true
+        run: python scripts/verify_contextual_feature_lists.py
+
+      - name: Verify contextual predict path
+        id: verify_predict_path
+        continue-on-error: true
+        run: python scripts/verify_contextual_predict_path.py
+
+      - name: Verify contextual PMF sensitivity (6 cases)
+        id: verify_sensitivity
+        continue-on-error: true
+        run: python scripts/verify_contextual_pmf_sensitivity.py
+
+      - name: Phase 13Q no-leakage
+        id: verify_no_leakage
+        continue-on-error: true
+        run: python scripts/verify_phase13q_no_leakage.py
+
+      - name: Phase 13L no-breakage
+        id: verify_no_break
+        continue-on-error: true
+        run: python scripts/verify_phase13l_no_breakage.py
+
+      - name: Promote contextual challenger
+        id: promote
+        if: |
+          steps.verify_feature_lists.outcome == 'success' &&
+          steps.verify_predict_path.outcome == 'success' &&
+          steps.verify_sensitivity.outcome == 'success' &&
+          steps.verify_no_leakage.outcome == 'success' &&
+          steps.verify_no_break.outcome == 'success'
+        continue-on-error: true
+        run: |
+          ARGS=""
+          if [ -n "${{ github.event.inputs.challenger_dir }}" ]; then
+            ARGS="$ARGS --challenger-dir ${{ github.event.inputs.challenger_dir }}"
+          fi
+          if [ "${{ github.event.inputs.force_promote }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          if [ "${{ github.event.inputs.allow_future_trained_through }}" = "true" ]; then
+            ARGS="$ARGS --allow-future-trained-through"
+          fi
+          python scripts/promote_contextual_challenger.py $ARGS
+
+      - name: Verify deployment + Derek contextual outputs
+        id: verify_deployment
+        continue-on-error: true
+        run: python scripts/verify_phase13r_deployment.py
+
+      - name: Upload Phase 13R artifacts (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase13r-contextual-deployment
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            artifacts/phase13r/**
+            artifacts/models/registry/champion_pointer.json
+            artifacts/models/champion/v_phase13r_*/**
+
+      - name: Commit Phase 13R artifacts (Joseph Shackelford authorship)
+        if: |
+          steps.audit.outcome == 'success' &&
+          steps.verify_feature_lists.outcome == 'success' &&
+          steps.verify_predict_path.outcome == 'success' &&
+          steps.verify_sensitivity.outcome == 'success' &&
+          steps.verify_no_leakage.outcome == 'success' &&
+          steps.verify_no_break.outcome == 'success' &&
+          steps.verify_deployment.outcome == 'success'
+        run: |
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add artifacts/phase13r \
+                  artifacts/models/registry/champion_pointer.json \
+                  artifacts/models/champion/v_phase13r_* \
+                  artifacts/models/challengers/*_contextual/promotion_decision.json \
+                  artifacts/models/challengers/*_contextual/promotion_manifest.json \
+                  || true
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "phase13r: deploy contextual lineup injury PMF engine"
+          git checkout -- . 2>/dev/null || true
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
+
+      - name: Fail workflow if any required step failed
+        if: |
+          steps.audit.outcome != 'success' ||
+          steps.verify_feature_lists.outcome != 'success' ||
+          steps.verify_predict_path.outcome != 'success' ||
+          steps.verify_sensitivity.outcome != 'success' ||
+          steps.verify_no_leakage.outcome != 'success' ||
+          steps.verify_no_break.outcome != 'success' ||
+          steps.verify_deployment.outcome != 'success'
+        run: |
+          echo "::error::A Phase 13R step failed."
+          exit 1

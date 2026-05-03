@@ -1,0 +1,67 @@
+{
+  "checked_paths": [
+    "scripts/run_derek_live_game_snapshot.py",
+    "src/nba_props_model/pipelines/predict.py",
+    "scripts/predict.py",
+    "scripts/build_daily_pmf_delivery.py",
+    "scripts/run_after_game_market_score.py",
+    "scripts/run_after_game_market_score_pipeline.py"
+  ],
+  "facts": {
+    "contextual_engine_load": {
+      "challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
+      "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+      "fitted_targets": [
+        "minutes",
+        "pts",
+        "reb",
+        "ast",
+        "tov",
+        "stl",
+        "blk",
+        "fg3m"
+      ],
+      "loaded": true,
+      "minutes_delta_present": true,
+      "score_keys": [
+        "minutes_delta",
+        "rate_delta_ast",
+        "rate_delta_blk",
+        "rate_delta_fg3m",
+        "rate_delta_pts",
+        "rate_delta_reb",
+        "rate_delta_stl",
+        "rate_delta_tov"
+      ]
+    },
+    "pipeline_lineup_join_smoke": {
+      "role_bucket_changed_count": 1,
+      "rows_joined": 1,
+      "starter_flag_changed_count": 1
+    },
+    "scripts/build_daily_pmf_delivery.py": {
+      "forbidden_patterns_seen": [],
+      "present": true
+    },
+    "scripts/predict.py": {
+      "forbidden_patterns_seen": [],
+      "missing_tokens": []
+    },
+    "scripts/run_after_game_market_score.py": {
+      "present": false
+    },
+    "scripts/run_after_game_market_score_pipeline.py": {
+      "present": false
+    },
+    "scripts/run_derek_live_game_snapshot.py": {
+      "forbidden_patterns_seen": [],
+      "missing_tokens": []
+    },
+    "src/nba_props_model/pipelines/predict.py": {
+      "forbidden_patterns_seen": [],
+      "missing_tokens": []
+    }
+  },
+  "issues": [],
+  "schema_version": "1.0"
+}
