@@ -1,0 +1,678 @@
+{
+  "date": "2026-05-03",
+  "generated_at": "2026-05-03T14:11:20.821990",
+  "props": [
+    {
+      "player_name": "Scottie Barnes",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.0,
+      "model_prob": 0.7464,
+      "market_prob": 0.5259,
+      "ev": 0.9779,
+      "edge": 0.2205,
+      "fair_odds_over": 294,
+      "fair_odds_under": -294,
+      "pmf_median": 0,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 194,
+        "under_odds": 165,
+        "best_odds": 165
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.5033,
+          "fair_odds": -101,
+          "display_prob": "50.3%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3256,
+          "fair_odds": 207,
+          "display_prob": "32.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1477,
+          "fair_odds": 577,
+          "display_prob": "14.8%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Evan Mobley",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7887,
+      "market_prob": 0.4731,
+      "ev": 0.6168,
+      "edge": 0.3156,
+      "fair_odds_over": 373,
+      "fair_odds_under": -373,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -119,
+        "under_odds": 105,
+        "best_odds": 105
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.3897,
+          "fair_odds": 157,
+          "display_prob": "39.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.399,
+          "fair_odds": 151,
+          "display_prob": "39.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1541,
+          "fair_odds": 549,
+          "display_prob": "15.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0066,
+          "fair_odds": 15052,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.007,
+          "fair_odds": 14186,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0078,
+          "fair_odds": 12721,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0063,
+          "fair_odds": 15773,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0066,
+          "fair_odds": 15052,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0081,
+          "fair_odds": 12246,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0072,
+          "fair_odds": 13789,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0078,
+          "fair_odds": 12721,
+          "display_prob": "0.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Donovan Mitchell",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.735,
+      "market_prob": 0.4786,
+      "ev": 0.5289,
+      "edge": 0.2564,
+      "fair_odds_over": 277,
+      "fair_odds_under": -277,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -110,
+        "under_odds": 108,
+        "best_odds": 108
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1766,
+          "fair_odds": 466,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3162,
+          "fair_odds": 216,
+          "display_prob": "31.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2423,
+          "fair_odds": 313,
+          "display_prob": "24.2%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1439,
+          "fair_odds": 595,
+          "display_prob": "14.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0592,
+          "fair_odds": 1589,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0385,
+          "fair_odds": 2497,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Paolo Banchero",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.6335,
+      "market_prob": 0.5342,
+      "ev": 0.5078,
+      "edge": 0.0993,
+      "fair_odds_over": 173,
+      "fair_odds_under": -173,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 173,
+        "under_odds": 138,
+        "best_odds": 138
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.364,
+          "fair_odds": 175,
+          "display_prob": "36.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2695,
+          "fair_odds": 271,
+          "display_prob": "27.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2207,
+          "fair_odds": 353,
+          "display_prob": "22.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0873,
+          "fair_odds": 1045,
+          "display_prob": "8.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0086,
+          "fair_odds": 11528,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0086,
+          "fair_odds": 11528,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0073,
+          "fair_odds": 13599,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0075,
+          "fair_odds": 13233,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0092,
+          "fair_odds": 10770,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0086,
+          "fair_odds": 11528,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0087,
+          "fair_odds": 11394,
+          "display_prob": "0.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Scottie Barnes",
+      "game": "Toronto Raptors @ Cleveland Cavaliers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 7.5,
+      "model_prob": 0.6678,
+      "market_prob": 0.4403,
+      "ev": 0.4825,
+      "edge": 0.2275,
+      "fair_odds_over": 201,
+      "fair_odds_under": -201,
+      "pmf_median": 6,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betrivers",
+        "over_odds": -134,
+        "under_odds": 122,
+        "best_odds": 122
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0281,
+          "fair_odds": 3459,
+          "display_prob": "2.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.034,
+          "fair_odds": 2841,
+          "display_prob": "3.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0487,
+          "fair_odds": 1953,
+          "display_prob": "4.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0738,
+          "fair_odds": 1255,
+          "display_prob": "7.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0982,
+          "fair_odds": 918,
+          "display_prob": "9.8%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1294,
+          "fair_odds": 673,
+          "display_prob": "12.9%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1327,
+          "fair_odds": 654,
+          "display_prob": "13.3%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.1228,
+          "fair_odds": 714,
+          "display_prob": "12.3%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.1137,
+          "fair_odds": 780,
+          "display_prob": "11.4%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0839,
+          "fair_odds": 1092,
+          "display_prob": "8.4%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.057,
+          "fair_odds": 1654,
+          "display_prob": "5.7%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0316,
+          "fair_odds": 3065,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0232,
+          "fair_odds": 4210,
+          "display_prob": "2.3%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0104,
+          "fair_odds": 9515,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.006,
+          "fair_odds": 16567,
+          "display_prob": "0.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Isaiah Stewart",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "OVER",
+      "line": 3.5,
+      "model_prob": 0.6166,
+      "market_prob": 0.4228,
+      "ev": 0.4429,
+      "edge": 0.1938,
+      "fair_odds_over": -161,
+      "fair_odds_under": 161,
+      "pmf_median": 4,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 134,
+        "under_odds": -140,
+        "best_odds": 134
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0474,
+          "fair_odds": 2010,
+          "display_prob": "4.7%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0825,
+          "fair_odds": 1112,
+          "display_prob": "8.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1199,
+          "fair_odds": 734,
+          "display_prob": "12.0%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1336,
+          "fair_odds": 649,
+          "display_prob": "13.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1468,
+          "fair_odds": 581,
+          "display_prob": "14.7%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1193,
+          "fair_odds": 738,
+          "display_prob": "11.9%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0929,
+          "fair_odds": 976,
+          "display_prob": "9.3%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0859,
+          "fair_odds": 1064,
+          "display_prob": "8.6%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0583,
+          "fair_odds": 1615,
+          "display_prob": "5.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0401,
+          "fair_odds": 2394,
+          "display_prob": "4.0%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0278,
+          "fair_odds": 3497,
+          "display_prob": "2.8%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0158,
+          "fair_odds": 6229,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0108,
+          "fair_odds": 9159,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Desmond Bane",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.6988,
+      "market_prob": 0.5062,
+      "ev": 0.3976,
+      "edge": 0.1926,
+      "fair_odds_over": 232,
+      "fair_odds_under": -232,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": 105,
+        "under_odds": 100,
+        "best_odds": 100
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1416,
+          "fair_odds": 606,
+          "display_prob": "14.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3022,
+          "fair_odds": 231,
+          "display_prob": "30.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.255,
+          "fair_odds": 292,
+          "display_prob": "25.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1626,
+          "fair_odds": 515,
+          "display_prob": "16.3%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0712,
+          "fair_odds": 1304,
+          "display_prob": "7.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0441,
+          "fair_odds": 2168,
+          "display_prob": "4.4%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0233,
+          "fair_odds": 4192,
+          "display_prob": "2.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Ausar Thompson",
+      "game": "Orlando Magic @ Detroit Pistons",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "OVER",
+      "line": 1.5,
+      "model_prob": 0.6247,
+      "market_prob": 0.4424,
+      "ev": 0.393,
+      "edge": 0.1823,
+      "fair_odds_over": -166,
+      "fair_odds_under": 166,
+      "pmf_median": 2,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 123,
+        "under_odds": -130,
+        "best_odds": 123
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1015,
+          "fair_odds": 885,
+          "display_prob": "10.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2738,
+          "fair_odds": 265,
+          "display_prob": "27.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1777,
+          "fair_odds": 463,
+          "display_prob": "17.8%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1941,
+          "fair_odds": 415,
+          "display_prob": "19.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1687,
+          "fair_odds": 493,
+          "display_prob": "16.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0139,
+          "fair_odds": 7094,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0142,
+          "fair_odds": 6942,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0126,
+          "fair_odds": 7837,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.013,
+          "fair_odds": 7592,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0164,
+          "fair_odds": 5998,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0142,
+          "fair_odds": 6942,
+          "display_prob": "1.4%"
+        }
+      ]
+    }
+  ]
+}
