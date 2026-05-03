@@ -11,7 +11,7 @@
   "output_generated_at_utc": "2026-05-03T23:10:26+00:00",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "stamp_code_commit": "d21350f7d8a60ca4c957abd22f85fc1f428e8fa1",
-  "stamped_into": "deliveries/2026-05-03/wizard_of_odds/run_manifest.json",
+  "stamped_into": "deliveries/2026-05-03/derek_forward_feed/feed_manifest.json",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"
