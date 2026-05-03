@@ -11,12 +11,12 @@
       "passed": true
     },
     {
-      "detail": "target=2026-05-03T19:28:42Z game_start=2026-05-03T23:40:00Z",
+      "detail": "target=2026-05-03T20:54:06Z game_start=2026-05-03T23:40:00Z",
       "name": "21682000/current_live/current_live_target_pre_tip",
       "passed": true
     },
     {
-      "detail": "started=2026-05-03T19:28:42Z finished=2026-05-03T19:28:46Z",
+      "detail": "started=2026-05-03T20:54:06Z finished=2026-05-03T20:54:09Z",
       "name": "21682000/current_live/run_timestamps_recorded",
       "passed": true
     },
@@ -56,17 +56,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-current_live-21682000-20260503T192842'",
+      "detail": "value='derek-snapshot-current_live-21682000-20260503T205406'",
       "name": "21682000/current_live/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='6d298b04f0506761e05081551fe59c841f63a6d5'",
+      "detail": "value='2d8ce8f3da87b36dd9e71d26c2432e40735126f8'",
       "name": "21682000/current_live/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-03T19:28:38Z'",
+      "detail": "value='2026-05-03T20:54:02Z'",
       "name": "21682000/current_live/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -136,12 +136,12 @@
       "passed": true
     },
     {
-      "detail": "target=2026-05-03T19:28:48Z game_start=2026-05-03T19:40:00Z",
-      "name": "21684819/current_live/current_live_target_pre_tip",
+      "detail": "target=2026-05-03T20:38:19Z game_start=2026-05-03T19:40:00Z (no pre-tip claim made)",
+      "name": "21684819/current_live/current_live_post_tip_stale_baseline",
       "passed": true
     },
     {
-      "detail": "started=2026-05-03T19:28:48Z finished=2026-05-03T19:28:51Z",
+      "detail": "started=2026-05-03T20:38:19Z finished=2026-05-03T20:38:22Z",
       "name": "21684819/current_live/run_timestamps_recorded",
       "passed": true
     },
@@ -181,17 +181,17 @@
       "passed": true
     },
     {
-      "detail": "value='derek-snapshot-current_live-21684819-20260503T192848'",
+      "detail": "value='derek-snapshot-current_live-21684819-20260503T203819'",
       "name": "21684819/current_live/manifest_field_present:prediction_run_id",
       "passed": true
     },
     {
-      "detail": "value='6d298b04f0506761e05081551fe59c841f63a6d5'",
+      "detail": "value='cbcb156c248a7c2ab1108187ad4383a1fa1e8bfc'",
       "name": "21684819/current_live/manifest_field_present:prediction_code_commit",
       "passed": true
     },
     {
-      "detail": "value='2026-05-03T19:28:38Z'",
+      "detail": "value='2026-05-03T20:38:09Z'",
       "name": "21684819/current_live/manifest_field_present:pmf_generated_at_utc",
       "passed": true
     },
@@ -256,7 +256,7 @@
       "passed": true
     }
   ],
-  "code_commit": "6a0b8314fbc4bf70f89978e908c0f1d73aac5f41",
+  "code_commit": "2d8ce8f3da87b36dd9e71d26c2432e40735126f8",
   "delivery_date": "2026-05-03",
   "facts": {
     "game_count": 2,
@@ -283,7 +283,7 @@
     "recomputed_snapshot_count": 0,
     "snapshot_count": 2
   },
-  "generated_at_utc": "2026-05-03T20:31:22+00:00",
+  "generated_at_utc": "2026-05-03T20:54:21+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

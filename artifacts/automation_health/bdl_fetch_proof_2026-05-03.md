@@ -16,7 +16,7 @@
   BDL_injury_endpoint='data/nba_injury_reports.parquet (downstream of predict.py)'
   BDL_lineup_rows=0
   BDL_injury_rows=0
-  BDL_lineup_fetched_at_utc='2026-05-03T20:38:16Z'
+  BDL_lineup_fetched_at_utc='2026-05-03T20:54:09Z'
 ```
 
 ### 21684819/current_live
