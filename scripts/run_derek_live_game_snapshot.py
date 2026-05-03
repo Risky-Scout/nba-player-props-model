@@ -342,36 +342,72 @@ def _write_snapshot_outputs(out_dir: Path, sub) -> dict:
         "sha256_prefix": sha256_file(out_dir / "full_pmf_wide.parquet")[:16],
     }
 
-    # 3. outcome_level_probabilities — long-form (player, stat, k, p_k).
+    # 3. outcome_level_probabilities — long-form (row_id, k, p_k) plus
+    # identifying columns. Phase 13AB: parse the canonical PMF JSON
+    # directly. The legacy p_ge_X reconstruction path produced all-zero
+    # rows on the current schema (no p_ge_X columns; PMFs live in the
+    # `pmf` JSON column).
+    import json as _json
+    import math as _math
+    import ast as _ast
+
+    def _parse_pmf_blob(value):
+        if value is None or (isinstance(value, float) and _math.isnan(value)):
+            return None
+        if isinstance(value, dict):
+            raw = value
+        else:
+            s = str(value).strip()
+            if not s or s in {"nan", "None", "{}"}:
+                return None
+            try:
+                raw = _json.loads(s)
+            except Exception:
+                try:
+                    raw = _json.loads(s.replace("'", '"'))
+                except Exception:
+                    try:
+                        raw = _ast.literal_eval(s)
+                    except Exception:
+                        return None
+        out = {}
+        for k, v in raw.items():
+            try:
+                ki = int(float(k)); pv = float(v)
+            except Exception:
+                return None
+            if not _math.isfinite(pv) or pv < 0:
+                return None
+            out[ki] = out.get(ki, 0.0) + pv
+        return out or None
+
+    OUTCOME_ID_COLS = (
+        "player_id", "player_name", "game_id", "game", "team_id",
+        "stat", "side", "line", "bet_vendor", "book",
+        "model_prob", "market_prob",
+        "edge_publish_status", "calibration_support_status",
+        "contextual_feature_set_id", "lineup_confirmed",
+    )
+    snap_type_label = out_dir.name
     rows: list[dict] = []
-    for _, r in sub.iterrows():
-        # Reconstruct outcome-level probabilities from p_ge ladder.
-        try:
-            import numpy as np
-            p_ge = []
-            for k in range(0, 22):
-                col = f"p_ge_{k}" if k > 0 else None
-                if col is None:
-                    continue
-                if col in r and pd.notna(r[col]):
-                    p_ge.append((k, float(r[col])))
-            p0 = float(r.get("p0") or (1.0 - p_ge[0][1] if p_ge else 0.0))
-            base = {
-                "player_id": r.get("player_id"),
-                "player_name": r.get("player_name"),
-                "stat": r.get("stat"),
-                "line": r.get("line"),
-                "book": r.get("book"),
-            }
-            rows.append({**base, "k": 0, "p_k": p0})
-            for i, (k, ge) in enumerate(p_ge):
-                ge_next = p_ge[i + 1][1] if i + 1 < len(p_ge) else 0.0
-                pk = max(0.0, ge - ge_next)
-                rows.append({**base, "k": k, "p_k": pk})
-        except Exception:
+    for orig_idx, r in sub.reset_index(drop=True).iterrows():
+        pmf_blob = r.get("pmf") if "pmf" in sub.columns else None
+        pmf_dict = _parse_pmf_blob(pmf_blob)
+        if pmf_dict is None:
             continue
+        s = sum(pmf_dict.values())
+        if not _math.isfinite(s) or s <= 0:
+            continue
+        norm = {k: v / s for k, v in pmf_dict.items()}
+        base = {col: r.get(col) for col in OUTCOME_ID_COLS if col in sub.columns}
+        base["snapshot_type"] = snap_type_label
+        base["row_id"] = int(orig_idx)
+        for k in sorted(norm):
+            rows.append({**base, "k": int(k), "p_k": float(norm[k])})
     if rows:
         long = pd.DataFrame(rows)
+        leading = [c for c in OUTCOME_ID_COLS if c in long.columns]
+        long = long[leading + ["snapshot_type", "row_id", "k", "p_k"]]
         long.to_csv(out_dir / "outcome_level_probabilities.csv", index=False)
         long.to_parquet(out_dir / "outcome_level_probabilities.parquet", index=False)
         written["outcome_level_probabilities.parquet"] = {

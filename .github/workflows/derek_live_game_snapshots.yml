@@ -300,6 +300,21 @@ jobs:
           python scripts/render_derek_human_reports.py \
             --delivery-date ${{ steps.d.outputs.date }}
 
+      - name: Repair Derek long-form outcome PMF files (Phase 13AB)
+        id: repair_outcome_long
+        continue-on-error: true
+        run: |
+          python scripts/repair_derek_outcome_level_probabilities.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --all-snapshots
+
+      - name: Verify Derek long-form outcome PMF files (Phase 13AB)
+        id: verify_outcome_long
+        continue-on-error: true
+        run: |
+          python scripts/verify_derek_outcome_level_probabilities.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
       - name: Verify Wizard of Odds untouched (Phase 13X)
         id: verify_woo_unchanged
         continue-on-error: true
