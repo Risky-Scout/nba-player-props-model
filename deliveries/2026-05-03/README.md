@@ -1,6 +1,6 @@
 # Derek PMF Delivery — May 3, 2026
 
-Generated 2026-05-03T22:52:20Z.
+Generated 2026-05-03T23:36:31Z.
 
 ## What to open first
 
@@ -15,7 +15,7 @@ Generated 2026-05-03T22:52:20Z.
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Raptors @ Cavaliers | Available | Scheduled | Scheduled |
+| Raptors @ Cavaliers | Available | Pending dispatch | Pending dispatch |
 | Magic @ Pistons | Available, stale baseline | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Missed snapshots are documented rather than backfilled. This avoids creating fake pre-tip output after a game has started. Going forward the dispatcher's snapshot state machine prevents silent misses by classifying every (game, snapshot type) pair as one of: Available, Scheduled, Pending dispatch, Available (late but pre-tip), or Missed during setup window.

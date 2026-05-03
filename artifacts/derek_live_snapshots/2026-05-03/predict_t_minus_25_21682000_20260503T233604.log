@@ -1,0 +1,33 @@
+$ /opt/hostedtoolcache/Python/3.11.15/x64/bin/python scripts/predict.py --derek-live-snapshot --target-date 2026-05-03 --game-id 21682000 --snapshot-output-dir deliveries/2026-05-03/derek_game_snapshots/21682000/t_minus_25 --snapshot-type t_minus_25 --snapshot-run-id derek-snapshot-t_minus_25-21682000-20260503T233604 --lineup-context artifacts/live_lineups/2026-05-03/21682000/bdl_lineups_normalized.parquet
+
+2026-05-03 23:36:08,734 [INFO] ============================================================
+2026-05-03 23:36:08,735 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+2026-05-03 23:36:08,735 [INFO] ============================================================
+2026-05-03 23:36:08,735 [INFO] Target date: 2026-05-03
+2026-05-03 23:36:08,735 [INFO] Loading models...
+PREDICT_DEREK_LIVE_ARGS_PASS
+  target_date=2026-05-03 game_id=21682000 snapshot_type=t_minus_25 snapshot_run_id=derek-snapshot-t_minus_25-21682000-20260503T233604
+Traceback (most recent call last):
+  File "/home/runner/work/nba-player-props-model/nba-player-props-model/scripts/predict.py", line 39, in <module>
+    raise SystemExit(main(sys.argv[1:]))
+                     ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/nba-player-props-model/nba-player-props-model/src/nba_props_model/pipelines/predict.py", line 827, in main
+    models, within_engine, teammate_engine, platt_calibrators, fg3m_hurdle_model, _centerer, live_cal_table = load_models()
+                                                                                                              ^^^^^^^^^^^^^
+  File "/home/runner/work/nba-player-props-model/nba-player-props-model/src/nba_props_model/pipelines/predict.py", line 329, in load_models
+    qmods[q] = joblib.load(p)
+               ^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/joblib/numpy_pickle.py", line 749, in load
+    obj = _unpickle(
+          ^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/joblib/numpy_pickle.py", line 626, in _unpickle
+    obj = unpickler.load()
+          ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/pickle.py", line 1213, in load
+    dispatch[key[0]](self)
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/pickle.py", line 1538, in load_stack_global
+    self.append(self.find_class(module, name))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/pickle.py", line 1580, in find_class
+    __import__(module, level=0)
+ModuleNotFoundError: No module named 'lightgbm'

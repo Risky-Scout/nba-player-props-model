@@ -24,11 +24,13 @@
     "21682000",
     "21684819"
   ],
-  "games_missed_t_minus_25": [],
+  "games_missed_t_minus_25": [
+    "21682000"
+  ],
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-03T22:52:00Z",
+  "now_utc": "2026-05-03T23:36:00Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {

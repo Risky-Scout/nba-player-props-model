@@ -1,8 +1,8 @@
 # Derek Live Snapshots — 2026-05-03
 
-- generated_at_utc: 2026-05-03T22:59:31+00:00
-- passed: **True**
-- snapshot_count: 2 across 2 game folders
+- generated_at_utc: 2026-05-03T23:36:24+00:00
+- passed: **False**
+- snapshot_count: 4 across 2 game folders
 
 ## Checks
 
@@ -34,6 +34,8 @@
 | 21682000/current_live/contextual_pmf_engine_recorded | yes | contextual_pmf_engine=True; no_challenger_artifacts_used=False |
 | 21682000/current_live/injury_source_recorded | yes | injury_source='data/nba_injury_reports.parquet (downstream of predict.py)' |
 | 21682000/current_live/availability_source_recorded | yes | availability_source='data/player_availability_asof.parquet (BDL availability snapshot)' |
+| 21682000/t_minus_25/required_outputs_present | NO | missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet'] |
+| 21682000/close_lock/required_outputs_present | NO | missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet'] |
 | 21684819/current_live/required_outputs_present | yes | ok |
 | 21684819/current_live/current_live_post_tip_stale_baseline | yes | target=2026-05-03T20:38:19Z game_start=2026-05-03T19:40:00Z (no pre-tip claim made) |
 | 21684819/current_live/run_timestamps_recorded | yes | started=2026-05-03T20:38:19Z finished=2026-05-03T20:38:22Z |

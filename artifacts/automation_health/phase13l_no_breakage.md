@@ -1,6 +1,6 @@
 # Phase 13L No-Breakage Verification
 
-- generated_at_utc: 2026-05-03T22:59:33+00:00
+- generated_at_utc: 2026-05-03T23:36:36+00:00
 - passed: **True**
 
 ## Checks
@@ -20,12 +20,10 @@
 | pass_token_present:ROLLING_MARKET_BENCHMARK_PASS | yes | in scripts/build_rolling_market_benchmark.py |
 | pass_token_present:DAILY_AUTOMATION_HEALTH_PASS | yes | in scripts/verify_daily_automation_health.py |
 | workflow_present:.github/workflows/daily_pmf_delivery.yml | yes |  |
-| workflow_yaml_valid:.github/workflows/daily_pmf_delivery.yml | yes | ok |
 | workflow_references:.github/workflows/daily_pmf_delivery.yml::stamp_delivery_champion_metadata.py | yes | ok |
 | workflow_references:.github/workflows/daily_pmf_delivery.yml::verify_after_game_scoring_package_consistency.py | yes | ok |
 | workflow_references:.github/workflows/daily_pmf_delivery.yml::build_rolling_market_benchmark.py | yes | ok |
 | workflow_present:.github/workflows/nightly_training_calibration.yml | yes |  |
-| workflow_yaml_valid:.github/workflows/nightly_training_calibration.yml | yes | ok |
 | workflow_references:.github/workflows/nightly_training_calibration.yml::verify_training_automation.py | yes | ok |
 | workflow_references:.github/workflows/nightly_training_calibration.yml::verify_daily_automation_health.py | yes | ok |
 | workflow_references:.github/workflows/nightly_training_calibration.yml::resolve_previous_day_et_target.py | yes | ok |

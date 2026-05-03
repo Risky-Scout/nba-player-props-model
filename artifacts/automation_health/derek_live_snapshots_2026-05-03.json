@@ -131,6 +131,16 @@
       "passed": true
     },
     {
+      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
+      "name": "21682000/t_minus_25/required_outputs_present",
+      "passed": false
+    },
+    {
+      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
+      "name": "21682000/close_lock/required_outputs_present",
+      "passed": false
+    },
+    {
       "detail": "ok",
       "name": "21684819/current_live/required_outputs_present",
       "passed": true
@@ -256,7 +266,7 @@
       "passed": true
     }
   ],
-  "code_commit": "0fbdaf9aae4489a3d3ec846f7d80ca0a2ce5903c",
+  "code_commit": "135a16a9a597c2e1e0e25fbf88f5f4f917407e8a",
   "delivery_date": "2026-05-03",
   "facts": {
     "game_count": 2,
@@ -281,9 +291,9 @@
       }
     ],
     "recomputed_snapshot_count": 0,
-    "snapshot_count": 2
+    "snapshot_count": 4
   },
-  "generated_at_utc": "2026-05-03T22:59:31+00:00",
-  "passed": true,
+  "generated_at_utc": "2026-05-03T23:36:24+00:00",
+  "passed": false,
   "schema_version": "1.0"
 }

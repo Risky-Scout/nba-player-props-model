@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — May 3, 2026
 
-Generated 2026-05-03T22:52:20Z.
+Generated 2026-05-03T23:36:31Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Raptors @ Cavaliers | Available | Scheduled | Scheduled |
+| Raptors @ Cavaliers | Available | Pending dispatch | Pending dispatch |
 | Magic @ Pistons | Available, stale baseline | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
@@ -25,8 +25,8 @@ _Game ID `21682000` (used in paths only). Tip time UTC: `2026-05-03T23:40:00Z`._
   - [pmf_driver_decomposition.md](21682000/current_live/pmf_driver_decomposition.md)
   - [lineup_injury_impact_report.md](21682000/current_live/lineup_injury_impact_report.md)
   - [direct_lineup_impact_report.md](21682000/current_live/direct_lineup_impact_report.md)
-- **T-minus-25**: Scheduled
-- **Close-lock**: Scheduled
+- **T-minus-25**: Pending dispatch
+- **Close-lock**: Pending dispatch
 
 ### Magic @ Pistons
 

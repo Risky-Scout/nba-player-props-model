@@ -1,35 +1,38 @@
 {
-  "code_commit": "ada036f0f947a80f3fba25c4f5c7542cc653e4ba",
+  "code_commit": "135a16a9a597c2e1e0e25fbf88f5f4f917407e8a",
   "decisions": [
     {
-      "decision": "skipped_not_due",
-      "detail": "now < target - 6min; will fire during the cron window starting at 2026-05-03T23:29:00+00:00",
+      "action": "fire_due_window",
+      "decision": "fired_failed",
+      "exit_code": 1,
       "game_id": "21682000",
-      "now_utc": "2026-05-03T22:52:05Z",
-      "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21682000/close_lock",
-      "state": "NOT_DUE",
+      "state": "DUE_WINDOW",
+      "tail": [
+        "DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_FAILED",
+        "  reason: predict.py exit=1; see log: artifacts/derek_live_snapshots/2026-05-03/predict_close_lock_21682000_20260503T233611.log"
+      ],
       "target_utc": "2026-05-03T23:35:00Z"
     },
     {
       "decision": "wrote_missed_post_tip_marker",
       "detail": "game already tipped at 2026-05-03T19:40:00+00:00; do not fabricate pre-tip data \u2014 write missed_snapshot_manifest.json",
       "game_id": "21684819",
-      "now_utc": "2026-05-03T22:52:05Z",
+      "now_utc": "2026-05-03T23:36:10Z",
       "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21684819/close_lock",
       "state": "MISSED_POST_TIP",
       "target_utc": "2026-05-03T19:35:00Z"
     }
   ],
   "delivery_date": "2026-05-03",
-  "eligible_rows": 0,
-  "now_utc": "2026-05-03T22:52:05Z",
+  "eligible_rows": 1,
+  "now_utc": "2026-05-03T23:36:10Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
   "snapshot_type": "close_lock",
   "summary": {
-    "failures": 0,
+    "failures": 1,
     "fired": 0,
     "skipped_already_run": 0,
-    "skipped_window": 1
+    "skipped_window": 0
   }
 }
