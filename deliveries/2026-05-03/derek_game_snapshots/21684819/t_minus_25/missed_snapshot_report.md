@@ -1,16 +1,20 @@
-# Missed snapshot — t_minus_25 (21684819) 2026-05-03
+# Magic @ Pistons — T-minus-25 snapshot
 
-- snapshot_type: **t_minus_25**
-- game_id: `21684819`
-- delivery_date: 2026-05-03
-- game_start_time_utc: `2026-05-03T19:40:00Z`
-- snapshot_target_time_utc: `2026-05-03T19:15:00Z`
-- now_utc: `2026-05-03T20:10:48Z`
-- missed_reason: `post_tip_no_pretip_snapshot_was_generated`
+This near-tip snapshot was not generated before tip.
 
-## Why a marker, not a fake snapshot
+The target time was 25 minutes before tip. By the time the near-tip verification ran, the game had already started, so the system did not create a backfilled pre-tip PMF. That is intentional: creating a pre-tip snapshot after the game starts would risk using information that was not available at the time.
 
-The game has already tipped. We do **not** fabricate a pre-tip snapshot after the fact — pre-tip lineups, injury status, and odds at this moment in history can no longer be reconstructed without leakage from in-game data. Instead, this marker file records the miss honestly so downstream verifiers and Derek's index can label the snapshot as MISSED_POST_TIP rather than silently treating it as pending.
+The miss is documented here so the daily index and verifiers show the true status. Going forward, the dispatcher's snapshot state machine fires inside the cron window and recovers any miss before tip; only post-tip misses produce this report.
 
-- `no_fake_pretip_snapshot: true`
-- `production_fix_applied: true`
+## Technical audit details
+
+- Game ID: `21684819`
+- Away Team: Magic
+- Home Team: Pistons
+- Snapshot type: `t_minus_25`
+- Target time UTC: `2026-05-03T19:15:00Z`
+- Tip time UTC: `2026-05-03T19:40:00Z`
+- Documented at UTC: `2026-05-03T20:10:48Z`
+- Missed reason: `post_tip_no_pretip_snapshot_was_generated`
+- no_fake_pretip_snapshot: **True**
+- production_fix_applied: **True**

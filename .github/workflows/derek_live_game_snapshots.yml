@@ -293,6 +293,13 @@ jobs:
           python scripts/build_derek_delivery_readme.py \
             --delivery-date ${{ steps.d.outputs.date }}
 
+      - name: Polish Derek reports with team-name labels (Phase 13Z)
+        id: polish_reports
+        continue-on-error: true
+        run: |
+          python scripts/render_derek_human_reports.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
       - name: Verify Wizard of Odds untouched (Phase 13X)
         id: verify_woo_unchanged
         continue-on-error: true

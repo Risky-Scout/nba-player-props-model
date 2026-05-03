@@ -1,17 +1,21 @@
 # Near-tip snapshot root-cause audit — 2026-05-03
 
-- generated_at_utc: 2026-05-03T20:08:23+00:00Z
+Generated 2026-05-03T21:45:11Z.
 
-## Per-(game, snapshot_type) state
+## Per-(matchup, snapshot) state
 
-| game_id | snapshot_type | tip_utc | target_utc | now_utc | exists | missed_marker | true_state |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 21682000 | t_minus_25 | 2026-05-03T23:40:00+00:00Z | 2026-05-03T23:15:00+00:00Z | 2026-05-03T20:08:23+00:00Z | False | False | **NOT_DUE** |
-| 21682000 | close_lock | 2026-05-03T23:40:00+00:00Z | 2026-05-03T23:35:00+00:00Z | 2026-05-03T20:08:23+00:00Z | False | False | **NOT_DUE** |
-| 21684819 | t_minus_25 | 2026-05-03T19:40:00+00:00Z | 2026-05-03T19:15:00+00:00Z | 2026-05-03T20:08:23+00:00Z | False | False | **MISSED_POST_TIP** |
-| 21684819 | close_lock | 2026-05-03T19:40:00+00:00Z | 2026-05-03T19:35:00+00:00Z | 2026-05-03T20:08:23+00:00Z | False | False | **MISSED_POST_TIP** |
+| Away | Home | Matchup | Snapshot | Tip Time UTC | Target Time UTC | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| Raptors | Cavaliers | Raptors @ Cavaliers | T-minus-25 | `2026-05-03T23:40:00Z` | `2026-05-03T23:15:00Z` | Scheduled |
+| Raptors | Cavaliers | Raptors @ Cavaliers | Close-lock | `2026-05-03T23:40:00Z` | `2026-05-03T23:35:00Z` | Scheduled |
+| Magic | Pistons | Magic @ Pistons | T-minus-25 | `2026-05-03T19:40:00Z` | `2026-05-03T19:15:00Z` | Missed during setup window; documented, not backfilled |
+| Magic | Pistons | Magic @ Pistons | Close-lock | `2026-05-03T19:40:00Z` | `2026-05-03T19:35:00Z` | Missed during setup window; documented, not backfilled |
 
-## Answers
+## Why missed snapshots are documented, not backfilled
+
+The dispatcher's snapshot state machine refuses to create a pre-tip snapshot after a game has already tipped. That would risk capturing post-tip information into a manifest claimed as pre-tip. Instead, missed near-tip snapshots get a `missed_snapshot_manifest.json` + `missed_snapshot_report.md` marker so the daily index and verifiers can show the true status.
+
+## Audit answers
 
 ### 1_why_21684819_t_minus_25_missing
 
@@ -44,9 +48,14 @@ The 'else' branch fired for CLOSE_LOCK at now=19:38:13 target=19:35:00 because t
 
 ### 7_other_games_at_risk
 
-[{'game_id': '21684819', 'snapshot_type': 't_minus_25', 'tip_utc': '2026-05-03T19:40:00+00:00Z', 'target_utc': '2026-05-03T19:15:00+00:00Z', 'now_utc': '2026-05-03T20:08:23+00:00Z', 'snapshot_exists': False, 'missed_marker_present': False, 'true_state': 'MISSED_POST_TIP'}, {'game_id': '21684819', 'snapshot_type': 'close_lock', 'tip_utc': '2026-05-03T19:40:00+00:00Z', 'target_utc': '2026-05-03T19:35:00+00:00Z', 'now_utc': '2026-05-03T20:08:23+00:00Z', 'snapshot_exists': False, 'missed_marker_present': False, 'true_state': 'MISSED_POST_TIP'}]
+- {'game_id': '21684819', 'missed_marker_present': False, 'now_utc': '2026-05-03T20:08:23+00:00Z', 'snapshot_exists': False, 'snapshot_type': 't_minus_25', 'target_utc': '2026-05-03T19:15:00+00:00Z', 'tip_utc': '2026-05-03T19:40:00+00:00Z', 'true_state': 'MISSED_POST_TIP'}
+- {'game_id': '21684819', 'missed_marker_present': False, 'now_utc': '2026-05-03T20:08:23+00:00Z', 'snapshot_exists': False, 'snapshot_type': 'close_lock', 'target_utc': '2026-05-03T19:35:00+00:00Z', 'tip_utc': '2026-05-03T19:40:00+00:00Z', 'true_state': 'MISSED_POST_TIP'}
 
 ### 8_files_to_repair
 
-['scripts/dispatch_derek_live_game_snapshots.py — share classify_snapshot_state with the verifier, generate LATE_BUT_PRE_TIP, write MISSED_POST_TIP markers.', 'scripts/verify_derek_production_live_e2e.py — replace the silent PENDING_NOT_DUE fallback with the same state machine; accept missed_post_tip markers as valid.', 'scripts/run_derek_live_game_snapshot.py — manifest stamps actual_run_late, late_seconds, snapshot_validity_status.', 'scripts/build_derek_delivery_readme.py — show explicit per-snapshot status from the state machine.', 'deliveries/<date>/derek_game_snapshots/<gid>/<snap>/missed_snapshot_manifest.json — the new honest miss marker.']
+- scripts/dispatch_derek_live_game_snapshots.py — share classify_snapshot_state with the verifier, generate LATE_BUT_PRE_TIP, write MISSED_POST_TIP markers.
+- scripts/verify_derek_production_live_e2e.py — replace the silent PENDING_NOT_DUE fallback with the same state machine; accept missed_post_tip markers as valid.
+- scripts/run_derek_live_game_snapshot.py — manifest stamps actual_run_late, late_seconds, snapshot_validity_status.
+- scripts/build_derek_delivery_readme.py — show explicit per-snapshot status from the state machine.
+- deliveries/<date>/derek_game_snapshots/<gid>/<snap>/missed_snapshot_manifest.json — the new honest miss marker.
 
