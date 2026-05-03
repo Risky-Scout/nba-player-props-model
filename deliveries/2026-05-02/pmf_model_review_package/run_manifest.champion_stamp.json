@@ -11,7 +11,7 @@
   "output_generated_at_utc": "2026-05-03T08:21:13+00:00",
   "promotion_decision_id": "contextual-promotion-2026-04-30_contextual-20260503T013200",
   "stamp_code_commit": "acb032aa498d3d657ffe24ecf54348b3c9b34722",
-  "stamped_into": "deliveries/2026-05-02/wizard_of_odds/run_manifest.json",
+  "stamped_into": "deliveries/2026-05-02/pmf_model_review_package/run_manifest.json",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"

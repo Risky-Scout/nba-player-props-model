@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "age_days=0.81 max=14",
+      "detail": "age_days=1.81 max=14",
       "name": "champion_freshness",
       "passed": true
     },
@@ -41,9 +41,9 @@
       "passed": true
     }
   ],
-  "code_commit": "2d701c5d29417d432aa8c683d6614d0d6146e2c1",
+  "code_commit": "acb032aa498d3d657ffe24ecf54348b3c9b34722",
   "facts": {
-    "champion_age_days": 0.81,
+    "champion_age_days": 1.81,
     "champion_calibrated_through_date": "2026-04-30",
     "champion_calibrator_actual_sha_prefixes": {
       "ast": "aa73d678b1512d33",
@@ -62,29 +62,29 @@
     "champion_calibrator_version": "phase8-role-bucket",
     "champion_model_dir": "artifacts/models",
     "champion_model_version": "challenger-2026-04-30",
-    "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+    "champion_pointer_hash": "9dc24f5d531ca31ee053e4a1ec6267a0",
     "champion_promoted_at_utc": "2026-05-01T12:48:39+00:00",
     "champion_trained_through_date": "2026-04-30",
-    "delivery_date_checked": "2026-05-01",
+    "delivery_date_checked": "2026-05-02",
     "delivery_manifest_stamped": {
       "derek": {
         "calibrated_through_date": "2026-04-30",
         "champion_model_id": "challenger-2026-04-30",
-        "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+        "champion_pointer_hash": "9dc24f5d531ca31ee053e4a1ec6267a0",
         "model_source": "champion_pointer",
         "model_version": null,
         "no_challenger_artifacts_used": true,
-        "path": "deliveries/2026-05-01/derek_forward_feed/feed_manifest.json",
+        "path": "deliveries/2026-05-02/derek_forward_feed/feed_manifest.json",
         "trained_through_date": "2026-04-30"
       },
       "woo": {
         "calibrated_through_date": "2026-04-30",
         "champion_model_id": "challenger-2026-04-30",
-        "champion_pointer_hash": "ce691fe085d0daee5c7eab9bf4066081",
+        "champion_pointer_hash": "9dc24f5d531ca31ee053e4a1ec6267a0",
         "model_source": "champion_pointer",
-        "model_version": "f496f12#phase10c",
+        "model_version": "04ee0aa#phase10c",
         "no_challenger_artifacts_used": true,
-        "path": "deliveries/2026-05-01/wizard_of_odds/run_manifest.json",
+        "path": "deliveries/2026-05-02/wizard_of_odds/run_manifest.json",
         "trained_through_date": "2026-04-30"
       }
     },
@@ -94,10 +94,10 @@
       "predict.py",
       "build_stat_grid_pmfs.py"
     ],
-    "latest_delivery_date": "2026-05-01",
+    "latest_delivery_date": "2026-05-02",
     "latest_delivery_generated_at": null
   },
-  "generated_at_utc": "2026-05-02T08:09:47+00:00",
+  "generated_at_utc": "2026-05-03T08:21:14+00:00",
   "max_stale_days": 14,
   "passed": true,
   "schema_version": "1.0"

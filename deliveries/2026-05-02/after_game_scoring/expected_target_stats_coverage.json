@@ -1,0 +1,88 @@
+{
+  "all_accounted": true,
+  "all_actually_scored": false,
+  "blockers": [
+    {
+      "blocker_id": "phase11c_market_driven_prediction_layer",
+      "blocker_summary": "TOV PMFs are not emitted by the current prediction layer when no market line is offered, because predict.py is market-line-driven. Resolving this requires the Phase 11C player-stat-grid prediction refactor (emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered). Outcomes are available in data/player_game_stats.parquet under the 'turnover' column; the gap is upstream of after-game scoring.",
+      "remediation_phase": "phase11c",
+      "stat": "tov"
+    }
+  ],
+  "delivery_date": "2026-05-02",
+  "documented_blocked_target_stats": [
+    {
+      "blocker_id": "phase11c_market_driven_prediction_layer",
+      "blocker_summary": "TOV PMFs are not emitted by the current prediction layer when no market line is offered, because predict.py is market-line-driven. Resolving this requires the Phase 11C player-stat-grid prediction refactor (emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered). Outcomes are available in data/player_game_stats.parquet under the 'turnover' column; the gap is upstream of after-game scoring.",
+      "outcome_source_column_present": "turnover",
+      "remediation_phase": "phase11c",
+      "stat": "tov"
+    }
+  ],
+  "expected_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov"
+  ],
+  "generated_at_utc": "2026-05-03T08:21:07Z",
+  "missing_target_stats": [],
+  "per_stat": [
+    {
+      "canonical_pmf_rows": 4,
+      "outcome_rows": 19,
+      "scored_rows": 3,
+      "stat": "pts",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 7,
+      "outcome_rows": 19,
+      "scored_rows": 6,
+      "stat": "reb",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 3,
+      "outcome_rows": 19,
+      "scored_rows": 2,
+      "stat": "ast",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 8,
+      "outcome_rows": 19,
+      "scored_rows": 7,
+      "stat": "fg3m",
+      "status": "scored"
+    },
+    {
+      "blocker_id": "phase11c_market_driven_prediction_layer",
+      "blocker_summary": "TOV PMFs are not emitted by the current prediction layer when no market line is offered, because predict.py is market-line-driven. Resolving this requires the Phase 11C player-stat-grid prediction refactor (emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered). Outcomes are available in data/player_game_stats.parquet under the 'turnover' column; the gap is upstream of after-game scoring.",
+      "canonical_pmf_rows": 0,
+      "outcome_rows": 19,
+      "outcome_source_column_present": "turnover",
+      "remediation_phase": "phase11c",
+      "scored_rows": 0,
+      "stat": "tov",
+      "status": "documented_blocked"
+    }
+  ],
+  "schema_version": "1.0",
+  "scored_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m"
+  ],
+  "source_columns_checked": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "turnover"
+  ],
+  "tov_rows_scored": 0,
+  "tov_source_column": "turnover"
+}

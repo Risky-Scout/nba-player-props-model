@@ -14,10 +14,10 @@
 - `training_run_id` = `nightly-20260501T124701`
 - `calibration_run_id` = `nightly-20260501T124701`
 - `validation_run_id` = `nightly-20260501T124701`
-- `promotion_decision_id` = `promotion-2026-04-30-20260501T124839`
+- `promotion_decision_id` = `contextual-promotion-2026-04-30_contextual-20260503T013200`
 - `champion_pointer_path` = `artifacts/models/registry/champion_pointer.json`
-- `champion_pointer_hash` = `ce691fe085d0daee5c7eab9bf4066081`
-- `metadata_stamped_at_utc` = `2026-05-02T23:27:25+00:00`
+- `champion_pointer_hash` = `9dc24f5d531ca31ee053e4a1ec6267a0`
+- `metadata_stamped_at_utc` = `2026-05-03T08:21:13+00:00`
 
 - `no_prediction_values_modified` = `True`
 
@@ -27,3 +27,4 @@
 | --- | --- | --- |
 | deliveries/2026-05-02/wizard_of_odds/run_manifest.json | yes | deliveries/2026-05-02/wizard_of_odds/run_manifest.champion_stamp.json |
 | deliveries/2026-05-02/derek_forward_feed/feed_manifest.json | yes | deliveries/2026-05-02/derek_forward_feed/feed_manifest.champion_stamp.json |
+| deliveries/2026-05-02/pmf_model_review_package/run_manifest.json | yes | deliveries/2026-05-02/pmf_model_review_package/run_manifest.champion_stamp.json |
