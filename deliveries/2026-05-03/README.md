@@ -1,6 +1,6 @@
 # Derek PMF Delivery — May 3, 2026
 
-Generated 2026-05-03T21:45:11Z.
+Generated 2026-05-03T22:18:35Z.
 
 ## What to open first
 
@@ -30,6 +30,11 @@ Missed snapshots are documented rather than backfilled. This avoids creating fak
 - **lineup_injury_impact_report.md** — lineup confirmation, BDL injury fetch, and counts of confirmed starters / bench / confirmed out.
 - **direct_lineup_impact_report.md** — Phase 13S direct-lineup driver attribution: starter / bench changes, lineup composition impact.
 - **missed_snapshot_report.md** — written when a near-tip snapshot was missed post-tip; explains the miss and links back to the audit trail.
+
+## PMF variance experience study
+
+- [pmf_variance_experience_2026-05-03.md](https://github.com/Risky-Scout/nba-player-props-model/blob/main/artifacts/experience_studies/pmf_variance_experience_2026-05-03.md)
+- This is an actuarial-style actual-to-expected study for settled rows. It checks PMF mean calibration, PMF variance calibration, quantile coverage, and model-vs-market scoring. In this first settled sample, PMF variance is reasonably close overall, but the model under-projects means and trails market on Brier/logloss, so this is a diagnostic and improvement report rather than a market-superiority claim.
 
 ## Daily location going forward
 

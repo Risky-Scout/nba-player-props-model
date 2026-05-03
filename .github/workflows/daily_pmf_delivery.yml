@@ -499,6 +499,21 @@ jobs:
           python scripts/build_rolling_market_benchmark.py \
             --as-of-date ${{ steps.d.outputs.date }} \
             --window-days 28 || echo "::warning::rolling market benchmark insufficient_sample"
+      - name: Phase 13AA — PMF variance experience study (non-blocking)
+        # Runs after after-game scoring so settled outcomes are joined.
+        # Honest insufficient-sample reports are written to disk; this step
+        # never fails the workflow because thin samples are expected during
+        # ramp-up.
+        continue-on-error: true
+        run: |
+          python scripts/build_pmf_variance_experience_study.py \
+            --as-of-date ${{ steps.d.outputs.date }} \
+            --lookback-days 60 \
+            --min-bucket-n 30 || \
+            echo "::warning::pmf variance experience study insufficient_sample_or_missing_inputs"
+          python scripts/verify_pmf_variance_experience_study.py \
+            --as-of-date ${{ steps.d.outputs.date }} || \
+            echo "::warning::pmf variance experience verifier WARN/FAILED — see step log"
       - name: Stage and commit
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
@@ -518,6 +533,7 @@ jobs:
                   artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   artifacts/market_benchmark/${{ steps.d.outputs.date }} \
                   artifacts/automation_health \
+                  artifacts/experience_studies \
                   deliveries/README.md \
                   deliveries/index.html
           git diff --staged --quiet && echo "Nothing to commit" || \

@@ -313,6 +313,25 @@ def main(argv=None) -> int:
         "`artifacts/automation_health/derek_production_live_e2e_<date>.json`"
     )
     md.append("")
+    md.append("## PMF variance experience study")
+    md.append("")
+    md.append(
+        f"- Latest study: "
+        f"https://github.com/Risky-Scout/nba-player-props-model/blob/main/"
+        f"artifacts/experience_studies/pmf_variance_experience_"
+        f"{args.as_of_date}.md"
+    )
+    md.append(
+        "- This is an actuarial-style actual-to-expected study for settled "
+        "rows. It checks PMF mean calibration, PMF variance calibration, "
+        "quantile coverage, and model-vs-market scoring. In the first "
+        "settled samples, PMF variance is reasonably close overall, but "
+        "the model under-projects means and trails market on Brier/logloss, "
+        "so this is a diagnostic and improvement report rather than a "
+        "market-superiority claim."
+    )
+    md.append("")
+
     md.append("## Pending items")
     md.append("")
     md.append(report["calibration_metrics_pending"]["blocker"])

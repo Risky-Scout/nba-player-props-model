@@ -275,6 +275,25 @@ def _write_top_readme(*, repo_root: Path, delivery_date: str,
     )
     md.append("")
 
+    md.append("## PMF variance experience study")
+    md.append("")
+    md.append(
+        f"- [pmf_variance_experience_{delivery_date}.md]("
+        f"https://github.com/Risky-Scout/nba-player-props-model/blob/main/"
+        f"artifacts/experience_studies/pmf_variance_experience_"
+        f"{delivery_date}.md)"
+    )
+    md.append(
+        "- This is an actuarial-style actual-to-expected study for "
+        "settled rows. It checks PMF mean calibration, PMF variance "
+        "calibration, quantile coverage, and model-vs-market scoring. "
+        "In this first settled sample, PMF variance is reasonably close "
+        "overall, but the model under-projects means and trails market "
+        "on Brier/logloss, so this is a diagnostic and improvement "
+        "report rather than a market-superiority claim."
+    )
+    md.append("")
+
     md.append("## Daily location going forward")
     md.append("")
     md.append("- Future daily delivery index: `deliveries/YYYY-MM-DD/README.md`")
@@ -376,6 +395,22 @@ def _write_snapshot_index(*, repo_root: Path, delivery_date: str,
             else:
                 md.append(f"- **{label}**: {data['status']}")
         md.append("")
+    md.append("## PMF variance experience study")
+    md.append("")
+    md.append(
+        f"- [pmf_variance_experience_{delivery_date}.md]("
+        f"https://github.com/Risky-Scout/nba-player-props-model/blob/main/"
+        f"artifacts/experience_studies/pmf_variance_experience_"
+        f"{delivery_date}.md)"
+    )
+    md.append(
+        "- Actuarial-style actual-to-expected diagnostic for settled "
+        "rows. PMF variance is reasonably close overall but the model "
+        "under-projects means and trails market on Brier/logloss in "
+        "the current sample, so this is a diagnostic and improvement "
+        "report rather than a market-superiority claim."
+    )
+    md.append("")
     out.write_text("\n".join(md) + "\n", encoding="utf-8")
 
 

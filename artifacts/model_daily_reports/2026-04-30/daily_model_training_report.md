@@ -103,6 +103,11 @@
 - Phase 13S no-leakage report: `artifacts/phase13s/no_leakage_report.json`
 - Derek snapshot E2E: `artifacts/automation_health/derek_production_live_e2e_<date>.json`
 
+## PMF variance experience study
+
+- Latest study: https://github.com/Risky-Scout/nba-player-props-model/blob/main/artifacts/experience_studies/pmf_variance_experience_2026-05-03.md
+- This is an actuarial-style actual-to-expected study for settled rows. It checks PMF mean calibration, PMF variance calibration, quantile coverage, and model-vs-market scoring. In this first settled sample, PMF variance is reasonably close overall, but the model under-projects means and trails market on Brier/logloss, so this is a diagnostic and improvement report rather than a market-superiority claim.
+
 ## Pending items
 
 PMF NLL / RPS / ECE / p0 calibration / mean bias / tail calibration are reported once nightly post-game scoring produces realized outcomes. The Phase 13S/13T after-game scoring writes DEREK_LIVE_SNAPSHOT_SCORING_PENDING when outcomes are not yet available.

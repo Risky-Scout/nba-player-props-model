@@ -1,6 +1,6 @@
 # Derek PMF Snapshots — May 3, 2026
 
-Generated 2026-05-03T21:45:11Z.
+Generated 2026-05-03T22:18:35Z.
 
 ## Snapshot status
 
@@ -44,4 +44,9 @@ _Game ID `21684819` (used in paths only). Tip time UTC: `2026-05-03T19:40:00Z`._
   - [missed_snapshot_report.md](21684819/t_minus_25/missed_snapshot_report.md)
 - **Close-lock** (Missed during setup window; documented, not backfilled):
   - [missed_snapshot_report.md](21684819/close_lock/missed_snapshot_report.md)
+
+## PMF variance experience study
+
+- [pmf_variance_experience_2026-05-03.md](https://github.com/Risky-Scout/nba-player-props-model/blob/main/artifacts/experience_studies/pmf_variance_experience_2026-05-03.md)
+- Actuarial-style actual-to-expected diagnostic for settled rows. PMF variance is reasonably close overall but the model under-projects means and trails market on Brier/logloss in the current sample, so this is a diagnostic and improvement report rather than a market-superiority claim.
 
