@@ -1,6 +1,6 @@
 {
   "challenger_dir": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual",
-  "code_commit": "acb032aa498d3d657ffe24ecf54348b3c9b34722",
+  "code_commit": "36ad7d071eaab80fb102513fb326432a56bc83d0",
   "direct_lineup_pmf_driver": true,
   "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
   "fitted_targets": [

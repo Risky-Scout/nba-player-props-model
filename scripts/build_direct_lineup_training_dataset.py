@@ -67,13 +67,12 @@ def _add_lagged_per_player(df, *, lag_window: int = 10):
     import pandas as pd
 
     df = df.sort_values(["player_id", "game_date"]).copy()
-    grp = df.groupby("player_id", group_keys=False)
-    df["prev_game_min"] = grp["min"].shift(1)
+    df["prev_game_min"] = df.groupby("player_id")["min"].shift(1)
     df["prev_game_min"] = df["prev_game_min"].fillna(0.0)
 
     df["mp_mean_last10"] = (
-        grp["min"].apply(lambda s: s.shift(1).rolling(lag_window, min_periods=3).mean())
-        .reset_index(level=0, drop=True)
+        df.groupby("player_id")["min"]
+        .transform(lambda s: s.shift(1).rolling(lag_window, min_periods=3).mean())
     )
 
     df["starter_proxy_lagged"] = (df["mp_mean_last10"] >= 24).astype(float)
@@ -91,23 +90,26 @@ def _add_lagged_per_player(df, *, lag_window: int = 10):
             out.append(cur)
         return pd.Series(out, index=s.index)
     df["consecutive_starter_streak"] = (
-        grp["min"].apply(_streak).reset_index(level=0, drop=True)
+        df.groupby("player_id")["min"].transform(_streak)
     ).astype(float)
 
     # Recent starter rate over last 5 games.
     df["recent_starter_rate_5"] = (
-        grp["min"].apply(
+        df.groupby("player_id")["min"].transform(
             lambda s: (s.shift(1) >= STARTER_MIN_THRESHOLD)
             .rolling(5, min_periods=1).mean()
-        ).reset_index(level=0, drop=True)
+        )
     ).fillna(0.0).astype(float)
 
     # Lagged per-minute rates used for composition / interaction features.
+    # Use ``transform`` instead of ``apply`` so each rate column is a
+    # straightforward groupby-shift-rolling, which avoids pandas-version
+    # quirks where ``apply``'s subframe drops auxiliary columns.
     safe_min = df["min"].clip(lower=0.5)
     for src, tgt in (
         ("fga", "fga_per_min"),
         ("fta", "fta_per_min"),
-        ("fg3a", "fg3_attempt_rate"),  # per-fga implicit; we'll normalize
+        ("fg3a", "fg3_attempt_rate"),
         ("turnover", "tov_per_min"),
         ("reb", "reb_per_min"),
         ("ast", "ast_per_min"),
@@ -115,23 +117,21 @@ def _add_lagged_per_player(df, *, lag_window: int = 10):
         if src not in df.columns:
             df[f"{tgt}_lagged"] = 0.0
             continue
-        rate = df[src] / safe_min
+        df[f"_rate_{src}"] = df[src] / safe_min
         df[f"{tgt}_lagged"] = (
-            grp.apply(
-                lambda g, c=rate.name: rate.loc[g.index].shift(1)
-                .rolling(lag_window, min_periods=3).mean()
-            ).reset_index(level=0, drop=True)
+            df.groupby("player_id")[f"_rate_{src}"]
+            .transform(lambda s: s.shift(1).rolling(lag_window, min_periods=3).mean())
         ).astype(float)
+        df.drop(columns=[f"_rate_{src}"], inplace=True)
 
     # Usage proxy: (fga + 0.44 * fta + tov) / min, lagged.
     if "fga" in df.columns and "fta" in df.columns and "turnover" in df.columns:
-        usage = (df["fga"] + 0.44 * df["fta"] + df["turnover"]) / safe_min
+        df["_usage"] = (df["fga"] + 0.44 * df["fta"] + df["turnover"]) / safe_min
         df["usage_proxy_lagged"] = (
-            grp.apply(
-                lambda g: usage.loc[g.index].shift(1)
-                .rolling(lag_window, min_periods=3).mean()
-            ).reset_index(level=0, drop=True)
+            df.groupby("player_id")["_usage"]
+            .transform(lambda s: s.shift(1).rolling(lag_window, min_periods=3).mean())
         ).astype(float)
+        df.drop(columns=["_usage"], inplace=True)
     else:
         df["usage_proxy_lagged"] = 0.0
 
@@ -164,23 +164,27 @@ def _add_lagged_per_player(df, *, lag_window: int = 10):
 
     # Game context features.
     df["game_date_dt"] = pd.to_datetime(df["game_date"])
-    df["prior_game_date"] = grp["game_date_dt"].shift(1)
+    df["prior_game_date"] = df.groupby("player_id")["game_date_dt"].shift(1)
     df["rest_days_raw"] = (df["game_date_dt"] - df["prior_game_date"]).dt.days
     df["rest_days"] = df["rest_days_raw"].clip(upper=5).fillna(5).astype(float)
     df["is_back_to_back"] = (df["rest_days_raw"] == 1).astype(float)
 
-    def _three_in_four(g):
-        dates = g["game_date_dt"].values
+    # Vectorized three-in-four: for each player, count prior games whose
+    # game_date is within (current_date - 4, current_date) exclusive,
+    # then mark >= 2 prior games in that window as "three-in-four"
+    # (current + 2 prior = three games in four days).
+    is_3in4 = pd.Series(0.0, index=df.index, dtype=float)
+    for pid, g in df.groupby("player_id"):
+        dates = g["game_date_dt"].to_numpy()
+        idx = g.index.to_numpy()
         out = []
         for i, d in enumerate(dates):
             cutoff = d - pd.Timedelta(days=4)
-            count = ((dates[:i] > cutoff) & (dates[:i] < d)).sum()
-            out.append(int(count >= 2))
-        return out
-    df["is_three_in_four"] = (
-        grp.apply(lambda g: pd.Series(_three_in_four(g), index=g.index))
-        .reset_index(level=0, drop=True)
-    ).astype(float)
+            prior = dates[:i]
+            count = ((prior > cutoff) & (prior < d)).sum()
+            out.append(1.0 if count >= 2 else 0.0)
+        is_3in4.loc[idx] = out
+    df["is_three_in_four"] = is_3in4.astype(float)
 
     df["season_game_number"] = df.groupby(["player_id", "season"]).cumcount() + 1
     df["season_game_number_norm"] = df["season_game_number"] / 82.0

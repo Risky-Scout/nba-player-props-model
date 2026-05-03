@@ -3,36 +3,36 @@
   "facts": {
     "2026-04-30_direct_lineup_contextual": {
       "ast": {
-        "n_test": 15751,
-        "rel_improvement": 0.00010032873147916121
+        "n_test": 15770,
+        "rel_improvement": 0.02095121126879354
       },
       "blk": {
-        "n_test": 15751,
-        "rel_improvement": 0.00012893556651722722
+        "n_test": 15770,
+        "rel_improvement": -0.00010826154372146587
       },
       "fg3m": {
-        "n_test": 15751,
-        "rel_improvement": 0.000408287009482784
+        "n_test": 15770,
+        "rel_improvement": 0.000477923565642257
       },
       "minutes": {
         "n_test": 16225,
-        "rel_improvement": 0.6158182263485236
+        "rel_improvement": 0.15338268139668593
       },
       "pts": {
-        "n_test": 15751,
-        "rel_improvement": 0.0010156164669798424
+        "n_test": 15770,
+        "rel_improvement": 0.0034132370524082986
       },
       "reb": {
-        "n_test": 15751,
-        "rel_improvement": -0.00048282862902499207
+        "n_test": 15770,
+        "rel_improvement": -0.0003605558227151181
       },
       "stl": {
-        "n_test": 15751,
-        "rel_improvement": -0.00011225143014696582
+        "n_test": 15770,
+        "rel_improvement": 0.00021675126731448974
       },
       "tov": {
-        "n_test": 15751,
-        "rel_improvement": 0.0007631485791821949
+        "n_test": 15770,
+        "rel_improvement": 0.0007844250298022434
       }
     }
   },

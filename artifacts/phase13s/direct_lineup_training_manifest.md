@@ -8,5 +8,5 @@
 ## Direct-lineup feature missingness summary
 
 - lineup_features_missing share: **100.00%** (historical training has no live BDL)
-- current_starter > 0 share: **67.15%**
+- current_starter > 0 share: **68.28%**
 - consecutive_starter_streak mean: **19.01**

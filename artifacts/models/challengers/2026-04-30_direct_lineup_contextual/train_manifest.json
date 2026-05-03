@@ -2,7 +2,7 @@
   "as_of_date": "2026-04-30",
   "calibrated_through_date": "2026-04-30",
   "challenger_suffix": "direct_lineup_contextual",
-  "code_commit": "acb032aa498d3d657ffe24ecf54348b3c9b34722",
+  "code_commit": "36ad7d071eaab80fb102513fb326432a56bc83d0",
   "direct_lineup_pmf_driver": true,
   "feature_columns": [
     "lineup_confirmed",
@@ -82,83 +82,83 @@
     "fg3m"
   ],
   "game_context_features_enabled": true,
-  "generated_at_utc": "2026-05-03T12:04:24+00:00",
+  "generated_at_utc": "2026-05-03T13:49:10+00:00",
   "injury_availability_features_enabled": true,
   "lineup_composition_features_enabled": true,
   "lineup_context_upstream_of_pmf": true,
   "lineup_history_note": "current_starter / confirmed_starter / confirmed_bench at training time are pre-game knowable proxies derived from the player's PREVIOUS game's min (>= 18 \u2192 starter). At predict time these columns are overridden by the live BDL lineup flag. starter_proxy_lagged remains a 10-game rolling proxy. consecutive_starter_streak and recent_starter_rate_5 are pre-game knowable streaks. rest_days, is_back_to_back, is_three_in_four, season_game_number, is_home, opponent_team_id_hash are schedule-derived. No same-game performance outcomes (min, pts, reb, ast, tov, stl, blk, fg3m) are predictors.",
   "metrics_per_target": {
     "ast": {
-      "baseline_mse": 0.009744409874666468,
-      "challenger_mse": 0.00974343223038473,
-      "coef_l2_norm": 0.03974667142021447,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.00956541013927596,
+      "challenger_mse": 0.00936500321057533,
+      "coef_l2_norm": 0.2546668781386493,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "ast",
-      "rel_improvement": 0.00010032873147916121
+      "rel_improvement": 0.02095121126879354
     },
     "blk": {
-      "baseline_mse": 0.002629694346625345,
-      "challenger_mse": 0.0026293552854949956,
-      "coef_l2_norm": 0.003830570306275187,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.0025263674758437674,
+      "challenger_mse": 0.00252664098428671,
+      "coef_l2_norm": 0.0045842212987528335,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "blk",
-      "rel_improvement": 0.00012893556651722722
+      "rel_improvement": -0.00010826154372146587
     },
     "fg3m": {
-      "baseline_mse": 0.005517570496888171,
-      "challenger_mse": 0.005515317744530386,
-      "coef_l2_norm": 0.02248987597184901,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.005090403469792902,
+      "challenger_mse": 0.005087970646016061,
+      "coef_l2_norm": 0.016942672688397872,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "fg3m",
-      "rel_improvement": 0.000408287009482784
+      "rel_improvement": 0.000477923565642257
     },
     "minutes": {
-      "baseline_mse": 212.1885990356406,
-      "challenger_mse": 81.51899232613437,
-      "coef_l2_norm": 23.013531555782023,
+      "baseline_mse": 57.872896182869084,
+      "challenger_mse": 48.996196186148595,
+      "coef_l2_norm": 6.428713773075797,
       "n_test": 16225,
       "n_train": 64900,
       "name": "minutes",
-      "rel_improvement": 0.6158182263485236
+      "rel_improvement": 0.15338268139668593
     },
     "pts": {
-      "baseline_mse": 0.09535671598961643,
-      "challenger_mse": 0.09525987013862025,
-      "coef_l2_norm": 0.057954428877389566,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.09237721906787127,
+      "challenger_mse": 0.09206191372095038,
+      "coef_l2_norm": 0.11738608699428396,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "pts",
-      "rel_improvement": 0.0010156164669798424
+      "rel_improvement": 0.0034132370524082986
     },
     "reb": {
-      "baseline_mse": 0.024001705130797652,
-      "challenger_mse": 0.024013293841180217,
-      "coef_l2_norm": 0.033074462951919036,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.023284881841548352,
+      "challenger_mse": 0.023293277341277556,
+      "coef_l2_norm": 0.03165348061023367,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "reb",
-      "rel_improvement": -0.00048282862902499207
+      "rel_improvement": -0.0003605558227151181
     },
     "stl": {
-      "baseline_mse": 0.004120947876004512,
-      "challenger_mse": 0.004121410458297154,
-      "coef_l2_norm": 0.01553118266910681,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.004056016683900769,
+      "challenger_mse": 0.004055137537144285,
+      "coef_l2_norm": 0.017124369742035225,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "stl",
-      "rel_improvement": -0.00011225143014696582
+      "rel_improvement": 0.00021675126731448974
     },
     "tov": {
-      "baseline_mse": 0.007352484485606074,
-      "challenger_mse": 0.0073468734475174245,
-      "coef_l2_norm": 0.032377417810068476,
-      "n_test": 15751,
-      "n_train": 63004,
+      "baseline_mse": 0.007029290828315467,
+      "challenger_mse": 0.007023776876647977,
+      "coef_l2_norm": 0.0259465759028686,
+      "n_test": 15770,
+      "n_train": 63078,
       "name": "tov",
-      "rel_improvement": 0.0007631485791821949
+      "rel_improvement": 0.0007844250298022434
     }
   },
   "no_leakage_verified": true,
@@ -168,7 +168,7 @@
   "rows_used": 81125,
   "schema_version": "1.0",
   "source_hashes": {
-    "direct_lineup_context_features_parquet": "1df144d1c1f6bab3ad02e748268eb1e9"
+    "direct_lineup_context_features_parquet": "b64fc44d4da779bfde5208bae270dfd5"
   },
   "source_paths": {
     "direct_lineup_context_features_parquet": "data/direct_lineup_context_features.parquet"

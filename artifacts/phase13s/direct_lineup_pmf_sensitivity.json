@@ -1,20 +1,20 @@
 {
   "case_results": {
     "case_1_direct_lineup": {
-      "abs_diff_minutes_delta": 12.960596653294278,
+      "abs_diff_minutes_delta": 2.85695076989602,
       "feature_vector_hash_post": "c6ef2fe8edb7777a",
       "feature_vector_hash_pre": "9c834bc334605ad9",
       "feature_vectors_changed": true,
-      "minutes_delta_post": 11.143156912725718,
-      "minutes_delta_pre": -1.8174397405685596,
-      "pmf_mean_post": 41.143156912725715,
-      "pmf_mean_pre": 28.18256025943144,
-      "pmf_mean_shift": 12.960596653294274
+      "minutes_delta_post": 3.924610155098442,
+      "minutes_delta_pre": 1.0676593852024219,
+      "pmf_mean_post": 33.92461015509844,
+      "pmf_mean_pre": 31.067659385202422,
+      "pmf_mean_shift": 2.85695076989602
     },
     "case_2_lineup_composition": {
-      "abs_diff_minutes_delta": 1.9646726106794645,
-      "minutes_delta_a": 11.484877984948863,
-      "minutes_delta_b": 9.520205374269398,
+      "abs_diff_minutes_delta": 2.451129839866251,
+      "minutes_delta_a": 3.9697695912669584,
+      "minutes_delta_b": 1.5186397514007073,
       "team_lineup_num_high_usage_players_a": 1.0,
       "team_lineup_num_high_usage_players_b": 3.0
     },
@@ -24,18 +24,18 @@
       "is_confirmed_out": true
     },
     "case_4_teammate_out": {
-      "abs_diff_minutes_delta": 1.1660649548164024,
-      "minutes_delta_loaded": 10.31881303013246,
-      "minutes_delta_quiet": 11.484877984948863
+      "abs_diff_minutes_delta": 0.00010795232667426546,
+      "minutes_delta_loaded": 3.969661638940284,
+      "minutes_delta_quiet": 3.9697695912669584
     },
     "case_5_market_only": {
-      "delta_hash_m1": "b9c45182256a8ca7",
-      "delta_hash_m2": "b9c45182256a8ca7",
+      "delta_hash_m1": "3297fe279984ab68",
+      "delta_hash_m2": "3297fe279984ab68",
       "feature_vectors_equal": true
     },
     "case_6_no_change": {
-      "delta_hash_a": "b9c45182256a8ca7",
-      "delta_hash_b": "b9c45182256a8ca7",
+      "delta_hash_a": "3297fe279984ab68",
+      "delta_hash_b": "3297fe279984ab68",
       "feature_vectors_equal": true
     }
   },
