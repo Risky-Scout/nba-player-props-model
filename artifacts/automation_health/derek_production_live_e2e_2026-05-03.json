@@ -6,7 +6,7 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-03",
-    "now_utc": "2026-05-03T18:21:51Z",
+    "now_utc": "2026-05-03T19:07:54Z",
     "overdue_missing_snapshots": [],
     "per_type_lines": [
       {
@@ -15,22 +15,22 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-03T18:21:51Z",
+        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-03T19:07:54Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-03T18:21:51Z",
+        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-03T19:07:54Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "CLOSE_LOCK"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-03T18:21:51Z",
+        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-03T19:07:54Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-03T18:21:51Z",
+        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-03T19:07:54Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "CLOSE_LOCK"
       }
