@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-03T15:56:17Z",
+  "built_at_utc": "2026-05-03T19:10:19Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-05-03",
@@ -91,7 +91,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 346
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -192,7 +192,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1508
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -294,7 +294,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1382
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -396,7 +396,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 1202
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -498,7 +498,7 @@
         "monetization_status_summary": {
           "needs_affiliate_mapping": 421
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -509,9 +509,9 @@
     },
     {
       "date": "2026-05-03",
-      "snapshot_type": "morning",
-      "snapshot_time_utc": "2026-05-03T15:56:15Z",
-      "model_version": "d68dd3c#phase10c",
+      "snapshot_type": "pre_close",
+      "snapshot_time_utc": "2026-05-03T19:10:16Z",
+      "model_version": "a1acc2f#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
         "lineup_unconfirmed",
@@ -520,8 +520,8 @@
       "row_counts": {
         "fair_odds_board": 1780,
         "full_pmfs_wide": 69,
-        "market_comparison": 963,
-        "publishable_edges": 927
+        "market_comparison": 980,
+        "publishable_edges": 938
       },
       "books_seen": [
         "betmgm",
@@ -543,64 +543,64 @@
       "files": [
         {
           "name": "fair_odds_board.csv",
-          "size_bytes": 1013581
+          "size_bytes": 1017141
         },
         {
           "name": "fair_odds_board.parquet",
-          "size_bytes": 69122
+          "size_bytes": 69132
         },
         {
           "name": "fair_odds_board.jsonl",
-          "size_bytes": 2409937
+          "size_bytes": 2413497
         },
         {
           "name": "full_pmfs_wide.csv",
-          "size_bytes": 68781
+          "size_bytes": 68919
         },
         {
           "name": "full_pmfs_wide.parquet",
-          "size_bytes": 64195
+          "size_bytes": 64205
         },
         {
           "name": "full_pmfs_outcome_level.csv",
-          "size_bytes": 622404
+          "size_bytes": 626862
         },
         {
           "name": "full_pmfs_outcome_level.parquet",
-          "size_bytes": 28222
+          "size_bytes": 28232
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 613405
+          "size_bytes": 625649
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 65857
+          "size_bytes": 65919
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 589739
+          "size_bytes": 598451
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 65025
+          "size_bytes": 64876
         },
         {
           "name": "run_manifest.json",
-          "size_bytes": 4374
+          "size_bytes": 4379
         },
         {
           "name": "README.md",
-          "size_bytes": 3131
+          "size_bytes": 3133
         }
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 963,
+        "rows": 980,
         "monetization_status_summary": {
-          "needs_affiliate_mapping": 963
+          "needs_affiliate_mapping": 980
         },
-        "snapshot_type_public": "woo_morning_monetization",
+        "snapshot_type_public": "woo_afternoon_refresh",
         "finality_status_public": "PROVISIONAL_EARLY_MARKET",
         "files": {
           "csv": "monetization_view.csv",
@@ -615,6 +615,6 @@
     "present": false,
     "books_mapped": []
   },
-  "snapshot_type_label": "woo_morning_monetization",
+  "snapshot_type_label": "woo_afternoon_refresh",
   "finality_status_override": "PROVISIONAL_EARLY_MARKET"
 }
