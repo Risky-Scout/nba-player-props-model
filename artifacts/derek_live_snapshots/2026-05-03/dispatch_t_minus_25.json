@@ -1,24 +1,24 @@
 {
-  "code_commit": "a291d753262bf0e8b78ea79f6612242579ac082b",
+  "code_commit": "e3a15462423ef4b0292e6b53244dd0c071be9c9c",
   "decisions": [
     {
       "decision": "skipped_window",
-      "due_reason": "target=2026-05-03T23:15:00Z window=(-5,+7)min now=2026-05-03T16:58:14Z \u2192 not_due",
+      "due_reason": "target=2026-05-03T23:15:00Z window=(-5,+7)min now=2026-05-03T17:22:06Z \u2192 not_due",
       "game_id": "21682000",
-      "now_utc": "2026-05-03T16:58:14Z",
+      "now_utc": "2026-05-03T17:22:06Z",
       "target_utc": "2026-05-03T23:15:00Z"
     },
     {
       "decision": "skipped_window",
-      "due_reason": "target=2026-05-03T19:15:00Z window=(-5,+7)min now=2026-05-03T16:58:14Z \u2192 not_due",
+      "due_reason": "target=2026-05-03T19:15:00Z window=(-5,+7)min now=2026-05-03T17:22:06Z \u2192 not_due",
       "game_id": "21684819",
-      "now_utc": "2026-05-03T16:58:14Z",
+      "now_utc": "2026-05-03T17:22:06Z",
       "target_utc": "2026-05-03T19:15:00Z"
     }
   ],
   "delivery_date": "2026-05-03",
   "eligible_rows": 0,
-  "now_utc": "2026-05-03T16:58:14Z",
+  "now_utc": "2026-05-03T17:22:06Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
   "snapshot_type": "t_minus_25",
