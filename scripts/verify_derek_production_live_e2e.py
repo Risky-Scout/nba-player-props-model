@@ -68,17 +68,34 @@ CLOSE_LOCK_OFFSET_MIN = 5
 # Required snapshot files for a PASS-level production-live snapshot.
 REQUIRED_PMF_FILES = (
     "snapshot_manifest.json",
+    "snapshot_report.md",
+    "prop_summary.csv",
     "prop_summary.parquet",
+    "full_pmf_wide.csv",
     "full_pmf_wide.parquet",
+    "outcome_level_probabilities.csv",
+    "outcome_level_probabilities.parquet",
+    "market_comparison.csv",
     "market_comparison.parquet",
 )
 REQUIRED_CONTEXT_FILES = (
+    "lineup_context.csv",
     "lineup_context.parquet",
+    "injury_availability_context.csv",
     "injury_availability_context.parquet",
-    "contextual_feature_audit.parquet",
-    "pmf_driver_decomposition.parquet",
-    "direct_lineup_impact_report.json",
+    "game_context.csv",
     "game_context.parquet",
+    "contextual_feature_audit.csv",
+    "contextual_feature_audit.parquet",
+    "prediction_input_audit.csv",
+    "prediction_input_audit.parquet",
+    "pmf_driver_decomposition.csv",
+    "pmf_driver_decomposition.parquet",
+    "pmf_driver_decomposition.md",
+    "lineup_injury_impact_report.json",
+    "lineup_injury_impact_report.md",
+    "direct_lineup_impact_report.json",
+    "direct_lineup_impact_report.md",
 )
 
 
@@ -151,8 +168,10 @@ def _check_snapshot(snap_dir: Path, *, pointer: dict) -> tuple[bool, list[str], 
         return False, [f"cannot parse snapshot_manifest.json: {exc}"], {}
 
     # Production-live mode required for E2E PASS classification.
+    # Phase 13U — production_live_current also counts (current_live snapshots
+    # use the contextual champion the same way).
     sm = m.get("snapshot_mode")
-    if sm != "production_live":
+    if sm not in ("production_live", "production_live_current"):
         return False, [f"snapshot_mode={sm!r} is not production_live"], m
 
     # Required files.
@@ -322,7 +341,7 @@ def main(argv=None) -> int:
         for game_dir in sorted(base.iterdir()):
             if not game_dir.is_dir():
                 continue
-            for snap_type in ("t_minus_25", "close_lock"):
+            for snap_type in ("current_live", "t_minus_25", "close_lock"):
                 snap_dir = game_dir / snap_type
                 if not snap_dir.exists():
                     continue

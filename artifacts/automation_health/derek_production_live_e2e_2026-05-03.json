@@ -6,25 +6,25 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-03",
-    "now_utc": "2026-05-03T14:50:38Z",
+    "now_utc": "2026-05-03T15:56:18Z",
     "pending_reason": "all_targets_in_future",
     "predictions_parquet_present": true,
     "schedule_eval": [
       {
         "cl_overdue": false,
-        "cl_target_utc": null,
+        "cl_target_utc": "2026-05-03T23:35:00Z",
         "game_id": "21682000",
-        "game_start_time": null,
+        "game_start_time": "2026-05-03T23:40:00Z",
         "t25_overdue": false,
-        "t25_target_utc": null
+        "t25_target_utc": "2026-05-03T23:15:00Z"
       },
       {
         "cl_overdue": false,
-        "cl_target_utc": null,
+        "cl_target_utc": "2026-05-03T19:35:00Z",
         "game_id": "21684819",
-        "game_start_time": null,
+        "game_start_time": "2026-05-03T19:40:00Z",
         "t25_overdue": false,
-        "t25_target_utc": null
+        "t25_target_utc": "2026-05-03T19:15:00Z"
       }
     ],
     "schedule_size": 2

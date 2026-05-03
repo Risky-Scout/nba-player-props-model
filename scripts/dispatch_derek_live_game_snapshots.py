@@ -37,7 +37,7 @@ from nba_props_model.training_automation import (  # noqa: E402
 )
 
 
-SNAPSHOT_TYPES = ("t_minus_25", "close_lock")
+SNAPSHOT_TYPES = ("current_live", "t_minus_25", "close_lock")
 DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PRED_DIR = REPO_ROOT / "predictions"
 DISPATCH_DIR = REPO_ROOT / "artifacts" / "derek_live_snapshots"
@@ -61,13 +61,17 @@ def _utc_iso(d: dt.datetime) -> str:
 def _load_schedule(delivery_date: str) -> list[dict]:
     """Load today's slate from ``predictions/all_props_<date>.parquet`` (one row
     per (player, stat, line) — we deduplicate to (game_id, game_start_time)).
+    Phase 13U — when the parquet has no ``game_start_time`` column, the
+    dispatcher invokes the cascading resolver to fill in real tip times
+    from cached/live Odds API or BDL. The resolver never fabricates;
+    games it cannot resolve simply have ``game_start_time=None`` and
+    are reported as not-due in the per-game log.
     """
     parquet = PRED_DIR / f"all_props_{delivery_date}.parquet"
     if not parquet.exists():
         return []
     try:
         import pandas as pd
-        cols = ["game_id"]
         df = pd.read_parquet(parquet, columns=None)
         if "game_id" not in df.columns:
             return []
@@ -85,6 +89,31 @@ def _load_schedule(delivery_date: str) -> list[dict]:
                 if gs is not None and not (hasattr(gs, "__class__") and pd.isna(gs)):
                     rec["game_start_time"] = str(gs)
             rows.append(rec)
+
+        # Phase 13U — fill missing tip times from the resolver.
+        if any(not r.get("game_start_time") for r in rows):
+            try:
+                # Lazy import; resolver depends on src/ being on sys.path.
+                from nba_props_model.schedule.game_start_times import (
+                    GameStartTimeResolver,
+                )
+                resolver = GameStartTimeResolver(repo_root=REPO_ROOT)
+                records, _telemetry = resolver.resolve(delivery_date)
+                resolved = {
+                    r.game_id: r.resolved_game_start_time_utc
+                    for r in records if r.resolved_game_start_time_utc
+                }
+                source_used = {r.game_id: r.source_used for r in records}
+                for r in rows:
+                    if not r.get("game_start_time") and r["game_id"] in resolved:
+                        r["game_start_time"] = resolved[r["game_id"]]
+                        r["game_start_time_source"] = source_used.get(
+                            r["game_id"], "resolver")
+            except Exception:
+                # Resolver failure is non-fatal — affected games stay
+                # without start time and the per-game log will surface
+                # the blocker.
+                pass
         return rows
     except Exception:
         return []
@@ -102,9 +131,18 @@ def _parse_iso_to_utc(s: str | None) -> dt.datetime | None:
         return None
 
 
-def _snapshot_target(game_start: dt.datetime, snapshot_type: str) -> dt.datetime:
-    offset = T_MINUS_25_OFFSET_MIN if snapshot_type == "t_minus_25" else CLOSE_LOCK_OFFSET_MIN
-    return game_start - dt.timedelta(minutes=offset)
+def _snapshot_target(game_start: dt.datetime, snapshot_type: str
+                      ) -> dt.datetime | None:
+    if snapshot_type == "t_minus_25":
+        return game_start - dt.timedelta(minutes=T_MINUS_25_OFFSET_MIN)
+    if snapshot_type == "close_lock":
+        return game_start - dt.timedelta(minutes=CLOSE_LOCK_OFFSET_MIN)
+    if snapshot_type == "current_live":
+        # current_live target is "now"; eligibility is simply
+        # "game has not tipped yet". Returning game_start lets the
+        # caller treat any pre-tip game as eligible.
+        return game_start
+    return None
 
 
 def _is_in_window(now: dt.datetime, target: dt.datetime, window: tuple[int, int]) -> bool:
@@ -224,26 +262,58 @@ def main(argv: list[str] | None = None) -> int:
     if args.max_games:
         schedule = schedule[: args.max_games]
 
-    window = T_MINUS_25_WINDOW if args.snapshot_type == "t_minus_25" else CLOSE_LOCK_WINDOW
+    if args.snapshot_type == "t_minus_25":
+        window = T_MINUS_25_WINDOW
+    elif args.snapshot_type == "close_lock":
+        window = CLOSE_LOCK_WINDOW
+    else:
+        # current_live — eligibility is "game has not tipped yet".
+        # A symbolic window is used only for the per-game log line.
+        window = (-9999, 0)
     eligible_rows = 0
     for entry in schedule:
         game_id = entry["game_id"]
         gs_iso = entry.get("game_start_time")
         gs = _parse_iso_to_utc(gs_iso)
         target = _snapshot_target(gs, args.snapshot_type) if gs else None
-        in_window = (
-            args.allow_backfill_test
-            or (target is not None and _is_in_window(now, target, window))
-        )
-        # Phase 13T verbose per-game visibility.
-        due_reason = (
-            "in_window" if in_window
-            else ("no_game_start_time" if target is None
-                  else f"target={_utc_iso(target)} window=({window[0]:+d},{window[1]:+d})min "
-                       f"now={_utc_iso(now)} → not_due")
-        )
+        if args.snapshot_type == "current_live":
+            # In-window iff the game has not tipped yet (pre-tip).
+            in_window = (
+                args.allow_backfill_test
+                or (gs is not None and now < gs)
+            )
+        else:
+            in_window = (
+                args.allow_backfill_test
+                or (target is not None and _is_in_window(now, target, window))
+            )
+        # Phase 13T+13U verbose per-game visibility.
+        if args.snapshot_type == "current_live":
+            if gs is None:
+                due_reason = "no_game_start_time"
+            elif now >= gs:
+                due_reason = (
+                    f"already_tipped (game_start_utc={_utc_iso(gs)} "
+                    f"now={_utc_iso(now)})"
+                )
+            else:
+                due_reason = (
+                    f"pre_tip (game_start_utc={_utc_iso(gs)} now={_utc_iso(now)})"
+                )
+        else:
+            due_reason = (
+                "in_window" if in_window
+                else ("no_game_start_time" if target is None
+                      else f"target={_utc_iso(target)} window=({window[0]:+d},{window[1]:+d})min "
+                           f"now={_utc_iso(now)} → not_due")
+            )
+        team = entry.get("team")
+        opponent = entry.get("opponent")
+        gst_source = entry.get("game_start_time_source") or "predictions_parquet"
         print(
-            f"  game_id={game_id} game_start_time={gs_iso!r} "
+            f"  game_id={game_id} team={team!r} opponent={opponent!r} "
+            f"game_start_time={gs_iso!r} game_start_time_source={gst_source} "
+            f"snapshot_type={args.snapshot_type} "
             f"target_utc={_utc_iso(target) if target else None} "
             f"due={in_window} reason={due_reason}"
         )
@@ -312,11 +382,14 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     print("DEREK_LIVE_SNAPSHOT_DISPATCH_PASS")
+    print("DEREK_DISPATCHER_GAME_TIME_AWARE_PASS")
     if eligible_rows == 0 and fired == 0:
         # Phase 13T — schedule had games but none were due in this
         # window. Emit the explicit pending token so the workflow's
         # E2E verifier can distinguish from a real failure.
         print("DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES")
+    if args.snapshot_type == "current_live" and fired > 0:
+        print("DEREK_CURRENT_LIVE_SNAPSHOT_MODE_PASS")
     print(f"  delivery_date={delivery_date} snapshot_type={args.snapshot_type}")
     print(
         f"  fired={fired} skipped_already_run={skipped_already_run} "

@@ -74,7 +74,7 @@ from nba_props_model.contextual import (  # noqa: E402
 )
 
 
-SNAPSHOT_TYPES = ("t_minus_25", "close_lock")
+SNAPSHOT_TYPES = ("current_live", "t_minus_25", "close_lock")
 DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PRED_DIR = REPO_ROOT / "predictions"
 PREDICT_SCRIPT = REPO_ROOT / "scripts" / "predict.py"
@@ -85,6 +85,10 @@ PREDICT_SCRIPT = REPO_ROOT / "scripts" / "predict.py"
 SNAPSHOT_OFFSETS_MINUTES = {
     "t_minus_25": 25,
     "close_lock": 5,
+    # current_live snapshots stamp snapshot_target_time_utc =
+    # actual_run_started_at_utc; the offset is treated as 0 for the
+    # manifest's offset calculation and the verifier accepts it.
+    "current_live": 0,
 }
 
 # Maximum allowed staleness of a predictions/all_props_{date}.parquet
@@ -1056,7 +1060,10 @@ def _build_snapshot_manifest(*,
                               ) -> dict:
     target_offset = SNAPSHOT_OFFSETS_MINUTES[snapshot_type]
     target_iso = None
-    if game_start_time_utc:
+    if snapshot_type == "current_live":
+        # Phase 13U — current_live target IS the actual run-start time.
+        target_iso = _utc_iso(run_started_at)
+    elif game_start_time_utc:
         try:
             gs = dt.datetime.fromisoformat(game_start_time_utc.replace("Z", "+00:00"))
             target = gs - dt.timedelta(minutes=target_offset)
@@ -1078,7 +1085,12 @@ def _build_snapshot_manifest(*,
     # on disk — does not count as recomputation and the manifest must not
     # claim it does. Snapshot_mode disambiguates the path.
     pmfs_recomputed = invoked_predict_ok
-    snapshot_mode = "backfill_demo" if allow_backfill else "production_live"
+    if allow_backfill:
+        snapshot_mode = "backfill_demo"
+    elif snapshot_type == "current_live":
+        snapshot_mode = "production_live_current"
+    else:
+        snapshot_mode = "production_live"
     if pmfs_recomputed:
         pmf_source = "live_snapshot_recomputed"
     elif backfill_reused:

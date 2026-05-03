@@ -1,0 +1,3 @@
+game_id,team_abbr,opponent_abbr,resolved_game_start_time_utc,source_used,source_confidence,source_payload_hash,resolution_blocker
+21682000,CLE,TOR,2026-05-03T23:40:00Z,predictions_parquet_game_start_time,high,22846cfc9f1fab41,
+21684819,DET,ORL,2026-05-03T19:40:00Z,predictions_parquet_game_start_time,high,cfb193ddb68cb030,

@@ -1,0 +1,42 @@
+{
+  "delivery_date": "2026-05-03",
+  "generated_at_utc": "2026-05-03T15:56:16+00:00Z",
+  "records": [
+    {
+      "game_id": "21682000",
+      "opponent_abbr": "TOR",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-03T23:40:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "22846cfc9f1fab41",
+      "source_used": "predictions_parquet_game_start_time",
+      "team_abbr": "CLE"
+    },
+    {
+      "game_id": "21684819",
+      "opponent_abbr": "ORL",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-03T19:40:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "cfb193ddb68cb030",
+      "source_used": "predictions_parquet_game_start_time",
+      "team_abbr": "DET"
+    }
+  ],
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": false,
+    "bdl_live_games": 0,
+    "delivery_date": "2026-05-03",
+    "from_predictions_count": 2,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 5,
+    "pmf_display_matchups_parsed": 2,
+    "predictions_present": true,
+    "predictions_rows": 69,
+    "predictions_unique_games": 2,
+    "resolved_count": 2,
+    "unresolved_count": 0
+  }
+}

@@ -249,7 +249,13 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
     p13q_trainer = REPO_ROOT / "scripts" / "train_contextual_challenger.py"
     needed = {
         runner: (
-            'snapshot_mode = "backfill_demo" if allow_backfill else "production_live"',
+            # Phase 13U expanded the snapshot_mode resolution to also
+            # emit "production_live_current" for current_live snapshots,
+            # so the assertion is now on the canonical mode strings
+            # rather than the exact one-line ternary.
+            'snapshot_mode = "backfill_demo"',
+            'snapshot_mode = "production_live_current"',
+            'snapshot_mode = "production_live"',
             "champion_metadata_verified",
             "lineup_feature_blocker",
             "--derek-live-snapshot",

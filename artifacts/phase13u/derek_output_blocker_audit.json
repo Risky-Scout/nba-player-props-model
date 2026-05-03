@@ -1,0 +1,163 @@
+{
+  "answers": {
+    "10_odds_api_raw_event_count": [
+      {
+        "2026-05-03": 0
+      }
+    ],
+    "11_derek_snapshot_count": [
+      {
+        "2026-05-03": 0
+      }
+    ],
+    "12_live_lineups_dir_present": [
+      {
+        "2026-05-03": false
+      }
+    ],
+    "13_dispatcher_no_games_root_cause": "predictions/all_props_<date>.parquet has no game_start_time column at all (not just null), so the dispatcher's _load_schedule cannot derive any per-game tip time. Without tip times, the T-25 / close-lock window check always returns due=False with reason=no_game_start_time.",
+    "14_files_to_repair": [
+      "src/nba_props_model/schedule/game_start_times.py (new resolver)",
+      "scripts/resolve_game_start_times.py (CLI for live_schedule outputs)",
+      "scripts/enrich_predictions_game_start_times.py (metadata-only writer)",
+      "scripts/dispatch_derek_live_game_snapshots.py (resolver-aware)",
+      "scripts/run_derek_live_game_snapshot.py (current_live mode)",
+      "scripts/verify_derek_slate_completeness.py (new)",
+      "scripts/verify_derek_production_live_e2e.py (extend with current_live)",
+      ".github/workflows/derek_live_game_snapshots.yml (cron + steps)"
+    ],
+    "1_predictions_parquet_present": [
+      {
+        "2026-05-03": true
+      }
+    ],
+    "2_prediction_rows": [
+      {
+        "2026-05-03": 69
+      }
+    ],
+    "3_unique_games": [
+      {
+        "2026-05-03": 2
+      }
+    ],
+    "4_game_ids": [
+      {
+        "2026-05-03": [
+          "21682000",
+          "21684819"
+        ]
+      }
+    ],
+    "5_team_ids": [
+      {
+        "2026-05-03": [
+          6,
+          9,
+          22,
+          28
+        ]
+      }
+    ],
+    "6_game_start_time_column_present": [
+      {
+        "2026-05-03": false
+      }
+    ],
+    "7_game_start_time_non_null_count": [
+      {
+        "2026-05-03": 0
+      }
+    ],
+    "8_pmf_display_present": [
+      {
+        "2026-05-03": true
+      }
+    ],
+    "8b_pmf_display_top_level_time_keys": [
+      {
+        "2026-05-03": []
+      }
+    ],
+    "9_odds_api_processed_dir_present": [
+      {
+        "2026-05-03": false
+      }
+    ]
+  },
+  "audits": [
+    {
+      "columns": [
+        "player_id",
+        "player_name",
+        "game_id",
+        "game",
+        "team_id",
+        "stat",
+        "side",
+        "line",
+        "odds",
+        "over_odds",
+        "under_odds",
+        "bet_vendor",
+        "model_prob",
+        "model_prob_raw",
+        "model_prob_cal",
+        "cal_source",
+        "market_prob",
+        "raw_edge",
+        "ev",
+        "kelly_units",
+        "q50",
+        "q_preds",
+        "usage_bucket",
+        "mp_bucket",
+        "min_ev_applied",
+        "cal_type",
+        "cal_applied",
+        "is_sparse",
+        "pmf",
+        "fair_odds_over",
+        "fair_odds_under",
+        "pmf_median",
+        "edge_over",
+        "edge_under",
+        "line_vs_median",
+        "mkt_true_over",
+        "mkt_true_under"
+      ],
+      "deliveries_dir_present": false,
+      "delivery_date": "2026-05-03",
+      "derek_game_snapshots_dir_present": false,
+      "derek_snapshot_count": 0,
+      "game_ids": [
+        "21682000",
+        "21684819"
+      ],
+      "game_start_time_column_present": false,
+      "game_start_time_non_null_count": 0,
+      "live_lineups_dir_present": false,
+      "odds_api_processed_dir_present": false,
+      "odds_api_raw_dir_present": false,
+      "pmf_display_games": [
+        "Orlando Magic @ Detroit Pistons",
+        "Toronto Raptors @ Cleveland Cavaliers"
+      ],
+      "pmf_display_present": true,
+      "pmf_display_props": 8,
+      "pmf_display_time_keys_in_rows": [],
+      "pmf_display_top_level_time_keys": [],
+      "prediction_rows": 69,
+      "predictions_parquet_present": true,
+      "team_ids": [
+        6,
+        9,
+        22,
+        28
+      ],
+      "unique_games": 2
+    }
+  ],
+  "generated_at_utc": "2026-05-03T15:35:20+00:00Z",
+  "schema_version": "1.0"
+}

@@ -32,11 +32,11 @@ on:
         required: false
         default: ""
       snapshot_type:
-        description: "Which snapshot to dispatch (both = t_minus_25 then close_lock)"
+        description: "Which snapshot to dispatch (both = t25 + close_lock; all = current_live + t25 + close_lock)"
         required: false
-        default: "both"
+        default: "all"
         type: choice
-        options: ["t_minus_25", "close_lock", "both"]
+        options: ["current_live", "t_minus_25", "close_lock", "both", "all"]
       allow_backfill_test:
         description: "Skip wall-clock window check (for manual testing)"
         required: false
@@ -86,16 +86,68 @@ jobs:
       - name: Resolve snapshot type
         id: s
         run: |
-          # workflow_dispatch input wins; cron schedule fans out across both.
+          # workflow_dispatch input wins; cron schedule fans out across all.
           INPUT_TYPE="${{ github.event.inputs.snapshot_type }}"
           if [ -z "$INPUT_TYPE" ]; then
-            INPUT_TYPE="both"
+            INPUT_TYPE="all"
           fi
           echo "type=$INPUT_TYPE" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve game start times (Phase 13U)
+        id: resolve_start_times
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python scripts/resolve_game_start_times.py --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Enrich predictions with real game_start_time (Phase 13U)
+        id: enrich_predictions
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python scripts/enrich_predictions_game_start_times.py --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Verify slate completeness (Phase 13U)
+        id: verify_slate
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python scripts/verify_derek_slate_completeness.py --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Dispatch current_live (Phase 13U)
+        id: dispatch_current_live
+        if: steps.s.outputs.type == 'current_live' || steps.s.outputs.type == 'all'
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          STALE_FLAG=""
+          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
+            STALE_FLAG="--allow-backfill-test"
+          fi
+          MAX_FLAG=""
+          if [ -n "${{ github.event.inputs.max_games }}" ]; then
+            MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
+          fi
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            FORCE_FLAG="--force"
+          fi
+          python scripts/dispatch_derek_live_game_snapshots.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --snapshot-type current_live \
+            $STALE_FLAG $MAX_FLAG $FORCE_FLAG
+
       - name: Dispatch t_minus_25
         id: dispatch_t25
-        if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both'
+        if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
         continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -120,7 +172,7 @@ jobs:
 
       - name: Dispatch close_lock
         id: dispatch_cl
-        if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both'
+        if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
         continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -196,6 +248,15 @@ jobs:
         run: |
           python scripts/verify_phase13l_no_breakage.py
 
+      - name: Build daily model training report (Phase 13U)
+        id: daily_report
+        continue-on-error: true
+        run: |
+          # Use the active champion's trained_through_date for the
+          # report, falling back to delivery_date when missing.
+          AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
+          python scripts/build_daily_model_training_report.py --as-of-date "$AS_OF"
+
       - name: Score Derek snapshots after games (pending if outcomes absent)
         id: after_game_scoring
         continue-on-error: true
@@ -237,34 +298,37 @@ jobs:
             artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.*
 
       - name: Stage and commit Derek-only files (Joseph Shackelford authorship)
-        # Commit only the Derek per-game snapshot folder and the dispatcher
-        # report. NEVER touch wizard_of_odds/, derek_forward_feed/,
-        # pmf_model_review_package/, canonical_source/, data/, or model
-        # artifacts. The verify steps above do not gate the commit — even
-        # partial dispatch (some games skipped due to window) should
-        # persist the snapshots that DID run.
+        # Phase 13U — also commit Phase 13U artifacts: live_schedule,
+        # phase13u audits, slate completeness, E2E audit, daily model
+        # reports. The commit gate accepts any successful dispatch
+        # (current_live, t_minus_25, or close_lock).
         if: |
+          steps.dispatch_current_live.outcome == 'success' ||
           steps.dispatch_t25.outcome == 'success' ||
           steps.dispatch_cl.outcome == 'success'
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+          AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
           git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
                   artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
                   artifacts/live_lineups/${{ steps.d.outputs.date }} \
+                  artifacts/live_schedule/${{ steps.d.outputs.date }} \
                   artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json \
                   artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md \
                   artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.json \
                   artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md \
                   artifacts/automation_health/phase13l_no_breakage.json \
-                  artifacts/automation_health/phase13l_no_breakage.md || true
+                  artifacts/automation_health/phase13l_no_breakage.md \
+                  artifacts/model_daily_reports/$AS_OF || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "phase13m derek live snapshots ${{ steps.d.outputs.date }}"
-          # Discard any tracked-file working-tree changes (e.g. BDL refresh
-          # side-effects on data/player_game_stats.parquet) so pull --rebase
-          # can proceed cleanly.
+              -m "phase13u: Derek live snapshots + daily model report ${{ steps.d.outputs.date }}"
           git checkout -- . 2>/dev/null || true
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin main && break || sleep 5

@@ -46,7 +46,7 @@ from nba_props_model.training_automation import (  # noqa: E402
 )
 
 
-SNAPSHOT_TYPES = ("t_minus_25", "close_lock")
+SNAPSHOT_TYPES = ("current_live", "t_minus_25", "close_lock")
 DELIVERIES_DIR = REPO_ROOT / "deliveries"
 HEALTH_DIR = REPO_ROOT / "artifacts" / "automation_health"
 
@@ -185,19 +185,31 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
     manifest = read_json(snap_dir / "snapshot_manifest.json")
 
     # 2. Snapshot type / target offset.
-    expected_offset = 25 if snapshot_type == "t_minus_25" else 5
+    # Phase 13U — current_live snapshots stamp target=now (offset 0
+    # from the run, NOT from game_start_time), so the offset check is
+    # skipped for them. The verifier instead checks that target ≤
+    # game_start_time (no post-tip data used).
     target_iso = manifest.get("snapshot_target_time_utc")
     gs_iso = manifest.get("game_start_time_utc")
     target_dt = _parse_iso(target_iso) if target_iso else None
     gs_dt = _parse_iso(gs_iso) if gs_iso else None
-    if gs_dt and target_dt:
-        delta_min = (gs_dt - target_dt).total_seconds() / 60.0
-        ok = abs(delta_min - expected_offset) < 0.5
-        report.add(
-            f"{label}/snapshot_target_offset_ok",
-            ok,
-            f"expected={expected_offset}min  observed={delta_min:.1f}min",
-        )
+    if snapshot_type == "current_live":
+        if gs_dt and target_dt:
+            report.add(
+                f"{label}/current_live_target_pre_tip",
+                target_dt <= gs_dt,
+                f"target={target_iso} game_start={gs_iso}",
+            )
+    else:
+        expected_offset = 25 if snapshot_type == "t_minus_25" else 5
+        if gs_dt and target_dt:
+            delta_min = (gs_dt - target_dt).total_seconds() / 60.0
+            ok = abs(delta_min - expected_offset) < 0.5
+            report.add(
+                f"{label}/snapshot_target_offset_ok",
+                ok,
+                f"expected={expected_offset}min  observed={delta_min:.1f}min",
+            )
 
     # 3. Run timestamps recorded.
     started = _parse_iso(manifest.get("actual_run_started_at_utc"))
@@ -225,7 +237,8 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
         )
     report.add(
         f"{label}/snapshot_mode_valid",
-        snapshot_mode in ("production_live", "backfill_demo"),
+        snapshot_mode in ("production_live", "production_live_current",
+                          "backfill_demo"),
         f"snapshot_mode={snapshot_mode!r}",
     )
     # The mode and the backfill flag must agree.
@@ -235,7 +248,7 @@ def _check_snapshot(report: Report, snap_dir: Path, game_id: str,
         backfill_flag == expected_backfill,
         f"snapshot_mode={snapshot_mode!r} allow_backfill_test={backfill_flag}",
     )
-    if snapshot_mode == "production_live":
+    if snapshot_mode in ("production_live", "production_live_current"):
         # Production-live REQUIRES recomputation. Reusing canonical PMFs is
         # a hard fail in this mode.
         report.add(
@@ -514,7 +527,12 @@ def main(argv: list[str] | None = None) -> int:
     games = [d for d in sorted(base.iterdir()) if d.is_dir()]
     report.facts["game_count"] = len(games)
     snapshot_count = 0
-    mode_counts: dict[str, int] = {"production_live": 0, "backfill_demo": 0, "unknown": 0}
+    mode_counts: dict[str, int] = {
+        "production_live": 0,
+        "production_live_current": 0,
+        "backfill_demo": 0,
+        "unknown": 0,
+    }
     recomputed_count = 0
     for game_dir in games:
         gid = game_dir.name
@@ -537,7 +555,7 @@ def main(argv: list[str] | None = None) -> int:
                         mode_counts.get(sm if sm in mode_counts else "unknown", 0) + 1
                     )
                     if (
-                        sm == "production_live"
+                        sm in ("production_live", "production_live_current")
                         and m.get("pmfs_recomputed") is True
                         and m.get("pmf_source") == "live_snapshot_recomputed"
                     ):
@@ -599,7 +617,10 @@ def main(argv: list[str] | None = None) -> int:
         # snapshot is backfill_demo (infrastructure proof, not live recompute).
         all_production_recomputed = (
             snapshot_count > 0
-            and mode_counts.get("production_live", 0) == snapshot_count
+            and (
+                mode_counts.get("production_live", 0)
+                + mode_counts.get("production_live_current", 0)
+            ) == snapshot_count
             and recomputed_count == snapshot_count
         )
         all_backfill = (

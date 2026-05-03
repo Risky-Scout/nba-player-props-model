@@ -1,0 +1,82 @@
+# Daily model training / recalibration report — 2026-04-30
+
+- generated_at_utc: 2026-05-03T15:56:19+00:00Z
+
+## Active champion
+
+- champion_model_id: `challenger-2026-04-30`
+- feature_set_id: `phase13s_direct_lineup_injury_pmf_driver_v1`
+- direct_lineup_pmf_driver: `True`
+- contextual_pmf_engine: `True`
+- trained_through_date: `2026-04-30`
+- calibrated_through_date: `2026-04-30`
+- training_run_id: `nightly-20260501T124701`
+- calibration_manifest_path: `artifacts/models/challengers/2026-04-30/calibration_manifest.json`
+- train_manifest_path: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/train_manifest.json`
+- validation_report_path: `artifacts/phase13s/validation_gates_report.json`
+- promotion_decision_path: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/promotion_decision.json`
+- no_leakage_manifest_path: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/no_leakage_manifest.json`
+- promotion_decision_id: `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826`
+
+## Promotion status
+
+- promoted: **True**
+- decision_id: `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826`
+- decided_at_utc: `2026-05-03T13:58:26+00:00`
+
+## Validation gates
+
+- any_positive_improvement: **True**
+- issues: []
+- minutes_min_rel_improvement: `0.05`
+- safe_noninferiority_threshold: `-0.005`
+
+## Per-target metrics (training-time validation)
+
+| target | n_test | rel_improvement |
+| --- | ---: | ---: |
+| ast | 15770 | +2.0951% |
+| blk | 15770 | -0.0108% |
+| fg3m | 15770 | +0.0478% |
+| minutes | 16225 | +15.3383% |
+| pts | 15770 | +0.3413% |
+| reb | 15770 | -0.0361% |
+| stl | 15770 | +0.0217% |
+| tov | 15770 | +0.0784% |
+
+## Sensitivity
+
+- case_1_direct_lineup: {'abs_diff_minutes_delta': 2.8569507698959917, 'feature_vector_hash_post': 'c6ef2fe8edb7777a', 'feature_vector_hash_pre': '9c834bc334605ad9', 'feature_vectors_changed': True, 'minutes_delta_post': 3.9246101550977954, 'minutes_delta_pre': 1.0676593852018037, 'pmf_mean_post': 33.924610155097795, 'pmf_mean_pre': 31.067659385201804, 'pmf_mean_shift': 2.8569507698959917}
+- case_2_lineup_composition: {'abs_diff_minutes_delta': 2.4511298398661854, 'minutes_delta_a': 3.969769591266317, 'minutes_delta_b': 1.5186397514001317, 'team_lineup_num_high_usage_players_a': 1.0, 'team_lineup_num_high_usage_players_b': 3.0}
+- case_3_actionability: {'injury_lineup_conflict': True, 'is_actionable': False, 'is_confirmed_out': True}
+- case_4_teammate_out: {'abs_diff_minutes_delta': 0.00010795232668137089, 'minutes_delta_loaded': 3.9696616389396358, 'minutes_delta_quiet': 3.969769591266317}
+- case_5_market_only: {'delta_hash_m1': '3297fe279984ab68', 'delta_hash_m2': '3297fe279984ab68', 'feature_vectors_equal': True}
+- case_6_no_change: {'delta_hash_a': '3297fe279984ab68', 'delta_hash_b': '3297fe279984ab68', 'feature_vectors_equal': True}
+
+## After-game scoring
+
+```json
+{
+  "delivery_date": "2026-04-30",
+  "facts": {
+    "outcomes_available": false,
+    "snapshot_manifests_found": 0
+  },
+  "reason": "no Derek snapshots found under deliveries/2026-04-30",
+  "schema_version": "1.0",
+  "scored": false
+}
+```
+
+## Rolling Derek benchmark
+
+```json
+{
+  "outcome": "pending",
+  "blocker": "no rolling Derek benchmark found for as_of_date=2026-04-30"
+}
+```
+
+## Pending items
+
+PMF NLL / RPS / ECE / p0 calibration / mean bias / tail calibration are reported once nightly post-game scoring produces realized outcomes. The Phase 13S/13T after-game scoring writes DEREK_LIVE_SNAPSHOT_SCORING_PENDING when outcomes are not yet available.
