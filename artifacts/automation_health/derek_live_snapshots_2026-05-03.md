@@ -1,6 +1,6 @@
 # Derek Live Snapshots — 2026-05-03
 
-- generated_at_utc: 2026-05-03T21:56:12+00:00
+- generated_at_utc: 2026-05-03T22:21:34+00:00
 - passed: **True**
 - snapshot_count: 2 across 2 game folders
 
