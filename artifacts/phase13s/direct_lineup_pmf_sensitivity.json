@@ -1,20 +1,20 @@
 {
   "case_results": {
     "case_1_direct_lineup": {
-      "abs_diff_minutes_delta": 2.85695076989602,
+      "abs_diff_minutes_delta": 2.8569507698959917,
       "feature_vector_hash_post": "c6ef2fe8edb7777a",
       "feature_vector_hash_pre": "9c834bc334605ad9",
       "feature_vectors_changed": true,
-      "minutes_delta_post": 3.924610155098442,
-      "minutes_delta_pre": 1.0676593852024219,
-      "pmf_mean_post": 33.92461015509844,
-      "pmf_mean_pre": 31.067659385202422,
-      "pmf_mean_shift": 2.85695076989602
+      "minutes_delta_post": 3.9246101550977954,
+      "minutes_delta_pre": 1.0676593852018037,
+      "pmf_mean_post": 33.924610155097795,
+      "pmf_mean_pre": 31.067659385201804,
+      "pmf_mean_shift": 2.8569507698959917
     },
     "case_2_lineup_composition": {
-      "abs_diff_minutes_delta": 2.451129839866251,
-      "minutes_delta_a": 3.9697695912669584,
-      "minutes_delta_b": 1.5186397514007073,
+      "abs_diff_minutes_delta": 2.4511298398661854,
+      "minutes_delta_a": 3.969769591266317,
+      "minutes_delta_b": 1.5186397514001317,
       "team_lineup_num_high_usage_players_a": 1.0,
       "team_lineup_num_high_usage_players_b": 3.0
     },
@@ -24,9 +24,9 @@
       "is_confirmed_out": true
     },
     "case_4_teammate_out": {
-      "abs_diff_minutes_delta": 0.00010795232667426546,
-      "minutes_delta_loaded": 3.969661638940284,
-      "minutes_delta_quiet": 3.9697695912669584
+      "abs_diff_minutes_delta": 0.00010795232668137089,
+      "minutes_delta_loaded": 3.9696616389396358,
+      "minutes_delta_quiet": 3.969769591266317
     },
     "case_5_market_only": {
       "delta_hash_m1": "3297fe279984ab68",

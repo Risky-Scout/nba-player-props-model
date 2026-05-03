@@ -110,7 +110,7 @@
       "consecutive_starter_streak not in saved feature lists"
     ]
   },
-  "generated_at_utc": "2026-05-03T12:04:15+00:00Z",
+  "generated_at_utc": "2026-05-03T13:58:04+00:00Z",
   "phase13q_metrics_per_target": {
     "ast": {
       "baseline_mse": 0.009784958557354345,
@@ -197,7 +197,7 @@
     "lineup_interaction_features_enabled": true,
     "model_version": "challenger-2026-04-30",
     "official_lineup_features_enabled": true,
-    "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T115838",
+    "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T134927",
     "vacated_opportunity_features_enabled": true,
     "validation_report_path": "artifacts/phase13s/validation_gates_report.json"
   },

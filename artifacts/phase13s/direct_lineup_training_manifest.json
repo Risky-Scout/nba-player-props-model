@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-04-30",
   "availability_rows_joined": 81125,
-  "code_commit": "36ad7d071eaab80fb102513fb326432a56bc83d0",
+  "code_commit": "5d6d79f8e9c4399918df4730fa82266f08855869",
   "date_max": "2026-04-29",
   "date_min": "2023-10-30",
   "direct_lineup_feature_missingness": {
@@ -58,7 +58,7 @@
   ],
   "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
   "game_context_rows": 81125,
-  "generated_at_utc": "2026-05-03T13:49:06+00:00",
+  "generated_at_utc": "2026-05-03T13:58:15+00:00",
   "injury_rows_joined": 81125,
   "lineup_rows_joined": 0,
   "lineup_source": "official_boxscore_starter_proxy_via_prev_game_min",
@@ -69,7 +69,7 @@
   "rows": 81125,
   "schema_version": "1.0",
   "source_hashes": {
-    "direct_lineup_context_features_parquet": "b64fc44d4da779bfde5208bae270dfd5",
+    "direct_lineup_context_features_parquet": "3f4dcefb5a06b8f536b28a9f4b51d694",
     "live_context_features_parquet": "c9c3c763c2cab917e7ae7197f7e725ec",
     "player_game_stats_parquet": "6c8549f7ac3eea1b93a7fa36fc166a51"
   },

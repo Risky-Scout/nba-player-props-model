@@ -1,6 +1,6 @@
 # Phase 13R Baseline Audit (Phase 13S Part A)
 
-- generated_at_utc: 2026-05-03T12:04:15+00:00Z
+- generated_at_utc: 2026-05-03T13:58:04+00:00Z
 - pointer.feature_set_id: `phase13s_direct_lineup_injury_pmf_driver_v1`
 - pointer.contextual_pmf_engine: **True**
 - contextual_challenger_dir: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual`

@@ -33,12 +33,12 @@
     "vacated_opportunity_features_enabled",
     "validation_report_path"
   ],
-  "code_commit": "36ad7d071eaab80fb102513fb326432a56bc83d0",
+  "code_commit": "5d6d79f8e9c4399918df4730fa82266f08855869",
   "contextual_challenger_dir": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual",
-  "decided_at_utc": "2026-05-03T13:49:27+00:00",
-  "decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T134927",
+  "decided_at_utc": "2026-05-03T13:58:26+00:00",
+  "decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
-  "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260503T134927p0000/champion_pointer.previous.json",
+  "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260503T135826p0000/champion_pointer.previous.json",
   "promoted": true,
   "schema_version": "1.0"
 }
