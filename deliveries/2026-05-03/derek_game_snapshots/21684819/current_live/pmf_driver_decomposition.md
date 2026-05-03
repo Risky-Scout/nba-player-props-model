@@ -1,11 +1,28 @@
-# Contextual PMF driver decomposition
+# PMF driver decomposition — 2026-05-03 game 21684819 (current_live)
 
 - feature_set_id: `phase13s_direct_lineup_injury_pmf_driver_v1`
-- contextual_challenger_dir: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual`
-- rows_scored: **33**
-- minutes_delta_abs_mean: **15.3781**
-- minutes_delta_abs_max: **15.3781**
+- contextual_pmf_engine: **True**
+- contextual_pmf_applied: **True**
+- direct_lineup_pmf_driver: **True**
 
-## Primary driver attribution
+This is a best-available pre-tip baseline. BDL did not return confirmed lineup rows at this timestamp, so official lineup status did not directly affect this PMF. The snapshot still reflects the active champion's lagged-proxy starter signal (`starter_proxy_lagged`) and all injury / availability / vacated-opportunity / game-context features.
 
-Each row is attributed by the dominant feature group whose absolute contribution is largest (lineup/injury/game-context/market-only/no-change).
+## Per-player contextual deltas (top 30)
+
+| player_name | exp_mp_contextual | contextual_minutes_delta |
+| --- | --- | --- |
+| Daniss Jenkins | 15.378 | 15.378 |
+| Ausar Thompson | 15.378 | 15.378 |
+| Anthony Black | 15.378 | 15.378 |
+| Isaiah Stewart | 15.378 | 15.378 |
+| Jamal Cain | 15.378 | 15.378 |
+| Tobias Harris | 15.378 | 15.378 |
+| Jalen Suggs | 15.378 | 15.378 |
+| Cade Cunningham | 15.378 | 15.378 |
+| Duncan Robinson | 15.378 | 15.378 |
+| Paolo Banchero | 15.378 | 15.378 |
+| Wendell Carter Jr. | 15.378 | 15.378 |
+| Desmond Bane | 15.378 | 15.378 |
+| Tristan Da Silva | 15.378 | 15.378 |
+| Jalen Duren | 15.378 | 15.378 |
+

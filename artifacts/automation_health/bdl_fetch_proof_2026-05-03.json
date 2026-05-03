@@ -1,0 +1,41 @@
+{
+  "delivery_date": "2026-05-03",
+  "failure_count": 0,
+  "outcome": "pass",
+  "schema_version": "1.0",
+  "snapshot_count": 2,
+  "snapshots": [
+    {
+      "facts": {
+        "BDL_injury_endpoint": "data/nba_injury_reports.parquet (downstream of predict.py)",
+        "BDL_injury_fetch_attempted": true,
+        "BDL_injury_fetch_status": "deferred_to_predict_pipeline",
+        "BDL_injury_rows": 0,
+        "BDL_lineup_endpoint": "balldontlie_v1_lineups",
+        "BDL_lineup_fetch_attempted": true,
+        "BDL_lineup_fetch_status": "no_rows_returned",
+        "BDL_lineup_fetched_at_utc": "2026-05-03T18:14:16Z",
+        "BDL_lineup_rows": 0
+      },
+      "game_id": "21682000",
+      "issues": [],
+      "snapshot_type": "current_live"
+    },
+    {
+      "facts": {
+        "BDL_injury_endpoint": "data/nba_injury_reports.parquet (downstream of predict.py)",
+        "BDL_injury_fetch_attempted": true,
+        "BDL_injury_fetch_status": "deferred_to_predict_pipeline",
+        "BDL_injury_rows": 0,
+        "BDL_lineup_endpoint": "balldontlie_v1_lineups",
+        "BDL_lineup_fetch_attempted": true,
+        "BDL_lineup_fetch_status": "no_rows_returned",
+        "BDL_lineup_fetched_at_utc": "2026-05-03T18:14:14Z",
+        "BDL_lineup_rows": 0
+      },
+      "game_id": "21684819",
+      "issues": [],
+      "snapshot_type": "current_live"
+    }
+  ]
+}

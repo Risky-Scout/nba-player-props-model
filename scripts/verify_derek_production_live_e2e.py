@@ -220,6 +220,51 @@ def _check_snapshot(snap_dir: Path, *, pointer: dict) -> tuple[bool, list[str], 
     if not m.get("no_post_tip_data_used"):
         issues.append("no_post_tip_data_used flag not true")
 
+    # Phase 13W — manifest truth fields must NEVER be None.
+    for f in (
+        "game_start_time",
+        "game_start_time_utc",
+        "game_start_time_source",
+        "game_start_time_resolution_confidence",
+        "BDL_lineup_fetch_attempted",
+        "BDL_lineup_fetch_status",
+        "BDL_lineup_rows",
+        "BDL_lineup_endpoint",
+        "BDL_injury_fetch_attempted",
+        "BDL_injury_fetch_status",
+        "BDL_injury_rows",
+        "BDL_injury_endpoint",
+        "official_lineup_context_supplied",
+        "lineup_context_supplied",
+        "injury_context_supplied",
+        "game_context_supplied",
+        "lineup_confirmed",
+        "lineup_aware",
+        "lineup_affects_pmf_features",
+        "injury_affects_pmf_features",
+        "direct_lineup_features_consumed",
+        "lineup_source",
+        "lineup_blocker",
+        "injury_source",
+        "injury_blocker",
+        "no_post_tip_data_used",
+        "market_odds_used_as_features",
+        "market_odds_used_for_edge_only",
+    ):
+        if m.get(f) is None:
+            issues.append(f"manifest.{f} is None (required non-null)")
+    # Phase 13W — game_start_time must mirror game_start_time_utc.
+    if m.get("game_start_time") and m.get("game_start_time_utc"):
+        if str(m.get("game_start_time")) != str(m.get("game_start_time_utc")):
+            issues.append(
+                f"game_start_time={m.get('game_start_time')!r} != "
+                f"game_start_time_utc={m.get('game_start_time_utc')!r}"
+            )
+    if m.get("market_odds_used_as_features") is True:
+        issues.append("market_odds_used_as_features=True (must be False)")
+    if m.get("market_odds_used_for_edge_only") is False:
+        issues.append("market_odds_used_for_edge_only=False (must be True)")
+
     # Phase 13T — explicit Phase 13S champion-flag checks. When the
     # active pointer claims direct_lineup_pmf_driver, the snapshot
     # manifest must mirror it. The manifest also has to record the
@@ -455,8 +500,78 @@ def main(argv=None) -> int:
                 overdue_missing.append(f"{gid}/{snap_type}")
     facts["overdue_missing_snapshots"] = overdue_missing
 
+    # Phase 13W — per-snapshot-type pass/pending/missed lines.
+    # current_live: pass if any current_live snapshot passed; else
+    # pending. There is no "missed" semantics for current_live because
+    # it has no fixed window other than "before tip".
+    per_type_lines: list[tuple[str, str, str]] = []  # (kind, type, detail)
+    have_current_live_pass = any(
+        r["snapshot_type"] == "current_live" for r in pl_passes
+    )
+    if have_current_live_pass:
+        per_type_lines.append(("PASS", "CURRENT_LIVE", ""))
+
+    # Required proof scripts — Phase 13W asserts these exist on disk
+    # and are runnable. Missing proof scripts is a hard fail.
+    proof_scripts_missing: list[str] = []
+    for s in (
+        "scripts/verify_bdl_fetch_proof_for_derek.py",
+        "scripts/audit_contextual_delta_variation.py",
+        "scripts/verify_daily_retrain_recalibration.py",
+        "scripts/build_daily_model_training_report.py",
+    ):
+        if not (REPO_ROOT / s).exists():
+            proof_scripts_missing.append(s)
+
+    # T-25 / close-lock per-game decisions.
+    for ev in schedule_eval:
+        gid = ev["game_id"]
+        for snap_type, target_key, overdue_key, label in (
+            ("t_minus_25", "t25_target_utc", "t25_overdue", "T_MINUS_25"),
+            ("close_lock", "cl_target_utc", "cl_overdue", "CLOSE_LOCK"),
+        ):
+            sd = base / gid / snap_type
+            target_iso = ev.get(target_key)
+            target_dt = _parse_iso_to_utc(target_iso)
+            game_start = _parse_iso_to_utc(ev.get("game_start_time"))
+            present = (sd / "snapshot_manifest.json").exists()
+            overdue = bool(ev.get(overdue_key))
+            if present:
+                # Verify the snapshot's manifest truth too.
+                ok, issues, _ = _check_snapshot(sd, pointer=pointer)
+                if ok:
+                    per_type_lines.append((
+                        "PASS", label,
+                        f"game={gid} target_utc={target_iso}",
+                    ))
+                else:
+                    per_type_lines.append((
+                        "FAILED", label,
+                        f"game={gid} issues={issues}",
+                    ))
+            elif overdue and game_start and game_start <= now:
+                per_type_lines.append((
+                    "MISSED", label,
+                    f"game={gid} target_utc={target_iso} now={_utc_iso(now)} "
+                    f"missed_post_tip=true",
+                ))
+            elif overdue:
+                per_type_lines.append((
+                    "MISSED", label,
+                    f"game={gid} target_utc={target_iso} now={_utc_iso(now)}",
+                ))
+            else:
+                per_type_lines.append((
+                    "PENDING_NOT_DUE", label,
+                    f"game={gid} target_utc={target_iso} now={_utc_iso(now)}",
+                ))
+
     # FAILED conditions.
     failed_reasons: list[str] = []
+    if proof_scripts_missing:
+        failed_reasons.append(
+            f"proof_scripts_missing={proof_scripts_missing}"
+        )
     if overdue_missing:
         failed_reasons.append(
             f"overdue_missing_snapshots={overdue_missing}"
@@ -466,6 +581,9 @@ def main(argv=None) -> int:
             failed_reasons.append(
                 f"snapshot {f['game_id']}/{f['snapshot_type']} issues={f['issues']}"
             )
+    facts["per_type_lines"] = [
+        {"outcome": k, "type": t, "detail": d} for (k, t, d) in per_type_lines
+    ]
 
     if failed_reasons:
         payload = {
@@ -493,6 +611,8 @@ def main(argv=None) -> int:
         print("DEREK_PRODUCTION_LIVE_E2E_FAILED", file=sys.stderr)
         for r in failed_reasons:
             print(f"  - {r}", file=sys.stderr)
+        for k, t, d in per_type_lines:
+            print(f"PHASE13W_{t}_{k}{(' ' + d) if d else ''}", file=sys.stderr)
         return 1
 
     # PASS requires at least one production-live snapshot to have passed.
@@ -519,6 +639,8 @@ def main(argv=None) -> int:
             encoding="utf-8",
         )
         print("DEREK_PRODUCTION_LIVE_E2E_PENDING")
+        for k, t, d in per_type_lines:
+            print(f"PHASE13W_{t}_{k}{(' ' + d) if d else ''}")
         print(
             f"  reason={facts['pending_reason']}  schedule_size={schedule_size}  "
             f"now_utc={_utc_iso(now)}"
@@ -553,6 +675,9 @@ def main(argv=None) -> int:
     for r in pl_passes:
         print(f"  - {r['game_id']}/{r['snapshot_type']} "
               f"feature_set_id={r['feature_set_id']!r}")
+    # Phase 13W per-snapshot-type explicit pass / pending / missed.
+    for k, t, d in per_type_lines:
+        print(f"PHASE13W_{t}_{k}{(' ' + d) if d else ''}")
     return 0
 
 

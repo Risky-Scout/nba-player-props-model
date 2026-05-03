@@ -320,6 +320,8 @@ def main(argv=None) -> int:
         "\n".join(md) + "\n", encoding="utf-8")
 
     print("DAILY_MODEL_TRAINING_REPORT_PASS")
+    # Phase 13W — explicit pass line for the daily model report.
+    print("PHASE13W_DAILY_MODEL_REPORT_PASS")
     print(f"  as_of_date={args.as_of_date}")
     print(f"  champion_model_id={pointer.get('champion_model_id')}")
     print(f"  feature_set_id={pointer.get('feature_set_id')}")

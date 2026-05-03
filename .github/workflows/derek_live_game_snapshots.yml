@@ -235,6 +235,27 @@ jobs:
           python scripts/verify_derek_live_snapshots.py \
             --delivery-date ${{ steps.d.outputs.date }}
 
+      - name: Verify BDL fetch proof (Phase 13W)
+        id: verify_bdl_fetch
+        continue-on-error: true
+        run: |
+          python scripts/verify_bdl_fetch_proof_for_derek.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Audit contextual delta variation (Phase 13W)
+        id: audit_delta
+        continue-on-error: true
+        run: |
+          python scripts/audit_contextual_delta_variation.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
+      - name: Build Derek delivery README (Phase 13W)
+        id: build_readme
+        continue-on-error: true
+        run: |
+          python scripts/build_derek_delivery_readme.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+
       - name: Verify Derek production-live E2E (Phase 13T)
         id: verify_e2e
         continue-on-error: true
@@ -247,6 +268,13 @@ jobs:
         continue-on-error: true
         run: |
           python scripts/verify_phase13l_no_breakage.py
+
+      - name: Verify daily retrain / recalibration (Phase 13W)
+        id: verify_retrain_recal
+        continue-on-error: true
+        run: |
+          AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
+          python scripts/verify_daily_retrain_recalibration.py --as-of-date "$AS_OF"
 
       - name: Build daily model training report (Phase 13U)
         id: daily_report
@@ -311,6 +339,7 @@ jobs:
           git config user.email "josephshack@gmail.com"
           AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
           git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
+                  deliveries/${{ steps.d.outputs.date }}/README.md \
                   artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
                   artifacts/live_lineups/${{ steps.d.outputs.date }} \
                   artifacts/live_schedule/${{ steps.d.outputs.date }} \
@@ -322,6 +351,11 @@ jobs:
                   artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md \
                   artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json \
                   artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json \
+                  artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md \
+                  artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json \
                   artifacts/automation_health/phase13l_no_breakage.json \
                   artifacts/automation_health/phase13l_no_breakage.md \
                   artifacts/model_daily_reports/$AS_OF || true

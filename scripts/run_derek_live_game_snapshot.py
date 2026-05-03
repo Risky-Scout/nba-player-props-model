@@ -1037,6 +1037,405 @@ def _write_derek_phase13s_sidecars(sub, *, contextual_summary: dict,
     return written
 
 
+def _write_phase13w_human_readable_reports(*, out_root: Path, sub,
+                                             manifest: dict,
+                                             contextual_summary: dict,
+                                             delivery_date: str,
+                                             game_id: str,
+                                             snapshot_type: str,
+                                             outputs: dict) -> None:
+    """Phase 13W — write human-readable Markdown reports Derek can read
+    without consulting the code or schema. Replaces / overwrites:
+
+        snapshot_report.md
+        pmf_driver_decomposition.md
+        lineup_injury_impact_report.md
+        direct_lineup_impact_report.md
+    """
+    import pandas as pd
+
+    snapshot_type_label = {
+        "current_live": "current_live  (best-available pre-tip baseline)",
+        "t_minus_25": "t_minus_25  (~25 minutes before tip)",
+        "close_lock": "close_lock  (~5 minutes before tip)",
+    }.get(snapshot_type, snapshot_type)
+
+    lineup_confirmed = bool(manifest.get("lineup_confirmed"))
+    bdl_lineup_status = manifest.get("BDL_lineup_fetch_status")
+    bdl_injury_status = manifest.get("BDL_injury_fetch_status")
+    feature_set_id = (manifest.get("feature_set_id") or "")
+
+    if lineup_confirmed:
+        lineup_paragraph = (
+            "Official BDL lineups WERE confirmed for this snapshot. The "
+            "snapshot's contextual PMFs reflect confirmed starter / bench "
+            "status."
+        )
+    else:
+        lineup_paragraph = (
+            "This is a best-available pre-tip baseline. BDL did not return "
+            "confirmed lineup rows at this timestamp, so official lineup "
+            "status did not directly affect this PMF. The snapshot still "
+            "reflects the active champion's lagged-proxy starter signal "
+            "(`starter_proxy_lagged`) and all injury / availability / "
+            "vacated-opportunity / game-context features."
+        )
+
+    # ── snapshot_report.md ───────────────────────────────────────────
+    lines = [
+        f"# Derek live snapshot — {delivery_date} game {game_id} ({snapshot_type})",
+        "",
+        "## Executive summary",
+        "",
+        f"- snapshot_type: **{snapshot_type_label}**",
+        f"- snapshot_mode: **{manifest.get('snapshot_mode')}**",
+        f"- game_start_time_utc: `{manifest.get('game_start_time_utc')}`",
+        f"- game_start_time_source: `{manifest.get('game_start_time_source')}`",
+        f"- props_emitted: **{manifest.get('props_emitted')}**",
+        f"- market_rows: **{manifest.get('market_rows')}**",
+        f"- active_players_projected: **{manifest.get('active_players_projected')}**",
+        "",
+        lineup_paragraph,
+        "",
+        "## BDL fetch status",
+        "",
+        f"- BDL_lineup_fetch_attempted: **{manifest.get('BDL_lineup_fetch_attempted')}**",
+        f"- BDL_lineup_fetch_status: `{bdl_lineup_status}`",
+        f"- BDL_lineup_rows: **{manifest.get('BDL_lineup_rows')}**",
+        f"- BDL_lineup_endpoint: `{manifest.get('BDL_lineup_endpoint')}`",
+        f"- BDL_lineup_fetched_at_utc: `{manifest.get('BDL_lineup_fetched_at_utc')}`",
+        f"- BDL_injury_fetch_attempted: **{manifest.get('BDL_injury_fetch_attempted')}**",
+        f"- BDL_injury_fetch_status: `{bdl_injury_status}`",
+        f"- BDL_injury_rows: **{manifest.get('BDL_injury_rows')}**",
+        f"- BDL_injury_endpoint: `{manifest.get('BDL_injury_endpoint')}`",
+        f"- lineup_blocker: `{manifest.get('lineup_blocker')}`",
+        f"- injury_blocker: `{manifest.get('injury_blocker')}`",
+        "",
+        "## Champion model",
+        "",
+        f"- champion_model_id: `{manifest.get('champion_model_id')}`",
+        f"- feature_set_id: `{feature_set_id}`",
+        f"- direct_lineup_pmf_driver: **{manifest.get('direct_lineup_pmf_driver')}**",
+        f"- contextual_pmf_engine: **{manifest.get('contextual_pmf_engine')}**",
+        f"- contextual_pmf_applied: **{manifest.get('contextual_pmf_applied')}**",
+        f"- pmfs_recomputed: **{manifest.get('pmfs_recomputed')}**",
+        f"- pmf_source: `{manifest.get('pmf_source')}`",
+        f"- trained_through_date: `{manifest.get('trained_through_date')}`",
+        f"- calibrated_through_date: `{manifest.get('calibrated_through_date')}`",
+        "",
+        "## Market odds invariant",
+        "",
+        "Market odds were used **for edge only**, never as model features.",
+        f"- market_odds_used_as_features: `{manifest.get('market_odds_used_as_features')}`",
+        f"- market_odds_used_for_edge_only: `{manifest.get('market_odds_used_for_edge_only')}`",
+        f"- no_post_tip_data_used: `{manifest.get('no_post_tip_data_used')}`",
+        "",
+    ]
+
+    # Top 20 model-vs-market edges.
+    if "edge" in sub.columns:
+        top_edges = sub.copy()
+        if "abs_edge" not in top_edges.columns:
+            top_edges["abs_edge"] = top_edges["edge"].abs()
+        cols = [c for c in (
+            "player_name", "stat", "side", "line",
+            "model_prob", "market_prob", "edge", "abs_edge",
+        ) if c in top_edges.columns]
+        top_edges = top_edges.sort_values("abs_edge", ascending=False).head(20)[cols]
+        lines.append("## Top 20 model-vs-market edges")
+        lines.append("")
+        lines.append("| " + " | ".join(cols) + " |")
+        lines.append("| " + " | ".join(["---"] * len(cols)) + " |")
+        for _, r in top_edges.iterrows():
+            row = []
+            for c in cols:
+                v = r.get(c)
+                if isinstance(v, float):
+                    row.append(f"{v:.3f}")
+                else:
+                    row.append(str(v))
+            lines.append("| " + " | ".join(row) + " |")
+        lines.append("")
+
+    # Top 20 contextual minutes deltas.
+    if "contextual_minutes_delta" in sub.columns:
+        cols = [c for c in (
+            "player_name", "team", "exp_mp", "exp_mp_contextual",
+            "contextual_minutes_delta",
+        ) if c in sub.columns]
+        slim = sub[cols].drop_duplicates(subset=["player_name"]) \
+            if "player_name" in sub.columns else sub[cols]
+        slim = slim.assign(
+            _abs=slim["contextual_minutes_delta"].abs()
+        ).sort_values("_abs", ascending=False).head(20)
+        slim = slim.drop(columns=["_abs"])
+        lines.append("## Top 20 contextual minutes deltas")
+        lines.append("")
+        lines.append("| " + " | ".join(cols) + " |")
+        lines.append("| " + " | ".join(["---"] * len(cols)) + " |")
+        for _, r in slim.iterrows():
+            row = []
+            for c in cols:
+                v = r.get(c)
+                if isinstance(v, float):
+                    row.append(f"{v:.3f}")
+                else:
+                    row.append(str(v))
+            lines.append("| " + " | ".join(row) + " |")
+        lines.append("")
+
+    # Top 20 stat-rate deltas.
+    rate_cols = [c for c in sub.columns if c.startswith("contextual_rate_delta_")]
+    if rate_cols:
+        lines.append("## Top 20 stat-rate deltas (any stat)")
+        lines.append("")
+        long_rows: list[dict] = []
+        for c in rate_cols:
+            stat = c.replace("contextual_rate_delta_", "")
+            for _, r in sub.iterrows():
+                v = r.get(c)
+                if v is None or pd.isna(v):
+                    continue
+                long_rows.append({
+                    "player_name": r.get("player_name"),
+                    "stat": stat,
+                    "rate_delta": float(v),
+                    "abs_rate_delta": abs(float(v)),
+                })
+        if long_rows:
+            df_l = pd.DataFrame(long_rows).sort_values(
+                "abs_rate_delta", ascending=False
+            ).head(20)
+            lines.append("| player_name | stat | rate_delta |")
+            lines.append("| --- | --- | ---: |")
+            for _, r in df_l.iterrows():
+                lines.append(
+                    f"| {r['player_name']} | {r['stat']} | "
+                    f"{r['rate_delta']:+.4f} |"
+                )
+            lines.append("")
+
+    # Top 20 PMF mean movers (post vs baseline).
+    if (
+        "contextual_pmf_mean_baseline" in sub.columns
+        and "contextual_pmf_mean_post" in sub.columns
+    ):
+        sm = sub.copy()
+        sm["pmf_mean_shift"] = (
+            sm["contextual_pmf_mean_post"] - sm["contextual_pmf_mean_baseline"]
+        )
+        sm = sm.dropna(subset=["pmf_mean_shift"])
+        if not sm.empty:
+            cols = [c for c in (
+                "player_name", "stat", "line",
+                "contextual_pmf_mean_baseline", "contextual_pmf_mean_post",
+                "pmf_mean_shift",
+            ) if c in sm.columns]
+            top_movers = sm.assign(
+                _abs=sm["pmf_mean_shift"].abs()
+            ).sort_values("_abs", ascending=False).head(20)[cols]
+            lines.append("## Top 20 PMF mean movers")
+            lines.append("")
+            lines.append("| " + " | ".join(cols) + " |")
+            lines.append("| " + " | ".join(["---"] * len(cols)) + " |")
+            for _, r in top_movers.iterrows():
+                row = []
+                for c in cols:
+                    v = r.get(c)
+                    row.append(f"{v:.3f}" if isinstance(v, float) else str(v))
+                lines.append("| " + " | ".join(row) + " |")
+            lines.append("")
+
+    # Driver explanation per row (top 20 by abs_edge).
+    if "edge" in sub.columns:
+        df_d = sub.copy()
+        df_d["abs_edge"] = df_d["edge"].abs()
+        df_d = df_d.sort_values("abs_edge", ascending=False).head(20)
+        lines.append("## Driver explanation (top 20 by edge)")
+        lines.append("")
+        lines.append(
+            "| player_name | stat | line | side | model_prob | "
+            "market_prob | edge | primary_driver | explanation |"
+        )
+        lines.append(
+            "| --- | --- | ---: | --- | ---: | ---: | ---: | --- | --- |"
+        )
+        for _, r in df_d.iterrows():
+            mp = r.get("model_prob")
+            mk = r.get("market_prob")
+            edge = r.get("edge")
+            ctx_md = r.get("contextual_minutes_delta")
+            mp_str = f"{float(mp):.3f}" if isinstance(mp, (int, float)) else "—"
+            mk_str = f"{float(mk):.3f}" if isinstance(mk, (int, float)) else "—"
+            edge_str = f"{float(edge):+.3f}" if isinstance(edge, (int, float)) else "—"
+            primary = "lineup_or_injury_or_market"
+            if isinstance(ctx_md, (int, float)) and abs(float(ctx_md)) > 1.0:
+                primary = "minutes_context"
+            elif r.get("is_actionable") is False:
+                primary = "non_actionable"
+            elif isinstance(edge, (int, float)) and abs(float(edge)) > 0.04:
+                primary = "market_only"
+            explanation = (
+                "model_prob > market_prob → over-edge"
+                if isinstance(mp, (int, float)) and isinstance(mk, (int, float))
+                and mp > mk
+                else (
+                    "model_prob < market_prob → under-edge"
+                    if isinstance(mp, (int, float)) and isinstance(mk, (int, float))
+                    else "incomplete model/market pair"
+                )
+            )
+            lines.append(
+                f"| {r.get('player_name')} | {r.get('stat')} | "
+                f"{r.get('line')} | {r.get('side')} | {mp_str} | "
+                f"{mk_str} | {edge_str} | {primary} | {explanation} |"
+            )
+        lines.append("")
+
+    lines.append("## What Derek should inspect first")
+    lines.append("")
+    lines.append("1. `snapshot_manifest.json` — full provenance + truth fields.")
+    lines.append("2. `prop_summary.csv` — slim per-prop view.")
+    lines.append("3. `direct_lineup_impact_report.md` — Phase 13S driver attribution.")
+    lines.append("4. `lineup_injury_impact_report.md` — lineup + injury impact summary.")
+    lines.append("5. `pmf_driver_decomposition.md` — per-row contextual deltas.")
+    lines.append("6. `market_comparison.csv` — model probs vs market probs (edge only).")
+    lines.append("")
+    lines.append("## Files in this snapshot")
+    lines.append("")
+    lines.append("| File | rows | sha256 |")
+    lines.append("| --- | ---: | --- |")
+    for fname, rec in outputs.items():
+        lines.append(f"| {fname} | {rec.get('rows')} | `{rec.get('sha256_prefix')}` |")
+    (out_root / "snapshot_report.md").write_text(
+        "\n".join(lines) + "\n", encoding="utf-8"
+    )
+
+    # ── pmf_driver_decomposition.md ─────────────────────────────────
+    decomp_lines = [
+        f"# PMF driver decomposition — {delivery_date} game {game_id} ({snapshot_type})",
+        "",
+        f"- feature_set_id: `{feature_set_id}`",
+        f"- contextual_pmf_engine: **{manifest.get('contextual_pmf_engine')}**",
+        f"- contextual_pmf_applied: **{manifest.get('contextual_pmf_applied')}**",
+        f"- direct_lineup_pmf_driver: **{manifest.get('direct_lineup_pmf_driver')}**",
+        "",
+    ]
+    if not lineup_confirmed:
+        decomp_lines.append(lineup_paragraph)
+        decomp_lines.append("")
+    decomp_lines.append("## Per-player contextual deltas (top 30)")
+    decomp_lines.append("")
+    if "contextual_minutes_delta" in sub.columns:
+        cols = [c for c in (
+            "player_name", "team", "exp_mp", "exp_mp_contextual",
+            "contextual_minutes_delta",
+        ) if c in sub.columns]
+        slim = sub[cols].drop_duplicates(subset=["player_name"]).head(30) \
+            if "player_name" in sub.columns else sub[cols].head(30)
+        decomp_lines.append("| " + " | ".join(cols) + " |")
+        decomp_lines.append("| " + " | ".join(["---"] * len(cols)) + " |")
+        for _, r in slim.iterrows():
+            row = []
+            for c in cols:
+                v = r.get(c)
+                row.append(f"{v:.3f}" if isinstance(v, float) else str(v))
+            decomp_lines.append("| " + " | ".join(row) + " |")
+        decomp_lines.append("")
+    (out_root / "pmf_driver_decomposition.md").write_text(
+        "\n".join(decomp_lines) + "\n", encoding="utf-8"
+    )
+
+    # ── lineup_injury_impact_report.md ──────────────────────────────
+    confirmed_starters = (
+        int((sub.get("confirmed_starter", pd.Series(dtype=bool)) == True).sum())
+        if "confirmed_starter" in sub.columns else 0
+    )
+    confirmed_benches = (
+        int((sub.get("confirmed_bench", pd.Series(dtype=bool)) == True).sum())
+        if "confirmed_bench" in sub.columns else 0
+    )
+    confirmed_out = (
+        int((sub.get("is_confirmed_out", pd.Series(dtype=bool)) == True).sum())
+        if "is_confirmed_out" in sub.columns else 0
+    )
+    li_lines = [
+        f"# Lineup / injury / game-context impact — {delivery_date} game {game_id} ({snapshot_type})",
+        "",
+        "## Executive summary",
+        "",
+        f"- lineup_confirmed: **{lineup_confirmed}**",
+        f"- BDL_lineup_fetch_status: `{bdl_lineup_status}`",
+        f"- BDL_injury_fetch_status: `{bdl_injury_status}`",
+        f"- official_lineup_context_supplied: **"
+        f"{manifest.get('official_lineup_context_supplied')}**",
+        f"- injury_context_supplied: **"
+        f"{manifest.get('injury_context_supplied')}**",
+        f"- game_context_supplied: **"
+        f"{manifest.get('game_context_supplied')}**",
+        "",
+        lineup_paragraph,
+        "",
+        "## Counts",
+        "",
+        f"- confirmed_starters: **{confirmed_starters}**",
+        f"- confirmed_benches: **{confirmed_benches}**",
+        f"- confirmed_out: **{confirmed_out}**",
+        "",
+    ]
+    (out_root / "lineup_injury_impact_report.md").write_text(
+        "\n".join(li_lines) + "\n", encoding="utf-8"
+    )
+
+    # ── direct_lineup_impact_report.md ──────────────────────────────
+    starter_changes = (
+        int((sub.get("starter_changed_from_projection",
+                       pd.Series(dtype=float)).astype(float) >= 0.5).sum())
+        if "starter_changed_from_projection" in sub.columns else 0
+    )
+    bench_changes = (
+        int((sub.get("bench_changed_from_projection",
+                       pd.Series(dtype=float)).astype(float) >= 0.5).sum())
+        if "bench_changed_from_projection" in sub.columns else 0
+    )
+    minutes_conflicts = (
+        int((sub.get("minutes_projection_conflict",
+                       pd.Series(dtype=float)).astype(float) >= 0.5).sum())
+        if "minutes_projection_conflict" in sub.columns else 0
+    )
+    abs_mean = float(
+        (contextual_summary or {}).get("minutes_delta_abs_mean") or 0.0
+    )
+    abs_max = float(
+        (contextual_summary or {}).get("minutes_delta_abs_max") or 0.0
+    )
+    dl_lines = [
+        f"# Direct lineup impact — {delivery_date} game {game_id} ({snapshot_type})",
+        "",
+        f"- feature_set_id: `{feature_set_id}`",
+        f"- direct_lineup_pmf_driver: **{manifest.get('direct_lineup_pmf_driver')}**",
+        f"- direct_lineup_features_consumed: **"
+        f"{manifest.get('direct_lineup_features_consumed')}**",
+        f"- lineup_confirmed: **{lineup_confirmed}**",
+        "",
+        lineup_paragraph,
+        "",
+        "## Direct lineup metrics",
+        "",
+        f"- confirmed_starters: **{confirmed_starters}**",
+        f"- confirmed_benches: **{confirmed_benches}**",
+        f"- starter_changed_from_projection: **{starter_changes}**",
+        f"- bench_changed_from_projection: **{bench_changes}**",
+        f"- minutes_projection_conflicts: **{minutes_conflicts}**",
+        f"- minutes_delta_abs_mean: **{abs_mean:.4f}**",
+        f"- minutes_delta_abs_max: **{abs_max:.4f}**",
+        "",
+    ]
+    (out_root / "direct_lineup_impact_report.md").write_text(
+        "\n".join(dl_lines) + "\n", encoding="utf-8"
+    )
+
+
 def _build_snapshot_manifest(*,
                                delivery_date: str,
                                game_id: str,
@@ -1111,11 +1510,48 @@ def _build_snapshot_manifest(*,
         # _ensure_fresh_predictions and short-circuited the caller.
         pmf_source = "unknown"
 
+    # Phase 13W — resolve game_start_time + source from the live
+    # schedule artifact (artifacts/live_schedule/<date>/game_start_times.json).
+    # The dispatcher and the resolver write this file; if it doesn't
+    # exist (e.g. backfill-only run) we honestly mark
+    # game_start_time_source="predictions_parquet" to record what we
+    # used.
+    game_start_time_source = "unresolved"
+    game_start_time_resolution_confidence = "unresolved"
+    try:
+        sched_file = (
+            REPO_ROOT / "artifacts" / "live_schedule" / delivery_date
+            / "game_start_times.json"
+        )
+        if sched_file.exists():
+            sched = json.loads(sched_file.read_text(encoding="utf-8"))
+            for r in (sched.get("records") or []):
+                if str(r.get("game_id")) == str(game_id):
+                    game_start_time_source = r.get("source_used") or "unresolved"
+                    game_start_time_resolution_confidence = (
+                        r.get("source_confidence") or "unresolved"
+                    )
+                    break
+    except Exception:
+        pass
+    if game_start_time_source == "unresolved" and game_start_time_utc:
+        # The dispatcher already enriched the predictions parquet — the
+        # canonical source is the parquet column.
+        game_start_time_source = "predictions_parquet"
+        game_start_time_resolution_confidence = "high"
+
     return {
         "schema_version": "1.0",
         "delivery_date": delivery_date,
         "game_id": str(game_id),
+        # Phase 13W — game_start_time MUST mirror game_start_time_utc
+        # so manifest consumers don't see a None.
+        "game_start_time": game_start_time_utc,
         "game_start_time_utc": game_start_time_utc,
+        "game_start_time_source": game_start_time_source,
+        "game_start_time_resolution_confidence": (
+            game_start_time_resolution_confidence
+        ),
         "snapshot_type": snapshot_type,
         "snapshot_target_time_utc": target_iso,
         "actual_run_started_at_utc": _utc_iso(run_started_at),
@@ -1259,7 +1695,12 @@ def _build_snapshot_manifest(*,
         "lineup_source": (
             (lineup_status or {}).get("source")
             if (lineup_status or {}).get("total_rows", 0) > 0
-            else None
+            # Phase 13W — when no rows are returned, record the
+            # endpoint we tried as the lineup_source rather than None.
+            else (
+                (lineup_status or {}).get("source")
+                or "balldontlie_v1_lineups (no rows returned)"
+            )
         ),
         "lineup_fetched_at_utc": (lineup_status or {}).get("fetched_at_utc"),
         "lineup_confirmed": bool((lineup_status or {}).get("lineup_confirmed")),
@@ -1340,21 +1781,69 @@ def _build_snapshot_manifest(*,
         # parsing model code.
         "market_odds_used_as_features": False,
         "market_odds_used_for_edge_only": True,
-        # Explicit BDL fetch flags so Derek can audit at-a-glance.
-        "BDL_lineup_fetch_attempted": (lineup_status is not None),
+        # Phase 13W — explicit BDL fetch fields, never None.
+        "BDL_lineup_fetch_attempted": bool(lineup_status is not None),
         "BDL_lineup_fetch_status": (
             "confirmed" if (lineup_status or {}).get("lineup_confirmed")
-            else ((lineup_status or {}).get("lineup_complete")
-                  or "no_lineup_status_recorded")
+            else (
+                "no_rows_returned"
+                if (lineup_status is not None
+                    and ((lineup_status or {}).get("total_rows", 0) == 0))
+                else (
+                    (lineup_status or {}).get("lineup_complete")
+                    or "no_lineup_status_recorded"
+                )
+            )
+        ),
+        "BDL_lineup_rows": int(
+            ((lineup_status or {}).get("total_rows") or 0)
+        ),
+        "BDL_lineup_endpoint": (
+            (lineup_status or {}).get("source")
+            or "balldontlie_v2_lineups"
+        ),
+        "BDL_lineup_fetched_at_utc": (
+            (lineup_status or {}).get("fetched_at_utc")
+            or (predict_info.get("predict_invocation") or {}).get(
+                "fetched_at_utc"
+            )
+            or pmf_generated_at
         ),
         "BDL_injury_fetch_attempted": True,
         "BDL_injury_fetch_status": (
             "ok" if (lineup_status or {}).get("lineup_confirmed")
             else "deferred_to_predict_pipeline"
         ),
+        "BDL_injury_rows": int(
+            (lineup_status or {}).get("injury_rows", 0) or 0
+        ),
+        "BDL_injury_endpoint": (
+            "data/nba_injury_reports.parquet (downstream of predict.py)"
+        ),
+        "BDL_injury_fetched_at_utc": pmf_generated_at,
         "injury_blocker": (
             "" if (lineup_status or {}).get("lineup_confirmed")
             else (lineup_status or {}).get("lineup_blocker") or ""
+        ),
+        # Phase 13W — explicit context-supplied flags, never None.
+        "official_lineup_context_supplied": bool(
+            (lineup_status or {}).get("lineup_confirmed")
+        ),
+        "injury_context_supplied": bool(
+            (outputs.get("injury_availability_context.parquet") or {})
+            .get("rows", 0)
+        ),
+        "game_context_supplied": bool(
+            (outputs.get("game_context.parquet") or {}).get("rows", 0)
+        ),
+        # Phase 13W — affects-PMF flags as explicit booleans.
+        "injury_affects_pmf_features": bool(
+            (contextual_summary or {}).get("contextual_pmf_applied")
+        ),
+        "direct_lineup_features_consumed": bool(
+            (contextual_summary or {}).get("contextual_pmf_applied")
+            and (contextual_summary or {}).get("feature_set_id", "")
+            .startswith("phase13s_")
         ),
         # Phase 13R: when the contextual engine has run, the snapshot
         # DID consume challenger artifacts (the trained Phase 13Q
@@ -1736,55 +2225,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     write_json_atomic(out_root / "snapshot_manifest.json", manifest)
 
-    md_lines = [
-        f"# Derek live snapshot — {args.delivery_date} game {args.game_id} ({args.snapshot_type})",
-        "",
-        f"- snapshot_type: **{args.snapshot_type}**",
-        f"- snapshot_mode: **{manifest['snapshot_mode']}**",
-        f"- pmf_source: **{manifest['pmf_source']}**",
-        f"- pmfs_recomputed: **{manifest['pmfs_recomputed']}**",
-        f"- champion_model_id: `{manifest['champion_model_id']}`",
-        f"- trained_through_date: `{manifest['trained_through_date']}`",
-        f"- calibrated_through_date: `{manifest['calibrated_through_date']}`",
-        f"- game_start_time_utc: `{game_start_time_utc}`",
-        f"- snapshot_target_time_utc: `{manifest['snapshot_target_time_utc']}`",
-        f"- actual_run_started_at_utc: `{manifest['actual_run_started_at_utc']}`",
-        f"- actual_run_finished_at_utc: `{manifest['actual_run_finished_at_utc']}`",
-        f"- pmf_generated_at_utc: `{manifest['pmf_generated_at_utc']}`",
-        f"- props_emitted: {manifest['props_emitted']}",
-        f"- market_rows: {manifest['market_rows']}",
-        f"- active_players_projected: {manifest['active_players_projected']}",
-        "",
-        "## Lineup status",
-        "",
-        f"- lineup_source: `{manifest.get('lineup_source')}`",
-        f"- lineup_fetched_at_utc: `{manifest.get('lineup_fetched_at_utc')}`",
-        f"- lineup_confirmed: **{manifest['lineup_confirmed']}**",
-        f"- lineup_complete: `{manifest.get('lineup_complete')}`",
-        f"- lineup_aware: **{manifest['lineup_aware']}**",
-        f"- lineup_confirmation_status: `{manifest['lineup_confirmation_status']}`",
-        f"- lineup_blocker: {manifest['lineup_blocker']!r}",
-        f"- lineup_hash: `{manifest.get('lineup_hash')}`",
-        f"- starters_by_team: `{manifest.get('starters_by_team')}`",
-        f"- lineup_context_supplied: **{manifest.get('lineup_context_supplied')}**",
-        f"- lineup_affects_pmf_features: **{manifest.get('lineup_affects_pmf_features')}**",
-        f"- lineup_feature_blocker: {manifest.get('lineup_feature_blocker')!r}",
-        "",
-        "## Champion model",
-        "",
-        f"- champion_metadata_verified: **{manifest.get('champion_metadata_verified')}**",
-        f"- no_leakage_champion_cutoff_verified: **{manifest.get('no_leakage_champion_cutoff_verified')}**",
-        f"- live_snapshot_retrained: **{manifest.get('live_snapshot_retrained')}**",
-        f"- live_snapshot_recalibrated: **{manifest.get('live_snapshot_recalibrated')}**",
-        "",
-        "## Files",
-        "",
-        "| File | rows | sha256 |",
-        "| --- | ---: | --- |",
-    ]
-    for fname, rec in outputs.items():
-        md_lines.append(f"| {fname} | {rec.get('rows')} | `{rec.get('sha256_prefix')}` |")
-    (out_root / "snapshot_report.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
+    # Phase 13W — human-readable Markdown reports.
+    _write_phase13w_human_readable_reports(
+        out_root=out_root, sub=sub, manifest=manifest,
+        contextual_summary=contextual_summary,
+        delivery_date=args.delivery_date, game_id=args.game_id,
+        snapshot_type=args.snapshot_type, outputs=outputs,
+    )
 
     if manifest["snapshot_mode"] == "production_live" and manifest["pmfs_recomputed"] is True:
         print("DEREK_LIVE_SNAPSHOT_RECOMPUTED_PMFS_PASS")
