@@ -169,7 +169,27 @@ def main(argv: list[str] | None = None) -> int:
     skipped_window = 0
     failures = 0
 
+    # Phase 13T — verbose visibility on dispatch decision context. The
+    # dispatcher prints what it sees so operators can debug "why was no
+    # snapshot generated?" without trawling parquet diffs. Never prints
+    # API keys.
+    parquet = PRED_DIR / f"all_props_{delivery_date}.parquet"
+    print(
+        f"  delivery_date={delivery_date}  now_utc={_utc_iso(now)}  "
+        f"snapshot_type={args.snapshot_type}"
+    )
+    print(
+        f"  predictions_parquet={parquet.relative_to(REPO_ROOT)} "
+        f"exists={parquet.exists()} "
+        f"unique_games={len({e['game_id'] for e in schedule})}"
+    )
+
     if not schedule:
+        slate_status = (
+            "predictions_parquet_missing"
+            if not parquet.exists()
+            else "predictions_parquet_present_but_no_games"
+        )
         report = {
             "schema_version": "1.0",
             "delivery_date": delivery_date,
@@ -177,6 +197,8 @@ def main(argv: list[str] | None = None) -> int:
             "now_utc": _utc_iso(now),
             "code_commit": git_commit(),
             "schedule_rows": 0,
+            "eligible_rows": 0,
+            "slate_status": slate_status,
             "decisions": [],
             "summary": {
                 "fired": 0, "skipped_already_run": 0,
@@ -184,33 +206,52 @@ def main(argv: list[str] | None = None) -> int:
             },
             "note": (
                 f"no schedule loaded — predictions/all_props_{delivery_date}.parquet "
-                "either missing or empty. Dispatcher exits cleanly with no work."
+                f"slate_status={slate_status}. Dispatcher exits cleanly with no work."
             ),
         }
         out = DISPATCH_DIR / delivery_date / f"dispatch_{args.snapshot_type}.json"
         out.parent.mkdir(parents=True, exist_ok=True)
         write_json_atomic(out, report)
+        # Phase 13T — emit explicit pending token alongside the existing
+        # dispatch pass token so downstream verifiers recognise this as
+        # honest "no games" rather than failure.
         print("DEREK_LIVE_SNAPSHOT_DISPATCH_PASS")
+        print("DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES")
         print(f"  delivery_date={delivery_date} snapshot_type={args.snapshot_type}")
-        print(f"  schedule_rows=0 (no games to dispatch)")
+        print(f"  schedule_rows=0 eligible_rows=0 slate_status={slate_status}")
         return 0
 
     if args.max_games:
         schedule = schedule[: args.max_games]
 
     window = T_MINUS_25_WINDOW if args.snapshot_type == "t_minus_25" else CLOSE_LOCK_WINDOW
+    eligible_rows = 0
     for entry in schedule:
         game_id = entry["game_id"]
-        gs = _parse_iso_to_utc(entry.get("game_start_time"))
+        gs_iso = entry.get("game_start_time")
+        gs = _parse_iso_to_utc(gs_iso)
         target = _snapshot_target(gs, args.snapshot_type) if gs else None
         in_window = (
             args.allow_backfill_test
             or (target is not None and _is_in_window(now, target, window))
         )
+        # Phase 13T verbose per-game visibility.
+        due_reason = (
+            "in_window" if in_window
+            else ("no_game_start_time" if target is None
+                  else f"target={_utc_iso(target)} window=({window[0]:+d},{window[1]:+d})min "
+                       f"now={_utc_iso(now)} → not_due")
+        )
+        print(
+            f"  game_id={game_id} game_start_time={gs_iso!r} "
+            f"target_utc={_utc_iso(target) if target else None} "
+            f"due={in_window} reason={due_reason}"
+        )
         if _already_run(delivery_date, game_id, args.snapshot_type) and not args.force:
             decisions.append({
                 "game_id": game_id, "decision": "skipped_already_run",
                 "target_utc": _utc_iso(target) if target else None,
+                "due_reason": due_reason,
             })
             skipped_already_run += 1
             continue
@@ -219,9 +260,11 @@ def main(argv: list[str] | None = None) -> int:
                 "game_id": game_id, "decision": "skipped_window",
                 "target_utc": _utc_iso(target) if target else None,
                 "now_utc": _utc_iso(now),
+                "due_reason": due_reason,
             })
             skipped_window += 1
             continue
+        eligible_rows += 1
         rc, log = _run_snapshot(
             delivery_date, game_id, args.snapshot_type,
             allow_backfill=bool(args.allow_backfill_test), force=args.force,
@@ -249,6 +292,7 @@ def main(argv: list[str] | None = None) -> int:
         "now_utc": _utc_iso(now),
         "code_commit": git_commit(),
         "schedule_rows": len(schedule),
+        "eligible_rows": eligible_rows,
         "decisions": decisions,
         "summary": {
             "fired": fired, "skipped_already_run": skipped_already_run,
@@ -268,10 +312,16 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     print("DEREK_LIVE_SNAPSHOT_DISPATCH_PASS")
+    if eligible_rows == 0 and fired == 0:
+        # Phase 13T — schedule had games but none were due in this
+        # window. Emit the explicit pending token so the workflow's
+        # E2E verifier can distinguish from a real failure.
+        print("DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES")
     print(f"  delivery_date={delivery_date} snapshot_type={args.snapshot_type}")
     print(
         f"  fired={fired} skipped_already_run={skipped_already_run} "
-        f"skipped_window={skipped_window} schedule_rows={len(schedule)}"
+        f"skipped_window={skipped_window} eligible_rows={eligible_rows} "
+        f"schedule_rows={len(schedule)}"
     )
     return 0
 

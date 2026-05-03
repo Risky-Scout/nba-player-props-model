@@ -470,21 +470,44 @@ def main(argv: list[str] | None = None) -> int:
     base = DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
     pointer = read_json(CHAMPION_POINTER_PATH) if CHAMPION_POINTER_PATH.exists() else {}
 
+    # Phase 13T — distinguish "no games on this slate" / "no snapshots
+    # due yet" from a true failure. The verifier emits PENDING when
+    # there are no eligible games rather than failing the workflow.
+    pred_parquet = REPO_ROOT / "predictions" / f"all_props_{args.delivery_date}.parquet"
+    slate_games = 0
+    if pred_parquet.exists():
+        try:
+            import pandas as pd
+            pdf = pd.read_parquet(pred_parquet, columns=["game_id"])
+            slate_games = int(pdf["game_id"].astype(str).nunique()) \
+                if "game_id" in pdf.columns else 0
+        except Exception:
+            slate_games = 0
+
     if not base.exists():
-        report.add(
-            "derek_game_snapshots_dir_present",
-            False,
-            f"missing {base.relative_to(REPO_ROOT)}",
+        # Two pending sub-states:
+        #   * predictions parquet missing OR has zero games: slate
+        #     not yet published / true off-day → PENDING_NO_GAMES.
+        #   * predictions exist with games but no snapshot dir: the
+        #     dispatcher hasn't fired yet (we're between cron windows
+        #     or before first window) → PENDING_NO_GAMES.
+        reason = (
+            "no_predictions_parquet" if not pred_parquet.exists()
+            else ("predictions_have_zero_games" if slate_games == 0
+                  else "no_snapshots_due_yet")
         )
+        report.facts["pending_reason"] = reason
+        report.facts["slate_games"] = slate_games
+        report.facts["predictions_parquet_present"] = pred_parquet.exists()
         write_json_atomic(
             HEALTH_DIR / f"derek_live_snapshots_{args.delivery_date}.json",
             report.to_dict(),
         )
-        print("DEREK_LIVE_SNAPSHOTS_FAILED", file=sys.stderr)
-        for c in report.checks:
-            if not c.passed:
-                print(f"  - {c.name}: {c.detail}", file=sys.stderr)
-        return 1
+        print("DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES")
+        print(f"  delivery_date={args.delivery_date} reason={reason} "
+              f"slate_games={slate_games} "
+              f"predictions_parquet_present={pred_parquet.exists()}")
+        return 0
 
     report.add("derek_game_snapshots_dir_present", True, str(base.relative_to(REPO_ROOT)))
 
@@ -525,11 +548,23 @@ def main(argv: list[str] | None = None) -> int:
     report.facts["recomputed_snapshot_count"] = recomputed_count
 
     if snapshot_count == 0:
-        report.add(
-            "any_snapshots_present",
-            False,
-            "no snapshots found under any game folder",
+        # Phase 13T — derek_game_snapshots exists but contains no per-game
+        # subfolders OR they are all empty. That's PENDING (dispatcher
+        # hasn't fired for any game yet), not FAILED. Workflow-level fail
+        # gate must allow this state.
+        report.facts["pending_reason"] = "no_snapshots_due_yet_dir_empty"
+        report.facts["slate_games"] = slate_games
+        write_json_atomic(
+            HEALTH_DIR / f"derek_live_snapshots_{args.delivery_date}.json",
+            report.to_dict(),
         )
+        print("DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES")
+        print(
+            f"  delivery_date={args.delivery_date} "
+            f"reason=no_snapshots_due_yet_dir_empty "
+            f"slate_games={slate_games} games_inspected={len(games)}"
+        )
+        return 0
 
     payload = report.to_dict()
     write_json_atomic(

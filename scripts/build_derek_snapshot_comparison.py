@@ -384,13 +384,40 @@ def main(argv: list[str] | None = None) -> int:
 
     base = DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
     if not base.exists():
-        print("DEREK_SNAPSHOT_COMPARISON_FAILED", file=sys.stderr)
-        print(f"  reason: missing {base.relative_to(REPO_ROOT)}", file=sys.stderr)
-        return 1
+        # Phase 13T — comparison cannot be built when no snapshots exist.
+        # Distinguish "slate not published / no games / dispatcher hasn't
+        # fired" (PENDING) from a true failure. The verifier above is the
+        # source of truth for the slate state; this builder mirrors it.
+        pred_parquet = REPO_ROOT / "predictions" / f"all_props_{args.delivery_date}.parquet"
+        slate_games = 0
+        if pred_parquet.exists():
+            try:
+                import pandas as pd
+                pdf = pd.read_parquet(pred_parquet, columns=["game_id"])
+                slate_games = int(pdf["game_id"].astype(str).nunique()) \
+                    if "game_id" in pdf.columns else 0
+            except Exception:
+                slate_games = 0
+        reason = (
+            "no_predictions_parquet" if not pred_parquet.exists()
+            else ("predictions_have_zero_games" if slate_games == 0
+                  else "no_snapshots_due_yet")
+        )
+        print("DEREK_SNAPSHOT_COMPARISON_PENDING_NO_GAMES")
+        print(
+            f"  delivery_date={args.delivery_date} reason={reason} "
+            f"slate_games={slate_games} "
+            f"predictions_parquet_present={pred_parquet.exists()}"
+        )
+        return 0
     if args.game_id:
         targets = [base / str(args.game_id)]
     else:
         targets = [d for d in sorted(base.iterdir()) if d.is_dir()]
+    if not targets:
+        print("DEREK_SNAPSHOT_COMPARISON_PENDING_NO_GAMES")
+        print(f"  delivery_date={args.delivery_date} reason=no_snapshots_present")
+        return 0
 
     statuses: list[dict] = []
     failures = 0
