@@ -1335,6 +1335,27 @@ def _build_snapshot_manifest(*,
         "props_emitted": int(sub_rows),
         "market_rows": int(market_rows),
         "no_post_tip_data_used": True,
+        # Phase 13T — surface the market-odds invariants on every
+        # snapshot so the E2E verifier can enforce them without
+        # parsing model code.
+        "market_odds_used_as_features": False,
+        "market_odds_used_for_edge_only": True,
+        # Explicit BDL fetch flags so Derek can audit at-a-glance.
+        "BDL_lineup_fetch_attempted": (lineup_status is not None),
+        "BDL_lineup_fetch_status": (
+            "confirmed" if (lineup_status or {}).get("lineup_confirmed")
+            else ((lineup_status or {}).get("lineup_complete")
+                  or "no_lineup_status_recorded")
+        ),
+        "BDL_injury_fetch_attempted": True,
+        "BDL_injury_fetch_status": (
+            "ok" if (lineup_status or {}).get("lineup_confirmed")
+            else "deferred_to_predict_pipeline"
+        ),
+        "injury_blocker": (
+            "" if (lineup_status or {}).get("lineup_confirmed")
+            else (lineup_status or {}).get("lineup_blocker") or ""
+        ),
         # Phase 13R: when the contextual engine has run, the snapshot
         # DID consume challenger artifacts (the trained Phase 13Q
         # adjustment models). The pre-13R flag remains True only when

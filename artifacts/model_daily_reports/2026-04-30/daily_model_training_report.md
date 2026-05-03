@@ -1,8 +1,21 @@
 # Daily model training / recalibration report — 2026-04-30
 
-- generated_at_utc: 2026-05-03T17:22:18+00:00Z
+- generated_at_utc: 2026-05-03T17:30:11+00:00Z
 
-## Active champion
+## Headline
+
+- active_champion_model_id: `challenger-2026-04-30`
+- feature_set_id: `phase13s_direct_lineup_injury_pmf_driver_v1`
+- is_phase13s_direct_lineup_driver: **True**
+- trained_through_date: `2026-04-30`
+- calibrated_through_date: `2026-04-30`
+- retraining_ran: **True**
+- recalibration_ran: **True**
+- no_leakage_passed: **True**
+- validation_gates_passed: **True**
+- challenger_promoted: **True**
+
+## Active champion (full pointer block)
 
 - champion_model_id: `challenger-2026-04-30`
 - feature_set_id: `phase13s_direct_lineup_injury_pmf_driver_v1`
@@ -76,6 +89,19 @@
   "blocker": "no rolling Derek benchmark found for as_of_date=2026-04-30"
 }
 ```
+
+## Files to inspect
+
+- champion_pointer: `artifacts/models/registry/champion_pointer.json`
+- contextual challenger dir: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual`
+- train_manifest: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/train_manifest.json`
+- no_leakage_manifest: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/no_leakage_manifest.json`
+- promotion_decision: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/promotion_decision.json`
+- validation_report: `artifacts/phase13s/validation_gates_report.json`
+- contextual_no_leakage_manifest: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/no_leakage_manifest.json`
+- Phase 13S sensitivity: `artifacts/phase13s/direct_lineup_pmf_sensitivity.json`
+- Phase 13S no-leakage report: `artifacts/phase13s/no_leakage_report.json`
+- Derek snapshot E2E: `artifacts/automation_health/derek_production_live_e2e_<date>.json`
 
 ## Pending items
 

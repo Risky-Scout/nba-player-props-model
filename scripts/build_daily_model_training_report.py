@@ -162,12 +162,61 @@ def main(argv=None) -> int:
         encoding="utf-8",
     )
 
+    # Phase 13T — explicit yes/no flags Derek can scan in 5 seconds.
+    retrain_ran = bool((train_manifest or {}).get("trained_through_date"))
+    recal_ran = bool((train_manifest or {}).get("calibrated_through_date"))
+    no_leak_passed = bool(
+        (no_leak_manifest or {}).get("no_leakage_verified")
+        and (phase13s_no_leakage or {}).get("issues") in (None, [], [])
+    )
+    gates_passed = (
+        validation_report is not None
+        and not (validation_report or {}).get("issues")
+        and (validation_report or {}).get("any_positive_improvement")
+    )
+    promoted = bool(report["promotion_status"]["promoted"])
+    is_phase13s = (pointer.get("feature_set_id", "") or "").startswith("phase13s_")
+
+    report["headline_summary"] = {
+        "active_champion": pointer.get("champion_model_id"),
+        "feature_set_id": pointer.get("feature_set_id"),
+        "is_phase13s": is_phase13s,
+        "trained_through_date": (
+            pointer.get("contextual_trained_through_date")
+            or pointer.get("trained_through_date")
+        ),
+        "calibrated_through_date": (
+            pointer.get("contextual_calibrated_through_date")
+            or pointer.get("calibrated_through_date")
+        ),
+        "retraining_ran": retrain_ran,
+        "recalibration_ran": recal_ran,
+        "no_leakage_passed": no_leak_passed,
+        "validation_gates_passed": gates_passed,
+        "challenger_promoted": promoted,
+    }
+
     md = [
         f"# Daily model training / recalibration report — {args.as_of_date}",
         "",
         f"- generated_at_utc: {report['generated_at_utc']}",
         "",
-        "## Active champion",
+        "## Headline",
+        "",
+        f"- active_champion_model_id: `{pointer.get('champion_model_id')}`",
+        f"- feature_set_id: `{pointer.get('feature_set_id')}`",
+        f"- is_phase13s_direct_lineup_driver: **{is_phase13s}**",
+        f"- trained_through_date: "
+        f"`{report['headline_summary']['trained_through_date']}`",
+        f"- calibrated_through_date: "
+        f"`{report['headline_summary']['calibrated_through_date']}`",
+        f"- retraining_ran: **{retrain_ran}**",
+        f"- recalibration_ran: **{recal_ran}**",
+        f"- no_leakage_passed: **{no_leak_passed}**",
+        f"- validation_gates_passed: **{gates_passed}**",
+        f"- challenger_promoted: **{promoted}**",
+        "",
+        "## Active champion (full pointer block)",
         "",
     ]
     for k, v in report["champion"].items():
@@ -222,6 +271,47 @@ def main(argv=None) -> int:
     md.append("## Rolling Derek benchmark")
     md.append("")
     md.append(f"```json\n{json.dumps(report['rolling_benchmark'], indent=2)}\n```")
+    md.append("")
+    md.append("## Files to inspect")
+    md.append("")
+    md.append(
+        "- champion_pointer: `artifacts/models/registry/champion_pointer.json`"
+    )
+    if challenger_dir_rel:
+        md.append(
+            f"- contextual challenger dir: `{challenger_dir_rel}`"
+        )
+        md.append(
+            f"- train_manifest: "
+            f"`{challenger_dir_rel}/train_manifest.json`"
+        )
+        md.append(
+            f"- no_leakage_manifest: "
+            f"`{challenger_dir_rel}/no_leakage_manifest.json`"
+        )
+        md.append(
+            f"- promotion_decision: "
+            f"`{challenger_dir_rel}/promotion_decision.json`"
+        )
+    if validation_report_path:
+        md.append(f"- validation_report: `{validation_report_path}`")
+    if pointer.get("contextual_no_leakage_manifest_path"):
+        md.append(
+            f"- contextual_no_leakage_manifest: "
+            f"`{pointer.get('contextual_no_leakage_manifest_path')}`"
+        )
+    md.append(
+        "- Phase 13S sensitivity: "
+        "`artifacts/phase13s/direct_lineup_pmf_sensitivity.json`"
+    )
+    md.append(
+        "- Phase 13S no-leakage report: "
+        "`artifacts/phase13s/no_leakage_report.json`"
+    )
+    md.append(
+        "- Derek snapshot E2E: "
+        "`artifacts/automation_health/derek_production_live_e2e_<date>.json`"
+    )
     md.append("")
     md.append("## Pending items")
     md.append("")

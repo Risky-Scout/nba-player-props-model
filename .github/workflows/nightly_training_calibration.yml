@@ -173,6 +173,14 @@ jobs:
         run: |
           python scripts/verify_daily_automation_health.py
 
+      - name: Build daily model training report (Phase 13T)
+        id: daily_report
+        if: steps.d.outputs.date != ''
+        continue-on-error: true
+        run: |
+          python scripts/build_daily_model_training_report.py \
+            --as-of-date ${{ steps.d.outputs.date }}
+
       - name: Upload nightly training artifacts (always)
         if: always()
         uses: actions/upload-artifact@v4
@@ -207,6 +215,7 @@ jobs:
             artifacts/nightly_training/*/source_completeness_manifest.json
             artifacts/nightly_training/*/source_completeness_report.md
             artifacts/nightly_training/*/run_context.json
+            artifacts/model_daily_reports/${{ steps.d.outputs.date }}/**
 
       - name: Fail workflow if any step failed
         if: |
@@ -258,6 +267,8 @@ jobs:
                   'artifacts/training_readiness/${{ steps.d.outputs.date }}/*.md' || true
           git add 'artifacts/nightly_training/${{ steps.d.outputs.date }}/*.json' \
                   'artifacts/nightly_training/${{ steps.d.outputs.date }}/*.md' || true
+          # Phase 13T daily model training report.
+          git add artifacts/model_daily_reports/${{ steps.d.outputs.date }} || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \

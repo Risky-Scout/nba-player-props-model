@@ -220,6 +220,64 @@ def _check_snapshot(snap_dir: Path, *, pointer: dict) -> tuple[bool, list[str], 
     if not m.get("no_post_tip_data_used"):
         issues.append("no_post_tip_data_used flag not true")
 
+    # Phase 13T — explicit Phase 13S champion-flag checks. When the
+    # active pointer claims direct_lineup_pmf_driver, the snapshot
+    # manifest must mirror it. The manifest also has to record the
+    # full per-feature-group enable flags so Derek consumers can rely
+    # on them without re-reading the pointer.
+    if pointer.get("direct_lineup_pmf_driver"):
+        if not m.get("direct_lineup_pmf_driver"):
+            issues.append(
+                "manifest.direct_lineup_pmf_driver missing/false even "
+                "though champion_pointer.direct_lineup_pmf_driver=True"
+            )
+        for flag in (
+            "official_lineup_features_enabled",
+            "injury_availability_features_enabled",
+            "vacated_opportunity_features_enabled",
+            "lineup_composition_features_enabled",
+            "game_context_features_enabled",
+        ):
+            if not m.get(flag):
+                issues.append(
+                    f"manifest.{flag} missing/false but pointer enables it"
+                )
+
+    # Phase 13T — BDL lineup fetch attempted: either
+    # lineup_confirmed=True OR lineup_blocker is non-empty. A snapshot
+    # with both lineup_confirmed=False AND no lineup_blocker is
+    # silently failing — flag it.
+    lineup_confirmed = m.get("lineup_confirmed")
+    lineup_blocker = m.get("lineup_blocker") or ""
+    if lineup_confirmed is None:
+        issues.append(
+            "manifest.lineup_confirmed missing — BDL lineup fetch "
+            "status not recorded"
+        )
+    if not lineup_confirmed and not lineup_blocker:
+        issues.append(
+            "lineup_confirmed=False but lineup_blocker is empty — "
+            "BDL lineup fetch failure must be recorded"
+        )
+
+    # BDL injury / availability fetch attempted: at minimum the
+    # manifest must record injury_source and availability_source
+    # strings (paths or live endpoint identifiers).
+    if not m.get("injury_source"):
+        issues.append("manifest.injury_source missing")
+    if not m.get("availability_source"):
+        issues.append("manifest.availability_source missing")
+
+    # Market odds invariant: the snapshot must NOT claim market odds
+    # were used as model features. If the manifest records the flag
+    # explicitly, enforce it; otherwise the absence is acceptable
+    # (legacy manifests didn't carry it).
+    if m.get("market_odds_used_as_features") is True:
+        issues.append(
+            "manifest.market_odds_used_as_features=True — market odds "
+            "must never be model features"
+        )
+
     # If the snapshot claims contextual_pmf_applied=true, the trained
     # artifacts must really have been used (challenger_dir set).
     if m.get("contextual_pmf_applied"):
