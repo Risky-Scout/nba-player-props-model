@@ -18,7 +18,7 @@ This is a best-available pre-tip baseline. BDL did not return confirmed lineup r
 - BDL_lineup_fetch_status: `no_rows_returned`
 - BDL_lineup_rows: **0**
 - BDL_lineup_endpoint: `balldontlie_v1_lineups`
-- BDL_lineup_fetched_at_utc: `2026-05-03T19:28:50Z`
+- BDL_lineup_fetched_at_utc: `2026-05-03T20:29:34Z`
 - BDL_injury_fetch_attempted: **True**
 - BDL_injury_fetch_status: `deferred_to_predict_pipeline`
 - BDL_injury_rows: **0**
@@ -114,7 +114,6 @@ Market odds were used **for edge only**, never as model features.
 | pmf_driver_decomposition.parquet | 33 | `49e98a311e447118` |
 | lineup_injury_impact_report.json | 1 | `394015348926e904` |
 | contextual_feature_audit.parquet | 14 | `6b05e5a6859d70e7` |
-
 ## Edge reasonability / publishability
 
 Current-live edges are **model-vs-market disagreements** from the best-available baseline. BDL did not return confirmed lineup rows at this timestamp, so these rows are **watchlist / review signals**, not confirmed-lineup recommendations. Large edges are flagged for review. Push / integer lines are audited separately. Calibration support is checked by stat / side / edge bucket where settled samples exist. **T-minus-25 and close-lock are the more important near-tip confirmed-lineup snapshots.**
