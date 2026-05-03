@@ -2,19 +2,19 @@
   "BDL_injury_endpoint": "data/nba_injury_reports.parquet (downstream of predict.py)",
   "BDL_injury_fetch_attempted": true,
   "BDL_injury_fetch_status": "deferred_to_predict_pipeline",
-  "BDL_injury_fetched_at_utc": "2026-05-03T15:58:13Z",
+  "BDL_injury_fetched_at_utc": "2026-05-03T18:21:27Z",
   "BDL_injury_rows": 0,
   "BDL_lineup_endpoint": "balldontlie_v1_lineups",
   "BDL_lineup_fetch_attempted": true,
   "BDL_lineup_fetch_status": "no_rows_returned",
-  "BDL_lineup_fetched_at_utc": "2026-05-03T18:14:14Z",
+  "BDL_lineup_fetched_at_utc": "2026-05-03T18:21:38Z",
   "BDL_lineup_rows": 0,
   "actionability_sensitivity_verified": true,
   "active_players_projected": 14,
-  "actual_run_finished_at_utc": "2026-05-03T18:14:14Z",
-  "actual_run_started_at_utc": "2026-05-03T18:14:13Z",
+  "actual_run_finished_at_utc": "2026-05-03T18:21:38Z",
+  "actual_run_started_at_utc": "2026-05-03T18:21:35Z",
   "allow_backfill_test": false,
-  "availability_fetched_at_utc": "2026-05-03T15:58:13Z",
+  "availability_fetched_at_utc": "2026-05-03T18:21:27Z",
   "availability_source": "data/player_availability_asof.parquet (BDL availability snapshot)",
   "bench_count_by_team": {},
   "calibrated_through_date": "2026-04-30",
@@ -54,22 +54,22 @@
   "injury_affects_pmf_features": true,
   "injury_availability_features_enabled": true,
   "injury_availability_hash": "51bb57d476f2acda21832a8797fd417a",
-  "injury_blocker": "BDL_API_KEY not set in runner environment",
+  "injury_blocker": "no rows returned by BDL lineups endpoint (lineups not posted yet)",
   "injury_context_supplied": true,
-  "injury_fetched_at_utc": "2026-05-03T15:58:13Z",
+  "injury_fetched_at_utc": "2026-05-03T18:21:27Z",
   "injury_source": "data/nba_injury_reports.parquet (downstream of predict.py)",
-  "input_manifest_hash": "d21693146807235847e647aa21146ce1",
+  "input_manifest_hash": "50f6b74d8ed3f8f48c93bb9eb042eb50",
   "lineup_affects_pmf_features": false,
   "lineup_aware": false,
-  "lineup_blocker": "BDL_API_KEY not set in runner environment",
-  "lineup_complete": "fetch_failed",
+  "lineup_blocker": "no rows returned by BDL lineups endpoint (lineups not posted yet)",
+  "lineup_complete": "unavailable",
   "lineup_composition_features_enabled": true,
-  "lineup_confirmation_status": "fetch_failed",
+  "lineup_confirmation_status": "unavailable",
   "lineup_confirmed": false,
   "lineup_context_supplied": true,
   "lineup_feature_blocker": "no lineup rows joined into prediction state for this snapshot \u2014 see derek_live_predictions_summary.json for the exact blocker (typical: BDL has not posted lineups yet, or backfill_demo mode bypassed predict.py).",
   "lineup_feature_columns_added": [],
-  "lineup_fetched_at_utc": "2026-05-03T18:14:14Z",
+  "lineup_fetched_at_utc": "2026-05-03T18:21:38Z",
   "lineup_hash": "",
   "lineup_injury_context_upstream_of_pmf": true,
   "lineup_source": "balldontlie_v1_lineups",
@@ -83,21 +83,21 @@
   "market_odds_used_for_edge_only": true,
   "market_only_edge_sensitivity_verified": true,
   "market_rows": 33,
-  "market_snapshot_hash": "fc636ef87feac491",
+  "market_snapshot_hash": "f23f89039160ecbf",
   "market_snapshot_type": "current_live",
   "minutes_feature_list_hash": "57b63afd927fef0c",
   "minutes_projection_conflict_count": 0,
   "no_challenger_artifacts_used": false,
   "no_leakage_champion_cutoff_verified": true,
   "no_post_tip_data_used": true,
-  "odds_fetched_at_utc": "2026-05-03T15:58:13Z",
+  "odds_fetched_at_utc": "2026-05-03T18:21:27Z",
   "odds_source": "Odds-API (consumed by build_daily_pmf_delivery + predict.py upstream)",
   "official_lineup_context_supplied": false,
   "official_lineup_features_enabled": true,
   "outputs": {
     "contextual_feature_audit.parquet": {
       "rows": 14,
-      "sha256_prefix": "ff215e9da25d99c2"
+      "sha256_prefix": "6b05e5a6859d70e7"
     },
     "direct_lineup_impact_report.json": {
       "rows": 1,
@@ -105,19 +105,19 @@
     },
     "full_pmf_wide.parquet": {
       "rows": 33,
-      "sha256_prefix": "ec3ba1c9bcfba624"
+      "sha256_prefix": "ca0892f1ea46f93c"
     },
     "game_context.parquet": {
       "rows": 14,
-      "sha256_prefix": "cef478ea358e1e88"
+      "sha256_prefix": "57d2af0e891852ca"
     },
     "injury_availability_context.parquet": {
       "rows": 14,
-      "sha256_prefix": "0e6c746d82e02043"
+      "sha256_prefix": "f703cdf64a4f65ba"
     },
     "lineup_context.parquet": {
       "rows": 14,
-      "sha256_prefix": "fca957c3620ea87f"
+      "sha256_prefix": "c40ca398f48a41a2"
     },
     "lineup_injury_impact_report.json": {
       "rows": 1,
@@ -125,37 +125,37 @@
     },
     "market_comparison.parquet": {
       "rows": 33,
-      "sha256_prefix": "fc636ef87feac491"
+      "sha256_prefix": "f23f89039160ecbf"
     },
     "outcome_level_probabilities.parquet": {
       "rows": 33,
-      "sha256_prefix": "f1e9defa598f1d0c"
+      "sha256_prefix": "d9002f7c2f93cfce"
     },
     "pmf_driver_decomposition.parquet": {
       "rows": 33,
-      "sha256_prefix": "34f40c4de5767254"
+      "sha256_prefix": "49e98a311e447118"
     },
     "prediction_input_audit.parquet": {
       "rows": 33,
-      "sha256_prefix": "7eccf72a0c200c25"
+      "sha256_prefix": "0aa0fc1947f59f7b"
     },
     "prop_summary.parquet": {
       "rows": 33,
-      "sha256_prefix": "7eccf72a0c200c25"
+      "sha256_prefix": "0aa0fc1947f59f7b"
     }
   },
   "players_marked_non_actionable": 0,
   "players_removed_confirmed_out": 0,
-  "pmf_generated_at_utc": "2026-05-03T15:58:13Z",
-  "pmf_output_hash": "ec3ba1c9bcfba624",
+  "pmf_generated_at_utc": "2026-05-03T18:21:27Z",
+  "pmf_output_hash": "ca0892f1ea46f93c",
   "pmf_recomputation_backfill_reused_canonical": true,
   "pmf_recomputation_predict_invocation_succeeded": false,
   "pmf_sensitivity_verified": true,
   "pmf_source": "live_snapshot_recomputed_canonical_current",
   "pmfs_recomputed": true,
   "predict_invocation": null,
-  "prediction_code_commit": "3f62d289f6973b72143ceccf6392ff266db0909d",
-  "prediction_run_id": "derek-snapshot-current_live-21684819-20260503T181413",
+  "prediction_code_commit": "cce877f110241953e592bdc0be7eefd5f53d0f7c",
+  "prediction_run_id": "derek-snapshot-current_live-21684819-20260503T182135",
   "predictions_parquet_path": "predictions/all_props_2026-05-03.parquet",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "props_emitted": 33,
@@ -172,7 +172,7 @@
   "role_bucket_changed_count": 0,
   "schema_version": "1.0",
   "snapshot_mode": "production_live_current",
-  "snapshot_target_time_utc": "2026-05-03T18:14:13Z",
+  "snapshot_target_time_utc": "2026-05-03T18:21:35Z",
   "snapshot_type": "current_live",
   "starter_flag_changed_count": 0,
   "starters_by_team": {},

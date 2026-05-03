@@ -1,7 +1,7 @@
 # BDL Lineup Status — game 21682000 (2026-05-03)
 
 - source: `balldontlie_v1_lineups`
-- fetched_at_utc: `2026-05-03T17:33:27Z`
+- fetched_at_utc: `2026-05-03T18:21:33Z`
 - lineup_confirmed: **False**
 - lineup_complete: **unavailable**
 - lineup_blocker: 'no rows returned by BDL lineups endpoint (lineups not posted yet)'

@@ -18,13 +18,13 @@ This is a best-available pre-tip baseline. BDL did not return confirmed lineup r
 - BDL_lineup_fetch_status: `no_rows_returned`
 - BDL_lineup_rows: **0**
 - BDL_lineup_endpoint: `balldontlie_v1_lineups`
-- BDL_lineup_fetched_at_utc: `2026-05-03T18:14:14Z`
+- BDL_lineup_fetched_at_utc: `2026-05-03T18:21:38Z`
 - BDL_injury_fetch_attempted: **True**
 - BDL_injury_fetch_status: `deferred_to_predict_pipeline`
 - BDL_injury_rows: **0**
 - BDL_injury_endpoint: `data/nba_injury_reports.parquet (downstream of predict.py)`
-- lineup_blocker: `BDL_API_KEY not set in runner environment`
-- injury_blocker: `BDL_API_KEY not set in runner environment`
+- lineup_blocker: `no rows returned by BDL lineups endpoint (lineups not posted yet)`
+- injury_blocker: `no rows returned by BDL lineups endpoint (lineups not posted yet)`
 
 ## Champion model
 
@@ -69,25 +69,25 @@ Market odds were used **for edge only**, never as model features.
 | player_name | stat | rate_delta |
 | --- | --- | ---: |
 | Daniss Jenkins | pts | +0.0331 |
-| Wendell Carter Jr. | pts | +0.0331 |
-| Cade Cunningham | pts | +0.0331 |
-| Duncan Robinson | pts | +0.0331 |
-| Duncan Robinson | pts | +0.0331 |
-| Paolo Banchero | pts | +0.0331 |
-| Paolo Banchero | pts | +0.0331 |
-| Paolo Banchero | pts | +0.0331 |
-| Desmond Bane | pts | +0.0331 |
-| Cade Cunningham | pts | +0.0331 |
-| Desmond Bane | pts | +0.0331 |
-| Desmond Bane | pts | +0.0331 |
-| Tristan Da Silva | pts | +0.0331 |
-| Jalen Duren | pts | +0.0331 |
-| Jalen Duren | pts | +0.0331 |
 | Daniss Jenkins | pts | +0.0331 |
-| Cade Cunningham | pts | +0.0331 |
-| Paolo Banchero | pts | +0.0331 |
-| Cade Cunningham | pts | +0.0331 |
+| Daniss Jenkins | pts | +0.0331 |
+| Ausar Thompson | pts | +0.0331 |
+| Anthony Black | pts | +0.0331 |
+| Anthony Black | pts | +0.0331 |
+| Isaiah Stewart | pts | +0.0331 |
+| Jamal Cain | pts | +0.0331 |
 | Tobias Harris | pts | +0.0331 |
+| Tobias Harris | pts | +0.0331 |
+| Tobias Harris | pts | +0.0331 |
+| Tobias Harris | pts | +0.0331 |
+| Jalen Suggs | pts | +0.0331 |
+| Jalen Suggs | pts | +0.0331 |
+| Jalen Suggs | pts | +0.0331 |
+| Cade Cunningham | pts | +0.0331 |
+| Cade Cunningham | pts | +0.0331 |
+| Cade Cunningham | pts | +0.0331 |
+| Cade Cunningham | pts | +0.0331 |
+| Cade Cunningham | pts | +0.0331 |
 
 ## What Derek should inspect first
 
@@ -102,15 +102,15 @@ Market odds were used **for edge only**, never as model features.
 
 | File | rows | sha256 |
 | --- | ---: | --- |
-| prop_summary.parquet | 33 | `7eccf72a0c200c25` |
-| full_pmf_wide.parquet | 33 | `ec3ba1c9bcfba624` |
-| outcome_level_probabilities.parquet | 33 | `f1e9defa598f1d0c` |
-| market_comparison.parquet | 33 | `fc636ef87feac491` |
-| lineup_context.parquet | 14 | `fca957c3620ea87f` |
-| injury_availability_context.parquet | 14 | `0e6c746d82e02043` |
-| prediction_input_audit.parquet | 33 | `7eccf72a0c200c25` |
+| prop_summary.parquet | 33 | `0aa0fc1947f59f7b` |
+| full_pmf_wide.parquet | 33 | `ca0892f1ea46f93c` |
+| outcome_level_probabilities.parquet | 33 | `d9002f7c2f93cfce` |
+| market_comparison.parquet | 33 | `f23f89039160ecbf` |
+| lineup_context.parquet | 14 | `c40ca398f48a41a2` |
+| injury_availability_context.parquet | 14 | `f703cdf64a4f65ba` |
+| prediction_input_audit.parquet | 33 | `0aa0fc1947f59f7b` |
 | direct_lineup_impact_report.json | 1 | `1641f1cdcba64f05` |
-| game_context.parquet | 14 | `cef478ea358e1e88` |
-| pmf_driver_decomposition.parquet | 33 | `34f40c4de5767254` |
+| game_context.parquet | 14 | `57d2af0e891852ca` |
+| pmf_driver_decomposition.parquet | 33 | `49e98a311e447118` |
 | lineup_injury_impact_report.json | 1 | `394015348926e904` |
-| contextual_feature_audit.parquet | 14 | `ff215e9da25d99c2` |
+| contextual_feature_audit.parquet | 14 | `6b05e5a6859d70e7` |
