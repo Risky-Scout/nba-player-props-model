@@ -1,13 +1,16 @@
 {
   "facts": {
     "any_target_in_past": true,
-    "any_target_overdue": false,
+    "any_target_overdue": true,
     "champion_pointer_contextual_pmf_engine": true,
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-03",
-    "now_utc": "2026-05-03T19:29:08Z",
-    "overdue_missing_snapshots": [],
+    "now_utc": "2026-05-03T20:00:43Z",
+    "overdue_missing_snapshots": [
+      "21684819/t_minus_25",
+      "21684819/close_lock"
+    ],
     "per_type_lines": [
       {
         "detail": "",
@@ -15,23 +18,23 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-03T19:29:08Z",
+        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-03T20:00:43Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-03T19:29:08Z",
+        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-03T20:00:43Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "CLOSE_LOCK"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-03T19:29:08Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-03T20:00:43Z missed_post_tip=true",
+        "outcome": "MISSED",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-03T19:29:08Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-03T20:00:43Z missed_post_tip=true",
+        "outcome": "MISSED",
         "type": "CLOSE_LOCK"
       }
     ],
@@ -69,16 +72,19 @@
         "t25_target_utc": "2026-05-03T23:15:00Z"
       },
       {
-        "cl_overdue": false,
+        "cl_overdue": true,
         "cl_target_utc": "2026-05-03T19:35:00Z",
         "game_id": "21684819",
         "game_start_time": "2026-05-03T19:40:00Z",
-        "t25_overdue": false,
+        "t25_overdue": true,
         "t25_target_utc": "2026-05-03T19:15:00Z"
       }
     ],
     "schedule_size": 2
   },
-  "outcome": "pass",
+  "failed_reasons": [
+    "overdue_missing_snapshots=['21684819/t_minus_25', '21684819/close_lock']"
+  ],
+  "outcome": "failed",
   "schema_version": "1.0"
 }

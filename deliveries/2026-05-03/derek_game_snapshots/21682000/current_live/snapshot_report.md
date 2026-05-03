@@ -114,6 +114,7 @@ Market odds were used **for edge only**, never as model features.
 | pmf_driver_decomposition.parquet | 36 | `e71a00e9a26a76d0` |
 | lineup_injury_impact_report.json | 1 | `f23ae18c69b7e9bb` |
 | contextual_feature_audit.parquet | 14 | `9687d78ecd426743` |
+
 ## Edge reasonability / publishability
 
 Current-live edges are **model-vs-market disagreements** from the best-available baseline. BDL did not return confirmed lineup rows at this timestamp, so these rows are **watchlist / review signals**, not confirmed-lineup recommendations. Large edges are flagged for review. Push / integer lines are audited separately. Calibration support is checked by stat / side / edge bucket where settled samples exist. **T-minus-25 and close-lock are the more important near-tip confirmed-lineup snapshots.**

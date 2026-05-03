@@ -1,29 +1,29 @@
 {
-  "code_commit": "6d298b04f0506761e05081551fe59c841f63a6d5",
+  "code_commit": "4e58ed30eaa908e70af8af0ae54a8c7fa3ef0b3f",
   "decisions": [
     {
-      "decision": "fired_ok",
+      "decision": "skipped_already_run",
+      "due_reason": "pre_tip (game_start_utc=2026-05-03T23:40:00Z now=2026-05-03T20:00:26Z)",
       "game_id": "21682000",
-      "tail": "  snapshot_dir=deliveries/2026-05-03/derek_game_snapshots/21682000/current_live",
       "target_utc": "2026-05-03T23:40:00Z"
     },
     {
-      "decision": "fired_ok",
+      "decision": "skipped_already_run",
+      "due_reason": "already_tipped (game_start_utc=2026-05-03T19:40:00Z now=2026-05-03T20:00:26Z)",
       "game_id": "21684819",
-      "tail": "  snapshot_dir=deliveries/2026-05-03/derek_game_snapshots/21684819/current_live",
       "target_utc": "2026-05-03T19:40:00Z"
     }
   ],
   "delivery_date": "2026-05-03",
-  "eligible_rows": 2,
-  "now_utc": "2026-05-03T19:28:41Z",
+  "eligible_rows": 0,
+  "now_utc": "2026-05-03T20:00:26Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
   "snapshot_type": "current_live",
   "summary": {
     "failures": 0,
-    "fired": 2,
-    "skipped_already_run": 0,
+    "fired": 0,
+    "skipped_already_run": 2,
     "skipped_window": 0
   }
 }
