@@ -52,11 +52,18 @@ FRESHNESS_MANIFEST_DIR = REPO_ROOT / "data" / "freshness_manifest"
 
 # Minimum player-game rows for a date to be considered "complete." During
 # the regular season a full slate is 200-400 rows; during the playoffs a
-# typical complete night is 50-100 rows (1-4 games × ~26 active players ×
-# 2 teams). Setting the floor at 50 catches obviously-partial slates
-# (e.g. our local 2026-04-29 has 17 rows) without rejecting completed
-# playoff nights.
-COMPLETE_NIGHT_FLOOR_ROWS = 50
+# typical complete night ranges from 20 rows (single playoff game, tight
+# 10-deep rotation) up to 100+ rows (4-game first-round slate, deeper
+# benches). The floor must catch obviously-partial slates (e.g. 2026-04-29
+# at 17 rows = late-arriving boxes) without rejecting completed multi-game
+# playoff nights with tight rotations (e.g. 2026-05-03 at 44 rows = two
+# games × 22-player tight playoff rotation).
+#
+# Phase 13AF lowered this from 50 → 25 because 50 was rejecting valid
+# 2-game playoff nights with playoff-tight rotations. 25 still catches
+# the partial-slate failure mode while accepting any completed playoff
+# game with normal active-roster coverage.
+COMPLETE_NIGHT_FLOOR_ROWS = 25
 
 
 def _compute_target_date_et() -> dt.date:

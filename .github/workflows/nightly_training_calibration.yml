@@ -80,16 +80,20 @@ jobs:
         run: |
           python scripts/_bootstrap_champion_registry.py
 
-      # Phase 13AE: refresh settled player box scores BEFORE the strict
-      # resolver decides whether to halt. The previous chain order
-      # (resolver-then-refresh) caused a chicken-and-egg deadlock:
-      # resolver halted because the parquet was stale → refresh never
-      # ran → parquet stayed stale forever. Running the BDL refresh up
-      # front lets the resolver see the freshly-merged outcomes when it
-      # makes its halt-or-proceed decision. continue-on-error keeps the
-      # job alive when BDL itself is empty for a date — the resolver
-      # then halts cleanly with previous_day_data_not_ready, which is
-      # still the correct safe behavior.
+      # Phase 13AE/13AF: refresh settled player box scores BEFORE the
+      # strict resolver decides whether to halt, AND commit the refreshed
+      # parquet back to main even when the resolver later halts. The
+      # previous chain order (resolver-then-refresh) caused a chicken-
+      # and-egg deadlock: resolver halted because the parquet was stale
+      # → refresh never ran → parquet stayed stale forever. Running the
+      # BDL refresh up front lets the resolver see freshly-merged
+      # outcomes when making its halt-or-proceed decision. Committing
+      # the parquet immediately means subsequent runs and downstream
+      # workflows pick up the fresh data even if today's resolver halts
+      # for a different reason. continue-on-error keeps the job alive
+      # when BDL itself is empty for a date — the resolver then halts
+      # cleanly with previous_day_data_not_ready, which is still the
+      # correct safe behavior.
       - name: Pre-resolver settled player stats refresh (Phase 13AE)
         id: bdl_refresh_pre_resolver
         continue-on-error: true
@@ -111,6 +115,25 @@ jobs:
           python scripts/verify_player_game_stats_freshness.py \
             --required-through-date "$PREV_DAY_ET" || \
             echo "::warning::player_game_stats freshness verifier failed; resolver will halt cleanly"
+
+      # Phase 13AF: commit the refreshed parquet so origin/main carries the
+      # fresh outcomes even if the resolver halts in this run.
+      - name: Commit refreshed player stats (Phase 13AF)
+        if: always()
+        continue-on-error: true
+        run: |
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add data/player_game_stats.parquet \
+                  artifacts/automation_health/player_game_stats_freshness_*.json \
+                  artifacts/automation_health/player_game_stats_freshness_*.md \
+                  artifacts/automation_health/player_game_stats_freshness_check_*.json \
+                  2>/dev/null || true
+          git diff --staged --quiet && echo "No parquet changes to commit" || \
+            git commit -m "Refresh settled player stats (Phase 13AF auto)"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break || sleep 5
+          done
 
       - name: Resolve previous-day-ET target (Phase 13G strict)
         id: d
