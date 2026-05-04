@@ -1,13 +1,13 @@
 # Near-tip snapshot root-cause audit — 2026-05-03
 
-Generated 2026-05-03T23:36:31Z.
+Generated 2026-05-04T15:06:45Z.
 
 ## Per-(matchup, snapshot) state
 
 | Away | Home | Matchup | Snapshot | Tip Time UTC | Target Time UTC | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Raptors | Cavaliers | Raptors @ Cavaliers | T-minus-25 | `2026-05-03T23:40:00Z` | `2026-05-03T23:15:00Z` | Pending dispatch |
-| Raptors | Cavaliers | Raptors @ Cavaliers | Close-lock | `2026-05-03T23:40:00Z` | `2026-05-03T23:35:00Z` | Pending dispatch |
+| Raptors | Cavaliers | Raptors @ Cavaliers | T-minus-25 | `2026-05-03T23:40:00Z` | `2026-05-03T23:15:00Z` | Missed during setup window; documented, not backfilled |
+| Raptors | Cavaliers | Raptors @ Cavaliers | Close-lock | `2026-05-03T23:40:00Z` | `2026-05-03T23:35:00Z` | Missed during setup window; documented, not backfilled |
 | Magic | Pistons | Magic @ Pistons | T-minus-25 | `2026-05-03T19:40:00Z` | `2026-05-03T19:15:00Z` | Missed during setup window; documented, not backfilled |
 | Magic | Pistons | Magic @ Pistons | Close-lock | `2026-05-03T19:40:00Z` | `2026-05-03T19:35:00Z` | Missed during setup window; documented, not backfilled |
 

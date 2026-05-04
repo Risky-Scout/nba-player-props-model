@@ -131,16 +131,6 @@
       "passed": true
     },
     {
-      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
-      "name": "21682000/t_minus_25/required_outputs_present",
-      "passed": false
-    },
-    {
-      "detail": "missing=['snapshot_manifest.json', 'snapshot_report.md', 'prop_summary.csv', 'prop_summary.parquet', 'full_pmf_wide.csv', 'full_pmf_wide.parquet', 'outcome_level_probabilities.csv', 'outcome_level_probabilities.parquet', 'market_comparison.csv', 'market_comparison.parquet']",
-      "name": "21682000/close_lock/required_outputs_present",
-      "passed": false
-    },
-    {
       "detail": "ok",
       "name": "21684819/current_live/required_outputs_present",
       "passed": true
@@ -266,11 +256,13 @@
       "passed": true
     }
   ],
-  "code_commit": "135a16a9a597c2e1e0e25fbf88f5f4f917407e8a",
+  "code_commit": "4b541897028919342b448833419adb44fae057c6",
   "delivery_date": "2026-05-03",
   "facts": {
     "game_count": 2,
     "missed_post_tip_markers": [
+      "21682000/t_minus_25",
+      "21682000/close_lock",
       "21684819/t_minus_25",
       "21684819/close_lock"
     ],
@@ -291,9 +283,9 @@
       }
     ],
     "recomputed_snapshot_count": 0,
-    "snapshot_count": 4
+    "snapshot_count": 2
   },
-  "generated_at_utc": "2026-05-03T23:36:24+00:00",
-  "passed": false,
+  "generated_at_utc": "2026-05-04T15:06:53+00:00",
+  "passed": true,
   "schema_version": "1.0"
 }

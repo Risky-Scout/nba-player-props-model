@@ -1,9 +1,8 @@
 # Derek production-live E2E — 2026-05-03
 
-- outcome: **failed**
-
-## Failed reasons
-
-- overdue_missing_snapshots=['21682000/t_minus_25', '21682000/close_lock']
-- snapshot 21682000/t_minus_25 issues=['missing snapshot_manifest.json']
-- snapshot 21682000/close_lock issues=['missing snapshot_manifest.json']
+- outcome: **pass**
+- production_live snapshots passing: **2**
+- now_utc: 2026-05-04T15:06:54Z
+- schedule_size: 2
+- pass: 21682000/current_live
+- pass: 21684819/current_live
