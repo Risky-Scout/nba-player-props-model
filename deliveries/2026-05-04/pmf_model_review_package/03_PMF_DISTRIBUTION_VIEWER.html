@@ -1,0 +1,797 @@
+<!doctype html><html><head><meta charset=utf-8><title>PMF Distribution Viewer — 2026-05-04</title><style>
+body{font-family:system-ui;max-width:1100px;margin:2rem auto;padding:0 1rem;color:#222}
+h1{margin-top:0}h2{margin-top:1.6rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}
+code{background:#f3f3f3;padding:0.1em 0.3em;border-radius:3px;font-size:0.95em}
+.callout{background:#fff8d6;border-left:4px solid #d4a900;padding:0.6rem 1rem;margin:1rem 0}
+.callout-warn{background:#ffe8e0;border-left:4px solid #c33;padding:0.6rem 1rem;margin:1rem 0}
+.pmf-card{border:1px solid #ddd;border-radius:6px;padding:0.8rem 1rem;margin:0.8rem 0;background:#fafafa}
+.pmf-head{display:flex;justify-content:space-between;font-weight:600}
+.pmf-meta{color:#666;font-size:0.9em;margin:0.2rem 0 0.6rem}
+.bars{display:flex;align-items:flex-end;gap:2px;height:90px;margin:0.4rem 0 0.2rem;background:#fff;border:1px solid #eee;padding:4px}
+.bar{display:flex;flex-direction:column;align-items:center;min-width:14px;font-size:0.7em;color:#666}
+.bar > .fill{background:#3b6;border-radius:1px 1px 0 0;width:100%}
+.bar > .label{margin-top:2px}
+table{border-collapse:collapse;margin:0.6rem 0}
+th,td{padding:0.3rem 0.6rem;border:1px solid #ddd;text-align:left;font-size:0.92em}
+th{background:#f0f0f0}
+</style></head><body><h1>PMF Distribution Viewer — 2026-05-04</h1><p>Every PMF in the slate, grouped by stat. Bars are normalized to the row's peak. Hover for exact P(outcome=k).</p><div class="callout">Model-only PMFs. No market anchoring.</div><h2>AST</h2>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Julius Randle — AST
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 3.64 &middot; median 3 &middot;
+          mode 3 &middot; p0 0.065</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:28px" title="P(0)=0.0646"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:49px" title="P(1)=0.1115"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:69px" title="P(2)=0.1577"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:80px" title="P(3)=0.1833"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:72px" title="P(4)=0.1657"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:52px" title="P(5)=0.1187"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:38px" title="P(6)=0.0864"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:24px" title="P(7)=0.0559"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:12px" title="P(8)=0.0274"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:7px" title="P(9)=0.0153"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:4px" title="P(10)=0.0092"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:1px" title="P(11)=0.0024"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:1px" title="P(12)=0.0017"></div><div class="label">12</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Anthony Edwards — AST
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 3.16 &middot; median 3 &middot;
+          mode 2 &middot; p0 0.078</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:33px" title="P(0)=0.0783"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:58px" title="P(1)=0.1392"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.1919"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:79px" title="P(3)=0.1896"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:68px" title="P(4)=0.1622"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:50px" title="P(5)=0.1207"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:26px" title="P(6)=0.0620"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:12px" title="P(7)=0.0284"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:6px" title="P(8)=0.0143"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:3px" title="P(9)=0.0079"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0034"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:1px" title="P(11)=0.0020"></div><div class="label">11</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Stephon Castle — AST
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 6.50 &middot; median 6 &middot;
+          mode 7 &middot; p0 0.021</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:12px" title="P(0)=0.0214"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:16px" title="P(1)=0.0282"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:28px" title="P(2)=0.0491"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:36px" title="P(3)=0.0617"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:57px" title="P(4)=0.0978"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:66px" title="P(5)=0.1136"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:75px" title="P(6)=0.1292"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:80px" title="P(7)=0.1383"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:66px" title="P(8)=0.1139"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:52px" title="P(9)=0.0899"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:37px" title="P(10)=0.0636"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:23px" title="P(11)=0.0404"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:15px" title="P(12)=0.0254"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:7px" title="P(13)=0.0122"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:4px" title="P(14)=0.0072"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:3px" title="P(15)=0.0045"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:1px" title="P(16)=0.0019"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:1px" title="P(17)=0.0016"></div><div class="label">17</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Ayo Dosunmu — AST
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 3.35 &middot; median 3 &middot;
+          mode 3 &middot; p0 0.073</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:30px" title="P(0)=0.0728"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:51px" title="P(1)=0.1248"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:71px" title="P(2)=0.1740"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:80px" title="P(3)=0.1949"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:69px" title="P(4)=0.1680"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:48px" title="P(5)=0.1157"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:29px" title="P(6)=0.0704"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:17px" title="P(7)=0.0423"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:9px" title="P(8)=0.0211"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:4px" title="P(9)=0.0093"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:2px" title="P(10)=0.0043"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:1px" title="P(11)=0.0023"></div><div class="label">11</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Jaden McDaniels — AST
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 2.34 &middot; median 2 &middot;
+          mode 2 &middot; p0 0.148</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:51px" title="P(0)=0.1483"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:69px" title="P(1)=0.1986"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.2306"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:69px" title="P(3)=0.1989"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:39px" title="P(4)=0.1119"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:21px" title="P(5)=0.0610"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:11px" title="P(6)=0.0310"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:5px" title="P(7)=0.0139"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0035"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0022"></div><div class="label">9</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Victor Wembanyama — AST
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 2.80 &middot; median 3 &middot;
+          mode 2 &middot; p0 0.124</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:51px" title="P(0)=0.1243"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:70px" title="P(1)=0.1723"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.1957"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:75px" title="P(3)=0.1843"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:56px" title="P(4)=0.1358"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:33px" title="P(5)=0.0815"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:21px" title="P(6)=0.0504"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:13px" title="P(7)=0.0307"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:5px" title="P(8)=0.0120"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:4px" title="P(9)=0.0089"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0026"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:1px" title="P(11)=0.0015"></div><div class="label">11</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Jalen Brunson — AST
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 6.05 &middot; median 6 &middot;
+          mode 6 &middot; p0 0.020</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:11px" title="P(0)=0.0203"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:16px" title="P(1)=0.0287"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:27px" title="P(2)=0.0490"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:45px" title="P(3)=0.0814"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:65px" title="P(4)=0.1171"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:77px" title="P(5)=0.1380"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:80px" title="P(6)=0.1435"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:70px" title="P(7)=0.1259"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:61px" title="P(8)=0.1095"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:44px" title="P(9)=0.0786"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:27px" title="P(10)=0.0479"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:17px" title="P(11)=0.0314"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:8px" title="P(12)=0.0145"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:5px" title="P(13)=0.0084"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:2px" title="P(14)=0.0027"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:1px" title="P(15)=0.0013"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:1px" title="P(16)=0.0017"></div><div class="label">16</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Josh Hart — AST
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 4.30 &middot; median 4 &middot;
+          mode 3 &middot; p0 0.058</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:30px" title="P(0)=0.0577"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:43px" title="P(1)=0.0820"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:61px" title="P(2)=0.1169"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:80px" title="P(3)=0.1542"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:77px" title="P(4)=0.1486"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:68px" title="P(5)=0.1308"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:60px" title="P(6)=0.1161"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:44px" title="P(7)=0.0848"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:26px" title="P(8)=0.0508"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:13px" title="P(9)=0.0258"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:9px" title="P(10)=0.0173"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:5px" title="P(11)=0.0091"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:2px" title="P(12)=0.0031"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0027"></div><div class="label">13</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Tyrese Maxey — AST
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 4.82 &middot; median 5 &middot;
+          mode 4 &middot; p0 0.040</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:22px" title="P(0)=0.0404"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:34px" title="P(1)=0.0624"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:55px" title="P(2)=0.1013"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:71px" title="P(3)=0.1298"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1472"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:74px" title="P(5)=0.1355"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:73px" title="P(6)=0.1338"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:50px" title="P(7)=0.0918"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:37px" title="P(8)=0.0677"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:22px" title="P(9)=0.0404"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:11px" title="P(10)=0.0202"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:9px" title="P(11)=0.0160"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:4px" title="P(12)=0.0073"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:2px" title="P(13)=0.0034"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:1px" title="P(14)=0.0027"></div><div class="label">14</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Mikal Bridges — AST
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 1.99 &middot; median 2 &middot;
+          mode 1 &middot; p0 0.227</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:78px" title="P(0)=0.2273"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.2329"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:73px" title="P(2)=0.2128"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:50px" title="P(3)=0.1448"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:32px" title="P(4)=0.0931"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:15px" title="P(5)=0.0438"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:8px" title="P(6)=0.0232"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:5px" title="P(7)=0.0136"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:2px" title="P(8)=0.0045"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0020"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0019"></div><div class="label">10</div></div></div>
+</div><h2>BLK</h2>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Devin Vassell — BLK
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 0.59 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.660</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.6599"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:28px" title="P(1)=0.2318"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:9px" title="P(2)=0.0771"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:1px" title="P(3)=0.0043"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:0px" title="P(4)=0.0039"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0037"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0035"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0032"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0044"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0039"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0043"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Ayo Dosunmu — BLK
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 0.29 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.819</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.8186"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:14px" title="P(1)=0.1431"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:2px" title="P(2)=0.0222"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:0px" title="P(3)=0.0021"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:0px" title="P(4)=0.0022"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0018"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0018"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0016"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0024"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0020"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0022"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Rudy Gobert — BLK
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 1.14 &middot; median 1 &middot;
+          mode 0 &middot; p0 0.451</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.4513"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:46px" title="P(1)=0.2591"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:33px" title="P(2)=0.1859"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:9px" title="P(3)=0.0535"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0080"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:1px" title="P(5)=0.0071"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:1px" title="P(6)=0.0064"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:1px" title="P(7)=0.0062"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0078"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0071"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0075"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Victor Wembanyama — BLK
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 3.13 &middot; median 3 &middot;
+          mode 1 &middot; p0 0.059</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:23px" title="P(0)=0.0592"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.2067"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:70px" title="P(2)=0.1806"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:66px" title="P(3)=0.1710"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:61px" title="P(4)=0.1571"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:46px" title="P(5)=0.1193"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:12px" title="P(6)=0.0322"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:7px" title="P(7)=0.0183"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:6px" title="P(8)=0.0162"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:8px" title="P(9)=0.0195"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:8px" title="P(10)=0.0198"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Kelly Oubre Jr. — BLK
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 0.60 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.650</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.6505"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:30px" title="P(1)=0.2438"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:9px" title="P(2)=0.0741"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:1px" title="P(3)=0.0043"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0043"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0035"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0034"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0032"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0048"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0038"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0043"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Joel Embiid — BLK
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 1.13 &middot; median 1 &middot;
+          mode 0 &middot; p0 0.448</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.4483"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:47px" title="P(1)=0.2614"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:36px" title="P(2)=0.2021"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:7px" title="P(3)=0.0403"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0065"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:1px" title="P(5)=0.0076"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:1px" title="P(6)=0.0059"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:1px" title="P(7)=0.0058"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0080"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0068"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0074"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>OG Anunoby — BLK
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 0.67 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.626</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.6262"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:31px" title="P(1)=0.2418"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:12px" title="P(2)=0.0968"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:0px" title="P(3)=0.0036"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0048"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:1px" title="P(5)=0.0047"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0037"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:1px" title="P(7)=0.0042"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0049"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0045"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0048"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Mikal Bridges — BLK
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 0.58 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.636</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.6365"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:37px" title="P(1)=0.2944"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:5px" title="P(2)=0.0373"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:0px" title="P(3)=0.0039"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0043"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0038"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0035"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0032"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0047"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0040"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0044"></div><div class="label">10</div></div></div>
+</div><h2>FG3M</h2>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Anthony Edwards — FG3M
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 2.48 &middot; median 2 &middot;
+          mode 2 &middot; p0 0.100</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:30px" title="P(0)=0.0996"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:79px" title="P(1)=0.2596"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.2623"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:56px" title="P(3)=0.1830"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:31px" title="P(4)=0.1001"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:12px" title="P(5)=0.0395"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:10px" title="P(6)=0.0325"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:7px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Mike Conley — FG3M
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 2.15 &middot; median 2 &middot;
+          mode 1 &middot; p0 0.144</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:38px" title="P(0)=0.1435"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.3034"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:67px" title="P(2)=0.2545"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:43px" title="P(3)=0.1612"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:19px" title="P(4)=0.0703"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:12px" title="P(5)=0.0437"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0000"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:6px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Julian Champagnie — FG3M
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 1.82 &middot; median 1 &middot;
+          mode 1 &middot; p0 0.203</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:48px" title="P(0)=0.2026"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.3371"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:58px" title="P(2)=0.2426"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:31px" title="P(3)=0.1290"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:16px" title="P(4)=0.0654"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0000"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0000"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:6px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Keldon Johnson — FG3M
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 1.27 &middot; median 1 &middot;
+          mode 0 &middot; p0 0.384</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.3836"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:71px" title="P(1)=0.3412"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:36px" title="P(2)=0.1735"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:16px" title="P(3)=0.0783"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:0px" title="P(4)=0.0000"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0000"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0000"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:5px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Miles McBride — FG3M
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 2.54 &middot; median 2 &middot;
+          mode 2 &middot; p0 0.090</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:27px" title="P(0)=0.0896"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:76px" title="P(1)=0.2504"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.2640"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:57px" title="P(3)=0.1897"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:32px" title="P(4)=0.1061"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:13px" title="P(5)=0.0431"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:10px" title="P(6)=0.0338"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:7px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Jalen Brunson — FG3M
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 2.78 &middot; median 2 &middot;
+          mode 2 &middot; p0 0.069</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:21px" title="P(0)=0.0687"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:68px" title="P(1)=0.2208"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.2597"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:61px" title="P(3)=0.1968"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:38px" title="P(4)=0.1240"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:18px" title="P(5)=0.0581"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:7px" title="P(6)=0.0216"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:8px" title="P(7)=0.0269"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:7px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Paul George — FG3M
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 2.18 &middot; median 2 &middot;
+          mode 1 &middot; p0 0.137</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:37px" title="P(0)=0.1370"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.2986"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:69px" title="P(2)=0.2566"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:45px" title="P(3)=0.1663"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:20px" title="P(4)=0.0733"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:12px" title="P(5)=0.0449"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0000"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:6px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Quentin Grimes — FG3M
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 1.37 &middot; median 1 &middot;
+          mode 1 &middot; p0 0.339</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:77px" title="P(0)=0.3385"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.3498"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:45px" title="P(2)=0.1972"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:21px" title="P(3)=0.0911"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:0px" title="P(4)=0.0000"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0000"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0000"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:5px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Tyrese Maxey — FG3M
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 2.40 &middot; median 2 &middot;
+          mode 1 &middot; p0 0.113</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:33px" title="P(0)=0.1128"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.2716"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:76px" title="P(2)=0.2580"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:52px" title="P(3)=0.1769"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:27px" title="P(4)=0.0906"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:11px" title="P(5)=0.0357"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:9px" title="P(6)=0.0311"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:7px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Mikal Bridges — FG3M
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 1.27 &middot; median 1 &middot;
+          mode 0 &middot; p0 0.385</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.3851"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:71px" title="P(1)=0.3405"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:36px" title="P(2)=0.1733"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:16px" title="P(3)=0.0778"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:0px" title="P(4)=0.0000"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0000"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0000"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0000"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:0px" title="P(8)=0.0000"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0000"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0000"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:0px" title="P(11)=0.0000"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:0px" title="P(12)=0.0000"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:0px" title="P(13)=0.0000"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0000"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:5px" title="P(15)=0.0233"></div><div class="label">15</div></div></div>
+</div><h2>PTS</h2>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>De'Aaron Fox — PTS
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 18.44 &middot; median 19 &middot;
+          mode 21 &middot; p0 0.012</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0688)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:18px" title="P(0)=0.0119"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:17px" title="P(1)=0.0110"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:15px" title="P(2)=0.0095"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:17px" title="P(3)=0.0112"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:16px" title="P(4)=0.0103"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:22px" title="P(5)=0.0146"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:27px" title="P(6)=0.0175"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:32px" title="P(7)=0.0209"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:38px" title="P(8)=0.0246"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:35px" title="P(9)=0.0226"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:38px" title="P(10)=0.0245"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:46px" title="P(11)=0.0300"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:43px" title="P(12)=0.0281"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:52px" title="P(13)=0.0340"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:58px" title="P(14)=0.0374"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:69px" title="P(15)=0.0452"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:68px" title="P(16)=0.0441"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:74px" title="P(17)=0.0481"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:72px" title="P(18)=0.0467"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:78px" title="P(19)=0.0511"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:80px" title="P(20)=0.0518"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:80px" title="P(21)=0.0521"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:78px" title="P(22)=0.0510"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:70px" title="P(23)=0.0453"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:53px" title="P(24)=0.0343"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:52px" title="P(25)=0.0340"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:48px" title="P(26)=0.0312"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:41px" title="P(27)=0.0267"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:33px" title="P(28)=0.0214"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:32px" title="P(29)=0.0210"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:29px" title="P(30)=0.0188"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Julius Randle — PTS
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 18.71 &middot; median 19 &middot;
+          mode 19 &middot; p0 0.010</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0692)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:15px" title="P(0)=0.0102"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:14px" title="P(1)=0.0097"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:14px" title="P(2)=0.0094"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:16px" title="P(3)=0.0112"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:17px" title="P(4)=0.0119"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:14px" title="P(5)=0.0093"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:19px" title="P(6)=0.0127"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:29px" title="P(7)=0.0202"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:31px" title="P(8)=0.0210"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:32px" title="P(9)=0.0220"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:34px" title="P(10)=0.0232"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:42px" title="P(11)=0.0287"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:46px" title="P(12)=0.0315"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:44px" title="P(13)=0.0301"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:60px" title="P(14)=0.0413"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:63px" title="P(15)=0.0430"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:66px" title="P(16)=0.0454"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:78px" title="P(17)=0.0537"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:79px" title="P(18)=0.0543"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:80px" title="P(19)=0.0550"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:78px" title="P(20)=0.0536"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:61px" title="P(21)=0.0416"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:67px" title="P(22)=0.0458"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:57px" title="P(23)=0.0389"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:65px" title="P(24)=0.0443"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:50px" title="P(25)=0.0345"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:47px" title="P(26)=0.0322"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:45px" title="P(27)=0.0311"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:33px" title="P(28)=0.0228"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:33px" title="P(29)=0.0226"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:28px" title="P(30)=0.0191"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Anthony Edwards — PTS
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 20.60 &middot; median 21 &middot;
+          mode 20 &middot; p0 0.009</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.1244)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:14px" title="P(0)=0.0085"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:15px" title="P(1)=0.0093"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:13px" title="P(2)=0.0081"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:11px" title="P(3)=0.0071"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:17px" title="P(4)=0.0106"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:19px" title="P(5)=0.0115"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:22px" title="P(6)=0.0134"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:25px" title="P(7)=0.0153"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:23px" title="P(8)=0.0142"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:27px" title="P(9)=0.0169"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:36px" title="P(10)=0.0225"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:32px" title="P(11)=0.0197"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:40px" title="P(12)=0.0249"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:44px" title="P(13)=0.0273"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:51px" title="P(14)=0.0317"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:60px" title="P(15)=0.0371"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:61px" title="P(16)=0.0378"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:64px" title="P(17)=0.0397"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:70px" title="P(18)=0.0433"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:70px" title="P(19)=0.0436"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:80px" title="P(20)=0.0496"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:74px" title="P(21)=0.0459"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:74px" title="P(22)=0.0461"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:80px" title="P(23)=0.0494"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:62px" title="P(24)=0.0387"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:65px" title="P(25)=0.0400"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:52px" title="P(26)=0.0322"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:62px" title="P(27)=0.0386"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:53px" title="P(28)=0.0328"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:49px" title="P(29)=0.0301"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:47px" title="P(30)=0.0292"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Ayo Dosunmu — PTS
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 15.11 &middot; median 15 &middot;
+          mode 18 &middot; p0 0.014</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0264)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:20px" title="P(0)=0.0135"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:20px" title="P(1)=0.0137"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:22px" title="P(2)=0.0147"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:25px" title="P(3)=0.0167"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:28px" title="P(4)=0.0186"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:35px" title="P(5)=0.0239"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:45px" title="P(6)=0.0305"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:51px" title="P(7)=0.0342"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:53px" title="P(8)=0.0356"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:61px" title="P(9)=0.0414"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:72px" title="P(10)=0.0486"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:73px" title="P(11)=0.0491"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:67px" title="P(12)=0.0451"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:72px" title="P(13)=0.0488"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:75px" title="P(14)=0.0508"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:70px" title="P(15)=0.0475"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:73px" title="P(16)=0.0491"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:79px" title="P(17)=0.0533"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:80px" title="P(18)=0.0540"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:63px" title="P(19)=0.0427"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:54px" title="P(20)=0.0368"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:54px" title="P(21)=0.0364"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:54px" title="P(22)=0.0363"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:44px" title="P(23)=0.0295"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:35px" title="P(24)=0.0235"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:32px" title="P(25)=0.0217"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:20px" title="P(26)=0.0135"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:21px" title="P(27)=0.0142"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:18px" title="P(28)=0.0124"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:14px" title="P(29)=0.0096"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:12px" title="P(30)=0.0079"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Julian Champagnie — PTS
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 8.30 &middot; median 8 &middot;
+          mode 6 &middot; p0 0.039</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0028)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:39px" title="P(0)=0.0391"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:47px" title="P(1)=0.0467"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:55px" title="P(2)=0.0551"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:63px" title="P(3)=0.0629"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:64px" title="P(4)=0.0635"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:71px" title="P(5)=0.0705"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:80px" title="P(6)=0.0795"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:75px" title="P(7)=0.0749"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:76px" title="P(8)=0.0753"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:61px" title="P(9)=0.0602"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:65px" title="P(10)=0.0644"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:52px" title="P(11)=0.0514"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:58px" title="P(12)=0.0572"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:41px" title="P(13)=0.0409"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:35px" title="P(14)=0.0344"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:29px" title="P(15)=0.0290"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:24px" title="P(16)=0.0237"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:17px" title="P(17)=0.0171"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:15px" title="P(18)=0.0152"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:11px" title="P(19)=0.0113"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:8px" title="P(20)=0.0084"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:4px" title="P(21)=0.0043"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:5px" title="P(22)=0.0048"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:2px" title="P(23)=0.0024"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:2px" title="P(24)=0.0016"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:2px" title="P(25)=0.0017"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:0px" title="P(26)=0.0000"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:1px" title="P(27)=0.0011"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:0px" title="P(28)=0.0000"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:0px" title="P(29)=0.0000"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:0px" title="P(30)=0.0000"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Naz Reid — PTS
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 11.21 &middot; median 11 &middot;
+          mode 12 &middot; p0 0.024</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0042)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:28px" title="P(0)=0.0242"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:30px" title="P(1)=0.0253"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:31px" title="P(2)=0.0270"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:43px" title="P(3)=0.0367"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:47px" title="P(4)=0.0403"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:47px" title="P(5)=0.0401"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:54px" title="P(6)=0.0467"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:66px" title="P(7)=0.0562"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:68px" title="P(8)=0.0583"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:70px" title="P(9)=0.0599"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:77px" title="P(10)=0.0662"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:75px" title="P(11)=0.0643"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:80px" title="P(12)=0.0687"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:66px" title="P(13)=0.0567"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:59px" title="P(14)=0.0503"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:63px" title="P(15)=0.0542"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:48px" title="P(16)=0.0409"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:41px" title="P(17)=0.0350"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:35px" title="P(18)=0.0298"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:27px" title="P(19)=0.0233"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:21px" title="P(20)=0.0184"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:21px" title="P(21)=0.0177"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:19px" title="P(22)=0.0159"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:10px" title="P(23)=0.0082"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:10px" title="P(24)=0.0087"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:8px" title="P(25)=0.0071"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:6px" title="P(26)=0.0054"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:4px" title="P(27)=0.0037"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:2px" title="P(28)=0.0021"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:2px" title="P(29)=0.0020"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:2px" title="P(30)=0.0020"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Jaden McDaniels — PTS
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 14.43 &middot; median 14 &middot;
+          mode 11 &middot; p0 0.017</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0262)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:25px" title="P(0)=0.0167"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:33px" title="P(1)=0.0217"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:24px" title="P(2)=0.0163"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:34px" title="P(3)=0.0225"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:41px" title="P(4)=0.0275"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:44px" title="P(5)=0.0290"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:52px" title="P(6)=0.0344"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:56px" title="P(7)=0.0372"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:58px" title="P(8)=0.0384"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:65px" title="P(9)=0.0434"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:68px" title="P(10)=0.0455"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:80px" title="P(11)=0.0533"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:71px" title="P(12)=0.0476"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:66px" title="P(13)=0.0440"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:64px" title="P(14)=0.0428"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:78px" title="P(15)=0.0519"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:75px" title="P(16)=0.0498"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:73px" title="P(17)=0.0484"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:71px" title="P(18)=0.0470"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:47px" title="P(19)=0.0311"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:58px" title="P(20)=0.0386"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:53px" title="P(21)=0.0353"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:31px" title="P(22)=0.0209"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:39px" title="P(23)=0.0260"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:34px" title="P(24)=0.0226"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:30px" title="P(25)=0.0197"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:27px" title="P(26)=0.0179"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:20px" title="P(27)=0.0135"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:20px" title="P(28)=0.0132"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:12px" title="P(29)=0.0082"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:13px" title="P(30)=0.0088"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Victor Wembanyama — PTS
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 21.19 &middot; median 21 &middot;
+          mode 21 &middot; p0 0.010</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.1706)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:18px" title="P(0)=0.0097"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:16px" title="P(1)=0.0087"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:12px" title="P(2)=0.0062"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:23px" title="P(3)=0.0121"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:16px" title="P(4)=0.0084"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:22px" title="P(5)=0.0120"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:24px" title="P(6)=0.0130"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:30px" title="P(7)=0.0159"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:37px" title="P(8)=0.0196"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:44px" title="P(9)=0.0235"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:36px" title="P(10)=0.0194"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:43px" title="P(11)=0.0229"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:46px" title="P(12)=0.0246"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:51px" title="P(13)=0.0274"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:55px" title="P(14)=0.0292"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:55px" title="P(15)=0.0292"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:74px" title="P(16)=0.0396"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:63px" title="P(17)=0.0338"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:68px" title="P(18)=0.0367"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:79px" title="P(19)=0.0425"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:70px" title="P(20)=0.0378"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:80px" title="P(21)=0.0429"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:68px" title="P(22)=0.0367"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:74px" title="P(23)=0.0398"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:79px" title="P(24)=0.0422"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:72px" title="P(25)=0.0384"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:70px" title="P(26)=0.0377"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:60px" title="P(27)=0.0323"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:59px" title="P(28)=0.0318"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:43px" title="P(29)=0.0229"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:61px" title="P(30)=0.0325"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Jalen Brunson — PTS
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 23.11 &middot; median 23 &middot;
+          mode 24 &middot; p0 0.007</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.2079)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:10px" title="P(0)=0.0072"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:13px" title="P(1)=0.0089"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:11px" title="P(2)=0.0080"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:11px" title="P(3)=0.0077"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:13px" title="P(4)=0.0089"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:16px" title="P(5)=0.0112"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:12px" title="P(6)=0.0085"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:11px" title="P(7)=0.0076"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:13px" title="P(8)=0.0093"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:17px" title="P(9)=0.0123"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:20px" title="P(10)=0.0139"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:23px" title="P(11)=0.0160"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:25px" title="P(12)=0.0174"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:30px" title="P(13)=0.0215"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:30px" title="P(14)=0.0216"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:30px" title="P(15)=0.0211"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:37px" title="P(16)=0.0263"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:51px" title="P(17)=0.0361"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:39px" title="P(18)=0.0274"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:52px" title="P(19)=0.0369"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:59px" title="P(20)=0.0421"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:65px" title="P(21)=0.0464"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:61px" title="P(22)=0.0433"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:67px" title="P(23)=0.0474"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:80px" title="P(24)=0.0567"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:68px" title="P(25)=0.0483"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:57px" title="P(26)=0.0407"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:57px" title="P(27)=0.0404"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:48px" title="P(28)=0.0338"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:51px" title="P(29)=0.0358"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:41px" title="P(30)=0.0288"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>VJ Edgecombe — PTS
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 13.85 &middot; median 13 &middot;
+          mode 10 &middot; p0 0.022</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0243)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:33px" title="P(0)=0.0221"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:24px" title="P(1)=0.0163"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:29px" title="P(2)=0.0194"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:30px" title="P(3)=0.0205"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:51px" title="P(4)=0.0343"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:51px" title="P(5)=0.0344"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:57px" title="P(6)=0.0386"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:54px" title="P(7)=0.0365"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:70px" title="P(8)=0.0473"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:68px" title="P(9)=0.0459"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:80px" title="P(10)=0.0541"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:68px" title="P(11)=0.0459"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:76px" title="P(12)=0.0513"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:66px" title="P(13)=0.0446"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:73px" title="P(14)=0.0490"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:73px" title="P(15)=0.0491"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:70px" title="P(16)=0.0471"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:68px" title="P(17)=0.0462"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:52px" title="P(18)=0.0353"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:58px" title="P(19)=0.0392"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:50px" title="P(20)=0.0335"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:37px" title="P(21)=0.0247"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:38px" title="P(22)=0.0258"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:35px" title="P(23)=0.0239"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:33px" title="P(24)=0.0222"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:25px" title="P(25)=0.0170"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:25px" title="P(26)=0.0170"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:16px" title="P(27)=0.0109"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:12px" title="P(28)=0.0084"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:11px" title="P(29)=0.0077"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:10px" title="P(30)=0.0067"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>OG Anunoby — PTS
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 15.89 &middot; median 16 &middot;
+          mode 17 &middot; p0 0.015</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0392)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:22px" title="P(0)=0.0148"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:20px" title="P(1)=0.0132"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:25px" title="P(2)=0.0165"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:23px" title="P(3)=0.0154"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:31px" title="P(4)=0.0209"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:36px" title="P(5)=0.0243"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:42px" title="P(6)=0.0280"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:40px" title="P(7)=0.0266"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:43px" title="P(8)=0.0287"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:49px" title="P(9)=0.0327"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:60px" title="P(10)=0.0404"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:60px" title="P(11)=0.0404"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:74px" title="P(12)=0.0501"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:65px" title="P(13)=0.0434"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:77px" title="P(14)=0.0516"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:77px" title="P(15)=0.0521"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:74px" title="P(16)=0.0498"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:80px" title="P(17)=0.0538"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:61px" title="P(18)=0.0410"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:68px" title="P(19)=0.0459"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:56px" title="P(20)=0.0380"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:55px" title="P(21)=0.0369"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:48px" title="P(22)=0.0324"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:53px" title="P(23)=0.0356"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:39px" title="P(24)=0.0263"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:32px" title="P(25)=0.0213"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:31px" title="P(26)=0.0206"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:28px" title="P(27)=0.0189"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:29px" title="P(28)=0.0196"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:16px" title="P(29)=0.0107"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:16px" title="P(30)=0.0108"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Tyrese Maxey — PTS
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 22.65 &middot; median 23 &middot;
+          mode 22 &middot; p0 0.009</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.1989)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:14px" title="P(0)=0.0093"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:12px" title="P(1)=0.0082"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:10px" title="P(2)=0.0069"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:10px" title="P(3)=0.0067"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:12px" title="P(4)=0.0082"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:19px" title="P(5)=0.0125"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:14px" title="P(6)=0.0096"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:15px" title="P(7)=0.0101"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:19px" title="P(8)=0.0124"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:24px" title="P(9)=0.0159"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:26px" title="P(10)=0.0175"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:19px" title="P(11)=0.0129"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:34px" title="P(12)=0.0226"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:28px" title="P(13)=0.0189"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:33px" title="P(14)=0.0217"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:41px" title="P(15)=0.0277"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:40px" title="P(16)=0.0270"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:52px" title="P(17)=0.0349"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:56px" title="P(18)=0.0376"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:54px" title="P(19)=0.0364"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:66px" title="P(20)=0.0444"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:60px" title="P(21)=0.0402"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:80px" title="P(22)=0.0535"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:69px" title="P(23)=0.0462"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:67px" title="P(24)=0.0450"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:71px" title="P(25)=0.0472"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:56px" title="P(26)=0.0376"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:55px" title="P(27)=0.0370"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:55px" title="P(28)=0.0367"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:40px" title="P(29)=0.0268"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:44px" title="P(30)=0.0295"></div><div class="label">30</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Karl-Anthony Towns — PTS
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 16.77 &middot; median 17 &middot;
+          mode 17 &middot; p0 0.012</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8 <span style="color:#888;font-size:0.85em">(tail k>30: 0.0390)</span></div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:17px" title="P(0)=0.0124"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:19px" title="P(1)=0.0135"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:14px" title="P(2)=0.0103"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:19px" title="P(3)=0.0136"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:18px" title="P(4)=0.0128"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:26px" title="P(5)=0.0185"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:30px" title="P(6)=0.0218"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:30px" title="P(7)=0.0218"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:36px" title="P(8)=0.0262"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:35px" title="P(9)=0.0250"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:41px" title="P(10)=0.0299"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:49px" title="P(11)=0.0352"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:57px" title="P(12)=0.0414"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:63px" title="P(13)=0.0454"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:73px" title="P(14)=0.0531"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:65px" title="P(15)=0.0472"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:68px" title="P(16)=0.0493"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:80px" title="P(17)=0.0578"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:79px" title="P(18)=0.0574"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:78px" title="P(19)=0.0562"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:72px" title="P(20)=0.0521"></div><div class="label">20</div></div><div class="bar"><div class="fill" style="height:60px" title="P(21)=0.0435"></div><div class="label">21</div></div><div class="bar"><div class="fill" style="height:60px" title="P(22)=0.0437"></div><div class="label">22</div></div><div class="bar"><div class="fill" style="height:50px" title="P(23)=0.0358"></div><div class="label">23</div></div><div class="bar"><div class="fill" style="height:42px" title="P(24)=0.0302"></div><div class="label">24</div></div><div class="bar"><div class="fill" style="height:33px" title="P(25)=0.0240"></div><div class="label">25</div></div><div class="bar"><div class="fill" style="height:38px" title="P(26)=0.0272"></div><div class="label">26</div></div><div class="bar"><div class="fill" style="height:27px" title="P(27)=0.0193"></div><div class="label">27</div></div><div class="bar"><div class="fill" style="height:23px" title="P(28)=0.0169"></div><div class="label">28</div></div><div class="bar"><div class="fill" style="height:15px" title="P(29)=0.0110"></div><div class="label">29</div></div><div class="bar"><div class="fill" style="height:11px" title="P(30)=0.0080"></div><div class="label">30</div></div></div>
+</div><h2>REB</h2>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>De'Aaron Fox — REB
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 3.25 &middot; median 3 &middot;
+          mode 3 &middot; p0 0.078</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:31px" title="P(0)=0.0780"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:57px" title="P(1)=0.1423"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:74px" title="P(2)=0.1854"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:80px" title="P(3)=0.1999"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:59px" title="P(4)=0.1478"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:42px" title="P(5)=0.1042"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:22px" title="P(6)=0.0542"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:18px" title="P(7)=0.0441"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:9px" title="P(8)=0.0217"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:4px" title="P(9)=0.0105"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:3px" title="P(10)=0.0074"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:1px" title="P(11)=0.0026"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:1px" title="P(12)=0.0018"></div><div class="label">12</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Julius Randle — REB
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 6.02 &middot; median 6 &middot;
+          mode 5 &middot; p0 0.020</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:11px" title="P(0)=0.0204"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:16px" title="P(1)=0.0299"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:30px" title="P(2)=0.0545"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:52px" title="P(3)=0.0942"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:60px" title="P(4)=0.1101"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:80px" title="P(5)=0.1457"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:78px" title="P(6)=0.1422"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:63px" title="P(7)=0.1146"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:53px" title="P(8)=0.0972"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:38px" title="P(9)=0.0685"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:26px" title="P(10)=0.0480"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:18px" title="P(11)=0.0329"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:12px" title="P(12)=0.0210"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:6px" title="P(13)=0.0101"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:3px" title="P(14)=0.0060"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:1px" title="P(15)=0.0025"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:1px" title="P(16)=0.0022"></div><div class="label">16</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Luke Kornet — REB
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 4.20 &middot; median 4 &middot;
+          mode 3 &middot; p0 0.049</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:25px" title="P(0)=0.0493"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:51px" title="P(1)=0.1009"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:79px" title="P(2)=0.1550"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:80px" title="P(3)=0.1578"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:73px" title="P(4)=0.1447"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:60px" title="P(5)=0.1190"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:47px" title="P(6)=0.0922"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:32px" title="P(7)=0.0639"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:22px" title="P(8)=0.0430"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:13px" title="P(9)=0.0252"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:9px" title="P(10)=0.0174"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:7px" title="P(11)=0.0128"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:3px" title="P(12)=0.0059"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:3px" title="P(13)=0.0059"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:1px" title="P(14)=0.0029"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:1px" title="P(15)=0.0022"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:0px" title="P(16)=0.0000"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:1px" title="P(17)=0.0018"></div><div class="label">17</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Anthony Edwards — REB
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 4.31 &middot; median 4 &middot;
+          mode 4 &middot; p0 0.042</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:20px" title="P(0)=0.0424"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:37px" title="P(1)=0.0779"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:61px" title="P(2)=0.1282"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:79px" title="P(3)=0.1653"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1670"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:62px" title="P(5)=0.1293"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:50px" title="P(6)=0.1043"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:36px" title="P(7)=0.0753"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:21px" title="P(8)=0.0444"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:15px" title="P(9)=0.0306"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:8px" title="P(10)=0.0177"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:5px" title="P(11)=0.0111"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:2px" title="P(12)=0.0039"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0016"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:0px" title="P(14)=0.0010"></div><div class="label">14</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Stephon Castle — REB
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 4.67 &middot; median 4 &middot;
+          mode 4 &middot; p0 0.033</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:16px" title="P(0)=0.0335"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:31px" title="P(1)=0.0640"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:53px" title="P(2)=0.1096"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:68px" title="P(3)=0.1402"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1652"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:70px" title="P(5)=0.1441"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:54px" title="P(6)=0.1120"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:45px" title="P(7)=0.0929"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:30px" title="P(8)=0.0613"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:18px" title="P(9)=0.0366"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:10px" title="P(10)=0.0209"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:5px" title="P(11)=0.0112"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:2px" title="P(12)=0.0050"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0022"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:1px" title="P(14)=0.0014"></div><div class="label">14</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Julian Champagnie — REB
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 4.38 &middot; median 4 &middot;
+          mode 4 &middot; p0 0.040</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:19px" title="P(0)=0.0397"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:35px" title="P(1)=0.0705"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:65px" title="P(2)=0.1319"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:78px" title="P(3)=0.1590"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1629"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:67px" title="P(5)=0.1356"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:56px" title="P(6)=0.1138"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:36px" title="P(7)=0.0736"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:21px" title="P(8)=0.0418"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:16px" title="P(9)=0.0324"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:11px" title="P(10)=0.0215"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:5px" title="P(11)=0.0111"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:1px" title="P(12)=0.0028"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0018"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:1px" title="P(14)=0.0015"></div><div class="label">14</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Naz Reid — REB
+    <span style="color:#888;font-weight:400">(MIN vs SAS)</span></span>
+    <span>mean 4.90 &middot; median 5 &middot;
+          mode 5 &middot; p0 0.030</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:15px" title="P(0)=0.0298"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:30px" title="P(1)=0.0588"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:51px" title="P(2)=0.1019"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:65px" title="P(3)=0.1299"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:76px" title="P(4)=0.1503"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:80px" title="P(5)=0.1590"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:59px" title="P(6)=0.1178"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:45px" title="P(7)=0.0895"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:33px" title="P(8)=0.0654"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:20px" title="P(9)=0.0401"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:12px" title="P(10)=0.0239"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:9px" title="P(11)=0.0171"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:5px" title="P(12)=0.0102"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:2px" title="P(13)=0.0036"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:1px" title="P(14)=0.0015"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:1px" title="P(15)=0.0011"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Keldon Johnson — REB
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 3.53 &middot; median 3 &middot;
+          mode 2 &middot; p0 0.071</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:31px" title="P(0)=0.0705"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:58px" title="P(1)=0.1314"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.1826"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:75px" title="P(3)=0.1702"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:68px" title="P(4)=0.1541"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:44px" title="P(5)=0.1012"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:34px" title="P(6)=0.0784"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:21px" title="P(7)=0.0471"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:12px" title="P(8)=0.0263"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:6px" title="P(9)=0.0146"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:5px" title="P(10)=0.0120"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:3px" title="P(11)=0.0060"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:1px" title="P(12)=0.0032"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0012"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:1px" title="P(14)=0.0012"></div><div class="label">14</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Victor Wembanyama — REB
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 8.44 &middot; median 8 &middot;
+          mode 8 &middot; p0 0.012</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:9px" title="P(0)=0.0123"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:11px" title="P(1)=0.0150"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:15px" title="P(2)=0.0209"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:24px" title="P(3)=0.0334"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:40px" title="P(4)=0.0555"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:51px" title="P(5)=0.0706"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:62px" title="P(6)=0.0862"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:80px" title="P(7)=0.1106"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:80px" title="P(8)=0.1107"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:80px" title="P(9)=0.1107"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:77px" title="P(10)=0.1063"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:58px" title="P(11)=0.0801"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:45px" title="P(12)=0.0623"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:28px" title="P(13)=0.0389"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:24px" title="P(14)=0.0328"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:12px" title="P(15)=0.0169"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:11px" title="P(16)=0.0157"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:8px" title="P(17)=0.0106"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:4px" title="P(18)=0.0061"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:2px" title="P(19)=0.0028"></div><div class="label">19</div></div><div class="bar"><div class="fill" style="height:1px" title="P(20)=0.0015"></div><div class="label">20</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Kelly Oubre Jr. — REB
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 5.03 &middot; median 5 &middot;
+          mode 4 &middot; p0 0.033</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:18px" title="P(0)=0.0328"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:33px" title="P(1)=0.0609"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:53px" title="P(2)=0.0992"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:71px" title="P(3)=0.1326"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1484"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:72px" title="P(5)=0.1345"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:58px" title="P(6)=0.1074"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:51px" title="P(7)=0.0942"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:37px" title="P(8)=0.0692"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:23px" title="P(9)=0.0434"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:19px" title="P(10)=0.0345"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:10px" title="P(11)=0.0192"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:6px" title="P(12)=0.0118"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:3px" title="P(13)=0.0064"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:2px" title="P(14)=0.0035"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:1px" title="P(15)=0.0021"></div><div class="label">15</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Jalen Brunson — REB
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 3.75 &middot; median 4 &middot;
+          mode 4 &middot; p0 0.055</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:24px" title="P(0)=0.0546"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:44px" title="P(1)=0.1019"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:67px" title="P(2)=0.1549"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:72px" title="P(3)=0.1669"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1842"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:59px" title="P(5)=0.1352"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:40px" title="P(6)=0.0931"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:24px" title="P(7)=0.0560"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:11px" title="P(8)=0.0261"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:7px" title="P(9)=0.0160"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:3px" title="P(10)=0.0075"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:1px" title="P(11)=0.0024"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:1px" title="P(12)=0.0012"></div><div class="label">12</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Paul George — REB
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 4.00 &middot; median 4 &middot;
+          mode 4 &middot; p0 0.042</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:19px" title="P(0)=0.0419"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:43px" title="P(1)=0.0937"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:69px" title="P(2)=0.1513"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:72px" title="P(3)=0.1583"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:80px" title="P(4)=0.1751"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:64px" title="P(5)=0.1392"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:45px" title="P(6)=0.0993"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:30px" title="P(7)=0.0661"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:17px" title="P(8)=0.0381"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:8px" title="P(9)=0.0179"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:5px" title="P(10)=0.0102"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:2px" title="P(11)=0.0040"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:2px" title="P(12)=0.0033"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0015"></div><div class="label">13</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Mitchell Robinson — REB
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 6.66 &middot; median 6 &middot;
+          mode 7 &middot; p0 0.023</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:15px" title="P(0)=0.0231"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:21px" title="P(1)=0.0319"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:34px" title="P(2)=0.0510"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:51px" title="P(3)=0.0779"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:68px" title="P(4)=0.1023"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:74px" title="P(5)=0.1126"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:71px" title="P(6)=0.1079"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:80px" title="P(7)=0.1210"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:62px" title="P(8)=0.0941"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:54px" title="P(9)=0.0824"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:42px" title="P(10)=0.0636"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:28px" title="P(11)=0.0429"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:20px" title="P(12)=0.0301"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:13px" title="P(13)=0.0198"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:9px" title="P(14)=0.0142"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:6px" title="P(15)=0.0097"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:4px" title="P(16)=0.0063"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:3px" title="P(17)=0.0048"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:2px" title="P(18)=0.0023"></div><div class="label">18</div></div><div class="bar"><div class="fill" style="height:1px" title="P(19)=0.0020"></div><div class="label">19</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Joel Embiid — REB
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 6.77 &middot; median 7 &middot;
+          mode 6 &middot; p0 0.015</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:9px" title="P(0)=0.0148"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:13px" title="P(1)=0.0218"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:25px" title="P(2)=0.0430"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:42px" title="P(3)=0.0708"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:54px" title="P(4)=0.0916"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:71px" title="P(5)=0.1193"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:80px" title="P(6)=0.1349"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:78px" title="P(7)=0.1310"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:62px" title="P(8)=0.1044"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:46px" title="P(9)=0.0774"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:38px" title="P(10)=0.0634"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:28px" title="P(11)=0.0469"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:19px" title="P(12)=0.0323"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:11px" title="P(13)=0.0185"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:8px" title="P(14)=0.0133"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:5px" title="P(15)=0.0080"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:3px" title="P(16)=0.0043"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:2px" title="P(17)=0.0027"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:1px" title="P(18)=0.0015"></div><div class="label">18</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>OG Anunoby — REB
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 7.44 &middot; median 7 &middot;
+          mode 8 &middot; p0 0.015</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:9px" title="P(0)=0.0148"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:12px" title="P(1)=0.0189"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:21px" title="P(2)=0.0342"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:29px" title="P(3)=0.0467"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:48px" title="P(4)=0.0758"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:54px" title="P(5)=0.0866"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:77px" title="P(6)=0.1225"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:70px" title="P(7)=0.1124"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:80px" title="P(8)=0.1276"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:62px" title="P(9)=0.0985"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:59px" title="P(10)=0.0939"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:35px" title="P(11)=0.0564"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:28px" title="P(12)=0.0452"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:16px" title="P(13)=0.0257"></div><div class="label">13</div></div><div class="bar"><div class="fill" style="height:11px" title="P(14)=0.0179"></div><div class="label">14</div></div><div class="bar"><div class="fill" style="height:6px" title="P(15)=0.0099"></div><div class="label">15</div></div><div class="bar"><div class="fill" style="height:5px" title="P(16)=0.0076"></div><div class="label">16</div></div><div class="bar"><div class="fill" style="height:2px" title="P(17)=0.0034"></div><div class="label">17</div></div><div class="bar"><div class="fill" style="height:1px" title="P(18)=0.0017"></div><div class="label">18</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Quentin Grimes — REB
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 2.39 &middot; median 2 &middot;
+          mode 2 &middot; p0 0.136</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:47px" title="P(0)=0.1361"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.2291"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:80px" title="P(2)=0.2302"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:55px" title="P(3)=0.1594"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:40px" title="P(4)=0.1142"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:24px" title="P(5)=0.0681"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:12px" title="P(6)=0.0347"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:7px" title="P(7)=0.0187"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:2px" title="P(8)=0.0051"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0032"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:0px" title="P(10)=0.0012"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Tyrese Maxey — REB
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 3.62 &middot; median 3 &middot;
+          mode 3 &middot; p0 0.055</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:24px" title="P(0)=0.0552"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:49px" title="P(1)=0.1152"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:74px" title="P(2)=0.1744"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:80px" title="P(3)=0.1876"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:70px" title="P(4)=0.1648"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:47px" title="P(5)=0.1096"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:36px" title="P(6)=0.0839"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:22px" title="P(7)=0.0520"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:11px" title="P(8)=0.0250"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:6px" title="P(9)=0.0145"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:4px" title="P(10)=0.0097"></div><div class="label">10</div></div><div class="bar"><div class="fill" style="height:2px" title="P(11)=0.0051"></div><div class="label">11</div></div><div class="bar"><div class="fill" style="height:1px" title="P(12)=0.0016"></div><div class="label">12</div></div><div class="bar"><div class="fill" style="height:1px" title="P(13)=0.0014"></div><div class="label">13</div></div></div>
+</div><h2>STL</h2>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Dylan Harper — STL
+    <span style="color:#888;font-weight:400">(SAS vs MIN)</span></span>
+    <span>mean 1.42 &middot; median 1 &middot;
+          mode 1 &middot; p0 0.285</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:57px" title="P(0)=0.2851"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.3993"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:38px" title="P(2)=0.1877"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:13px" title="P(3)=0.0629"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:2px" title="P(4)=0.0102"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:2px" title="P(5)=0.0093"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:2px" title="P(6)=0.0084"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:2px" title="P(7)=0.0079"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:2px" title="P(8)=0.0104"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:2px" title="P(9)=0.0091"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:2px" title="P(10)=0.0098"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Miles McBride — STL
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 0.63 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.647</span>
+  </div>
+  <div class="pmf-meta">role: bench &middot;
+       calibration: medium &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.6468"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:27px" title="P(1)=0.2216"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:12px" title="P(2)=0.0993"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:1px" title="P(3)=0.0046"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0042"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:0px" title="P(5)=0.0037"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:0px" title="P(6)=0.0034"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0034"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0047"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:0px" title="P(9)=0.0039"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0044"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Kelly Oubre Jr. — STL
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 1.50 &middot; median 1 &middot;
+          mode 1 &middot; p0 0.239</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:43px" title="P(0)=0.2390"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.4418"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:30px" title="P(2)=0.1669"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:15px" title="P(3)=0.0854"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:2px" title="P(4)=0.0093"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:2px" title="P(5)=0.0105"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:1px" title="P(6)=0.0082"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:1px" title="P(7)=0.0082"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:2px" title="P(8)=0.0110"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:2px" title="P(9)=0.0095"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:2px" title="P(10)=0.0103"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>VJ Edgecombe — STL
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 1.53 &middot; median 1 &middot;
+          mode 1 &middot; p0 0.243</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:49px" title="P(0)=0.2431"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.3991"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:43px" title="P(2)=0.2148"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:15px" title="P(3)=0.0747"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:2px" title="P(4)=0.0102"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:2px" title="P(5)=0.0098"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:2px" title="P(6)=0.0089"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:2px" title="P(7)=0.0083"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:2px" title="P(8)=0.0110"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:2px" title="P(9)=0.0097"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:2px" title="P(10)=0.0104"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Joel Embiid — STL
+    <span style="color:#888;font-weight:400">(PHI vs NYK)</span></span>
+    <span>mean 1.23 &middot; median 1 &middot;
+          mode 1 &middot; p0 0.336</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:71px" title="P(0)=0.3357"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:80px" title="P(1)=0.3760"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:48px" title="P(2)=0.2272"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:2px" title="P(3)=0.0083"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:2px" title="P(4)=0.0078"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:1px" title="P(5)=0.0070"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:1px" title="P(6)=0.0068"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:1px" title="P(7)=0.0065"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:2px" title="P(8)=0.0086"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:2px" title="P(9)=0.0078"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:2px" title="P(10)=0.0083"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>OG Anunoby — STL
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 0.86 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.522</span>
+  </div>
+  <div class="pmf-meta">role: starter &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.5217"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:46px" title="P(1)=0.3024"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:20px" title="P(2)=0.1309"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:1px" title="P(3)=0.0049"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0059"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:1px" title="P(5)=0.0060"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:1px" title="P(6)=0.0049"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:1px" title="P(7)=0.0053"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0062"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0057"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0061"></div><div class="label">10</div></div></div>
+</div>
+<div class="pmf-card">
+  <div class="pmf-head">
+    <span>Mikal Bridges — STL
+    <span style="color:#888;font-weight:400">(NYK vs PHI)</span></span>
+    <span>mean 0.67 &middot; median 0 &middot;
+          mode 0 &middot; p0 0.618</span>
+  </div>
+  <div class="pmf-meta">role: rotation &middot;
+       calibration: high &middot;
+       TOV status: current_phase8</div>
+  <div class="bars"><div class="bar"><div class="fill" style="height:80px" title="P(0)=0.6184"></div><div class="label">0</div></div><div class="bar"><div class="fill" style="height:32px" title="P(1)=0.2475"></div><div class="label">1</div></div><div class="bar"><div class="fill" style="height:13px" title="P(2)=0.0989"></div><div class="label">2</div></div><div class="bar"><div class="fill" style="height:1px" title="P(3)=0.0050"></div><div class="label">3</div></div><div class="bar"><div class="fill" style="height:1px" title="P(4)=0.0044"></div><div class="label">4</div></div><div class="bar"><div class="fill" style="height:1px" title="P(5)=0.0040"></div><div class="label">5</div></div><div class="bar"><div class="fill" style="height:1px" title="P(6)=0.0040"></div><div class="label">6</div></div><div class="bar"><div class="fill" style="height:0px" title="P(7)=0.0035"></div><div class="label">7</div></div><div class="bar"><div class="fill" style="height:1px" title="P(8)=0.0051"></div><div class="label">8</div></div><div class="bar"><div class="fill" style="height:1px" title="P(9)=0.0044"></div><div class="label">9</div></div><div class="bar"><div class="fill" style="height:1px" title="P(10)=0.0048"></div><div class="label">10</div></div></div>
+</div></body></html>

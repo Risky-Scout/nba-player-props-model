@@ -1,0 +1,72 @@
+<!doctype html><html><head><meta charset=utf-8><title>START HERE — PMF Model Review</title><style>
+body{font-family:system-ui;max-width:1100px;margin:2rem auto;padding:0 1rem;color:#222}
+h1{margin-top:0}h2{margin-top:1.6rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}
+code{background:#f3f3f3;padding:0.1em 0.3em;border-radius:3px;font-size:0.95em}
+.callout{background:#fff8d6;border-left:4px solid #d4a900;padding:0.6rem 1rem;margin:1rem 0}
+.callout-warn{background:#ffe8e0;border-left:4px solid #c33;padding:0.6rem 1rem;margin:1rem 0}
+.pmf-card{border:1px solid #ddd;border-radius:6px;padding:0.8rem 1rem;margin:0.8rem 0;background:#fafafa}
+.pmf-head{display:flex;justify-content:space-between;font-weight:600}
+.pmf-meta{color:#666;font-size:0.9em;margin:0.2rem 0 0.6rem}
+.bars{display:flex;align-items:flex-end;gap:2px;height:90px;margin:0.4rem 0 0.2rem;background:#fff;border:1px solid #eee;padding:4px}
+.bar{display:flex;flex-direction:column;align-items:center;min-width:14px;font-size:0.7em;color:#666}
+.bar > .fill{background:#3b6;border-radius:1px 1px 0 0;width:100%}
+.bar > .label{margin-top:2px}
+table{border-collapse:collapse;margin:0.6rem 0}
+th,td{padding:0.3rem 0.6rem;border:1px solid #ddd;text-align:left;font-size:0.92em}
+th{background:#f0f0f0}
+</style></head><body><h1>START HERE — PMF Model Review</h1>
+<p><b>Delivery date:</b> 2026-05-04 &nbsp;&nbsp;
+<b>Rows:</b> 65</p>
+
+<div class="callout"><b>Run status — 2026-05-04 — snapshot morning</b><br>
+status: <b>PROVISIONAL</b> &middot; safe to use, with the caveats below<br>
+props: <b>65</b> &middot; books: <b>12</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>fresh</b><br>
+role provenance: derived_from_projected_minutes: 65<br>
+model: <code>466c26c#phase10c</code>
+<br><br>
+<b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>
+- <code>lineup_unconfirmed</code> — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
+- <code>missing_stats:tov</code> — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
+</div>
+
+<div class="callout">
+<b>Model-only, never anchored.</b> The PMFs in this package are the
+canonical model output. No probability has been adjusted to fit any
+book line. Market references live in a separate Wizard of Odds package.
+</div>
+
+<h2>How to view this package</h2>
+<ol>
+<li><b>02_MODEL_REVIEW_OVERVIEW.html</b> — opens in any browser. Shows the
+slate, the model version, per-stat counts, and quality-flag rollup.</li>
+<li><b>03_PMF_DISTRIBUTION_VIEWER.html</b> — opens in any browser. Renders
+every PMF as a small histogram, grouped by stat. Use this to eyeball
+shape, peak, and tail before consuming the numbers.</li>
+<li><b>04_PROP_SUMMARY.csv</b> — opens in Excel / Google Sheets. One row
+per (player, stat) with <code>mean</code>, <code>median</code>,
+<code>mode</code>, <code>p0</code>, role, market context (if any).</li>
+<li><b>05_FULL_PMF_WIDE.csv</b> — same rows, with <code>pmf_json</code>
+(the full PMF as JSON) and the <code>p_ge_1 … p_ge_20</code> tail
+ladder.</li>
+<li><b>06_OUTCOME_LEVEL_PROBABILITIES.csv</b> — long format. One row per
+(player, stat, k) with P(outcome=k). Useful for plotting tools.</li>
+<li><b>machine_readable/model_only.parquet</b> — the same content as
+<code>05_FULL_PMF_WIDE</code> in parquet form, full numeric precision.
+This is the canonical artifact.</li>
+</ol>
+
+<h2>What's NOT in this package</h2>
+<ul>
+<li>No book lines, no edges, no recommendations. Those live in the
+separate <code>wizard_of_odds/</code> package.</li>
+<li>No backtests or claims of profitability.</li>
+</ul>
+
+<h2>TOV note</h2>
+<div class="callout-warn">
+TOV PMFs (when present in the slate) come from the current production
+Phase 8 calibrators with <b>no Phase 10D / 10D.2 overlay</b>. Those
+overlays failed independent validation. The structural refit plan lives
+at <code>docs/phase11_tov_structural_refit_plan.md</code>.
+</div>
+</body></html>
