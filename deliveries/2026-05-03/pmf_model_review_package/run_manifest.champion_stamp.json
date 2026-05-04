@@ -11,7 +11,7 @@
   "output_generated_at_utc": "2026-05-04T09:05:09+00:00",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "stamp_code_commit": "5c3f5d18ff603c3d9dfa6e84977f0ea00eec3b31",
-  "stamped_into": "deliveries/2026-05-03/wizard_of_odds/run_manifest.json",
+  "stamped_into": "deliveries/2026-05-03/pmf_model_review_package/run_manifest.json",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"

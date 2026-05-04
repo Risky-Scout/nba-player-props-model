@@ -1,21 +1,57 @@
-# Model performance & calibration — 2026-05-03
+# Model Performance and Calibration — 2026-05-03
 
-**after_game_status**: `pending_outcomes`
+- champion_model_id: `challenger-2026-04-30`
+- trained_through_date: `2026-04-30`
+- calibrated_through_date: `2026-04-30`
+- after_game_status: **scored**
+- expected_target_stats: ['pts', 'reb', 'ast', 'fg3m', 'tov']
+- scored_target_stats: ['pts', 'reb', 'ast', 'fg3m']
+- documented_blocked_target_stats: ['tov']
+- missing_target_stats (undocumented): []
 
-This file will be re-written by `scripts/score_daily_pmf_delivery_after_game.py` once box-score finals are loaded into `data/player_game_stats.parquet` for 2026-05-03.
+PMFs are model-only and are NOT market-anchored. Comparisons against
+market lines below use realized outcomes only.
 
-## Rollup at delivery time
+## Aggregate PMF metrics
 
-- delivery_date: `2026-05-03`
-- props in delivery: **69**
-- finality_status: `provisional`
-- finality_blockers: lineup_unconfirmed, missing_stats:tov
-- model_version: `a9bdb1c#phase10c`
+- rows scored: 46
+- mean NLL: 3.2537
+- mean RPS: 0.0820
+- mean abs error: 3.1144
+- mean outcome_prob_assigned: 0.1010
 
-## What this file will contain after scoring
+## Per stat
 
-- props scored, PMF NLL, RPS, mean absolute error
-- assigned probability to the realized outcome
-- model logloss / Brier per (stat, role_bucket) where market lines exist
-- CLV summary where morning and close snapshots both exist
-- model vs market logloss / Brier comparison **only when directly measured** — no claims of market superiority otherwise
+| Stat | n | NLL | RPS | abs_mean_error |
+| --- | ---: | ---: | ---: | ---: |
+| ast | 8 | 2.5153 | 0.0800 | 2.1808 |
+| fg3m | 12 | 5.9621 | 0.0541 | 1.3267 |
+| pts | 13 | 2.0599 | 0.1076 | 5.8749 |
+| reb | 13 | 2.4020 | 0.0833 | 2.5786 |
+
+## Per role bucket
+
+| Role | n | NLL | RPS | abs_mean_error |
+| --- | ---: | ---: | ---: | ---: |
+| bench | 8 | 5.5231 | 0.0905 | 2.6930 |
+| rotation | 16 | 3.9044 | 0.1009 | 3.3656 |
+| starter | 22 | 1.9553 | 0.0651 | 3.0849 |
+
+## Market-line scoring (model only)
+
+- rows scored: 489
+- mean model logloss at market lines: 0.6400
+- mean model Brier at market lines: 0.2273
+
+## Model vs market
+
+- rows_paired: 489 (threshold for hard claim: 20)
+- delta_logloss = model - market = **-0.0141** (negative favors model)
+- delta_brier   = model - market = **-0.0050** (negative favors model)
+
+## Stats blocked by upstream phases
+
+### tov — `phase11c_market_driven_prediction_layer` (phase11c)
+
+TOV PMFs are not emitted by the current prediction layer when no market line is offered, because predict.py is market-line-driven. Resolving this requires the Phase 11C player-stat-grid prediction refactor (emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered). Outcomes are available in data/player_game_stats.parquet under the 'turnover' column; the gap is upstream of after-game scoring.
+

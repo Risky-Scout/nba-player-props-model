@@ -1,0 +1,87 @@
+{
+  "after_game_status": "scored",
+  "calibrated_through_date": "2026-04-30",
+  "calibration_run_id": "nightly-20260501T124701",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "delivery_date": "2026-05-03",
+  "documented_blocked_target_stats": [
+    {
+      "blocker_id": "phase11c_market_driven_prediction_layer",
+      "blocker_summary": "TOV PMFs are not emitted by the current prediction layer when no market line is offered, because predict.py is market-line-driven. Resolving this requires the Phase 11C player-stat-grid prediction refactor (emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered). Outcomes are available in data/player_game_stats.parquet under the 'turnover' column; the gap is upstream of after-game scoring.",
+      "outcome_source_column_present": "turnover",
+      "remediation_phase": "phase11c",
+      "stat": "tov"
+    }
+  ],
+  "expected_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov"
+  ],
+  "file_hashes": {
+    "01_START_HERE.html": "868323a42d456fddbdfe6cc60e9d2c32",
+    "02_MODEL_REVIEW_OVERVIEW.html": "b56a98a69bbdc3e1826c52e1706e2bbe",
+    "03_PMF_DISTRIBUTION_VIEWER.html": "1d9d592306a73f26a46a0768b1d7c6e7",
+    "04_PROP_SUMMARY.csv": "c93a1c5a3bb44338a82a9905b06cbf31",
+    "04_PROP_SUMMARY.parquet": "33b138cfec6d39ff8435d8dd2f34ff14",
+    "05_FULL_PMF_WIDE.csv": "90609fb598c09b4239d77bf71be09ac3",
+    "05_FULL_PMF_WIDE.parquet": "5f5f26f8f9265455a76b22cd9f65b35d",
+    "06_OUTCOME_LEVEL_PROBABILITIES.csv": "6eb3ec410de516e819a3bc9d43fdb5f0",
+    "06_OUTCOME_LEVEL_PROBABILITIES.parquet": "e5079a728086de8e9ade3fde46fa219a",
+    "MODEL_PERFORMANCE_AND_CALIBRATION.md": "9bfb144610245d982711ef7ea316d307",
+    "README.md": "a45b276d82b8fc9d935c41fff99bc591",
+    "after_game_scoring.csv": "7573c0363ec828997ca48f021629889c",
+    "after_game_scoring.parquet": "20b3479d0761d84070998927cbe0d484",
+    "after_game_summary.md": "864cfe1ef7bda78a794a398aad9cbc6b",
+    "run_manifest.json": "f2b384d6aa508c0c8142f30554276c8d"
+  },
+  "generated_at_utc": "2026-05-04T09:05:02Z",
+  "metadata_stamped_at_utc": "2026-05-04T09:05:09+00:00",
+  "missing_target_stats": [],
+  "model_source": "champion_pointer",
+  "no_challenger_artifacts_used": true,
+  "output_generated_at_utc": "2026-05-04T09:05:09+00:00",
+  "package_files": [
+    "01_START_HERE.html",
+    "02_MODEL_REVIEW_OVERVIEW.html",
+    "03_PMF_DISTRIBUTION_VIEWER.html",
+    "04_PROP_SUMMARY.csv",
+    "04_PROP_SUMMARY.parquet",
+    "05_FULL_PMF_WIDE.csv",
+    "05_FULL_PMF_WIDE.parquet",
+    "06_OUTCOME_LEVEL_PROBABILITIES.csv",
+    "06_OUTCOME_LEVEL_PROBABILITIES.parquet",
+    "MODEL_PERFORMANCE_AND_CALIBRATION.md",
+    "README.md",
+    "after_game_scoring.csv",
+    "after_game_scoring.parquet",
+    "after_game_summary.md",
+    "run_manifest.json"
+  ],
+  "package_type": "pmf_model_review_package",
+  "phase10d_overlays_in_use": false,
+  "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+  "row_counts": {
+    "04_PROP_SUMMARY.parquet": 0,
+    "05_FULL_PMF_WIDE.parquet": 0,
+    "06_OUTCOME_LEVEL_PROBABILITIES.parquet": 0,
+    "after_game_scoring.parquet": 0
+  },
+  "schema_version": "1.0",
+  "scored_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m"
+  ],
+  "scoring_status": "scored",
+  "stamp_code_commit": "5c3f5d18ff603c3d9dfa6e84977f0ea00eec3b31",
+  "trained_through_date": "2026-04-30",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_run_id": "nightly-20260501T124701"
+}
