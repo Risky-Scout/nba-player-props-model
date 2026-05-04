@@ -378,18 +378,44 @@ def check_latest_derek_and_woo_for_latest_date(report: HealthReport, latest_date
         report.add("latest_derek_for_latest_date", False, "no delivery dirs found")
         report.add("latest_woo_for_latest_date", False, "no delivery dirs found")
         return
-    derek_dir = DELIVERIES_DIR / latest_date / "derek_forward_feed"
-    woo_dir = DELIVERIES_DIR / latest_date / "wizard_of_odds"
-    report.add(
-        "latest_derek_for_latest_date",
-        derek_dir.exists() and any(derek_dir.iterdir()),
-        f"{derek_dir.relative_to(REPO_ROOT)} exists={derek_dir.exists()}",
-    )
-    report.add(
-        "latest_woo_for_latest_date",
-        woo_dir.exists() and any(woo_dir.iterdir()),
-        f"{woo_dir.relative_to(REPO_ROOT)} exists={woo_dir.exists()}",
-    )
+    # Phase 13AF: when the latest delivery_date is today (UTC), the daily
+    # Derek/WoO workflows may not have finished yet. The training-time
+    # health probe runs early in the morning, before the prediction
+    # pipeline has delivered. In that case, fall back to the most recent
+    # PRIOR date that has the directory and treat the today-not-yet case
+    # as a soft warning rather than a hard failure.
+    today_utc = dt.datetime.utcnow().date().isoformat()
+
+    def _most_recent_with(subdir: str) -> str | None:
+        candidates = sorted(
+            (p.parent.name for p in DELIVERIES_DIR.glob(f"*/{subdir}")
+             if p.is_dir() and any(p.iterdir())),
+            reverse=True,
+        )
+        return candidates[0] if candidates else None
+
+    for label, subdir in (
+        ("latest_derek_for_latest_date", "derek_forward_feed"),
+        ("latest_woo_for_latest_date", "wizard_of_odds"),
+    ):
+        d = DELIVERIES_DIR / latest_date / subdir
+        if d.exists() and any(d.iterdir()):
+            report.add(label, True, f"{d.relative_to(REPO_ROOT)} exists=True")
+            continue
+        # Today not yet delivered — fall back if there is a prior delivery.
+        if latest_date == today_utc:
+            fallback = _most_recent_with(subdir)
+            if fallback and fallback < latest_date:
+                report.add(
+                    label, True,
+                    f"{d.relative_to(REPO_ROOT)} not yet produced for today; "
+                    f"falling back to deliveries/{fallback}/{subdir} (advisory)"
+                )
+                continue
+        report.add(
+            label, False,
+            f"{d.relative_to(REPO_ROOT)} exists={d.exists()}"
+        )
 
 
 def check_delivery_does_not_reference_challengers(report: HealthReport) -> None:

@@ -731,7 +731,14 @@ def main(argv: list[str] | None = None) -> int:
                     "champion_pointer_metadata",
                 ),
                 (
-                    [sys.executable, "scripts/verify_derek_woo_champion_dependency.py"],
+                    # Phase 13AF: training-time chain runs BEFORE the day's
+                    # Derek/WoO deliveries are produced, so requiring both
+                    # delivery sides to already exist would always fail at
+                    # nightly cron. The strict both-sides check is enforced
+                    # in the daily_pmf_delivery workflow instead, after
+                    # Derek and WoO actually run.
+                    [sys.executable, "scripts/verify_derek_woo_champion_dependency.py",
+                     "--require-both-sides", "false"],
                     "derek_woo_champion_dependency",
                 ),
                 # Phase 13K: rolling market benchmark for promotion-gate proof.
