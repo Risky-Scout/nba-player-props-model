@@ -1,0 +1,86 @@
+{
+  "as_of_date": "2026-05-03",
+  "checks": [
+    {
+      "detail": "max=2026-03-31 cutoff=2026-05-03",
+      "name": "fold_aggregate_max_game_date",
+      "passed": true
+    },
+    {
+      "detail": "max=2026-05-03 cutoff=2026-05-03",
+      "name": "train_manifest_max_date",
+      "passed": true
+    },
+    {
+      "detail": "dry_run=False",
+      "name": "train_manifest_real_run",
+      "passed": true
+    },
+    {
+      "detail": "future_rows_excluded=0",
+      "name": "train_manifest_future_rows_excluded_recorded",
+      "passed": true
+    },
+    {
+      "detail": "validation_window_end=2026-05-03 cutoff=2026-05-03",
+      "name": "calibration_validation_window_end",
+      "passed": true
+    },
+    {
+      "detail": "training_window_end=2026-04-05 cutoff=2026-05-03",
+      "name": "calibration_training_window_end",
+      "passed": true
+    },
+    {
+      "detail": "dry_run=False",
+      "name": "calibration_manifest_real_run",
+      "passed": true
+    },
+    {
+      "detail": "end=2026-05-03 cutoff=2026-05-03",
+      "name": "validation_challenger_holdout_window_end",
+      "passed": true
+    },
+    {
+      "detail": "end=2026-05-03 cutoff=2026-05-03",
+      "name": "validation_champion_holdout_window_end",
+      "passed": true
+    },
+    {
+      "detail": "validation.challenger.dry_run=False",
+      "name": "validation_challenger_dry_run_false",
+      "passed": true
+    },
+    {
+      "detail": "rows_after_cutoff=247625 future_rows_excluded=0",
+      "name": "training_inputs_no_future_rows",
+      "passed": true
+    }
+  ],
+  "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
+  "generated_at_utc": "2026-05-04T17:40:47+00:00",
+  "leakage_checks_passed": true,
+  "max_dates": {
+    "calibration_training_window_end": "2026-04-05",
+    "calibration_validation_window_end": "2026-05-03",
+    "challenger_holdout_window_end": "2026-05-03",
+    "champion_holdout_window_end": "2026-05-03",
+    "fold_aggregate": "2026-03-31",
+    "future_rows_excluded": 0,
+    "prepare_fold_aggregate_future_rows_excluded": 0,
+    "prepare_fold_aggregate_rows_after_cutoff": 247625,
+    "training_summary_max_date": "2026-05-03"
+  },
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-03",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-03",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260504T173907"
+  },
+  "resolved_training_cutoff_date": "2026-05-03",
+  "schema_version": "1.0",
+  "target_date_et": "2026-05-03"
+}

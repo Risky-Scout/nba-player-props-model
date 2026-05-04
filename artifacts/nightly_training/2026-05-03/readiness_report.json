@@ -1,0 +1,91 @@
+{
+  "as_of_date": "2026-05-03",
+  "checks": [
+    {
+      "detail": "rows through 2026-05-03: 83729",
+      "name": "outcomes_through_as_of_date",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "0 rows have date > 2026-05-03; trainer must filter them out",
+      "name": "future_dates_present_advisory",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "present=['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl'] missing=['tov']",
+      "name": "required_stat_columns_present",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "ok",
+      "name": "no_impossible_stat_values",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "83729 >= 5000",
+      "name": "min_training_rows",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "enough=['pts', 'reb', 'ast', 'fg3m', 'stl', 'blk'] thin=[]",
+      "name": "min_per_stat_rows",
+      "passed": true,
+      "severity": "advisory"
+    },
+    {
+      "detail": "0 duplicates on 2026-05-03",
+      "name": "no_duplicate_player_game_rows_on_date",
+      "passed": true,
+      "severity": "blocking"
+    },
+    {
+      "detail": "data/odds_api/processed missing \u2014 market comparison will be skipped (advisory only)",
+      "name": "odds_snapshots_present",
+      "passed": false,
+      "severity": "advisory"
+    },
+    {
+      "detail": "data/freshness_manifest/ missing (advisory)",
+      "name": "freshness_manifest_present",
+      "passed": false,
+      "severity": "advisory"
+    },
+    {
+      "detail": "ok",
+      "name": "no_promotion_lock_held",
+      "passed": true,
+      "severity": "blocking"
+    }
+  ],
+  "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
+  "counts": {
+    "per_stat_rows_through_as_of": {
+      "ast": 83729,
+      "blk": 83729,
+      "fg3m": 83729,
+      "pts": 83729,
+      "reb": 83729,
+      "stl": 83729
+    },
+    "player_game_stats_rows_after_as_of": 0,
+    "player_game_stats_rows_on_as_of_date": 44,
+    "player_game_stats_rows_through_as_of": 83729,
+    "player_game_stats_total_rows": 83729,
+    "stat_columns_present": {
+      "ast": "ast",
+      "blk": "blk",
+      "fg3m": "fg3m",
+      "pts": "pts",
+      "reb": "reb",
+      "stl": "stl"
+    }
+  },
+  "generated_at_utc": "2026-05-04T17:39:11+00:00",
+  "overall_pass": true,
+  "schema_version": "1.0"
+}

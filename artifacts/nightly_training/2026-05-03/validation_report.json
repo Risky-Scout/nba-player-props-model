@@ -1,0 +1,539 @@
+{
+  "as_of_date": "2026-05-03",
+  "challenger": {
+    "calibrator_version": "phase8-role-bucket",
+    "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
+    "dry_run": false,
+    "metrics": {
+      "brier_logloss_at_market": null,
+      "by_line_bucket": {},
+      "by_role_bucket": {
+        "bench": {
+          "n": 3650,
+          "nll": 2.0666232001545253,
+          "p0_err": 0.37999925703465676
+        },
+        "core": {
+          "n": 6705,
+          "nll": 2.338826077685758,
+          "p0_err": 0.1958490173531913
+        },
+        "fringe": {
+          "n": 1265,
+          "nll": 1.6464581907723865,
+          "p0_err": 0.4208213745674434
+        },
+        "inactive_risk": {
+          "n": 1825,
+          "nll": 2.4044860534013814,
+          "p0_err": 0.41873162168440364
+        },
+        "rotation": {
+          "n": 5890,
+          "nll": 2.1882066569402308,
+          "p0_err": 0.290051970518579
+        },
+        "starter": {
+          "n": 3545,
+          "nll": 2.524561713969658,
+          "p0_err": 0.13436095439530102
+        }
+      },
+      "by_stat": {
+        "ast": {
+          "calibrator_present": true,
+          "mean_bias": -0.11357085065102322,
+          "nll": 1.8316980807482477,
+          "p0_err": 0.30052992729498623,
+          "rows_scored": 4576,
+          "rps": 0.9353787510717244
+        },
+        "fg3m": {
+          "calibrator_present": true,
+          "mean_bias": 0.3163309816692464,
+          "nll": 2.4705346275483047,
+          "p0_err": 0.3161567727213414,
+          "rows_scored": 4576,
+          "rps": 0.6108422885516223
+        },
+        "pts": {
+          "calibrator_present": true,
+          "mean_bias": -0.5626653291237609,
+          "nll": 3.327113196339492,
+          "p0_err": 0.15684713529848,
+          "rows_scored": 4576,
+          "rps": 3.2808831078763694
+        },
+        "reb": {
+          "calibrator_present": true,
+          "mean_bias": -0.16649764588281027,
+          "nll": 2.2388643470994434,
+          "p0_err": 0.17737259534567956,
+          "rows_scored": 4576,
+          "rps": 1.301901886948734
+        },
+        "tov": {
+          "calibrator_present": true,
+          "mean_bias": -0.023955519527876258,
+          "nll": 1.3936054553519235,
+          "p0_err": 0.39992505701811315,
+          "rows_scored": 4576,
+          "rps": 0.5920042672208671
+        }
+      },
+      "clv": null,
+      "ece": null,
+      "edge_buckets": null,
+      "holdout_window": {
+        "end": "2026-05-03",
+        "rows": 22880,
+        "start": "2026-03-03"
+      },
+      "market_comparison": null,
+      "mean_error": -0.11007167270324485,
+      "median_error": null,
+      "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03",
+      "nll": 2.252363141417482,
+      "p0_calibration": 0.27016629753572,
+      "pmf_validity_issues": [],
+      "rows_scored_total": 22880,
+      "rps": 1.3442020603338636,
+      "tov": {
+        "mean_bias": -0.023955519527876258,
+        "nll": 1.3936054553519235,
+        "p0_error": 0.39992505701811315,
+        "rps": 0.5920042672208671
+      }
+    },
+    "model_version": "challenger-2026-05-03"
+  },
+  "champion": {
+    "calibrator_version": "phase8-role-bucket",
+    "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+    "metrics": {
+      "brier_logloss_at_market": null,
+      "by_line_bucket": {},
+      "by_role_bucket": {
+        "bench": {
+          "n": 3650,
+          "nll": 2.0666232001545253,
+          "p0_err": 0.37999925703465676
+        },
+        "core": {
+          "n": 6705,
+          "nll": 2.338826077685758,
+          "p0_err": 0.1958490173531913
+        },
+        "fringe": {
+          "n": 1265,
+          "nll": 1.6464581907723865,
+          "p0_err": 0.4208213745674434
+        },
+        "inactive_risk": {
+          "n": 1825,
+          "nll": 2.4044860534013814,
+          "p0_err": 0.41873162168440364
+        },
+        "rotation": {
+          "n": 5890,
+          "nll": 2.1882066569402308,
+          "p0_err": 0.290051970518579
+        },
+        "starter": {
+          "n": 3545,
+          "nll": 2.524561713969658,
+          "p0_err": 0.13436095439530102
+        }
+      },
+      "by_stat": {
+        "ast": {
+          "calibrator_present": true,
+          "mean_bias": -0.11357085065102322,
+          "nll": 1.8316980807482477,
+          "p0_err": 0.30052992729498623,
+          "rows_scored": 4576,
+          "rps": 0.9353787510717244
+        },
+        "fg3m": {
+          "calibrator_present": true,
+          "mean_bias": 0.3163309816692464,
+          "nll": 2.4705346275483047,
+          "p0_err": 0.3161567727213414,
+          "rows_scored": 4576,
+          "rps": 0.6108422885516223
+        },
+        "pts": {
+          "calibrator_present": true,
+          "mean_bias": -0.5626653291237609,
+          "nll": 3.327113196339492,
+          "p0_err": 0.15684713529848,
+          "rows_scored": 4576,
+          "rps": 3.2808831078763694
+        },
+        "reb": {
+          "calibrator_present": true,
+          "mean_bias": -0.16649764588281027,
+          "nll": 2.2388643470994434,
+          "p0_err": 0.17737259534567956,
+          "rows_scored": 4576,
+          "rps": 1.301901886948734
+        },
+        "tov": {
+          "calibrator_present": true,
+          "mean_bias": -0.023955519527876258,
+          "nll": 1.3936054553519235,
+          "p0_err": 0.39992505701811315,
+          "rows_scored": 4576,
+          "rps": 0.5920042672208671
+        }
+      },
+      "clv": null,
+      "ece": null,
+      "edge_buckets": null,
+      "holdout_window": {
+        "end": "2026-05-03",
+        "rows": 22880,
+        "start": "2026-03-03"
+      },
+      "market_comparison": null,
+      "mean_error": -0.11007167270324485,
+      "median_error": null,
+      "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models",
+      "nll": 2.252363141417482,
+      "p0_calibration": 0.27016629753572,
+      "pmf_validity_issues": [],
+      "rows_scored_total": 22880,
+      "rps": 1.3442020603338636,
+      "tov": {
+        "mean_bias": -0.023955519527876258,
+        "nll": 1.3936054553519235,
+        "p0_error": 0.39992505701811315,
+        "rps": 0.5920042672208671
+      }
+    },
+    "model_version": "challenger-2026-04-30"
+  },
+  "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
+  "derek_compatibility": {
+    "canonical_builder_present": true,
+    "derek_script_present": true,
+    "notes": "Smoke check of script presence; full I/O smoke runs in orchestrator.",
+    "passed": true
+  },
+  "gates_failed": [
+    {
+      "detail": "AT OR AFTER 14:30 UTC \u2014 too close to WoO run",
+      "name": "promotion_clock_safe"
+    },
+    {
+      "detail": "delta_logloss=0.014793250567967896 tolerance=0.005 (negative favors model)",
+      "name": "market_logloss_non_inferior_or_better"
+    },
+    {
+      "detail": "delta_brier=0.006408313073238642 tolerance=0.005 (negative favors model)",
+      "name": "market_brier_non_inferior_or_better"
+    },
+    {
+      "detail": "severe market regression on reb: delta_logloss=+0.0631",
+      "name": "no_severe_market_stat_bucket_regression"
+    }
+  ],
+  "gates_passed": [
+    {
+      "detail": "challenger=2.25236 champion=2.25236 delta=+0 (tol=0.02252363141417482)",
+      "name": "nll_improves_or_non_worse"
+    },
+    {
+      "detail": "challenger=1.3442 champion=1.3442 delta=+0 (tol=0.013442020603338637)",
+      "name": "rps_improves_or_non_worse"
+    },
+    {
+      "detail": "challenger=0.270166 champion=0.270166 delta=+0 (tol=0.0)",
+      "name": "calibration_error_improves"
+    },
+    {
+      "detail": "challenger=0.270166 champion=0.270166 delta=+0 (tol=0.005)",
+      "name": "p0_error_improves_or_non_worse"
+    },
+    {
+      "detail": "challenger=0.110072 champion=0.110072 delta=+0 (tol=0.05)",
+      "name": "mean_bias_does_not_worsen"
+    },
+    {
+      "detail": "challenger=1.39361 champion=1.39361 delta=+0 (tol=0.02787210910703847)",
+      "name": "tov_does_not_regress"
+    },
+    {
+      "detail": "worst_core_nll_delta=0.0",
+      "name": "starter_core_role_buckets_do_not_regress"
+    },
+    {
+      "detail": "worst_bench_nll_delta=0.0",
+      "name": "bench_fringe_role_buckets_do_not_regress_materially"
+    },
+    {
+      "detail": "worst_stat=pts delta=0.0",
+      "name": "no_severe_stat_bucket_regression"
+    },
+    {
+      "detail": "ok",
+      "name": "pmf_validity"
+    },
+    {
+      "detail": "future_rows_excluded=0",
+      "name": "no_future_leakage"
+    },
+    {
+      "detail": "total_samples_in_calibration_window=185094",
+      "name": "sufficient_calibration_samples"
+    },
+    {
+      "detail": "ok",
+      "name": "derek_feed_compatibility"
+    },
+    {
+      "detail": "ok",
+      "name": "woo_export_compatibility"
+    },
+    {
+      "detail": "ok",
+      "name": "no_phase10d_overlays_referenced"
+    },
+    {
+      "detail": "rows_total=3362 dates_included=4",
+      "name": "market_benchmark_available"
+    }
+  ],
+  "generated_at_utc": "2026-05-04T17:40:41+00:00",
+  "market_benchmark": {
+    "as_of_date": "2026-05-03",
+    "by_edge_bucket": [],
+    "by_role_bucket": [
+      {
+        "delta_brier": 0.07824659855483324,
+        "delta_logloss": 0.19765999640110732,
+        "market_brier": 0.24452818408821198,
+        "market_logloss": 0.6807238775803491,
+        "minimum_sample_passed": true,
+        "model_brier": 0.32277478264304527,
+        "model_logloss": 0.8783838739814565,
+        "n": 195,
+        "role_bucket": "bench"
+      },
+      {
+        "delta_brier": 0.0360022549099298,
+        "delta_logloss": 0.08076699719045398,
+        "market_brier": 0.2388720648765855,
+        "market_logloss": 0.6703883160189681,
+        "minimum_sample_passed": true,
+        "model_brier": 0.27487431978651533,
+        "model_logloss": 0.7511553132094223,
+        "n": 824,
+        "role_bucket": "rotation"
+      },
+      {
+        "delta_brier": -0.009978316778380842,
+        "delta_logloss": -0.023628167551703765,
+        "market_brier": 0.2303981282145784,
+        "market_logloss": 0.6518496178573642,
+        "minimum_sample_passed": true,
+        "model_brier": 0.22041981143619757,
+        "model_logloss": 0.6282214503056603,
+        "n": 2343,
+        "role_bucket": "starter"
+      }
+    ],
+    "by_stat": [
+      {
+        "delta_brier": -0.013966246786772829,
+        "delta_logloss": -0.03453286053790666,
+        "market_brier": 0.23973602720112583,
+        "market_logloss": 0.6723458210335705,
+        "minimum_sample_passed": true,
+        "model_brier": 0.22576978041435303,
+        "model_logloss": 0.6378129604956638,
+        "n": 560,
+        "stat": "ast"
+      },
+      {
+        "delta_brier": -0.011702043617767522,
+        "delta_logloss": -0.028994025925186486,
+        "market_brier": 0.2247291666191184,
+        "market_logloss": 0.640327054226055,
+        "minimum_sample_passed": true,
+        "model_brier": 0.2130271230013509,
+        "model_logloss": 0.6113330283008686,
+        "n": 578,
+        "stat": "fg3m"
+      },
+      {
+        "delta_brier": 0.008220857138154911,
+        "delta_logloss": 0.018575042591046285,
+        "market_brier": 0.232195251234131,
+        "market_logloss": 0.6549197948114793,
+        "minimum_sample_passed": true,
+        "model_brier": 0.2404161083722859,
+        "model_logloss": 0.6734948374025257,
+        "n": 1224,
+        "stat": "pts"
+      },
+      {
+        "delta_brier": 0.02606729882678913,
+        "delta_logloss": 0.06309600516405295,
+        "market_brier": 0.2359837707132077,
+        "market_logloss": 0.6641802571968922,
+        "minimum_sample_passed": true,
+        "model_brier": 0.26205106953999685,
+        "model_logloss": 0.7272762623609451,
+        "n": 1000,
+        "stat": "reb"
+      }
+    ],
+    "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
+    "dates_included": [
+      "2026-05-03",
+      "2026-05-02",
+      "2026-05-01",
+      "2026-04-30"
+    ],
+    "dates_missing": [
+      "2026-04-29",
+      "2026-04-28",
+      "2026-04-27",
+      "2026-04-26",
+      "2026-04-25",
+      "2026-04-24",
+      "2026-04-23",
+      "2026-04-22",
+      "2026-04-21",
+      "2026-04-20",
+      "2026-04-19",
+      "2026-04-18",
+      "2026-04-17",
+      "2026-04-16",
+      "2026-04-15",
+      "2026-04-14",
+      "2026-04-13",
+      "2026-04-12",
+      "2026-04-11",
+      "2026-04-10",
+      "2026-04-09",
+      "2026-04-08",
+      "2026-04-07",
+      "2026-04-06"
+    ],
+    "delta_brier": 0.006408313073238642,
+    "delta_logloss": 0.014793250567967896,
+    "generated_at_utc": "2026-05-04T17:40:27+00:00",
+    "market_brier": 0.23329458410537332,
+    "market_logloss": 0.6580680497226657,
+    "min_bucket_rows": 50,
+    "min_overall_rows": 500,
+    "minimum_sample_passed": true,
+    "minimum_sample_passed_per_stat": {
+      "ast": true,
+      "fg3m": true,
+      "pts": true,
+      "reb": true
+    },
+    "model_brier": 0.2397028971786119,
+    "model_logloss": 0.6728613002906337,
+    "per_slate_summaries": [
+      {
+        "date": "2026-05-03",
+        "overall": {
+          "delta_brier": -0.004996112752997523,
+          "delta_logloss": -0.01409474223962366,
+          "market_brier": 0.23226423186711187,
+          "market_logloss": 0.654120135271143,
+          "model_brier": 0.22726811911411435,
+          "model_logloss": 0.6400253930315194,
+          "n": 489
+        },
+        "rows_paired": 489,
+        "rows_total": 489
+      },
+      {
+        "date": "2026-05-02",
+        "overall": {
+          "delta_brier": 0.05552741851279544,
+          "delta_logloss": 0.13676583058275626,
+          "market_brier": 0.23703766005352775,
+          "market_logloss": 0.6661274089055593,
+          "model_brier": 0.2925650785663232,
+          "model_logloss": 0.8028932394883157,
+          "n": 406
+        },
+        "rows_paired": 406,
+        "rows_total": 406
+      },
+      {
+        "date": "2026-05-01",
+        "overall": {
+          "delta_brier": 0.01322563112080243,
+          "delta_logloss": 0.028488900614722285,
+          "market_brier": 0.23601795744796422,
+          "market_logloss": 0.6642631878469255,
+          "model_brier": 0.24924358856876663,
+          "model_logloss": 0.6927520884616478,
+          "n": 1202
+        },
+        "rows_paired": 1202,
+        "rows_total": 1202
+      },
+      {
+        "date": "2026-04-30",
+        "overall": {
+          "delta_brier": -0.011425686035537818,
+          "delta_logloss": -0.026200275407755876,
+          "market_brier": 0.22990380043087913,
+          "market_logloss": 0.651120914792373,
+          "model_brier": 0.21847811439534132,
+          "model_logloss": 0.6249206393846171,
+          "n": 1265
+        },
+        "rows_paired": 1265,
+        "rows_total": 1265
+      }
+    ],
+    "rows_non_push": 3362,
+    "rows_total": 3362,
+    "schema_version": "1.0",
+    "status": "ok",
+    "window_days": 28,
+    "window_end": "2026-05-03",
+    "window_start": "2026-04-06"
+  },
+  "market_benchmark_manifest_path": "artifacts/market_benchmark/2026-05-03/rolling_market_benchmark.json",
+  "market_gates_failed": [
+    "market_logloss_non_inferior_or_better",
+    "market_brier_non_inferior_or_better",
+    "no_severe_market_stat_bucket_regression"
+  ],
+  "market_gates_passed": [
+    "market_benchmark_available"
+  ],
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-03",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-03",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260504T173907"
+  },
+  "pmf_validity": {
+    "checked_files": 1,
+    "issues": [],
+    "rows_checked": 247625,
+    "source": "artifacts/models/challengers/2026-05-03",
+    "stats_seen": []
+  },
+  "schema_version": "1.0",
+  "woo_compatibility": {
+    "notes": "Smoke check of script presence; full export smoke runs in orchestrator.",
+    "passed": true,
+    "woo_script_present": true
+  }
+}
