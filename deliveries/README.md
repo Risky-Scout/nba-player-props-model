@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-04T21:01:52Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-04T23:17:28Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -14,7 +14,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-01** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 95 | 2519 | 1202 | 1142 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1199 | `present` | 1199 | `scored` | `f496f12#phase10c` |
 | **2026-05-02** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 29 | 660 | 421 | 315 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 414 | `present` | 414 | `scored` | `04ee0aa#phase10c` |
 | **2026-05-03** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 69 | 1780 | 489 | 462 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 524 | `present` | 524 | `scored` | `a9bdb1c#phase10c` |
-| **2026-05-04** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 65 | 1724 | 987 | 802 | `full` | `fresh` | `missing_from_prediction_source` | `absent` | — | `—` | — | `n/a` | `85e1bba#phase10c` |
+| **2026-05-04** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 65 | 1724 | 982 | 791 | `full` | `fresh` | `missing_from_prediction_source` | `incomplete` | — | `present` | 974 | `n/a` | `c564a05#phase10c` |
 
 ## Per-date links
 
@@ -321,6 +321,17 @@ _lineup_unconfirmed, missing_stats:tov_
 - [06_OUTCOME_LEVEL_PROBABILITIES.csv](2026-05-04/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv)
 - [machine_readable/model_only.parquet](2026-05-04/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-04/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
+
+**Derek forward feed (PMF snapshots)** — lineup=present · latest→lineup
+
+- [FEED_README.md](2026-05-04/derek_forward_feed/FEED_README.md)
+- [feed_manifest.json](2026-05-04/derek_forward_feed/feed_manifest.json)
+- [latest_available_snapshot.csv](2026-05-04/derek_forward_feed/latest_available_snapshot.csv)
+- [latest_available_snapshot.parquet](2026-05-04/derek_forward_feed/latest_available_snapshot.parquet)
+- [lineup_snapshot.csv](2026-05-04/derek_forward_feed/lineup_snapshot.csv)
+- [lineup_snapshot.parquet](2026-05-04/derek_forward_feed/lineup_snapshot.parquet)
+- [lineup_snapshot.jsonl](2026-05-04/derek_forward_feed/lineup_snapshot.jsonl)
+- [lineup_snapshot_status.json](2026-05-04/derek_forward_feed/lineup_snapshot_status.json)
 
 **Wizard of Odds**
 

@@ -17,7 +17,7 @@
 - `promotion_decision_id` = `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826`
 - `champion_pointer_path` = `artifacts/models/registry/champion_pointer.json`
 - `champion_pointer_hash` = `125eb260dc642bd3b26878f8e407bffd`
-- `metadata_stamped_at_utc` = `2026-05-04T21:01:53+00:00`
+- `metadata_stamped_at_utc` = `2026-05-04T23:17:30+00:00`
 
 - `no_prediction_values_modified` = `True`
 
@@ -26,4 +26,4 @@
 | Manifest | Stamped | Note |
 | --- | --- | --- |
 | deliveries/2026-05-04/wizard_of_odds/run_manifest.json | yes | deliveries/2026-05-04/wizard_of_odds/run_manifest.champion_stamp.json |
-| /home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-04/derek_forward_feed/feed_manifest.json | NO | missing |
+| deliveries/2026-05-04/derek_forward_feed/feed_manifest.json | yes | deliveries/2026-05-04/derek_forward_feed/feed_manifest.champion_stamp.json |
