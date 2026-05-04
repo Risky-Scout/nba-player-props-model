@@ -27,6 +27,7 @@ SECTION_LABEL_MAP = (
     ("training_automation",      "TRAINING       "),
     ("recalibration_automation", "RECALIBRATION  "),
     ("daily_predictions",        "PREDICTIONS    "),
+    ("woo_snapshot_state_machine", "WOO STATE M/C  "),
     ("woo_morning_snapshot",     "WOO MORNING    "),
     ("woo_t_minus_25",           "WOO T-25       "),
     ("woo_close_lock",           "WOO CLOSE      "),

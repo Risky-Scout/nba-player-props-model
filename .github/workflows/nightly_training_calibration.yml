@@ -208,6 +208,18 @@ jobs:
             --as-of-date ${{ steps.d.outputs.date }} \
             $DRY_FLAG $NO_PROMOTE_FLAG $STALE_FLAG
 
+      # Phase 13AI: write a lightweight aggregate-input audit JSON so the
+      # no-leakage verifier can prove max(input game_date) <= cutoff even
+      # when the multi-MB fold_aggregate.parquet is gitignored on
+      # origin/main. Runs only after a successful training run.
+      - name: Write no-leakage audit JSON (Phase 13AI)
+        id: aggregate_audit
+        if: steps.d.outputs.date != '' && steps.run_nightly.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python scripts/write_aggregate_input_audit.py \
+            --as-of-date ${{ steps.d.outputs.date }}
+
       - name: Run automation verification suite
         id: verify
         if: steps.d.outputs.date != ''

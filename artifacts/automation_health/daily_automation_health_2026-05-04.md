@@ -1,36 +1,35 @@
 # Daily automation health — 2026-05-04
 
-_Generated 2026-05-04T20:03:04+00:00._
+_Generated 2026-05-04T20:38:41+00:00._
 
 ## Overall: **OVERALL_WARN**
 
 - summary: one or more sections pending honest upstream data
 
-## 1. Nightly training / recalibration — `HALTED_PENDING_UPSTREAM_DATA`
+## 1. Nightly training / recalibration — `NO_PROMOTE_PASS`
 
-- **status:** `HALTED_PENDING_UPSTREAM_DATA`
-- **training_cutoff_date:** `2026-05-04`
-- **same_day_artifacts_present:** `True`
-- **same_day_report_status:** `halted_pending_upstream_data`
-- **halted_reason:** `previous_day_data_not_ready`
-- **halted_workflow_run_url:** `https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911`
+- **status:** `NO_PROMOTE_PASS`
+- **run_date:** `2026-05-04`
+- **prediction_date:** `2026-05-04`
+- **training_cutoff_date:** `2026-05-03`
+- **required_outcomes_through:** `2026-05-03`
+- **settled_outcomes_max_date:** `2026-05-03`
+- **training_cutoff_satisfied_by_settled_outcomes:** `True`
+- **completed_cutoff_training_dir:** `artifacts/models/challengers/2026-05-03`
+- **promoted:** `None`
+- **promotion_reason:** `gate_failed:promotion_clock_safe`
+- **halted_reason:** `promotion_clock_cutoff`
+- **halted_workflow_run_url:** `None`
 - **champion_model_id:** `challenger-2026-04-30`
 - **trained_through_date:** `2026-04-30`
 - **calibrated_through_date:** `2026-04-30`
-- **daily_report_md_path:** `artifacts/model_daily_reports/2026-05-04/daily_model_training_report.md`
-- **readiness_report_path:** `artifacts/training_readiness/2026-05-04/readiness_report.json`
-- **root_cause:** Wait for BDL settled-stats backfill for 2026-04-30 → 2026-05-03. Next nightly cron (09:30 UTC) will re-attempt the resolver.
+- **daily_report_md_path:** `artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md`
+- **readiness_report_path:** `artifacts/training_readiness/2026-05-03/readiness_report.json`
+- **same_day_run_status:** `halted_pending_upstream_data`
+- **same_day_run_classified_as:** `historical_failed_attempt`
+- **root_cause:** training completed for cutoff=2026-05-03 but promotion withheld: gate_failed:promotion_clock_safe. champion pointer unchanged.
 
-**Most-recent-completed training (supplementary, not today's status):**
-
-- `training_cutoff_date`: `2026-05-03`
-- `final_status`: `halted_no_promotion`
-- `halted_reason`: `promotion_clock_cutoff`
-- `challenger_artifact_dir`: `artifacts/models/challengers/2026-05-03`
-- `daily_report_md_path`: `artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md`
-- `promoted`: `None`
-- `promotion_reason`: `gate_failed:promotion_clock_safe`
-- `label`: `previous champion state — not today's training run; do not infer same-day status from this`
+_Training artifacts are keyed by latest settled outcome date (training_cutoff_date), not by slate / run date. Same-day outcomes (e.g. tonight's games) may still be pending for postgame scoring; that does not affect today's training status._
 
 ## 2. Daily prediction generation — `PASS`
 

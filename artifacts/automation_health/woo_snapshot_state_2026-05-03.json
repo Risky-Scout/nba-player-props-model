@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-05-03",
+  "generated_at_utc": "2026-05-04T20:36:44+00:00",
+  "snapshot_types_checked": [
+    "morning",
+    "t_minus_25",
+    "close_lock"
+  ],
+  "states": [
+    {
+      "snapshot_type": "morning",
+      "scope": "slate",
+      "commence_time_utc": null,
+      "file_path": "predictions/woo_snapshots/2026-05-03/morning/slate/nba_props_today.json",
+      "file_present": true,
+      "missed_marker_present": false,
+      "state": "EXISTS",
+      "detail": "morning slate snapshot present"
+    },
+    {
+      "snapshot_type": "t_minus_25",
+      "scope": "21682000",
+      "commence_time_utc": "2026-05-03T23:40:00Z",
+      "file_path": "predictions/woo_snapshots/2026-05-03/t_minus_25/21682000/nba_props_today.json",
+      "file_present": false,
+      "missed_marker_present": true,
+      "state": "MISSED_DOCUMENTED",
+      "detail": "documented historical miss"
+    },
+    {
+      "snapshot_type": "t_minus_25",
+      "scope": "21684819",
+      "commence_time_utc": "2026-05-03T19:40:00Z",
+      "file_path": "predictions/woo_snapshots/2026-05-03/t_minus_25/21684819/nba_props_today.json",
+      "file_present": false,
+      "missed_marker_present": true,
+      "state": "MISSED_DOCUMENTED",
+      "detail": "documented historical miss"
+    },
+    {
+      "snapshot_type": "close_lock",
+      "scope": "21682000",
+      "commence_time_utc": "2026-05-03T23:40:00Z",
+      "file_path": "predictions/woo_snapshots/2026-05-03/close_lock/21682000/nba_props_today.json",
+      "file_present": false,
+      "missed_marker_present": true,
+      "state": "MISSED_DOCUMENTED",
+      "detail": "documented historical miss"
+    },
+    {
+      "snapshot_type": "close_lock",
+      "scope": "21684819",
+      "commence_time_utc": "2026-05-03T19:40:00Z",
+      "file_path": "predictions/woo_snapshots/2026-05-03/close_lock/21684819/nba_props_today.json",
+      "file_present": false,
+      "missed_marker_present": true,
+      "state": "MISSED_DOCUMENTED",
+      "detail": "documented historical miss"
+    }
+  ],
+  "fail_count": 0,
+  "outcome": "pass"
+}

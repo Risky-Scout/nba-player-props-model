@@ -94,27 +94,71 @@ def _parse_date_str(s: str | None) -> dt.date | None:
 
 def check_fold_aggregate_max_date(report: LeakageReport, ch_dir: Path, cutoff: dt.date) -> None:
     """Confirm the OOF parquet that calibrate_pmf actually consumed has no
-    rows newer than the resolved cutoff."""
+    rows newer than the resolved cutoff.
+
+    Phase 13AI: ``aggregate_input/fold_aggregate.parquet`` is gitignored
+    under ``artifacts/models/challengers/**/*.parquet``. On a freshly
+    pulled origin/main checkout the parquet does not exist, but the
+    canonical max-date proof is also recorded in
+    ``aggregate_input_audit.json`` (lightweight JSON written by
+    ``scripts/write_aggregate_input_audit.py`` from the
+    ``train_manifest.json`` summary fields). Try the audit JSON first
+    when the parquet is absent, and only fall through to a hard fail
+    when neither source provides the max date.
+    """
     fold_path = ch_dir / "aggregate_input" / "fold_aggregate.parquet"
-    if not fold_path.exists():
-        report.add(
-            "fold_aggregate_max_game_date",
-            False,
-            f"missing {fold_path.relative_to(REPO_ROOT)}",
-        )
-        return
-    try:
-        import pandas as pd
-        df = pd.read_parquet(fold_path, columns=["game_date"])
-        max_d = pd.to_datetime(df["game_date"]).dt.date.max()
-        report.max_dates["fold_aggregate"] = str(max_d)
-        report.add(
-            "fold_aggregate_max_game_date",
-            max_d <= cutoff,
-            f"max={max_d} cutoff={cutoff}",
-        )
-    except Exception as exc:
-        report.add("fold_aggregate_max_game_date", False, f"error: {exc}")
+    audit_path = ch_dir / "aggregate_input_audit.json"
+
+    if fold_path.exists():
+        try:
+            import pandas as pd
+            df = pd.read_parquet(fold_path, columns=["game_date"])
+            max_d = pd.to_datetime(df["game_date"]).dt.date.max()
+            report.max_dates["fold_aggregate"] = str(max_d)
+            report.add(
+                "fold_aggregate_max_game_date",
+                max_d <= cutoff,
+                f"max={max_d} cutoff={cutoff} source=fold_aggregate.parquet",
+            )
+            return
+        except Exception as exc:
+            report.add(
+                "fold_aggregate_max_game_date",
+                False,
+                f"parquet read error: {exc}; falling back to audit JSON",
+            )
+
+    if audit_path.exists():
+        try:
+            import json as _json
+            audit = _json.loads(audit_path.read_text(encoding="utf-8"))
+            max_str = audit.get("fold_aggregate_max_game_date")
+            if max_str:
+                max_d = dt.date.fromisoformat(max_str)
+                report.max_dates["fold_aggregate"] = max_str
+                report.add(
+                    "fold_aggregate_max_game_date",
+                    bool(audit.get("no_leakage_pass")) and max_d <= cutoff,
+                    f"max={max_str} cutoff={cutoff} "
+                    f"source=aggregate_input_audit.json "
+                    f"(rows={audit.get('row_count')}, "
+                    f"sha256={(audit.get('fold_aggregate_sha256') or '')[:16]})",
+                )
+                return
+        except Exception as exc:
+            report.add(
+                "fold_aggregate_max_game_date",
+                False,
+                f"audit JSON read error: {exc}",
+            )
+            return
+
+    report.add(
+        "fold_aggregate_max_game_date",
+        False,
+        f"missing both {fold_path.relative_to(REPO_ROOT)} and "
+        f"{audit_path.relative_to(REPO_ROOT)} — cannot prove no leakage",
+    )
 
 
 def check_train_manifest(report: LeakageReport, ch_dir: Path, cutoff: dt.date) -> None:

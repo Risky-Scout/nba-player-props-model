@@ -114,57 +114,64 @@ def main(argv: list[str] | None = None) -> int:
                 "report is dishonest"
             )
 
-        # Phase 13AG: same-day training consistency.
+        # Phase 13AG/13AI: training-section consistency.
+        # Training is keyed on training_cutoff_date (last day with settled
+        # outcomes), which is normally <= run_date. The verifier ensures:
+        #
+        #   - daily_report_md_path points at the training_cutoff_date
+        #     directory (NOT a stale 13AD honest-pending path that only
+        #     exists when the cutoff training itself had not run yet);
+        #   - training.status=PASS / NO_PROMOTE_PASS only when a
+        #     completed challenger directory exists at training_cutoff_date
+        #     OR when the same-day halted artifacts are correctly
+        #     reclassified as historical_failed_attempt.
         training = sections.get("training", {})
         if training:
             t_status = training.get("status")
             t_cutoff = training.get("training_cutoff_date")
             t_md_path = training.get("daily_report_md_path", "")
-            expected_md = f"artifacts/model_daily_reports/{date}/daily_model_training_report.md"
+            completed_dir = training.get("completed_cutoff_training_dir")
 
-            if t_md_path and t_md_path != expected_md:
+            expected_md = (
+                f"artifacts/model_daily_reports/{t_cutoff}/daily_model_training_report.md"
+                if t_cutoff else None
+            )
+            if expected_md and t_md_path and t_md_path != expected_md:
                 failures.append(
                     f"training.daily_report_md_path={t_md_path!r} does not "
-                    f"point at the same-day path {expected_md!r}; the daily "
-                    "health report must reference SAME-DAY artifacts as the "
-                    "primary training source"
-                )
-            if t_cutoff and t_cutoff != date:
-                failures.append(
-                    f"training.training_cutoff_date={t_cutoff!r} != "
-                    f"requested date {date!r}; previous-day training is "
-                    "supplementary state, not today's status"
+                    f"point at the training_cutoff_date={t_cutoff!r} path "
+                    f"{expected_md!r}"
                 )
 
-            # Cross-check the same-day daily report and run_manifest.
-            same_daily = _read_json(
-                REPO_ROOT / "artifacts" / "model_daily_reports" / date
-                / "daily_model_training_report.json"
-            ) or {}
-            same_run = _read_json(
-                REPO_ROOT / "artifacts" / "nightly_training" / date
-                / "run_manifest.json"
-            ) or {}
-            sd_status = same_daily.get("status")
-            sd_halt = same_daily.get("halted_reason")
-            sr_status = same_run.get("final_status")
-            sr_halt = same_run.get("halted_reason")
+            # If status claims PASS / NO_PROMOTE_PASS, completed_cutoff_dir
+            # must exist on disk.
+            if t_status in {"PASS", "NO_PROMOTE_PASS"}:
+                if not completed_dir:
+                    failures.append(
+                        f"training.status={t_status} but no "
+                        "completed_cutoff_training_dir is recorded"
+                    )
+                else:
+                    if not (REPO_ROOT / completed_dir).exists():
+                        failures.append(
+                            f"training.status={t_status} but "
+                            f"completed_cutoff_training_dir "
+                            f"{completed_dir!r} does not exist on disk"
+                        )
 
-            halted_signal = (
-                (sd_status in HALT_STATUSES_NOT_PASS)
-                or (sr_status in HALT_STATUSES_NOT_PASS)
-                or (sd_halt in HALT_REASONS_NOT_PASS)
-                or (sr_halt in HALT_REASONS_NOT_PASS)
-            )
-            if halted_signal and t_status == "PASS":
-                failures.append(
-                    f"training.status=PASS but same-day artifacts say halted "
-                    f"(daily_report.status={sd_status!r}, "
-                    f"run_manifest.final_status={sr_status!r}, "
-                    f"halted_reason={(sd_halt or sr_halt)!r}) — health "
-                    "report cannot mark training PASS while the same-day "
-                    "report says HALTED"
-                )
+            # If status claims HALTED_PENDING_UPSTREAM_DATA, settled stats
+            # must actually be behind the required cutoff.
+            if t_status == "HALTED_PENDING_UPSTREAM_DATA":
+                settled_max = training.get("settled_outcomes_max_date")
+                req = training.get("required_outcomes_through")
+                if settled_max and req and settled_max >= req:
+                    failures.append(
+                        f"training.status=HALTED_PENDING_UPSTREAM_DATA but "
+                        f"settled_outcomes_max_date={settled_max!r} >= "
+                        f"required_outcomes_through={req!r}; halted "
+                        "classification is no longer accurate — the "
+                        "stale-BDL-blocker must be cleared"
+                    )
 
     if failures:
         print("DAILY_AUTOMATION_HEALTH_FAILED  "

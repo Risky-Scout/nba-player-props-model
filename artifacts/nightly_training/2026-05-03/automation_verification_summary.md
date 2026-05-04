@@ -1,6 +1,6 @@
 # Training Automation Verification — 2026-05-03
 
-- generated_at_utc: 2026-05-04T20:03:06+00:00
+- generated_at_utc: 2026-05-04T20:39:41+00:00
 - mode: **real_training**
 - overall_pass: **True**
 

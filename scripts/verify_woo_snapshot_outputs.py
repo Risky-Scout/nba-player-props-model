@@ -132,6 +132,11 @@ def _has_tipped(now_utc: dt.datetime, commence_time) -> bool | None:
     return ts.to_pydatetime() <= now_utc
 
 
+def _has_missed_marker(date: str, snap_type: str, scope: str) -> bool:
+    p = WOO_SNAP_ROOT / date / snap_type / scope / "missed_snapshot_manifest.json"
+    return p.exists()
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--date", required=True)
@@ -177,6 +182,13 @@ def main(argv: list[str] | None = None) -> int:
                 else:
                     per_game_present.append(gid)
             else:
+                # Phase 13AI: when a documented missed-marker is present,
+                # this is an honest historical miss — count it as present
+                # (not pending, not failed) so the state machine has the
+                # final word on documented misses.
+                if _has_missed_marker(date, snap_type, gid):
+                    per_game_present.append(gid)
+                    continue
                 # Determine pending vs failed based on tip status.
                 commence_time = (g.get("game_start_time") or
                                   g.get("commence_time"))

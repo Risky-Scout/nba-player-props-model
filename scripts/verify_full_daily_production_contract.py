@@ -48,15 +48,50 @@ def _grep(text: str, *needles: str) -> str | None:
     return None
 
 
+# Phase 13AI: anything matching one of these regex patterns in subprocess
+# stdout/stderr forces the section to FAIL, regardless of whether a later
+# PASS line is also present.
+import re
+
+CRITICAL_FAILURE_PATTERNS = (
+    r"^[A-Z_]+_FAILED\b",
+    r"^VERIFICATION FAILED\b",
+    r"^Traceback\b",
+    r"^Exception\b",
+    r"missing required artifact",
+    r"\bstale json\b",
+    r"\bblank page\b",
+    r"PREVIOUS_DAY_NO_LEAKAGE_FAILED",
+)
+_CRITICAL_RX = [re.compile(p, flags=re.IGNORECASE | re.MULTILINE)
+                for p in CRITICAL_FAILURE_PATTERNS]
+
+
+def _has_critical_failure(text: str) -> str | None:
+    """Return the first matching critical-failure line, else None."""
+    for line in text.splitlines():
+        for rx in _CRITICAL_RX:
+            if rx.search(line):
+                return line.strip()
+    return None
+
+
 def _check(name: str, cmd: list[str], pass_prefixes: tuple[str, ...],
             warn_prefixes: tuple[str, ...] = (), fail_prefixes: tuple[str, ...] = (),
             critical: bool = True) -> dict:
     rc, stdout, stderr = _run(cmd)
     combined = stdout + "\n" + stderr
+    crit = _has_critical_failure(combined)
     pass_line = _grep(combined, *pass_prefixes)
     warn_line = _grep(combined, *warn_prefixes) if warn_prefixes else None
     fail_line = _grep(combined, *fail_prefixes) if fail_prefixes else None
-    if pass_line:
+    # Phase 13AI: ANY critical-failure pattern downgrades to FAIL even if a
+    # later PASS line is emitted by a chained sub-verifier. This is what
+    # Phase 13AG taught us — "PREVIOUS_DAY_NO_LEAKAGE_FAILED" cannot be
+    # masked by a trailing TRAINING_AUTOMATION_VERIFICATION_PASS.
+    if crit:
+        status = "FAIL"
+    elif pass_line:
         status = "PASS"
     elif warn_line:
         status = "WARN"
@@ -72,6 +107,7 @@ def _check(name: str, cmd: list[str], pass_prefixes: tuple[str, ...],
         "pass_line": pass_line,
         "warn_line": warn_line,
         "fail_line": fail_line,
+        "critical_failure_line": crit,
         "rc": rc,
         "tail": (stderr or stdout).strip().splitlines()[-1:][0:1] or [""],
     }
@@ -139,7 +175,13 @@ def main(argv: list[str] | None = None) -> int:
         fail_prefixes=("WOO_NBA_PROPS_PAGE_FAILED",),
     ))
 
-    # 5b/6/7. WoO morning + t_minus_25 + close_lock snapshot outputs
+    # 5b/6/7. WoO state machine + morning + t_minus_25 + close_lock snapshots
+    checks.append(_check(
+        "woo_snapshot_state_machine",
+        [py, "scripts/verify_woo_snapshot_schedule_state.py", "--date", args.date],
+        pass_prefixes=("WOO_SNAPSHOT_STATE_MACHINE_PASS",),
+        fail_prefixes=("WOO_SNAPSHOT_STATE_MACHINE_FAILED",),
+    ))
     rc, out, err = _run([py, "scripts/verify_woo_snapshot_outputs.py",
                           "--date", args.date])
     combined = out + "\n" + err

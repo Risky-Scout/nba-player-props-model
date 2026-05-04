@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "delivery_date": "2026-05-03",
+  "snapshot_type": "close_lock",
+  "snapshot_scope": "21682000",
+  "game_id": "21682000",
+  "commence_time_utc": "2026-05-03T23:40:00Z",
+  "missed_reason": "WoO snapshot publisher infrastructure did not exist prior to Phase 13AH (2026-05-04). Documented historical miss; not a fabricated pre-tip snapshot.",
+  "state": "MISSED_DOCUMENTED",
+  "no_fake_pretip_snapshot": true,
+  "production_fix_applied": true,
+  "generated_at_utc": "2026-05-04T20:36:37+00:00"
+}

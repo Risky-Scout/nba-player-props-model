@@ -1,6 +1,6 @@
 # Derek/WoO Champion Dependency Verification
 
-- generated_at_utc: 2026-05-04T20:03:10+00:00
+- generated_at_utc: 2026-05-04T20:39:45+00:00
 - max_stale_days: 14
 - passed: **True**
 
@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | champion_pointer_present | yes | model_version='challenger-2026-04-30' |
 | champion_calibrators_present | yes | ok |
-| champion_freshness | yes | age_days=3.30 max=14 |
+| champion_freshness | yes | age_days=3.33 max=14 |
 | delivery_scripts_no_challenger_refs | yes | ok |
 | delivery_scripts_reference_champion_path | yes | 4/6 delivery scripts reference champion path (via direct path or nba_props_model package import) |
 | latest_delivery_after_champion_promotion | yes | delivery_generated_at=None promoted_at_utc='2026-05-01T12:48:39+00:00' (advisory) |
@@ -34,7 +34,7 @@
     "fg3m": "6fb662716667fed4",
     "tov": "5b9d732536e30e33"
   },
-  "champion_age_days": 3.3,
+  "champion_age_days": 3.33,
   "delivery_scripts_with_champion_refs": [
     "build_daily_pmf_delivery.py",
     "run_daily_delivery_pipeline.py",

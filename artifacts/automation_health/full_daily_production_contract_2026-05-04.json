@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-04T20:03:16+00:00",
+  "generated_at_utc": "2026-05-04T20:39:51+00:00",
   "date": "2026-05-04",
   "derek_date": "2026-05-03",
   "required_outcomes_through": "2026-05-03",
@@ -13,6 +13,7 @@
       "pass_line": "PLAYER_GAME_STATS_FRESHNESS_PASS  required_through=2026-05-03  max_game_date=2026-05-03  rows_total=83729  rows_for_required_date=44",
       "warn_line": null,
       "fail_line": null,
+      "critical_failure_line": null,
       "rc": 0,
       "tail": [
         "PLAYER_GAME_STATS_FRESHNESS_PASS  required_through=2026-05-03  max_game_date=2026-05-03  rows_total=83729  rows_for_required_date=44"
@@ -26,9 +27,10 @@
       "pass_line": "TRAINING_AUTOMATION_VERIFICATION_PASS",
       "warn_line": null,
       "fail_line": null,
-      "rc": 1,
+      "critical_failure_line": null,
+      "rc": 0,
       "tail": [
-        "  - fold_aggregate_max_game_date: missing artifacts/models/challengers/2026-05-03/aggregate_input/fold_aggregate.parquet"
+        "TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS"
       ]
     },
     {
@@ -39,9 +41,9 @@
       "pass_line": "RECALIBRATION_VALID_SKIP_PASS",
       "warn_line": null,
       "fail_line": null,
-      "rc": 1,
+      "rc": 0,
       "tail": [
-        "  - fold_aggregate_max_game_date: missing artifacts/models/challengers/2026-05-03/aggregate_input/fold_aggregate.parquet"
+        "TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS"
       ]
     },
     {
@@ -52,6 +54,7 @@
       "pass_line": "DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-04  parquet_rows=65  singles=8  pmf_display=8  today_count=65",
       "warn_line": null,
       "fail_line": null,
+      "critical_failure_line": null,
       "rc": 0,
       "tail": [
         "DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-04  parquet_rows=65  singles=8  pmf_display=8  today_count=65"
@@ -65,9 +68,24 @@
       "pass_line": "WOO_NBA_PROPS_PAGE_PASS  date=2026-05-04  count=65  games=2  date=2026-05-04",
       "warn_line": null,
       "fail_line": null,
+      "critical_failure_line": null,
       "rc": 0,
       "tail": [
         "WOO_NBA_PROPS_PAGE_PASS  date=2026-05-04  count=65  games=2  date=2026-05-04"
+      ]
+    },
+    {
+      "name": "woo_snapshot_state_machine",
+      "command": "scripts/verify_woo_snapshot_schedule_state.py --date 2026-05-04",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "WOO_SNAPSHOT_STATE_MACHINE_PASS  date=2026-05-04  states_checked=5  json=artifacts/automation_health/woo_snapshot_state_2026-05-04.json",
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_SNAPSHOT_STATE_MACHINE_PASS  date=2026-05-04  states_checked=5  json=artifacts/automation_health/woo_snapshot_state_2026-05-04.json"
       ]
     },
     {
@@ -117,6 +135,7 @@
       "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4",
       "warn_line": null,
       "fail_line": null,
+      "critical_failure_line": null,
       "rc": 0,
       "tail": [
         "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4"
@@ -156,6 +175,7 @@
       "pass_line": "DEREK_EMAIL_CLAIMED_FILES_PASS  delivery_date=2026-05-03  snapshots_ok=2  snapshots_skipped=4",
       "warn_line": null,
       "fail_line": null,
+      "critical_failure_line": null,
       "rc": 0,
       "tail": [
         "DEREK_EMAIL_CLAIMED_FILES_PASS  delivery_date=2026-05-03  snapshots_ok=2  snapshots_skipped=4"

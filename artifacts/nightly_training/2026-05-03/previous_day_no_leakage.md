@@ -3,13 +3,13 @@
 - target_date_et: 2026-05-03
 - resolved_training_cutoff_date: 2026-05-03
 - stale_fallback_used: False
-- leakage_checks_passed: **False**
+- leakage_checks_passed: **True**
 
 ## Checks
 
 | Check | Pass | Detail |
 | --- | --- | --- |
-| fold_aggregate_max_game_date | NO | missing artifacts/models/challengers/2026-05-03/aggregate_input/fold_aggregate.parquet |
+| fold_aggregate_max_game_date | yes | max=2026-05-03 cutoff=2026-05-03 source=aggregate_input_audit.json (rows=83729, sha256=49f7228ab26d21ab) |
 | train_manifest_max_date | yes | max=2026-05-03 cutoff=2026-05-03 |
 | train_manifest_real_run | yes | dry_run=False |
 | train_manifest_future_rows_excluded_recorded | yes | future_rows_excluded=0 |
@@ -25,6 +25,7 @@
 
 ```
 {
+  "fold_aggregate": "2026-05-03",
   "training_summary_max_date": "2026-05-03",
   "future_rows_excluded": 0,
   "calibration_validation_window_end": "2026-05-03",
