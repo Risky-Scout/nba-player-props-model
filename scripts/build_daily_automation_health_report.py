@@ -60,63 +60,102 @@ def _read_json(path: Path) -> dict | None:
 
 
 def _section_training(date: str) -> dict:
-    # Phase 13AF: nightly training is keyed on the previous-day-ET cutoff,
-    # not the wall-clock UTC date. Look for that artifact set first; fall
-    # back to the today-UTC artifacts (which is what 13AD's halted-pending
-    # manifests use) if the previous-day-ET training did not produce a
-    # run_manifest yet.
-    candidates: list[str] = []
-    try:
-        prev_et = (dt.date.fromisoformat(date) - dt.timedelta(days=1)).isoformat()
-        candidates.append(prev_et)
-    except Exception:
-        pass
-    candidates.append(date)
-    chosen_date = None
-    run_manifest_path = None
-    for c in candidates:
-        p = REPO_ROOT / "artifacts" / "nightly_training" / c / "run_manifest.json"
-        if p.exists():
-            chosen_date = c
-            run_manifest_path = p
-            break
-    if chosen_date is None:
-        chosen_date = date
-        run_manifest_path = REPO_ROOT / "artifacts" / "nightly_training" / date / "run_manifest.json"
+    """Same-day training section.
 
-    daily_md = REPO_ROOT / "artifacts" / "model_daily_reports" / chosen_date / "daily_model_training_report.md"
-    daily_json = REPO_ROOT / "artifacts" / "model_daily_reports" / chosen_date / "daily_model_training_report.json"
-    readiness = REPO_ROOT / "artifacts" / "training_readiness" / chosen_date / "readiness_report.json"
+    Phase 13AG: status is governed by the SAME-DAY artifacts only —
+    artifacts/{nightly_training,model_daily_reports,training_readiness}/
+    <date>/. A previous-day successful training run does NOT upgrade
+    today's status. The previous-day artifacts are surfaced as
+    ``most_recent_completed_training`` facts for visibility, never as
+    primary status.
 
-    rm = _read_json(run_manifest_path)
-    daily_payload = _read_json(daily_json)
-    readiness_payload = _read_json(readiness)
+    The earlier 13AF behavior (preferring previous-day-ET artifacts)
+    produced a same-day/previous-day path mismatch: 2026-05-04 health
+    said PASS while pointing at the 2026-05-03 daily report, despite
+    the same-day 2026-05-04 daily report explicitly saying
+    HALTED_PENDING_UPSTREAM_DATA. That is now caught by the verifier.
+    """
+    same_run_manifest = REPO_ROOT / "artifacts" / "nightly_training" / date / "run_manifest.json"
+    same_daily_md = REPO_ROOT / "artifacts" / "model_daily_reports" / date / "daily_model_training_report.md"
+    same_daily_json = REPO_ROOT / "artifacts" / "model_daily_reports" / date / "daily_model_training_report.json"
+    same_readiness = REPO_ROOT / "artifacts" / "training_readiness" / date / "readiness_report.json"
+
+    rm = _read_json(same_run_manifest)
+    daily_payload = _read_json(same_daily_json)
     pointer = _read_json(REPO_ROOT / "artifacts" / "models" / "registry" / "champion_pointer.json")
 
     out: dict = {
         "section": "nightly_training_recalibration",
-        "training_cutoff_date": chosen_date,
-        "run_manifest_path": str(run_manifest_path.relative_to(REPO_ROOT)),
-        "daily_report_md_path": str(daily_md.relative_to(REPO_ROOT)),
-        "daily_report_json_path": str(daily_json.relative_to(REPO_ROOT)),
-        "readiness_report_path": str(readiness.relative_to(REPO_ROOT)),
+        "training_cutoff_date": date,
+        "run_manifest_path": str(same_run_manifest.relative_to(REPO_ROOT)),
+        "daily_report_md_path": str(same_daily_md.relative_to(REPO_ROOT)),
+        "daily_report_json_path": str(same_daily_json.relative_to(REPO_ROOT)),
+        "readiness_report_path": str(same_readiness.relative_to(REPO_ROOT)),
+        "same_day_artifacts_present": bool(rm or daily_payload),
         "champion_model_id": (pointer or {}).get("champion_model_id"),
         "trained_through_date": (pointer or {}).get("trained_through_date"),
         "calibrated_through_date": (pointer or {}).get("calibrated_through_date"),
         "feature_set_id": (pointer or {}).get("feature_set_id"),
         "halted_reason": None,
         "halted_workflow_run_url": None,
+        "same_day_report_status": (daily_payload or {}).get("status"),
         "root_cause": None,
         "status": "PENDING",
     }
 
-    if rm is None and daily_payload is None:
+    # Surface most-recent-completed training as supplementary facts. This is
+    # the previous-day-ET training that may have succeeded earlier; it does
+    # NOT govern today's status. The top-level `status` field is driven by
+    # SAME-DAY artifacts only.
+    most_recent: dict | None = None
+    challengers_root = REPO_ROOT / "artifacts" / "models" / "challengers"
+    if challengers_root.exists():
+        # Look at challenger directories that have a non-dry-run train_manifest.
+        best: tuple[str, dict] | None = None
+        for child in sorted(challengers_root.iterdir(), reverse=True):
+            if not child.is_dir():
+                continue
+            name = child.name
+            # Skip prior-named historical dirs and per-flavor subdirs (e.g.
+            # _direct_lineup_contextual). Prefer the canonical YYYY-MM-DD form.
+            if not (len(name) == 10 and name[4] == "-" and name[7] == "-"):
+                continue
+            # Don't surface today's same-day dir as "most recent completed."
+            if name >= date:
+                continue
+            tm_path = child / "train_manifest.json"
+            tm = _read_json(tm_path)
+            if not tm or tm.get("dry_run") is not False or tm.get("status") not in {"ok", None}:
+                continue
+            best = (name, tm)
+            break
+        if best is not None:
+            mr_date, mr_tm = best
+            mr_run_manifest = _read_json(REPO_ROOT / "artifacts" / "nightly_training" / mr_date / "run_manifest.json") or {}
+            mr_daily = _read_json(REPO_ROOT / "artifacts" / "model_daily_reports" / mr_date / "daily_model_training_report.json") or {}
+            mr_promotion = _read_json(REPO_ROOT / "artifacts" / "models" / "challengers" / mr_date / "promotion_decision.json") or {}
+            most_recent = {
+                "training_cutoff_date": mr_date,
+                "final_status": mr_run_manifest.get("final_status"),
+                "halted_reason": mr_run_manifest.get("halted_reason"),
+                "challenger_artifact_dir": f"artifacts/models/challengers/{mr_date}",
+                "daily_report_md_path": f"artifacts/model_daily_reports/{mr_date}/daily_model_training_report.md",
+                "promoted": mr_promotion.get("promoted"),
+                "promotion_reason": mr_promotion.get("reason"),
+                "label": (
+                    "previous champion state — not today's training run; "
+                    "do not infer same-day status from this"
+                ),
+            }
+    out["most_recent_completed_training"] = most_recent
+
+    if not (rm or daily_payload):
         out["status"] = "FAIL"
         out["root_cause"] = (
             f"No run_manifest.json or daily_model_training_report.json for "
-            f"{date} under artifacts/nightly_training/{date}/ or "
+            f"same-day {date} under artifacts/nightly_training/{date}/ or "
             f"artifacts/model_daily_reports/{date}/. Nightly workflow either "
-            f"never ran or did not upload artifacts."
+            "never ran or did not upload artifacts."
         )
         return out
 
@@ -127,19 +166,25 @@ def _section_training(date: str) -> dict:
     elif (daily_payload or {}).get("halted_workflow_run"):
         out["halted_workflow_run_url"] = daily_payload["halted_workflow_run"].get("url")
 
+    same_day_report_status = (daily_payload or {}).get("status")
     final_status = (rm or {}).get("final_status")
-    if final_status == "ok":
-        out["status"] = "PASS"
+
+    # Same-day daily report explicitly halted → mirror the halt. Never PASS.
+    if same_day_report_status == "halted_pending_upstream_data" or \
+       final_status == "halted_pending_upstream_data" or \
+       halted == "previous_day_data_not_ready":
+        out["status"] = "HALTED_PENDING_UPSTREAM_DATA"
+        out["root_cause"] = (
+            (daily_payload or {}).get("remediation")
+            or "Strict resolver halted: previous-day-ET data not ready in "
+               "data/player_game_stats.parquet. Correct safe behavior. "
+               "Training will resume automatically when BDL backfills "
+               "settled stats."
+        )
         return out
 
-    if halted == "previous_day_data_not_ready":
-        out["status"] = "SKIPPED_WITH_REASON"
-        out["root_cause"] = (
-            "Strict resolver halted: previous-day-ET data not ready in "
-            "data/player_game_stats.parquet. Correct safe behavior. Training "
-            "will resume automatically when BDL backfills settled stats. "
-            "champion pointer unchanged."
-        )
+    if final_status == "ok":
+        out["status"] = "PASS"
         return out
 
     if halted in {"training_inputs_missing", "training_inputs_prepare_failed",
@@ -151,18 +196,14 @@ def _section_training(date: str) -> dict:
         )
         return out
 
-    if final_status in {"halted_pending_upstream_data", None}:
-        out["status"] = "SKIPPED_WITH_REASON"
-        out["root_cause"] = (
-            (daily_payload or {}).get("remediation")
-            or "training did not run and no halted_reason was recorded; "
-               "treat as pending pending operator review"
-        )
-        return out
-
-    out["status"] = "WARN"
+    # Same-day artifacts exist but final_status is unset/unknown — surface
+    # honestly rather than silently passing.
+    out["status"] = "SKIPPED_WITH_REASON"
     out["root_cause"] = (
-        f"final_status={final_status!r} not classified — review run_manifest.json"
+        (daily_payload or {}).get("remediation")
+        or f"final_status={final_status!r} same_day_report_status="
+           f"{same_day_report_status!r} — same-day training did not "
+           "complete; manual review required"
     )
     return out
 
@@ -426,6 +467,11 @@ def _overall(sections: dict) -> tuple[str, str]:
         return "OVERALL_WARN", "one or more sections pending honest upstream data"
     if any(s == "SKIPPED_WITH_REASON" for s in statuses.values()):
         return "OVERALL_WARN", "training skipped pending upstream data"
+    if any(s == "HALTED_PENDING_UPSTREAM_DATA" for s in statuses.values()):
+        return "OVERALL_WARN", (
+            "training halted pending upstream data — same-day cycle did not "
+            "run; no_promote remains in effect"
+        )
     return "OVERALL_PASS", "all critical sections pass; no warnings"
 
 
@@ -458,6 +504,9 @@ def _markdown(payload: dict) -> str:
 
     _emit("1. Nightly training / recalibration", "training", [
         ("status", "status"),
+        ("training_cutoff_date", "training_cutoff_date"),
+        ("same_day_artifacts_present", "same_day_artifacts_present"),
+        ("same_day_report_status", "same_day_report_status"),
         ("halted_reason", "halted_reason"),
         ("halted_workflow_run_url", "halted_workflow_run_url"),
         ("champion_model_id", "champion_model_id"),
@@ -466,6 +515,14 @@ def _markdown(payload: dict) -> str:
         ("daily_report_md_path", "daily_report_md_path"),
         ("readiness_report_path", "readiness_report_path"),
     ])
+    mr = sections["training"].get("most_recent_completed_training")
+    if mr:
+        lines.append("**Most-recent-completed training (supplementary, not "
+                     "today's status):**")
+        lines.append("")
+        for k, v in mr.items():
+            lines.append(f"- `{k}`: `{v}`")
+        lines.append("")
 
     _emit("2. Daily prediction generation", "predictions", [
         ("status", "status"),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Phase 13AD — verify the daily automation health report is complete
-and honest.
+"""Phase 13AD/13AG — verify the daily automation health report is complete,
+honest, and date-consistent.
 
 Inputs:
   --date YYYY-MM-DD
@@ -10,14 +10,26 @@ Checks:
   - JSON has all five sections (training, predictions, derek, woo,
     after_game) with status + root_cause-when-failed
   - if any critical-path section is FAIL, OVERALL_PASS must NOT be set
+  - **same-day training consistency (Phase 13AG):**
+    - training section's ``daily_report_md_path`` must point at the
+      requested ``--date`` (not at a previous-day path)
+    - training section's ``training_cutoff_date`` must equal ``--date``
+    - if the same-day ``daily_model_training_report.json`` exists and
+      its ``status`` is ``halted_pending_upstream_data``, training
+      section's status MUST NOT be PASS
+    - if the same-day ``run_manifest.json`` records
+      ``halted_reason=previous_day_data_not_ready``, training section's
+      status MUST NOT be PASS
   - emits a single line:
       DAILY_AUTOMATION_HEALTH_PASS    — overall passes, no warnings
       DAILY_AUTOMATION_HEALTH_WARN    — overall warn (e.g. training
-                                          skipped, after-game pending)
+                                          honestly halted/skipped,
+                                          after-game pending)
       DAILY_AUTOMATION_HEALTH_FAILED  — report missing/incomplete OR
-                                          OVERALL_FAIL OR a critical
-                                          section is FAIL while overall
-                                          is wrongly green
+                                          OVERALL_FAIL OR same-day vs
+                                          previous-day mismatch OR a
+                                          critical section is FAIL while
+                                          overall is wrongly green
 """
 from __future__ import annotations
 
@@ -32,6 +44,26 @@ ART_DIR = REPO_ROOT / "artifacts" / "automation_health"
 REQUIRED_SECTIONS = ("training", "predictions", "derek", "woo", "after_game")
 CRITICAL_SECTIONS = ("predictions", "derek", "woo")
 TERMINAL_FAIL_STATUSES = {"FAIL"}
+HALT_STATUSES_NOT_PASS = {
+    "halted_pending_upstream_data",
+}
+HALT_REASONS_NOT_PASS = {
+    "previous_day_data_not_ready",
+    "training_inputs_missing",
+    "training_inputs_prepare_failed",
+    "readiness_failed",
+    "training_failed",
+    "calibration_failed",
+}
+
+
+def _read_json(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -81,6 +113,58 @@ def main(argv: list[str] | None = None) -> int:
                 "overall=OVERALL_PASS while a critical section is FAIL — "
                 "report is dishonest"
             )
+
+        # Phase 13AG: same-day training consistency.
+        training = sections.get("training", {})
+        if training:
+            t_status = training.get("status")
+            t_cutoff = training.get("training_cutoff_date")
+            t_md_path = training.get("daily_report_md_path", "")
+            expected_md = f"artifacts/model_daily_reports/{date}/daily_model_training_report.md"
+
+            if t_md_path and t_md_path != expected_md:
+                failures.append(
+                    f"training.daily_report_md_path={t_md_path!r} does not "
+                    f"point at the same-day path {expected_md!r}; the daily "
+                    "health report must reference SAME-DAY artifacts as the "
+                    "primary training source"
+                )
+            if t_cutoff and t_cutoff != date:
+                failures.append(
+                    f"training.training_cutoff_date={t_cutoff!r} != "
+                    f"requested date {date!r}; previous-day training is "
+                    "supplementary state, not today's status"
+                )
+
+            # Cross-check the same-day daily report and run_manifest.
+            same_daily = _read_json(
+                REPO_ROOT / "artifacts" / "model_daily_reports" / date
+                / "daily_model_training_report.json"
+            ) or {}
+            same_run = _read_json(
+                REPO_ROOT / "artifacts" / "nightly_training" / date
+                / "run_manifest.json"
+            ) or {}
+            sd_status = same_daily.get("status")
+            sd_halt = same_daily.get("halted_reason")
+            sr_status = same_run.get("final_status")
+            sr_halt = same_run.get("halted_reason")
+
+            halted_signal = (
+                (sd_status in HALT_STATUSES_NOT_PASS)
+                or (sr_status in HALT_STATUSES_NOT_PASS)
+                or (sd_halt in HALT_REASONS_NOT_PASS)
+                or (sr_halt in HALT_REASONS_NOT_PASS)
+            )
+            if halted_signal and t_status == "PASS":
+                failures.append(
+                    f"training.status=PASS but same-day artifacts say halted "
+                    f"(daily_report.status={sd_status!r}, "
+                    f"run_manifest.final_status={sr_status!r}, "
+                    f"halted_reason={(sd_halt or sr_halt)!r}) — health "
+                    "report cannot mark training PASS while the same-day "
+                    "report says HALTED"
+                )
 
     if failures:
         print("DAILY_AUTOMATION_HEALTH_FAILED  "

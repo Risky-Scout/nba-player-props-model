@@ -6,7 +6,7 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-03",
-    "now_utc": "2026-05-04T18:08:02Z",
+    "now_utc": "2026-05-04T19:25:40Z",
     "overdue_missing_snapshots": [],
     "overdue_unresolved": [],
     "per_type_lines": [
@@ -16,22 +16,22 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-04T18:08:02Z  missed_snapshot_manifest.json present",
+        "detail": "game=21682000 target_utc=2026-05-03T23:15:00Z now=2026-05-04T19:25:40Z  missed_snapshot_manifest.json present",
         "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-04T18:08:02Z  missed_snapshot_manifest.json present",
+        "detail": "game=21682000 target_utc=2026-05-03T23:35:00Z now=2026-05-04T19:25:40Z  missed_snapshot_manifest.json present",
         "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "CLOSE_LOCK"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-04T18:08:02Z  missed_snapshot_manifest.json present",
+        "detail": "game=21684819 target_utc=2026-05-03T19:15:00Z now=2026-05-04T19:25:40Z  missed_snapshot_manifest.json present",
         "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-04T18:08:02Z  missed_snapshot_manifest.json present",
+        "detail": "game=21684819 target_utc=2026-05-03T19:35:00Z now=2026-05-04T19:25:40Z  missed_snapshot_manifest.json present",
         "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "CLOSE_LOCK"
       }

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "date": "2026-05-04",
-  "generated_at_utc": "2026-05-04T18:08:03+00:00",
+  "generated_at_utc": "2026-05-04T19:03:05+00:00",
   "overall": {
     "status": "OVERALL_WARN",
     "summary": "one or more sections pending honest upstream data"
@@ -9,19 +9,31 @@
   "sections": {
     "training": {
       "section": "nightly_training_recalibration",
-      "training_cutoff_date": "2026-05-03",
-      "run_manifest_path": "artifacts/nightly_training/2026-05-03/run_manifest.json",
-      "daily_report_md_path": "artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md",
-      "daily_report_json_path": "artifacts/model_daily_reports/2026-05-03/daily_model_training_report.json",
-      "readiness_report_path": "artifacts/training_readiness/2026-05-03/readiness_report.json",
+      "training_cutoff_date": "2026-05-04",
+      "run_manifest_path": "artifacts/nightly_training/2026-05-04/run_manifest.json",
+      "daily_report_md_path": "artifacts/model_daily_reports/2026-05-04/daily_model_training_report.md",
+      "daily_report_json_path": "artifacts/model_daily_reports/2026-05-04/daily_model_training_report.json",
+      "readiness_report_path": "artifacts/training_readiness/2026-05-04/readiness_report.json",
+      "same_day_artifacts_present": true,
       "champion_model_id": "challenger-2026-04-30",
       "trained_through_date": "2026-04-30",
       "calibrated_through_date": "2026-04-30",
       "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
-      "halted_reason": null,
-      "halted_workflow_run_url": null,
-      "root_cause": null,
-      "status": "PASS"
+      "halted_reason": "previous_day_data_not_ready",
+      "halted_workflow_run_url": "https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911",
+      "same_day_report_status": "halted_pending_upstream_data",
+      "root_cause": "Wait for BDL settled-stats backfill for 2026-04-30 \u2192 2026-05-03. Next nightly cron (09:30 UTC) will re-attempt the resolver.",
+      "status": "HALTED_PENDING_UPSTREAM_DATA",
+      "most_recent_completed_training": {
+        "training_cutoff_date": "2026-05-03",
+        "final_status": "ok",
+        "halted_reason": null,
+        "challenger_artifact_dir": "artifacts/models/challengers/2026-05-03",
+        "daily_report_md_path": "artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md",
+        "promoted": null,
+        "promotion_reason": "gate_failed:promotion_clock_safe",
+        "label": "previous champion state \u2014 not today's training run; do not infer same-day status from this"
+      }
     },
     "predictions": {
       "section": "daily_prediction_generation",
