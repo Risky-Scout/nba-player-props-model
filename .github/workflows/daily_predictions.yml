@@ -132,6 +132,20 @@ jobs:
           DATE=$(date -u +%Y-%m-%d)
           python3 scripts/verify_woo_nba_props_page.py --date "$DATE"
 
+      # Phase 13AE: surface settled-stats freshness in the daily predict
+      # job so the operator audit trail explicitly captures whether BDL
+      # backfill is current. This step never fails the predict job —
+      # predictions can be generated against the previous champion even
+      # when settled stats lag — but the warning is loud.
+      - name: Verify settled player stats freshness (Phase 13AE)
+        continue-on-error: true
+        run: |
+          PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                     || TZ=America/New_York date -v-1d +%Y-%m-%d)
+          python3 scripts/verify_player_game_stats_freshness.py \
+            --required-through-date "$PREV_DAY" || \
+            echo "::warning::player_game_stats stale through $PREV_DAY — training/scoring blocked until BDL backfills"
+
       - name: Build + verify daily automation health report (Phase 13AD)
         continue-on-error: true
         run: |

@@ -80,6 +80,38 @@ jobs:
         run: |
           python scripts/_bootstrap_champion_registry.py
 
+      # Phase 13AE: refresh settled player box scores BEFORE the strict
+      # resolver decides whether to halt. The previous chain order
+      # (resolver-then-refresh) caused a chicken-and-egg deadlock:
+      # resolver halted because the parquet was stale → refresh never
+      # ran → parquet stayed stale forever. Running the BDL refresh up
+      # front lets the resolver see the freshly-merged outcomes when it
+      # makes its halt-or-proceed decision. continue-on-error keeps the
+      # job alive when BDL itself is empty for a date — the resolver
+      # then halts cleanly with previous_day_data_not_ready, which is
+      # still the correct safe behavior.
+      - name: Pre-resolver settled player stats refresh (Phase 13AE)
+        id: bdl_refresh_pre_resolver
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          # Compute previous-day ET in shell; refresh wrapper handles
+          # any missing-from-window cases idempotently.
+          PREV_DAY_ET=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-1d +%Y-%m-%d)
+          # Walk back up to 7 days so a multi-day BDL lag is still caught.
+          FROM_DATE=$(TZ=America/New_York date -d "$PREV_DAY_ET -6 days" +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-7d -j -f %Y-%m-%d "$PREV_DAY_ET" +%Y-%m-%d)
+          echo "Refreshing player box scores from=$FROM_DATE to=$PREV_DAY_ET"
+          python scripts/backfill_player_game_stats_from_bdl.py \
+            --from-date "$FROM_DATE" \
+            --to-date "$PREV_DAY_ET" || \
+            echo "::warning::BDL backfill exited non-zero; resolver will halt if data still stale"
+          python scripts/verify_player_game_stats_freshness.py \
+            --required-through-date "$PREV_DAY_ET" || \
+            echo "::warning::player_game_stats freshness verifier failed; resolver will halt cleanly"
+
       - name: Resolve previous-day-ET target (Phase 13G strict)
         id: d
         run: |

@@ -1,15 +1,17 @@
 {
   "changed_files": [
+    "artifacts/automation_health/daily_automation_health_2026-05-04.json",
+    "artifacts/automation_health/daily_automation_health_2026-05-04.md",
     "artifacts/automation_health/derek_live_snapshots_2026-05-03.json",
     "artifacts/automation_health/derek_live_snapshots_2026-05-03.md",
     "artifacts/automation_health/derek_production_live_e2e_2026-05-03.json",
     "artifacts/automation_health/derek_production_live_e2e_2026-05-03.md",
-    "artifacts/nightly_training/2026-05-04/",
-    "artifacts/phase13z/near_tip_snapshot_root_cause_2026-05-03.md",
-    "artifacts/training_readiness/2026-05-04/",
-    "deliveries/2026-05-03/README.md",
-    "deliveries/2026-05-03/derek_game_snapshots/README.md",
-    "scripts/render_derek_human_reports.py"
+    "artifacts/automation_health/phase13l_no_breakage.json",
+    "artifacts/automation_health/phase13l_no_breakage.md",
+    "artifacts/nightly_training/2026-05-04/automation_verification_report.json",
+    "artifacts/nightly_training/2026-05-04/automation_verification_summary.md",
+    "artifacts/training_readiness/2026-05-04/readiness_report.json",
+    "artifacts/training_readiness/2026-05-04/readiness_summary.md"
   ],
   "documented_paths": [],
   "outcome": "pass",

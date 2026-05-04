@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-05-04T17:00:53+00:00",
+  "from_date": "2026-04-30",
+  "to_date": "2026-05-03",
+  "status": "FAILED",
+  "reason": "BDL_API_KEY environment variable is not set; refusing to fabricate outcomes. The official refresh script (scripts/refresh_bdl_player_game_stats.py) requires this credential.",
+  "remediation": "Run from CI where BDL_API_KEY is provisioned, or export BDL_API_KEY locally before invoking this script.",
+  "summary": {
+    "rows_total": 83497,
+    "min_game_date": "2023-10-24",
+    "max_game_date": "2026-04-29",
+    "duplicate_key_rows": 0,
+    "null_counts": {
+      "player_id": 0,
+      "player_name": 0,
+      "game_id": 0,
+      "game_date": 0,
+      "pts": 0,
+      "reb": 0,
+      "ast": 0,
+      "fg3m": 0,
+      "stl": 0,
+      "blk": 0,
+      "turnover": 0,
+      "min": 0
+    }
+  },
+  "rows_added": 0
+}
