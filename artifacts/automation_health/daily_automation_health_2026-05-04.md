@@ -1,22 +1,21 @@
 # Daily automation health — 2026-05-04
 
-_Generated 2026-05-04T17:02:05+00:00._
+_Generated 2026-05-04T18:08:03+00:00._
 
 ## Overall: **OVERALL_WARN**
 
 - summary: one or more sections pending honest upstream data
 
-## 1. Nightly training / recalibration — `SKIPPED_WITH_REASON`
+## 1. Nightly training / recalibration — `PASS`
 
-- **status:** `SKIPPED_WITH_REASON`
-- **halted_reason:** `previous_day_data_not_ready`
-- **halted_workflow_run_url:** `https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911`
+- **status:** `PASS`
+- **halted_reason:** `None`
+- **halted_workflow_run_url:** `None`
 - **champion_model_id:** `challenger-2026-04-30`
 - **trained_through_date:** `2026-04-30`
 - **calibrated_through_date:** `2026-04-30`
-- **daily_report_md_path:** `artifacts/model_daily_reports/2026-05-04/daily_model_training_report.md`
-- **readiness_report_path:** `artifacts/training_readiness/2026-05-04/readiness_report.json`
-- **root_cause:** Strict resolver halted: previous-day-ET data not ready in data/player_game_stats.parquet. Correct safe behavior. Training will resume automatically when BDL backfills settled stats. champion pointer unchanged.
+- **daily_report_md_path:** `artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md`
+- **readiness_report_path:** `artifacts/training_readiness/2026-05-03/readiness_report.json`
 
 ## 2. Daily prediction generation — `PASS`
 
@@ -55,8 +54,8 @@ _Generated 2026-05-04T17:02:05+00:00._
 ## 5. After-game scoring — `PENDING`
 
 - **status:** `PENDING`
-- **latest_settled_date:** `2026-04-29`
+- **latest_settled_date:** `2026-05-03`
 - **outcomes_available:** `False`
 - **scoring_report_path:** `None`
-- **root_cause:** settled stats only through 2026-04-29; after-game scoring for 2026-05-04 pending upstream backfill
+- **root_cause:** settled stats only through 2026-05-03; after-game scoring for 2026-05-04 pending upstream backfill
 

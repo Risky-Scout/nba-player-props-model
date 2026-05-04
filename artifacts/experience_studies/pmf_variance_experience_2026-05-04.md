@@ -4,12 +4,12 @@ _Actual-to-expected (A/E) review of settled PMF predictions, as-of `2026-05-04` 
 
 ## Executive summary
 
-- **1,001** settled rows from **2026-04-17** through **2026-05-03** (16 delivery dates with at least one settled row).
-- **Mean A/E = 1.144** — actual outcomes ran +14.4% relative to expected means in this sample.
-- **Variance A/E = 0.913** — PMF spread is reasonably close overall (the well-calibrated band is 0.80–1.20), slightly wide overall.
-- **Standardized residual: mean = 0.211, sd = 1.052** — slight positive bias and dispersion close to calibrated (target sd = 1.00).
-- Quantile coverage at the 75th and 90th percentiles is near target (0.746 and 0.899); the 10th-percentile band is over-covered (0.195 vs target 0.10).
-- **Model trails market on binary scoring:** Brier 0.278 vs 0.246 (model vs market); logloss 0.762 vs 0.688.
+- **1,349** settled rows from **2026-04-17** through **2026-05-03** (16 delivery dates with at least one settled row).
+- **Mean A/E = 1.140** — actual outcomes ran +14.0% relative to expected means in this sample.
+- **Variance A/E = 0.865** — PMF spread is reasonably close overall (the well-calibrated band is 0.80–1.20), slightly wide overall.
+- **Standardized residual: mean = 0.200, sd = 1.014** — slight positive bias and dispersion close to calibrated (target sd = 1.00).
+- Quantile coverage at the 75th and 90th percentiles is near target (0.745 and 0.900); the 10th-percentile band is over-covered (0.199 vs target 0.10).
+- **Model trails market on binary scoring:** Brier 0.275 vs 0.247 (model vs market); logloss 0.755 vs 0.690.
 - **Therefore, do not claim market superiority from this study.** This is a diagnostic and improvement layer, not proof of edge.
 
 ## What this study tests
@@ -27,32 +27,28 @@ This is an actuarial actual-to-expected review. Each settled (player, game, stat
 
 | metric | value |
 |---|---:|
-| rows | 1,001 |
-| actual_mean (per row) | 6.329 |
-| expected_mean (per row) | 5.531 |
-| **mean_AE** | **1.1443** |
-| Σ squared residual | 14733.02 |
-| Σ expected variance | 16141.00 |
-| **variance_AE** | **0.9128** |
-| standardized_residual_mean | 0.2106 |
-| standardized_residual_sd | 1.0519 |
-| pmf_nll_mean | 2.7125 |
-| pmf_rps_mean | 0.1221 |
-| model_brier (over/under) | 0.2782 |
-| market_brier (over/under) | 0.2465 |
-| model_logloss (over/under) | 0.7618 |
-| market_logloss (over/under) | 0.6876 |
-| coverage @ 10 / 25 / 50 / 75 / 90 | 0.195 / 0.264 / 0.467 / 0.746 / 0.899 |
+| rows | 1,349 |
+| actual_mean (per row) | 6.241 |
+| expected_mean (per row) | 5.473 |
+| **mean_AE** | **1.1403** |
+| Σ squared residual | 18875.72 |
+| Σ expected variance | 21825.98 |
+| **variance_AE** | **0.8648** |
+| standardized_residual_mean | 0.2004 |
+| standardized_residual_sd | 1.0143 |
+| pmf_nll_mean | 2.6158 |
+| pmf_rps_mean | 0.1171 |
+| model_brier (over/under) | 0.2753 |
+| market_brier (over/under) | 0.2472 |
+| model_logloss (over/under) | 0.7551 |
+| market_logloss (over/under) | 0.6898 |
+| coverage @ 10 / 25 / 50 / 75 / 90 | 0.199 / 0.274 / 0.469 / 0.745 / 0.900 |
 
 ## Where the PMF is too narrow
 
 `variance_AE > 1` means realized outcomes are more volatile than the PMF expected. The model is putting too little spread on these buckets and will be surprised by tails more often than its quantiles imply.
 
-| Dimension | Bucket | n | variance_AE | std_resid_sd | mean_AE | NLL |
-|---|---|---:|---:|---:|---:|---:|
-| predicted_variance_bucket | `low` | 330 | **1.406** | 1.258 | 1.123 | 2.354 |
-| side | `OVER` | 103 | **1.356** | 1.372 | 1.033 | 4.200 |
-| stat | `fg3m` | 76 | **2.009** | 1.522 | 1.108 | 2.725 |
+_No buckets exceeded `variance_AE > 1.20` with sufficient sample._
 
 ## Where the PMF is too wide
 
@@ -60,17 +56,24 @@ This is an actuarial actual-to-expected review. Each settled (player, game, stat
 
 | Dimension | Bucket | n | variance_AE | std_resid_sd | mean_AE | NLL |
 |---|---|---:|---:|---:|---:|---:|
-| line_bucket | `20_to_25` | 33 | **0.780** | 1.123 | 1.068 | 4.866 |
-| line_bucket | `5_to_8` | 44 | **0.429** | 0.754 | 1.048 | 2.517 |
-| line_bucket | `le_half` | 193 | **0.441** | 0.695 | 1.175 | 1.239 |
-| low_line_discrete | `yes` | 320 | **0.629** | 0.902 | 1.200 | 1.606 |
-| p0_bucket | `20_to_50pct` | 158 | **0.755** | 1.036 | 1.092 | 1.916 |
-| p0_bucket | `5_to_20pct` | 278 | **0.751** | 0.927 | 1.234 | 2.424 |
-| p0_bucket | `ge_50pct` | 190 | **0.504** | 0.695 | 1.350 | 1.334 |
-| role_bucket | `ge30min_starter` | 398 | **0.750** | 1.024 | 1.084 | 2.797 |
-| stat | `ast` | 158 | **0.724** | 1.034 | 1.040 | 2.599 |
-| stat | `blk` | 131 | **0.595** | 0.753 | 1.344 | 1.537 |
-| stat | `stl` | 140 | **0.554** | 0.854 | 1.184 | 1.460 |
+| edge_bucket | `0_to_5pct` | 36 | **0.583** | 1.079 | 0.868 | 3.149 |
+| injury_context | `fresh` | 201 | **0.757** | 0.949 | 1.101 | 2.658 |
+| line_bucket | `1_to_1p5` | 195 | **0.664** | 1.019 | 1.172 | 2.068 |
+| line_bucket | `20_to_25` | 42 | **0.648** | 1.015 | 1.084 | 4.515 |
+| line_bucket | `2_to_2p5` | 43 | **0.760** | 1.451 | 1.114 | 2.953 |
+| line_bucket | `5_to_8` | 67 | **0.601** | 0.845 | 1.077 | 2.499 |
+| line_bucket | `ge_25` | 37 | **0.623** | 0.846 | 1.050 | 3.767 |
+| line_bucket | `le_half` | 253 | **0.426** | 0.672 | 1.151 | 1.297 |
+| lineup_confirmed | `projected` | 222 | **0.767** | 0.962 | 1.115 | 2.695 |
+| low_line_discrete | `yes` | 448 | **0.553** | 0.840 | 1.163 | 1.633 |
+| p0_bucket | `20_to_50pct` | 229 | **0.695** | 0.967 | 1.089 | 1.970 |
+| p0_bucket | `ge_50pct` | 245 | **0.482** | 0.678 | 1.327 | 1.313 |
+| role_bucket | `ge30min_starter` | 463 | **0.723** | 0.993 | 1.085 | 2.677 |
+| role_bucket | `starter` | 126 | **0.618** | 0.891 | 1.102 | 2.587 |
+| stat | `ast` | 205 | **0.795** | 1.035 | 1.062 | 2.546 |
+| stat | `blk` | 178 | **0.530** | 0.713 | 1.325 | 1.559 |
+| stat | `fg3m` | 134 | **0.686** | 1.214 | 1.026 | 2.433 |
+| stat | `stl` | 189 | **0.568** | 0.827 | 1.146 | 1.443 |
 
 ## Where the PMF dispersion is well calibrated
 
@@ -78,32 +81,35 @@ Buckets within the `0.80 ≤ variance_AE ≤ 1.20` band, sample size at or above
 
 | Dimension | Bucket | n | mean_AE | variance_AE | std_resid_mean | NLL |
 |---|---|---:|---:|---:|---:|---:|
-| edge_bucket | `10_to_20pct` | 499 | 1.116 | 0.847 | 0.150 | 2.712 |
-| edge_bucket | `5_to_10pct` | 138 | 1.143 | 1.021 | 0.158 | 2.884 |
-| edge_bucket | `ge_20pct` | 341 | 1.251 | 0.988 | 0.374 | 2.591 |
-| injury_context | `unavailable` | 980 | 1.141 | 0.913 | 0.204 | 2.705 |
-| line_bucket | `10_to_15` | 67 | 1.063 | 1.173 | 0.132 | 3.270 |
-| line_bucket | `15_to_20` | 77 | 1.258 | 1.050 | 0.593 | 4.137 |
-| line_bucket | `1_to_1p5` | 127 | 1.220 | 0.866 | 0.182 | 2.164 |
-| line_bucket | `3_to_5` | 66 | 0.972 | 0.829 | -0.064 | 2.666 |
-| line_bucket | `4_to_7` | 105 | 1.354 | 0.981 | 0.575 | 3.081 |
-| line_bucket | `7_to_10` | 51 | 1.202 | 0.924 | 0.427 | 3.332 |
-| line_bucket | `lt_3` | 36 | 1.059 | 0.841 | 0.001 | 2.254 |
-| line_bucket | `lt_4` | 101 | 1.151 | 0.968 | 0.164 | 2.865 |
-| lineup_confirmed | `unavailable` | 980 | 1.141 | 0.913 | 0.204 | 2.705 |
-| low_line_discrete | `no` | 681 | 1.141 | 0.923 | 0.256 | 3.233 |
-| minutes_volatility_bucket | `unavailable` | 1001 | 1.144 | 0.913 | 0.211 | 2.713 |
-| overall | `ALL` | 1001 | 1.144 | 0.913 | 0.211 | 2.713 |
-| p0_bucket | `lt_5pct` | 375 | 1.119 | 0.960 | 0.230 | 3.961 |
-| predicted_variance_bucket | `high` | 331 | 1.142 | 0.904 | 0.304 | 3.433 |
-| predicted_variance_bucket | `mid` | 340 | 1.161 | 0.863 | 0.202 | 2.359 |
-| role_bucket | `lt22min` | 110 | 1.022 | 0.804 | -0.063 | 1.910 |
-| role_bucket | `lt30min` | 465 | 1.230 | 1.131 | 0.311 | 2.826 |
-| side | `UNDER` | 898 | 1.164 | 0.884 | 0.246 | 2.542 |
-| snapshot_type | `morning` | 1001 | 1.144 | 0.913 | 0.211 | 2.713 |
-| stat | `pts` | 221 | 1.123 | 0.940 | 0.266 | 3.903 |
-| stat | `reb` | 275 | 1.237 | 0.908 | 0.371 | 3.016 |
-| vacated_opportunity_bucket | `unavailable` | 1001 | 1.144 | 0.913 | 0.211 | 2.713 |
+| edge_bucket | `10_to_20pct` | 680 | 1.133 | 0.838 | 0.165 | 2.618 |
+| edge_bucket | `5_to_10pct` | 235 | 1.112 | 0.900 | 0.125 | 2.711 |
+| edge_bucket | `ge_20pct` | 398 | 1.229 | 0.946 | 0.343 | 2.507 |
+| injury_context | `unavailable` | 1127 | 1.147 | 0.892 | 0.205 | 2.600 |
+| line_bucket | `10_to_15` | 89 | 1.081 | 1.024 | 0.151 | 3.250 |
+| line_bucket | `15_to_20` | 95 | 1.247 | 1.007 | 0.559 | 4.015 |
+| line_bucket | `3_to_5` | 82 | 1.022 | 0.858 | 0.021 | 2.583 |
+| line_bucket | `4_to_7` | 136 | 1.258 | 1.066 | 0.449 | 2.972 |
+| line_bucket | `7_to_10` | 72 | 1.222 | 1.084 | 0.467 | 3.193 |
+| line_bucket | `lt_3` | 41 | 1.023 | 0.899 | -0.020 | 2.237 |
+| line_bucket | `lt_4` | 128 | 1.155 | 1.088 | 0.197 | 2.777 |
+| lineup_confirmed | `unavailable` | 1127 | 1.147 | 0.892 | 0.205 | 2.600 |
+| low_line_discrete | `no` | 901 | 1.139 | 0.879 | 0.249 | 3.105 |
+| minutes_volatility_bucket | `unavailable` | 1349 | 1.140 | 0.865 | 0.200 | 2.616 |
+| overall | `ALL` | 1349 | 1.140 | 0.865 | 0.200 | 2.616 |
+| p0_bucket | `5_to_20pct` | 355 | 1.230 | 0.847 | 0.276 | 2.388 |
+| p0_bucket | `lt_5pct` | 520 | 1.118 | 0.884 | 0.223 | 3.670 |
+| predicted_variance_bucket | `high` | 445 | 1.139 | 0.845 | 0.286 | 3.392 |
+| predicted_variance_bucket | `low` | 445 | 1.112 | 1.162 | 0.114 | 2.187 |
+| predicted_variance_bucket | `mid` | 459 | 1.156 | 0.918 | 0.201 | 2.279 |
+| role_bucket | `lt22min` | 123 | 1.039 | 0.802 | -0.031 | 1.879 |
+| role_bucket | `lt30min` | 533 | 1.237 | 1.109 | 0.306 | 2.709 |
+| role_bucket | `rotation` | 70 | 1.184 | 1.038 | 0.221 | 2.880 |
+| side | `OVER` | 157 | 1.004 | 1.102 | -0.118 | 3.586 |
+| side | `UNDER` | 1192 | 1.163 | 0.846 | 0.242 | 2.488 |
+| snapshot_type | `morning` | 1349 | 1.140 | 0.865 | 0.200 | 2.616 |
+| stat | `pts` | 285 | 1.130 | 0.862 | 0.277 | 3.808 |
+| stat | `reb` | 358 | 1.206 | 1.003 | 0.344 | 2.920 |
+| vacated_opportunity_bucket | `unavailable` | 1349 | 1.140 | 0.865 | 0.200 | 2.616 |
 
 ## Where the sample is too thin to conclude
 
@@ -111,19 +117,13 @@ _Buckets below n = 30. Reported but flagged; do not act on point estimates._
 
 | Dimension | Bucket | n | variance_AE | std_resid_mean |
 |---|---|---:|---:|---:|
-| edge_bucket | `0_to_5pct` | 23 | 0.661 | -0.577 |
 | injury_context | `very_stale` | 21 | 0.902 | 0.518 |
-| line_bucket | `2_to_2p5` | 20 | 2.963 | 0.523 |
-| line_bucket | `ge_10` | 18 | 0.541 | 0.185 |
-| line_bucket | `ge_25` | 26 | 0.740 | 0.070 |
-| line_bucket | `ge_3` | 7 | 1.716 | 0.150 |
-| line_bucket | `ge_8` | 12 | 1.147 | 0.479 |
-| line_bucket | `lt_10` | 18 | 0.404 | -0.187 |
-| lineup_confirmed | `projected` | 21 | 0.902 | 0.518 |
-| role_bucket | `bench` | 2 | 0.438 | 0.609 |
-| role_bucket | `lt15min` | 7 | 0.245 | -0.016 |
-| role_bucket | `rotation` | 17 | 0.862 | 0.392 |
-| role_bucket | `starter` | 2 | 2.125 | 1.495 |
+| line_bucket | `ge_10` | 22 | 0.455 | 0.150 |
+| line_bucket | `ge_3` | 10 | 1.157 | -0.134 |
+| line_bucket | `ge_8` | 15 | 1.152 | 0.405 |
+| line_bucket | `lt_10` | 22 | 0.827 | 0.032 |
+| role_bucket | `bench` | 26 | 0.882 | 0.002 |
+| role_bucket | `lt15min` | 8 | 0.245 | 0.047 |
 
 ## Live-context limitations
 

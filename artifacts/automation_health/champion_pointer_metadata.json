@@ -1,0 +1,53 @@
+{
+  "bootstrap_caveat": false,
+  "checks": [
+    {
+      "detail": "artifacts/models/registry/champion_pointer.json",
+      "name": "champion_pointer_present",
+      "passed": true
+    },
+    {
+      "detail": "all Phase 13H fields present",
+      "name": "champion_pointer_metadata_complete",
+      "passed": true
+    },
+    {
+      "detail": "artifacts/models/pmf_cal_role_pts.pkl",
+      "name": "champion_calibrator_path_present_pts",
+      "passed": true
+    },
+    {
+      "detail": "artifacts/models/pmf_cal_role_reb.pkl",
+      "name": "champion_calibrator_path_present_reb",
+      "passed": true
+    },
+    {
+      "detail": "artifacts/models/pmf_cal_role_ast.pkl",
+      "name": "champion_calibrator_path_present_ast",
+      "passed": true
+    },
+    {
+      "detail": "artifacts/models/pmf_cal_role_fg3m.pkl",
+      "name": "champion_calibrator_path_present_fg3m",
+      "passed": true
+    },
+    {
+      "detail": "artifacts/models/pmf_cal_role_tov.pkl",
+      "name": "champion_calibrator_path_present_tov",
+      "passed": true
+    }
+  ],
+  "code_commit": "3ffe8e6b4a97ae3b9dacca6e9295ee1814cbfc87",
+  "facts": {
+    "is_bootstrap_pointer": false,
+    "missing_fields": [],
+    "model_version": "challenger-2026-04-30",
+    "present_field_count": 27,
+    "promoted_at_utc": "2026-05-01T12:48:39+00:00",
+    "schema_version": "1.1",
+    "total_required_fields": 27
+  },
+  "generated_at_utc": "2026-05-04T18:06:02+00:00",
+  "passed": true,
+  "schema_version": "1.0"
+}

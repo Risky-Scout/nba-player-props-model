@@ -2,57 +2,57 @@
   "as_of_date": "2026-05-03",
   "checks": [
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/training_readiness/2026-05-03/readiness_report.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/training_readiness/2026-05-03/readiness_report.json",
       "name": "readiness_report_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03",
       "name": "challenger_dir_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/train_manifest.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/train_manifest.json",
       "name": "train_manifest_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/calibration_manifest.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/calibration_manifest.json",
       "name": "calibration_manifest_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/validation_report.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/validation_report.json",
       "name": "validation_report_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/promotion_decision.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/promotion_decision.json",
       "name": "promotion_decision_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/champion_pointer.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/champion_pointer.json",
       "name": "champion_pointer_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/model_registry.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/model_registry.json",
       "name": "model_registry_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/promotion_log.csv",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/promotion_log.csv",
       "name": "promotion_log_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-03/run_manifest.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-03/run_manifest.json",
       "name": "nightly_run_manifest_exists",
       "passed": true
     },
     {
-      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-03/smoke_test_report.json",
+      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-03/smoke_test_report.json",
       "name": "smoke_test_report_exists",
       "passed": true
     },
@@ -167,7 +167,7 @@
       "passed": true
     }
   ],
-  "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
+  "code_commit": "3ffe8e6b4a97ae3b9dacca6e9295ee1814cbfc87",
   "failure_simulation": {
     "pointer_unchanged": true,
     "post_pointer_sha256": "125eb260dc642bd3b26878f8e407bffd716a210a2727e6cbdc815dea9191fff3",
@@ -175,11 +175,13 @@
     "promote_script_exit_code": 0,
     "promotion_marker_promoted_field": false
   },
-  "generated_at_utc": "2026-05-04T17:40:43+00:00",
+  "generated_at_utc": "2026-05-04T18:05:59+00:00",
   "mode": "real_training",
   "mode_details": {
     "calibration_manifest_dry_run": false,
     "challenger_pickle_count": 5,
+    "manifest_recorded_pickle_count": 5,
+    "pickles_source": "train_manifest_record",
     "run_manifest_final_status": "ok",
     "run_manifest_halted_reason": null,
     "train_manifest_dry_run": false,

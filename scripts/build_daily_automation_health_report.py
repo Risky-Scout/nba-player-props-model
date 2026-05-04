@@ -60,10 +60,33 @@ def _read_json(path: Path) -> dict | None:
 
 
 def _section_training(date: str) -> dict:
-    run_manifest_path = REPO_ROOT / "artifacts" / "nightly_training" / date / "run_manifest.json"
-    daily_md = REPO_ROOT / "artifacts" / "model_daily_reports" / date / "daily_model_training_report.md"
-    daily_json = REPO_ROOT / "artifacts" / "model_daily_reports" / date / "daily_model_training_report.json"
-    readiness = REPO_ROOT / "artifacts" / "training_readiness" / date / "readiness_report.json"
+    # Phase 13AF: nightly training is keyed on the previous-day-ET cutoff,
+    # not the wall-clock UTC date. Look for that artifact set first; fall
+    # back to the today-UTC artifacts (which is what 13AD's halted-pending
+    # manifests use) if the previous-day-ET training did not produce a
+    # run_manifest yet.
+    candidates: list[str] = []
+    try:
+        prev_et = (dt.date.fromisoformat(date) - dt.timedelta(days=1)).isoformat()
+        candidates.append(prev_et)
+    except Exception:
+        pass
+    candidates.append(date)
+    chosen_date = None
+    run_manifest_path = None
+    for c in candidates:
+        p = REPO_ROOT / "artifacts" / "nightly_training" / c / "run_manifest.json"
+        if p.exists():
+            chosen_date = c
+            run_manifest_path = p
+            break
+    if chosen_date is None:
+        chosen_date = date
+        run_manifest_path = REPO_ROOT / "artifacts" / "nightly_training" / date / "run_manifest.json"
+
+    daily_md = REPO_ROOT / "artifacts" / "model_daily_reports" / chosen_date / "daily_model_training_report.md"
+    daily_json = REPO_ROOT / "artifacts" / "model_daily_reports" / chosen_date / "daily_model_training_report.json"
+    readiness = REPO_ROOT / "artifacts" / "training_readiness" / chosen_date / "readiness_report.json"
 
     rm = _read_json(run_manifest_path)
     daily_payload = _read_json(daily_json)
@@ -72,6 +95,7 @@ def _section_training(date: str) -> dict:
 
     out: dict = {
         "section": "nightly_training_recalibration",
+        "training_cutoff_date": chosen_date,
         "run_manifest_path": str(run_manifest_path.relative_to(REPO_ROOT)),
         "daily_report_md_path": str(daily_md.relative_to(REPO_ROOT)),
         "daily_report_json_path": str(daily_json.relative_to(REPO_ROOT)),

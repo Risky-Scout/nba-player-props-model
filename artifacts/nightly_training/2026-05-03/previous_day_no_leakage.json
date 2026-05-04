@@ -2,9 +2,9 @@
   "as_of_date": "2026-05-03",
   "checks": [
     {
-      "detail": "max=2026-03-31 cutoff=2026-05-03",
+      "detail": "missing artifacts/models/challengers/2026-05-03/aggregate_input/fold_aggregate.parquet",
       "name": "fold_aggregate_max_game_date",
-      "passed": true
+      "passed": false
     },
     {
       "detail": "max=2026-05-03 cutoff=2026-05-03",
@@ -57,15 +57,14 @@
       "passed": true
     }
   ],
-  "code_commit": "0f6c5ac9713a3e72de9a93f8ac5ee108a2988c37",
-  "generated_at_utc": "2026-05-04T17:40:47+00:00",
-  "leakage_checks_passed": true,
+  "code_commit": "3ffe8e6b4a97ae3b9dacca6e9295ee1814cbfc87",
+  "generated_at_utc": "2026-05-04T18:06:14+00:00",
+  "leakage_checks_passed": false,
   "max_dates": {
     "calibration_training_window_end": "2026-04-05",
     "calibration_validation_window_end": "2026-05-03",
     "challenger_holdout_window_end": "2026-05-03",
     "champion_holdout_window_end": "2026-05-03",
-    "fold_aggregate": "2026-03-31",
     "future_rows_excluded": 0,
     "prepare_fold_aggregate_future_rows_excluded": 0,
     "prepare_fold_aggregate_rows_after_cutoff": 247625,

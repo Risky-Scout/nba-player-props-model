@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "date": "2026-05-04",
-  "generated_at_utc": "2026-05-04T17:02:05+00:00",
+  "generated_at_utc": "2026-05-04T18:08:03+00:00",
   "overall": {
     "status": "OVERALL_WARN",
     "summary": "one or more sections pending honest upstream data"
@@ -9,18 +9,19 @@
   "sections": {
     "training": {
       "section": "nightly_training_recalibration",
-      "run_manifest_path": "artifacts/nightly_training/2026-05-04/run_manifest.json",
-      "daily_report_md_path": "artifacts/model_daily_reports/2026-05-04/daily_model_training_report.md",
-      "daily_report_json_path": "artifacts/model_daily_reports/2026-05-04/daily_model_training_report.json",
-      "readiness_report_path": "artifacts/training_readiness/2026-05-04/readiness_report.json",
+      "training_cutoff_date": "2026-05-03",
+      "run_manifest_path": "artifacts/nightly_training/2026-05-03/run_manifest.json",
+      "daily_report_md_path": "artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md",
+      "daily_report_json_path": "artifacts/model_daily_reports/2026-05-03/daily_model_training_report.json",
+      "readiness_report_path": "artifacts/training_readiness/2026-05-03/readiness_report.json",
       "champion_model_id": "challenger-2026-04-30",
       "trained_through_date": "2026-04-30",
       "calibrated_through_date": "2026-04-30",
       "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
-      "halted_reason": "previous_day_data_not_ready",
-      "halted_workflow_run_url": "https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911",
-      "root_cause": "Strict resolver halted: previous-day-ET data not ready in data/player_game_stats.parquet. Correct safe behavior. Training will resume automatically when BDL backfills settled stats. champion pointer unchanged.",
-      "status": "SKIPPED_WITH_REASON"
+      "halted_reason": null,
+      "halted_workflow_run_url": null,
+      "root_cause": null,
+      "status": "PASS"
     },
     "predictions": {
       "section": "daily_prediction_generation",
@@ -78,11 +79,11 @@
     },
     "after_game": {
       "section": "after_game_scoring",
-      "latest_settled_date": "2026-04-29",
+      "latest_settled_date": "2026-05-03",
       "outcomes_available": false,
       "scoring_report_path": null,
       "status": "PENDING",
-      "root_cause": "settled stats only through 2026-04-29; after-game scoring for 2026-05-04 pending upstream backfill"
+      "root_cause": "settled stats only through 2026-05-03; after-game scoring for 2026-05-04 pending upstream backfill"
     }
   }
 }

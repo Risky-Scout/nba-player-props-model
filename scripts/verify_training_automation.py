@@ -535,11 +535,39 @@ def detect_mode(as_of: str) -> tuple[str, dict]:
         tm = read_json(train_path)
         details["train_manifest_dry_run"] = tm.get("dry_run")
         details["train_manifest_status"] = tm.get("status")
+    else:
+        tm = {}
     if cal_path.exists():
         details["calibration_manifest_dry_run"] = read_json(cal_path).get("dry_run")
     cdir = challenger_dir(as_of)
     if cdir.exists():
         details["challenger_pickle_count"] = len(list(cdir.glob("pmf_cal_role_*.pkl")))
+    # Phase 13AF: pickles are gitignored under
+    # ``artifacts/models/challengers/**/*.pkl``, so a freshly-pulled
+    # post-CI working tree never carries them. The train_manifest.json
+    # records the pickles produced during the training run with sha256
+    # hashes — that's the canonical proof of pickle creation. Treat
+    # ``challenger_artifacts.files`` containing >=1 pmf_cal_role_*.pkl
+    # entry as equivalent evidence to "pickles on disk."
+    manifest_pickles = 0
+    try:
+        files = ((tm or {}).get("challenger_artifacts") or {}).get("files") or []
+        manifest_pickles = sum(
+            1 for f in files
+            if isinstance(f, dict)
+            and "pmf_cal_role_" in str(f.get("path", ""))
+            and f.get("path", "").endswith(".pkl")
+        )
+    except Exception:
+        manifest_pickles = 0
+    details["manifest_recorded_pickle_count"] = manifest_pickles
+    if details["challenger_pickle_count"] == 0 and manifest_pickles > 0:
+        # Use the manifest count for downstream classification — pickles
+        # exist on the CI runner but are gitignored from the repo.
+        details["challenger_pickle_count"] = manifest_pickles
+        details["pickles_source"] = "train_manifest_record"
+    else:
+        details["pickles_source"] = "on_disk"
     if run_path.exists():
         rm = read_json(run_path)
         details["run_manifest_halted_reason"] = rm.get("halted_reason")
