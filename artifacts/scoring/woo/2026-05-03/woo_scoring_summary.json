@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-05-03",
+  "generated_at_utc": "2026-05-04T20:03:16+00:00",
+  "status": "scored",
+  "props_scored": 68,
+  "skipped": {
+    "unknown_stat": 0,
+    "no_outcome": 1,
+    "no_pmf": 0
+  },
+  "mean_p_realized": 0.17264411764705886,
+  "median_p_realized": 0.09905,
+  "mean_nll": 2.743169301795853,
+  "model_brier_mean": 0.26612586264705884,
+  "market_brier_mean": 0.24982747411764705,
+  "model_logloss_mean": 0.737780426029869,
+  "market_logloss_mean": 0.7003051193694022,
+  "outputs": {
+    "summary_json": "artifacts/scoring/woo/2026-05-03/woo_scoring_summary.json",
+    "summary_md": "artifacts/scoring/woo/2026-05-03/woo_scoring_summary.md",
+    "scored_props_csv": "artifacts/scoring/woo/2026-05-03/woo_scored_props.csv"
+  }
+}

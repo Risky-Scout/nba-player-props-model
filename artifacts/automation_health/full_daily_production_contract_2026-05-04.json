@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-05-04T20:03:16+00:00",
+  "date": "2026-05-04",
+  "derek_date": "2026-05-03",
+  "required_outcomes_through": "2026-05-03",
+  "checks": [
+    {
+      "name": "settled_outcome_freshness",
+      "command": "scripts/verify_player_game_stats_freshness.py --required-through-date 2026-05-03",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "PLAYER_GAME_STATS_FRESHNESS_PASS  required_through=2026-05-03  max_game_date=2026-05-03  rows_total=83729  rows_for_required_date=44",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "PLAYER_GAME_STATS_FRESHNESS_PASS  required_through=2026-05-03  max_game_date=2026-05-03  rows_total=83729  rows_for_required_date=44"
+      ]
+    },
+    {
+      "name": "training_automation",
+      "command": "scripts/verify_training_automation.py --as-of-date 2026-05-03",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "TRAINING_AUTOMATION_VERIFICATION_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "  - fold_aggregate_max_game_date: missing artifacts/models/challengers/2026-05-03/aggregate_input/fold_aggregate.parquet"
+      ]
+    },
+    {
+      "name": "recalibration_automation",
+      "command": "(inferred from training_automation chain)",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "RECALIBRATION_VALID_SKIP_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "  - fold_aggregate_max_game_date: missing artifacts/models/challengers/2026-05-03/aggregate_input/fold_aggregate.parquet"
+      ]
+    },
+    {
+      "name": "daily_predictions",
+      "command": "scripts/verify_daily_prediction_outputs.py --date 2026-05-04",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-04  parquet_rows=65  singles=8  pmf_display=8  today_count=65",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-04  parquet_rows=65  singles=8  pmf_display=8  today_count=65"
+      ]
+    },
+    {
+      "name": "woo_nba_props_page",
+      "command": "scripts/verify_woo_nba_props_page.py --date 2026-05-04",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "WOO_NBA_PROPS_PAGE_PASS  date=2026-05-04  count=65  games=2  date=2026-05-04",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_NBA_PROPS_PAGE_PASS  date=2026-05-04  count=65  games=2  date=2026-05-04"
+      ]
+    },
+    {
+      "name": "woo_morning_snapshot",
+      "command": "verify_woo_snapshot_outputs.py",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "WOO_MORNING_OUTPUTS_PASS  date=2026-05-04  path=predictions/woo_snapshots/2026-05-04/morning/slate/nba_props_today.json",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_MORNING_OUTPUTS_PASS  date=2026-05-04  path=predictions/woo_snapshots/2026-05-04/morning/slate/nba_props_today.json"
+      ]
+    },
+    {
+      "name": "woo_t_minus_25",
+      "command": "verify_woo_snapshot_outputs.py",
+      "status": "WARN",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": "WOO_T_MINUS_25_OUTPUTS_PENDING  date=2026-05-04  games_total=2  games_present=0  games_pending=2",
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_T_MINUS_25_OUTPUTS_PENDING  date=2026-05-04  games_total=2  games_present=0  games_pending=2"
+      ]
+    },
+    {
+      "name": "woo_close_lock",
+      "command": "verify_woo_snapshot_outputs.py",
+      "status": "WARN",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": "WOO_CLOSE_LOCK_OUTPUTS_PENDING  date=2026-05-04  games_total=2  games_present=0  games_pending=2",
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_CLOSE_LOCK_OUTPUTS_PENDING  date=2026-05-04  games_total=2  games_present=0  games_pending=2"
+      ]
+    },
+    {
+      "name": "derek_current_live",
+      "command": "scripts/verify_derek_outcome_level_probabilities.py --delivery-date 2026-05-03",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4"
+      ]
+    },
+    {
+      "name": "derek_live_snapshots",
+      "command": "verify_derek_live_snapshots",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_LIVE_SNAPSHOTS_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_LIVE_SNAPSHOTS_PASS"
+      ]
+    },
+    {
+      "name": "derek_production_live_e2e",
+      "command": "verify_derek_production_live_e2e",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_PRODUCTION_LIVE_E2E_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_PRODUCTION_LIVE_E2E_PASS"
+      ]
+    },
+    {
+      "name": "derek_email_claimed_files",
+      "command": "scripts/verify_derek_email_claimed_files.py --delivery-date 2026-05-03",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_EMAIL_CLAIMED_FILES_PASS  delivery_date=2026-05-03  snapshots_ok=2  snapshots_skipped=4",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_EMAIL_CLAIMED_FILES_PASS  delivery_date=2026-05-03  snapshots_ok=2  snapshots_skipped=4"
+      ]
+    },
+    {
+      "name": "derek_after_game_scoring",
+      "command": "score_derek_live_snapshots_after_game",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_AFTER_GAME_SCORING_PASS  delivery_date=2026-05-03  snapshots_scored=2  props_scored=68  unjoined=0  scoring_report=deliveries/2026-05-03/derek_game_snapshots/aggregate_snapshot_scoring.json",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_AFTER_GAME_SCORING_PASS  delivery_date=2026-05-03  snapshots_scored=2  props_scored=68  unjoined=0  scoring_report=deliveries/2026-05-03/derek_game_snapshots/aggregate_snapshot_scoring.json"
+      ]
+    },
+    {
+      "name": "woo_after_game_scoring",
+      "command": "score_woo_after_game",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "WOO_AFTER_GAME_SCORING_PASS  date=2026-05-03  props_scored=68  mean_nll=2.7432  summary=artifacts/scoring/woo/2026-05-03/woo_scoring_summary.json",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_AFTER_GAME_SCORING_PASS  date=2026-05-03  props_scored=68  mean_nll=2.7432  summary=artifacts/scoring/woo/2026-05-03/woo_scoring_summary.json"
+      ]
+    },
+    {
+      "name": "pmf_variance_calibration_study",
+      "command": "verify_pmf_variance_experience_study",
+      "status": "WARN",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-03  rows=1208  model_trails_market=True  warnings=0",
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-03  rows=1208  model_trails_market=True  warnings=0"
+      ]
+    },
+    {
+      "name": "human_readable_reports",
+      "command": "(file presence check)",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "HUMAN_READABLE_REPORTS_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "all human-readable reports present"
+      ]
+    },
+    {
+      "name": "daily_automation_health",
+      "command": "verify_daily_automation_health_report",
+      "status": "WARN",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": "DAILY_AUTOMATION_HEALTH_WARN  date=2026-05-04  summary='one or more sections pending honest upstream data'",
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DAILY_AUTOMATION_HEALTH_WARN  date=2026-05-04  summary='one or more sections pending honest upstream data'"
+      ]
+    }
+  ],
+  "overall": "FULL_DAILY_PRODUCTION_CONTRACT_WARN"
+}

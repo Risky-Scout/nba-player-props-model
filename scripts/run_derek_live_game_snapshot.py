@@ -407,7 +407,10 @@ def _write_snapshot_outputs(out_dir: Path, sub) -> dict:
     if rows:
         long = pd.DataFrame(rows)
         leading = [c for c in OUTCOME_ID_COLS if c in long.columns]
-        long = long[leading + ["snapshot_type", "row_id", "k", "p_k"]]
+        # Phase 13AH: source_row_id is an alias for row_id; kept for
+        # downstream consumers that key on either name.
+        long["source_row_id"] = long["row_id"]
+        long = long[leading + ["snapshot_type", "source_row_id", "row_id", "k", "p_k"]]
         long.to_csv(out_dir / "outcome_level_probabilities.csv", index=False)
         long.to_parquet(out_dir / "outcome_level_probabilities.parquet", index=False)
         written["outcome_level_probabilities.parquet"] = {

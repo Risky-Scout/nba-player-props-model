@@ -187,10 +187,12 @@ def _repair_one(snapshot_dir: Path) -> dict:
                 "summary": summary,
                 "errors": errors}
 
-    # Deterministic column order — id cols first, then snapshot_type, row_id,
-    # k, p_k.
+    # Deterministic column order — id cols first, then snapshot_type,
+    # source_row_id (alias for row_id, both retained for downstream
+    # consumers that key on either name), row_id, k, p_k.
+    long_df["source_row_id"] = long_df["row_id"]
     leading = [c for c in ID_COLS if c in long_df.columns]
-    cols = leading + ["snapshot_type", "row_id", "k", "p_k"]
+    cols = leading + ["snapshot_type", "source_row_id", "row_id", "k", "p_k"]
     long_df = long_df[cols]
 
     long_df.to_csv(out_csv, index=False)

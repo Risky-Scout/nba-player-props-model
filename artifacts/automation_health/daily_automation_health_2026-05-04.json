@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "date": "2026-05-04",
-  "generated_at_utc": "2026-05-04T19:03:05+00:00",
+  "generated_at_utc": "2026-05-04T20:03:04+00:00",
   "overall": {
     "status": "OVERALL_WARN",
     "summary": "one or more sections pending honest upstream data"
@@ -26,8 +26,8 @@
       "status": "HALTED_PENDING_UPSTREAM_DATA",
       "most_recent_completed_training": {
         "training_cutoff_date": "2026-05-03",
-        "final_status": "ok",
-        "halted_reason": null,
+        "final_status": "halted_no_promotion",
+        "halted_reason": "promotion_clock_cutoff",
         "challenger_artifact_dir": "artifacts/models/challengers/2026-05-03",
         "daily_report_md_path": "artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md",
         "promoted": null,

@@ -1,6 +1,6 @@
 # Aggregate snapshot scoring — 2026-05-03
 
 - status: **scored**
-- generated_at_utc: 2026-05-04T18:06:35+00:00
-- snapshots scored: 0
-- mean_nll across all scored snapshots: `None`
+- generated_at_utc: 2026-05-04T20:03:16+00:00
+- snapshots scored: 2
+- mean_nll across all scored snapshots: `2.7614294262689967`

@@ -46,7 +46,12 @@ from nba_props_model.training_automation import (  # noqa: E402
 
 
 DELIVERIES_DIR = REPO_ROOT / "deliveries"
-SNAPSHOT_TYPES = ("t_minus_25", "close_lock")
+# Phase 13AH: include current_live so the daily aggregate scoring
+# actually includes the morning baseline / current-live snapshots once
+# settled outcomes land. Previous scope was near-tip only and produced
+# snapshots_scored=0 even when current_live had perfectly matchable
+# outcomes for the delivery date.
+SNAPSHOT_TYPES = ("current_live", "t_minus_25", "close_lock")
 STATS_PARQUET = REPO_ROOT / "data" / "player_game_stats.parquet"
 
 # stat → column in player_game_stats.parquet
@@ -268,12 +273,28 @@ def main(argv: list[str] | None = None) -> int:
 
     # Pass lines — only when at least one snapshot of each type was scored.
     types_scored = {row["snapshot_type"] for row in aggregate_rows}
+    if "current_live" in types_scored:
+        print("DEREK_CURRENT_LIVE_SCORING_PASS")
     if "t_minus_25" in types_scored:
         print("DEREK_T_MINUS_25_SCORING_PASS")
     if "close_lock" in types_scored:
         print("DEREK_CLOSE_LOCK_SCORING_PASS")
     if types_scored:
         print("DEREK_SNAPSHOT_CALIBRATION_PASS")
+    # Phase 13AH: canonical end-of-pass line required by the daily
+    # production contract. Includes total props scored across all
+    # successfully-joined snapshots and the unjoined-row count for
+    # operator audit.
+    props_scored = sum(int(row.get("matched_rows", 0)) for row in aggregate_rows)
+    unjoined = sum(int(row.get("unmatched_rows", 0)) for row in aggregate_rows)
+    if aggregate_rows:
+        print(f"DEREK_AFTER_GAME_SCORING_PASS  delivery_date={args.delivery_date}  "
+              f"snapshots_scored={len(aggregate_rows)}  "
+              f"props_scored={props_scored}  unjoined={unjoined}  "
+              f"scoring_report=deliveries/{args.delivery_date}/derek_game_snapshots/aggregate_snapshot_scoring.json")
+    else:
+        print(f"DEREK_AFTER_GAME_SCORING_FAILED  delivery_date={args.delivery_date}  "
+              f"reason=no_snapshots_scored", file=sys.stderr)
     print(
         f"  delivery_date={args.delivery_date} snapshots_scored={len(aggregate_rows)}"
     )

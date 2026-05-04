@@ -146,6 +146,39 @@ jobs:
             --required-through-date "$PREV_DAY" || \
             echo "::warning::player_game_stats stale through $PREV_DAY — training/scoring blocked until BDL backfills"
 
+      # Phase 13AH: publish the morning WoO snapshot, score the previous-
+      # day's WoO predictions against settled outcomes, and run the full
+      # daily production contract verifier so the operator audit trail
+      # captures every required PASS/WARN/FAIL line.
+      - name: Publish WoO morning snapshot (Phase 13AH)
+        continue-on-error: true
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          python3 scripts/publish_woo_snapshot.py --date "$DATE" --snapshot-type morning
+
+      - name: Verify WoO snapshot outputs (Phase 13AH)
+        continue-on-error: true
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          python3 scripts/verify_woo_snapshot_outputs.py --date "$DATE" || \
+            echo "::warning::WoO t_minus_25/close_lock snapshots pending until tip — see step log"
+
+      - name: Score WoO previous-day predictions (Phase 13AH)
+        continue-on-error: true
+        run: |
+          PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                     || TZ=America/New_York date -v-1d +%Y-%m-%d)
+          python3 scripts/score_woo_after_game.py --date "$PREV_DAY" || \
+            echo "::warning::WoO after-game scoring did not pass — see step log"
+
+      - name: Verify Derek email-claimed files (Phase 13AH)
+        continue-on-error: true
+        run: |
+          PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                     || TZ=America/New_York date -v-1d +%Y-%m-%d)
+          python3 scripts/verify_derek_email_claimed_files.py --delivery-date "$PREV_DAY" || \
+            echo "::warning::Derek email-claimed files verifier failed — see step log"
+
       - name: Build + verify daily automation health report (Phase 13AD)
         continue-on-error: true
         run: |
@@ -154,11 +187,27 @@ jobs:
           python3 scripts/verify_daily_automation_health_report.py --date "$DATE" || \
             echo "::warning::daily automation health report WARN/FAILED — see step log"
 
+      - name: Run full daily production contract + operator daily check (Phase 13AH)
+        continue-on-error: true
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                     || TZ=America/New_York date -v-1d +%Y-%m-%d)
+          python3 scripts/verify_full_daily_production_contract.py \
+            --date "$DATE" --derek-date "$PREV_DAY" \
+            --required-outcomes-through "$PREV_DAY" || \
+            echo "::warning::full production contract WARN/FAILED — see step log"
+          python3 scripts/operator_daily_check.py \
+            --date "$DATE" --derek-date "$PREV_DAY" \
+            --required-outcomes-through "$PREV_DAY" || \
+            echo "::warning::operator daily check WARN/FAILED — see step log"
+
       - name: Commit predictions and graded results
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add predictions/ artifacts/graded/ artifacts/automation_health/ -f
+          git add predictions/ artifacts/graded/ artifacts/automation_health/ \
+                  artifacts/scoring/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
           for i in 1 2 3; do

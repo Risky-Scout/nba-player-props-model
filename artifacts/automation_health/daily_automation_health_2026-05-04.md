@@ -1,6 +1,6 @@
 # Daily automation health — 2026-05-04
 
-_Generated 2026-05-04T19:03:05+00:00._
+_Generated 2026-05-04T20:03:04+00:00._
 
 ## Overall: **OVERALL_WARN**
 
@@ -24,8 +24,8 @@ _Generated 2026-05-04T19:03:05+00:00._
 **Most-recent-completed training (supplementary, not today's status):**
 
 - `training_cutoff_date`: `2026-05-03`
-- `final_status`: `ok`
-- `halted_reason`: `None`
+- `final_status`: `halted_no_promotion`
+- `halted_reason`: `promotion_clock_cutoff`
 - `challenger_artifact_dir`: `artifacts/models/challengers/2026-05-03`
 - `daily_report_md_path`: `artifacts/model_daily_reports/2026-05-03/daily_model_training_report.md`
 - `promoted`: `None`

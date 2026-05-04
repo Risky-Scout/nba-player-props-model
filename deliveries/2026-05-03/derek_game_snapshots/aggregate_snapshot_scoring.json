@@ -1,11 +1,33 @@
 {
   "by_game": {
-    "21682000": {},
-    "21684819": {}
+    "21682000": {
+      "current_live": {
+        "blocker": "",
+        "matched_rows": 35,
+        "mean_nll": 2.140585194182121,
+        "median_p_realized": 0.1133,
+        "present": true,
+        "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21682000/current_live"
+      }
+    },
+    "21684819": {
+      "current_live": {
+        "blocker": "",
+        "matched_rows": 33,
+        "mean_nll": 3.3822736583558726,
+        "median_p_realized": 0.0964,
+        "present": true,
+        "snapshot_dir": "deliveries/2026-05-03/derek_game_snapshots/21684819/current_live"
+      }
+    }
   },
-  "code_commit": "3ffe8e6b4a97ae3b9dacca6e9295ee1814cbfc87",
+  "code_commit": "262cf57158930ff15079d1dc6c7fd7b31eeccfa3",
   "delivery_date": "2026-05-03",
-  "generated_at_utc": "2026-05-04T18:06:35+00:00",
+  "generated_at_utc": "2026-05-04T20:03:16+00:00",
   "schema_version": "1.0",
-  "status": "scored"
+  "status": "scored",
+  "summary": {
+    "mean_nll": 2.7614294262689967,
+    "snapshots_scored": 2
+  }
 }

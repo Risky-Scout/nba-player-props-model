@@ -1,0 +1,3 @@
+game_id,snapshot_type,snapshot_dir,matched_rows,mean_nll,median_p_realized,present,blocker
+21682000,current_live,deliveries/2026-05-03/derek_game_snapshots/21682000/current_live,35,2.140585194182121,0.1133,True,
+21684819,current_live,deliveries/2026-05-03/derek_game_snapshots/21684819/current_live,33,3.3822736583558726,0.0964,True,
