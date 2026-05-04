@@ -105,8 +105,12 @@
 
 ## PMF variance experience study
 
-- Latest study: https://github.com/Risky-Scout/nba-player-props-model/blob/main/artifacts/experience_studies/pmf_variance_experience_2026-04-30.md
-- This is an actuarial-style actual-to-expected study for settled rows. It checks PMF mean calibration, PMF variance calibration, quantile coverage, and model-vs-market scoring. In the first settled samples, PMF variance is reasonably close overall, but the model under-projects means and trails market on Brier/logloss, so this is a diagnostic and improvement report rather than a market-superiority claim.
+- Latest as-of-2026-05-03 study: https://github.com/Risky-Scout/nba-player-props-model/blob/main/artifacts/experience_studies/pmf_variance_experience_2026-05-03.md
+- Index: https://github.com/Risky-Scout/nba-player-props-model/blob/main/artifacts/experience_studies/README.md
+- Sample: 1,001 settled player-prop rows, 2026-04-17 → 2026-05-02, morning / current settled rows only.
+- Headline: mean A/E = 1.144 (actuals ran ~14.4% above expected means); variance A/E = 0.913 (reasonably close overall, slightly wide); standardized residual mean 0.211, sd 1.052; model Brier 0.278 vs market 0.246; model logloss 0.762 vs market 0.688.
+- This study currently covers settled morning/current rows only; T-minus-25 and close-lock scoring will become meaningful after more live snapshots settle. The prospective live-context sample still needs to build.
+- This is a diagnostic and improvement report. Do not claim market superiority from this sample. Next improvements: mean calibration, low-line discrete handling, fg3m dispersion, bucket-level recalibration, more settled t_minus_25 / close_lock snapshots, confirmed-lineup and injury-context experience tracking.
 
 ## Pending items
 
