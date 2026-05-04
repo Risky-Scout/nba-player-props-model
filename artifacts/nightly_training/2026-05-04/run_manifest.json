@@ -1,0 +1,43 @@
+{
+  "as_of_date": "2026-05-04",
+  "code_commit": "37b1ea4639dd0819a492d45267244b2dee8db257",
+  "dry_run": null,
+  "final_status": "halted_pending_upstream_data",
+  "finished_at_utc": null,
+  "halted_reason": "previous_day_data_not_ready",
+  "halted_detail": "data/player_game_stats.parquet max_outcome_date=2026-04-29 < target_date_et=2026-05-03; rows_for_target=0. Strict resolver halted before training. This is correct safe behavior — training should not run on stale upstream data.",
+  "no_promote": true,
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": false,
+    "max_outcome_date_in_file": "2026-04-29",
+    "resolved_training_cutoff_date": null,
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-03",
+    "target_policy": "previous_day_et",
+    "rows_for_target": 0,
+    "training_run_id": null
+  },
+  "promotion_summary": {
+    "from_version": "challenger-2026-04-30",
+    "promoted": false,
+    "reason": "halted_pending_upstream_data; champion pointer unchanged",
+    "to_version": "challenger-2026-04-30"
+  },
+  "schema_version": "1.0",
+  "smoke_summary": {
+    "champion_pointer_smoke": null,
+    "derek_compat_smoke": null,
+    "woo_compat_smoke": null,
+    "skipped_reason": "training did not run; smokes deferred until upstream data lands"
+  },
+  "started_at_utc": "2026-05-04T11:20:33+00:00",
+  "steps": [],
+  "halted_workflow_run": {
+    "id": "25316091911",
+    "url": "https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911",
+    "conclusion": "failure",
+    "is_correct_safe_behavior": true
+  }
+}

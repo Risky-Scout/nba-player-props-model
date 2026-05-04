@@ -1,5 +1,5 @@
 {
-  "code_commit": "e4d45b7114a625651c28fc78ceb6f44c9eed8ada",
+  "code_commit": "37b1ea4639dd0819a492d45267244b2dee8db257",
   "completeness": {
     "data_complete_for_target_date": false,
     "freshness_manifest_for_target": null,
@@ -9,14 +9,14 @@
     "max_outcome_meets_target": false,
     "rows_for_target": 0,
     "rows_for_target_meets_floor": false,
-    "target_date_et": "2026-04-30"
+    "target_date_et": "2026-05-03"
   },
-  "generated_at_utc": "2026-05-01T10:53:58+00:00",
-  "halted_reason": null,
-  "resolved_training_cutoff_date": "2026-04-28",
+  "generated_at_utc": "2026-05-04T15:58:05+00:00",
+  "halted_reason": "previous_day_data_not_ready",
+  "resolved_training_cutoff_date": null,
   "schema_version": "1.0",
-  "stale_fallback_target_date": "2026-04-28",
-  "stale_fallback_used": true,
-  "target_date_et": "2026-04-30",
+  "stale_fallback_target_date": null,
+  "stale_fallback_used": false,
+  "target_date_et": "2026-05-03",
   "target_policy": "previous_day_et"
 }

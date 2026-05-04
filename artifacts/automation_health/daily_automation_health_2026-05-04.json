@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-05-04",
+  "generated_at_utc": "2026-05-04T16:29:46+00:00",
+  "overall": {
+    "status": "OVERALL_WARN",
+    "summary": "one or more sections pending honest upstream data"
+  },
+  "sections": {
+    "training": {
+      "section": "nightly_training_recalibration",
+      "run_manifest_path": "artifacts/nightly_training/2026-05-04/run_manifest.json",
+      "daily_report_md_path": "artifacts/model_daily_reports/2026-05-04/daily_model_training_report.md",
+      "daily_report_json_path": "artifacts/model_daily_reports/2026-05-04/daily_model_training_report.json",
+      "readiness_report_path": "artifacts/training_readiness/2026-05-04/readiness_report.json",
+      "champion_model_id": "challenger-2026-04-30",
+      "trained_through_date": "2026-04-30",
+      "calibrated_through_date": "2026-04-30",
+      "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+      "halted_reason": "previous_day_data_not_ready",
+      "halted_workflow_run_url": "https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911",
+      "root_cause": "Strict resolver halted: previous-day-ET data not ready in data/player_game_stats.parquet. Correct safe behavior. Training will resume automatically when BDL backfills settled stats. champion pointer unchanged.",
+      "status": "SKIPPED_WITH_REASON"
+    },
+    "predictions": {
+      "section": "daily_prediction_generation",
+      "all_props_path": "predictions/all_props_2026-05-04.parquet",
+      "singles_path": "predictions/singles_2026-05-04.json",
+      "pmf_display_path": "predictions/pmf_display_2026-05-04.json",
+      "nba_props_today_path": "predictions/nba_props_today.json",
+      "all_props_rows": 65,
+      "all_props_games": 2,
+      "singles_count": 8,
+      "pmf_display_count": 8,
+      "today_count": 65,
+      "today_date": "2026-05-04",
+      "no_data_reason": null,
+      "verifier_pass_line": "DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-04  parquet_rows=65  singles=8  pmf_display=8  today_count=65",
+      "status": "PASS"
+    },
+    "derek": {
+      "section": "derek_snapshots",
+      "requested_date": "2026-05-04",
+      "delivery_date": "2026-05-03",
+      "latest_verified_date": "2026-05-03",
+      "current_live_count": 2,
+      "t_minus_25_missed": 2,
+      "t_minus_25_present": 0,
+      "close_lock_missed": 2,
+      "close_lock_present": 0,
+      "verifier_pass_lines": {
+        "DEREK_LIVE_SNAPSHOTS": {
+          "pass_line": "DEREK_LIVE_SNAPSHOTS_PASS",
+          "exit_code": 0,
+          "passed": true
+        },
+        "DEREK_PRODUCTION_LIVE_E2E": {
+          "pass_line": "DEREK_PRODUCTION_LIVE_E2E_PASS",
+          "exit_code": 0,
+          "passed": true
+        },
+        "DEREK_OUTCOME_LEVEL_PROBABILITIES": {
+          "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4",
+          "exit_code": 0,
+          "passed": true
+        }
+      },
+      "status": "PASS"
+    },
+    "woo": {
+      "section": "wizard_of_odds",
+      "html_path": "predictions/nba-props.html",
+      "data_path": "predictions/nba_props_today.json",
+      "html_size_bytes": 39614,
+      "verifier_pass_line": "WOO_NBA_PROPS_PAGE_PASS  date=2026-05-04  count=65  games=2  date=2026-05-04",
+      "status": "PASS",
+      "blank_page_prevention": true
+    },
+    "after_game": {
+      "section": "after_game_scoring",
+      "latest_settled_date": "2026-04-29",
+      "outcomes_available": false,
+      "scoring_report_path": null,
+      "status": "PENDING",
+      "root_cause": "settled stats only through 2026-04-29; after-game scoring for 2026-05-04 pending upstream backfill"
+    }
+  }
+}

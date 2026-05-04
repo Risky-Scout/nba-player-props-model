@@ -240,6 +240,12 @@ tbody td.c-pl{white-space:normal;overflow:hidden;}
   <div class="tb-right"><span class="tb-time" id="tb-time">—</span></div>
 </div>
 
+<!-- Phase 13AD: visible static-snapshot banner. Hidden by default; the
+     load() function reveals it when the page is rendering from the
+     local nba_props_today.json fallback (deployed PHP endpoint
+     unavailable). Ensures the page is never blank without explanation. -->
+<div id="static-banner" style="display:none;background:rgba(240,165,0,.09);border-bottom:1px solid rgba(240,165,0,.22);color:#f0a500;font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px 18px;letter-spacing:.3px;">—</div>
+
 <div id="inj-bar">
   <div class="ib-row"><span class="ib-lbl">⚠ Injury Alerts</span><div id="inj-chips"></div></div>
 </div>
@@ -358,6 +364,7 @@ tbody td.c-pl{white-space:normal;overflow:hidden;}
 
 <script>
 const API='./api/live_props.php';
+const STATIC_FALLBACK='./nba_props_today.json';
 const RL=30000,RP=120000,ML=6;
 const CORR={pts_pts:1,pts_reb:.647,pts_ast:.426,pts_fg3m:.512,reb_reb:1,reb_ast:.274,reb_fg3m:.195,ast_ast:1,ast_fg3m:.283,fg3m_fg3m:1};
 let all=[],legs=[],sc='edge',sd='desc',mf='all',sf='',ef=0,sideF='both',timer=null,_rp=[];
@@ -366,17 +373,61 @@ function tick(){document.getElementById('tb-time').textContent=new Date().toLoca
 setInterval(tick,1000);tick();
 
 async function load(){
+  // Phase 13AD: try the deployed PHP endpoint first, fall back to the
+  // statically published nba_props_today.json so the page never renders
+  // blank when the server-side endpoint is unavailable.
+  let d=null,source=null;
   try{
     const r=await fetch(API+'?_='+Date.now());
-    const d=await r.json();
-    if(d.error){showState('error',d.error);return;}
-    all=d.props||[];
-    updFeed(d);updInj(d.injuries||[]);updMetrics(d.metrics||{});
-    renderModelSGPs(d.model_sgps||[]);
-    render();
-    clearTimeout(timer);
-    timer=setTimeout(load,(d.mode==='live'||d.live_games>0)?RL:RP);
-  }catch(e){showState('error','API unreachable — retrying in 15s');timer=setTimeout(load,15000);}
+    if(r.ok){
+      d=await r.json();
+      if(d && !d.error){source='live_api';}
+      else{d=null;}
+    }
+  }catch(e){d=null;}
+  if(!d){
+    try{
+      const r=await fetch(STATIC_FALLBACK+'?_='+Date.now());
+      if(r.ok){
+        const fb=await r.json();
+        d={
+          props:fb.props||[],
+          count:fb.count||0,
+          events:fb.games||0,
+          mode:'static',
+          live_games:0,
+          metrics:{pred_date:fb.date,avg_edge:null,max_edge:null,positive_edge:0},
+          injuries:[],model_sgps:[],
+          _fallback_reason:fb.reason||null,
+          _generated_at:fb.generated_at||null,
+          _date:fb.date||null,
+        };
+        source='static_fallback';
+      }
+    }catch(e){d=null;}
+  }
+  if(!d){
+    showState('error','Both live API and static fallback unreachable — retrying in 15s');
+    timer=setTimeout(load,15000);
+    return;
+  }
+  if(d.error){showState('error',d.error);return;}
+  all=d.props||[];
+  updFeed(d);updInj(d.injuries||[]);updMetrics(d.metrics||{});
+  renderModelSGPs(d.model_sgps||[]);
+  render();
+  if(source==='static_fallback'){
+    const banner=document.getElementById('static-banner');
+    if(banner){
+      const date=d._date||'—';
+      const gen=d._generated_at||'—';
+      const reason=d._fallback_reason?` · ${d._fallback_reason}`:'';
+      banner.textContent=`Static snapshot — slate ${date} · generated ${gen} · ${all.length} props${reason}`;
+      banner.style.display='block';
+    }
+  }
+  clearTimeout(timer);
+  timer=setTimeout(load,(d.mode==='live'||d.live_games>0)?RL:RP);
 }
 
 function updFeed(d){

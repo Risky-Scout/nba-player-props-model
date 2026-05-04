@@ -113,11 +113,38 @@ jobs:
             echo "WARNING: 0 picks written — check API keys and model files"
           fi
 
+      # Phase 13AD: refresh nba_props_today.json so the WoO front-end
+      # static fallback never goes stale, then run the prediction-output
+      # verifier and the WoO page verifier. Failures here surface as
+      # workflow errors so the operator notices.
+      - name: Refresh nba_props_today.json (Phase 13AD)
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          python3 scripts/publish_nba_props_today.py --date "$DATE"
+
+      - name: Verify daily prediction outputs (Phase 13AD)
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          python3 scripts/verify_daily_prediction_outputs.py --date "$DATE"
+
+      - name: Verify WoO NBA props page (Phase 13AD)
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          python3 scripts/verify_woo_nba_props_page.py --date "$DATE"
+
+      - name: Build + verify daily automation health report (Phase 13AD)
+        continue-on-error: true
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          python3 scripts/build_daily_automation_health_report.py --date "$DATE"
+          python3 scripts/verify_daily_automation_health_report.py --date "$DATE" || \
+            echo "::warning::daily automation health report WARN/FAILED — see step log"
+
       - name: Commit predictions and graded results
         run: |
           git config user.name  "Props Bot"
           git config user.email "props-bot@wizardofodds.com"
-          git add predictions/ artifacts/graded/ -f
+          git add predictions/ artifacts/graded/ artifacts/automation_health/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit -m "Predictions $(date -u +%Y-%m-%d)"
           for i in 1 2 3; do
@@ -144,6 +171,12 @@ jobs:
             -u "$SFTP_USER:$SFTP_PASS" \
             -T "predictions/pmf_display_${DATE}.json" \
             "ftp://$SFTP_HOST${SFTP_PATH}/pmf_display_${DATE}.json"
+          # Phase 13AD: also upload the freshly published nba_props_today.json
+          # so the deployed front-end has a current static fallback.
+          curl --ftp-create-dirs --max-time 30 --retry 3 \
+            -u "$SFTP_USER:$SFTP_PASS" \
+            -T "predictions/nba_props_today.json" \
+            "ftp://$SFTP_HOST${SFTP_PATH}/nba_props_today.json"
           echo "✓ Predictions uploaded to server"
 
 

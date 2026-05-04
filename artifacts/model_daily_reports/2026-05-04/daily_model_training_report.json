@@ -1,0 +1,37 @@
+{
+  "as_of_date": "2026-05-04",
+  "generated_at_utc": "2026-05-04T15:58:05+00:00Z",
+  "status": "halted_pending_upstream_data",
+  "halted_reason": "previous_day_data_not_ready",
+  "halted_workflow_run": {
+    "id": "25316091911",
+    "url": "https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911",
+    "conclusion": "failure",
+    "is_correct_safe_behavior": true
+  },
+  "active_champion": {
+    "champion_model_id": "challenger-2026-04-30",
+    "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+    "trained_through_date": "2026-04-30",
+    "calibrated_through_date": "2026-04-30"
+  },
+  "promotion_status": {
+    "promoted": false,
+    "reason": "halted_pending_upstream_data",
+    "decided_at_utc": "2026-05-04T15:58:05+00:00",
+    "champion_pointer_unchanged": true
+  },
+  "training_attempted": false,
+  "calibration_attempted": false,
+  "validation_status": "skipped_no_training_run",
+  "no_leakage_status": "skipped_no_training_run",
+  "smoke_summary": {
+    "champion_pointer_smoke": null,
+    "derek_compat_smoke": null,
+    "woo_compat_smoke": null,
+    "skipped_reason": "training did not run"
+  },
+  "after_game_scoring_pending": true,
+  "remediation": "Wait for BDL settled-stats backfill for 2026-04-30 → 2026-05-03. Next nightly cron (09:30 UTC) will re-attempt the resolver.",
+  "schema_version": "1.0"
+}
