@@ -1,6 +1,6 @@
 # Training Automation Verification — 2026-05-03
 
-- generated_at_utc: 2026-05-04T18:05:59+00:00
+- generated_at_utc: 2026-05-04T19:55:21+00:00
 - mode: **real_training**
 - overall_pass: **True**
 
@@ -8,17 +8,17 @@
 
 | Check | Pass | Detail |
 | --- | --- | --- |
-| readiness_report_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/training_readiness/2026-05-03/readiness_report.json |
-| challenger_dir_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03 |
-| train_manifest_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/train_manifest.json |
-| calibration_manifest_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/calibration_manifest.json |
-| validation_report_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/validation_report.json |
-| promotion_decision_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-03/promotion_decision.json |
-| champion_pointer_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/champion_pointer.json |
-| model_registry_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/model_registry.json |
-| promotion_log_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/promotion_log.csv |
-| nightly_run_manifest_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-03/run_manifest.json |
-| smoke_test_report_exists | yes | /Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-03/smoke_test_report.json |
+| readiness_report_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/training_readiness/2026-05-03/readiness_report.json |
+| challenger_dir_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03 |
+| train_manifest_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/train_manifest.json |
+| calibration_manifest_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/calibration_manifest.json |
+| validation_report_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/validation_report.json |
+| promotion_decision_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-03/promotion_decision.json |
+| champion_pointer_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/champion_pointer.json |
+| model_registry_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/model_registry.json |
+| promotion_log_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/promotion_log.csv |
+| nightly_run_manifest_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-03/run_manifest.json |
+| smoke_test_report_exists | yes | /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-03/smoke_test_report.json |
 | champion_pointer_unchanged_when_promote_false | yes | pointer model_version present and unchanged (promote was false) |
 | pmf_validity_passed | yes | issues=[] |
 | derek_compat_smoke_passed | yes | {"build_derek_forward_feed.py_present": true, "challenger_dir_referenced": false, "champion_pointer_used_only": true} |
@@ -49,11 +49,11 @@
   "train_manifest_dry_run": false,
   "calibration_manifest_dry_run": false,
   "challenger_pickle_count": 5,
-  "run_manifest_halted_reason": null,
-  "run_manifest_final_status": "ok",
+  "run_manifest_halted_reason": "promotion_clock_cutoff",
+  "run_manifest_final_status": "halted_no_promotion",
   "train_manifest_status": "ok",
   "manifest_recorded_pickle_count": 5,
-  "pickles_source": "train_manifest_record"
+  "pickles_source": "on_disk"
 }
 ```
 

@@ -2,8 +2,8 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-04T17:39:12+00:00 |
-| Code commit | 0f6c5ac9713a |
+| Generated (UTC) | 2026-05-04T19:53:50+00:00 |
+| Code commit | 5ca6a4480440 |
 | All required inputs present | yes |
 | Missing required | [] |
 | Missing advisory | ['data/training_table.parquet'] |
