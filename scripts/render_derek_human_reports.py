@@ -232,27 +232,31 @@ def _write_top_readme(*, repo_root: Path, delivery_date: str,
     )
     md.append("")
 
-    md.append("## What each file means")
+    md.append("## Validated Derek files")
+    md.append("")
+    md.append("Per snapshot folder (`derek_game_snapshots/<game_id>/<snapshot_type>/`):")
     md.append("")
     md.append(
-        "- **snapshot_report.md** — plain-English executive summary of "
-        "one snapshot: top edges, top contextual minutes deltas, "
-        "driver attribution, publishability gates."
+        "- **snapshot_report.md** — plain-English summary of one "
+        "snapshot: top edges, top contextual minutes deltas, driver "
+        "attribution, publishability gates."
     )
     md.append(
         "- **market_comparison.csv** — per-prop model probability vs "
-        "market no-vig probability, with the Phase 13X "
-        "edge_publish_status / edge_reasonability_status columns. "
-        "Edges marked `WATCHLIST` / `REVIEW` / `PUBLISH_BLOCKER` are "
-        "not for action."
+        "market no-vig probability, with `edge_publish_status` / "
+        "`edge_reasonability_status` columns. Rows marked `WATCHLIST` "
+        "/ `REVIEW` / `PUBLISH_BLOCKER` are not for action."
     )
     md.append(
         "- **full_pmf_wide.csv** — full per-prop PMF + market "
-        "probabilities."
+        "probabilities, one row per (player, stat, side, line, book)."
     )
     md.append(
-        "- **outcome_level_probabilities.csv** — long-form "
-        "(player, stat, k, p_k) view of the PMF."
+        "- **outcome_level_probabilities.csv** — long-form PMF view. "
+        "Phase 13AB regenerated this file from the canonical PMF JSON: "
+        "each prop's PMF expands into one row per possible outcome "
+        "`k`, with `p_k` summing to 1 per prop. Verifier: "
+        "`scripts/verify_derek_outcome_level_probabilities.py`."
     )
     md.append(
         "- **pmf_driver_decomposition.md** — per-row contextual "
@@ -260,8 +264,8 @@ def _write_top_readme(*, repo_root: Path, delivery_date: str,
     )
     md.append(
         "- **lineup_injury_impact_report.md** — lineup confirmation, "
-        "BDL injury fetch, and counts of confirmed starters / bench "
-        "/ confirmed out."
+        "BDL injury fetch, counts of confirmed starters / bench / "
+        "confirmed out."
     )
     md.append(
         "- **direct_lineup_impact_report.md** — Phase 13S direct-"
@@ -274,23 +278,81 @@ def _write_top_readme(*, repo_root: Path, delivery_date: str,
         "back to the audit trail."
     )
     md.append("")
+    md.append("## Model status and calibration note")
+    md.append("")
+    md.append(
+        f"The {delivery_date} package includes live-context PMF "
+        "snapshots and a new actuarial-style PMF variance experience "
+        "study. The experience study is based on the trailing 60-day "
+        "settled sample of player-prop rows. It is a diagnostic "
+        "review of settled morning / current rows, not a mature "
+        "T-minus-25 or close-lock live-context sample yet — those "
+        "snapshots have not accumulated enough joinable game stats "
+        "to score meaningfully."
+    )
+    md.append("")
+    md.append(
+        "The first study is useful but mixed: PMF variance is "
+        "reasonably close overall (variance A/E in the 0.80–1.20 "
+        "well-calibrated band, standardized residual sd near 1.00), "
+        "but the model under-projects means (mean A/E above 1.0) and "
+        "trails the market on binary scoring in this sample (Brier "
+        "and logloss both higher than the market no-vig baseline). "
+        "Read this as a recalibration roadmap, not a market-"
+        "superiority claim."
+    )
+    md.append("")
+    md.append("**Next improvements (in priority order):**")
+    md.append("")
+    md.append(
+        "1. Mean calibration — the mean A/E bias points at the "
+        "role-aware mean centering in the contextual stack."
+    )
+    md.append(
+        "2. Low-line discrete stat handling — fg3m / stl / blk / tov "
+        "at lines ≤ 1.5 are the most miscalibrated bucket family."
+    )
+    md.append(
+        "3. fg3m dispersion — variance A/E above 2 means the PMF is "
+        "materially too narrow on threes."
+    )
+    md.append(
+        "4. Bucket-level recalibration — high-p0 props and starter "
+        "minutes are over-dispersed; they compress cleanly with "
+        "isotonic."
+    )
+    md.append(
+        "5. More settled t_minus_25 / close_lock snapshots — the "
+        "prospective live-context sample still needs to build."
+    )
+    md.append(
+        "6. Confirmed-lineup and injury-context experience tracking — "
+        "Source A coverage will let us compare confirmed-lineup rows "
+        "against projected rows once enough delivery dates accumulate."
+    )
+    md.append("")
 
     md.append("## PMF variance experience study")
     md.append("")
     md.append(
-        f"- [pmf_variance_experience_{delivery_date}.md]("
-        f"https://github.com/Risky-Scout/nba-player-props-model/blob/main/"
-        f"artifacts/experience_studies/pmf_variance_experience_"
-        f"{delivery_date}.md)"
+        f"- Latest study: https://github.com/Risky-Scout/nba-player-"
+        f"props-model/blob/main/artifacts/experience_studies/"
+        f"pmf_variance_experience_{delivery_date}.md"
     )
     md.append(
-        "- This is an actuarial-style actual-to-expected study for "
-        "settled rows. It checks PMF mean calibration, PMF variance "
-        "calibration, quantile coverage, and model-vs-market scoring. "
-        "In this first settled sample, PMF variance is reasonably close "
-        "overall, but the model under-projects means and trails market "
-        "on Brier/logloss, so this is a diagnostic and improvement "
-        "report rather than a market-superiority claim."
+        "- Index: https://github.com/Risky-Scout/nba-player-props-"
+        "model/blob/main/artifacts/experience_studies/README.md"
+    )
+    md.append(
+        "- Sample: trailing 60-day window of settled player-prop rows, "
+        "morning / current settled rows only. Headline metrics — "
+        "mean A/E, variance A/E, model Brier vs market Brier, model "
+        "logloss vs market logloss — are reported in the linked "
+        "study."
+    )
+    md.append(
+        "- This is a diagnostic and improvement report. Do not claim "
+        "market superiority from this sample."
     )
     md.append("")
 
@@ -339,6 +401,51 @@ def _write_snapshot_index(*, repo_root: Path, delivery_date: str,
         "Each subfolder is `<game_id>/<snapshot_type>/`. Visible "
         "labels use team names; the numeric `game_id` is preserved "
         "in file paths and technical manifests for the audit trail."
+    )
+    md.append("")
+    md.append("## How to read this package")
+    md.append("")
+    md.append(
+        "- **Start with the matchup-level `snapshot_report.md`** — it "
+        "summarizes the slate, top edges, contextual minutes deltas, "
+        "lineup status, and publishability gates."
+    )
+    md.append(
+        "- **Use `market_comparison.csv`** for side / line / model / "
+        "market / edge / review status. The `edge_publish_status` and "
+        "`edge_reasonability_status` columns govern action — anything "
+        "tagged `WATCHLIST`, `REVIEW`, or `PUBLISH_BLOCKER` is not "
+        "for action."
+    )
+    md.append(
+        "- **Use `full_pmf_wide.csv`** for the full per-row PMF JSON "
+        "plus market probabilities — one row per "
+        "(player, stat, side, line, book)."
+    )
+    md.append(
+        "- **Use `outcome_level_probabilities.csv`** for the long-form "
+        "outcome probabilities (one row per `(prop, k)`, `p_k` summing "
+        "to 1 per prop). Repaired in Phase 13AB on 2026-05-03; "
+        "verifier `scripts/verify_derek_outcome_level_probabilities.py` "
+        "runs daily."
+    )
+    md.append(
+        "- **Use the PMF variance experience study** for after-the-"
+        "fact calibration diagnostics: mean A/E, variance A/E, "
+        "standardized residuals, quantile coverage, model-vs-market "
+        "Brier and logloss across stat / side / role / line / edge / "
+        "p0 / predicted-variance buckets. Sample is the trailing "
+        "60-day settled window (morning / current only). The report "
+        "itself flags where the model is too narrow, too wide, or "
+        "under-projecting means."
+    )
+    md.append(
+        "- **Current-live snapshots without confirmed lineups are "
+        "watchlist / baseline output**, not final confirmed-lineup "
+        "action output. The `lineup_confirmed` column in "
+        "`market_comparison.csv` and the "
+        "`WATCHLIST_NOT_CONFIRMED_LINEUP` publish status make this "
+        "explicit."
     )
     md.append("")
     md.append("## Per-game files")
@@ -398,17 +505,34 @@ def _write_snapshot_index(*, repo_root: Path, delivery_date: str,
     md.append("## PMF variance experience study")
     md.append("")
     md.append(
-        f"- [pmf_variance_experience_{delivery_date}.md]("
-        f"https://github.com/Risky-Scout/nba-player-props-model/blob/main/"
-        f"artifacts/experience_studies/pmf_variance_experience_"
-        f"{delivery_date}.md)"
+        f"- Latest study: https://github.com/Risky-Scout/nba-player-"
+        f"props-model/blob/main/artifacts/experience_studies/"
+        f"pmf_variance_experience_{delivery_date}.md"
     )
     md.append(
-        "- Actuarial-style actual-to-expected diagnostic for settled "
-        "rows. PMF variance is reasonably close overall but the model "
-        "under-projects means and trails market on Brier/logloss in "
-        "the current sample, so this is a diagnostic and improvement "
-        "report rather than a market-superiority claim."
+        "- Index: https://github.com/Risky-Scout/nba-player-props-"
+        "model/blob/main/artifacts/experience_studies/README.md"
+    )
+    md.append(
+        "- Sample: trailing 60-day settled window of player-prop rows, "
+        "morning / current settled rows only. T-minus-25 and close-"
+        "lock scoring will become meaningful only after enough live "
+        "snapshots settle — the prospective live-context sample still "
+        "needs to build."
+    )
+    md.append(
+        "- Headline metrics (mean A/E, variance A/E, model Brier, "
+        "market Brier, model logloss, market logloss) are reported "
+        "in the linked study. In the current sample the model trails "
+        "the market on binary scoring."
+    )
+    md.append(
+        "- Status: this is a diagnostic and improvement report. "
+        "**Do not claim market superiority from this sample.** Next "
+        "improvements: mean calibration, low-line discrete handling, "
+        "fg3m dispersion, bucket-level recalibration, more settled "
+        "live snapshots, confirmed-lineup / injury-context experience "
+        "tracking."
     )
     md.append("")
     out.write_text("\n".join(md) + "\n", encoding="utf-8")
