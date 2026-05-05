@@ -76,10 +76,10 @@ jobs:
       group: phase13a-nightly-training
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
@@ -94,7 +94,7 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          python3 scripts/verify_secrets_preflight.py
+          python3 scripts/verify_secrets_preflight.py --mode training
 
       - name: Bootstrap champion registry (idempotent)
         run: |

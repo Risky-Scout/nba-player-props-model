@@ -1,6 +1,6 @@
 # Daily model training / recalibration report — 2026-05-04
 
-- generated_at_utc: 2026-05-05T14:38:44+00:00Z
+- generated_at_utc: 2026-05-05T17:04:29+00:00Z
 
 ## Headline
 
@@ -13,7 +13,8 @@
 - recalibration_ran: **True**
 - no_leakage_passed: **True**
 - validation_gates_passed: **True**
-- challenger_promoted: **True**
+- challenger_promoted: **False**
+- promotion_reason: `gate_failed:promotion_clock_safe`
 
 ## Active champion (full pointer block)
 
@@ -33,9 +34,15 @@
 
 ## Promotion status
 
-- promoted: **True**
-- decision_id: `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826`
-- decided_at_utc: `2026-05-03T13:58:26+00:00`
+- promoted: **False**
+- decision_promote_field: `False`
+- manifest_promoted_field: `True`
+- champion_pointer_swapped_to_today: **False**
+- expected_today_challenger_id: `challenger-2026-05-04`
+- active_champion_model_id: `challenger-2026-04-30`
+- promotion_reason: `gate_failed:promotion_clock_safe`
+- decision_id: `None`
+- decided_at_utc: `None`
 
 ## Validation gates
 

@@ -8,6 +8,12 @@ on:
         required: false
         default: 'Scheduled retrain'
 
+# Phase 13AN-H1: serialize concurrent retrains so two manual
+# workflow_dispatch firings don't race on git push of model artifacts.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   retrain:
     runs-on: ubuntu-latest

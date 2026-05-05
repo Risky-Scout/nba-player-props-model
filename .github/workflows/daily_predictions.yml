@@ -13,6 +13,16 @@ on:
     - cron: '0 23 * * *'   # 7:00 PM ET (EDT) / 6:00 PM ET (EST)  — closing lines snapshot
   workflow_dispatch:         # manual trigger runs all three jobs
 
+# Phase 13AN-H1: queue concurrent runs against main so the three jobs
+# never race each other on commit/push of generated files.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Phase 13AN-G: opt this workflow's actions into Node 24.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 # ── Job 1: Opening lines snapshot (9 AM ET) ───────────────────────────────────
 jobs:
 
@@ -25,10 +35,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -66,7 +76,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -75,7 +85,7 @@ jobs:
           java-version: '17'
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -91,7 +101,7 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          python3 scripts/verify_secrets_preflight.py
+          python3 scripts/verify_secrets_preflight.py --mode daily
 
       - name: Grade yesterday's predictions
         env:
@@ -263,10 +273,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'

@@ -33,6 +33,97 @@ def _read_json(p: Path):
         return None
 
 
+def _build_promotion_status(
+    as_of_date: str,
+    pointer: dict,
+    promotion_decision: dict | None,
+    promotion_manifest: dict | None,
+    today_decision_path: Path,
+    today_manifest_path: Path,
+) -> dict:
+    """Phase 13AN: derive promotion truth from explicit signals.
+
+    Three signals are surfaced in the report so the operator can see the
+    full picture:
+
+    * ``decision_promote_field`` — today's ``promotion_decision.json``'s
+      ``promote`` (canonical) or legacy ``promoted`` field. None when the
+      decision file is missing.
+    * ``manifest_promoted_field`` — today's ``promotion_manifest.json``'s
+      ``promoted`` field. None when the manifest is absent (no actual
+      pointer swap was attempted/written).
+    * ``champion_pointer_swapped_to_today`` — whether the active champion
+      pointer's ``champion_model_id`` matches the canonical
+      ``challenger-<as_of>`` for today.
+
+    Final truth is the AND of these signals:
+
+        promoted = (manifest.promoted is True)
+                  AND (champion pointer reflects today's challenger)
+                  AND (decision.promote is True)
+
+    Any disagreement reports ``promoted=False`` with a precise
+    ``promotion_reason`` extracted from the decision file.
+    """
+    decision_promote_field = None
+    if promotion_decision:
+        if "promote" in promotion_decision:
+            decision_promote_field = bool(promotion_decision.get("promote"))
+        elif "promoted" in promotion_decision:
+            decision_promote_field = bool(promotion_decision.get("promoted"))
+
+    manifest_promoted_field = None
+    if promotion_manifest:
+        manifest_promoted_field = bool(promotion_manifest.get("promoted"))
+
+    expected_today_challenger_id = f"challenger-{as_of_date}"
+    champion_id_now = pointer.get("champion_model_id")
+    champion_pointer_swapped_to_today = (
+        champion_id_now == expected_today_challenger_id
+    )
+
+    promoted = (
+        decision_promote_field is True
+        and manifest_promoted_field is True
+        and champion_pointer_swapped_to_today
+    )
+
+    promotion_reason = None
+    if promotion_decision:
+        promotion_reason = (
+            promotion_decision.get("reason")
+            or promotion_decision.get("promotion_reason")
+        )
+    if promotion_reason is None and not promoted:
+        # Synthesize a clear reason when the decision file did not
+        # spell one out but we know the swap did not happen.
+        if decision_promote_field is False:
+            promotion_reason = "decision_promote_false"
+        elif decision_promote_field is None:
+            promotion_reason = "promotion_decision_missing_or_unparseable"
+        elif manifest_promoted_field is not True:
+            promotion_reason = "promotion_manifest_did_not_record_swap"
+        elif not champion_pointer_swapped_to_today:
+            promotion_reason = (
+                "champion_pointer_not_advanced_to_"
+                f"{expected_today_challenger_id}_now={champion_id_now}"
+            )
+
+    return {
+        "promoted": promoted,
+        "decision_promote_field": decision_promote_field,
+        "manifest_promoted_field": manifest_promoted_field,
+        "champion_pointer_swapped_to_today": champion_pointer_swapped_to_today,
+        "active_champion_model_id": champion_id_now,
+        "expected_today_challenger_id": expected_today_challenger_id,
+        "promotion_reason": promotion_reason,
+        "promotion_decision_path": str(today_decision_path),
+        "promotion_manifest_path": str(today_manifest_path),
+        "promotion_decision": promotion_decision,
+        "promotion_manifest": promotion_manifest,
+    }
+
+
 def main(argv=None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--as-of-date", required=True)
@@ -50,10 +141,34 @@ def main(argv=None) -> int:
         if challenger_dir else None
     no_leak_manifest = _read_json(challenger_dir / "no_leakage_manifest.json") \
         if challenger_dir else None
-    promotion_decision = _read_json(challenger_dir / "promotion_decision.json") \
-        if challenger_dir else None
-    promotion_manifest = _read_json(challenger_dir / "promotion_manifest.json") \
-        if challenger_dir else None
+
+    # Phase 13AN: TODAY's promotion truth lives at
+    #   artifacts/nightly_training/<as_of>/promotion_decision.json
+    #   artifacts/nightly_training/<as_of>/promotion_manifest.json
+    # Reading the active-champion's stale promotion_manifest.json (which
+    # is what the previous code did via challenger_dir from pointer) gave
+    # back the LAST SUCCESSFUL promotion's "promoted=true" even when
+    # today's challenger was not promoted. The decision file uses field
+    # `promote` (boolean); the manifest file uses `promoted`. Both are
+    # honored below for backward compat.
+    today_nightly_dir = (
+        REPO_ROOT / "artifacts" / "nightly_training" / args.as_of_date
+    )
+    today_promotion_decision_path = today_nightly_dir / "promotion_decision.json"
+    today_promotion_manifest_path = today_nightly_dir / "promotion_manifest.json"
+    promotion_decision = _read_json(today_promotion_decision_path)
+    promotion_manifest = _read_json(today_promotion_manifest_path)
+    if promotion_decision is None and challenger_dir is not None:
+        # Fallback to the active-champion's challenger dir for older runs
+        # that didn't write into nightly_training/. Surface this fallback
+        # explicitly in the report so it's auditable.
+        promotion_decision = _read_json(
+            challenger_dir / "promotion_decision.json"
+        )
+    if promotion_manifest is None and challenger_dir is not None:
+        promotion_manifest = _read_json(
+            challenger_dir / "promotion_manifest.json"
+        )
 
     validation_report_path = pointer.get("validation_report_path")
     validation_report = (
@@ -106,12 +221,14 @@ def main(argv=None) -> int:
             "no_leakage_manifest_path": pointer.get("contextual_no_leakage_manifest_path"),
             "promotion_decision_id": pointer.get("promotion_decision_id"),
         },
-        "promotion_status": {
-            "promoted": bool((promotion_manifest or {}).get("promoted")
-                              or promotion_decision and promotion_decision.get("promoted")),
-            "promotion_decision": promotion_decision,
-            "promotion_manifest": promotion_manifest,
-        },
+        "promotion_status": _build_promotion_status(
+            args.as_of_date,
+            pointer,
+            promotion_decision,
+            promotion_manifest,
+            today_promotion_decision_path,
+            today_promotion_manifest_path,
+        ),
         "validation_gates": {
             "report": validation_report,
             "any_positive_improvement": (
@@ -179,6 +296,7 @@ def main(argv=None) -> int:
 
     report["headline_summary"] = {
         "active_champion": pointer.get("champion_model_id"),
+        "active_champion_model_id": pointer.get("champion_model_id"),
         "feature_set_id": pointer.get("feature_set_id"),
         "is_phase13s": is_phase13s,
         "trained_through_date": (
@@ -194,6 +312,7 @@ def main(argv=None) -> int:
         "no_leakage_passed": no_leak_passed,
         "validation_gates_passed": gates_passed,
         "challenger_promoted": promoted,
+        "promotion_reason": report["promotion_status"].get("promotion_reason"),
     }
 
     md = [
@@ -215,6 +334,7 @@ def main(argv=None) -> int:
         f"- no_leakage_passed: **{no_leak_passed}**",
         f"- validation_gates_passed: **{gates_passed}**",
         f"- challenger_promoted: **{promoted}**",
+        f"- promotion_reason: `{report['promotion_status'].get('promotion_reason')}`",
         "",
         "## Active champion (full pointer block)",
         "",
@@ -225,6 +345,30 @@ def main(argv=None) -> int:
     md.append("## Promotion status")
     md.append("")
     md.append(f"- promoted: **{report['promotion_status']['promoted']}**")
+    md.append(
+        f"- decision_promote_field: "
+        f"`{report['promotion_status'].get('decision_promote_field')}`"
+    )
+    md.append(
+        f"- manifest_promoted_field: "
+        f"`{report['promotion_status'].get('manifest_promoted_field')}`"
+    )
+    md.append(
+        f"- champion_pointer_swapped_to_today: "
+        f"**{report['promotion_status'].get('champion_pointer_swapped_to_today')}**"
+    )
+    md.append(
+        f"- expected_today_challenger_id: "
+        f"`{report['promotion_status'].get('expected_today_challenger_id')}`"
+    )
+    md.append(
+        f"- active_champion_model_id: "
+        f"`{report['promotion_status'].get('active_champion_model_id')}`"
+    )
+    md.append(
+        f"- promotion_reason: "
+        f"`{report['promotion_status'].get('promotion_reason')}`"
+    )
     if promotion_decision:
         md.append(f"- decision_id: `{promotion_decision.get('decision_id')}`")
         md.append(f"- decided_at_utc: `{promotion_decision.get('decided_at_utc')}`")
@@ -344,7 +488,15 @@ def main(argv=None) -> int:
     print(f"  as_of_date={args.as_of_date}")
     print(f"  champion_model_id={pointer.get('champion_model_id')}")
     print(f"  feature_set_id={pointer.get('feature_set_id')}")
-    print(f"  promoted={report['promotion_status']['promoted']}")
+    print(f"  challenger_promoted={report['promotion_status']['promoted']}")
+    print(
+        f"  active_champion_model_id="
+        f"{report['promotion_status'].get('active_champion_model_id')}"
+    )
+    print(
+        f"  promotion_reason="
+        f"{report['promotion_status'].get('promotion_reason')}"
+    )
     print(f"  validation_gates_issues={report['validation_gates']['issues']}")
     print(f"  output={out_dir.relative_to(REPO_ROOT)}/daily_model_training_report.md")
     return 0

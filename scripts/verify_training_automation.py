@@ -97,8 +97,37 @@ class Report:
 
 
 def _scan_text_for_forbidden_overlay(s: str) -> list[str]:
-    s = s.lower()
-    return [t for t in FORBIDDEN_OVERLAY_TOKENS if t in s]
+    """Phase 13AN: workflow-yaml overlay reference scanner.
+
+    Only flags lines that look like real overlay artifact paths or
+    explicit overlay-key assignments. Lines containing the safe
+    gate/status strings (``no_phase10d_overlays_referenced``,
+    ``workflow_no_phase10d_overlays``, etc.) are not flagged.
+    """
+    from nba_props_model.training_automation import (  # local import; avoids cycle
+        REAL_OVERLAY_KEY_NAMES,
+        REAL_OVERLAY_PATH_PREFIXES,
+        _is_safe_overlay_string,
+    )
+
+    hits: list[str] = []
+    for raw_line in s.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if _is_safe_overlay_string(line):
+            continue
+        ll = line.lower()
+        for prefix in REAL_OVERLAY_PATH_PREFIXES:
+            if prefix in ll:
+                hits.append(f"path:{prefix}")
+                break
+        else:
+            for key in REAL_OVERLAY_KEY_NAMES:
+                if key in ll:
+                    hits.append(f"key:{key}")
+                    break
+    return hits
 
 
 def check_artifacts(report: Report, as_of: str) -> None:

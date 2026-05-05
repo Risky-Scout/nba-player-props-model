@@ -67,6 +67,48 @@ FORBIDDEN_OVERLAY_TOKENS: tuple[str, ...] = (
     "phase10_tov_pmf_root_cause",
 )
 
+# Phase 13AN: real overlay references that MUST fail the gate. These are
+# the only key names / value patterns the scanner treats as live overlay
+# usage. Anything outside this list is a documentation/safety reference
+# (e.g. "phase10d_overlays_in_use=false", "no_phase10d_overlays_referenced",
+# "no_phase10d_overlays_in_manifests") and is allowed.
+REAL_OVERLAY_KEY_NAMES: frozenset[str] = frozenset(
+    {
+        "phase10d_overlay_path",
+        "phase10d_minutes_overlay",
+        "phase10d_calibration_overlay",
+        "phase10d2_overlay_path",
+        "phase10d2_minutes_overlay",
+        "phase10d2_calibration_overlay",
+        "phase10_tov_pmf_root_cause_overlay",
+    }
+)
+
+# Path prefixes that, if present in any string value, indicate a live
+# overlay artifact reference. Match is case-insensitive substring.
+REAL_OVERLAY_PATH_PREFIXES: tuple[str, ...] = (
+    "artifacts/phase10d/",
+    "artifacts/phase10d2/",
+    "phase10d_overlays/",
+    "phase10d2_overlays/",
+    "/phase10d/",
+    "/phase10d2/",
+)
+
+# Explicit allowlist of safe gate/status strings that MAY contain
+# "phase10d" without being a real overlay reference. The scanner skips
+# keys/values that exactly match an entry in this set, OR that contain
+# any of these substrings.
+SAFE_OVERLAY_REFERENCE_STRINGS: frozenset[str] = frozenset(
+    {
+        "no_phase10d_overlays_referenced",
+        "no_phase10d_overlays_in_manifests",
+        "phase10d_overlays_in_use",
+        "workflow_no_phase10d_overlays",
+        "no_phase10d_overlays",
+    }
+)
+
 
 def utcnow() -> _dt.datetime:
     return _dt.datetime.now(tz=_dt.timezone.utc)
@@ -204,48 +246,62 @@ def promotion_lock(timeout_s: float = 0.0) -> Iterator[Path]:
             os.unlink(PROMOTION_LOCK_PATH)
 
 
-def scan_for_forbidden_overlay_tokens(payload: object) -> list[str]:
-    """Recursively look for Phase 10D / 10D.2 forbidden tokens in a JSON-like value.
+def _is_safe_overlay_string(s: str) -> bool:
+    """Return True if a string is in the explicit safe-reference allowlist.
 
-    Negations and explicit "in_use: false" assertions are exempt — those are
-    safety claims that the overlay is *not* being used, not references to it.
+    A string is "safe" if it equals one of the SAFE_OVERLAY_REFERENCE_STRINGS
+    or contains one of them as a substring (e.g. a longer status field name
+    that embeds ``no_phase10d_overlays_referenced``).
+    """
+    ls = s.lower()
+    if ls in SAFE_OVERLAY_REFERENCE_STRINGS:
+        return True
+    for safe in SAFE_OVERLAY_REFERENCE_STRINGS:
+        if safe in ls:
+            return True
+    return False
+
+
+def scan_for_forbidden_overlay_tokens(payload: object) -> list[str]:
+    """Phase 13AN: structural overlay scanner.
+
+    The previous implementation grepped JSON-like structures for any
+    occurrence of ``phase10d`` and used heuristic ``no_*`` / ``not_*``
+    prefixes to filter out negations. That misfired on legitimate gate
+    status strings like ``no_phase10d_overlays_referenced`` and
+    ``no_phase10d_overlays_in_manifests`` that *announce* the absence of
+    overlays. The fix below removes the substring-grep approach entirely:
+
+        1. Walk the payload as structured JSON.
+        2. Only fail on ``key`` matches that are real overlay artifact
+           pointers (``REAL_OVERLAY_KEY_NAMES``).
+        3. Only fail on ``string value`` matches that contain a real
+           overlay artifact path prefix (``REAL_OVERLAY_PATH_PREFIXES``).
+        4. Explicitly allow safe gate/status strings — anything in
+           ``SAFE_OVERLAY_REFERENCE_STRINGS`` is skipped.
     """
     found: list[str] = []
-
-    def is_negation(s: str) -> bool:
-        ls = s.lower()
-        if ls.startswith("no_"):
-            return True
-        if ls.startswith("not_"):
-            return True
-        if "overlays_in_use" in ls:
-            # field name like "phase10d_overlays_in_use" — its boolean value
-            # carries the safety claim, not the field name itself.
-            return True
-        return False
 
     def walk(node: object, path: str) -> None:
         if isinstance(node, dict):
             for k, v in node.items():
                 k_str = str(k)
-                if not is_negation(k_str):
-                    lower_k = k_str.lower()
-                    for token in FORBIDDEN_OVERLAY_TOKENS:
-                        if token in lower_k:
-                            found.append(f"{path}.{k_str} [key]: {k_str}")
-                            break
+                # Only fail on exact-known overlay key names. Any "phase10d"
+                # appearing inside a non-overlay key (e.g. a gate name) is OK.
+                if k_str.lower() in REAL_OVERLAY_KEY_NAMES:
+                    found.append(f"{path}.{k_str} [overlay_key]")
                 walk(v, f"{path}.{k_str}" if path else k_str)
         elif isinstance(node, list):
             for i, v in enumerate(node):
                 walk(v, f"{path}[{i}]")
         elif isinstance(node, str):
-            if is_negation(node):
+            if _is_safe_overlay_string(node):
                 return
             lower = node.lower()
-            for token in FORBIDDEN_OVERLAY_TOKENS:
-                if token in lower:
+            for prefix in REAL_OVERLAY_PATH_PREFIXES:
+                if prefix in lower:
                     found.append(f"{path}: {node}")
-                    break
+                    return
 
     walk(payload, "")
     return found
