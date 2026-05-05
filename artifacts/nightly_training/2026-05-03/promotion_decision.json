@@ -38,7 +38,7 @@
     "by_stat": {
       "ast": {
         "calibrator_present": true,
-        "mean_bias": -0.11357085065102322,
+        "mean_bias": -0.11357085065102318,
         "nll": 1.8316980807482477,
         "p0_err": 0.30052992729498623,
         "rows_scored": 4576,
@@ -54,7 +54,7 @@
       },
       "pts": {
         "calibrator_present": true,
-        "mean_bias": -0.5626653291237609,
+        "mean_bias": -0.562665329123761,
         "nll": 3.327113196339492,
         "p0_err": 0.15684713529848,
         "rows_scored": 4576,
@@ -62,7 +62,7 @@
       },
       "reb": {
         "calibrator_present": true,
-        "mean_bias": -0.16649764588281027,
+        "mean_bias": -0.16649764588281016,
         "nll": 2.2388643470994434,
         "p0_err": 0.17737259534567956,
         "rows_scored": 4576,
@@ -70,7 +70,7 @@
       },
       "tov": {
         "calibrator_present": true,
-        "mean_bias": -0.023955519527876258,
+        "mean_bias": -0.02395551952787627,
         "nll": 1.3936054553519235,
         "p0_err": 0.39992505701811315,
         "rows_scored": 4576,
@@ -95,7 +95,7 @@
     "rows_scored_total": 22880,
     "rps": 1.3442020603338636,
     "tov": {
-      "mean_bias": -0.023955519527876258,
+      "mean_bias": -0.02395551952787627,
       "nll": 1.3936054553519235,
       "p0_error": 0.39992505701811315,
       "rps": 0.5920042672208671
@@ -139,7 +139,7 @@
     "by_stat": {
       "ast": {
         "calibrator_present": true,
-        "mean_bias": -0.11357085065102322,
+        "mean_bias": -0.11357085065102318,
         "nll": 1.8316980807482477,
         "p0_err": 0.30052992729498623,
         "rows_scored": 4576,
@@ -155,7 +155,7 @@
       },
       "pts": {
         "calibrator_present": true,
-        "mean_bias": -0.5626653291237609,
+        "mean_bias": -0.562665329123761,
         "nll": 3.327113196339492,
         "p0_err": 0.15684713529848,
         "rows_scored": 4576,
@@ -163,7 +163,7 @@
       },
       "reb": {
         "calibrator_present": true,
-        "mean_bias": -0.16649764588281027,
+        "mean_bias": -0.16649764588281016,
         "nll": 2.2388643470994434,
         "p0_err": 0.17737259534567956,
         "rows_scored": 4576,
@@ -171,7 +171,7 @@
       },
       "tov": {
         "calibrator_present": true,
-        "mean_bias": -0.023955519527876258,
+        "mean_bias": -0.02395551952787627,
         "nll": 1.3936054553519235,
         "p0_err": 0.39992505701811315,
         "rows_scored": 4576,
@@ -196,15 +196,14 @@
     "rows_scored_total": 22880,
     "rps": 1.3442020603338636,
     "tov": {
-      "mean_bias": -0.023955519527876258,
+      "mean_bias": -0.02395551952787627,
       "nll": 1.3936054553519235,
       "p0_error": 0.39992505701811315,
       "rps": 0.5920042672208671
     }
   },
-  "code_commit": "5ca6a448044011381707050a9c2e80f42e58f955",
+  "code_commit": "6bae79b4c62f90b641ac124cde367cef13fd5d29",
   "gates_failed": [
-    "promotion_clock_safe",
     "market_logloss_non_inferior_or_better",
     "market_brier_non_inferior_or_better",
     "no_severe_market_stat_bucket_regression"
@@ -224,10 +223,11 @@
     "sufficient_calibration_samples",
     "derek_feed_compatibility",
     "woo_export_compatibility",
+    "promotion_clock_safe",
     "no_phase10d_overlays_referenced",
     "market_benchmark_available"
   ],
-  "generated_at_utc": "2026-05-04T19:55:20+00:00",
+  "generated_at_utc": "2026-05-05T03:00:42+00:00",
   "market_benchmark": {
     "as_of_date": "2026-05-03",
     "by_edge_bucket": [],
@@ -312,7 +312,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "5ca6a448044011381707050a9c2e80f42e58f955",
+    "code_commit": "6bae79b4c62f90b641ac124cde367cef13fd5d29",
     "dates_included": [
       "2026-05-03",
       "2026-05-02",
@@ -347,7 +347,7 @@
     ],
     "delta_brier": 0.006408313073238642,
     "delta_logloss": 0.014793250567967896,
-    "generated_at_utc": "2026-05-04T19:55:05+00:00",
+    "generated_at_utc": "2026-05-05T03:00:31+00:00",
     "market_brier": 0.23329458410537332,
     "market_logloss": 0.6580680497226657,
     "min_bucket_rows": 50,
@@ -443,10 +443,10 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-03",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260504T195345"
+    "training_run_id": "nightly-20260505T025923"
   },
   "promote": false,
-  "reason": "gate_failed:promotion_clock_safe",
+  "reason": "gate_failed:market_logloss_non_inferior_or_better",
   "schema_version": "1.0",
   "warnings": []
 }

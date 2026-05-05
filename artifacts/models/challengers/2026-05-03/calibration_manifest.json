@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-05-03",
   "calibrator_type": "phase8-role-bucket",
-  "code_commit": "5ca6a448044011381707050a9c2e80f42e58f955",
+  "code_commit": "6bae79b4c62f90b641ac124cde367cef13fd5d29",
   "details": {
     "calibration_window": {
       "fold_days": 28,
@@ -124,7 +124,7 @@
     }
   },
   "dry_run": false,
-  "finished_at_utc": "2026-05-04T19:55:04+00:00",
+  "finished_at_utc": "2026-05-05T03:00:29+00:00",
   "notes": "Phase 13A dry-run inherits champion calibrators by reference. The rolling validation window is reported but no recompute is performed. Walk-forward only \u2014 no future leakage.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -134,10 +134,10 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-03",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260504T195345"
+    "training_run_id": "nightly-20260505T025923"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-04T19:55:04+00:00",
+  "started_at_utc": "2026-05-05T03:00:29+00:00",
   "status": "ok",
   "warnings": []
 }

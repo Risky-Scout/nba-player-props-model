@@ -1,9 +1,9 @@
 # Nightly Training/Calibration Run — 2026-05-03
 
-- final_status: **halted_no_promotion**
-- halted_reason: promotion_clock_cutoff
+- final_status: **ok**
+- halted_reason: (none)
 - dry_run: False
-- no_promote: False
+- no_promote: True
 - promoted: False
 
 ## Steps
@@ -17,7 +17,7 @@
 - **calibrate_challenger**: exit_code=0 log=artifacts/nightly_training/2026-05-03/logs/calibrate_challenger.log
 - **rolling_market_benchmark**: exit_code=0 log=artifacts/nightly_training/2026-05-03/logs/rolling_market_benchmark.log
 - **validate**: exit_code=0 log=artifacts/nightly_training/2026-05-03/logs/validate.log
-- **promote**: skipped (promotion_clock_unsafe_at_or_after_14:30_utc)
+- **promote**: skipped (--no-promote was set)
 
 ## Smoke Tests
 

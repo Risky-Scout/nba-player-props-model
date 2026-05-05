@@ -17,8 +17,8 @@
   },
   "all_required_present": true,
   "as_of_date": "2026-05-03",
-  "code_commit": "5ca6a448044011381707050a9c2e80f42e58f955",
-  "generated_at_utc": "2026-05-04T19:53:50+00:00",
+  "code_commit": "6bae79b4c62f90b641ac124cde367cef13fd5d29",
+  "generated_at_utc": "2026-05-05T02:59:28+00:00",
   "missing_advisory": [
     "data/training_table.parquet"
   ],
@@ -37,7 +37,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-03",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260504T195345"
+    "training_run_id": "nightly-20260505T025923"
   },
   "required_inputs": {
     "champion_pmf_cal_role_ast": {
