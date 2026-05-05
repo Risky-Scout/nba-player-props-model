@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-05T01:16:43+00:00",
+  "generated_at_utc": "2026-05-05T01:46:19+00:00",
   "date": "2026-05-04",
   "derek_date": "2026-05-04",
   "required_outcomes_through": "2026-05-03",
@@ -128,6 +128,34 @@
       ]
     },
     {
+      "name": "woo_public_export_contract",
+      "command": "scripts/verify_woo_public_export_contract.py --date 2026-05-04",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "WOO_PUBLIC_EXPORT_CONTRACT_PASS  date=2026-05-04  local_export_root=public_export/wizard_of_odds",
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_PUBLIC_EXPORT_CONTRACT_PASS  date=2026-05-04  local_export_root=public_export/wizard_of_odds"
+      ]
+    },
+    {
+      "name": "daily_readme_freshness",
+      "command": "scripts/verify_daily_readme_freshness.py --date 2026-05-04 --derek-date 2026-05-04",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DAILY_README_FRESHNESS_PASS  date=2026-05-04  derek_date=2026-05-04  path=README.md",
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 0,
+      "tail": [
+        "DAILY_README_FRESHNESS_PASS  date=2026-05-04  derek_date=2026-05-04  path=README.md"
+      ]
+    },
+    {
       "name": "woo_snapshot_state_machine",
       "command": "scripts/verify_woo_snapshot_schedule_state.py --date 2026-05-04",
       "status": "PASS",
@@ -183,15 +211,15 @@
     {
       "name": "derek_current_live",
       "command": "scripts/verify_derek_outcome_level_probabilities.py --delivery-date 2026-05-04",
-      "status": "PASS",
+      "status": "WARN",
       "critical": true,
-      "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-04  ok=0  skipped=1",
-      "warn_line": null,
+      "pass_line": null,
+      "warn_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_MISSED_DOCUMENTED  delivery_date=2026-05-04  slate_games=2  ok=0  missed_documented=5  reason=all_eligible_games_have_documented_missed_snapshots",
       "fail_line": null,
       "critical_failure_line": null,
       "rc": 0,
       "tail": [
-        "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-04  ok=0  skipped=1"
+        "DEREK_OUTCOME_LEVEL_PROBABILITIES_MISSED_DOCUMENTED  delivery_date=2026-05-04  slate_games=2  ok=0  missed_documented=5  reason=all_eligible_games_have_documented_missed_snapshots"
       ]
     },
     {
@@ -265,24 +293,24 @@
       "status": "WARN",
       "critical": false,
       "pass_line": null,
-      "warn_line": "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-04  rows=1349  model_trails_market=True  warnings=2",
+      "warn_line": "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-04  rows=1349  model_trails_market=True  warnings=0",
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-04  rows=1349  model_trails_market=True  warnings=2"
+        "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-04  rows=1349  model_trails_market=True  warnings=0"
       ]
     },
     {
       "name": "human_readable_reports",
       "command": "(file presence check)",
-      "status": "WARN",
+      "status": "PASS",
       "critical": true,
-      "pass_line": null,
-      "warn_line": "human-readable reports not yet produced for today's Derek delivery (current_live snapshot has not run)",
+      "pass_line": "HUMAN_READABLE_REPORTS_PASS",
+      "warn_line": null,
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "pending: ['deliveries/2026-05-04/derek_game_snapshots/README.md', 'deliveries/2026-05-04/README.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-04.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-04.md']"
+        "all human-readable reports present"
       ]
     },
     {

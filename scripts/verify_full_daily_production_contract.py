@@ -225,6 +225,23 @@ def main(argv: list[str] | None = None) -> int:
         fail_prefixes=("WOO_NBA_PROPS_PAGE_FAILED",),
     ))
 
+    # 5a'. WoO public-export contract (Phase 13AK).
+    checks.append(_check(
+        "woo_public_export_contract",
+        [py, "scripts/verify_woo_public_export_contract.py", "--date", args.date],
+        pass_prefixes=("WOO_PUBLIC_EXPORT_CONTRACT_PASS",),
+        fail_prefixes=("WOO_PUBLIC_EXPORT_CONTRACT_FAILED",),
+    ))
+
+    # 5a''. Daily README freshness (Phase 13AK).
+    checks.append(_check(
+        "daily_readme_freshness",
+        [py, "scripts/verify_daily_readme_freshness.py",
+         "--date", args.date, "--derek-date", args.derek_date],
+        pass_prefixes=("DAILY_README_FRESHNESS_PASS",),
+        fail_prefixes=("DAILY_README_FRESHNESS_FAILED",),
+    ))
+
     # 5b/6/7. WoO state machine + morning + t_minus_25 + close_lock snapshots
     checks.append(_check(
         "woo_snapshot_state_machine",
@@ -276,6 +293,8 @@ def main(argv: list[str] | None = None) -> int:
         [py, "scripts/verify_derek_outcome_level_probabilities.py",
          "--delivery-date", args.derek_date],
         pass_prefixes=("DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS",),
+        warn_prefixes=("DEREK_OUTCOME_LEVEL_PROBABILITIES_PENDING",
+                       "DEREK_OUTCOME_LEVEL_PROBABILITIES_MISSED_DOCUMENTED"),
         fail_prefixes=("DEREK_OUTCOME_LEVEL_PROBABILITIES_FAILED",),
     ))
     rc, out, err = _run([py, "scripts/verify_derek_live_snapshots.py",

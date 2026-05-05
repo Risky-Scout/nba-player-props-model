@@ -82,7 +82,7 @@
       "stat": "reb"
     }
   ],
-  "code_commit": "25d807a0a9b966272209bc3ec615a5486c136bce",
+  "code_commit": "84cade383e5a48f94e1665eafc837e1a3a239bff",
   "dates_included": [
     "2026-05-03",
     "2026-05-02",
@@ -117,7 +117,7 @@
   ],
   "delta_brier": 0.006408313073238642,
   "delta_logloss": 0.014793250567967896,
-  "generated_at_utc": "2026-05-05T01:05:13+00:00",
+  "generated_at_utc": "2026-05-05T01:46:15+00:00",
   "market_brier": 0.23329458410537332,
   "market_logloss": 0.6580680497226657,
   "min_bucket_rows": 50,

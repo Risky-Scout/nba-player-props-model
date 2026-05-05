@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "date": "2026-05-04",
-  "generated_at_utc": "2026-05-05T01:05:07+00:00",
+  "generated_at_utc": "2026-05-05T01:46:15+00:00",
   "facts": {
     "date": "2026-05-04",
     "pred_parquet_path": "predictions/all_props_2026-05-04.parquet",

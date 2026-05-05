@@ -43,6 +43,8 @@ SECTION_LABEL_MAP = (
     ("derek_production_live_e2e","DEREK CLOSE    "),
     ("derek_after_game_scoring", "DEREK SCORING  "),
     ("woo_after_game_scoring",   "WOO SCORING    "),
+    ("woo_public_export_contract", "WOO EXPORT     "),
+    ("daily_readme_freshness",   "README FRESH   "),
     ("pmf_variance_calibration_study", "CALIBRATION    "),
     ("human_readable_reports",   "HUMAN REPORTS  "),
 )

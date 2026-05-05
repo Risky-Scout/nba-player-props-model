@@ -1,6 +1,6 @@
 # WoO snapshot schedule state — 2026-05-04
 
-_Generated 2026-05-05T01:05:15+00:00._
+_Generated 2026-05-05T01:46:16+00:00._
 
 - snapshot types checked: `['morning', 't_minus_25', 'close_lock']`
 - outcome: **pass**

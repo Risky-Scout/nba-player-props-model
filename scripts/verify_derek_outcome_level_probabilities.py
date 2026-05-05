@@ -202,6 +202,53 @@ def main(argv: list[str] | None = None) -> int:
               f"ok={len(ok)}  skipped={len(skipped)}", file=sys.stderr)
         return 1
 
+    # Phase 13AK: a production PASS requires at least one real verified
+    # current_live snapshot. ok=0 with skipped>0 needs a finer
+    # classification:
+    #   - all skipped folders carry missed_snapshot_manifest.json →
+    #     MISSED_DOCUMENTED (honest documented historical misses; not a
+    #     fail — the dispatcher correctly refused to fabricate pre-tip
+    #     data after tip).
+    #   - any skipped folder is just absent / partial → FAIL.
+    #   - slate has zero games → PENDING (pre-slate, no work yet).
+    if not ok:
+        pred_parquet = REPO_ROOT / "predictions" / f"all_props_{args.delivery_date}.parquet"
+        slate_games = 0
+        if pred_parquet.exists():
+            try:
+                import pandas as pd
+                df = pd.read_parquet(pred_parquet, columns=["game_id"])
+                slate_games = int(df["game_id"].nunique())
+            except Exception:
+                pass
+        if slate_games == 0:
+            print("DEREK_OUTCOME_LEVEL_PROBABILITIES_PENDING  "
+                  f"delivery_date={args.delivery_date}  "
+                  f"reason=no_predictions_parquet_or_zero_games")
+            return 0
+
+        # Distinguish documented-miss from absent-without-marker.
+        all_documented = True
+        for r in skipped:
+            snap_dir = REPO_ROOT / r["path"]
+            if not (snap_dir / "missed_snapshot_manifest.json").exists():
+                all_documented = False
+                break
+        if all_documented and skipped:
+            print("DEREK_OUTCOME_LEVEL_PROBABILITIES_MISSED_DOCUMENTED  "
+                  f"delivery_date={args.delivery_date}  "
+                  f"slate_games={slate_games}  ok=0  "
+                  f"missed_documented={len(skipped)}  "
+                  f"reason=all_eligible_games_have_documented_missed_snapshots")
+            return 0
+
+        print("DEREK_OUTCOME_LEVEL_PROBABILITIES_FAILED  "
+              f"delivery_date={args.delivery_date}  "
+              f"slate_games={slate_games}  ok=0  skipped={len(skipped)}  "
+              f"reason=no_verified_snapshots_and_not_all_misses_documented",
+              file=sys.stderr)
+        return 1
+
     print("DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  "
           f"delivery_date={args.delivery_date}  ok={len(ok)}  skipped={len(skipped)}")
     return 0

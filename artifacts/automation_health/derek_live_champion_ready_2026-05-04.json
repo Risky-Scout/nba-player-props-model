@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "detail": "artifacts/models/registry/champion_pointer.json",
+      "name": "champion_pointer_present",
+      "passed": true
+    },
+    {
+      "detail": "all rich fields present",
+      "name": "champion_pointer_rich_fields_present",
+      "passed": true
+    },
+    {
+      "detail": "trained_through=2026-04-30 yesterday=2026-05-03",
+      "name": "trained_through_date_no_later_than_yesterday",
+      "passed": true
+    },
+    {
+      "detail": "calibrated_through=2026-04-30 yesterday=2026-05-03",
+      "name": "calibrated_through_date_no_later_than_yesterday",
+      "passed": true
+    },
+    {
+      "detail": "trained=2026-04-30 calibrated=2026-04-30",
+      "name": "calibrated_through_ge_trained_through",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "pointer_flag:leakage_checks_passed",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "pointer_flag:no_future_rows_verified",
+      "passed": true
+    },
+    {
+      "detail": "promotion_decision_id='phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826'",
+      "name": "champion_not_dry_run_or_synthetic",
+      "passed": true
+    }
+  ],
+  "code_commit": "84cade383e5a48f94e1665eafc837e1a3a239bff",
+  "delivery_date": "2026-05-04",
+  "facts": {
+    "calibrated_through_date": "2026-04-30",
+    "champion_model_id": "challenger-2026-04-30",
+    "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+    "delivery_date_minus_one_utc": "2026-05-03",
+    "trained_through_date": "2026-04-30"
+  },
+  "generated_at_utc": "2026-05-05T01:42:39+00:00",
+  "passed": true,
+  "schema_version": "1.0"
+}
