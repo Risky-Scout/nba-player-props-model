@@ -72,7 +72,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy requests joblib scikit-learn
+        run: pip install -r requirements.txt
 
       # Phase 13AL: secrets preflight — fail fast if BDL is missing.
       - name: Secrets preflight (Phase 13AL)
