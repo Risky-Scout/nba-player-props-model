@@ -3,5 +3,5 @@
   "snapshot_type_emitted": "near_tip",
   "lineup_freshness_rollup": "projected=65",
   "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
-  "checked_at_utc": "2026-05-05T03:51:13Z"
+  "checked_at_utc": "2026-05-05T08:34:28Z"
 }

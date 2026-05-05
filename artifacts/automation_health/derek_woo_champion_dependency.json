@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "age_days=3.54 max=14",
+      "detail": "age_days=3.82 max=14",
       "name": "champion_freshness",
       "passed": true
     },
@@ -41,9 +41,9 @@
       "passed": true
     }
   ],
-  "code_commit": "84cade383e5a48f94e1665eafc837e1a3a239bff",
+  "code_commit": "cd51e43d40a8f7ce89acc69254a98655b84e412e",
   "facts": {
-    "champion_age_days": 3.54,
+    "champion_age_days": 3.82,
     "champion_calibrated_through_date": "2026-04-30",
     "champion_calibrator_actual_sha_prefixes": {
       "ast": "aa73d678b1512d33",
@@ -82,7 +82,7 @@
         "champion_model_id": "challenger-2026-04-30",
         "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
         "model_source": "champion_pointer",
-        "model_version": "3a9664f#phase10c",
+        "model_version": "c74808d#phase10c",
         "no_challenger_artifacts_used": true,
         "path": "deliveries/2026-05-04/wizard_of_odds/run_manifest.json",
         "trained_through_date": "2026-04-30"
@@ -97,7 +97,7 @@
     "latest_delivery_date": "2026-05-04",
     "latest_delivery_generated_at": null
   },
-  "generated_at_utc": "2026-05-05T01:46:14+00:00",
+  "generated_at_utc": "2026-05-05T08:34:37+00:00",
   "max_stale_days": 14,
   "passed": true,
   "schema_version": "1.0"
