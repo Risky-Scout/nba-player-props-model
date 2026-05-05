@@ -1,21 +1,22 @@
 name: NBA Props Model — Daily Pipeline
 
-# Three jobs, three cron triggers:
-#   14:00 UTC = 9:00 AM ET  — opening lines snapshot (before sharp action)
-#   13:00 UTC = 8:00 AM ET  — predictions + grading
-#   23:00 UTC = 6:00 PM ET  — closing lines snapshot (post-injury-report)
+# Three jobs, three cron triggers (ET reference is approximate — ET shifts
+# ±1h between EST and EDT; pipeline behavior depends on UTC, not local ET):
+#   13:00 UTC = 9:00 AM ET (EDT) / 8:00 AM ET (EST)  — predictions + grading
+#   14:00 UTC = 10:00 AM ET (EDT) / 9:00 AM ET (EST) — opening lines snapshot
+#   23:00 UTC = 7:00 PM ET (EDT) / 6:00 PM ET (EST)  — closing lines snapshot
 
 on:
   schedule:
-    - cron: '0 14 * * *'   # 9:00 AM ET — opening lines snapshot
-    - cron: '0 13 * * *'   # 8:00 AM ET — predictions + grading
-    - cron: '0 23 * * *'   # 6:00 PM ET — closing lines snapshot
+    - cron: '0 14 * * *'   # 10:00 AM ET (EDT) / 9:00 AM ET (EST) — opening lines snapshot
+    - cron: '0 13 * * *'   # 9:00 AM ET (EDT) / 8:00 AM ET (EST)  — predictions + grading
+    - cron: '0 23 * * *'   # 7:00 PM ET (EDT) / 6:00 PM ET (EST)  — closing lines snapshot
   workflow_dispatch:         # manual trigger runs all three jobs
 
 # ── Job 1: Opening lines snapshot (9 AM ET) ───────────────────────────────────
 jobs:
 
-  snapshot_opening:
+  snapshot_opening:  # 14:00 UTC = 10:00 AM ET EDT / 9:00 AM ET EST
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: |
@@ -52,7 +53,7 @@ jobs:
           done
 
 
-# ── Job 2: Grade + Predict (8 AM ET) ─────────────────────────────────────────
+# ── Job 2: Grade + Predict (13:00 UTC = 9 AM ET EDT / 8 AM ET EST) ───────────
 # CRITICAL: This job is INDEPENDENT — it does NOT depend on snapshot_opening.
 # snapshot_opening failing must never cause predictions to be skipped.
 
@@ -251,7 +252,7 @@ jobs:
           echo "✓ Predictions uploaded to server"
 
 
-# ── Job 3: Closing lines snapshot (6 PM ET) ──────────────────────────────────
+# ── Job 3: Closing lines snapshot (23:00 UTC = 7 PM ET EDT / 6 PM ET EST) ────
 
   snapshot_closing:
     runs-on: ubuntu-latest

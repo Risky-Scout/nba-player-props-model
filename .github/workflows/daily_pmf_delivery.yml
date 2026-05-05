@@ -40,6 +40,15 @@ name: NBA PMF Delivery — Daily Pipeline
 #     needs_affiliate_mapping and the URL fields stay blank)
 
 on:
+  # Phase 13AM: prefer workflow_run so PMF delivery fires automatically
+  # after a successful Daily Pipeline (predict.py producing the dated
+  # parquet). Cron schedules below remain for the window-specific
+  # near-tip / monetization / after-game runs that don't depend on a
+  # fresh predict cycle.
+  workflow_run:
+    workflows: ["NBA Props Model — Daily Pipeline"]
+    types: [completed]
+    branches: [main]
   schedule:
     # WoO monetization (early/afternoon).
     - cron: '0 15 * * *'
@@ -114,15 +123,31 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           python3 scripts/verify_secrets_preflight.py
-      - name: Resolve delivery date
+      - name: Resolve delivery date (America/New_York)
         id: d
+        # Phase 13AM: ET-anchored slate-date resolution so cron firings
+        # that span the UTC rollover still target tonight's slate (matches
+        # what the operator and Derek/WoO downstream expect).
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_DATE via America/New_York"
+            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           fi
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "morning"
       - name: Run delivery pipeline (morning, manual)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -141,6 +166,7 @@ jobs:
             --regions us us2 \
             --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
       - name: Stage and commit approved files
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
@@ -193,15 +219,29 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           python3 scripts/verify_secrets_preflight.py
-      - name: Resolve delivery date
+      - name: Resolve delivery date (America/New_York)
         id: d
+        # Phase 13AM: ET-anchored slate-date resolution.
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_DATE via America/New_York"
+            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           fi
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "woo_morning_monetization"
       - name: Run delivery pipeline (woo_morning_monetization)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -220,6 +260,7 @@ jobs:
             --regions us us2 \
             --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
       - name: Stage and commit approved files
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
@@ -273,15 +314,29 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           python3 scripts/verify_secrets_preflight.py
-      - name: Resolve delivery date
+      - name: Resolve delivery date (America/New_York)
         id: d
+        # Phase 13AM: ET-anchored slate-date resolution.
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_DATE via America/New_York"
+            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           fi
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "woo_afternoon_refresh"
       - name: Run delivery pipeline (woo_afternoon_refresh)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -295,6 +350,7 @@ jobs:
             --mode woo_afternoon_refresh \
             --regions us us2 $FORCE_FLAG
       - name: Stage and commit
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
@@ -367,47 +423,32 @@ jobs:
             echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           fi
 
-      # Phase 13AJ: hard prerequisite — predictions/all_props_<date>.parquet
-      # must exist before near-lineup can compute snapshot deltas. If
-      # missing, generate it via predict.py with the dated slate. If
-      # predict.py also fails (e.g. odds API rate limit), surface a
-      # WAITING_FOR_PREDICTIONS exit instead of an opaque pipeline crash.
-      - name: Ensure dated predictions exist (Phase 13AJ)
+      # Phase 13AM: predictions-readiness gate. Replaces the looser Phase
+      # 13AJ "Ensure dated predictions exist" step with a single source of
+      # truth that emits WAITING_FOR_PREDICTIONS_VALID_SKIP (exit 0 GREEN)
+      # when the slate's predictions parquet does not yet exist AND the
+      # daily predict cron has not yet had a chance to fire. When the
+      # cron-window has passed and predictions are still missing, the gate
+      # invokes scripts/predict.py and fails loudly if predict.py can't
+      # produce the dated artifacts.
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          DATE=${{ steps.d.outputs.date }}
-          PARQUET="predictions/all_props_${DATE}.parquet"
-          if [ -f "$PARQUET" ]; then
-            echo "predictions parquet present: $PARQUET"
-          else
-            echo "::warning::predictions parquet missing — invoking predict.py before near-lineup"
-            python scripts/predict.py || {
-              echo "::error::predict.py failed; near-lineup cannot run without dated predictions. Exiting WAITING_FOR_PREDICTIONS."
-              echo "WAITING_FOR_PREDICTIONS  date=$DATE"
-              exit 0
-            }
-          fi
-          if [ ! -f "$PARQUET" ]; then
-            echo "::error::predict.py finished but $PARQUET still missing. Exiting WAITING_FOR_PREDICTIONS."
-            echo "WAITING_FOR_PREDICTIONS  date=$DATE"
-            exit 0
-          fi
-          python3 scripts/verify_daily_prediction_outputs.py --date "$DATE"
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "derek_near_lineup"
 
       - name: Run delivery pipeline (derek_near_lineup)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
           DATE=${{ steps.d.outputs.date }}
-          PARQUET="predictions/all_props_${DATE}.parquet"
-          if [ ! -f "$PARQUET" ]; then
-            echo "::error::predictions parquet still missing; refusing to run near-lineup pipeline"
-            echo "WAITING_FOR_PREDICTIONS  date=$DATE"
-            exit 0
-          fi
           FORCE_FLAG=""
           if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
             FORCE_FLAG="--force-run"
@@ -423,12 +464,14 @@ jobs:
       # the contract status in the workflow log without re-failing the
       # job that just succeeded.
       - name: Verify near-lineup contract (Phase 13AJ)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         continue-on-error: true
         run: |
           python3 scripts/verify_derek_near_lineup_contract.py \
             --date ${{ steps.d.outputs.date }} || \
             echo "::warning::near-lineup contract verifier WARN/FAILED — see step log"
       - name: Stage and commit
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
@@ -481,15 +524,31 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           python3 scripts/verify_secrets_preflight.py
-      - name: Resolve delivery date
+      - name: Resolve delivery date (America/New_York)
         id: d
+        # Phase 13AM: ET-anchored slate-date resolution. close_lock fires
+        # at 03:25 UTC which is the day AFTER the slate in UTC; ET puts us
+        # back on the operator's slate.
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_DATE via America/New_York"
+            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           fi
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "close_lock"
       - name: Run delivery pipeline (close_lock)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -503,6 +562,7 @@ jobs:
             --mode close_lock \
             --regions us us2 $FORCE_FLAG
       - name: Stage and commit
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
@@ -555,16 +615,37 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           python3 scripts/verify_secrets_preflight.py
-      - name: Resolve delivery date (yesterday)
+      - name: Resolve delivery date (yesterday, America/New_York)
         id: d
+        # Phase 13AM: ET-anchored "yesterday" so after-game scoring keys
+        # the slate the operator just watched, not the UTC-rolled date.
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d 2>/dev/null || \
-              date -u -v-1d +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_PREV=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-1d +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_PREV via America/New_York yesterday"
+            echo "date=$ET_PREV" >> "$GITHUB_OUTPUT"
           fi
+      - name: Predictions readiness gate (Phase 13AM, after-game)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          # After-game scores yesterday's slate, so predictions must
+          # already exist. There is no point invoking predict.py for a
+          # past slate, so the gate is configured with --no-run-predict
+          # (still emits WAITING_FOR_PREDICTIONS_VALID_SKIP if the prior
+          # day's predictions never landed, instead of red-failing).
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "after_game" \
+            --no-run-predict
       - name: Run delivery pipeline (after_game)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
@@ -572,6 +653,7 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode after_game
       - name: Phase 13K — re-run scorer for canonical artifacts
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
@@ -583,6 +665,7 @@ jobs:
           python scripts/score_daily_pmf_delivery_after_game.py \
             --date ${{ steps.d.outputs.date }}
       - name: Phase 13K — stamp Derek/WoO/PMF-review manifests
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         # Stamp BEFORE consistency verification so the verifier sees a
         # consistent state. The Stage-and-commit step below still re-runs
         # stamping + Derek/WoO dependency check idempotently, which is fine.
@@ -590,15 +673,18 @@ jobs:
           python scripts/stamp_delivery_champion_metadata.py \
             --delivery-date ${{ steps.d.outputs.date }}
       - name: Phase 13K — after-game package consistency
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           python scripts/verify_after_game_scoring_package_consistency.py \
             --delivery-date ${{ steps.d.outputs.date }}
       - name: Phase 13K — rolling market benchmark
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           python scripts/build_rolling_market_benchmark.py \
             --as-of-date ${{ steps.d.outputs.date }} \
             --window-days 28 || echo "::warning::rolling market benchmark insufficient_sample"
       - name: Phase 13AA — PMF variance experience study (non-blocking)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         # Runs after after-game scoring so settled outcomes are joined.
         # Honest insufficient-sample reports are written to disk; this step
         # never fails the workflow because thin samples are expected during
@@ -614,6 +700,7 @@ jobs:
             --as-of-date ${{ steps.d.outputs.date }} || \
             echo "::warning::pmf variance experience verifier WARN/FAILED — see step log"
       - name: Stage and commit
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
