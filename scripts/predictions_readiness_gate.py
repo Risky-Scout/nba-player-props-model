@@ -210,19 +210,22 @@ def main() -> int:
         f"[gate] now_utc_hour={now_hour} predict_cron_hour_utc={args.predict_cron_hour_utc}"
     )
 
-    # After-game mode: never invoke predict for a past slate.
-    if args.no_run_predict:
-        return _valid_skip(date, mode, reason="past_slate_no_regenerate")
-
-    # Forward-looking modes: if we are still BEFORE the predict cron has
-    # had a chance to fire today, this is an expected pre-tip cron firing.
-    # Valid-skip green.
+    # If we are still BEFORE the predict cron has had a chance to fire
+    # today, this is an expected pre-tip firing — valid-skip green
+    # regardless of whether predict.py is allowed to run.
     if now_hour < args.predict_cron_hour_utc:
         return _valid_skip(
             date,
             mode,
             reason=f"before_predict_cron_now_utc_hour={now_hour}",
         )
+
+    # --no-run-predict modes (e.g. after-game past slates, deploy at
+    # an arbitrary time) never invoke predict.py themselves; they
+    # valid-skip green and let the forward-looking pipeline regenerate
+    # the slate's predictions.
+    if args.no_run_predict:
+        return _valid_skip(date, mode, reason="no_run_predict_mode")
 
     # We are at/past predict cron and predictions still don't exist:
     # invoke predict.py. Fail loudly if it cannot produce the artifacts.
