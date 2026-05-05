@@ -22,7 +22,7 @@
     "training_run_id": "nightly-20260501T124701",
     "validation_report_path": "artifacts/phase13s/validation_gates_report.json"
   },
-  "generated_at_utc": "2026-05-05T17:04:29+00:00Z",
+  "generated_at_utc": "2026-05-05T17:11:23+00:00Z",
   "metrics_per_target": {
     "ast": {
       "baseline_mse": 0.00956541013927596,
@@ -335,7 +335,7 @@
           "rps": 0.5920042672208671
         }
       },
-      "code_commit": "c3d076c2a68fc46ceca9d630c67e800fd1e6a0cf",
+      "code_commit": "f1e4b40b02e7c887aee5e2ab402912a78459c2be",
       "gates_failed": [
         "promotion_clock_safe",
         "market_logloss_non_inferior_or_better",
@@ -360,7 +360,7 @@
         "no_phase10d_overlays_referenced",
         "market_benchmark_available"
       ],
-      "generated_at_utc": "2026-05-05T14:38:24+00:00",
+      "generated_at_utc": "2026-05-05T17:11:02+00:00",
       "market_benchmark": {
         "as_of_date": "2026-05-04",
         "by_edge_bucket": [],
@@ -445,7 +445,7 @@
             "stat": "reb"
           }
         ],
-        "code_commit": "c3d076c2a68fc46ceca9d630c67e800fd1e6a0cf",
+        "code_commit": "f1e4b40b02e7c887aee5e2ab402912a78459c2be",
         "dates_included": [
           "2026-05-04",
           "2026-05-03",
@@ -480,7 +480,7 @@
         ],
         "delta_brier": 0.006408313073238642,
         "delta_logloss": 0.014793250567967896,
-        "generated_at_utc": "2026-05-05T14:38:09+00:00",
+        "generated_at_utc": "2026-05-05T17:10:48+00:00",
         "market_brier": 0.23329458410537332,
         "market_logloss": 0.6580680497226657,
         "min_bucket_rows": 50,
@@ -582,14 +582,14 @@
         "stale_fallback_used": false,
         "target_date_et": "2026-05-04",
         "target_policy": "manual_override",
-        "training_run_id": "nightly-20260505T143650"
+        "training_run_id": "nightly-20260505T170926"
       },
       "promote": false,
       "reason": "gate_failed:promotion_clock_safe",
       "schema_version": "1.0",
       "warnings": []
     },
-    "promotion_decision_path": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-04/promotion_decision.json",
+    "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-04/promotion_decision.json",
     "promotion_manifest": {
       "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
       "code_commit": "5d6d79f8e9c4399918df4730fa82266f08855869",
@@ -600,7 +600,7 @@
       "promoted_at_utc": "2026-05-03T13:58:26+00:00",
       "schema_version": "1.0"
     },
-    "promotion_manifest_path": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-04/promotion_manifest.json",
+    "promotion_manifest_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-04/promotion_manifest.json",
     "promotion_reason": "gate_failed:promotion_clock_safe"
   },
   "rolling_benchmark": {
