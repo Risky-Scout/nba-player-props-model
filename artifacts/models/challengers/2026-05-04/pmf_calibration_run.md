@@ -1,8 +1,8 @@
 # PMF calibration run
 
-**Run at:** 2026-05-05T17:10:44.972278Z
+**Run at:** 2026-05-05T20:04:06.173136Z
 **Folds:** 15 walk-forward, 28-day validation, 365-day minimum training window.
-**Production artifact backup:** `/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/archive/aggregate_only_20260505_170940`
+**Production artifact backup:** `/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/archive/aggregate_only_20260505_200302`
 
 ## Per-stat result
 

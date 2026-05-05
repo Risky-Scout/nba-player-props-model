@@ -3,8 +3,8 @@
 - status: **skipped_already_fresh**
 - halted_reason: (none)
 - provider: balldontlie.io
-- started_at_utc: 2026-05-05T17:09:27+00:00
-- finished_at_utc: 2026-05-05T17:09:27+00:00
+- started_at_utc: 2026-05-05T20:02:50+00:00
+- finished_at_utc: 2026-05-05T20:02:50+00:00
 
 ## Parquet pre/post
 
