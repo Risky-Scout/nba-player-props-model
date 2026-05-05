@@ -100,7 +100,27 @@ jobs:
           echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           echo "Resolved deploy_date=$ET_DATE via America/New_York"
 
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
+        # Same valid-skip gate the PMF Delivery jobs use. workflow_run
+        # firings happen after PMF Delivery succeeds, so predictions
+        # will be present in the standard flow. Manual dispatches
+        # before the predict cron just emit WAITING_FOR_PREDICTIONS_VALID_SKIP
+        # exit 0 GREEN and the downstream steps skip cleanly. The
+        # deploy is configured with --no-run-predict so a manual
+        # dispatch at 02:00 ET never tries to fabricate predictions.
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "ftp_deploy" \
+            --no-run-predict
+
       - name: Preflight — verify required FTP secrets are set
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           WOO_FTP_HOST: ${{ secrets.WOO_FTP_HOST }}
           WOO_FTP_USER: ${{ secrets.WOO_FTP_USER }}
@@ -133,22 +153,27 @@ jobs:
       # gated behind their success; if any fails, no FTP upload happens.
 
       - name: 1/4 Publish WoO public export JSON (Phase 13AM)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           python3 scripts/publish_woo_public_export.py --date "${{ steps.d.outputs.date }}"
 
       - name: 2/4 Build WoO dashboard HTML pages (Phase 13AM)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           python3 scripts/build_woo_dashboard.py --date "${{ steps.d.outputs.date }}"
 
       - name: 3/4 Verify WoO dashboard render contract (Phase 13AM)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           python3 scripts/verify_woo_dashboard_render_contract.py --date "${{ steps.d.outputs.date }}"
 
       - name: 4/4 Verify WoO public export contract (Phase 13AM)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           python3 scripts/verify_woo_public_export_contract.py --date "${{ steps.d.outputs.date }}"
 
       - name: Stage rendered HTML pages for FTP upload (Phase 13AM)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         # Copy the rendered HTML into public_export/wizard_of_odds/ so
         # the existing recursive FTP deploy picks them up. Templates
         # (_template_*.html) live ONLY in predictions/ and are never
@@ -178,6 +203,7 @@ jobs:
           done
 
       - name: Pre-deploy verifier — workflow contract (Phase 13AM)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         # Static workflow audit; ensures THIS yaml + the daily ones use
         # the new pipeline (and not the legacy build_wizard_of_odds_*.py).
         # Required to emit WOO_DEPLOY_WORKFLOW_CONTRACT_PASS.
@@ -185,6 +211,7 @@ jobs:
           python3 scripts/verify_woo_deploy_workflow_contract.py
 
       - name: FTP deploy (FTPS, with optional plain fallback)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           WOO_FTP_HOST: ${{ secrets.WOO_FTP_HOST }}
           WOO_FTP_USER: ${{ secrets.WOO_FTP_USER }}
