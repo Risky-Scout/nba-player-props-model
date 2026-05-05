@@ -87,14 +87,5 @@
   },
   "generated_at_utc": "2026-05-05T14:36:54+00:00",
   "overall_pass": true,
-  "phase13g": {
-    "data_complete_for_target_date": null,
-    "resolved_training_cutoff_date": "2026-05-04",
-    "stale_fallback_target_date": null,
-    "stale_fallback_used": false,
-    "target_date_et": "2026-05-04",
-    "target_policy": "manual_override",
-    "training_run_id": "nightly-20260505T143650"
-  },
   "schema_version": "1.0"
 }

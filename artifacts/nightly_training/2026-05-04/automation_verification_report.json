@@ -2,59 +2,59 @@
   "as_of_date": "2026-05-04",
   "checks": [
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/training_readiness/2026-05-04/readiness_report.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/training_readiness/2026-05-04/readiness_report.json",
       "name": "readiness_report_exists",
       "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-04",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04",
       "name": "challenger_dir_exists",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-04/train_manifest.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/train_manifest.json",
       "name": "train_manifest_exists",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-04/calibration_manifest.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/calibration_manifest.json",
       "name": "calibration_manifest_exists",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-04/validation_report.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/validation_report.json",
       "name": "validation_report_exists",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/challengers/2026-05-04/promotion_decision.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/promotion_decision.json",
       "name": "promotion_decision_exists",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/champion_pointer.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/champion_pointer.json",
       "name": "champion_pointer_exists",
       "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/model_registry.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/model_registry.json",
       "name": "model_registry_exists",
       "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/models/registry/promotion_log.csv",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/promotion_log.csv",
       "name": "promotion_log_exists",
       "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-04/run_manifest.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-04/run_manifest.json",
       "name": "nightly_run_manifest_exists",
       "passed": true
     },
     {
-      "detail": "/Users/josephshackelford/woo_models/Gen3_DARKO_Model/artifacts/nightly_training/2026-05-04/smoke_test_report.json",
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-04/smoke_test_report.json",
       "name": "smoke_test_report_exists",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "pointer model_version present and unchanged (promote was false)",
@@ -62,19 +62,19 @@
       "passed": true
     },
     {
-      "detail": "validation_report.json missing",
+      "detail": "issues=[]",
       "name": "pmf_validity_passed",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "smoke_test_report.json missing",
+      "detail": "{\"build_derek_forward_feed.py_present\": true, \"challenger_dir_referenced\": false, \"champion_pointer_used_only\": true}",
       "name": "derek_compat_smoke_passed",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "smoke_test_report.json missing",
+      "detail": "{\"build_wizard_of_odds_public_export.py_present\": true, \"challenger_dir_referenced\": false, \"champion_pointer_used_only\": true}",
       "name": "woo_compat_smoke_passed",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "hits=[]",
@@ -92,9 +92,9 @@
       "passed": true
     },
     {
-      "detail": "manifests missing",
+      "detail": "missing_train=set() missing_cal=set()",
       "name": "training_run_reproducible",
-      "passed": false
+      "passed": true
     },
     {
       "detail": ".github/workflows/nightly_training_calibration.yml",
@@ -150,9 +150,24 @@
       "detail": "staged_violations=[]",
       "name": "no_forbidden_files_staged",
       "passed": true
+    },
+    {
+      "detail": "challenger_pickles=5 (must be > 0 when dry_run=false)",
+      "name": "real_training_challenger_pickles_present",
+      "passed": true
+    },
+    {
+      "detail": "validation_report.challenger.dry_run=False",
+      "name": "real_training_validation_scored_real_artifacts",
+      "passed": true
+    },
+    {
+      "detail": "challenger_has_metric=True champion_has_metric=True",
+      "name": "real_training_metrics_computed",
+      "passed": true
     }
   ],
-  "code_commit": "466c26c5d0f3aca97be3ee5e92dbbbca1aed2656",
+  "code_commit": "c3d076c2a68fc46ceca9d630c67e800fd1e6a0cf",
   "failure_simulation": {
     "pointer_unchanged": true,
     "post_pointer_sha256": "125eb260dc642bd3b26878f8e407bffd716a210a2727e6cbdc815dea9191fff3",
@@ -160,16 +175,18 @@
     "promote_script_exit_code": 0,
     "promotion_marker_promoted_field": false
   },
-  "generated_at_utc": "2026-05-04T16:39:26+00:00",
-  "mode": "unknown",
+  "generated_at_utc": "2026-05-05T14:38:26+00:00",
+  "mode": "real_training",
   "mode_details": {
-    "calibration_manifest_dry_run": null,
-    "challenger_pickle_count": 0,
-    "run_manifest_final_status": "halted_pending_upstream_data",
-    "run_manifest_halted_reason": "previous_day_data_not_ready",
-    "train_manifest_dry_run": null,
-    "train_manifest_status": null
+    "calibration_manifest_dry_run": false,
+    "challenger_pickle_count": 5,
+    "manifest_recorded_pickle_count": 5,
+    "pickles_source": "on_disk",
+    "run_manifest_final_status": "halted_no_promotion",
+    "run_manifest_halted_reason": "promotion_clock_cutoff",
+    "train_manifest_dry_run": false,
+    "train_manifest_status": "ok"
   },
-  "overall_pass": false,
+  "overall_pass": true,
   "schema_version": "1.0"
 }

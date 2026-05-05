@@ -1,43 +1,153 @@
 {
   "as_of_date": "2026-05-04",
-  "code_commit": "37b1ea4639dd0819a492d45267244b2dee8db257",
-  "dry_run": null,
-  "final_status": "halted_pending_upstream_data",
-  "finished_at_utc": null,
-  "halted_reason": "previous_day_data_not_ready",
-  "halted_detail": "data/player_game_stats.parquet max_outcome_date=2026-04-29 < target_date_et=2026-05-03; rows_for_target=0. Strict resolver halted before training. This is correct safe behavior — training should not run on stale upstream data.",
-  "no_promote": true,
+  "code_commit": "c3d076c2a68fc46ceca9d630c67e800fd1e6a0cf",
+  "dry_run": false,
+  "final_status": "halted_no_promotion",
+  "finished_at_utc": "2026-05-05T14:38:24+00:00",
+  "halted_reason": "promotion_clock_cutoff",
+  "no_promote": false,
   "phase10d_overlays_in_use": false,
   "phase13g": {
-    "data_complete_for_target_date": false,
-    "max_outcome_date_in_file": "2026-04-29",
-    "resolved_training_cutoff_date": null,
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-04",
     "stale_fallback_target_date": null,
     "stale_fallback_used": false,
-    "target_date_et": "2026-05-03",
-    "target_policy": "previous_day_et",
-    "rows_for_target": 0,
-    "training_run_id": null
+    "target_date_et": "2026-05-04",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260505T143650"
   },
   "promotion_summary": {
-    "from_version": "challenger-2026-04-30",
+    "from_version": null,
     "promoted": false,
-    "reason": "halted_pending_upstream_data; champion pointer unchanged",
-    "to_version": "challenger-2026-04-30"
+    "reason": null,
+    "to_version": null
   },
   "schema_version": "1.0",
   "smoke_summary": {
-    "champion_pointer_smoke": null,
-    "derek_compat_smoke": null,
-    "woo_compat_smoke": null,
-    "skipped_reason": "training did not run; smokes deferred until upstream data lands"
+    "champion_pointer_smoke": true,
+    "derek_compat_smoke": true,
+    "woo_compat_smoke": true
   },
-  "started_at_utc": "2026-05-04T11:20:33+00:00",
-  "steps": [],
-  "halted_workflow_run": {
-    "id": "25316091911",
-    "url": "https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25316091911",
-    "conclusion": "failure",
-    "is_correct_safe_behavior": true
-  }
+  "started_at_utc": "2026-05-05T14:36:50+00:00",
+  "steps": [
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/refresh_completed_game_data.py",
+        "--target-date",
+        "2026-05-04",
+        "--skip-if-fresh"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/source_data_refresh.log",
+      "name": "source_data_refresh",
+      "tail": "{\"status\": \"skipped_already_fresh\", \"target_date\": \"2026-05-04\"}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/verify_previous_day_source_completeness.py",
+        "--target-date",
+        "2026-05-04"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/previous_day_source_completeness.log",
+      "name": "previous_day_source_completeness",
+      "tail": "PREVIOUS_DAY_SOURCE_COMPLETENESS_PASS"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/check_daily_training_readiness.py",
+        "--date",
+        "2026-05-04"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/readiness.log",
+      "name": "readiness",
+      "tail": "{\"date\": \"2026-05-04\", \"overall_pass\": true, \"blocking_failed\": []}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/check_training_inputs.py",
+        "--as-of-date",
+        "2026-05-04"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/training_input_preflight.log",
+      "name": "training_input_preflight",
+      "tail": "{\"as_of_date\": \"2026-05-04\", \"all_required_present\": true, \"missing_advisory\": [\"data/training_table.parquet\"]}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/prepare_training_inputs.py",
+        "--as-of-date",
+        "2026-05-04"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/prepare_training_inputs.log",
+      "name": "prepare_training_inputs",
+      "tail": "{\"as_of_date\": \"2026-05-04\", \"stale_state_cleaned\": [\"aggregate_input/\"], \"inputs_present\": [\"fold_aggregate.parquet\", \"training_table.parquet\"]}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/train_daily_challenger_model.py",
+        "--as-of-date",
+        "2026-05-04",
+        "--no-dry-run"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/train_challenger.log",
+      "name": "train_challenger",
+      "tail": "}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/calibrate_daily_challenger_pmfs.py",
+        "--as-of-date",
+        "2026-05-04",
+        "--no-dry-run"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/calibrate_challenger.log",
+      "name": "calibrate_challenger",
+      "tail": "}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/build_rolling_market_benchmark.py",
+        "--as-of-date",
+        "2026-05-04",
+        "--window-days",
+        "28"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/rolling_market_benchmark.log",
+      "name": "rolling_market_benchmark",
+      "tail": "  rows_total=3362 dates_included=5 delta_logloss=+0.0148 delta_brier=+0.0064"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/validate_champion_vs_challenger.py",
+        "--as-of-date",
+        "2026-05-04"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-04/logs/validate.log",
+      "name": "validate",
+      "tail": "}"
+    },
+    {
+      "name": "promote",
+      "reason": "promotion_clock_unsafe_at_or_after_14:30_utc",
+      "skipped": true
+    }
+  ],
+  "training_run_id": "nightly-20260505T143650"
 }

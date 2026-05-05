@@ -1,0 +1,49 @@
+{
+  "code_commit": "c3d076c2a68fc46ceca9d630c67e800fd1e6a0cf",
+  "fetcher": "scripts/refresh_bdl_player_game_stats.py",
+  "finished_at_utc": "2026-05-05T14:36:51+00:00",
+  "halted_reason": null,
+  "post_refresh": {
+    "exists": true,
+    "max_game_date": "2026-05-04",
+    "mtime_utc": "2026-05-05T14:36:40.356779+00:00",
+    "path": "data/player_game_stats.parquet",
+    "recent_date_row_counts": {
+      "2026-04-30": 71,
+      "2026-05-01": 61,
+      "2026-05-02": 19,
+      "2026-05-03": 44,
+      "2026-05-04": 46
+    },
+    "row_count": 83775,
+    "rows_after_target_date": 0,
+    "rows_on_target_date": 46,
+    "sha256_prefix": "e493ee6f8a936ca6",
+    "size_bytes": 1312792
+  },
+  "pre_refresh": {
+    "exists": true,
+    "max_game_date": "2026-05-04",
+    "mtime_utc": "2026-05-05T14:36:40.356779+00:00",
+    "path": "data/player_game_stats.parquet",
+    "recent_date_row_counts": {
+      "2026-04-30": 71,
+      "2026-05-01": 61,
+      "2026-05-02": 19,
+      "2026-05-03": 44,
+      "2026-05-04": 46
+    },
+    "row_count": 83775,
+    "rows_after_target_date": 0,
+    "rows_on_target_date": 46,
+    "sha256_prefix": "e493ee6f8a936ca6",
+    "size_bytes": 1312792
+  },
+  "provider": "balldontlie.io",
+  "schema_version": "1.0",
+  "started_at_utc": "2026-05-05T14:36:51+00:00",
+  "status": "skipped_already_fresh",
+  "subprocess": null,
+  "target_date": "2026-05-04",
+  "target_policy": "yesterday_america_new_york"
+}

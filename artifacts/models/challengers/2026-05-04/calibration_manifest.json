@@ -1,0 +1,143 @@
+{
+  "as_of_date": "2026-05-04",
+  "calibrator_type": "phase8-role-bucket",
+  "code_commit": "c3d076c2a68fc46ceca9d630c67e800fd1e6a0cf",
+  "details": {
+    "calibration_window": {
+      "fold_days": 28,
+      "min_train_days": 365,
+      "scheme": "rolling-walk-forward",
+      "training_window_end": "2026-04-06",
+      "training_window_start": "2025-04-06",
+      "validation_window_end": "2026-05-04",
+      "validation_window_start": "2026-04-07"
+    },
+    "calibrator_kind": "real-walk-forward-from-calibrate-pmf",
+    "calibrator_pickles": [
+      {
+        "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/pmf_cal_role_ast.pkl",
+        "sha256_prefix": "58a6548670ca48f7",
+        "stat": "ast"
+      },
+      {
+        "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/pmf_cal_role_fg3m.pkl",
+        "sha256_prefix": "95a7e24bf892f92b",
+        "stat": "fg3m"
+      },
+      {
+        "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/pmf_cal_role_pts.pkl",
+        "sha256_prefix": "25d4677746bb6f23",
+        "stat": "pts"
+      },
+      {
+        "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/pmf_cal_role_reb.pkl",
+        "sha256_prefix": "f221abf92cbb4973",
+        "stat": "reb"
+      },
+      {
+        "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-04/pmf_cal_role_tov.pkl",
+        "sha256_prefix": "a19b28ca69c63e1e",
+        "stat": "tov"
+      }
+    ],
+    "oof_pmfs_parquet": "artifacts/models/challengers/2026-05-04/oof_pmfs.parquet",
+    "pmf_cal_meta_json": null,
+    "samples_by_role_bucket": {
+      "ast": {},
+      "blk": {},
+      "fg3m": {},
+      "pts": {},
+      "reb": {},
+      "stl": {},
+      "tov": {}
+    },
+    "samples_by_stat": {
+      "ast": 30792,
+      "blk": 30792,
+      "fg3m": 30792,
+      "pts": 30792,
+      "reb": 30792,
+      "stl": 30792,
+      "tov": 0
+    },
+    "shrinkage_applied": {
+      "ast": false,
+      "blk": false,
+      "fg3m": false,
+      "pts": false,
+      "reb": false,
+      "stl": false,
+      "tov": true
+    },
+    "shrinkage_floor_samples": 50,
+    "stat_support": {
+      "ast": {
+        "calibrator_pickle_present": true,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      },
+      "blk": {
+        "calibrator_pickle_present": false,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      },
+      "fg3m": {
+        "calibrator_pickle_present": true,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      },
+      "pts": {
+        "calibrator_pickle_present": true,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      },
+      "reb": {
+        "calibrator_pickle_present": true,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      },
+      "stl": {
+        "calibrator_pickle_present": false,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      },
+      "tov": {
+        "calibrator_pickle_present": true,
+        "fitted_in_meta": false,
+        "reason_if_unsupported": "no_oof_or_pickle",
+        "supported": false
+      }
+    },
+    "tov_diagnostics": {
+      "mean_bias": null,
+      "nll": null,
+      "notes": "Real numeric diagnostics computed by validate_champion_vs_challenger.py.",
+      "p0_error": null,
+      "role_bucket_calibration": null,
+      "rps": null
+    }
+  },
+  "dry_run": false,
+  "finished_at_utc": "2026-05-05T14:38:08+00:00",
+  "notes": "Phase 13A dry-run inherits champion calibrators by reference. The rolling validation window is reported but no recompute is performed. Walk-forward only \u2014 no future leakage.",
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-04",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-04",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260505T143650"
+  },
+  "schema_version": "1.0",
+  "started_at_utc": "2026-05-05T14:38:08+00:00",
+  "status": "ok",
+  "warnings": []
+}
