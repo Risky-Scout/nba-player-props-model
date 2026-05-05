@@ -86,6 +86,16 @@ jobs:
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
 
+      # Phase 13AL: surface required secrets before any downstream step.
+      # Fails fast if BDL_API_KEY is missing so the operator sees the
+      # exact gap rather than a confusing predict.py crash later.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
+
       - name: Bootstrap champion registry (idempotent)
         run: |
           python scripts/_bootstrap_champion_registry.py

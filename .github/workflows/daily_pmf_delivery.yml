@@ -107,6 +107,13 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      # Phase 13AL: secrets preflight — fail fast on BDL/Odds gaps.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
       - name: Resolve delivery date
         id: d
         run: |
@@ -179,6 +186,13 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      # Phase 13AL: secrets preflight — fail fast on BDL/Odds gaps.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
       - name: Resolve delivery date
         id: d
         run: |
@@ -252,6 +266,13 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      # Phase 13AL: secrets preflight — fail fast on BDL/Odds gaps.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
       - name: Resolve delivery date
         id: d
         run: |
@@ -322,6 +343,13 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      # Phase 13AL: secrets preflight — fail fast on BDL/Odds gaps.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
       - name: Resolve delivery date (America/New_York)
         id: d
         # Phase 13AJ: near-lineup cron windows extend across the UTC date
@@ -446,6 +474,13 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      # Phase 13AL: secrets preflight — fail fast on BDL/Odds gaps.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
       - name: Resolve delivery date
         id: d
         run: |
@@ -513,6 +548,13 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
+      # Phase 13AL: secrets preflight — fail fast on BDL/Odds gaps.
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py
       - name: Resolve delivery date (yesterday)
         id: d
         run: |
