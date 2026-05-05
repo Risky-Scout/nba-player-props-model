@@ -259,6 +259,16 @@ jobs:
             --mode woo_morning_monetization \
             --regions us us2 \
             --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
+      # Phase 13AM: refresh customer-facing JSON + HTML using the new
+      # pipeline so the public export is authoritatively from the new
+      # builder, not the legacy build_wizard_of_odds_public_export.py.
+      - name: Phase 13AM WoO new pipeline (publish/build/verify)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
       - name: Stage and commit approved files
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -277,7 +287,9 @@ jobs:
                   artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
-                  public_export/wizard_of_odds || true
+                  public_export/wizard_of_odds \
+                  predictions/nba-props.html \
+                  predictions/nba-pmf-research.html || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -349,6 +361,14 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode woo_afternoon_refresh \
             --regions us us2 $FORCE_FLAG
+      # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
+      - name: Phase 13AM WoO new pipeline (publish/build/verify)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -367,7 +387,9 @@ jobs:
                   artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
-                  public_export/wizard_of_odds || true
+                  public_export/wizard_of_odds \
+                  predictions/nba-props.html \
+                  predictions/nba-pmf-research.html || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -457,6 +479,15 @@ jobs:
             --date $DATE \
             --mode derek_near_lineup \
             --regions us us2 $FORCE_FLAG
+
+      # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
+      - name: Phase 13AM WoO new pipeline (publish/build/verify)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
 
       # Phase 13AJ: enforce the near-lineup contract — predictions
       # parquet present, near-lineup output produced, no UTC/ET date
@@ -561,6 +592,14 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode close_lock \
             --regions us us2 $FORCE_FLAG
+      # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
+      - name: Phase 13AM WoO new pipeline (publish/build/verify)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
+          python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -579,7 +618,9 @@ jobs:
                   artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
                   deliveries/README.md \
                   deliveries/index.html \
-                  public_export/wizard_of_odds || true
+                  public_export/wizard_of_odds \
+                  predictions/nba-props.html \
+                  predictions/nba-pmf-research.html || true
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \

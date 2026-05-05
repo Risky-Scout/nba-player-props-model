@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PMF Research · Wizard of Odds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --panel: #131826;
+    --panel-2: #1a2030;
+    --panel-3: #222a40;
+    --border: #232a3d;
+    --border-2: #2d3650;
+    --text: #e8ecf5;
+    --text-dim: #8892a8;
+    --text-muted: #5a6378;
+    --gold: #d4af37;
+    --gold-soft: #b89a30;
+    --green: #4ade80;
+    --red: #f87171;
+    --bar: #6b8cc4;        /* clean clear blue */
+    --bar-mode: #d4af37;
+    --bar-tail-bg: #5b78b5;
+    --grid: #1c2438;
+    --line-over: #4ade80;
+    --line-under: #f87171;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--text); font-family: 'Fraunces', Georgia, serif; min-height: 100vh; }
+  body { font-feature-settings: "ss01", "ss02"; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-feature-settings: "ss01"; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #0d1220 0%, var(--bg) 100%);
+    padding: 18px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .logo { display: flex; align-items: baseline; gap: 12px; }
+  .logo-mark { font-size: 28px; font-weight: 700; color: var(--gold); font-style: italic; letter-spacing: -0.02em; }
+  .logo-name { font-size: 20px; font-weight: 500; font-style: italic; }
+  .logo-tag { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; padding-left: 12px; border-left: 1px solid var(--border); }
+  .nav { display: flex; gap: 8px; }
+  .nav a {
+    color: var(--text-dim); text-decoration: none; padding: 7px 16px; border-radius: 18px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.12em; border: 1px solid var(--border); transition: all 0.15s;
+  }
+  .nav a:hover { color: var(--text); border-color: var(--border-2); }
+  .nav a.active { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold); }
+  .meta { display: flex; gap: 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; }
+  .meta span strong { display: block; color: var(--text); font-weight: 500; font-size: 13px; margin-top: 2px; }
+
+  .hero { padding: 32px 28px 20px; max-width: 1700px; margin: 0 auto; }
+  .hero h1 { font-size: 36px; font-weight: 400; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 12px; }
+  .hero h1 em { color: var(--gold); font-style: italic; font-weight: 500; }
+  .hero p { color: var(--text-dim); font-size: 14px; line-height: 1.65; max-width: 820px; margin-bottom: 8px; }
+  .hero p strong { color: var(--text); font-weight: 500; }
+
+  .legend {
+    display: flex; gap: 22px; margin-top: 20px; padding: 14px 20px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 2px; }
+  .legend-swatch.bar { background: var(--bar); }
+  .legend-swatch.mode { background: var(--bar-mode); }
+  .legend-swatch.tail {
+    background: linear-gradient(135deg, var(--bar-tail-bg) 25%, transparent 25%, transparent 50%, var(--bar-tail-bg) 50%, var(--bar-tail-bg) 75%, transparent 75%);
+    background-size: 6px 6px;
+  }
+  .legend-line { display: none; }
+  .legend-text { color: var(--text-dim); }
+  .legend-text strong { color: var(--text); font-weight: 500; }
+
+  .filters {
+    padding: 18px 28px; max-width: 1700px; margin: 0 auto;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.15em; }
+  .chip {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text-dim);
+    padding: 7px 14px; border-radius: 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.08em;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--border-2); color: var(--text); }
+  .chip.active { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold); }
+  .chip-count { color: var(--text-muted); margin-left: 6px; font-size: 10px; }
+  .chip.active .chip-count { color: var(--gold-soft); }
+  .search {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    padding: 7px 14px; border-radius: 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; width: 220px; margin-left: auto; outline: none;
+  }
+  .search:focus { border-color: var(--gold); }
+
+  .players-grid { padding: 28px; max-width: 1700px; margin: 0 auto; }
+
+  .player-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+    margin-bottom: 24px; overflow: hidden;
+  }
+  .player-head {
+    display: flex; justify-content: space-between; align-items: baseline; padding: 20px 24px;
+    background: var(--panel-2); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 12px;
+  }
+  .player-name {
+    font-size: 24px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.1;
+  }
+  .player-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .player-meta strong { color: var(--text); font-weight: 500; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 1px; background: var(--border);
+  }
+  .stat-cell {
+    background: var(--panel); padding: 26px 28px;
+  }
+  .stat-cell-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  }
+  .stat-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;
+    color: var(--text); text-transform: uppercase; letter-spacing: 0.18em;
+  }
+  .stat-subtitle {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--text-muted); margin-top: 4px; letter-spacing: 0.1em;
+  }
+
+  .stat-summary {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-bottom: 18px; padding: 16px; background: var(--bg); border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .stat-summary-cell { text-align: center; }
+  .stat-summary-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 6px;
+  }
+  .stat-summary-value {
+    font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 600; color: var(--text);
+  }
+
+  /* — histograms — extra-clean Royce Webb-grade quality — */
+  .histogram-wrap {
+    margin: 4px 0 18px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 14px 12px;
+  }
+  .histogram-svg { display: block; width: 100%; height: 320px; overflow: visible; }
+  .hist-bar { fill: var(--bar); transition: opacity 0.12s; }
+  .hist-bar.mode { fill: var(--bar-mode); }
+  .hist-bar.tail { fill: var(--bar-tail-bg); }
+  .hist-bar:hover { opacity: 0.85; }
+  .hist-grid { stroke: var(--grid); stroke-width: 1; }
+  .hist-grid.major { stroke: #283147; }
+  .hist-axis { stroke: var(--border-2); stroke-width: 1; }
+  .hist-axis-label { fill: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 10.5px; text-anchor: middle; }
+  .hist-axis-label.tail-label { fill: var(--text-dim); font-weight: 600; }
+  .hist-y-label { fill: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 10px; text-anchor: end; }
+  .hist-axis-title { fill: var(--text-dim); font-family: 'JetBrains Mono', monospace; font-size: 10px; text-anchor: middle; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .empty {
+    padding: 80px 28px; text-align: center; color: var(--text-dim); font-style: italic;
+    font-size: 14px;
+  }
+  .empty-pmf-data {
+    padding: 14px; text-align: center; color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    font-style: italic;
+  }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 24px 28px; text-align: center;
+    color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    line-height: 1.7; letter-spacing: 0.05em;
+  }
+  footer strong { color: var(--text-dim); }
+
+  @media (max-width: 700px) {
+    .hero h1 { font-size: 28px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .player-head { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<!-- INJECT_PMF_DATA_HERE -->
+
+<header>
+  <div class="logo">
+    <span class="logo-mark">W</span>
+    <span class="logo-name">Wizard of Odds</span>
+    <span class="logo-tag">NBA · PMF Research</span>
+  </div>
+  <div class="nav">
+    <a href="nba-props.html">Bet Board</a>
+    <a href="nba-pmf-research.html" class="active">PMF Research</a>
+  </div>
+  <div class="meta">
+    <span>Slate<strong id="slate-date">—</strong></span>
+    <span>Players<strong id="player-count">—</strong></span>
+    <span>Distributions<strong id="prop-count">—</strong></span>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>The full <em>distribution</em> behind every line.</h1>
+  <p>Each chart is the model's complete probability mass over outcomes. Every bar is <strong>P(stat = k)</strong> — the model's estimated probability the player records exactly that many. The gold bar is the most likely outcome (the mode). Striped bars at the right edge represent the tail bucket — the combined probability of any outcome above the model's emitted support range.</p>
+  <p>Probabilities sum to 1.0 by construction. The tail bucket is honest model output, not extrapolation — it represents <strong>P(stat ≥ k)</strong> for the labeled k.</p>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-swatch bar"></div>
+      <div class="legend-text"><strong>P(stat = k)</strong> · individual outcome</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch mode"></div>
+      <div class="legend-text"><strong>Mode</strong> · most likely outcome</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch tail"></div>
+      <div class="legend-text"><strong>k+</strong> · tail bucket (combined upper-tail mass)</div>
+    </div>
+  </div>
+</section>
+
+<div class="filters">
+  <span class="filter-label">Stat focus</span>
+  <div id="stat-chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  <input class="search" id="search" placeholder="Search player or team…">
+</div>
+
+<div class="players-grid" id="players-grid">
+  <div class="empty">Loading distributions…</div>
+</div>
+
+<footer>
+  Each PMF is the model's prospective output, not a smoothed visualization. Sums to 1.0 by construction.<br>
+  The tail bucket convention (<code>&lt;k&gt;+</code>) is the model's honest representation of sparse upper-tail mass — never extrapolated.<br>
+  © Wizard of Odds — model PMFs.
+</footer>
+
+<script>
+'use strict';
+
+const STATE = {
+  data: null,
+  filters: { stat: 'all', search: '' },
+};
+
+const STAT_DISPLAY = {
+  pts: { label: 'Points',     short: 'PTS' },
+  reb: { label: 'Rebounds',   short: 'REB' },
+  ast: { label: 'Assists',    short: 'AST' },
+  fg3m:{ label: '3-Pointers', short: '3PM' },
+  tov: { label: 'Turnovers',  short: 'TOV' },
+};
+
+// Single-stat allowlist. The current PMF model emits per-stat marginal
+// distributions for points, rebounds, assists, 3-pointers, and turnovers.
+// It does NOT currently estimate steals or blocks, and it does not emit
+// a joint PMF for combo props. Anything outside this allowlist is
+// dropped before render so phantom rows cannot leak onto the page.
+const SUPPORTED_SINGLE_STATS = new Set(['pts', 'reb', 'ast', 'fg3m', 'tov']);
+
+function fmtDate(s) {
+  if (!s) return '—';
+  return new Date(s + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function shortGame(game) {
+  if (!game) return '';
+  const teamShort = (full) => full.trim().split(' ').slice(-1)[0].slice(0, 3).toUpperCase();
+  const parts = game.split(' @ ');
+  if (parts.length !== 2) return game;
+  return `${teamShort(parts[0])} @ ${teamShort(parts[1])}`;
+}
+
+// ── Histogram renderer — clean pure distribution, honoring the <k>+ tail bucket ──
+function renderHistogram(supportPoints, mode, statShort) {
+  if (!supportPoints || supportPoints.length === 0) {
+    return '<div class="empty-pmf-data">No PMF data</div>';
+  }
+
+  const allPoints = supportPoints.slice();
+  const tailIdx = allPoints.findIndex(p => p.is_tail);
+  const hasTail = tailIdx >= 0;
+  const nonTailPoints = hasTail ? allPoints.slice(0, tailIdx) : allPoints;
+  const tailPoint = hasTail ? allPoints[tailIdx] : null;
+
+  // Find max probability for y-axis scaling.
+  const maxNonTail = nonTailPoints.length ? Math.max(...nonTailPoints.map(p => p.p)) : 0;
+  const maxP = Math.max(maxNonTail, tailPoint ? tailPoint.p : 0);
+  if (maxP <= 0) return '<div class="empty-pmf-data">No PMF data</div>';
+
+  // Visibility threshold — bars below 0.5% of max are noise.
+  const cutoff = maxP * 0.005;
+
+  // Identify the FIRST and LAST visible non-tail k. We trim invisible bars
+  // on BOTH sides so the x-axis isn't full of empty space when the model
+  // emits long tails of near-zero mass.
+  let firstK = null, lastVisibleK = null;
+  for (const pt of nonTailPoints) {
+    if (pt.p >= cutoff) {
+      if (firstK === null) firstK = pt.k;
+      lastVisibleK = pt.k;
+    }
+  }
+
+  let displayMinK, displayMaxK, intBarCount;
+  if (firstK === null) {
+    // No visible non-tail bars; only the tail (if any) will render.
+    displayMinK = 0;
+    displayMaxK = -1;
+    intBarCount = 0;
+  } else {
+    displayMinK = firstK;
+    displayMaxK = lastVisibleK;
+    intBarCount = displayMaxK - displayMinK + 1;
+  }
+
+  // Layout
+  const W = 600, H = 300;
+  const PAD_LEFT = 50, PAD_RIGHT = 18;
+  const PAD_TOP = 20;
+  const PAD_BOTTOM = 42;
+  const plotW = W - PAD_LEFT - PAD_RIGHT;
+  const plotH = H - PAD_TOP - PAD_BOTTOM;
+
+  // Reserve TWO slots for the tail bucket: one empty gap slot for visual
+  // separation (and to keep the last tick label from colliding with the
+  // tail label), then the tail bar itself.
+  const tailGapSlots = (hasTail && intBarCount > 0) ? 1 : 0;
+  const tailBarSlots = hasTail ? 1 : 0;
+  const totalSlots = intBarCount + tailGapSlots + tailBarSlots;
+  if (totalSlots === 0) return '<div class="empty-pmf-data">No PMF data</div>';
+  const slotW = plotW / totalSlots;
+  const barW = Math.max(2, slotW * 0.78);
+
+  function xCenter(slotIdx) { return PAD_LEFT + slotIdx * slotW + slotW / 2; }
+  function xForK(k) { return xCenter(k - displayMinK); }
+  function yScale(p) { return PAD_TOP + plotH - (p / maxP) * plotH; }
+
+  // Y-axis: 5 horizontal gridlines + numeric percentage labels
+  let grid = '';
+  let yLabels = '';
+  const yTicks = 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const frac = i / yTicks;
+    const yval = maxP * frac;
+    const yPx = PAD_TOP + plotH - frac * plotH;
+    const cls = (i === 0 || i === yTicks) ? 'hist-grid major' : 'hist-grid';
+    grid += `<line class="${cls}" x1="${PAD_LEFT}" y1="${yPx.toFixed(1)}" x2="${(PAD_LEFT + plotW).toFixed(1)}" y2="${yPx.toFixed(1)}"/>`;
+    yLabels += `<text class="hist-y-label" x="${(PAD_LEFT - 8).toFixed(1)}" y="${(yPx + 3.5).toFixed(1)}">${(yval * 100).toFixed(1)}%</text>`;
+  }
+
+  // Visible non-tail bars
+  let bars = '';
+  if (intBarCount > 0) {
+    for (const point of nonTailPoints) {
+      if (point.k < displayMinK || point.k > displayMaxK) continue;
+      if (point.p < 1e-7) continue;
+      const slotIdx = point.k - displayMinK;
+      const x = xCenter(slotIdx) - barW / 2;
+      const y = yScale(point.p);
+      const h = (PAD_TOP + plotH) - y;
+      const cls = (point.k === mode) ? 'hist-bar mode' : 'hist-bar';
+      bars += `<rect class="${cls}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="1">
+        <title>P(${statShort} = ${point.k}) = ${(point.p * 100).toFixed(2)}%</title>
+      </rect>`;
+    }
+  }
+
+  // Subtle visual separator inside the gap slot to communicate the
+  // discontinuity (when the tail starts well past the last visible bar).
+  // Tail buckets in your schema use `k_min` rather than `k`.
+  const tailK = tailPoint ? (tailPoint.k_min ?? tailPoint.k) : null;
+  let gapMarker = '';
+  if (hasTail && intBarCount > 0 && tailPoint && typeof tailK === 'number' && (tailK - lastVisibleK) > 1) {
+    const gapSlotIdx = intBarCount;
+    const gapX = xCenter(gapSlotIdx);
+    const gapY = PAD_TOP + plotH / 2 + 4;
+    gapMarker = `<text class="hist-axis-label" x="${gapX.toFixed(1)}" y="${gapY.toFixed(1)}" style="opacity:0.32;font-size:14px">⋯</text>`;
+  }
+
+  // Tail bucket — ALWAYS rendered as the tail style, never gold. The tail
+  // is a RANGE of k, not a single outcome; calling one "the mode" because
+  // the JSON's mode happens to fall inside the range is misleading.
+  let tailLabel = '';
+  if (hasTail && tailPoint) {
+    const tailSlotIdx = intBarCount + tailGapSlots; // slot after gap
+    const x = xCenter(tailSlotIdx) - barW / 2;
+    const y = yScale(tailPoint.p);
+    const h = (PAD_TOP + plotH) - y;
+    const tailKDisplay = (tailPoint.label || '').replace('+','') || (tailK ?? '');
+    bars += `<rect class="hist-bar tail" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="1">
+      <title>P(${statShort} ≥ ${tailKDisplay}) = ${(tailPoint.p * 100).toFixed(2)}%</title>
+    </rect>`;
+    tailLabel = `<text class="hist-axis-label tail-label" x="${xCenter(tailSlotIdx).toFixed(1)}" y="${(PAD_TOP + plotH + 16).toFixed(1)}">${escapeHtml(tailPoint.label || `${tailK}+`)}</text>`;
+  }
+
+  // X-axis baseline + tick labels
+  const baseY = PAD_TOP + plotH;
+  let axes = `<line class="hist-axis" x1="${PAD_LEFT}" y1="${baseY}" x2="${(PAD_LEFT + plotW).toFixed(1)}" y2="${baseY}"/>`;
+  let tickLabels = '';
+  if (intBarCount > 0) {
+    const tickStep = Math.max(1, Math.ceil(intBarCount / 10));
+    for (let k = displayMinK; k <= displayMaxK; k += tickStep) {
+      tickLabels += `<text class="hist-axis-label" x="${xForK(k).toFixed(1)}" y="${(baseY + 16).toFixed(1)}">${k}</text>`;
+    }
+    if ((displayMaxK - displayMinK) % tickStep !== 0) {
+      tickLabels += `<text class="hist-axis-label" x="${xForK(displayMaxK).toFixed(1)}" y="${(baseY + 16).toFixed(1)}">${displayMaxK}</text>`;
+    }
+  }
+  tickLabels += tailLabel;
+  // X-axis title
+  const xTitleY = baseY + 34;
+  const xTitleX = PAD_LEFT + plotW / 2;
+  tickLabels += `<text class="hist-axis-title" x="${xTitleX.toFixed(1)}" y="${xTitleY}">${escapeHtml(statShort)} (outcome k)</text>`;
+  // Y-axis title
+  const yTitleX = 12;
+  const yTitleY = PAD_TOP + plotH / 2;
+  tickLabels += `<text class="hist-axis-title" x="${yTitleX}" y="${yTitleY}" transform="rotate(-90 ${yTitleX} ${yTitleY})">Probability</text>`;
+
+  return `<svg class="histogram-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    ${grid}
+    ${bars}
+    ${gapMarker}
+    ${axes}
+    ${yLabels}
+    ${tickLabels}
+  </svg>`;
+}
+
+// Compute summary stats from the support_points so we never display "0.0"
+// just because the JSON's `mean` field was missing/zero. Mode is the
+// argmax over visible (non-tail) bars; if the tail has higher mass, we
+// still don't return its label because the tail is a range, not a single k.
+// Tail buckets may use `k_min` instead of `k` — we accept either.
+function summaryStatsFromSupport(supportPoints) {
+  if (!supportPoints || supportPoints.length === 0) return { mean: null, median: null, mode: null };
+  const nonTail = supportPoints.filter(p => !p.is_tail);
+  const tail = supportPoints.find(p => p.is_tail) || null;
+  const tailK = tail ? (tail.k_min ?? tail.k) : null;
+
+  // Mean: sum of k * p over all support points (using tail's labeled k as
+  // a lower-bound contribution for the tail mass — same as the model would).
+  let mean = 0, totalP = 0;
+  for (const pt of nonTail) {
+    if (pt.p > 0 && typeof pt.k === 'number') {
+      mean += pt.k * pt.p;
+      totalP += pt.p;
+    }
+  }
+  if (tail && typeof tailK === 'number' && tail.p > 0) {
+    mean += tailK * tail.p;
+    totalP += tail.p;
+  }
+  if (totalP > 0) mean = mean / totalP; else mean = null;
+
+  // Median: smallest k where cumulative >= 0.5
+  let median = null;
+  let cum = 0;
+  for (const pt of supportPoints) {
+    cum += (pt.p || 0);
+    if (cum >= 0.5) {
+      median = pt.is_tail ? (pt.k_min ?? pt.k) : pt.k;
+      break;
+    }
+  }
+
+  // Mode: argmax over non-tail bars only. If tail mass is greater than
+  // every non-tail bar, the mode is "in the tail" — we report the tail's
+  // labeled k threshold but render it transparently.
+  let mode = null, modeP = -Infinity;
+  for (const pt of nonTail) {
+    if ((pt.p || 0) > modeP) { modeP = pt.p; mode = pt.k; }
+  }
+  if (tail && (tail.p || 0) > modeP && typeof tailK === 'number') {
+    mode = tailK;
+  }
+
+  return { mean, median, mode };
+}
+
+function renderStatCell(statKey, statObj) {
+  const meta = STAT_DISPLAY[statKey] || { label: statKey.toUpperCase(), short: statKey.toUpperCase() };
+  const support = statObj.support_points || [];
+
+  // RESOLVE STATS FIRST — the histogram needs the resolved modeVal (not raw
+  // statObj.mode) so the gold mode bar matches the value shown in the
+  // summary box. Your model emits `expected_mean` not `mean`, and may omit
+  // `mode` entirely; we fall back to values computed from support_points.
+  const computed = summaryStatsFromSupport(support);
+  const meanFromJson = (typeof statObj.expected_mean === 'number') ? statObj.expected_mean
+                     : (typeof statObj.mean === 'number')          ? statObj.mean
+                     : null;
+  const meanVal   = (meanFromJson !== null && meanFromJson !== 0) ? meanFromJson : computed.mean;
+  const medianVal = (typeof statObj.median === 'number') ? statObj.median : computed.median;
+  const modeVal   = (typeof statObj.mode   === 'number') ? statObj.mode   : computed.mode;
+
+  // Now build the histogram with the resolved mode.
+  const histogram = renderHistogram(support, modeVal, meta.short);
+
+  const meanFmt   = (meanVal   === null || meanVal   === undefined) ? '—' : Number(meanVal).toFixed(1);
+  const medianFmt = (medianVal === null || medianVal === undefined) ? '—' : String(medianVal);
+  const modeFmt   = (modeVal   === null || modeVal   === undefined) ? '—' : String(modeVal);
+
+  return `<div class="stat-cell">
+    <div class="stat-cell-head">
+      <div>
+        <div class="stat-title">${escapeHtml(meta.label)}</div>
+        <div class="stat-subtitle">${support.length} support points · sums to 1.0</div>
+      </div>
+    </div>
+    <div class="stat-summary">
+      <div class="stat-summary-cell">
+        <div class="stat-summary-label">Mean</div>
+        <div class="stat-summary-value">${meanFmt}</div>
+      </div>
+      <div class="stat-summary-cell">
+        <div class="stat-summary-label">Median</div>
+        <div class="stat-summary-value">${medianFmt}</div>
+      </div>
+      <div class="stat-summary-cell">
+        <div class="stat-summary-label">Mode</div>
+        <div class="stat-summary-value">${modeFmt}</div>
+      </div>
+    </div>
+    <div class="histogram-wrap">${histogram}</div>
+  </div>`;
+}
+
+function renderPlayerCard(p) {
+  const stats = Object.entries(p.stats || {})
+    .filter(([statKey]) => SUPPORTED_SINGLE_STATS.has(String(statKey).toLowerCase()));
+  if (stats.length === 0) return '';
+  const order = ['pts', 'reb', 'ast', 'fg3m', 'tov'];
+  stats.sort(([a], [b]) => {
+    const ai = order.indexOf(a), bi = order.indexOf(b);
+    return (ai < 0 ? 999 : ai) - (bi < 0 ? 999 : bi);
+  });
+  return `<div class="player-card">
+    <div class="player-head">
+      <div class="player-name">${escapeHtml(p.player)}</div>
+      <div class="player-meta">${escapeHtml(shortGame(p.game))}</div>
+    </div>
+    <div class="stats-row">
+      ${stats.map(([statKey, statObj]) => renderStatCell(statKey, statObj)).join('')}
+    </div>
+  </div>`;
+}
+
+function applyFilters(players) {
+  const f = STATE.filters;
+  let out = players;
+  if (f.stat !== 'all') {
+    out = out.map(p => {
+      const filteredStats = {};
+      if (p.stats[f.stat]) filteredStats[f.stat] = p.stats[f.stat];
+      return { ...p, stats: filteredStats };
+    }).filter(p => Object.keys(p.stats).length > 0);
+  }
+  if (f.search) {
+    const q = f.search.toLowerCase();
+    out = out.filter(p => (p.player || '').toLowerCase().includes(q)
+                       || (p.game || '').toLowerCase().includes(q));
+  }
+  return out;
+}
+
+function renderStatChips(players) {
+  const counts = {};
+  for (const p of players) {
+    for (const s of Object.keys(p.stats || {})) {
+      if (!SUPPORTED_SINGLE_STATS.has(s.toLowerCase())) continue;
+      counts[s] = (counts[s] || 0) + 1;
+    }
+  }
+  const order = ['pts', 'reb', 'ast', 'fg3m', 'tov'];
+  const stats = order.filter(s => counts[s]);
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  let html = `<span class="chip ${STATE.filters.stat === 'all' ? 'active' : ''}" data-stat="all">All <span class="chip-count">${total}</span></span>`;
+  for (const s of stats) {
+    const lbl = (STAT_DISPLAY[s] || {}).short || s.toUpperCase();
+    html += `<span class="chip ${STATE.filters.stat === s ? 'active' : ''}" data-stat="${s}">${lbl} <span class="chip-count">${counts[s]}</span></span>`;
+  }
+  document.getElementById('stat-chips').innerHTML = html;
+  document.querySelectorAll('#stat-chips .chip').forEach(el => {
+    el.onclick = () => { STATE.filters.stat = el.dataset.stat; render(); };
+  });
+}
+
+function render() {
+  if (!STATE.data) return;
+  const data = STATE.data;
+  document.getElementById('slate-date').textContent = fmtDate(data.date);
+  document.getElementById('player-count').textContent = (data.players || []).length;
+
+  // Count only single-stat distributions (combos / unsupported are filtered)
+  let displayedPropCount = 0;
+  for (const p of data.players || []) {
+    for (const s of Object.keys(p.stats || {})) {
+      if (SUPPORTED_SINGLE_STATS.has(s.toLowerCase())) displayedPropCount++;
+    }
+  }
+  document.getElementById('prop-count').textContent = displayedPropCount;
+
+  renderStatChips(data.players || []);
+  const filtered = applyFilters(data.players || []);
+  const grid = document.getElementById('players-grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty">No players match the current filters.</div>';
+  } else {
+    grid.innerHTML = filtered.map(p => renderPlayerCard(p)).join('');
+  }
+}
+
+document.getElementById('search').oninput = (e) => {
+  STATE.filters.search = e.target.value;
+  render();
+};
+
+function main() {
+  const data = window.EMBEDDED_PMF_DATA;
+  if (!data || !Array.isArray(data.players)) {
+    document.getElementById('players-grid').innerHTML =
+      '<div class="empty">No PMF research data embedded. Run scripts/build_woo_dashboard.py to regenerate.</div>';
+    return;
+  }
+  STATE.data = data;
+  render();
+}
+
+main();
+</script>
+</body>
+</html>

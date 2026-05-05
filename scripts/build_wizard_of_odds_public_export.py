@@ -1,6 +1,24 @@
 #!/usr/bin/env python3
 """Build the Wizard of Odds public export folder.
 
+LEGACY / AUXILIARY (Phase 13AM) — this script remains in the repo because
+it still produces non-customer-facing ancillary artifacts (fair_odds_board,
+monetization_view, full_pmfs_wide, market_comparison, publishable_edges,
+README.md, run_manifest.json) that the WoO portal and downstream Derek
+processing have historically consumed. It is NO LONGER the source of truth
+for the customer-facing JSON files (affiliate_dashboard.json,
+pmf_research.json) or the HTML pages (nba-props.html, nba-pmf-research.html);
+those now come from the four-step Phase 13AM pipeline:
+
+    1. scripts/publish_woo_public_export.py      → JSON
+    2. scripts/build_woo_dashboard.py             → HTML
+    3. scripts/verify_woo_dashboard_render_contract.py
+    4. scripts/verify_woo_public_export_contract.py
+
+Production workflows (wizard_of_odds_ftp_deploy.yml, daily_pmf_delivery.yml)
+must run that pipeline AFTER any invocation of this legacy builder so the
+customer-facing artifacts are authoritatively from the new pipeline.
+
 Phase 12B — assembles a clean, public-facing mirror of `deliveries/<date>/wizard_of_odds/`
 for FTP upload to the WoO portal. Only model-only PMF artifacts and their manifests
 are published. Internal Derek review packages, canonical source dumps, and after-game

@@ -233,6 +233,31 @@ def main(argv: list[str] | None = None) -> int:
         fail_prefixes=("WOO_PUBLIC_EXPORT_CONTRACT_FAILED",),
     ))
 
+    # 5a''. Phase 13AM — new pipeline customer-facing dashboard build.
+    # Build emits WOO_DASHBOARD_BUILD_PASS; render-contract verifier
+    # emits WOO_DASHBOARD_RENDER_CONTRACT_PASS; deploy-workflow contract
+    # verifier emits WOO_DEPLOY_WORKFLOW_CONTRACT_PASS. All three must
+    # pass for the WoO row to be PASS.
+    checks.append(_check(
+        "woo_dashboard_build",
+        [py, "scripts/build_woo_dashboard.py", "--date", args.date],
+        pass_prefixes=("WOO_DASHBOARD_BUILD_PASS",),
+        fail_prefixes=("FATAL:",),
+    ))
+    checks.append(_check(
+        "woo_dashboard_render_contract",
+        [py, "scripts/verify_woo_dashboard_render_contract.py",
+         "--date", args.date],
+        pass_prefixes=("WOO_DASHBOARD_RENDER_CONTRACT_PASS",),
+        fail_prefixes=("WOO_DASHBOARD_RENDER_CONTRACT_FAILED",),
+    ))
+    checks.append(_check(
+        "woo_deploy_workflow_contract",
+        [py, "scripts/verify_woo_deploy_workflow_contract.py"],
+        pass_prefixes=("WOO_DEPLOY_WORKFLOW_CONTRACT_PASS",),
+        fail_prefixes=("WOO_DEPLOY_WORKFLOW_CONTRACT_FAILED",),
+    ))
+
     # 5a''. Daily README freshness (Phase 13AK).
     checks.append(_check(
         "daily_readme_freshness",

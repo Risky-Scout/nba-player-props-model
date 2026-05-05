@@ -1,11 +1,27 @@
 name: Wizard of Odds — FTP Deploy
 
-# Phase 12B/12D/12E/12F — publish public_export/wizard_of_odds/ to the
-# WoO FTP portal after the daily PMF delivery has produced a public
-# snapshot. Phase 12F adds the missing `pip install` step that caused
-# `build_wizard_of_odds_public_export.py` to silently skip the
-# monetization_view files (pandas was missing on the runner), plus a
-# secrets preflight check and friendlier workflow_dispatch input names.
+# Phase 12B/12D/12E/12F/13AM — publish public_export/wizard_of_odds/ to
+# the WoO FTP portal after the daily PMF delivery has produced a public
+# snapshot. Phase 12F added the missing `pip install` step. Phase 13AM
+# replaces the old monolithic build_wizard_of_odds_public_export.py +
+# verify_wizard_of_odds_public_export.py with the four-step pipeline:
+#
+#   1. scripts/publish_woo_public_export.py --date <date>
+#      writes affiliate_dashboard.json + pmf_research.json under
+#      public_export/wizard_of_odds/<date>/, /latest/, and the root.
+#   2. scripts/build_woo_dashboard.py --date <date>
+#      renders the two self-contained HTML pages from the JSON via
+#      predictions/_template_*.html. Emits WOO_DASHBOARD_BUILD_PASS.
+#   3. scripts/verify_woo_dashboard_render_contract.py --date <date>
+#      static render-contract verifier; gates the deploy.
+#      Emits WOO_DASHBOARD_RENDER_CONTRACT_PASS.
+#   4. scripts/verify_woo_public_export_contract.py --date <date>
+#      JSON contract verifier (PMF tail-bucket convention,
+#      non-empty rows, etc.). Emits WOO_PUBLIC_EXPORT_CONTRACT_PASS.
+#
+# Only after all three PASS lines emit do we copy the rendered HTML
+# pages into public_export/wizard_of_odds/ (so the FTP step uploads
+# them along with the JSON tree) and run the FTP deploy.
 #
 # Effective post-Phase-12D-amend deploy schedule:
 #   - woo_morning_monetization        (15:00 UTC)
@@ -69,14 +85,20 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
-      # Phase 12F — root-cause fix for the silent monetization_view
-      # skip. build_wizard_of_odds_public_export.py imports pandas
-      # inside _write_monetization_view; the daily delivery workflow
-      # installs these but the FTP-deploy workflow used to skip
-      # `pip install`, so the build silently dropped the canonical
-      # monetization files and the verifier failed downstream.
+      # Phase 12F/13AM — pandas + pyarrow are required by both the old
+      # monetization_view writer (still emitted by the daily-delivery
+      # pipeline) AND publish_woo_public_export.py.
       - name: Install python deps
         run: pip install pandas pyarrow numpy
+
+      - name: Resolve delivery date (America/New_York)
+        id: d
+        # Phase 13AM — ET-anchored slate so the deploy targets the same
+        # date the operator reads in the daily PMF delivery audit.
+        run: |
+          ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+          echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
+          echo "Resolved deploy_date=$ET_DATE via America/New_York"
 
       - name: Preflight — verify required FTP secrets are set
         env:
@@ -106,13 +128,61 @@ jobs:
             exit 1
           fi
 
-      - name: Build public export folder
-        run: |
-          python scripts/build_wizard_of_odds_public_export.py --all-available
+      # ── Phase 13AM WoO build/verify pipeline ────────────────────────
+      # The four steps below MUST run in order. The deploy step is
+      # gated behind their success; if any fails, no FTP upload happens.
 
-      - name: Verify public export folder
+      - name: 1/4 Publish WoO public export JSON (Phase 13AM)
         run: |
-          python scripts/verify_wizard_of_odds_public_export.py
+          python3 scripts/publish_woo_public_export.py --date "${{ steps.d.outputs.date }}"
+
+      - name: 2/4 Build WoO dashboard HTML pages (Phase 13AM)
+        run: |
+          python3 scripts/build_woo_dashboard.py --date "${{ steps.d.outputs.date }}"
+
+      - name: 3/4 Verify WoO dashboard render contract (Phase 13AM)
+        run: |
+          python3 scripts/verify_woo_dashboard_render_contract.py --date "${{ steps.d.outputs.date }}"
+
+      - name: 4/4 Verify WoO public export contract (Phase 13AM)
+        run: |
+          python3 scripts/verify_woo_public_export_contract.py --date "${{ steps.d.outputs.date }}"
+
+      - name: Stage rendered HTML pages for FTP upload (Phase 13AM)
+        # Copy the rendered HTML into public_export/wizard_of_odds/ so
+        # the existing recursive FTP deploy picks them up. Templates
+        # (_template_*.html) live ONLY in predictions/ and are never
+        # copied into public_export/, so they never reach the FTP root.
+        run: |
+          cp -v predictions/nba-props.html        public_export/wizard_of_odds/nba-props.html
+          cp -v predictions/nba-pmf-research.html public_export/wizard_of_odds/nba-pmf-research.html
+          # Confirm we are NOT staging templates by accident.
+          if ls public_export/wizard_of_odds/_template_*.html 2>/dev/null; then
+            echo "::error::templates leaked into public_export/wizard_of_odds/"
+            exit 1
+          fi
+          # Confirm the HTML files actually changed in this build (not
+          # the stale ones from an old build_wizard_of_odds_public_export.py
+          # run). Modification within the last 30 minutes is required.
+          for f in public_export/wizard_of_odds/nba-props.html public_export/wizard_of_odds/nba-pmf-research.html; do
+            if [ ! -s "$f" ]; then
+              echo "::error::$f missing or empty"
+              exit 1
+            fi
+            mtime_age=$(( $(date +%s) - $(stat -c %Y "$f" 2>/dev/null || stat -f %m "$f") ))
+            if [ "$mtime_age" -gt 1800 ]; then
+              echo "::error::$f mtime older than 30 min — likely stale build"
+              exit 1
+            fi
+            echo "  $f age_s=$mtime_age size=$(wc -c < $f)"
+          done
+
+      - name: Pre-deploy verifier — workflow contract (Phase 13AM)
+        # Static workflow audit; ensures THIS yaml + the daily ones use
+        # the new pipeline (and not the legacy build_wizard_of_odds_*.py).
+        # Required to emit WOO_DEPLOY_WORKFLOW_CONTRACT_PASS.
+        run: |
+          python3 scripts/verify_woo_deploy_workflow_contract.py
 
       - name: FTP deploy (FTPS, with optional plain fallback)
         env:
