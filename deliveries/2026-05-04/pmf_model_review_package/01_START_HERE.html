@@ -20,11 +20,12 @@ th{background:#f0f0f0}
 
 <div class="callout"><b>Run status — 2026-05-04 — snapshot pre_close</b><br>
 status: <b>PROVISIONAL</b> &middot; safe to use, with the caveats below<br>
-props: <b>65</b> &middot; books: <b>12</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>fresh</b><br>
+props: <b>65</b> &middot; books: <b>0</b> &middot; market coverage: <b>none</b> &middot; injury freshness: <b>fresh</b><br>
 role provenance: derived_from_projected_minutes: 65<br>
-model: <code>3a9664f#phase10c</code>
+model: <code>c74808d#phase10c</code>
 <br><br>
 <b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>
+- <code>market_coverage_none</code> — No book offered any line; no market_comparison rows.
 - <code>lineup_unconfirmed</code> — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
 - <code>missing_stats:tov</code> — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
 </div>

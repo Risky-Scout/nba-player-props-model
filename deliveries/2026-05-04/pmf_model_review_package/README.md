@@ -5,16 +5,17 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **65**
-- books: **12**
-- market coverage: **full**
+- books: **0**
+- market coverage: **none**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 65
-- model: `3a9664f#phase10c`
+- model: `c74808d#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
+- `market_coverage_none` — No book offered any line; no market_comparison rows.
 - `lineup_unconfirmed` — role_bucket derived from projected minutes (mp_bucket); no confirmed-lineup source consumed.
 - `missing_stats:tov` — Predictions did not emit rows for ['tov']. predict.py is market-driven; with no offered market line, no row is generated for those stats.
 

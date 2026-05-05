@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-04T23:33:19Z",
+  "built_at_utc": "2026-05-05T03:51:14Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-05-04",
@@ -612,33 +612,21 @@
     {
       "date": "2026-05-04",
       "snapshot_type": "pre_close",
-      "snapshot_time_utc": "2026-05-04T23:33:16Z",
-      "model_version": "3a9664f#phase10c",
+      "snapshot_time_utc": "2026-05-05T03:51:12Z",
+      "model_version": "c74808d#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
+        "market_coverage_none",
         "lineup_unconfirmed",
         "missing_stats:tov"
       ],
       "row_counts": {
         "fair_odds_board": 1724,
         "full_pmfs_wide": 65,
-        "market_comparison": 993,
-        "publishable_edges": 802
+        "market_comparison": 0,
+        "publishable_edges": 0
       },
-      "books_seen": [
-        "betmgm",
-        "betonlineag",
-        "betparx",
-        "betrivers",
-        "bovada",
-        "draftkings",
-        "espnbet",
-        "fanatics",
-        "fanduel",
-        "fliff",
-        "hardrockbet_fl",
-        "williamhill_us"
-      ],
+      "books_seen": [],
       "tov_status": "missing_from_prediction_source",
       "files": [
         {
@@ -671,35 +659,33 @@
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 622499
+          "size_bytes": 635
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 68169
+          "size_bytes": 24579
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 499111
+          "size_bytes": 635
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 62626
+          "size_bytes": 24579
         },
         {
           "name": "run_manifest.json",
-          "size_bytes": 4284
+          "size_bytes": 3917
         },
         {
           "name": "README.md",
-          "size_bytes": 3133
+          "size_bytes": 3239
         }
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 993,
-        "monetization_status_summary": {
-          "needs_affiliate_mapping": 993
-        },
+        "rows": 0,
+        "monetization_status_summary": {},
         "snapshot_type_public": "pre_close",
         "finality_status_public": "provisional",
         "files": {
