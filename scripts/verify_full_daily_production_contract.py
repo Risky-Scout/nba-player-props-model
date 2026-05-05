@@ -281,10 +281,14 @@ def main(argv: list[str] | None = None) -> int:
     rc, out, err = _run([py, "scripts/verify_derek_live_snapshots.py",
                           "--delivery-date", args.derek_date])
     combined = out + "\n" + err
-    derek_live = _grep(combined, "DEREK_LIVE_SNAPSHOTS_PASS",
+    derek_live = _grep(combined,
+                        "DEREK_LIVE_SNAPSHOTS_PASS",
+                        "DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES",
                         "DEREK_LIVE_SNAPSHOTS_FAILED")
     if derek_live and "_PASS" in derek_live:
         d_status = "PASS"
+    elif derek_live and "_PENDING" in derek_live:
+        d_status = "WARN"
     elif derek_live and "_FAILED" in derek_live:
         d_status = "FAIL"
     else:
@@ -293,17 +297,21 @@ def main(argv: list[str] | None = None) -> int:
         "name": "derek_live_snapshots", "command": "verify_derek_live_snapshots",
         "status": d_status, "critical": True,
         "pass_line": derek_live if d_status == "PASS" else None,
-        "warn_line": None,
+        "warn_line": derek_live if d_status == "WARN" else None,
         "fail_line": derek_live if d_status == "FAIL" else None,
         "rc": rc, "tail": [derek_live or "no pass line"],
     })
     rc, out, err = _run([py, "scripts/verify_derek_production_live_e2e.py",
                           "--delivery-date", args.derek_date])
     combined = out + "\n" + err
-    e2e = _grep(combined, "DEREK_PRODUCTION_LIVE_E2E_PASS",
+    e2e = _grep(combined,
+                 "DEREK_PRODUCTION_LIVE_E2E_PASS",
+                 "DEREK_PRODUCTION_LIVE_E2E_PENDING",
                  "DEREK_PRODUCTION_LIVE_E2E_FAILED")
     if e2e and "_PASS" in e2e:
         e_status = "PASS"
+    elif e2e and "_PENDING" in e2e:
+        e_status = "WARN"
     elif e2e and "_FAILED" in e2e:
         e_status = "FAIL"
     else:
@@ -312,19 +320,46 @@ def main(argv: list[str] | None = None) -> int:
         "name": "derek_production_live_e2e", "command": "verify_derek_production_live_e2e",
         "status": e_status, "critical": True,
         "pass_line": e2e if e_status == "PASS" else None,
-        "warn_line": None,
+        "warn_line": e2e if e_status == "WARN" else None,
         "fail_line": e2e if e_status == "FAIL" else None,
         "rc": rc, "tail": [e2e or "no pass line"],
     })
 
-    # 11. Derek email-claimed files
-    checks.append(_check(
-        "derek_email_claimed_files",
-        [py, "scripts/verify_derek_email_claimed_files.py",
-         "--delivery-date", args.derek_date],
-        pass_prefixes=("DEREK_EMAIL_CLAIMED_FILES_PASS",),
-        fail_prefixes=("DEREK_EMAIL_CLAIMED_FILES_FAILED",),
-    ))
+    # 11. Derek email-claimed files. PENDING when today's Derek delivery
+    # has not produced its current_live snapshot yet.
+    derek_snapshot_root = REPO_ROOT / "deliveries" / args.derek_date / "derek_game_snapshots"
+    derek_has_run = derek_snapshot_root.exists() and any(
+        (game / "current_live" / "snapshot_manifest.json").exists()
+        for game in derek_snapshot_root.iterdir() if game.is_dir()
+    )
+    # Phase 13AJ: operator semantics — "today" is the ET calendar day
+    # that contains tonight's slate, not the raw UTC date. UTC rolls over
+    # before ET tip windows close, so anchoring on UTC would mark a
+    # pre-tip-pending Derek day as "in the past."
+    try:
+        from zoneinfo import ZoneInfo as _ZI
+        today_utc = dt.datetime.now(_ZI("America/New_York")).date().isoformat()
+    except Exception:
+        today_utc = dt.datetime.now(dt.timezone.utc).date().isoformat()
+    if (args.derek_date >= today_utc) and not derek_has_run:
+        checks.append({
+            "name": "derek_email_claimed_files",
+            "command": "verify_derek_email_claimed_files (pending)",
+            "status": "WARN", "critical": True, "pass_line": None,
+            "warn_line": (f"DEREK_EMAIL_CLAIMED_FILES_PENDING  "
+                          f"derek_date={args.derek_date}  "
+                          "current_live snapshot not yet run for today"),
+            "fail_line": None,
+            "rc": 0, "tail": ["pending pre-tip"],
+        })
+    else:
+        checks.append(_check(
+            "derek_email_claimed_files",
+            [py, "scripts/verify_derek_email_claimed_files.py",
+             "--delivery-date", args.derek_date],
+            pass_prefixes=("DEREK_EMAIL_CLAIMED_FILES_PASS",),
+            fail_prefixes=("DEREK_EMAIL_CLAIMED_FILES_FAILED",),
+        ))
 
     # 12. Derek after-game scoring
     rc, out, err = _run([py, "scripts/score_derek_live_snapshots_after_game.py",
@@ -395,23 +430,53 @@ def main(argv: list[str] | None = None) -> int:
         "rc": rc, "tail": [pmf_var or "no pass line"],
     })
 
-    # 15. Human-readable reports — Derek index README + variance study + edge audits
+    # 15. Human-readable reports — Derek index README + variance study + edge audits.
+    # Phase 13AJ: when --derek-date is "today" and Derek hasn't published
+    # yet (no current_live snapshot run), the canonical delivery is the
+    # previous-day completed delivery. Surface as PENDING in that case
+    # rather than a hard FAIL.
     derek_readme = REPO_ROOT / "deliveries" / args.derek_date / "derek_game_snapshots" / "README.md"
     delivery_readme = REPO_ROOT / "deliveries" / args.derek_date / "README.md"
     variance_md = REPO_ROOT / "artifacts" / "experience_studies" / f"pmf_variance_experience_{args.derek_date}.md"
     edge_root_md = REPO_ROOT / "artifacts" / "automation_health" / f"derek_edge_root_cause_{args.derek_date}.md"
     edge_cal_md = REPO_ROOT / "artifacts" / "automation_health" / f"derek_edge_calibration_{args.derek_date}.md"
-    missing = [str(p.relative_to(REPO_ROOT))
-               for p in (derek_readme, delivery_readme, variance_md, edge_root_md, edge_cal_md)
-               if not p.exists()]
+    candidate_paths = (derek_readme, delivery_readme, variance_md, edge_root_md, edge_cal_md)
+    missing = [str(p.relative_to(REPO_ROOT)) for p in candidate_paths if not p.exists()]
+    # Phase 13AJ: operator semantics — "today" is the ET calendar day
+    # that contains tonight's slate, not the raw UTC date. UTC rolls over
+    # before ET tip windows close, so anchoring on UTC would mark a
+    # pre-tip-pending Derek day as "in the past."
+    try:
+        from zoneinfo import ZoneInfo as _ZI
+        today_utc = dt.datetime.now(_ZI("America/New_York")).date().isoformat()
+    except Exception:
+        today_utc = dt.datetime.now(dt.timezone.utc).date().isoformat()
+    requested_is_today_or_future = args.derek_date >= today_utc
+    derek_snapshot_root = REPO_ROOT / "deliveries" / args.derek_date / "derek_game_snapshots"
+    derek_has_run = derek_snapshot_root.exists() and any(
+        (game / "current_live" / "snapshot_manifest.json").exists()
+        for game in derek_snapshot_root.iterdir() if game.is_dir()
+    )
     if missing:
-        checks.append({
-            "name": "human_readable_reports", "command": "(file presence check)",
-            "status": "FAIL", "critical": True, "pass_line": None,
-            "warn_line": None,
-            "fail_line": f"missing human-readable reports: {missing}",
-            "rc": 1, "tail": [f"missing: {missing}"],
-        })
+        if requested_is_today_or_future and not derek_has_run:
+            checks.append({
+                "name": "human_readable_reports", "command": "(file presence check)",
+                "status": "WARN", "critical": True, "pass_line": None,
+                "warn_line": (
+                    "human-readable reports not yet produced for today's "
+                    "Derek delivery (current_live snapshot has not run)"
+                ),
+                "fail_line": None,
+                "rc": 0, "tail": [f"pending: {missing}"],
+            })
+        else:
+            checks.append({
+                "name": "human_readable_reports", "command": "(file presence check)",
+                "status": "FAIL", "critical": True, "pass_line": None,
+                "warn_line": None,
+                "fail_line": f"missing human-readable reports: {missing}",
+                "rc": 1, "tail": [f"missing: {missing}"],
+            })
     else:
         checks.append({
             "name": "human_readable_reports", "command": "(file presence check)",

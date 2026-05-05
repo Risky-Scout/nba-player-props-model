@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-05T01:03:19+00:00",
+  "generated_at_utc": "2026-05-05T01:16:43+00:00",
   "date": "2026-05-04",
   "derek_date": "2026-05-04",
   "required_outcomes_through": "2026-05-03",
@@ -197,41 +197,40 @@
     {
       "name": "derek_live_snapshots",
       "command": "verify_derek_live_snapshots",
-      "status": "FAIL",
+      "status": "WARN",
       "critical": true,
       "pass_line": null,
-      "warn_line": null,
+      "warn_line": "DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES",
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "no pass line"
+        "DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES"
       ]
     },
     {
       "name": "derek_production_live_e2e",
       "command": "verify_derek_production_live_e2e",
-      "status": "FAIL",
+      "status": "WARN",
       "critical": true,
       "pass_line": null,
-      "warn_line": null,
+      "warn_line": "DEREK_PRODUCTION_LIVE_E2E_PENDING",
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "no pass line"
+        "DEREK_PRODUCTION_LIVE_E2E_PENDING"
       ]
     },
     {
       "name": "derek_email_claimed_files",
-      "command": "scripts/verify_derek_email_claimed_files.py --delivery-date 2026-05-04",
-      "status": "FAIL",
+      "command": "verify_derek_email_claimed_files (pending)",
+      "status": "WARN",
       "critical": true,
       "pass_line": null,
-      "warn_line": null,
-      "fail_line": "DEREK_EMAIL_CLAIMED_FILES_FAILED  delivery_date=2026-05-04  snapshot_failures=0  day_failures=3",
-      "critical_failure_line": "DEREK_EMAIL_CLAIMED_FILES_FAILED  delivery_date=2026-05-04  snapshot_failures=0  day_failures=3",
-      "rc": 1,
+      "warn_line": "DEREK_EMAIL_CLAIMED_FILES_PENDING  derek_date=2026-05-04  current_live snapshot not yet run for today",
+      "fail_line": null,
+      "rc": 0,
       "tail": [
-        "  - missing artifacts/automation_health/derek_edge_calibration_2026-05-04.md"
+        "pending pre-tip"
       ]
     },
     {
@@ -276,14 +275,14 @@
     {
       "name": "human_readable_reports",
       "command": "(file presence check)",
-      "status": "FAIL",
+      "status": "WARN",
       "critical": true,
       "pass_line": null,
-      "warn_line": null,
-      "fail_line": "missing human-readable reports: ['deliveries/2026-05-04/derek_game_snapshots/README.md', 'deliveries/2026-05-04/README.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-04.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-04.md']",
-      "rc": 1,
+      "warn_line": "human-readable reports not yet produced for today's Derek delivery (current_live snapshot has not run)",
+      "fail_line": null,
+      "rc": 0,
       "tail": [
-        "missing: ['deliveries/2026-05-04/derek_game_snapshots/README.md', 'deliveries/2026-05-04/README.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-04.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-04.md']"
+        "pending: ['deliveries/2026-05-04/derek_game_snapshots/README.md', 'deliveries/2026-05-04/README.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-04.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-04.md']"
       ]
     },
     {
@@ -300,5 +299,5 @@
       ]
     }
   ],
-  "overall": "FULL_DAILY_PRODUCTION_CONTRACT_FAILED"
+  "overall": "FULL_DAILY_PRODUCTION_CONTRACT_WARN"
 }
