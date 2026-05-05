@@ -160,6 +160,24 @@ def _run_verifier(date: str) -> int:
     return proc.returncode
 
 
+def _run_publish_nba_props_today(date: str) -> int:
+    """Refresh predictions/nba_props_today.json for the slate date.
+
+    Must run AFTER predict.py succeeds and BEFORE the verifier, so that
+    verify_daily_prediction_outputs.py does not flag nba_props_today.json
+    as stale.
+    """
+    cmd = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "publish_nba_props_today.py"),
+        "--date",
+        date,
+    ]
+    _emit(f"[gate] invoking {' '.join(cmd)}")
+    proc = subprocess.run(cmd, cwd=str(REPO_ROOT), check=False)
+    return proc.returncode
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--date", required=True, help="Slate date (YYYY-MM-DD).")
@@ -190,8 +208,17 @@ def main() -> int:
 
     missing = _missing(date)
     if not missing:
-        # Predictions exist — verify them before proceeding so we never
-        # hand a corrupt parquet to downstream delivery steps.
+        # Predictions exist — refresh nba_props_today.json from the dated
+        # artifacts, then verify them before proceeding so we never hand
+        # a corrupt parquet (or a stale today.json) to downstream delivery.
+        publish_rc = _run_publish_nba_props_today(date)
+        if publish_rc != 0:
+            return _hard_fail(
+                "PUBLISH_NBA_PROPS_TODAY_FAILED",
+                date,
+                mode,
+                detail=f"publish_rc={publish_rc}",
+            )
         verifier_rc = _run_verifier(date)
         if verifier_rc != 0:
             return _hard_fail(
@@ -249,6 +276,15 @@ def main() -> int:
             date,
             mode,
             detail=f"missing={','.join(p.name for p in still_missing)}",
+        )
+
+    publish_rc = _run_publish_nba_props_today(date)
+    if publish_rc != 0:
+        return _hard_fail(
+            "PUBLISH_NBA_PROPS_TODAY_FAILED",
+            date,
+            mode,
+            detail=f"publish_rc={publish_rc}",
         )
 
     verifier_rc = _run_verifier(date)
