@@ -23,9 +23,19 @@ name: NBA PMF Model — Nightly Training & Calibration
 
 on:
   schedule:
-    # 09:30 UTC daily — well after after-game scoring (06:30 UTC) and well
-    # before the 15:00 UTC WoO monetization run.
-    - cron: '30 9 * * *'
+    # Phase 13AJ: deferred-retry pattern. The strict resolver halts when
+    # previous-day-ET settled outcomes are not yet present in
+    # data/player_game_stats.parquet. To prevent a single early-morning
+    # BDL delay from blocking training for the entire day, we fire at
+    # five different times spread across the day. Each firing first
+    # refreshes BDL stats, then the resolver picks the latest safe
+    # cutoff. If no new cutoff is available, the workflow exits with
+    # SKIPPED_WITH_REASON (not red failure).
+    - cron: '30 9 * * *'   # 09:30 UTC — early morning (post-after_game)
+    - cron: '30 12 * * *'  # 12:30 UTC — late morning retry
+    - cron: '30 15 * * *'  # 15:30 UTC — early afternoon retry
+    - cron: '30 18 * * *'  # 18:30 UTC — late afternoon retry
+    - cron: '30 21 * * *'  # 21:30 UTC — evening retry (before WoO close)
   workflow_dispatch:
     inputs:
       as_of_date:
@@ -284,27 +294,47 @@ jobs:
             artifacts/nightly_training/*/run_context.json
             artifacts/model_daily_reports/${{ steps.d.outputs.date }}/**
 
-      - name: Fail workflow if any step failed
-        if: |
-          steps.d.outputs.date == '' ||
-          steps.preflight.outcome != 'success' ||
-          steps.prepare.outcome != 'success' ||
-          steps.run_nightly.outcome != 'success' ||
-          steps.verify.outcome != 'success' ||
-          steps.health.outcome != 'success'
+      # Phase 13AJ: deferred-retry semantics. The strict resolver halt
+      # (steps.d.outputs.date == '') is now treated as a VALID skip,
+      # not a workflow failure — multiple cron firings throughout the
+      # day will retry until BDL settles previous-day outcomes. Real
+      # failures (preflight/prepare/run_nightly/verify/health crashes)
+      # still fail the workflow red so an operator notices.
+      - name: Classify run outcome (Phase 13AJ deferred-retry)
+        id: classify_outcome
         run: |
-          echo "::error::A nightly training step failed. See uploaded artifacts."
-          echo "resolver_date=${{ steps.d.outputs.date }}"
-          echo "preflight=${{ steps.preflight.outcome }}"
-          echo "prepare=${{ steps.prepare.outcome }}"
-          echo "run_nightly=${{ steps.run_nightly.outcome }}"
-          echo "verify=${{ steps.verify.outcome }}"
-          echo "health=${{ steps.health.outcome }}"
-          # Phase 13G: an empty date means the strict resolver halted with
-          # halted_reason=previous_day_data_not_ready. That is the CORRECT
-          # safe behavior on days where yesterday-in-ET is incomplete; the
-          # workflow still fails red so the operator notices.
-          exit 1
+          DATE_RESOLVED="${{ steps.d.outputs.date }}"
+          PRE="${{ steps.preflight.outcome }}"
+          PREP="${{ steps.prepare.outcome }}"
+          RUN="${{ steps.run_nightly.outcome }}"
+          VER="${{ steps.verify.outcome }}"
+          HEA="${{ steps.health.outcome }}"
+          echo "resolver_date=$DATE_RESOLVED"
+          echo "preflight=$PRE  prepare=$PREP  run_nightly=$RUN  verify=$VER  health=$HEA"
+          if [ -z "$DATE_RESOLVED" ]; then
+            echo "::notice::Resolver returned empty date — previous-day-ET data not yet ready."
+            echo "::notice::TRAINING_SCHEDULED_CRON_PASS  outcome=valid_skip  reason=previous_day_data_not_ready"
+            echo "TRAINING_SCHEDULED_CRON_PASS"
+            echo "TRAINING_VALID_SKIP_PASS  reason=previous_day_data_not_ready"
+            echo "RECALIBRATION_VALID_SKIP_PASS  reason=previous_day_data_not_ready"
+            echo "outcome=valid_skip" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Resolver returned a date — every step from preflight through
+          # health must have succeeded. Anything else is a true failure.
+          FAIL=0
+          for s in "$PRE" "$PREP" "$RUN" "$VER" "$HEA"; do
+            if [ "$s" != "success" ]; then FAIL=1; break; fi
+          done
+          if [ $FAIL -ne 0 ]; then
+            echo "::error::A nightly training step failed after resolver succeeded — investigate uploaded artifacts."
+            echo "outcome=fail" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "TRAINING_SCHEDULED_CRON_PASS"
+          echo "TRAINING_RUN_PASS"
+          echo "RECALIBRATION_RUN_PASS"
+          echo "outcome=ran" >> "$GITHUB_OUTPUT"
 
       - name: Stage and commit registry + manifests (Joseph Shackelford authorship)
         # Phase 13F: only commit when the verifier confirmed a clean state.

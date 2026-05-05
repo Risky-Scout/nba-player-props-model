@@ -583,6 +583,28 @@ def main(argv: list[str] | None = None) -> int:
         gid = game_dir.name
         for snap_type in SNAPSHOT_TYPES:
             snap_dir = game_dir / snap_type
+            # Phase 13AJ — folders carrying a failed_snapshot_manifest.json
+            # are PARTIAL_FAILED states the dispatcher wrote when its
+            # child crashed mid-snapshot. Surface as a hard FAIL with the
+            # captured child traceback / stderr so verifiers cannot mask
+            # them as "missing snapshot" or "documented miss."
+            failed_marker = snap_dir / "failed_snapshot_manifest.json"
+            if failed_marker.exists():
+                try:
+                    fm = read_json(failed_marker)
+                except Exception:
+                    fm = {}
+                report.add(
+                    f"{gid}/{snap_type}_partial_or_failed",
+                    False,
+                    f"failed_snapshot_manifest present: state="
+                    f"{fm.get('state')!r} returncode={fm.get('child_returncode')!r} "
+                    f"missing={fm.get('required_files_missing')}"
+                )
+                report.facts.setdefault("partial_failed_snapshots", []).append(
+                    f"{gid}/{snap_type}"
+                )
+                continue
             # Phase 13Z — folders that only contain a
             # missed_snapshot_manifest.json (no PMF outputs) are honest
             # MISSED_POST_TIP markers; skip them so the legacy

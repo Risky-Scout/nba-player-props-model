@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "age_days=3.33 max=14",
+      "detail": "age_days=3.51 max=14",
       "name": "champion_freshness",
       "passed": true
     },
@@ -41,9 +41,9 @@
       "passed": true
     }
   ],
-  "code_commit": "8fcf9763d3c6da88a61736b69a5c32e7d3673254",
+  "code_commit": "25d807a0a9b966272209bc3ec615a5486c136bce",
   "facts": {
-    "champion_age_days": 3.33,
+    "champion_age_days": 3.51,
     "champion_calibrated_through_date": "2026-04-30",
     "champion_calibrator_actual_sha_prefixes": {
       "ast": "aa73d678b1512d33",
@@ -67,12 +67,22 @@
     "champion_trained_through_date": "2026-04-30",
     "delivery_date_checked": "2026-05-04",
     "delivery_manifest_stamped": {
+      "derek": {
+        "calibrated_through_date": "2026-04-30",
+        "champion_model_id": "challenger-2026-04-30",
+        "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+        "model_source": "champion_pointer",
+        "model_version": null,
+        "no_challenger_artifacts_used": true,
+        "path": "deliveries/2026-05-04/derek_forward_feed/feed_manifest.json",
+        "trained_through_date": "2026-04-30"
+      },
       "woo": {
         "calibrated_through_date": "2026-04-30",
         "champion_model_id": "challenger-2026-04-30",
         "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
         "model_source": "champion_pointer",
-        "model_version": "9688166#phase10c",
+        "model_version": "3a9664f#phase10c",
         "no_challenger_artifacts_used": true,
         "path": "deliveries/2026-05-04/wizard_of_odds/run_manifest.json",
         "trained_through_date": "2026-04-30"
@@ -87,7 +97,7 @@
     "latest_delivery_date": "2026-05-04",
     "latest_delivery_generated_at": null
   },
-  "generated_at_utc": "2026-05-04T20:39:45+00:00",
+  "generated_at_utc": "2026-05-05T01:05:12+00:00",
   "max_stale_days": 14,
   "passed": true,
   "schema_version": "1.0"

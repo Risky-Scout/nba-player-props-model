@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-04T20:39:51+00:00",
+  "generated_at_utc": "2026-05-05T01:03:19+00:00",
   "date": "2026-05-04",
-  "derek_date": "2026-05-03",
+  "derek_date": "2026-05-04",
   "required_outcomes_through": "2026-05-03",
   "checks": [
     {
@@ -47,6 +47,45 @@
       ]
     },
     {
+      "name": "training_scheduled_cron",
+      "command": "(inferred from training_automation chain)",
+      "status": "PASS",
+      "critical": false,
+      "pass_line": "TRAINING_SCHEDULED_CRON_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS"
+      ]
+    },
+    {
+      "name": "training_run",
+      "command": "(inferred from training_automation chain)",
+      "status": "PASS",
+      "critical": false,
+      "pass_line": "TRAINING_RUN_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS"
+      ]
+    },
+    {
+      "name": "recalibration_run",
+      "command": "(inferred from training_automation chain)",
+      "status": "PASS",
+      "critical": false,
+      "pass_line": "RECALIBRATION_RUN_PASS",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "TRAINING_AUTOMATION_REAL_TRAINING_VERIFICATION_PASS"
+      ]
+    },
+    {
       "name": "daily_predictions",
       "command": "scripts/verify_daily_prediction_outputs.py --date 2026-05-04",
       "status": "PASS",
@@ -58,6 +97,20 @@
       "rc": 0,
       "tail": [
         "DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-04  parquet_rows=65  singles=8  pmf_display=8  today_count=65"
+      ]
+    },
+    {
+      "name": "derek_near_lineup",
+      "command": "scripts/verify_derek_near_lineup_contract.py --date 2026-05-04",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_NEAR_LINEUP_CONTRACT_PASS  date=2026-05-04  feed_dir=deliveries/2026-05-04/derek_forward_feed",
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_NEAR_LINEUP_CONTRACT_PASS  date=2026-05-04  feed_dir=deliveries/2026-05-04/derek_forward_feed"
       ]
     },
     {
@@ -129,82 +182,82 @@
     },
     {
       "name": "derek_current_live",
-      "command": "scripts/verify_derek_outcome_level_probabilities.py --delivery-date 2026-05-03",
+      "command": "scripts/verify_derek_outcome_level_probabilities.py --delivery-date 2026-05-04",
       "status": "PASS",
       "critical": true,
-      "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4",
+      "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-04  ok=0  skipped=1",
       "warn_line": null,
       "fail_line": null,
       "critical_failure_line": null,
       "rc": 0,
       "tail": [
-        "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4"
+        "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-04  ok=0  skipped=1"
       ]
     },
     {
       "name": "derek_live_snapshots",
       "command": "verify_derek_live_snapshots",
-      "status": "PASS",
+      "status": "FAIL",
       "critical": true,
-      "pass_line": "DEREK_LIVE_SNAPSHOTS_PASS",
+      "pass_line": null,
       "warn_line": null,
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "DEREK_LIVE_SNAPSHOTS_PASS"
+        "no pass line"
       ]
     },
     {
       "name": "derek_production_live_e2e",
       "command": "verify_derek_production_live_e2e",
-      "status": "PASS",
+      "status": "FAIL",
       "critical": true,
-      "pass_line": "DEREK_PRODUCTION_LIVE_E2E_PASS",
+      "pass_line": null,
       "warn_line": null,
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "DEREK_PRODUCTION_LIVE_E2E_PASS"
+        "no pass line"
       ]
     },
     {
       "name": "derek_email_claimed_files",
-      "command": "scripts/verify_derek_email_claimed_files.py --delivery-date 2026-05-03",
-      "status": "PASS",
+      "command": "scripts/verify_derek_email_claimed_files.py --delivery-date 2026-05-04",
+      "status": "FAIL",
       "critical": true,
-      "pass_line": "DEREK_EMAIL_CLAIMED_FILES_PASS  delivery_date=2026-05-03  snapshots_ok=2  snapshots_skipped=4",
+      "pass_line": null,
       "warn_line": null,
-      "fail_line": null,
-      "critical_failure_line": null,
-      "rc": 0,
+      "fail_line": "DEREK_EMAIL_CLAIMED_FILES_FAILED  delivery_date=2026-05-04  snapshot_failures=0  day_failures=3",
+      "critical_failure_line": "DEREK_EMAIL_CLAIMED_FILES_FAILED  delivery_date=2026-05-04  snapshot_failures=0  day_failures=3",
+      "rc": 1,
       "tail": [
-        "DEREK_EMAIL_CLAIMED_FILES_PASS  delivery_date=2026-05-03  snapshots_ok=2  snapshots_skipped=4"
+        "  - missing artifacts/automation_health/derek_edge_calibration_2026-05-04.md"
       ]
     },
     {
       "name": "derek_after_game_scoring",
       "command": "score_derek_live_snapshots_after_game",
-      "status": "PASS",
+      "status": "WARN",
       "critical": true,
-      "pass_line": "DEREK_AFTER_GAME_SCORING_PASS  delivery_date=2026-05-03  snapshots_scored=2  props_scored=68  unjoined=0  scoring_report=deliveries/2026-05-03/derek_game_snapshots/aggregate_snapshot_scoring.json",
-      "warn_line": null,
+      "pass_line": null,
+      "warn_line": "DEREK_LIVE_SNAPSHOT_SCORING_PENDING",
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "DEREK_AFTER_GAME_SCORING_PASS  delivery_date=2026-05-03  snapshots_scored=2  props_scored=68  unjoined=0  scoring_report=deliveries/2026-05-03/derek_game_snapshots/aggregate_snapshot_scoring.json"
+        "DEREK_LIVE_SNAPSHOT_SCORING_PENDING"
       ]
     },
     {
       "name": "woo_after_game_scoring",
       "command": "score_woo_after_game",
-      "status": "PASS",
+      "status": "WARN",
       "critical": true,
-      "pass_line": "WOO_AFTER_GAME_SCORING_PASS  date=2026-05-03  props_scored=68  mean_nll=2.7432  summary=artifacts/scoring/woo/2026-05-03/woo_scoring_summary.json",
-      "warn_line": null,
+      "pass_line": null,
+      "warn_line": "WOO_AFTER_GAME_SCORING_PENDING  date=2026-05-04  reason=outcomes_not_yet_settled",
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "WOO_AFTER_GAME_SCORING_PASS  date=2026-05-03  props_scored=68  mean_nll=2.7432  summary=artifacts/scoring/woo/2026-05-03/woo_scoring_summary.json"
+        "WOO_AFTER_GAME_SCORING_PENDING  date=2026-05-04  reason=outcomes_not_yet_settled"
       ]
     },
     {
@@ -213,24 +266,24 @@
       "status": "WARN",
       "critical": false,
       "pass_line": null,
-      "warn_line": "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-03  rows=1208  model_trails_market=True  warnings=0",
+      "warn_line": "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-04  rows=1349  model_trails_market=True  warnings=2",
       "fail_line": null,
       "rc": 0,
       "tail": [
-        "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-03  rows=1208  model_trails_market=True  warnings=0"
+        "PMF_VARIANCE_EXPERIENCE_STUDY_WARN  as_of_date=2026-05-04  rows=1349  model_trails_market=True  warnings=2"
       ]
     },
     {
       "name": "human_readable_reports",
       "command": "(file presence check)",
-      "status": "PASS",
+      "status": "FAIL",
       "critical": true,
-      "pass_line": "HUMAN_READABLE_REPORTS_PASS",
+      "pass_line": null,
       "warn_line": null,
-      "fail_line": null,
-      "rc": 0,
+      "fail_line": "missing human-readable reports: ['deliveries/2026-05-04/derek_game_snapshots/README.md', 'deliveries/2026-05-04/README.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-04.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-04.md']",
+      "rc": 1,
       "tail": [
-        "all human-readable reports present"
+        "missing: ['deliveries/2026-05-04/derek_game_snapshots/README.md', 'deliveries/2026-05-04/README.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-04.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-04.md']"
       ]
     },
     {
@@ -247,5 +300,5 @@
       ]
     }
   ],
-  "overall": "FULL_DAILY_PRODUCTION_CONTRACT_WARN"
+  "overall": "FULL_DAILY_PRODUCTION_CONTRACT_FAILED"
 }

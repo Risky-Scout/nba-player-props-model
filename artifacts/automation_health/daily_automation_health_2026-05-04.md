@@ -1,6 +1,6 @@
 # Daily automation health — 2026-05-04
 
-_Generated 2026-05-04T20:38:41+00:00._
+_Generated 2026-05-05T01:04:50+00:00._
 
 ## Overall: **OVERALL_WARN**
 
@@ -42,19 +42,20 @@ _Training artifacts are keyed by latest settled outcome date (training_cutoff_da
 - **today_count:** `65`
 - **today_date:** `2026-05-04`
 
-## 3. Derek snapshots — `PASS`
+## 3. Derek snapshots — `PENDING`
 
-- **status:** `PASS`
-- **delivery_date:** `2026-05-03`
-- **current_live_count:** `2`
-- **t_minus_25_missed:** `2`
+- **status:** `PENDING`
+- **delivery_date:** `2026-05-04`
+- **current_live_count:** `0`
+- **t_minus_25_missed:** `1`
 - **t_minus_25_present:** `0`
-- **close_lock_missed:** `2`
+- **close_lock_missed:** `0`
 - **close_lock_present:** `0`
+- **root_cause:** one or more Derek verifiers reported PENDING (no game due / no game tipped); honest pre-tip state, not a failure
 
-- DEREK_LIVE_SNAPSHOTS: `DEREK_LIVE_SNAPSHOTS_PASS`
-- DEREK_PRODUCTION_LIVE_E2E: `DEREK_PRODUCTION_LIVE_E2E_PASS`
-- DEREK_OUTCOME_LEVEL_PROBABILITIES: `DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4`
+- DEREK_LIVE_SNAPSHOTS: `DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES`
+- DEREK_PRODUCTION_LIVE_E2E: `DEREK_PRODUCTION_LIVE_E2E_PENDING`
+- DEREK_OUTCOME_LEVEL_PROBABILITIES: `DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-04  ok=0  skipped=1`
 
 ## 4. Wizard of Odds — `PASS`
 

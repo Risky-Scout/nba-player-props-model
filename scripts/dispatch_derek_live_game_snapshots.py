@@ -163,8 +163,37 @@ def _already_run(delivery_date: str, game_id: str, snapshot_type: str) -> bool:
              / "snapshot_manifest.json").exists()
 
 
+REQUIRED_SNAPSHOT_FILES = (
+    "snapshot_manifest.json",
+    "snapshot_report.md",
+    "prop_summary.csv",
+    "prop_summary.parquet",
+    "full_pmf_wide.csv",
+    "full_pmf_wide.parquet",
+    "outcome_level_probabilities.csv",
+    "outcome_level_probabilities.parquet",
+    "market_comparison.csv",
+    "market_comparison.parquet",
+)
+
+
 def _run_snapshot(delivery_date: str, game_id: str, snapshot_type: str,
-                   allow_backfill: bool, force: bool) -> tuple[int, str]:
+                   allow_backfill: bool, force: bool) -> tuple[int, dict]:
+    """Invoke run_derek_live_game_snapshot.py and capture FULL child
+    output for the dispatcher's audit log.
+
+    Returns (returncode, child_info) where child_info has keys:
+      command, stdout, stderr, traceback (extracted), elapsed_seconds,
+      output_path, output_path_contents, snapshot_manifest_status.
+
+    Phase 13AJ: previously the dispatcher returned only ``exit_code=1``
+    on child failure, leaving operators with no signal to debug. The
+    runner's stdout+stderr are now persisted and the dispatcher writes a
+    ``failed_snapshot_manifest.json`` + ``failed_snapshot_report.md`` in
+    the output folder when the child crashes mid-snapshot, so partial
+    directories never trick downstream verifiers into a false PASS.
+    """
+    import time as _time
     cmd = [
         sys.executable,
         "scripts/run_derek_live_game_snapshot.py",
@@ -176,11 +205,125 @@ def _run_snapshot(delivery_date: str, game_id: str, snapshot_type: str,
         cmd.append("--allow-backfill-test")
     if force:
         cmd.append("--force")
+    t0 = _time.perf_counter()
     proc = subprocess.run(
         cmd, cwd=REPO_ROOT, capture_output=True, text=True, check=False,
         env={**os.environ},
     )
-    return proc.returncode, (proc.stdout or "") + (proc.stderr or "")
+    elapsed = round(_time.perf_counter() - t0, 1)
+    stdout = proc.stdout or ""
+    stderr = proc.stderr or ""
+
+    # Extract a Python traceback from stderr if present (predict.py and
+    # the runner both write tracebacks to stderr on crash).
+    traceback_text: str | None = None
+    if "Traceback (most recent call last)" in stderr:
+        # Take from the last traceback marker through end of stderr.
+        idx = stderr.rfind("Traceback (most recent call last)")
+        traceback_text = stderr[idx:].strip()
+    elif "Traceback (most recent call last)" in stdout:
+        idx = stdout.rfind("Traceback (most recent call last)")
+        traceback_text = stdout[idx:].strip()
+
+    snap_dir = _snapshot_dir(delivery_date, str(game_id), snapshot_type)
+    output_path_contents: list[str] = []
+    if snap_dir.exists():
+        try:
+            output_path_contents = sorted(
+                str(p.relative_to(snap_dir)) for p in snap_dir.iterdir()
+            )
+        except Exception:
+            output_path_contents = []
+
+    manifest_status = "absent"
+    manifest_path = snap_dir / "snapshot_manifest.json"
+    if manifest_path.exists():
+        try:
+            mp = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest_status = (mp.get("snapshot_validity_status")
+                                or mp.get("snapshot_mode")
+                                or "present_no_status")
+        except Exception:
+            manifest_status = "present_unparseable"
+
+    info = {
+        "command": cmd,
+        "stdout": stdout,
+        "stderr": stderr,
+        "traceback": traceback_text,
+        "elapsed_seconds": elapsed,
+        "output_path": str(snap_dir.relative_to(REPO_ROOT)),
+        "output_path_contents": output_path_contents,
+        "snapshot_manifest_status": manifest_status,
+    }
+
+    # If the child failed and produced a partial directory, write a
+    # failed_snapshot_manifest so verifiers can distinguish "child
+    # crashed mid-write" from "snapshot legitimately not produced yet."
+    if proc.returncode != 0:
+        snap_dir.mkdir(parents=True, exist_ok=True)
+        missing_required = [
+            f for f in REQUIRED_SNAPSHOT_FILES if not (snap_dir / f).exists()
+        ]
+        failed_payload = {
+            "schema_version": "1.0",
+            "delivery_date": delivery_date,
+            "game_id": str(game_id),
+            "snapshot_type": snapshot_type,
+            "child_command": cmd,
+            "child_returncode": proc.returncode,
+            "child_stdout_tail": stdout[-4000:],
+            "child_stderr_tail": stderr[-4000:],
+            "child_traceback": traceback_text,
+            "elapsed_seconds": elapsed,
+            "output_path": str(snap_dir.relative_to(REPO_ROOT)),
+            "output_path_contents": output_path_contents,
+            "snapshot_manifest_status": manifest_status,
+            "required_files_missing": missing_required,
+            "state": "PARTIAL_FAILED" if output_path_contents else "FAILED_NO_OUTPUT",
+            "generated_at_utc": _utc_iso(_utcnow()),
+        }
+        try:
+            (snap_dir / "failed_snapshot_manifest.json").write_text(
+                json.dumps(failed_payload, indent=2), encoding="utf-8"
+            )
+            md_lines = [
+                f"# FAILED snapshot — {delivery_date} game {game_id} {snapshot_type}",
+                "",
+                f"- child returncode: **{proc.returncode}**",
+                f"- elapsed: **{elapsed}s**",
+                f"- state: **{failed_payload['state']}**",
+                f"- output path: `{failed_payload['output_path']}`",
+                f"- required files missing: `{missing_required}`",
+                "",
+                "## Child stderr tail",
+                "",
+                "```",
+                stderr[-2000:] or "(empty)",
+                "```",
+                "",
+                "## Child stdout tail",
+                "",
+                "```",
+                stdout[-2000:] or "(empty)",
+                "```",
+            ]
+            if traceback_text:
+                md_lines += [
+                    "",
+                    "## Extracted traceback",
+                    "",
+                    "```",
+                    traceback_text,
+                    "```",
+                ]
+            (snap_dir / "failed_snapshot_report.md").write_text(
+                "\n".join(md_lines) + "\n", encoding="utf-8",
+            )
+        except Exception:
+            pass
+
+    return proc.returncode, info
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -377,7 +520,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
 
         eligible_rows += 1
-        rc, log = _run_snapshot(
+        rc, child_info = _run_snapshot(
             delivery_date, game_id, args.snapshot_type,
             allow_backfill=bool(args.allow_backfill_test),
             force=(args.force or action == "regenerate_force"),
@@ -389,15 +532,55 @@ def main(argv: list[str] | None = None) -> int:
                 "target_utc": target_iso,
                 "state": sr.state, "action": action,
                 "snapshot_dir": str(snap_dir.relative_to(REPO_ROOT)),
-                "tail": log.strip().splitlines()[-1:][0] if log.strip() else "",
+                "tail": (child_info.get("stdout") or "").strip()
+                    .splitlines()[-1:][0] if child_info.get("stdout") else "",
             })
         else:
+            # Phase 13AJ: persist full child output so the operator can
+            # debug without re-running. Print stderr/stdout/traceback to
+            # the dispatcher's own stderr so the GitHub Actions log shows
+            # the failure inline rather than just exit_code=1.
             failures += 1
+            print(f"::error::DEREK child snapshot failed game_id={game_id} "
+                  f"snapshot_type={args.snapshot_type} "
+                  f"exit_code={rc} elapsed={child_info.get('elapsed_seconds')}s",
+                  file=sys.stderr)
+            print(f"  command: {child_info.get('command')}", file=sys.stderr)
+            print(f"  output_path: {child_info.get('output_path')}", file=sys.stderr)
+            print(f"  output_path_contents: {child_info.get('output_path_contents')}",
+                  file=sys.stderr)
+            print(f"  snapshot_manifest_status: {child_info.get('snapshot_manifest_status')}",
+                  file=sys.stderr)
+            child_stderr = (child_info.get("stderr") or "").strip()
+            if child_stderr:
+                print("  ── child stderr (tail) ──", file=sys.stderr)
+                for line in child_stderr.splitlines()[-40:]:
+                    print(f"  | {line}", file=sys.stderr)
+            child_stdout = (child_info.get("stdout") or "").strip()
+            if child_stdout:
+                print("  ── child stdout (tail) ──", file=sys.stderr)
+                for line in child_stdout.splitlines()[-20:]:
+                    print(f"  | {line}", file=sys.stderr)
+            tb = child_info.get("traceback")
+            if tb:
+                print("  ── extracted traceback ──", file=sys.stderr)
+                for line in tb.splitlines():
+                    print(f"  | {line}", file=sys.stderr)
             decisions.append({
                 "game_id": game_id, "decision": "fired_failed",
                 "exit_code": rc, "state": sr.state, "action": action,
                 "target_utc": target_iso,
-                "tail": log.strip().splitlines()[-3:],
+                "elapsed_seconds": child_info.get("elapsed_seconds"),
+                "child_stdout_tail": (child_info.get("stdout") or "").strip()
+                    .splitlines()[-3:],
+                "child_stderr_tail": (child_info.get("stderr") or "").strip()
+                    .splitlines()[-10:],
+                "traceback_extracted": bool(child_info.get("traceback")),
+                "output_path_contents": child_info.get("output_path_contents"),
+                "snapshot_manifest_status": child_info.get("snapshot_manifest_status"),
+                "failed_manifest_written": (
+                    snap_dir / "failed_snapshot_manifest.json"
+                ).exists(),
             })
 
     report = {

@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "date": "2026-05-04",
-  "generated_at_utc": "2026-05-04T20:38:41+00:00",
+  "generated_at_utc": "2026-05-05T01:04:50+00:00",
   "overall": {
     "status": "OVERALL_WARN",
     "summary": "one or more sections pending honest upstream data"
@@ -53,31 +53,35 @@
     "derek": {
       "section": "derek_snapshots",
       "requested_date": "2026-05-04",
-      "delivery_date": "2026-05-03",
-      "latest_verified_date": "2026-05-03",
-      "current_live_count": 2,
-      "t_minus_25_missed": 2,
+      "delivery_date": "2026-05-04",
+      "latest_verified_date": "2026-05-04",
+      "current_live_count": 0,
+      "t_minus_25_missed": 1,
       "t_minus_25_present": 0,
-      "close_lock_missed": 2,
+      "close_lock_missed": 0,
       "close_lock_present": 0,
       "verifier_pass_lines": {
         "DEREK_LIVE_SNAPSHOTS": {
-          "pass_line": "DEREK_LIVE_SNAPSHOTS_PASS",
+          "pass_line": "DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES",
           "exit_code": 0,
-          "passed": true
+          "passed": false,
+          "pending": true
         },
         "DEREK_PRODUCTION_LIVE_E2E": {
-          "pass_line": "DEREK_PRODUCTION_LIVE_E2E_PASS",
+          "pass_line": "DEREK_PRODUCTION_LIVE_E2E_PENDING",
           "exit_code": 0,
-          "passed": true
+          "passed": false,
+          "pending": true
         },
         "DEREK_OUTCOME_LEVEL_PROBABILITIES": {
-          "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-03  ok=2  skipped=4",
+          "pass_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_PASS  delivery_date=2026-05-04  ok=0  skipped=1",
           "exit_code": 0,
-          "passed": true
+          "passed": true,
+          "pending": false
         }
       },
-      "status": "PASS"
+      "status": "PENDING",
+      "root_cause": "one or more Derek verifiers reported PENDING (no game due / no game tipped); honest pre-tip state, not a failure"
     },
     "woo": {
       "section": "wizard_of_odds",

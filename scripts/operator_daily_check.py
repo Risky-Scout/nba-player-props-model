@@ -24,9 +24,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 SECTION_LABEL_MAP = (
-    ("training_automation",      "TRAINING       "),
-    ("recalibration_automation", "RECALIBRATION  "),
+    # Phase 13AJ: scheduled-cron status, training-run status, and
+    # recalibration-run status are now distinct rows so a "valid skip"
+    # cannot hide as a generic green PASS.
+    ("training_scheduled_cron",  "TRAIN CRON     "),
+    ("training_run",             "TRAIN RUN      "),
+    ("training_automation",      "TRAIN ARTIFACT "),
+    ("recalibration_run",        "RECAL RUN      "),
+    ("recalibration_automation", "RECAL ARTIFACT "),
     ("daily_predictions",        "PREDICTIONS    "),
+    ("derek_near_lineup",        "DEREK NEAR-LINE"),
     ("woo_snapshot_state_machine", "WOO STATE M/C  "),
     ("woo_morning_snapshot",     "WOO MORNING    "),
     ("woo_t_minus_25",           "WOO T-25       "),

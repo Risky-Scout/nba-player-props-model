@@ -396,15 +396,35 @@ def _section_derek(date: str) -> dict:
             (l for l in (stdout + stderr).splitlines() if l.startswith(label)),
             None,
         )
+        pending_line = next(
+            (l for l in (stdout + stderr).splitlines()
+             if l.startswith(label) and ("_PENDING" in l or "_NOT_DUE" in l
+                                         or "_PENDING_NO_GAMES" in l)),
+            None,
+        )
+        # Phase 13AJ: pre-tip pending states are honest WARNs, not FAILs.
+        # The state machine and live verifiers correctly emit *_PENDING_*
+        # lines when no game is yet due / tipped. Only treat as fail when
+        # neither a PASS nor a PENDING line is emitted.
+        passed = bool(line is not None and "_PASS" in line and rc == 0)
         pass_lines[label] = {
-            "pass_line": line,
+            "pass_line": line if passed else (pending_line or line),
             "exit_code": rc,
-            "passed": (rc == 0 and (line or "").endswith("_PASS")
-                       or (line is not None and "_PASS" in line)),
+            "passed": passed,
+            "pending": pending_line is not None and not passed,
         }
     out["verifier_pass_lines"] = pass_lines
+    # Phase 13AJ: classify the section based on the mix of PASS/PENDING.
+    # All-PASS → PASS. Any explicit pending-pre-tip state mixed with
+    # otherwise-PASS → PENDING. Anything else (true failure) → FAIL.
     if all(v.get("passed") for v in pass_lines.values()):
         out["status"] = "PASS"
+    elif all(v.get("passed") or v.get("pending") for v in pass_lines.values()):
+        out["status"] = "PENDING"
+        out["root_cause"] = (
+            "one or more Derek verifiers reported PENDING (no game due / "
+            "no game tipped); honest pre-tip state, not a failure"
+        )
     else:
         out["status"] = "FAIL"
         out["root_cause"] = "one or more Derek verifiers did not emit a PASS line"

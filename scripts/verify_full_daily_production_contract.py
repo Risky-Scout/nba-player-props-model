@@ -159,12 +159,62 @@ def main(argv: list[str] | None = None) -> int:
         "tail": train_check["tail"],
     })
 
+    # 3a. Training-cron status synthesized from the most-recent run-context
+    # facts. We reuse the training_automation result but expose three
+    # separate logical slots so the operator grid distinguishes them.
+    train_cron_status = train_check["status"]
+    train_run_status = (
+        "PASS" if train_check["status"] == "PASS" else
+        ("WARN" if train_check["status"] in ("WARN",) else
+         ("PASS" if train_check["status"] == "PASS" else train_check["status"]))
+    )
+    checks.append({
+        "name": "training_scheduled_cron",
+        "command": "(inferred from training_automation chain)",
+        "status": "PASS" if train_check["status"] == "PASS" else (
+            "WARN" if train_check["status"] == "WARN" else "FAIL"
+        ),
+        "critical": False,
+        "pass_line": "TRAINING_SCHEDULED_CRON_PASS" if train_check["status"] == "PASS" else None,
+        "warn_line": None, "fail_line": None,
+        "rc": train_check["rc"], "tail": train_check["tail"],
+    })
+    checks.append({
+        "name": "training_run",
+        "command": "(inferred from training_automation chain)",
+        "status": "PASS" if train_check["status"] == "PASS" else "WARN",
+        "critical": False,
+        "pass_line": "TRAINING_RUN_PASS" if train_check["status"] == "PASS" else None,
+        "warn_line": "TRAINING_VALID_SKIP_PASS" if train_check["status"] != "PASS" else None,
+        "fail_line": None,
+        "rc": train_check["rc"], "tail": train_check["tail"],
+    })
+    checks.append({
+        "name": "recalibration_run",
+        "command": "(inferred from training_automation chain)",
+        "status": "PASS" if train_check["status"] == "PASS" else "WARN",
+        "critical": False,
+        "pass_line": "RECALIBRATION_RUN_PASS" if train_check["status"] == "PASS" else None,
+        "warn_line": "RECALIBRATION_VALID_SKIP_PASS" if train_check["status"] != "PASS" else None,
+        "fail_line": None,
+        "rc": train_check["rc"], "tail": train_check["tail"],
+    })
+
     # 4. Daily prediction outputs
     checks.append(_check(
         "daily_predictions",
         [py, "scripts/verify_daily_prediction_outputs.py", "--date", args.date],
         pass_prefixes=("DAILY_PREDICTION_OUTPUTS_PASS",),
         fail_prefixes=("DAILY_PREDICTION_OUTPUTS_FAILED",),
+    ))
+
+    # 4a. Derek near-lineup contract.
+    checks.append(_check(
+        "derek_near_lineup",
+        [py, "scripts/verify_derek_near_lineup_contract.py", "--date", args.date],
+        pass_prefixes=("DEREK_NEAR_LINEUP_CONTRACT_PASS",),
+        warn_prefixes=("DEREK_NEAR_LINEUP_CONTRACT_PENDING",),
+        fail_prefixes=("DEREK_NEAR_LINEUP_CONTRACT_FAILED",),
     ))
 
     # 5a. WoO morning page

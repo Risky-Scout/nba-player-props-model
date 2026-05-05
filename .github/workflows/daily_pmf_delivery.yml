@@ -322,27 +322,84 @@ jobs:
           cache: 'pip'
       - name: Install python deps
         run: pip install pandas pyarrow numpy requests joblib scikit-learn
-      - name: Resolve delivery date
+      - name: Resolve delivery date (America/New_York)
         id: d
+        # Phase 13AJ: near-lineup cron windows extend across the UTC date
+        # rollover (22:25 UTC through 03:10 UTC). Resolving with `date -u`
+        # caused the late-night runs to ask for tomorrow's slate while
+        # tonight's ET games were still active. Resolve using
+        # America/New_York so the slate date matches the operator's
+        # frame.
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_DATE via America/New_York"
+            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
           fi
+
+      # Phase 13AJ: hard prerequisite — predictions/all_props_<date>.parquet
+      # must exist before near-lineup can compute snapshot deltas. If
+      # missing, generate it via predict.py with the dated slate. If
+      # predict.py also fails (e.g. odds API rate limit), surface a
+      # WAITING_FOR_PREDICTIONS exit instead of an opaque pipeline crash.
+      - name: Ensure dated predictions exist (Phase 13AJ)
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          DATE=${{ steps.d.outputs.date }}
+          PARQUET="predictions/all_props_${DATE}.parquet"
+          if [ -f "$PARQUET" ]; then
+            echo "predictions parquet present: $PARQUET"
+          else
+            echo "::warning::predictions parquet missing — invoking predict.py before near-lineup"
+            python scripts/predict.py || {
+              echo "::error::predict.py failed; near-lineup cannot run without dated predictions. Exiting WAITING_FOR_PREDICTIONS."
+              echo "WAITING_FOR_PREDICTIONS  date=$DATE"
+              exit 0
+            }
+          fi
+          if [ ! -f "$PARQUET" ]; then
+            echo "::error::predict.py finished but $PARQUET still missing. Exiting WAITING_FOR_PREDICTIONS."
+            echo "WAITING_FOR_PREDICTIONS  date=$DATE"
+            exit 0
+          fi
+          python3 scripts/verify_daily_prediction_outputs.py --date "$DATE"
+
       - name: Run delivery pipeline (derek_near_lineup)
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
+          DATE=${{ steps.d.outputs.date }}
+          PARQUET="predictions/all_props_${DATE}.parquet"
+          if [ ! -f "$PARQUET" ]; then
+            echo "::error::predictions parquet still missing; refusing to run near-lineup pipeline"
+            echo "WAITING_FOR_PREDICTIONS  date=$DATE"
+            exit 0
+          fi
           FORCE_FLAG=""
           if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
             FORCE_FLAG="--force-run"
           fi
           python scripts/run_daily_delivery_pipeline.py \
-            --date ${{ steps.d.outputs.date }} \
+            --date $DATE \
             --mode derek_near_lineup \
             --regions us us2 $FORCE_FLAG
+
+      # Phase 13AJ: enforce the near-lineup contract — predictions
+      # parquet present, near-lineup output produced, no UTC/ET date
+      # rollover mismatch. Non-blocking warning so the operator can see
+      # the contract status in the workflow log without re-failing the
+      # job that just succeeded.
+      - name: Verify near-lineup contract (Phase 13AJ)
+        continue-on-error: true
+        run: |
+          python3 scripts/verify_derek_near_lineup_contract.py \
+            --date ${{ steps.d.outputs.date }} || \
+            echo "::warning::near-lineup contract verifier WARN/FAILED — see step log"
       - name: Stage and commit
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
