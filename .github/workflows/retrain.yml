@@ -22,7 +22,10 @@ concurrency:
 jobs:
   retrain:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    # L4 (RT-8): full retrain wall-clock is well under 3 hours; the
+    # previous 360-minute cap masked stuck runs. 180 minutes still leaves
+    # safe margin for cold-cache + slow-runner days.
+    timeout-minutes: 180
 
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -48,11 +51,38 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python scripts/train.py
 
+      # RT-7: catch a corrupt or truncated training table NOW, before
+      # calibrate.py tries to use it and before we upload it as the
+      # artifact Phase 8 consumes. A truncated table would otherwise
+      # propagate to Phase 8 calibration runs hours later.
+      - name: Verify training table integrity
+        run: |
+          python3 - <<'PY'
+          import pandas as pd, sys
+          df = pd.read_parquet('data/training_table.parquet')
+          if len(df) < 500_000:
+              sys.exit(f"Training table too small: {len(df)} rows, expected >500k")
+          required_cols = ['game_date', 'player_id', 'pts', 'reb', 'ast']
+          missing = [c for c in required_cols if c not in df.columns]
+          if missing:
+              sys.exit(f"Missing columns: {missing}")
+          print(f"OK: {len(df)} rows, all required columns present")
+          PY
+
       - name: Run Platt calibration
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python scripts/calibrate.py || echo "Calibration skipped — insufficient graded data"
+          # RT-2 TODO: scripts/calibrate.py currently exits 0 in BOTH the
+          # success case AND the no-graded-data case (it logs a warning
+          # and returns). Real crashes exit non-zero. There is no exit-2
+          # path that would let us distinguish "insufficient data" from
+          # "crash". The previous `|| echo "Calibration skipped"` swallow
+          # was misleading: it fired only on crashes (which we want to
+          # surface), never on the actual skip case (which already exits 0
+          # silently). Track at: add an exit-2 path to calibrate.py for
+          # the no-graded-data branch so we can echo a notice line again.
+          python scripts/calibrate.py
 
       - name: Upload training-table artifact for Phase 8 handoff
         # Phase 8 downloads this artifact instead of rebuilding the table
@@ -70,13 +100,38 @@ jobs:
         run: |
           git config user.name  "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+          # RT-4: the convoluted `git rm --cached` + `git add data/ -f` +
+          # `git rm --cached` again pattern is intentional and load-bearing.
+          # `data/training_table.parquet` is gitignored because it's
+          # multi-GB and Phase 8 picks it up via the upload-artifact above
+          # rather than from origin/main. `git add data/ -f` force-stages
+          # everything in data/ (bypassing the gitignore) so the smaller
+          # training byproducts are committed. The post-add `git rm
+          # --cached training_table.parquet` then unstages the huge parquet
+          # so it never lands on origin/main. The pre-add `git rm --cached`
+          # is a no-op when nothing is staged but is kept defensively in
+          # case a previous step left it in the index. Investigation note:
+          # could not determine which specific files in data/ are needed
+          # downstream; leaving the existing pattern intact rather than
+          # narrowing it and risking a silent drop.
           git rm --cached data/training_table.parquet 2>/dev/null || true
           git add artifacts/models/ -f
           git add data/ -f
           git rm --cached data/training_table.parquet 2>/dev/null || true
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Retrain $(date -u +%Y-%m-%d): ${{ github.event.inputs.note }}"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Retrain $(date -u +%Y-%m-%d): ${{ github.event.inputs.note }}"
           git config http.postBuffer 524288000
+          PUSH_SUCCESS=0
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin main && break || sleep 30
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 30
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 5 attempts"
+            exit 1
+          fi
