@@ -128,6 +128,14 @@ jobs:
           FROM_DATE=$(TZ=America/New_York date -d "$PREV_DAY_ET -6 days" +%Y-%m-%d 2>/dev/null \
                        || TZ=America/New_York date -v-7d -j -f %Y-%m-%d "$PREV_DAY_ET" +%Y-%m-%d)
           echo "Refreshing player box scores from=$FROM_DATE to=$PREV_DAY_ET"
+          # H4 TODO: backfill_player_game_stats_from_bdl.py currently returns 1
+          # for ALL failure paths (BDL_API_KEY missing, refresh script error,
+          # duplicate keys) and 0 on success — there is no exit-code 2 to
+          # distinguish "no new data available for the requested window" from
+          # "crash". Until the script gains that distinction, the warning here
+          # is the only signal we have, and continue-on-error must stay so the
+          # resolver gets a chance to halt cleanly. Track at: add an exit-2
+          # path to backfill_player_game_stats_from_bdl.py for empty windows.
           python scripts/backfill_player_game_stats_from_bdl.py \
             --from-date "$FROM_DATE" \
             --to-date "$PREV_DAY_ET" || \
@@ -144,16 +152,33 @@ jobs:
         run: |
           git config user.name  "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+          # H6 EXCEPTION (Pattern A): the freshness JSON/MD globs may not
+          # match if verify_player_game_stats_freshness.py crashed before
+          # writing them. The parquet itself is the load-bearing artifact;
+          # we want to commit it whenever it changed regardless of whether
+          # the freshness sidecar files exist. `2>/dev/null || true`
+          # preserves "stage what exists, skip what doesn't" behavior.
           git add data/player_game_stats.parquet \
                   artifacts/automation_health/player_game_stats_freshness_*.json \
                   artifacts/automation_health/player_game_stats_freshness_*.md \
                   artifacts/automation_health/player_game_stats_freshness_check_*.json \
                   2>/dev/null || true
           git diff --staged --quiet && echo "No parquet changes to commit" || \
-            git commit -m "Refresh settled player stats (Phase 13AF auto)"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Refresh settled player stats (Phase 13AF auto)"
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
       - name: Resolve previous-day-ET target (Phase 13G strict)
         id: d
@@ -384,8 +409,21 @@ jobs:
           # (e.g. data/player_game_stats.parquet) that we explicitly do
           # NOT commit from the nightly workflow. Discard those working-tree
           # changes before rebase so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
-          git clean -fd artifacts/nightly_training/${{ steps.d.outputs.date }}/logs 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # H13: previously `git clean -fd` here, which violates the operator's
+          # hard rule against `git clean -fd` (one stray run could nuke unrelated
+          # untracked work). Use a scoped `rm -rf` that only touches the dated
+          # logs directory created by this run.
+          rm -rf "artifacts/nightly_training/${{ steps.d.outputs.date }}/logs" 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
