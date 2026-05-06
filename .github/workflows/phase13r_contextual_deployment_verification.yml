@@ -14,6 +14,12 @@ name: Phase 13R — Contextual PMF Engine Deployment Verification
 #     pointer backups.
 
 on:
+  # H1B chain — auto-fire after phase13q succeeds (parallel with
+  # phase13s). Manual dispatch remains available.
+  workflow_run:
+    workflows: ["Phase 13Q — Contextual PMF Engine (train + validate, no-promote)"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       challenger_dir:
@@ -40,12 +46,33 @@ jobs:
   phase13r_contextual_deployment:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # H1B chain gate.
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     concurrency:
       group: phase13r-contextual-deployment
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
+
+      - name: H1B — Verify upstream output present (workflow_run only)
+        if: github.event_name == 'workflow_run'
+        run: |
+          set -e
+          # Upstream is phase13q which commits
+          # "phase13q: contextual challenger <date>".
+          UPSTREAM_PATTERN="^phase13q: "
+          if ! git log --grep="$UPSTREAM_PATTERN" --since="24 hours ago" --format="%h" | head -1 | grep -q .; then
+            echo "::error::No upstream commit matching '$UPSTREAM_PATTERN' in last 24h on origin/main"
+            echo "Recent commits:"
+            git log -5 --oneline
+            exit 1
+          fi
+          LATEST=$(git log --grep="$UPSTREAM_PATTERN" --since="24 hours ago" -1 --format="%h %ai %s")
+          echo "::notice::Upstream output verified: $LATEST"
+
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
