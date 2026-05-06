@@ -45,6 +45,14 @@ on:
   # parquet). Cron schedules below remain for the window-specific
   # near-tip / monetization / after-game runs that don't depend on a
   # fresh predict cycle.
+  #
+  # NOTE: this workflow_run trigger is currently INERT. None of the 6
+  # jobs below have an `if:` clause that accepts
+  # `event_name == 'workflow_run'`, so workflow_run firings reach this
+  # workflow but no job runs (every job's gate requires either
+  # workflow_dispatch or a specific cron schedule). The actual morning
+  # publish runs via woo_morning_monetization on the 15:00 UTC cron.
+  # Left registered for future hookup; do not rely on it.
   workflow_run:
     workflows: ["NBA Props Model — Daily Pipeline"]
     types: [completed]
@@ -187,11 +195,14 @@ jobs:
             --require-both-sides false
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add deliveries/${{ steps.d.outputs.date }} \
-                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
-                  deliveries/README.md \
-                  deliveries/index.html \
-                  public_export/wizard_of_odds || true
+          if ! git add deliveries/${{ steps.d.outputs.date }} \
+                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
+                       deliveries/README.md \
+                       deliveries/index.html \
+                       public_export/wizard_of_odds; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -199,10 +210,19 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
   # ── WoO morning monetization (15:00 UTC = 11 AM ET) ──────────────────────
   woo_morning_monetization:
@@ -291,13 +311,16 @@ jobs:
             --require-both-sides false
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add deliveries/${{ steps.d.outputs.date }} \
-                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
-                  deliveries/README.md \
-                  deliveries/index.html \
-                  public_export/wizard_of_odds \
-                  predictions/nba-props.html \
-                  predictions/nba-pmf-research.html || true
+          if ! git add deliveries/${{ steps.d.outputs.date }} \
+                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
+                       deliveries/README.md \
+                       deliveries/index.html \
+                       public_export/wizard_of_odds \
+                       predictions/nba-props.html \
+                       predictions/nba-pmf-research.html; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -305,10 +328,19 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
   # ── WoO afternoon refresh (18:00 + 20:00 UTC) ────────────────────────────
   woo_afternoon_refresh:
@@ -391,13 +423,16 @@ jobs:
             --require-both-sides false
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add deliveries/${{ steps.d.outputs.date }} \
-                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
-                  deliveries/README.md \
-                  deliveries/index.html \
-                  public_export/wizard_of_odds \
-                  predictions/nba-props.html \
-                  predictions/nba-pmf-research.html || true
+          if ! git add deliveries/${{ steps.d.outputs.date }} \
+                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
+                       deliveries/README.md \
+                       deliveries/index.html \
+                       public_export/wizard_of_odds \
+                       predictions/nba-props.html \
+                       predictions/nba-pmf-research.html; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -405,10 +440,19 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
   # ── Derek near-lineup (first publishable Derek snapshot + every-15 refresh) ──
   derek_near_lineup:
@@ -499,16 +543,14 @@ jobs:
 
       # Phase 13AJ: enforce the near-lineup contract — predictions
       # parquet present, near-lineup output produced, no UTC/ET date
-      # rollover mismatch. Non-blocking warning so the operator can see
-      # the contract status in the workflow log without re-failing the
-      # job that just succeeded.
+      # rollover mismatch. Hard-fails so the operator notices when the
+      # contract is broken (was previously a non-blocking warning).
       - name: Verify near-lineup contract (Phase 13AJ)
         if: steps.predict_gate.outputs.should_proceed == 'true'
-        continue-on-error: true
         run: |
           python3 scripts/verify_derek_near_lineup_contract.py \
-            --date ${{ steps.d.outputs.date }} || \
-            echo "::warning::near-lineup contract verifier WARN/FAILED — see step log"
+            --date ${{ steps.d.outputs.date }} || { \
+            echo "::error::near-lineup contract verifier FAILED - see step log"; exit 1; }
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -523,11 +565,14 @@ jobs:
             --require-both-sides false
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add deliveries/${{ steps.d.outputs.date }} \
-                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
-                  deliveries/README.md \
-                  deliveries/index.html \
-                  public_export/wizard_of_odds || true
+          if ! git add deliveries/${{ steps.d.outputs.date }} \
+                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
+                       deliveries/README.md \
+                       deliveries/index.html \
+                       public_export/wizard_of_odds; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -535,10 +580,19 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
   # ── Close lock (late-slate snapshot, 03:25 UTC) ──────────────────────────
   close_lock:
@@ -622,13 +676,16 @@ jobs:
             --require-both-sides false
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add deliveries/${{ steps.d.outputs.date }} \
-                  artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
-                  deliveries/README.md \
-                  deliveries/index.html \
-                  public_export/wizard_of_odds \
-                  predictions/nba-props.html \
-                  predictions/nba-pmf-research.html || true
+          if ! git add deliveries/${{ steps.d.outputs.date }} \
+                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
+                       deliveries/README.md \
+                       deliveries/index.html \
+                       public_export/wizard_of_odds \
+                       predictions/nba-props.html \
+                       predictions/nba-pmf-research.html; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -636,10 +693,19 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
   # ── After-game (yesterday's slate) ───────────────────────────────────────
   after_game:
@@ -778,7 +844,28 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
+
+      # M9: classify the after_game outcome so the operator log distinguishes
+      # "successfully scored" from "valid-skipped because nothing to score"
+      # (the gate runs in --no-run-predict mode for past slates).
+      - name: Classify after_game outcome
+        if: always()
+        run: |
+          if [ "${{ steps.predict_gate.outputs.should_proceed }}" != "true" ]; then
+            echo "::notice::AFTER_GAME_VALID_SKIP date=${{ steps.d.outputs.date }} reason=gate_skipped"
+          else
+            echo "::notice::AFTER_GAME_RAN date=${{ steps.d.outputs.date }}"
+          fi
