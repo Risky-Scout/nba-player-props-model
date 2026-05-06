@@ -210,7 +210,27 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Bug E (same root cause as Bug C in nightly_training): expand
+          # the working-tree reset to cover verifier-mutated tracked files
+          # this workflow writes but does NOT commit. All 6 jobs run
+          # verify_derek_woo_champion_dependency.py which rewrites the
+          # derek_woo_champion_dependency.{json,md} pair under
+          # artifacts/automation_health/. refresh_daily_inputs.py mutates
+          # data/player_game_stats.parquet via the BDL refresh.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          # Bug E defensive secondary reset: catch any tracked file still
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -328,7 +348,27 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Bug E (same root cause as Bug C in nightly_training): expand
+          # the working-tree reset to cover verifier-mutated tracked files
+          # this workflow writes but does NOT commit. All 6 jobs run
+          # verify_derek_woo_champion_dependency.py which rewrites the
+          # derek_woo_champion_dependency.{json,md} pair under
+          # artifacts/automation_health/. refresh_daily_inputs.py mutates
+          # data/player_game_stats.parquet via the BDL refresh.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          # Bug E defensive secondary reset: catch any tracked file still
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -440,7 +480,27 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Bug E (same root cause as Bug C in nightly_training): expand
+          # the working-tree reset to cover verifier-mutated tracked files
+          # this workflow writes but does NOT commit. All 6 jobs run
+          # verify_derek_woo_champion_dependency.py which rewrites the
+          # derek_woo_champion_dependency.{json,md} pair under
+          # artifacts/automation_health/. refresh_daily_inputs.py mutates
+          # data/player_game_stats.parquet via the BDL refresh.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          # Bug E defensive secondary reset: catch any tracked file still
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -580,7 +640,27 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Bug E (same root cause as Bug C in nightly_training): expand
+          # the working-tree reset to cover verifier-mutated tracked files
+          # this workflow writes but does NOT commit. All 6 jobs run
+          # verify_derek_woo_champion_dependency.py which rewrites the
+          # derek_woo_champion_dependency.{json,md} pair under
+          # artifacts/automation_health/. refresh_daily_inputs.py mutates
+          # data/player_game_stats.parquet via the BDL refresh.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          # Bug E defensive secondary reset: catch any tracked file still
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -693,7 +773,27 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Bug E (same root cause as Bug C in nightly_training): expand
+          # the working-tree reset to cover verifier-mutated tracked files
+          # this workflow writes but does NOT commit. All 6 jobs run
+          # verify_derek_woo_champion_dependency.py which rewrites the
+          # derek_woo_champion_dependency.{json,md} pair under
+          # artifacts/automation_health/. refresh_daily_inputs.py mutates
+          # data/player_game_stats.parquet via the BDL refresh.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          # Bug E defensive secondary reset: catch any tracked file still
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -844,7 +944,27 @@ jobs:
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Bug E (same root cause as Bug C in nightly_training): expand
+          # the working-tree reset to cover verifier-mutated tracked files
+          # this workflow writes but does NOT commit. All 6 jobs run
+          # verify_derek_woo_champion_dependency.py which rewrites the
+          # derek_woo_champion_dependency.{json,md} pair under
+          # artifacts/automation_health/. refresh_daily_inputs.py mutates
+          # data/player_game_stats.parquet via the BDL refresh.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          # Bug E defensive secondary reset: catch any tracked file still
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
