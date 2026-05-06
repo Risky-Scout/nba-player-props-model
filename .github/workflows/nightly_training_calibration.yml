@@ -84,7 +84,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy requests joblib scikit-learn
+        run: pip install -r requirements.txt
 
       # Phase 13AL: surface required secrets before any downstream step.
       # Fails fast if BDL_API_KEY is missing so the operator sees the

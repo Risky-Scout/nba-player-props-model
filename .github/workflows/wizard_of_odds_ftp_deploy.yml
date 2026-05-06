@@ -100,7 +100,7 @@ jobs:
       # monetization_view writer (still emitted by the daily-delivery
       # pipeline) AND publish_woo_public_export.py.
       - name: Install python deps
-        run: pip install pandas pyarrow numpy
+        run: pip install -r requirements.txt
 
       - name: Resolve delivery date (America/New_York)
         id: d
