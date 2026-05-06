@@ -128,6 +128,16 @@
   .coverage-banner strong { color: var(--gold); }
   .coverage-banner em { color: var(--red); font-style: normal; }
 
+  /* Static fallback banner — shown only when window.EMBEDDED_DATA is
+     absent or stale and the page falls back to ./nba_props_today.json. */
+  .static-banner {
+    max-width: 1700px; margin: 0 auto; padding: 11px 28px;
+    background: rgba(212, 175, 55, 0.10); border-bottom: 1px solid rgba(212, 175, 55, 0.32);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gold);
+  }
+  .static-banner code { color: var(--text); background: rgba(255,255,255,0.04); padding: 1px 4px; border-radius: 3px; }
+  .static-banner em { color: var(--red); font-style: normal; }
+
   .table-wrap { max-width: 1700px; margin: 0 auto; padding: 16px 28px 40px; overflow-x: auto; }
   table.props { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1300px; }
   th, td { text-align: left; padding: 13px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px; vertical-align: middle; }
@@ -275,6 +285,11 @@
     <strong>Kelly</strong> sizes each bet by your edge × your bankroll. Half Kelly is the standard for most professional bettors — it sacrifices a little growth for substantially less variance.
   </div>
 </section>
+
+<!-- STATIC_FALLBACK banner — populated by showState() when window.EMBEDDED_DATA
+     is absent/stale and the page falls back to ./nba_props_today.json. Hidden
+     by default so it does not appear on normal (fresh embedded data) days. -->
+<div class="static-banner" id="static-banner" hidden></div>
 
 <div class="coverage-banner" id="coverage-banner"></div>
 
@@ -802,11 +817,74 @@ document.getElementById('kelly-select').onchange = (e) => {
   render();
 };
 
-function main() {
+// ── Static fallback / empty-state machinery (Bug D) ───────────────────
+// When window.EMBEDDED_DATA is absent OR stale (date != today in ET),
+// the page falls back to fetching ./nba_props_today.json so the user
+// sees a concrete signal of what data exists for today rather than a
+// blank or stale page.
+function todayET() {
+  // en-CA locale gives YYYY-MM-DD directly; the timeZone option anchors
+  // the calendar date to America/New_York to match the rest of the
+  // pipeline's slate-date semantics.
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+}
+
+function showState(message) {
+  const el = document.getElementById('static-banner');
+  if (!el) return;
+  el.innerHTML = message;
+  el.hidden = false;
+}
+
+async function tryStaticFallback() {
+  // STATIC_FALLBACK: fetches ./nba_props_today.json (the static
+  // proof-of-data file produced by scripts/publish_nba_props_today.py).
+  // We surface the count/date in the static-banner; we do NOT re-render
+  // the bet table from this JSON because its schema is per-prop with
+  // {model_prob_over, model_prob_under} fields, while the bet table
+  // builder expects per-side rows from affiliate_dashboard.json.
+  // Honest fallback: tell the user what data exists, don't pretend the
+  // dashboard is live with the wrong-shape data.
+  try {
+    const r = await fetch('./nba_props_today.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const dt = (j && j.date) || '?';
+    const ct = (j && (j.count != null ? j.count : (j.props || []).length)) || 0;
+    const reason = (j && j.reason) || '';
+    if (ct > 0) {
+      showState(
+        'Static fallback active — <code>' + ct + '</code> props for slate <code>' + escapeHtml(dt) + '</code>. ' +
+        'Embedded affiliate dashboard JSON is not present for today; the dashboard will repopulate on the ' +
+        'next morning monetization publish. Raw data: <code>./nba_props_today.json</code>.'
+      );
+    } else {
+      showState(
+        '<em>No bets today.</em> ' +
+        (reason ? escapeHtml(reason) : 'Slate empty or not yet published.') +
+        ' (date in static fallback: <code>' + escapeHtml(dt) + '</code>)'
+      );
+    }
+  } catch (e) {
+    showState(
+      '<em>Dashboard data unavailable.</em> Both the embedded slate and the static ' +
+      'fallback (<code>./nba_props_today.json</code>) are unreachable. ' +
+      escapeHtml(String((e && e.message) || e))
+    );
+  }
+}
+
+async function main() {
   const data = window.EMBEDDED_DATA;
-  if (!data || !Array.isArray(data.rows)) {
+  const today = todayET();
+  // Fresh = data exists, has a rows array, AND its date matches today
+  // (in ET). Anything else triggers the static fallback path so the
+  // page never silently shows stale data without a banner.
+  const dataIsFresh = !!(data && Array.isArray(data.rows) && data.date === today);
+  if (!dataIsFresh) {
     document.getElementById('rows-tbody').innerHTML =
-      '<tr><td colspan="9" class="empty-state">No slate data embedded. Run scripts/build_woo_dashboard.py to regenerate.</td></tr>';
+      '<tr><td colspan="9" class="empty-state">Slate not yet embedded for today — checking static fallback (./nba_props_today.json)…</td></tr>';
+    await tryStaticFallback();
     return;
   }
   STATE.data = data;
