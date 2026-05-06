@@ -57,10 +57,19 @@ jobs:
           git config user.email "props-bot@wizardofodds.com"
           git add data/opening_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Opening lines $(date -u +%Y-%m-%d)"
+            git commit -m "Opening lines $(TZ=America/New_York date +%Y-%m-%d)"
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
 
 # ── Job 2: Grade + Predict (13:00 UTC = 9 AM ET EDT / 8 AM ET EST) ───────────
@@ -108,7 +117,6 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: python scripts/grade.py
-        continue-on-error: true
 
       - name: Generate today's predictions
         env:
@@ -117,19 +125,30 @@ jobs:
           SKIP_SGPS: "1"
         run: python scripts/predict.py
 
-      # HARD FAIL: predictions file must exist or the whole job fails visibly
+      # HARD FAIL: all 4 prediction files must exist non-empty or the whole job fails visibly.
+      # predict.py writes sgps_*.json even when SKIP_SGPS=1 (empty sgps array), so the
+      # check is unconditional.
       - name: Verify predictions were written
         run: |
-          DATE=$(date -u +%Y-%m-%d)
-          FILE="predictions/singles_${DATE}.json"
-          if [ ! -f "$FILE" ]; then
-            echo "FATAL: $FILE was not written — predictions failed"
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
+          MISSING=""
+          for f in "predictions/all_props_${DATE}.parquet" \
+                   "predictions/pmf_display_${DATE}.json" \
+                   "predictions/singles_${DATE}.json" \
+                   "predictions/sgps_${DATE}.json"; do
+            if [ ! -s "$f" ]; then
+              MISSING="$MISSING $f"
+            fi
+          done
+          if [ -n "$MISSING" ]; then
+            echo "::error::Predictions missing or empty:$MISSING"
             exit 1
           fi
-          COUNT=$(python3 -c "import json; d=json.load(open('$FILE')); print(len(d.get('picks',d.get('singles',[]))))")
-          echo "✓ Predictions written: $COUNT picks in $FILE"
+          COUNT=$(python3 -c "import json; d=json.load(open('predictions/singles_${DATE}.json')); print(len(d.get('picks',d.get('singles',[]))))")
+          echo "Predictions written: $COUNT picks"
           if [ "$COUNT" -eq "0" ]; then
-            echo "WARNING: 0 picks written — check API keys and model files"
+            echo "::error::0 picks written - check API keys and model files"
+            exit 1
           fi
 
       # Phase 13AD: refresh nba_props_today.json so the WoO front-end
@@ -138,17 +157,17 @@ jobs:
       # workflow errors so the operator notices.
       - name: Refresh nba_props_today.json (Phase 13AD)
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/publish_nba_props_today.py --date "$DATE"
 
       - name: Verify daily prediction outputs (Phase 13AD)
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/verify_daily_prediction_outputs.py --date "$DATE"
 
       - name: Verify WoO NBA props page (Phase 13AD)
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/verify_woo_nba_props_page.py --date "$DATE"
 
       # Phase 13AE: surface settled-stats freshness in the daily predict
@@ -170,56 +189,53 @@ jobs:
       # daily production contract verifier so the operator audit trail
       # captures every required PASS/WARN/FAIL line.
       - name: Publish WoO morning snapshot (Phase 13AH)
-        continue-on-error: true
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/publish_woo_snapshot.py --date "$DATE" --snapshot-type morning
 
       - name: Verify WoO snapshot outputs (Phase 13AH)
+        # KEEP continue-on-error: t_minus_25/close_lock snapshots are legitimately
+        # "pending until tip" early in the day — the warning is the intended signal.
         continue-on-error: true
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/verify_woo_snapshot_outputs.py --date "$DATE" || \
             echo "::warning::WoO t_minus_25/close_lock snapshots pending until tip — see step log"
 
       - name: Score WoO previous-day predictions (Phase 13AH)
-        continue-on-error: true
         run: |
           PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
                      || TZ=America/New_York date -v-1d +%Y-%m-%d)
-          python3 scripts/score_woo_after_game.py --date "$PREV_DAY" || \
-            echo "::warning::WoO after-game scoring did not pass — see step log"
+          python3 scripts/score_woo_after_game.py --date "$PREV_DAY" || { \
+            echo "::error::WoO after-game scoring failed - see step log"; exit 1; }
 
       - name: Verify Derek email-claimed files (Phase 13AH)
-        continue-on-error: true
         run: |
           PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
                      || TZ=America/New_York date -v-1d +%Y-%m-%d)
-          python3 scripts/verify_derek_email_claimed_files.py --delivery-date "$PREV_DAY" || \
-            echo "::warning::Derek email-claimed files verifier failed — see step log"
+          python3 scripts/verify_derek_email_claimed_files.py --delivery-date "$PREV_DAY" || { \
+            echo "::error::Derek email-claimed files verifier failed - see step log"; exit 1; }
 
       - name: Build + verify daily automation health report (Phase 13AD)
-        continue-on-error: true
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/build_daily_automation_health_report.py --date "$DATE"
-          python3 scripts/verify_daily_automation_health_report.py --date "$DATE" || \
-            echo "::warning::daily automation health report WARN/FAILED — see step log"
+          python3 scripts/verify_daily_automation_health_report.py --date "$DATE" || { \
+            echo "::error::daily automation health report FAILED - see step log"; exit 1; }
 
       - name: Run full daily production contract + operator daily check (Phase 13AH)
-        continue-on-error: true
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
                      || TZ=America/New_York date -v-1d +%Y-%m-%d)
           python3 scripts/verify_full_daily_production_contract.py \
             --date "$DATE" --derek-date "$PREV_DAY" \
-            --required-outcomes-through "$PREV_DAY" || \
-            echo "::warning::full production contract WARN/FAILED — see step log"
+            --required-outcomes-through "$PREV_DAY" || { \
+              echo "::error::full production contract FAILED - see step log"; exit 1; }
           python3 scripts/operator_daily_check.py \
             --date "$DATE" --derek-date "$PREV_DAY" \
-            --required-outcomes-through "$PREV_DAY" || \
-            echo "::warning::operator daily check WARN/FAILED — see step log"
+            --required-outcomes-through "$PREV_DAY" || { \
+              echo "::error::operator daily check FAILED - see step log"; exit 1; }
 
       - name: Commit predictions and graded results
         run: |
@@ -228,10 +244,19 @@ jobs:
           git add predictions/ artifacts/graded/ artifacts/automation_health/ \
                   artifacts/scoring/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Predictions $(date -u +%Y-%m-%d)"
+            git commit -m "Predictions $(TZ=America/New_York date +%Y-%m-%d)"
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
       - name: Upload predictions to server via SFTP
         env:
@@ -240,7 +265,7 @@ jobs:
           SFTP_PASS: ${{ secrets.SFTP_PASS }}
           SFTP_PATH: ${{ secrets.SFTP_PATH }}
         run: |
-          DATE=$(date -u +%Y-%m-%d)
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
           curl --ftp-create-dirs --max-time 30 --retry 3 \
             -u "$SFTP_USER:$SFTP_PASS" \
             -T "predictions/singles_${DATE}.json" \
@@ -295,7 +320,16 @@ jobs:
           git config user.email "props-bot@wizardofodds.com"
           git add artifacts/graded/closing_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Closing lines $(date -u +%Y-%m-%d)"
+            git commit -m "Closing lines $(TZ=America/New_York date +%Y-%m-%d)"
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
