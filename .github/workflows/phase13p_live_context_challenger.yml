@@ -43,7 +43,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: 'pip'
       - name: Install python deps
-        run: pip install pandas pyarrow numpy joblib scikit-learn
+        run: pip install -r requirements.txt
 
       - name: Resolve as-of date
         id: d
