@@ -37,9 +37,15 @@ on:
         type: choice
         options: ["false", "true"]
       allow_future_trained_through:
-        description: "Allow promotion when trained_through_date is in the future"
+        description: "Allow promotion when trained_through_date is in the future. Manual escape hatch — leave 'false' for normal runs."
         required: false
-        default: "true"
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      force_promote:
+        description: "Force overwrite of existing champion_pointer.json (bypass the existing-pointer guard)."
+        required: false
+        default: "false"
         type: choice
         options: ["false", "true"]
 
@@ -63,13 +69,15 @@ jobs:
       - name: Install python deps
         run: pip install -r requirements.txt
 
-      - name: Resolve as-of date
+      - name: Resolve as-of date (America/New_York)
         id: d
         run: |
           if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
             echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_PREV=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-1d +%Y-%m-%d)
+            echo "date=$ET_PREV" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Phase 13S started
@@ -109,14 +117,23 @@ jobs:
       - name: Phase 13L no-breakage
         run: python scripts/verify_phase13l_no_breakage.py
 
+      # H12: combine the explicit `promote_if_pass != 'false'` check with
+      # the implicit success() so a verifier failure can never reach the
+      # promote step even when the operator left promote_if_pass=true.
+      # H11: --force is no longer hardcoded; gated behind force_promote
+      # input (default false) so a normal run cannot accidentally overwrite
+      # an existing champion_pointer.json.
       - name: Promote direct-lineup challenger
-        if: ${{ github.event.inputs.promote_if_pass != 'false' }}
+        if: success() && github.event.inputs.promote_if_pass != 'false'
         run: |
           ARGS=""
           if [ "${{ github.event.inputs.allow_future_trained_through }}" = "true" ]; then
             ARGS="$ARGS --allow-future-trained-through"
           fi
-          python scripts/promote_direct_lineup_challenger.py $ARGS --force
+          if [ "${{ github.event.inputs.force_promote }}" = "true" ]; then
+            ARGS="$ARGS --force"
+          fi
+          python scripts/promote_direct_lineup_challenger.py $ARGS
 
       - name: Verify all predict paths + Derek interpretability outputs
         run: python scripts/verify_phase13s_deployment.py
@@ -145,20 +162,47 @@ jobs:
             artifacts/models/challengers/*_direct_lineup_contextual/**
 
       - name: Commit Phase 13S artifacts (Joseph Shackelford authorship)
+        if: success()
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add artifacts/phase13s \
-                  artifacts/models/registry/champion_pointer.json \
-                  artifacts/models/champion/v_phase13s_* \
-                  artifacts/models/challengers/*_direct_lineup_contextual/promotion_decision.json \
-                  artifacts/models/challengers/*_direct_lineup_contextual/promotion_manifest.json \
-                  || true
+          # promotion_log.csv added during M1 investigation (same bug as
+          # phase13r): promote_direct_lineup_challenger.py appends a row
+          # to this tracked file, but `git checkout -- .` was discarding
+          # it. Phase 13S promotions now actually show up in the
+          # promotion log on origin/main.
+          if ! git add artifacts/phase13s \
+                       artifacts/models/registry/champion_pointer.json \
+                       artifacts/models/registry/promotion_log.csv \
+                       artifacts/models/champion/v_phase13s_* \
+                       artifacts/models/challengers/*_direct_lineup_contextual/promotion_decision.json \
+                       artifacts/models/challengers/*_direct_lineup_contextual/promotion_manifest.json; then
+            echo "::error::git add failed for one or more Phase 13S paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13s: train direct lineup injury PMF drivers"
-          git checkout -- . 2>/dev/null || true
+          # M1: scope the working-tree reset to (a) BDL/build-mutated data
+          # parquets we explicitly do NOT commit from this workflow, and
+          # (b) phase13l_no_breakage.{md,json} which are regenerated and
+          # committed by nightly_training_calibration. promotion_log.csv
+          # was previously also being discarded here — see git add list.
+          git checkout -- data/player_game_stats.parquet \
+                          data/live_context_features.parquet \
+                          artifacts/automation_health/phase13l_no_breakage.md \
+                          artifacts/automation_health/phase13l_no_breakage.json \
+                          2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
