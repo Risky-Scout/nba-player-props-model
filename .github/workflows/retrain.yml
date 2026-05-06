@@ -55,6 +55,17 @@ jobs:
       # calibrate.py tries to use it and before we upload it as the
       # artifact Phase 8 consumes. A truncated table would otherwise
       # propagate to Phase 8 calibration runs hours later.
+      #
+      # The training table is LONG format: one row per
+      # (game_date, player_id, stat) with the observed value in the
+      # `actual` column. Stat values for pts/reb/ast/etc. live as rows
+      # in the `stat` column, not as separate columns. The integrity
+      # check verifies (a) row-count floor, (b) the four structural
+      # columns are present, and (c) each active-production stat per
+      # the operator contract (pts, reb, ast) has enough rows.
+      # fg3m/tov/stl/blk may also be present in the table but are
+      # blocked from publishing — they are intentionally NOT required
+      # here so the gate matches what downstream actually consumes.
       - name: Verify training table integrity
         run: |
           python3 - <<'PY'
@@ -62,11 +73,21 @@ jobs:
           df = pd.read_parquet('data/training_table.parquet')
           if len(df) < 500_000:
               sys.exit(f"Training table too small: {len(df)} rows, expected >500k")
-          required_cols = ['game_date', 'player_id', 'pts', 'reb', 'ast']
+          required_cols = ['game_date', 'player_id', 'stat', 'actual']
           missing = [c for c in required_cols if c not in df.columns]
           if missing:
-              sys.exit(f"Missing columns: {missing}")
-          print(f"OK: {len(df)} rows, all required columns present")
+              sys.exit(f"Missing required structural columns: {missing}")
+          active_stats = ['pts', 'reb', 'ast']
+          counts = df['stat'].astype(str).value_counts()
+          too_sparse = [s for s in active_stats if int(counts.get(s, 0)) < 50_000]
+          if too_sparse:
+              sys.exit(
+                  f"Active production stats missing or too sparse "
+                  f"(<50k rows): {too_sparse}"
+              )
+          print(f"OK: {len(df)} rows; active stats:")
+          for s in active_stats:
+              print(f"  {s}: {int(counts.get(s, 0))} rows")
           PY
 
       - name: Run Platt calibration
