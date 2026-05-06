@@ -27,9 +27,9 @@
       "size_bytes": 733301
     }
   },
-  "code_commit": "4694841744612b813d895ed2b808c8caffe96e05",
+  "code_commit": "d0c3fca35577cde21b7ccbec2f3e54d4f4c02ba4",
   "errors": [],
-  "generated_at_utc": "2026-05-06T20:10:15+00:00",
+  "generated_at_utc": "2026-05-06T22:27:39+00:00",
   "inputs": {
     "fold_aggregate.parquet": {
       "future_rows_excluded": 0,
@@ -55,7 +55,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-05",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260506T201010"
+    "training_run_id": "nightly-20260506T222734"
   },
   "schema_version": "1.0",
   "stale_state_cleaned": [

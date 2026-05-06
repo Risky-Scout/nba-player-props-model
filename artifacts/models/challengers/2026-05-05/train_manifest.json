@@ -11,7 +11,7 @@
       "--output-dir",
       "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-05"
     ],
-    "calibrate_pmf_elapsed_seconds": 56.7,
+    "calibrate_pmf_elapsed_seconds": 57.2,
     "calibrate_pmf_log": "artifacts/models/challengers/2026-05-05/calibrate_pmf.log",
     "challenger_kind": "real-aggregate-mode-from-rolling-oof",
     "files": [
@@ -44,9 +44,9 @@
     "training_table_sha256": null,
     "training_table_snapshot": null
   },
-  "code_commit": "4694841744612b813d895ed2b808c8caffe96e05",
+  "code_commit": "d0c3fca35577cde21b7ccbec2f3e54d4f4c02ba4",
   "dry_run": false,
-  "finished_at_utc": "2026-05-06T20:11:14+00:00",
+  "finished_at_utc": "2026-05-06T22:28:38+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -56,7 +56,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-05",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260506T201010"
+    "training_run_id": "nightly-20260506T222734"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
@@ -64,7 +64,7 @@
     "model_version": "challenger-2026-04-30"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-06T20:10:17+00:00",
+  "started_at_utc": "2026-05-06T22:27:41+00:00",
   "stats_trained": [
     "pts",
     "reb",
@@ -79,7 +79,7 @@
     "aggregate_oof_future_rows_excluded": null,
     "aggregate_oof_rows_after_cutoff": 247625,
     "aggregate_oof_rows_pre_cutoff": 247625,
-    "calibrate_pmf_elapsed_seconds": 56.7,
+    "calibrate_pmf_elapsed_seconds": 57.2,
     "future_rows_excluded": 0,
     "max_date": "2026-05-05",
     "min_date": "2023-10-24",
