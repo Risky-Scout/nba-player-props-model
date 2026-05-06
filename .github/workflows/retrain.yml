@@ -1,6 +1,11 @@
 name: NBA Props Model — Retrain
 
 on:
+  schedule:
+    # 06:00 UTC = 02:00 ET (EDT) / 01:00 ET (EST). Daily retrain at the
+    # start of the morning model readiness chain. retrain.yml has no
+    # upstream gate — it is the first workflow in the chain.
+    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       note:
