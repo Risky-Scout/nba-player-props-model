@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "delivery_date": "2026-05-06",
   "snapshot_type": "all",
-  "generated_at_utc": "2026-05-06T22:58:07Z",
+  "generated_at_utc": "2026-05-06T23:57:15Z",
   "status": "no_games_today",
   "reason": "Dispatcher returned no schedule rows for this date. See artifacts/derek_live_snapshots/2026-05-06/dispatch_*.json for the source-of-truth status emitted by scripts/dispatch_derek_live_game_snapshots.py."
 }
