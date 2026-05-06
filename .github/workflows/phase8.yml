@@ -9,6 +9,12 @@ name: NBA Props Model — Phase 8 (PMF calibration + diagnostics + market eval)
 # Only the final job pushes back to origin/main.
 
 on:
+  # H1B chain — auto-fire after retrain.yml succeeds. Manual dispatch
+  # remains available for ad-hoc / profiling runs.
+  workflow_run:
+    workflows: ["NBA Props Model — Retrain"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       note:
@@ -49,6 +55,11 @@ jobs:
   build-table:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    # H1B chain gate: run on manual dispatch OR on workflow_run only
+    # when the upstream (retrain.yml) actually succeeded.
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     permissions:
       actions: read
       contents: read
@@ -60,6 +71,24 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+
+      - name: H1B — Verify upstream output present (workflow_run only)
+        if: github.event_name == 'workflow_run'
+        run: |
+          set -e
+          # Upstream is retrain.yml which commits "Retrain <date>: <note>"
+          # via scripts/train.py outputs. Confirm that commit reached
+          # origin/main before we run; catches the race where workflow_run
+          # fires but origin push is slightly delayed.
+          UPSTREAM_PATTERN="^Retrain "
+          if ! git log --grep="$UPSTREAM_PATTERN" --since="24 hours ago" --format="%h" | head -1 | grep -q .; then
+            echo "::error::No upstream commit matching '$UPSTREAM_PATTERN' in last 24h on origin/main"
+            echo "Recent commits:"
+            git log -5 --oneline
+            exit 1
+          fi
+          LATEST=$(git log --grep="$UPSTREAM_PATTERN" --since="24 hours ago" -1 --format="%h %ai %s")
+          echo "::notice::Upstream output verified: $LATEST"
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v6
@@ -170,6 +199,9 @@ jobs:
     needs: build-table
     runs-on: ubuntu-latest
     timeout-minutes: 2
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     outputs:
       folds: ${{ steps.gen.outputs.folds }}
     steps:
@@ -197,6 +229,9 @@ jobs:
     needs: [build-table, setup-matrix]
     runs-on: ubuntu-latest
     timeout-minutes: 300
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     strategy:
       fail-fast: false
       max-parallel: 5
@@ -274,7 +309,13 @@ jobs:
   # ─── B2. Aggregate per-fold OOFs + fit final calibrators ─────────────────
   aggregate-calibration:
     needs: [calibrate-fold, setup-matrix]
-    if: ${{ github.event.inputs.val_rows_limit == '' }}
+    # H1B chain gate combined with existing val_rows_limit profiling check.
+    # On workflow_dispatch: skip when val_rows_limit is set (profiling).
+    # On workflow_run (auto): always run if upstream succeeded
+    # (val_rows_limit input doesn't exist for workflow_run events anyway).
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.val_rows_limit == '') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -399,7 +440,10 @@ jobs:
   # ─── C. Diagnostics + market-relative evaluation ─────────────────────────
   diagnostics:
     needs: [build-table, aggregate-calibration]
-    if: ${{ github.event.inputs.val_rows_limit == '' }}
+    # H1B chain gate combined with existing val_rows_limit profiling check.
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.val_rows_limit == '') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
