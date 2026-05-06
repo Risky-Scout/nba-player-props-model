@@ -2,10 +2,15 @@ name: NBA Props Model — Retrain
 
 on:
   schedule:
-    # 06:00 UTC = 02:00 ET (EDT) / 01:00 ET (EST). Daily retrain at the
-    # start of the morning model readiness chain. retrain.yml has no
-    # upstream gate — it is the first workflow in the chain.
-    - cron: '0 6 * * *'
+    # 07:00 UTC = 03:00 ET (EDT) / 02:00 ET (EST). Daily retrain at the
+    # start of the H1B chain. retrain.yml has no upstream gate — it is
+    # the first workflow in the chain. The 07:00 UTC choice gives BDL
+    # ~1 hour of buffer past late-finishing games (NBA games end
+    # 10:30–11:30 PM ET = 02:30–03:30 UTC; BDL ingestion takes ~1-2 hr,
+    # so 07:00 UTC clears most-but-not-all late games). Train.py has
+    # no explicit freshness gate — adding a BDL-readiness pre-flight is
+    # tracked as a future fix.
+    - cron: '0 7 * * *'
   workflow_dispatch:
     inputs:
       note:
