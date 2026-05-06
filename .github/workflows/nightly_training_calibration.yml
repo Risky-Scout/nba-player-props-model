@@ -405,11 +405,44 @@ jobs:
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13h nightly training run ${{ steps.d.outputs.date }}"
-          # Phase 13H: BDL refresh and other steps mutate tracked files
-          # (e.g. data/player_game_stats.parquet) that we explicitly do
-          # NOT commit from the nightly workflow. Discard those working-tree
-          # changes before rebase so `git pull --rebase` can proceed.
-          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          # Phase 13H: BDL refresh and the nightly verifier chain mutate
+          # tracked files we explicitly do NOT commit from this workflow.
+          # Discard those working-tree changes before rebase so
+          # `git pull --rebase` can proceed.
+          #
+          # Bug C: the M1 fix from 2026-05-06 narrowed this from
+          # `git checkout -- .` to a single path, but the verifier chain
+          # rewrites 9 other tracked files under
+          # artifacts/automation_health/* that weren't enumerated. Run
+          # 25432325258 (2026-05-06 11:28 UTC) succeeded the commit then
+          # failed `git pull --rebase` with "You have unstaged changes".
+          # The list below covers every non-dated tracked file the
+          # nightly chain (verify_training_automation.py +
+          # verify_daily_automation_health.py + their transitive
+          # verifiers) writes.
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/latest_health_summary.md \
+                          artifacts/automation_health/latest_health_report.json \
+                          artifacts/automation_health/phase13l_no_breakage.md \
+                          artifacts/automation_health/phase13l_no_breakage.json \
+                          artifacts/automation_health/champion_pointer_metadata.md \
+                          artifacts/automation_health/champion_pointer_metadata.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/phase13x_woo_unchanged.json \
+                          2>/dev/null || true
+          # Bug C defensive secondary: if a new verifier comes online and
+          # mutates a tracked file we forgot to enumerate above, reset
+          # whatever is still dirty rather than letting `git pull --rebase`
+          # fail. The notice line tells the operator which file to add to
+          # the explicit list so this stays a one-time recovery, not a
+          # recurring catch-all.
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Resetting unexpected dirty tracked files before rebase:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           # H13: previously `git clean -fd` here, which violates the operator's
           # hard rule against `git clean -fd` (one stray run could nuke unrelated
           # untracked work). Use a scoped `rm -rf` that only touches the dated
