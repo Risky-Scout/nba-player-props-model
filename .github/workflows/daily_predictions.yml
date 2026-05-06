@@ -53,11 +53,14 @@ jobs:
 
       - name: Commit opening lines
         run: |
-          git config user.name  "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Hard rule #6: every commit must show Joseph Shackelford as author.
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add data/opening_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Opening lines $(TZ=America/New_York date +%Y-%m-%d)"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Opening lines $(TZ=America/New_York date +%Y-%m-%d)"
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -239,12 +242,15 @@ jobs:
 
       - name: Commit predictions and graded results
         run: |
-          git config user.name  "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Hard rule #6: every commit must show Joseph Shackelford as author.
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add predictions/ artifacts/graded/ artifacts/automation_health/ \
                   artifacts/scoring/ -f
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Predictions $(TZ=America/New_York date +%Y-%m-%d)"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Predictions $(TZ=America/New_York date +%Y-%m-%d)"
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
@@ -316,11 +322,14 @@ jobs:
 
       - name: Commit closing lines
         run: |
-          git config user.name  "Props Bot"
-          git config user.email "props-bot@wizardofodds.com"
+          # Hard rule #6: every commit must show Joseph Shackelford as author.
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
           git add artifacts/graded/closing_lines_*.json
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Closing lines $(TZ=America/New_York date +%Y-%m-%d)"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Closing lines $(TZ=America/New_York date +%Y-%m-%d)"
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
