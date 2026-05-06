@@ -16,9 +16,9 @@ on:
         required: false
         default: 'Phase 8 run'
       max_folds:
-        description: 'Walk-forward fold cap for calibrate_pmf.py. FAST-VALIDATION default=1; raise to 4 for core-props validation; 6+ for research.'
+        description: 'Walk-forward fold cap for calibrate_pmf.py. Default 4 (core-props validation, matches max-parallel: 5). Set 1 for fast smoke; 6+ for research.'
         required: false
-        default: '1'
+        default: '4'
       core_props_only:
         description: 'Restrict calibration and diagnostics to core props (PTS, REB, AST, FG3M, TOV) only'
         type: boolean
@@ -462,6 +462,7 @@ jobs:
           # Until that join is wired in, the diagnostics report emits
           # `market_eval_available=false` and the lift column is NaN.
           echo "Market-relative eval not available; baseline-only metrics emitted."
+          echo "::warning::market_eval_not_wired - see scripts/run_diagnostics.py NOTE about alt-line ladder join"
 
       - name: Upload Phase 8 outputs
         uses: actions/upload-artifact@v4
@@ -477,16 +478,47 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+      # H17: refuse to commit broken calibrators. The aggregate-calibration
+      # step is what produces these pkls; if the artifact download succeeded
+      # but any pkl is empty/zero-byte, committing them would replace good
+      # production calibrators with broken ones.
+      - name: Verify calibrators are non-empty before commit
+        if: success()
+        run: |
+          set -e
+          for f in artifacts/models/pmf_cal_*.pkl; do
+            if [ ! -s "$f" ]; then
+              echo "::error::$f is missing or empty - refusing to commit broken calibrators"
+              exit 1
+            fi
+            echo "  $f size=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f") bytes"
+          done
+
       - name: Commit Phase 8 artifacts back to origin/main
+        if: success()
         run: |
           git config user.name  "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add artifacts/models/pmf_cal_*.pkl 2>/dev/null || true
-          git add artifacts/docs/ 2>/dev/null || true
-          git add data/oof_pmfs.parquet 2>/dev/null || true
+          if ! git add artifacts/models/pmf_cal_*.pkl \
+                       artifacts/docs/ \
+                       data/oof_pmfs.parquet; then
+            echo "::error::git add failed for one or more Phase 8 output paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit -m "Phase 8: PMF calibration + diagnostics + market eval"
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Phase 8: PMF calibration + diagnostics + market eval"
           git config http.postBuffer 524288000
+          PUSH_SUCCESS=0
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin main && break || sleep 30
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 30
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 5 attempts"
+            exit 1
+          fi
