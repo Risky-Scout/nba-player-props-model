@@ -93,6 +93,11 @@ def _now_utc_hour() -> int:
     return _dt.datetime.now(_dt.timezone.utc).hour
 
 
+def _now_utc() -> _dt.datetime:
+    """Current UTC time as a timezone-aware datetime (date + hour)."""
+    return _dt.datetime.now(_dt.timezone.utc)
+
+
 def _emit(line: str) -> None:
     print(line, flush=True)
 
@@ -232,14 +237,44 @@ def main() -> int:
     missing_names = ",".join(p.name for p in missing)
     _emit(f"[gate] predictions missing for {date} mode={mode} files={missing_names}")
 
-    now_hour = _now_utc_hour()
+    now_utc = _now_utc()
+    now_hour = now_utc.hour
+    today_utc = now_utc.date().isoformat()
+    slate_date = date  # caller resolves this in America/New_York
     _emit(
-        f"[gate] now_utc_hour={now_hour} predict_cron_hour_utc={args.predict_cron_hour_utc}"
+        f"[gate] now_utc={now_utc.isoformat()} today_utc={today_utc} "
+        f"slate_date={slate_date} predict_cron_hour_utc={args.predict_cron_hour_utc}"
     )
 
-    # If we are still BEFORE the predict cron has had a chance to fire
-    # today, this is an expected pre-tip firing — valid-skip green
-    # regardless of whether predict.py is allowed to run.
+    # C1 fix: compare slate_date against today_utc to know whether the
+    # predict cron has had a chance to fire FOR THIS SPECIFIC SLATE.
+    # The previous logic compared only now_hour against predict_cron_hour_utc,
+    # which silently fake-greened every cron firing between 00:00-13:00 UTC
+    # for a past slate (slate_date < today_utc) because now_hour < 13 was
+    # always true in that window.
+
+    # Future slate: caller asked about a date we have not reached yet.
+    if slate_date > today_utc:
+        return _valid_skip(
+            date,
+            mode,
+            reason=f"future_slate today_utc={today_utc}",
+        )
+
+    # Past slate: predict cron has already fired (or should have) for
+    # this date. Forward-looking workflows must NOT try to regenerate
+    # yesterday's predictions. Valid-skip with an honest reason.
+    if slate_date < today_utc:
+        return _valid_skip(
+            date,
+            mode,
+            reason=f"past_slate today_utc={today_utc}",
+        )
+
+    # slate_date == today_utc from here on.
+
+    # Still BEFORE today's predict cron has had a chance to fire — this
+    # is an expected pre-tip firing; valid-skip green.
     if now_hour < args.predict_cron_hour_utc:
         return _valid_skip(
             date,
@@ -247,8 +282,8 @@ def main() -> int:
             reason=f"before_predict_cron_now_utc_hour={now_hour}",
         )
 
-    # --no-run-predict modes (e.g. after-game past slates, deploy at
-    # an arbitrary time) never invoke predict.py themselves; they
+    # --no-run-predict modes (after-game past slates, deploy at an
+    # arbitrary time) never invoke predict.py themselves; they
     # valid-skip green and let the forward-looking pipeline regenerate
     # the slate's predictions.
     if args.no_run_predict:
