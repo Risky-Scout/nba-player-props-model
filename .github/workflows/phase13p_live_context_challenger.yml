@@ -45,13 +45,15 @@ jobs:
       - name: Install python deps
         run: pip install -r requirements.txt
 
-      - name: Resolve as-of date
+      - name: Resolve as-of date (America/New_York)
         id: d
         run: |
           if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
             echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_PREV=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-1d +%Y-%m-%d)
+            echo "date=$ET_PREV" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Phase 13P training started
@@ -121,31 +123,63 @@ jobs:
             artifacts/models/challengers/${{ steps.d.outputs.date }}_live_context/**
             artifacts/phase13p/**
 
+      # P-2: gate the commit on training success AND both safety verifiers
+      # (no-leakage, no-breakage). A challenger that trains but fails either
+      # safety check must not land on origin/main where another workflow
+      # could pick it up.
       - name: Commit Phase 13P artifacts (Joseph Shackelford authorship)
         if: |
-          steps.train_challenger.outcome == 'success'
+          steps.train_challenger.outcome == 'success' &&
+          steps.verify_no_leakage.outcome == 'success' &&
+          steps.verify_no_break.outcome == 'success'
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add artifacts/models/challengers/${{ steps.d.outputs.date }}_live_context \
-                  artifacts/phase13p || true
+          if ! git add artifacts/models/challengers/${{ steps.d.outputs.date }}_live_context \
+                       artifacts/phase13p; then
+            echo "::error::git add failed for one or more Phase 13P paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13p: live-context challenger ${{ steps.d.outputs.date }}"
-          git checkout -- . 2>/dev/null || true
+          # M1: scope the working-tree reset to the dataset/parquet files
+          # the upstream build_dataset + BDL refresh may have mutated.
+          git checkout -- data/live_context_features.parquet data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
+      # P-3: consolidator expanded from 3 to 6 outcomes — adds
+      # verify_feature_lists, verify_sensitivity, verify_validation_gates.
+      # build_dataset is intentionally omitted: any failure there cascades
+      # into train_challenger.outcome != 'success', which is already in
+      # this list. All upstream steps use continue-on-error: true, so the
+      # default success() gate works (no early termination).
       - name: Fail workflow if any required step failed
         if: |
           steps.train_challenger.outcome != 'success' ||
           steps.verify_no_leakage.outcome != 'success' ||
-          steps.verify_no_break.outcome != 'success'
+          steps.verify_no_break.outcome != 'success' ||
+          steps.verify_feature_lists.outcome != 'success' ||
+          steps.verify_sensitivity.outcome != 'success' ||
+          steps.verify_validation_gates.outcome != 'success'
         run: |
           echo "::error::A Phase 13P step failed."
           echo "train_challenger=${{ steps.train_challenger.outcome }}"
+          echo "verify_feature_lists=${{ steps.verify_feature_lists.outcome }}"
+          echo "verify_sensitivity=${{ steps.verify_sensitivity.outcome }}"
           echo "verify_no_leakage=${{ steps.verify_no_leakage.outcome }}"
+          echo "verify_validation_gates=${{ steps.verify_validation_gates.outcome }}"
           echo "verify_no_break=${{ steps.verify_no_break.outcome }}"
           exit 1
