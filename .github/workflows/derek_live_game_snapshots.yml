@@ -437,6 +437,18 @@ jobs:
               git commit \
                 --author="Joseph Shackelford <josephshack@gmail.com>" \
                 -m "phase13u: Derek no-games-today ${{ steps.d.outputs.date }} (${{ steps.s.outputs.type }})"
+            # Bug F (Bug C pattern, no-games branch): verifier steps
+            # earlier in this job rewrite tracked files that the no-games
+            # branch deliberately does NOT commit (phase13l_no_breakage.{md,json},
+            # phase13x_woo_unchanged.json, several dated
+            # derek_*_<date>.{json,md} files, etc.). Reset whatever is
+            # still dirty so `git pull --rebase` can proceed.
+            DIRTY_REMAINING=$(git diff --name-only)
+            if [ -n "$DIRTY_REMAINING" ]; then
+              echo "::notice::Bug F defensive reset (no-games branch) — dirty tracked files:"
+              echo "$DIRTY_REMAINING"
+              git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+            fi
             PUSH_SUCCESS=0
             for i in 1 2 3; do
               if git pull --rebase origin main && git push origin main; then
@@ -486,7 +498,20 @@ jobs:
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13u: Derek live snapshots + daily model report ${{ steps.d.outputs.date }}"
+          # Bug F (Bug C pattern, normal-day branch): the long git add
+          # above already commits the dated derek_*_<date>.{json,md} files
+          # plus phase13l_no_breakage.{md,json} and phase13x_woo_unchanged.json,
+          # so most verifier-mutated tracked files are not dirty here.
+          # data/player_game_stats.parquet may be mutated transitively by
+          # the dispatcher's predict.py invocation. The defensive secondary
+          # reset below catches anything else.
           git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug F defensive reset (normal-day branch) — dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
           PUSH_SUCCESS=0
           for i in 1 2 3; do
             if git pull --rebase origin main && git push origin main; then
