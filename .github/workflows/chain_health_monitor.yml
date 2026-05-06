@@ -1,0 +1,100 @@
+name: Chain Health Monitor
+
+# Daily verification that the H1B chain (retrain → phase8 →
+# phase13o → phase13p → phase13q → phase13r/s) plus the independent
+# nightly_training_calibration cron all completed successfully in the
+# last 24 hours.
+#
+# Fires at 16:30 UTC = 12:30 PM EDT / 11:30 AM EST. By this time the
+# H1B chain (07:00 UTC retrain → ~12-13 UTC end) AND daily_predictions's
+# predict job (13:00 UTC) AND snapshot_opening (14:00 UTC) should all
+# have completed, with margin for slow-chain days where phase13r/s
+# might still be wrapping up — earlier monitor times produced
+# false-positive in_progress failures on those days.
+#
+# Reports a status table to the run log. Hard-fails (exit 1) if any
+# monitored workflow's most recent run in the last 24h is not in
+# {success, skipped, in_progress}:
+#   - success: healthy
+#   - skipped: legit workflow_run-gated skip when upstream failed
+#     (failure is already reported on the upstream's row)
+#   - in_progress: chain still running; emit ::warning:: but don't fail
+#   - everything else (failure / cancelled / etc.): hard-fail
+# A truly absent run (no firing in last 24h) is also a hard failure.
+
+on:
+  schedule:
+    - cron: '30 16 * * *'
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    steps:
+      - name: Check H1B chain + nightly_training_calibration health
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          WORKFLOWS=(
+            "retrain.yml"
+            "phase8.yml"
+            "phase13o_live_context_training.yml"
+            "phase13p_live_context_challenger.yml"
+            "phase13q_contextual_challenger.yml"
+            "phase13r_contextual_deployment_verification.yml"
+            "phase13s_direct_lineup_contextual_pmf.yml"
+            "nightly_training_calibration.yml"
+          )
+          ANY_FAIL=0
+          printf "%-52s %-25s %-12s %s\n" "Workflow" "Most recent run created" "Conclusion" "Run ID"
+          printf -- '-%.0s' $(seq 1 110); echo
+          # Compute "24 hours ago" cutoff in ISO8601 UTC for the --jq filter.
+          CUTOFF=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+                   || date -u -v-24H +%Y-%m-%dT%H:%M:%SZ)
+          for wf in "${WORKFLOWS[@]}"; do
+            # Most recent run created in the last 24 hours, regardless of event type.
+            # gh run list returns the runs newest-first, so head -1 gives the most recent.
+            INFO=$(gh run list \
+                     --workflow="$wf" \
+                     --limit=10 \
+                     --json databaseId,conclusion,createdAt,event \
+                     --jq ".[] | select(.createdAt > \"$CUTOFF\") | [.createdAt, .conclusion, (.databaseId|tostring), .event] | @tsv" \
+                     2>/dev/null | head -1)
+            if [ -z "$INFO" ]; then
+              printf "%-52s %-25s %-12s %s\n" "$wf" "(no run in last 24h)" "MISSING" "-"
+              echo "::error::No run in last 24h for $wf"
+              ANY_FAIL=1
+              continue
+            fi
+            CREATED=$(echo "$INFO" | cut -f1)
+            CONCLUSION=$(echo "$INFO" | cut -f2)
+            RUN_ID=$(echo "$INFO" | cut -f3)
+            EVENT=$(echo "$INFO" | cut -f4)
+            # Empty conclusion means the run is still in progress.
+            if [ -z "$CONCLUSION" ] || [ "$CONCLUSION" = "null" ]; then
+              CONCLUSION="in_progress"
+            fi
+            printf "%-52s %-25s %-12s %s (event=%s)\n" "$wf" "$CREATED" "$CONCLUSION" "$RUN_ID" "$EVENT"
+            case "$CONCLUSION" in
+              success|skipped)
+                ;;
+              in_progress)
+                echo "::warning::$wf still running (run $RUN_ID) — monitor fired before chain completed"
+                ;;
+              *)
+                echo "::error::$wf most recent run conclusion=$CONCLUSION (run $RUN_ID)"
+                ANY_FAIL=1
+                ;;
+            esac
+          done
+          echo
+          if [ "$ANY_FAIL" -eq 1 ]; then
+            echo "::error::Chain health check FAILED — see workflow annotations above."
+            echo "Browse the failed runs in the Actions tab to diagnose."
+            exit 1
+          fi
+          echo "::notice::All monitored workflows healthy in the last 24h."
