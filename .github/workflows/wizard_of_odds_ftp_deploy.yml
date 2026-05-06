@@ -154,7 +154,13 @@ jobs:
           if [ -n "$missing" ]; then
             echo "::error::Required GitHub secrets are empty:$missing"
             if echo "$missing" | grep -q WOO_FTP_REMOTE_DIR; then
-              echo "::error::Missing WOO_FTP_REMOTE_DIR secret; expected /odds-scanner/predictions/"
+              # U2: the deployed WoO portal serves these pages at
+              # /tools/odds-scanner/predictions/ (e.g. nba-props.html,
+              # nba-pmf-research.html) per the URLs the operator publishes.
+              # Older operator notes referenced /odds-scanner/predictions/.
+              # The actual remote-directory path depends on the FTP host's
+              # docroot; if you change it here, also update the audit notes.
+              echo "::error::Missing WOO_FTP_REMOTE_DIR secret; set it to your FTP target directory (typically /tools/odds-scanner/predictions/ or /odds-scanner/predictions/ depending on deployed setup)"
             fi
             exit 1
           fi
@@ -197,20 +203,35 @@ jobs:
             echo "::error::templates leaked into public_export/wizard_of_odds/"
             exit 1
           fi
-          # Confirm the HTML files actually changed in this build (not
-          # the stale ones from an old build_wizard_of_odds_public_export.py
-          # run). Modification within the last 30 minutes is required.
-          for f in public_export/wizard_of_odds/nba-props.html public_export/wizard_of_odds/nba-pmf-research.html; do
+          # M4: content-based freshness check. The previous mtime check
+          # measured runner write time (always "fresh" right after `cp -v`)
+          # and never caught a stale build. The HTML pages are rendered
+          # FROM the source-of-truth JSON files written by
+          # publish_woo_public_export.py — those JSONs carry the slate
+          # `date` at the top level (see scripts/publish_woo_public_export.py
+          # line ~254). Verifying that field matches the resolved deploy
+          # date proves the content is for the right slate.
+          DEPLOY_DATE='${{ steps.d.outputs.date }}'
+          for f in public_export/wizard_of_odds/nba-props.html \
+                   public_export/wizard_of_odds/nba-pmf-research.html; do
             if [ ! -s "$f" ]; then
               echo "::error::$f missing or empty"
               exit 1
             fi
-            mtime_age=$(( $(date +%s) - $(stat -c %Y "$f" 2>/dev/null || stat -f %m "$f") ))
-            if [ "$mtime_age" -gt 1800 ]; then
-              echo "::error::$f mtime older than 30 min — likely stale build"
+            echo "  $f size=$(wc -c < $f)"
+          done
+          for j in public_export/wizard_of_odds/affiliate_dashboard.json \
+                   public_export/wizard_of_odds/pmf_research.json; do
+            if [ ! -s "$j" ]; then
+              echo "::error::$j missing or empty"
               exit 1
             fi
-            echo "  $f age_s=$mtime_age size=$(wc -c < $f)"
+            DATE_IN_JSON=$(python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get('date',''))" "$j")
+            if [ "$DATE_IN_JSON" != "$DEPLOY_DATE" ]; then
+              echo "::error::$j carries date='$DATE_IN_JSON' but deploy_date='$DEPLOY_DATE' — stale or mis-built export"
+              exit 1
+            fi
+            echo "  $j date=$DATE_IN_JSON OK"
           done
 
       - name: Pre-deploy verifier — workflow contract (Phase 13AM)
