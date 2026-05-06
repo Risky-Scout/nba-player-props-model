@@ -82,13 +82,13 @@ jobs:
         run: |
           python3 scripts/verify_secrets_preflight.py --mode daily
 
-      - name: Resolve delivery date
+      - name: Resolve delivery date (America/New_York)
         id: d
         run: |
           if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
             echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            echo "date=$(TZ=America/New_York date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Resolve snapshot type
@@ -131,7 +131,6 @@ jobs:
       - name: Dispatch current_live (Phase 13U)
         id: dispatch_current_live
         if: steps.s.outputs.type == 'current_live' || steps.s.outputs.type == 'all'
-        continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -156,7 +155,6 @@ jobs:
       - name: Dispatch t_minus_25
         id: dispatch_t25
         if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
-        continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -181,7 +179,6 @@ jobs:
       - name: Dispatch close_lock
         id: dispatch_cl
         if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
-        continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -399,62 +396,91 @@ jobs:
             artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.*
 
       - name: Stage and commit Derek-only files (Joseph Shackelford authorship)
-        # Phase 13U — also commit Phase 13U artifacts: live_schedule,
-        # phase13u audits, slate completeness, E2E audit, daily model
-        # reports. The commit gate accepts any successful dispatch
-        # (current_live, t_minus_25, or close_lock).
+        # Phase 13U — commit gate requires every attempted dispatch to have
+        # succeeded. For each dispatch: either it wasn't required by the
+        # selected `type` (skipped is OK), or it ran and succeeded.
         if: |
-          steps.dispatch_current_live.outcome == 'success' ||
-          steps.dispatch_t25.outcome == 'success' ||
-          steps.dispatch_cl.outcome == 'success'
+          (steps.s.outputs.type != 'current_live' && steps.s.outputs.type != 'all' || steps.dispatch_current_live.outcome == 'success') &&
+          (steps.s.outputs.type != 't_minus_25' && steps.s.outputs.type != 'both' && steps.s.outputs.type != 'all' || steps.dispatch_t25.outcome == 'success') &&
+          (steps.s.outputs.type != 'close_lock' && steps.s.outputs.type != 'both' && steps.s.outputs.type != 'all' || steps.dispatch_cl.outcome == 'success')
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
-          git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
-                  deliveries/${{ steps.d.outputs.date }}/README.md \
-                  artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
-                  artifacts/live_lineups/${{ steps.d.outputs.date }} \
-                  artifacts/live_schedule/${{ steps.d.outputs.date }} \
-                  artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.json \
-                  artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.md \
-                  artifacts/automation_health/phase13x_woo_unchanged.json \
-                  artifacts/phase13z \
-                  artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json \
-                  artifacts/automation_health/phase13l_no_breakage.json \
-                  artifacts/automation_health/phase13l_no_breakage.md \
-                  artifacts/model_daily_reports/$AS_OF || true
+          if ! git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
+                       deliveries/${{ steps.d.outputs.date }}/README.md \
+                       artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
+                       artifacts/live_lineups/${{ steps.d.outputs.date }} \
+                       artifacts/live_schedule/${{ steps.d.outputs.date }} \
+                       artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.json \
+                       artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.md \
+                       artifacts/automation_health/phase13x_woo_unchanged.json \
+                       artifacts/phase13z \
+                       artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json \
+                       artifacts/automation_health/phase13l_no_breakage.json \
+                       artifacts/automation_health/phase13l_no_breakage.md \
+                       artifacts/model_daily_reports/$AS_OF; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13u: Derek live snapshots + daily model report ${{ steps.d.outputs.date }}"
-          git checkout -- . 2>/dev/null || true
+          git checkout -- data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
       - name: Fail workflow if any required step failed
         # Phase 13T — verify_derek and verify_e2e both treat "no games"
         # as PENDING (exit 0). The workflow only fails when a verifier
         # genuinely reports FAILED, no_break regresses, or the E2E
         # check finds overdue-missing snapshots.
-        if: ${{ steps.verify_derek.outcome != 'success' || steps.verify_e2e.outcome != 'success' || steps.verify_no_break.outcome != 'success' }}
+        #
+        # `if: always()` is required so this consolidator runs even after
+        # one of the now-hard-failing dispatchers (H3) terminates the job
+        # — without it, a dispatch failure would skip this step and the
+        # operator log wouldn't show the consolidated outcome line.
+        # `outcome == 'failure'` (not `!= 'success'`) is used for dispatchers
+        # so that skipped dispatches (type didn't include them) don't
+        # falsely trigger the consolidator.
+        if: ${{ always() && (
+            steps.verify_derek.outcome != 'success' ||
+            steps.verify_e2e.outcome != 'success' ||
+            steps.verify_no_break.outcome != 'success' ||
+            steps.dispatch_current_live.outcome == 'failure' ||
+            steps.dispatch_t25.outcome == 'failure' ||
+            steps.dispatch_cl.outcome == 'failure'
+          ) }}
         run: |
-          echo "::error::A Derek live snapshot verifier failed. See uploaded artifacts."
+          echo "::error::A Derek live snapshot dispatcher or verifier failed. See uploaded artifacts."
+          echo "dispatch_current_live=${{ steps.dispatch_current_live.outcome }}"
+          echo "dispatch_t25=${{ steps.dispatch_t25.outcome }}"
+          echo "dispatch_cl=${{ steps.dispatch_cl.outcome }}"
           echo "verify_derek=${{ steps.verify_derek.outcome }}"
           echo "verify_e2e=${{ steps.verify_e2e.outcome }}"
           echo "verify_no_break=${{ steps.verify_no_break.outcome }}"
