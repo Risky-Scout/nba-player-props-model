@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-06T23:13:31Z",
+  "built_at_utc": "2026-05-06T23:35:09Z",
   "deliveries_root": "deliveries",
   "out_dir": "public_export/wizard_of_odds",
   "latest_date": "2026-05-06",
@@ -698,8 +698,8 @@
     {
       "date": "2026-05-06",
       "snapshot_type": "pre_close",
-      "snapshot_time_utc": "2026-05-06T23:13:28Z",
-      "model_version": "93f49c4#phase10c",
+      "snapshot_time_utc": "2026-05-06T23:35:06Z",
+      "model_version": "ddd86a7#phase10c",
       "finality_status": "provisional",
       "finality_blocker_codes": [
         "role_bucket_missing"
@@ -707,8 +707,8 @@
       "row_counts": {
         "fair_odds_board": 2364,
         "full_pmfs_wide": 111,
-        "market_comparison": 1200,
-        "publishable_edges": 1147
+        "market_comparison": 762,
+        "publishable_edges": 709
       },
       "books_seen": [
         "betmgm",
@@ -756,34 +756,34 @@
         },
         {
           "name": "market_comparison.csv",
-          "size_bytes": 746287
+          "size_bytes": 471003
         },
         {
           "name": "market_comparison.parquet",
-          "size_bytes": 80647
+          "size_bytes": 71701
         },
         {
           "name": "publishable_edges.csv",
-          "size_bytes": 714341
+          "size_bytes": 437883
         },
         {
           "name": "publishable_edges.parquet",
-          "size_bytes": 79558
+          "size_bytes": 69934
         },
         {
           "name": "run_manifest.json",
-          "size_bytes": 3842
+          "size_bytes": 3840
         },
         {
           "name": "README.md",
-          "size_bytes": 2957
+          "size_bytes": 2955
         }
       ],
       "missing_files": [],
       "monetization": {
-        "rows": 1200,
+        "rows": 762,
         "monetization_status_summary": {
-          "needs_affiliate_mapping": 1200
+          "needs_affiliate_mapping": 762
         },
         "snapshot_type_public": "pre_close",
         "finality_status_public": "provisional",
