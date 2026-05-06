@@ -1,11 +1,21 @@
 {
+  "after_game": {
+    "abs_mean_error": 2.6372665757038227,
+    "n_clv_rows": 0,
+    "n_scored_market_rows": 0,
+    "n_scored_pmf_rows": 48,
+    "nll_mean": 2.3345957385584093,
+    "rps_mean": 0.07989721390770624,
+    "scored_at_utc": "2026-05-05T08:34:29Z",
+    "status": "scored"
+  },
+  "calibrated_through_date": "2026-04-30",
+  "calibration_run_id": "nightly-20260501T124701",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "delivery_date": "2026-05-04",
-  "pipeline_run_id": "06feeb8c-4a7c-44ff-81f4-728a01a79b81",
-  "snapshot_type": "pre_close",
-  "snapshot_time_utc": "2026-05-05T03:51:12Z",
-  "model_version": "c74808d#phase10c",
-  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
-  "finality_status": "provisional",
   "finality_blocker_codes": [
     "market_coverage_none",
     "lineup_unconfirmed",
@@ -28,9 +38,87 @@
       "required_to_resolve": "Phase 11C player-stat-grid prediction refactor: emit one model-only PMF row per (player, eligible_stat) regardless of whether a market line is offered. See docs/phase11_tov_structural_refit_plan.md."
     }
   ],
-  "tov_overlay": "off",
-  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
-  "tov_status": "missing_from_prediction_source",
+  "finality_status": "provisional",
+  "freshness_manifest": {
+    "availability_freshness_status": "fresh",
+    "books_seen": [],
+    "built_at_utc": "2026-05-05T03:50:57Z",
+    "finals_finality_status": "finals_present",
+    "odds_status": "ok",
+    "overall_status": "not_ready",
+    "path": "data/freshness_manifest/2026-05-04.json",
+    "predictions_mtime_utc": "2026-05-05T03:50:06.969060Z",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 65
+    },
+    "tov_status": "missing_from_prediction_source"
+  },
+  "metadata_stamped_at_utc": "2026-05-05T08:34:36+00:00",
+  "model_source": "champion_pointer",
+  "model_version": "c74808d#phase10c",
+  "no_challenger_artifacts_used": true,
+  "no_odds_fetch": false,
+  "output_generated_at_utc": "2026-05-05T08:34:36+00:00",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
+  "pipeline_run_id": "06feeb8c-4a7c-44ff-81f4-728a01a79b81",
+  "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+  "quality_rollup": {
+    "calibration_confidence": {
+      "high": 58,
+      "medium": 7
+    },
+    "injury_freshness_status": {
+      "fresh": 65
+    },
+    "lineup_freshness_status": {
+      "projected": 65
+    },
+    "market_coverage_status": {
+      "none": 65
+    },
+    "pmf_sum_error_max": 2.220446049250313e-16,
+    "pmf_valid_ok_pct": 1.0,
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 65
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 1724,
+    "full_pmfs_wide": 65,
+    "market_comparison": 0,
+    "publishable_edges": 0
+  },
+  "snapshot_time_utc": "2026-05-05T03:51:12Z",
+  "snapshot_type": "pre_close",
+  "sources": {
+    "availability_table": {
+      "freshness_status": "fresh",
+      "mtime_utc": "2026-05-05T03:50:06.708057Z",
+      "path": "data/player_availability_asof.parquet"
+    },
+    "model_only_parquet": {
+      "auto_built_from_predictions": false,
+      "mtime_utc": "2026-05-05T03:50:06.941677Z",
+      "path": "deliveries/2026-05-04/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "sha256": "497be2c1cd8f57dd33e767c0d4bf2cb325c57440564f47d6143db8739772ab7f"
+    },
+    "odds_snapshot": {
+      "books_seen": [],
+      "coverage_status": "none",
+      "fetch_status": "skipped:no_disk_snapshot",
+      "mtime_utc": null,
+      "path": null
+    },
+    "predictions_parquet": {
+      "mtime_utc": "2026-05-05T03:50:06.969060Z",
+      "path": "predictions/all_props_2026-05-04.parquet"
+    }
+  },
+  "stamp_code_commit": "cd51e43d40a8f7ce89acc69254a98655b84e412e",
   "target_stats": {
     "expected": [
       "pts",
@@ -38,6 +126,10 @@
       "ast",
       "tov",
       "fg3m"
+    ],
+    "extra_relative_to_supported": [
+      "blk",
+      "stl"
     ],
     "in_delivery": [
       "ast",
@@ -49,80 +141,13 @@
     ],
     "missing": [
       "tov"
-    ],
-    "extra_relative_to_supported": [
-      "blk",
-      "stl"
     ]
   },
-  "sources": {
-    "model_only_parquet": {
-      "path": "deliveries/2026-05-04/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "mtime_utc": "2026-05-05T03:50:06.941677Z",
-      "sha256": "497be2c1cd8f57dd33e767c0d4bf2cb325c57440564f47d6143db8739772ab7f",
-      "auto_built_from_predictions": false
-    },
-    "predictions_parquet": {
-      "path": "predictions/all_props_2026-05-04.parquet",
-      "mtime_utc": "2026-05-05T03:50:06.969060Z"
-    },
-    "availability_table": {
-      "path": "data/player_availability_asof.parquet",
-      "mtime_utc": "2026-05-05T03:50:06.708057Z",
-      "freshness_status": "fresh"
-    },
-    "odds_snapshot": {
-      "path": null,
-      "mtime_utc": null,
-      "books_seen": [],
-      "coverage_status": "none",
-      "fetch_status": "skipped:no_disk_snapshot"
-    }
-  },
-  "row_counts": {
-    "fair_odds_board": 1724,
-    "full_pmfs_wide": 65,
-    "market_comparison": 0,
-    "publishable_edges": 0
-  },
-  "quality_rollup": {
-    "pmf_valid_ok_pct": 1.0,
-    "pmf_sum_error_max": 2.220446049250313e-16,
-    "calibration_confidence": {
-      "high": 58,
-      "medium": 7
-    },
-    "market_coverage_status": {
-      "none": 65
-    },
-    "injury_freshness_status": {
-      "fresh": 65
-    },
-    "lineup_freshness_status": {
-      "projected": 65
-    },
-    "role_freshness_status": {
-      "derived_from_projected_minutes": 65
-    }
-  },
-  "warnings": [],
-  "no_odds_fetch": false,
-  "freshness_manifest": {
-    "path": "data/freshness_manifest/2026-05-04.json",
-    "built_at_utc": "2026-05-05T03:50:57Z",
-    "overall_status": "not_ready",
-    "odds_status": "ok",
-    "regions_requested": [
-      "us",
-      "us2"
-    ],
-    "books_seen": [],
-    "tov_status": "missing_from_prediction_source",
-    "predictions_mtime_utc": "2026-05-05T03:50:06.969060Z",
-    "availability_freshness_status": "fresh",
-    "finals_finality_status": "finals_present",
-    "role_freshness_status_rollup": {
-      "derived_from_projected_minutes": 65
-    }
-  }
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "missing_from_prediction_source",
+  "trained_through_date": "2026-04-30",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_run_id": "nightly-20260501T124701",
+  "warnings": []
 }

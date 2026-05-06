@@ -1,0 +1,62 @@
+{
+  "calibrated_through_date": "2026-04-30",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+  "delivery_date": "2026-05-06",
+  "fields_written": [
+    "model_source",
+    "champion_model_id",
+    "champion_artifact_dir",
+    "trained_through_date",
+    "calibrated_through_date",
+    "training_run_id",
+    "calibration_run_id",
+    "validation_run_id",
+    "promotion_decision_id",
+    "champion_pointer_path",
+    "champion_pointer_hash",
+    "output_generated_at_utc",
+    "metadata_stamped_at_utc",
+    "no_challenger_artifacts_used",
+    "stamp_code_commit"
+  ],
+  "files_missing": [
+    "/home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-06/derek_forward_feed/feed_manifest.json"
+  ],
+  "files_stamped": [
+    "deliveries/2026-05-06/wizard_of_odds/run_manifest.json"
+  ],
+  "no_prediction_values_modified": true,
+  "results": [
+    {
+      "path": "deliveries/2026-05-06/wizard_of_odds/run_manifest.json",
+      "sidecar": "deliveries/2026-05-06/wizard_of_odds/run_manifest.champion_stamp.json",
+      "stamped": true
+    },
+    {
+      "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-06/derek_forward_feed/feed_manifest.json",
+      "reason": "missing",
+      "stamped": false
+    }
+  ],
+  "schema_version": "1.0",
+  "stamp": {
+    "calibrated_through_date": "2026-04-30",
+    "calibration_run_id": "nightly-20260501T124701",
+    "champion_artifact_dir": "artifacts/models",
+    "champion_model_id": "challenger-2026-04-30",
+    "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+    "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+    "metadata_stamped_at_utc": "2026-05-06T19:55:45+00:00",
+    "model_source": "champion_pointer",
+    "no_challenger_artifacts_used": true,
+    "output_generated_at_utc": "2026-05-06T19:55:45+00:00",
+    "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+    "stamp_code_commit": "84d6db3d56fea3f71139f161e5e5f5df3f96378a",
+    "trained_through_date": "2026-04-30",
+    "training_run_id": "nightly-20260501T124701",
+    "validation_run_id": "nightly-20260501T124701"
+  },
+  "status": "ok",
+  "trained_through_date": "2026-04-30"
+}
