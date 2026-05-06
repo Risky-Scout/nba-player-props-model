@@ -55,13 +55,15 @@ jobs:
       - name: Install python deps
         run: pip install -r requirements.txt
 
-      - name: Resolve as-of date
+      - name: Resolve as-of date (America/New_York)
         id: d
         run: |
           if [ -n "${{ github.event.inputs.as_of_date }}" ]; then
             echo "date=${{ github.event.inputs.as_of_date }}" >> "$GITHUB_OUTPUT"
           else
-            echo "date=$(date -u -d 'yesterday' +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+            ET_PREV=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-1d +%Y-%m-%d)
+            echo "date=$ET_PREV" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Phase 13O training started
@@ -84,6 +86,10 @@ jobs:
             --start-date ${{ github.event.inputs.start_date }} \
             $DRY
 
+      # O-7: continue-on-error stays so the workflow runs the remaining
+      # verifiers even when this token is missing. The end-of-job
+      # consolidator (below, expanded per O-4) reads this step's outcome
+      # and fails the workflow visibly.
       - name: Verify feature flow audit pass token
         id: verify_audit
         continue-on-error: true
@@ -113,7 +119,12 @@ jobs:
         run: |
           python scripts/_phase13o_check_no_leakage.py
 
-      - name: Validation gates (no-promotion this phase)
+      # O-5: this step always exits 0; renamed from "Validation gates"
+      # to "Report validation status" so the workflow log doesn't imply
+      # a hard gate exists when the no-challenger case is informational
+      # only. The consolidator (O-4) intentionally does not read this
+      # step's outcome.
+      - name: Report validation status (no-promotion this phase)
         id: validation_gates
         continue-on-error: true
         run: |
@@ -154,29 +165,62 @@ jobs:
             data/live_context_features.parquet
             artifacts/phase13o/**
 
+      # O-6: gate the commit on BOTH build_dataset success AND
+      # verify_no_leakage success. Committing live_context_features.parquet
+      # without the no-leakage check passing would publish a dataset that
+      # could contain post-cutoff information.
       - name: Commit Phase 13O artifacts (Joseph Shackelford authorship)
         if: |
-          steps.build_dataset.outcome == 'success'
+          steps.build_dataset.outcome == 'success' &&
+          steps.verify_no_leakage.outcome == 'success'
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add data/live_context_features.parquet \
-                  artifacts/phase13o || true
+          if ! git add data/live_context_features.parquet \
+                       artifacts/phase13o; then
+            echo "::error::git add failed for one or more Phase 13O paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13o: live-context training dataset ${{ steps.d.outputs.date }}"
-          git checkout -- . 2>/dev/null || true
+          # M1: scope the working-tree reset to the BDL-mutated tracked file
+          # plus the dataset itself (which we already staged + committed).
+          git checkout -- data/live_context_features.parquet data/player_game_stats.parquet 2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
 
+      # O-4: consolidator now checks all 5 required upstream outcomes.
+      # validation_gates and derek_readiness are intentionally omitted —
+      # they are informational (validation_gates always exits 0;
+      # derek_readiness records state and never gates).
+      # All upstream steps use continue-on-error: true, so a failure in any
+      # of them leaves conclusion=success while outcome=failure; the
+      # default success() gate on this consolidator works because nothing
+      # upstream actually terminated the job.
       - name: Fail workflow if any required step failed
         if: |
           steps.build_dataset.outcome != 'success' ||
+          steps.verify_audit.outcome != 'success' ||
+          steps.verify_training_wiring.outcome != 'success' ||
+          steps.verify_sensitivity.outcome != 'success' ||
           steps.verify_no_leakage.outcome != 'success'
         run: |
           echo "::error::A Phase 13O step failed. See uploaded artifacts."
           echo "build_dataset=${{ steps.build_dataset.outcome }}"
+          echo "verify_audit=${{ steps.verify_audit.outcome }}"
+          echo "verify_training_wiring=${{ steps.verify_training_wiring.outcome }}"
+          echo "verify_sensitivity=${{ steps.verify_sensitivity.outcome }}"
           echo "verify_no_leakage=${{ steps.verify_no_leakage.outcome }}"
           exit 1
