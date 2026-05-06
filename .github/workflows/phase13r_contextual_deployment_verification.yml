@@ -27,9 +27,9 @@ on:
         type: choice
         options: ["false", "true"]
       allow_future_trained_through:
-        description: "Allow promotion when trained_through_date is in the future."
+        description: "Allow promotion when trained_through_date is in the future. Manual escape hatch — leave at 'false' for normal runs."
         required: false
-        default: "true"
+        default: "false"
         type: choice
         options: ["false", "true"]
 
@@ -77,7 +77,11 @@ jobs:
       - name: Phase 13L no-breakage
         run: python scripts/verify_phase13l_no_breakage.py
 
+      # R-5: explicit `if: success()` (already implicit) so the gate is
+      # visible to anyone reading the file — promotion must NEVER run if
+      # any upstream verifier failed.
       - name: Promote contextual challenger
+        if: success()
         run: |
           ARGS=""
           if [ -n "${{ github.event.inputs.challenger_dir }}" ]; then
@@ -106,21 +110,49 @@ jobs:
             artifacts/models/registry/champion_pointer.json
             artifacts/models/champion/v_phase13r_*/**
 
+      # R-6: explicit `if: success()` so the commit gate is visible —
+      # promotion artifacts must never land on origin/main if any
+      # upstream verifier failed.
       - name: Commit Phase 13R artifacts (Joseph Shackelford authorship)
+        if: success()
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          git add artifacts/phase13r \
-                  artifacts/models/registry/champion_pointer.json \
-                  artifacts/models/champion/v_phase13r_* \
-                  artifacts/models/challengers/*_contextual/promotion_decision.json \
-                  artifacts/models/challengers/*_contextual/promotion_manifest.json \
-                  || true
+          # promotion_log.csv added during M1 investigation: previously
+          # promote_contextual_challenger.py appended a row to this
+          # tracked file but it was being silently discarded by the
+          # `git checkout -- .` below. Phase 13R promotions now actually
+          # show up in the promotion log on origin/main.
+          if ! git add artifacts/phase13r \
+                       artifacts/models/registry/champion_pointer.json \
+                       artifacts/models/registry/promotion_log.csv \
+                       artifacts/models/champion/v_phase13r_* \
+                       artifacts/models/challengers/*_contextual/promotion_decision.json \
+                       artifacts/models/challengers/*_contextual/promotion_manifest.json; then
+            echo "::error::git add failed for one or more Phase 13R paths"
+            exit 1
+          fi
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13r: deploy contextual lineup injury PMF engine"
-          git checkout -- . 2>/dev/null || true
+          # M1: scope the working-tree reset to verifier-rewritten tracked
+          # files we explicitly do NOT commit from Phase 13R (they are
+          # regenerated and committed by nightly_training_calibration).
+          # promotion_log.csv was previously also being discarded here —
+          # see git add list above for the fix.
+          git checkout -- artifacts/automation_health/phase13l_no_breakage.md \
+                          artifacts/automation_health/phase13l_no_breakage.json \
+                          2>/dev/null || true
+          PUSH_SUCCESS=0
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break || sleep 5
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
           done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
