@@ -18,6 +18,12 @@ name: Phase 13O — Live-Context Training Dataset (build + verify)
 #   - Author: Joseph Shackelford <josephshack@gmail.com>.
 
 on:
+  # H1B chain — auto-fire after phase8.yml succeeds. Manual dispatch
+  # remains available.
+  workflow_run:
+    workflows: ["NBA Props Model — Phase 8 (PMF calibration + diagnostics + market eval)"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       as_of_date:
@@ -42,12 +48,35 @@ jobs:
   phase13o_live_context_training:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # H1B chain gate: run on manual dispatch OR on workflow_run only
+    # when the upstream (phase8.yml) actually succeeded.
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     concurrency:
       group: phase13o-live-context-${{ github.event.inputs.as_of_date || 'today' }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
+
+      - name: H1B — Verify upstream output present (workflow_run only)
+        if: github.event_name == 'workflow_run'
+        run: |
+          set -e
+          # Upstream is phase8.yml which commits "Phase 8: PMF calibration..."
+          # via scripts/build_woo_dashboard etc. Confirm that commit reached
+          # origin/main before we run.
+          UPSTREAM_PATTERN="^Phase 8:"
+          if ! git log --grep="$UPSTREAM_PATTERN" --since="24 hours ago" --format="%h" | head -1 | grep -q .; then
+            echo "::error::No upstream commit matching '$UPSTREAM_PATTERN' in last 24h on origin/main"
+            echo "Recent commits:"
+            git log -5 --oneline
+            exit 1
+          fi
+          LATEST=$(git log --grep="$UPSTREAM_PATTERN" --since="24 hours ago" -1 --format="%h %ai %s")
+          echo "::notice::Upstream output verified: $LATEST"
+
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
