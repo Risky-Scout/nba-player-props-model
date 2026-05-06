@@ -406,6 +406,51 @@ jobs:
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+          # Bug A: no-games-day short-circuit. The dispatcher exits 0
+          # without creating deliveries/<date>/derek_game_snapshots/ on a
+          # no-games day (it writes a status JSON under
+          # artifacts/derek_live_snapshots/<date>/ instead — see
+          # scripts/dispatch_derek_live_game_snapshots.py line ~368).
+          # H6's hard-fail `git add` would otherwise trip on the missing
+          # path. Detect this case, write a sentinel manifest so we have
+          # a positive record on origin/main, commit ONLY that file, and
+          # exit 0.
+          SNAPSHOT_DIR="deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots"
+          if [ ! -d "$SNAPSHOT_DIR" ] || [ -z "$(find "$SNAPSHOT_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ]; then
+            echo "::notice::DEREK_NO_GAMES_TODAY date=${{ steps.d.outputs.date }} type=${{ steps.s.outputs.type }}"
+            mkdir -p "$SNAPSHOT_DIR"
+            cat > "$SNAPSHOT_DIR/no_games_today.json" <<JSON
+          {
+            "schema_version": "1.0",
+            "delivery_date": "${{ steps.d.outputs.date }}",
+            "snapshot_type": "${{ steps.s.outputs.type }}",
+            "generated_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "status": "no_games_today",
+            "reason": "Dispatcher returned no schedule rows for this date. See artifacts/derek_live_snapshots/${{ steps.d.outputs.date }}/dispatch_*.json for the source-of-truth status emitted by scripts/dispatch_derek_live_game_snapshots.py."
+          }
+          JSON
+            if ! git add "$SNAPSHOT_DIR/no_games_today.json"; then
+              echo "::error::git add failed for no_games_today sentinel"
+              exit 1
+            fi
+            git diff --staged --quiet && echo "Sentinel unchanged" || \
+              git commit \
+                --author="Joseph Shackelford <josephshack@gmail.com>" \
+                -m "phase13u: Derek no-games-today ${{ steps.d.outputs.date }} (${{ steps.s.outputs.type }})"
+            PUSH_SUCCESS=0
+            for i in 1 2 3; do
+              if git pull --rebase origin main && git push origin main; then
+                PUSH_SUCCESS=1
+                break
+              fi
+              sleep 5
+            done
+            if [ "$PUSH_SUCCESS" != "1" ]; then
+              echo "::error::git push failed after 3 attempts"
+              exit 1
+            fi
+            exit 0
+          fi
           AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
           if ! git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
                        deliveries/${{ steps.d.outputs.date }}/README.md \
