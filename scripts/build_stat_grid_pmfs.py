@@ -89,9 +89,9 @@ _AVAILABILITY_COLS = (
 )
 _INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
 
-# We default to TOV only — that is the gap the production export leaves.
+# Default to the full model-only stat grid used by Derek/WoO PMF deliveries.
 # The flag accepts any stat in build_prop_pmfs's output keyset.
-DEFAULT_STATS = ("tov",)
+DEFAULT_STATS = ("pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks")
 ALLOWED_STATS = ("pts", "reb", "ast", "tov", "fg3m", "stl", "blk", "stocks")
 
 
@@ -149,6 +149,108 @@ def _slate_keys_from_all_props(all_props_path: Path) -> list[tuple[int, int]]:
     df["game_id"] = df["game_id"].astype(int)
     pairs = set(zip(df["player_id"].tolist(), df["game_id"].tolist()))
     return sorted(pairs)
+
+
+def _slate_keys_from_recent_rosters(
+    state: dict,
+    target_date: str,
+    *,
+    max_players_per_team: int = 18,
+    recent_days: int = 120,
+) -> list[tuple[int, int]]:
+    """Build a model-only slate without depending on market/all_props rows.
+
+    Uses today's BDL game slate plus recent team roster history. Inactive
+    players are filtered by the same injury map used later by the PMF row
+    builder. Feature/minutes construction still decides whether a player is
+    actually computable; this function only supplies candidate player-game
+    pairs.
+    """
+    stats_df = state.get("stats_df")
+    games_by_id = state.get("games_by_id", {})
+    inactive_ids = set(state.get("inactive_player_ids", set()))
+
+    if stats_df is None or stats_df.empty or not games_by_id:
+        return []
+
+    required = {"player_id", "team_id", "game_date"}
+    if not required.issubset(set(stats_df.columns)):
+        return []
+
+    df = stats_df.copy()
+    df["game_date_dt"] = pd.to_datetime(df["game_date"], errors="coerce")
+    df["player_id_num"] = pd.to_numeric(df["player_id"], errors="coerce")
+    df["team_id_num"] = pd.to_numeric(df["team_id"], errors="coerce")
+    df = df.dropna(subset=["game_date_dt", "player_id_num", "team_id_num"])
+
+    target_ts = pd.Timestamp(target_date)
+    df = df[df["game_date_dt"] < target_ts]
+    if df.empty:
+        return []
+
+    recent_cutoff = target_ts - pd.Timedelta(days=int(recent_days))
+    minutes_col = next(
+        (c for c in ("minutes", "min", "mp", "minutes_played") if c in df.columns),
+        None,
+    )
+
+    keys: set[tuple[int, int]] = set()
+
+    for gid, game in sorted(games_by_id.items()):
+        home_id = (
+            (game.get("home_team") or {}).get("id")
+            or game.get("home_team_id")
+        )
+        visitor_id = (
+            (game.get("visitor_team") or {}).get("id")
+            or game.get("visitor_team_id")
+        )
+
+        for team_id in (home_id, visitor_id):
+            if team_id is None:
+                continue
+
+            try:
+                team_id_int = int(team_id)
+            except Exception:
+                continue
+
+            team_df = df[df["team_id_num"] == team_id_int].copy()
+            if team_df.empty:
+                continue
+
+            recent = team_df[team_df["game_date_dt"] >= recent_cutoff].copy()
+            if recent.empty:
+                recent = team_df.copy()
+
+            grouped = recent.groupby("player_id_num").agg(
+                last_game=("game_date_dt", "max"),
+                recent_games=("game_date_dt", "count"),
+            )
+
+            if minutes_col is not None:
+                recent[minutes_col] = pd.to_numeric(recent[minutes_col], errors="coerce")
+                grouped["recent_minutes"] = (
+                    recent.groupby("player_id_num")[minutes_col]
+                    .mean()
+                    .fillna(0.0)
+                )
+            else:
+                grouped["recent_minutes"] = 0.0
+
+            grouped = grouped.sort_values(
+                ["recent_minutes", "recent_games", "last_game"],
+                ascending=[False, False, False],
+            )
+
+            for pid_float in grouped.head(int(max_players_per_team)).index:
+                pid = int(pid_float)
+                if pid in inactive_ids:
+                    continue
+                keys.add((pid, int(gid)))
+
+    return sorted(keys)
+
 
 
 def _build_pipeline_state(target_date: str) -> dict:
@@ -355,12 +457,18 @@ def main() -> int:
     ap.add_argument("--stats", nargs="+", default=list(DEFAULT_STATS),
                      choices=list(ALLOWED_STATS),
                      help=f"stats to emit (default: {DEFAULT_STATS}; the "
-                           "full grid is available via "
+                           "default is the full model-only stat grid; restrict via "
                            "--stats pts reb ast tov fg3m stl blk stocks)")
+    ap.add_argument("--slate-source", choices=["recent_rosters", "all_props"],
+                    default="recent_rosters",
+                    help=("player-game slate source; default recent_rosters "
+                          "keeps PMF-only delivery independent of market rows"))
+    ap.add_argument("--max-players-per-team", type=int, default=18,
+                    help="recent-roster candidates per team for PMF-only slate")
     ap.add_argument("--all-props",
                      default=None,
-                     help=("path to predictions/all_props_{date}.parquet; "
-                            "default auto-resolves under predictions/"))
+                     help=("optional path to predictions/all_props_{date}.parquet; "
+                           "used only with --slate-source all_props"))
     ap.add_argument("--out",
                      default=None,
                      help=("output parquet path; "
@@ -372,29 +480,42 @@ def main() -> int:
         print("FATAL: BDL_API_KEY not set", file=sys.stderr)
         return 2
 
-    all_props_path = Path(
-        args.all_props or PRED_DIR / f"all_props_{target_date}.parquet"
-    )
-    if not all_props_path.exists():
-        print(f"FATAL: {all_props_path} missing — run predict.py first")
-        return 1
-
     out_path = Path(args.out or PRED_DIR / f"stat_grid_{target_date}.parquet")
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
+    state = _build_pipeline_state(target_date)
+
+    all_props_path = Path(
+        args.all_props or PRED_DIR / f"all_props_{target_date}.parquet"
+    )
+
+    if args.slate_source == "all_props":
+        if not all_props_path.exists():
+            print(f"FATAL: {all_props_path} missing and --slate-source all_props was requested")
+            return 1
+        keys = _slate_keys_from_all_props(all_props_path)
+        slate_source_label = str(all_props_path.relative_to(REPO_ROOT))
+    else:
+        keys = _slate_keys_from_recent_rosters(
+            state,
+            target_date,
+            max_players_per_team=args.max_players_per_team,
+        )
+        slate_source_label = (
+            f"recent_rosters(max_players_per_team={args.max_players_per_team})"
+        )
+
     print("=" * 72)
     print(f"build_stat_grid_pmfs — date={target_date} stats={args.stats}")
-    print(f"  slate source: {all_props_path.relative_to(REPO_ROOT)}")
-    print(f"  output       : {out_path.relative_to(REPO_ROOT)}")
+    print(f" slate source: {slate_source_label}")
+    print(f" output : {out_path.relative_to(REPO_ROOT)}")
     print("=" * 72)
 
-    keys = _slate_keys_from_all_props(all_props_path)
-    print(f"  slate (player_id, game_id) pairs: {len(keys)}")
+    print(f" slate (player_id, game_id) pairs: {len(keys)}")
     if not keys:
-        print("  WARN: empty slate — nothing to compute.")
+        print(" WARN: empty slate — nothing to compute.")
         return 1
 
-    state = _build_pipeline_state(target_date)
     fg3m_model = _fg3m_hurdle_model() if "fg3m" in args.stats else None
 
     rows: list[dict] = []

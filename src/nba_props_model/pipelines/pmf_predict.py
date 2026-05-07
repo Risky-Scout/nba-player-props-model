@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
@@ -44,6 +45,8 @@ from nba_props_model.selection.bet_selection import (
 )
 
 logger = logging.getLogger(__name__)
+
+PMF_SIM_DRAWS = int(os.getenv("NBA_PMF_SIM_DRAWS", "50000"))
 
 
 MAIN_STATS = ("pts", "reb", "ast", "tov")
@@ -88,7 +91,7 @@ def build_prop_pmfs(
     # Main stats via minutes x rate.
     main_pmfs = simulation.simulate_all_main_stats(
         minutes_dist=minutes_dist, feature_row=feature_row,
-        n_draws=5_000, rng=rng,
+        n_draws=PMF_SIM_DRAWS, rng=rng,
     )
     for stat, spmf in main_pmfs.items():
         out[stat] = PropPMF(stat=stat, pmf=spmf.pmf, calibrated=False,
