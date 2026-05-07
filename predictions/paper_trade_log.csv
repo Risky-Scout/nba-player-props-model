@@ -23,3 +23,8 @@ date,type,player,game,stat,side,line,odds,model_prob,ev,kelly_units,outcome,prof
 2026-05-06,single,Mike Conley,Minnesota Timberwolves @ San Antonio Spurs,fg3m,OVER,1.5,180,0.5766,0.6145,0.079,,
 2026-05-06,single,Julian Champagnie,Minnesota Timberwolves @ San Antonio Spurs,stl,UNDER,0.5,125,0.6791,0.528,0.082,,
 2026-05-06,single,Victor Wembanyama,Minnesota Timberwolves @ San Antonio Spurs,reb,UNDER,12.5,-105,0.7359,0.4368,0.067,,
+2026-05-06,single,Julian Champagnie,Minnesota Timberwolves @ San Antonio Spurs,blk,OVER,0.5,195,0.6696,0.9753,0.106,,
+2026-05-06,single,Stephon Castle,Minnesota Timberwolves @ San Antonio Spurs,stl,UNDER,1.5,165,0.7405,0.9624,0.124,,
+2026-05-06,single,Victor Wembanyama,Minnesota Timberwolves @ San Antonio Spurs,ast,UNDER,3.5,136,0.6212,0.4661,0.073,,
+2026-05-06,single,Victor Wembanyama,Minnesota Timberwolves @ San Antonio Spurs,reb,UNDER,12.5,-105,0.7342,0.4335,0.084,,
+2026-05-06,single,Tyrese Maxey,Philadelphia 76ers @ New York Knicks,pts,UNDER,26.5,100,0.6754,0.3509,0.088,,
