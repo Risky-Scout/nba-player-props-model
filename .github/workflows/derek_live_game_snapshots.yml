@@ -200,6 +200,27 @@ jobs:
             --snapshot-type close_lock \
             $STALE_FLAG $MAX_FLAG $FORCE_FLAG
 
+      - name: Build Derek snapshots from corrected PMF delivery
+        id: build_corrected_derek_snapshots
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          SNAPSHOT_TYPE="${{ steps.s.outputs.type }}"
+          if [ "$SNAPSHOT_TYPE" = "both" ] || [ "$SNAPSHOT_TYPE" = "all" ]; then
+            SNAPSHOT_TYPE="close_lock"
+          fi
+          python scripts/build_derek_game_snapshots_from_delivery.py \
+            --date ${{ steps.d.outputs.date }} \
+            --snapshot-type "$SNAPSHOT_TYPE" \
+            --force
+
+      - name: Verify corrected PMF delivery contract
+        id: verify_corrected_pmf_delivery
+        run: |
+          python scripts/verify_corrected_pmf_delivery.py \
+            --date ${{ steps.d.outputs.date }}
+
       - name: Verify Derek live API readiness
         id: verify_api_readiness
         continue-on-error: true
@@ -309,9 +330,8 @@ jobs:
         id: repair_outcome_long
         continue-on-error: true
         run: |
-          python scripts/repair_derek_outcome_level_probabilities.py \
-            --delivery-date ${{ steps.d.outputs.date }} \
-            --all-snapshots
+          echo "Skipped: corrected Derek builder writes outcome_level_probabilities directly from full PMFs."
+          echo "Source of truth: deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet"
 
       - name: Verify Derek long-form outcome PMF files (Phase 13AB)
         id: verify_outcome_long
