@@ -1,0 +1,21 @@
+{
+  "bug_count": 0,
+  "delivery_date": "2026-05-07",
+  "outcome": "pass",
+  "schema_version": "1.0",
+  "snapshot_count": 2,
+  "snapshots": [
+    {
+      "game_id": "21708301",
+      "snap_dir": "deliveries/2026-05-07/derek_game_snapshots/21708301/close_lock",
+      "snapshot_type": "close_lock",
+      "status": "no_decomposition"
+    },
+    {
+      "game_id": "21709223",
+      "snap_dir": "deliveries/2026-05-07/derek_game_snapshots/21709223/close_lock",
+      "snapshot_type": "close_lock",
+      "status": "no_decomposition"
+    }
+  ]
+}

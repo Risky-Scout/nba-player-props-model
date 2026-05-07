@@ -1,0 +1,42 @@
+{
+  "delivery_date": "2026-05-07",
+  "generated_at_utc": "2026-05-07T20:55:43+00:00Z",
+  "records": [
+    {
+      "game_id": "21708301",
+      "opponent_abbr": "OKC",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-08T01:40:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "be60f9fb90355d07",
+      "source_used": "predictions_parquet_game_start_time",
+      "team_abbr": "LAL"
+    },
+    {
+      "game_id": "21709223",
+      "opponent_abbr": "DET",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-07T23:10:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "1db86bf634cda29a",
+      "source_used": "predictions_parquet_game_start_time",
+      "team_abbr": "CLE"
+    }
+  ],
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 2,
+    "delivery_date": "2026-05-07",
+    "from_predictions_count": 2,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 4,
+    "pmf_display_matchups_parsed": 2,
+    "predictions_present": true,
+    "predictions_rows": 61,
+    "predictions_unique_games": 2,
+    "resolved_count": 2,
+    "unresolved_count": 0
+  }
+}

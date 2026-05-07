@@ -1,0 +1,35 @@
+{
+  "code_commit": "397ec01ef27523c0c2e5deb28dc529653bcd5c66",
+  "decisions": [
+    {
+      "decision": "skipped_not_due",
+      "detail": "now < target - 6min; will fire during the cron window starting at 2026-05-08T01:34:00+00:00",
+      "game_id": "21708301",
+      "now_utc": "2026-05-07T20:55:47Z",
+      "snapshot_dir": "deliveries/2026-05-07/derek_game_snapshots/21708301/current_live",
+      "state": "NOT_DUE",
+      "target_utc": "2026-05-08T01:40:00Z"
+    },
+    {
+      "decision": "skipped_not_due",
+      "detail": "now < target - 6min; will fire during the cron window starting at 2026-05-07T23:04:00+00:00",
+      "game_id": "21709223",
+      "now_utc": "2026-05-07T20:55:47Z",
+      "snapshot_dir": "deliveries/2026-05-07/derek_game_snapshots/21709223/current_live",
+      "state": "NOT_DUE",
+      "target_utc": "2026-05-07T23:10:00Z"
+    }
+  ],
+  "delivery_date": "2026-05-07",
+  "eligible_rows": 0,
+  "now_utc": "2026-05-07T20:55:47Z",
+  "schedule_rows": 2,
+  "schema_version": "1.0",
+  "snapshot_type": "current_live",
+  "summary": {
+    "failures": 0,
+    "fired": 0,
+    "skipped_already_run": 0,
+    "skipped_window": 2
+  }
+}

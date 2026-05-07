@@ -1,0 +1,8 @@
+{
+  "blocker": "no rows in player_game_stats.parquet for game_date=2026-05-07",
+  "code_commit": "397ec01ef27523c0c2e5deb28dc529653bcd5c66",
+  "delivery_date": "2026-05-07",
+  "generated_at_utc": "2026-05-07T20:56:06+00:00",
+  "schema_version": "1.0",
+  "status": "pending_outcomes"
+}

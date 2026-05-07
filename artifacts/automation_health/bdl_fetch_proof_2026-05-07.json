@@ -1,0 +1,57 @@
+{
+  "delivery_date": "2026-05-07",
+  "failure_count": 2,
+  "outcome": "fail",
+  "schema_version": "1.0",
+  "snapshot_count": 2,
+  "snapshots": [
+    {
+      "facts": {
+        "BDL_injury_endpoint": null,
+        "BDL_injury_fetch_attempted": null,
+        "BDL_injury_fetch_status": null,
+        "BDL_injury_rows": null,
+        "BDL_lineup_endpoint": null,
+        "BDL_lineup_fetch_attempted": null,
+        "BDL_lineup_fetch_status": null,
+        "BDL_lineup_rows": null
+      },
+      "game_id": "21708301",
+      "issues": [
+        "BDL_lineup_fetch_attempted not bool (got NoneType=None)",
+        "BDL_injury_fetch_attempted not bool (got NoneType=None)",
+        "BDL_lineup_fetch_status not a non-empty string (got None)",
+        "BDL_lineup_endpoint not a non-empty string (got None)",
+        "BDL_injury_fetch_status not a non-empty string (got None)",
+        "BDL_injury_endpoint not a non-empty string (got None)",
+        "BDL_lineup_rows not int (got NoneType=None)",
+        "BDL_injury_rows not int (got NoneType=None)"
+      ],
+      "snapshot_type": "close_lock"
+    },
+    {
+      "facts": {
+        "BDL_injury_endpoint": null,
+        "BDL_injury_fetch_attempted": null,
+        "BDL_injury_fetch_status": null,
+        "BDL_injury_rows": null,
+        "BDL_lineup_endpoint": null,
+        "BDL_lineup_fetch_attempted": null,
+        "BDL_lineup_fetch_status": null,
+        "BDL_lineup_rows": null
+      },
+      "game_id": "21709223",
+      "issues": [
+        "BDL_lineup_fetch_attempted not bool (got NoneType=None)",
+        "BDL_injury_fetch_attempted not bool (got NoneType=None)",
+        "BDL_lineup_fetch_status not a non-empty string (got None)",
+        "BDL_lineup_endpoint not a non-empty string (got None)",
+        "BDL_injury_fetch_status not a non-empty string (got None)",
+        "BDL_injury_endpoint not a non-empty string (got None)",
+        "BDL_lineup_rows not int (got NoneType=None)",
+        "BDL_injury_rows not int (got NoneType=None)"
+      ],
+      "snapshot_type": "close_lock"
+    }
+  ]
+}
