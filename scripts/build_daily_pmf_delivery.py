@@ -1822,7 +1822,7 @@ def main() -> int:
         "warnings": [*msgs_canon, *msgs_edges],
         "no_odds_fetch": bool(args.no_odds_fetch),
         "freshness_manifest": ({
-            "path": str(fm_path.relative_to(REPO_ROOT))
+            "path": _display_path(fm_path)
                      if fm_path is not None else None,
             "built_at_utc": freshness_manifest.get("built_at_utc"),
             "overall_status": freshness_manifest.get("overall_status"),
