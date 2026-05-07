@@ -1,45 +1,45 @@
 {
   "fallback": {
-    "pts": 0.41500000000000004,
-    "ast": -0.10999999999999988,
-    "reb": -0.6400000000000001,
-    "fg3m": -0.04499999999999993
+    "pts": 1.0200000000000005,
+    "ast": 0.030000000000000027,
+    "reb": 0.0,
+    "fg3m": -0.004999999999999893
   },
   "meta": {
     "pts": {
-      "n": 38,
-      "cv_mae_mean": 8.137060832041579,
-      "cv_mae_std": 2.0839913655917353,
-      "target_median": 0.41500000000000004,
-      "target_mean": 0.8678947368421056,
-      "fallback_correction": 0.41500000000000004,
+      "n": 44,
+      "cv_mae_mean": 9.04723768738186,
+      "cv_mae_std": 2.7838430233761495,
+      "target_median": 1.0200000000000005,
+      "target_mean": 1.6131818181818183,
+      "fallback_correction": 1.0200000000000005,
       "model_type": "Ridge"
     },
     "ast": {
-      "n": 38,
-      "cv_mae_mean": 1.8839157521532826,
-      "cv_mae_std": 0.08640535605057542,
-      "target_median": -0.10999999999999988,
-      "target_mean": -0.005263157894736824,
-      "fallback_correction": -0.10999999999999988,
-      "model_type": "Ridge"
+      "n": 56,
+      "cv_mae_mean": 2.0947905026008184,
+      "cv_mae_std": 0.6401612172773281,
+      "target_median": 0.030000000000000027,
+      "target_mean": 0.3357142857142858,
+      "fallback_correction": 0.030000000000000027,
+      "model_type": "GradientBoostingRegressor"
     },
     "reb": {
-      "n": 57,
-      "cv_mae_mean": 2.745658644787606,
-      "cv_mae_std": 0.4322280867378535,
-      "target_median": -0.6400000000000001,
-      "target_mean": -0.33,
-      "fallback_correction": -0.6400000000000001,
+      "n": 81,
+      "cv_mae_mean": 2.824087915075357,
+      "cv_mae_std": 0.4332388464512302,
+      "target_median": 0.0,
+      "target_mean": 0.15049382716049384,
+      "fallback_correction": 0.0,
       "model_type": "GradientBoostingRegressor"
     },
     "fg3m": {
-      "n": 34,
-      "cv_mae_mean": 1.1440150626343735,
-      "cv_mae_std": 0.26181181088442923,
-      "target_median": -0.04499999999999993,
-      "target_mean": 0.15735294117647056,
-      "fallback_correction": -0.04499999999999993,
+      "n": 42,
+      "cv_mae_mean": 1.0506012113690408,
+      "cv_mae_std": 0.22105456800614748,
+      "target_median": -0.004999999999999893,
+      "target_mean": 0.10357142857142856,
+      "fallback_correction": -0.004999999999999893,
       "model_type": "Ridge"
     }
   },
