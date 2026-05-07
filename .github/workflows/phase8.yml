@@ -275,6 +275,7 @@ jobs:
           # this tells us exactly where it was lost.
           VAL_ROWS_LIMIT="${{ inputs.val_rows_limit }}"
           MAX_FOLDS="${{ inputs.max_folds }}"
+          MAX_FOLDS="${MAX_FOLDS:-6}"
           CORE_PROPS_ONLY="${{ inputs.core_props_only }}"
           PMF_DRAWS="${{ inputs.pmf_draws }}"
           echo "workflow input max_folds='${MAX_FOLDS}'"
