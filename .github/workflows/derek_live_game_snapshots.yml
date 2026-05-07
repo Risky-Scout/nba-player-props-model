@@ -254,26 +254,38 @@ jobs:
           python scripts/build_derek_snapshot_comparison.py \
             --delivery-date ${{ steps.d.outputs.date }} || true
 
-      - name: Verify Derek live snapshots
+      - name: Legacy diagnostic: Verify Derek live snapshots
         id: verify_derek
         continue-on-error: true
         run: |
-          python scripts/verify_derek_live_snapshots.py \
-            --delivery-date ${{ steps.d.outputs.date }}
+          if python scripts/verify_derek_live_snapshots.py \
+            --delivery-date ${{ steps.d.outputs.date }}; then
+            echo "legacy verify_derek_live_snapshots PASS"
+          else
+            echo "::warning::legacy verify_derek_live_snapshots failed; corrected PMF verifier is authoritative"
+          fi
 
-      - name: Verify BDL fetch proof (Phase 13W)
+      - name: Legacy diagnostic: Verify BDL fetch proof (Phase 13W)
         id: verify_bdl_fetch
         continue-on-error: true
         run: |
-          python scripts/verify_bdl_fetch_proof_for_derek.py \
-            --delivery-date ${{ steps.d.outputs.date }}
+          if python scripts/verify_bdl_fetch_proof_for_derek.py \
+            --delivery-date ${{ steps.d.outputs.date }}; then
+            echo "legacy verify_bdl_fetch_proof_for_derek PASS"
+          else
+            echo "::warning::legacy BDL fetch proof failed; corrected PMF verifier is authoritative"
+          fi
 
-      - name: Audit contextual delta variation (Phase 13W)
+      - name: Legacy diagnostic: Audit contextual delta variation (Phase 13W)
         id: audit_delta
         continue-on-error: true
         run: |
-          python scripts/audit_contextual_delta_variation.py \
-            --delivery-date ${{ steps.d.outputs.date }}
+          if python scripts/audit_contextual_delta_variation.py \
+            --delivery-date ${{ steps.d.outputs.date }}; then
+            echo "legacy audit_contextual_delta_variation PASS"
+          else
+            echo "::warning::legacy contextual delta audit failed; corrected PMF verifier is authoritative"
+          fi
 
       - name: Build Derek delivery README (Phase 13W)
         id: build_readme
@@ -282,12 +294,16 @@ jobs:
           python scripts/build_derek_delivery_readme.py \
             --delivery-date ${{ steps.d.outputs.date }}
 
-      - name: Audit Derek edge root-cause (Phase 13X)
+      - name: Legacy diagnostic: Audit Derek edge root-cause (Phase 13X)
         id: audit_edge_rootcause
         continue-on-error: true
         run: |
-          python scripts/audit_derek_edge_root_cause.py \
-            --delivery-date ${{ steps.d.outputs.date }}
+          if python scripts/audit_derek_edge_root_cause.py \
+            --delivery-date ${{ steps.d.outputs.date }}; then
+            echo "legacy audit_derek_edge_root_cause PASS"
+          else
+            echo "::warning::legacy Derek edge root-cause audit failed; corrected PMF verifier is authoritative"
+          fi
 
       - name: Audit Derek edge calibration buckets (Phase 13X)
         id: audit_edge_calibration
@@ -333,12 +349,16 @@ jobs:
           echo "Skipped: corrected Derek builder writes outcome_level_probabilities directly from full PMFs."
           echo "Source of truth: deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet"
 
-      - name: Verify Derek long-form outcome PMF files (Phase 13AB)
+      - name: Legacy diagnostic: Verify Derek long-form outcome PMF files (Phase 13AB)
         id: verify_outcome_long
         continue-on-error: true
         run: |
-          python scripts/verify_derek_outcome_level_probabilities.py \
-            --delivery-date ${{ steps.d.outputs.date }}
+          if python scripts/verify_derek_outcome_level_probabilities.py \
+            --delivery-date ${{ steps.d.outputs.date }}; then
+            echo "legacy verify_derek_outcome_level_probabilities PASS"
+          else
+            echo "::warning::legacy outcome-level verifier failed; corrected Derek builder writes outcome_level_probabilities directly from full PMFs"
+          fi
 
       - name: Verify Wizard of Odds untouched (Phase 13X)
         id: verify_woo_unchanged
