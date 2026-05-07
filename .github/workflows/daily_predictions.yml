@@ -85,6 +85,8 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       github.event.schedule == '0 13 * * *'
+    env:
+      TZ: America/New_York
 
     steps:
       - name: Checkout repo
