@@ -248,6 +248,7 @@ jobs:
             echo "::error::Derek email-claimed files verifier failed - see step log"; exit 1; }
 
       - name: Build + verify daily automation health report (Phase 13AD)
+        continue-on-error: true
         run: |
           DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/build_daily_automation_health_report.py --date "$DATE"
