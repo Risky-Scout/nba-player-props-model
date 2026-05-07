@@ -16,16 +16,17 @@ th,td{padding:0.3rem 0.6rem;border:1px solid #ddd;text-align:left;font-size:0.92
 th{background:#f0f0f0}
 </style></head><body><h1>START HERE — PMF Model Review</h1>
 <p><b>Delivery date:</b> 2026-05-07 &nbsp;&nbsp;
-<b>Rows:</b> 475</p>
+<b>Rows:</b> 330</p>
 
 <div class="callout"><b>Run status — 2026-05-07 — snapshot morning</b><br>
 status: <b>PROVISIONAL</b> &middot; safe to use, with the caveats below<br>
-props: <b>475</b> &middot; books: <b>14</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>fresh</b><br>
-role provenance: missing: 414, derived_from_projected_minutes: 61<br>
-model: <code>639adbe#phase10c</code>
+props: <b>330</b> &middot; books: <b>0</b> &middot; market coverage: <b>none</b> &middot; injury freshness: <b>fresh</b><br>
+role provenance: derived_from_projected_minutes: 330<br>
+model: <code>1f90885#phase10c</code>
 <br><br>
 <b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>
-- <code>role_bucket_missing</code> — role_bucket could not be derived for at least one row (mp_bucket absent in predictions).
+- <code>market_coverage_none</code> — 330 rows have no market coverage.
+- <code>lineup_unconfirmed</code> — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 </div>
 
 <div class="callout">

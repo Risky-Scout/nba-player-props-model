@@ -7,10 +7,10 @@ This file will be re-written by `scripts/score_daily_pmf_delivery_after_game.py`
 ## Rollup at delivery time
 
 - delivery_date: `2026-05-07`
-- props in delivery: **475**
+- props in delivery: **330**
 - finality_status: `provisional`
-- finality_blockers: role_bucket_missing
-- model_version: `639adbe#phase10c`
+- finality_blockers: market_coverage_none, lineup_unconfirmed
+- model_version: `1f90885#phase10c`
 
 ## What this file will contain after scoring
 
