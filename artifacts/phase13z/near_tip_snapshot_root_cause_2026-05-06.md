@@ -1,13 +1,13 @@
 # Near-tip snapshot root-cause audit — 2026-05-06
 
-Generated 2026-05-07T02:31:41Z.
+Generated 2026-05-07T03:34:27Z.
 
 ## Per-(matchup, snapshot) state
 
 | Away | Home | Matchup | Snapshot | Tip Time UTC | Target Time UTC | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Timberwolves | Spurs | Timberwolves @ Spurs | T-minus-25 | `2026-05-07T01:48:13Z` | `2026-05-07T01:23:13Z` | Missed during setup window; documented, not backfilled |
-| Timberwolves | Spurs | Timberwolves @ Spurs | Close-lock | `2026-05-07T01:48:13Z` | `2026-05-07T01:43:13Z` | Pending dispatch |
+| Timberwolves | Spurs | Timberwolves @ Spurs | Close-lock | `2026-05-07T01:48:13Z` | `2026-05-07T01:43:13Z` | Missed during setup window; documented, not backfilled |
 
 ## Why missed snapshots are documented, not backfilled
 

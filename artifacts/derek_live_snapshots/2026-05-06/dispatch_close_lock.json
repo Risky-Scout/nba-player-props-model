@@ -5,27 +5,27 @@
       "decision": "wrote_missed_post_tip_marker",
       "detail": "game already tipped at 2026-05-07T01:48:13+00:00; do not fabricate pre-tip data \u2014 write missed_snapshot_manifest.json",
       "game_id": "21707973",
-      "now_utc": "2026-05-07T03:34:14Z",
-      "snapshot_dir": "deliveries/2026-05-06/derek_game_snapshots/21707973/t_minus_25",
+      "now_utc": "2026-05-07T03:34:16Z",
+      "snapshot_dir": "deliveries/2026-05-06/derek_game_snapshots/21707973/close_lock",
       "state": "MISSED_POST_TIP",
-      "target_utc": "2026-05-07T01:23:13Z"
+      "target_utc": "2026-05-07T01:43:13Z"
     },
     {
       "decision": "skipped_invalid_no_start_time",
       "detail": "game_start_time_utc missing or unparseable",
       "game_id": "21708674",
-      "now_utc": "2026-05-07T03:34:14Z",
-      "snapshot_dir": "deliveries/2026-05-06/derek_game_snapshots/21708674/t_minus_25",
+      "now_utc": "2026-05-07T03:34:16Z",
+      "snapshot_dir": "deliveries/2026-05-06/derek_game_snapshots/21708674/close_lock",
       "state": "INVALID_NO_START",
       "target_utc": null
     }
   ],
   "delivery_date": "2026-05-06",
   "eligible_rows": 0,
-  "now_utc": "2026-05-07T03:34:14Z",
+  "now_utc": "2026-05-07T03:34:16Z",
   "schedule_rows": 2,
   "schema_version": "1.0",
-  "snapshot_type": "t_minus_25",
+  "snapshot_type": "close_lock",
   "summary": {
     "failures": 0,
     "fired": 0,

@@ -1,7 +1,6 @@
 # Derek production-live E2E — 2026-05-06
 
-- outcome: **failed**
-
-## Failed reasons
-
-- overdue_missing_snapshots=['21707973/close_lock']
+- outcome: **pending**
+- reason: schedule_present_but_no_target_overdue_yet
+- schedule_size: 2
+- now_utc: 2026-05-07T03:34:29Z

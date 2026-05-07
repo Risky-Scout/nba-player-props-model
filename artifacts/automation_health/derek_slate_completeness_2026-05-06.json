@@ -1,6 +1,8 @@
 {
   "delivery_date": "2026-05-06",
-  "derek_game_folders": {},
+  "derek_game_folders": {
+    "21707973": []
+  },
   "eligible_close_lock": [],
   "eligible_current_live": [],
   "eligible_t_minus_25": [],
@@ -21,7 +23,7 @@
   "games_with_null_start_time": [
     "21708674"
   ],
-  "now_utc": "2026-05-07T02:31:27Z",
+  "now_utc": "2026-05-07T03:34:11Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {

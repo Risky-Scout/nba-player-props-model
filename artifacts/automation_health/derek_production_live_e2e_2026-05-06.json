@@ -6,31 +6,28 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-06",
-    "now_utc": "2026-05-07T02:31:44Z",
-    "overdue_missing_snapshots": [
-      "21707973/close_lock"
-    ],
-    "overdue_unresolved": [
-      "21707973/close_lock"
-    ],
+    "now_utc": "2026-05-07T03:34:29Z",
+    "overdue_missing_snapshots": [],
+    "overdue_unresolved": [],
+    "pending_reason": "schedule_present_but_no_target_overdue_yet",
     "per_type_lines": [
       {
-        "detail": "game=21707973 target_utc=2026-05-07T01:23:13Z now=2026-05-07T02:31:44Z  missed_snapshot_manifest.json present",
+        "detail": "game=21707973 target_utc=2026-05-07T01:23:13Z now=2026-05-07T03:34:29Z  missed_snapshot_manifest.json present",
         "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21707973 target_utc=2026-05-07T01:43:13Z now=2026-05-07T02:31:44Z  game tipped before snapshot was generated; no missed_snapshot_manifest.json \u2014 Phase 13Z dispatch should write one",
-        "outcome": "MISSED_POST_TIP_UNDOCUMENTED",
+        "detail": "game=21707973 target_utc=2026-05-07T01:43:13Z now=2026-05-07T03:34:29Z  missed_snapshot_manifest.json present",
+        "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "CLOSE_LOCK"
       },
       {
-        "detail": "game=21708674 target_utc=None now=2026-05-07T02:31:44Z",
+        "detail": "game=21708674 target_utc=None now=2026-05-07T03:34:29Z",
         "outcome": "INVALID_NO_START_TIME",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21708674 target_utc=None now=2026-05-07T02:31:44Z",
+        "detail": "game=21708674 target_utc=None now=2026-05-07T03:34:29Z",
         "outcome": "INVALID_NO_START_TIME",
         "type": "CLOSE_LOCK"
       }
@@ -64,9 +61,6 @@
     ],
     "schedule_size": 2
   },
-  "failed_reasons": [
-    "overdue_missing_snapshots=['21707973/close_lock']"
-  ],
-  "outcome": "failed",
+  "outcome": "pending",
   "schema_version": "1.0"
 }

@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — May 6, 2026
 
-Generated 2026-05-07T02:31:41Z.
+Generated 2026-05-07T03:34:27Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Timberwolves @ Spurs | Pending dispatch | Missed during setup window; documented, not backfilled | Pending dispatch |
+| Timberwolves @ Spurs | Pending dispatch | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
 
@@ -27,7 +27,8 @@ _Game ID `21707973` (used in paths only). Tip time UTC: `2026-05-07T01:48:13Z`._
 
 - **T-minus-25** (Missed during setup window; documented, not backfilled):
   - [missed_snapshot_report.md](21707973/t_minus_25/missed_snapshot_report.md)
-- **Close-lock**: Pending dispatch
+- **Close-lock** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21707973/close_lock/missed_snapshot_report.md)
 
 ## PMF variance experience study
 
