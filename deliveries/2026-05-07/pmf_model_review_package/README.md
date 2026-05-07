@@ -1,21 +1,20 @@
 # PMF Model Review Package — 2026-05-07
 
-## Run status — 2026-05-07 — snapshot `morning`
+## Run status — 2026-05-07 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **330**
-- books: **0**
-- market coverage: **none**
+- books: **14**
+- market coverage: **full**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 330
-- model: `1f90885#phase10c`
+- model: `29a8d27#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `market_coverage_none` — 330 rows have no market coverage.
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 
 ---

@@ -9,8 +9,8 @@ This file will be re-written by `scripts/score_daily_pmf_delivery_after_game.py`
 - delivery_date: `2026-05-07`
 - props in delivery: **330**
 - finality_status: `provisional`
-- finality_blockers: market_coverage_none, lineup_unconfirmed
-- model_version: `1f90885#phase10c`
+- finality_blockers: lineup_unconfirmed
+- model_version: `29a8d27#phase10c`
 
 ## What this file will contain after scoring
 

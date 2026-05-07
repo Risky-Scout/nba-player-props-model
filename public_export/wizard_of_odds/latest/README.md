@@ -1,21 +1,21 @@
 # Wizard of Odds — 2026-05-07
 
-## Run status — 2026-05-07 — snapshot `morning`
+## Run status — 2026-05-07 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
-- props: **475**
+- props: **330**
 - books: **14**
 - market coverage: **full**
 - injury freshness: **fresh**
-- role provenance: `missing`: 414, `derived_from_projected_minutes`: 61
-- model: `639adbe#phase10c`
+- role provenance: `derived_from_projected_minutes`: 330
+- model: `29a8d27#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `role_bucket_missing` — role_bucket could not be derived for at least one row (mp_bucket absent in predictions).
+- `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 
 ---
 
@@ -34,15 +34,15 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['role_bucket_missing']`
+- **finality_blockers**: `['lineup_unconfirmed']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
 - **books_seen**: `14`
 - **freshness.overall_status**: `not_ready`
 - **availability_freshness_status**: `fresh`
-- **role_freshness_status (rollup)**: `{'missing': 414, 'derived_from_projected_minutes': 61}`
+- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 330}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=11205, full_pmfs_wide=475, market_comparison=2138, publishable_edges=1440
+- **row counts**: fair_odds_board=7722, full_pmfs_wide=330, market_comparison=2371, publishable_edges=1659
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
