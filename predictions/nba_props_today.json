@@ -1,7 +1,7 @@
 {
   "date": "2026-05-07",
-  "generated_at": "2026-05-07T13:32:10",
-  "count": 58,
+  "generated_at": "2026-05-07T15:29:00",
+  "count": 61,
   "games": 2,
   "props": [
     {
@@ -14,11 +14,11 @@
       "line": 3.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": -132.0,
-      "under_odds": 115.0,
-      "model_prob_over": 0.38870000000000005,
-      "model_prob_under": 0.6113,
+      "under_odds": 110.0,
+      "model_prob_over": 0.38639999999999997,
+      "model_prob_under": 0.6136,
       "ev_over": null,
-      "ev_under": 0.3144,
+      "ev_under": 0.2885,
       "projection": 3.0,
       "q_preds": {
         "0.1": 0.0,
@@ -33,8 +33,8 @@
         "0.8": 5.0,
         "0.9": 7.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5502
+      "book_key": "caesars",
+      "market_prob_over": 0.5444
     },
     {
       "player_id": 666626,
@@ -45,7 +45,7 @@
       "side": "UNDER",
       "line": 0.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -137.0,
+      "over_odds": -139.0,
       "under_odds": 104.0,
       "model_prob_over": 0.375,
       "model_prob_under": 0.625,
@@ -66,39 +66,39 @@
         "0.9": 2.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5411
+      "market_prob_over": 0.5426
     },
     {
       "player_id": 420,
       "player": "Marcus Smart",
       "game_id": 21708301,
       "game": "Los Angeles Lakers @ Oklahoma City Thunder",
-      "stat": "ast",
-      "side": "OVER",
+      "stat": "reb",
+      "side": "UNDER",
       "line": 3.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -115.0,
-      "under_odds": 100.0,
-      "model_prob_over": 0.5688,
-      "model_prob_under": 0.4312,
-      "ev_over": 0.0634,
-      "ev_under": null,
-      "projection": 4.0,
+      "over_odds": 130.0,
+      "under_odds": -138.0,
+      "model_prob_over": 0.39039999999999997,
+      "model_prob_under": 0.6096,
+      "ev_over": null,
+      "ev_under": 0.0514,
+      "projection": 3.0,
       "q_preds": {
         "0.1": 1.0,
-        "0.2": 2.0,
+        "0.2": 1.0,
         "0.25": 2.0,
-        "0.33": 3.0,
-        "0.4": 3.0,
-        "0.5": 4.0,
-        "0.6": 5.0,
-        "0.67": 5.0,
-        "0.75": 6.0,
-        "0.8": 6.0,
-        "0.9": 8.0
+        "0.33": 2.0,
+        "0.4": 2.0,
+        "0.5": 3.0,
+        "0.6": 3.0,
+        "0.67": 4.0,
+        "0.75": 4.0,
+        "0.8": 5.0,
+        "0.9": 6.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.5169
+      "book_key": "betway",
+      "market_prob_over": 0.4285
     },
     {
       "player_id": 420,
@@ -110,11 +110,11 @@
       "line": 1.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": -140.0,
-      "under_odds": 123.0,
+      "under_odds": 139.0,
       "model_prob_over": 0.40080000000000005,
       "model_prob_under": 0.5992,
       "ev_over": null,
-      "ev_under": 0.3363,
+      "ev_under": 0.4322,
       "projection": 1.0,
       "q_preds": {
         "0.1": 0.0,
@@ -130,7 +130,7 @@
         "0.9": 3.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.5654
+      "market_prob_over": 0.5823
     },
     {
       "player_id": 420,
@@ -171,14 +171,14 @@
       "game": "Los Angeles Lakers @ Oklahoma City Thunder",
       "stat": "pts",
       "side": "UNDER",
-      "line": 16.5,
+      "line": 15.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": 102.0,
-      "under_odds": -125.0,
-      "model_prob_over": 0.23770000000000002,
-      "model_prob_under": 0.7623,
+      "over_odds": -115.0,
+      "under_odds": 102.0,
+      "model_prob_over": 0.2783,
+      "model_prob_under": 0.7217,
       "ev_over": null,
-      "ev_under": 0.3722,
+      "ev_under": 0.4578,
       "projection": 11.0,
       "q_preds": {
         "0.1": 3.0,
@@ -191,10 +191,10 @@
         "0.67": 14.0,
         "0.75": 16.0,
         "0.8": 18.0,
-        "0.9": 21.0
+        "0.9": 22.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.47119999999999995
+      "book_key": "betway",
+      "market_prob_over": 0.5193
     },
     {
       "player_id": 1028037477,
@@ -205,12 +205,12 @@
       "side": "UNDER",
       "line": 3.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": 104.0,
+      "over_odds": 105.0,
       "under_odds": -110.0,
-      "model_prob_over": 0.39349999999999996,
-      "model_prob_under": 0.6065,
+      "model_prob_over": 0.3859,
+      "model_prob_under": 0.6141,
       "ev_over": null,
-      "ev_under": 0.1579,
+      "ev_under": 0.1724,
       "projection": 3.0,
       "q_preds": {
         "0.1": 1.0,
@@ -225,8 +225,8 @@
         "0.8": 5.0,
         "0.9": 6.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.48340000000000005
+      "book_key": "caesars",
+      "market_prob_over": 0.48219999999999996
     },
     {
       "player_id": 1028037477,
@@ -239,10 +239,10 @@
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": -130.0,
       "under_odds": 108.0,
-      "model_prob_over": 0.35050000000000003,
-      "model_prob_under": 0.6495,
+      "model_prob_over": 0.3427,
+      "model_prob_under": 0.6573,
       "ev_over": null,
-      "ev_under": 0.351,
+      "ev_under": 0.3672,
       "projection": 3.0,
       "q_preds": {
         "0.1": 0.0,
@@ -269,11 +269,11 @@
       "side": "OVER",
       "line": 1.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -118.0,
+      "over_odds": -114.0,
       "under_odds": 105.0,
       "model_prob_over": 0.627,
       "model_prob_under": 0.373,
-      "ev_over": 0.1583,
+      "ev_over": 0.177,
       "ev_under": null,
       "projection": 2.0,
       "q_preds": {
@@ -290,7 +290,7 @@
         "0.9": 4.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.526
+      "market_prob_over": 0.522
     },
     {
       "player_id": 201,
@@ -302,11 +302,11 @@
       "line": 3.0,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": 140.0,
-      "under_odds": 125.0,
-      "model_prob_over": 0.24609999999999999,
-      "model_prob_under": 0.7539,
+      "under_odds": 130.0,
+      "model_prob_over": 0.24939999999999996,
+      "model_prob_under": 0.7506,
       "ev_over": null,
-      "ev_under": 0.6963,
+      "ev_under": 0.7263,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -322,7 +322,71 @@
         "0.9": 5.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.4839
+      "market_prob_over": 0.48939999999999995
+    },
+    {
+      "player_id": 56677833,
+      "player": "Cason Wallace",
+      "game_id": 21708301,
+      "game": "Los Angeles Lakers @ Oklahoma City Thunder",
+      "stat": "ast",
+      "side": "UNDER",
+      "line": 2.5,
+      "commence_time": "2026-05-08T01:40:00Z",
+      "over_odds": 130.0,
+      "under_odds": -180.0,
+      "model_prob_over": 0.29079999999999995,
+      "model_prob_under": 0.7092,
+      "ev_over": null,
+      "ev_under": 0.1031,
+      "projection": 2.0,
+      "q_preds": {
+        "0.1": 0.0,
+        "0.2": 0.0,
+        "0.25": 0.0,
+        "0.33": 1.0,
+        "0.4": 1.0,
+        "0.5": 2.0,
+        "0.6": 2.0,
+        "0.67": 2.0,
+        "0.75": 3.0,
+        "0.8": 3.0,
+        "0.9": 4.0
+      },
+      "book_key": "betway",
+      "market_prob_over": 0.40349999999999997
+    },
+    {
+      "player_id": 17553995,
+      "player": "Austin Reaves",
+      "game_id": 21708301,
+      "game": "Los Angeles Lakers @ Oklahoma City Thunder",
+      "stat": "reb",
+      "side": "UNDER",
+      "line": 4.5,
+      "commence_time": "2026-05-08T01:40:00Z",
+      "over_odds": 107.0,
+      "under_odds": -120.0,
+      "model_prob_over": 0.42500000000000004,
+      "model_prob_under": 0.575,
+      "ev_over": null,
+      "ev_under": 0.0541,
+      "projection": 4.0,
+      "q_preds": {
+        "0.1": 1.0,
+        "0.2": 2.0,
+        "0.25": 2.0,
+        "0.33": 3.0,
+        "0.4": 3.0,
+        "0.5": 4.0,
+        "0.6": 5.0,
+        "0.67": 5.0,
+        "0.75": 6.0,
+        "0.8": 6.0,
+        "0.9": 8.0
+      },
+      "book_key": "draftkings",
+      "market_prob_over": 0.4697
     },
     {
       "player_id": 17553995,
@@ -334,16 +398,16 @@
       "line": 5.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": 120.0,
-      "under_odds": -140.0,
-      "model_prob_over": 0.34030000000000005,
-      "model_prob_under": 0.6597,
+      "under_odds": -139.0,
+      "model_prob_over": 0.33420000000000005,
+      "model_prob_under": 0.6658,
       "ev_over": null,
-      "ev_under": 0.1309,
+      "ev_under": 0.1447,
       "projection": 4.0,
       "q_preds": {
         "0.1": 1.0,
         "0.2": 2.0,
-        "0.25": 3.0,
+        "0.25": 2.0,
         "0.33": 3.0,
         "0.4": 4.0,
         "0.5": 4.0,
@@ -354,7 +418,7 @@
         "0.9": 8.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.43799999999999994
+      "market_prob_over": 0.4387
     },
     {
       "player_id": 17553995,
@@ -397,12 +461,12 @@
       "side": "UNDER",
       "line": 6.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -112.0,
+      "over_odds": -107.0,
       "under_odds": 100.0,
-      "model_prob_over": 0.38480000000000003,
-      "model_prob_under": 0.6152,
+      "model_prob_over": 0.3832,
+      "model_prob_under": 0.6168,
       "ev_over": null,
-      "ev_under": 0.2303,
+      "ev_under": 0.2335,
       "projection": 6.0,
       "q_preds": {
         "0.1": 2.0,
@@ -417,40 +481,8 @@
         "0.8": 8.0,
         "0.9": 10.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5138
-    },
-    {
-      "player_id": 237,
-      "player": "LeBron James",
-      "game_id": 21708301,
-      "game": "Los Angeles Lakers @ Oklahoma City Thunder",
-      "stat": "ast",
-      "side": "UNDER",
-      "line": 7.5,
-      "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -105.0,
-      "under_odds": -102.0,
-      "model_prob_over": 0.4579,
-      "model_prob_under": 0.5421,
-      "ev_over": null,
-      "ev_under": 0.0735,
-      "projection": 7.0,
-      "q_preds": {
-        "0.1": 3.0,
-        "0.2": 4.0,
-        "0.25": 5.0,
-        "0.33": 6.0,
-        "0.4": 6.0,
-        "0.5": 7.0,
-        "0.6": 8.0,
-        "0.67": 9.0,
-        "0.75": 9.0,
-        "0.8": 10.0,
-        "0.9": 12.0
-      },
-      "book_key": "betmgm",
-      "market_prob_over": 0.5036
+      "book_key": "draftkings",
+      "market_prob_over": 0.5083
     },
     {
       "player_id": 237,
@@ -462,11 +494,11 @@
       "line": 1.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": 140.0,
-      "under_odds": -125.0,
+      "under_odds": -130.0,
       "model_prob_over": 0.4051,
       "model_prob_under": 0.5949,
       "ev_over": null,
-      "ev_under": 0.0708,
+      "ev_under": 0.0525,
       "projection": 1.0,
       "q_preds": {
         "0.1": 0.0,
@@ -482,7 +514,7 @@
         "0.9": 3.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.4286
+      "market_prob_over": 0.4244
     },
     {
       "player_id": 237,
@@ -525,12 +557,12 @@
       "side": "UNDER",
       "line": 2.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -155.0,
-      "under_odds": 136.0,
-      "model_prob_over": 0.4393,
-      "model_prob_under": 0.5607,
+      "over_odds": -150.0,
+      "under_odds": 135.0,
+      "model_prob_over": 0.4354,
+      "model_prob_under": 0.5646,
       "ev_over": null,
-      "ev_under": 0.3232,
+      "ev_under": 0.3269,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -545,8 +577,8 @@
         "0.8": 4.0,
         "0.9": 5.0
       },
-      "book_key": "betmgm",
-      "market_prob_over": 0.5892
+      "book_key": "draftkings",
+      "market_prob_over": 0.5851
     },
     {
       "player_id": 175,
@@ -555,14 +587,14 @@
       "game": "Los Angeles Lakers @ Oklahoma City Thunder",
       "stat": "pts",
       "side": "UNDER",
-      "line": 28.5,
+      "line": 29.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -122.0,
-      "under_odds": -105.0,
-      "model_prob_over": 0.4073,
-      "model_prob_under": 0.5927,
+      "over_odds": -103.0,
+      "under_odds": -108.0,
+      "model_prob_over": 0.3668,
+      "model_prob_under": 0.6332,
       "ev_over": null,
-      "ev_under": 0.1572,
+      "ev_under": 0.2194,
       "projection": 26.0,
       "q_preds": {
         "0.1": 11.0,
@@ -575,10 +607,10 @@
         "0.67": 30.0,
         "0.75": 33.0,
         "0.8": 34.0,
-        "0.9": 38.0
+        "0.9": 39.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5176000000000001
+      "book_key": "betrivers",
+      "market_prob_over": 0.4942
     },
     {
       "player_id": 175,
@@ -591,18 +623,18 @@
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": 134.0,
       "under_odds": -150.0,
-      "model_prob_over": 0.347,
-      "model_prob_under": 0.653,
+      "model_prob_over": 0.34430000000000005,
+      "model_prob_under": 0.6557,
       "ev_over": null,
-      "ev_under": 0.0884,
-      "projection": 4.0,
+      "ev_under": 0.0928,
+      "projection": 3.0,
       "q_preds": {
         "0.1": 1.0,
         "0.2": 2.0,
         "0.25": 2.0,
         "0.33": 2.0,
         "0.4": 3.0,
-        "0.5": 4.0,
+        "0.5": 3.0,
         "0.6": 4.0,
         "0.67": 5.0,
         "0.75": 5.0,
@@ -621,12 +653,12 @@
       "side": "UNDER",
       "line": 7.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": 120.0,
+      "over_odds": 115.0,
       "under_odds": -132.0,
-      "model_prob_over": 0.30510000000000004,
-      "model_prob_under": 0.6949,
+      "model_prob_over": 0.3026,
+      "model_prob_under": 0.6974,
       "ev_over": null,
-      "ev_under": 0.2214,
+      "ev_under": 0.2258,
       "projection": 6.0,
       "q_preds": {
         "0.1": 2.0,
@@ -642,7 +674,7 @@
         "0.9": 10.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.44410000000000005
+      "market_prob_over": 0.4498
     },
     {
       "player_id": 175,
@@ -686,10 +718,10 @@
       "line": 3.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": -107.0,
-      "under_odds": -115.0,
-      "model_prob_over": 0.5583,
-      "model_prob_under": 0.4417,
-      "ev_over": 0.0801,
+      "under_odds": -110.0,
+      "model_prob_over": 0.5595,
+      "model_prob_under": 0.4405,
+      "ev_over": 0.0824,
       "ev_under": null,
       "projection": 4.0,
       "q_preds": {
@@ -706,7 +738,7 @@
         "0.9": 8.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.4915
+      "market_prob_over": 0.4967
     },
     {
       "player_id": 666609,
@@ -717,12 +749,12 @@
       "side": "UNDER",
       "line": 12.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -122.0,
-      "under_odds": -102.0,
-      "model_prob_over": 0.42600000000000005,
-      "model_prob_under": 0.574,
+      "over_odds": -114.0,
+      "under_odds": 105.0,
+      "model_prob_over": 0.4283,
+      "model_prob_under": 0.5717,
       "ev_over": null,
-      "ev_under": 0.1367,
+      "ev_under": 0.1719,
       "projection": 11.0,
       "q_preds": {
         "0.1": 3.0,
@@ -734,11 +766,11 @@
         "0.6": 13.0,
         "0.67": 14.0,
         "0.75": 16.0,
-        "0.8": 17.0,
+        "0.8": 18.0,
         "0.9": 21.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5211
+      "book_key": "draftkings",
+      "market_prob_over": 0.522
     },
     {
       "player_id": 38017685,
@@ -749,12 +781,12 @@
       "side": "UNDER",
       "line": 16.5,
       "commence_time": "2026-05-08T01:40:00Z",
-      "over_odds": -106.0,
-      "under_odds": -105.0,
-      "model_prob_over": 0.2854,
-      "model_prob_under": 0.7146,
+      "over_odds": -107.0,
+      "under_odds": -109.0,
+      "model_prob_over": 0.2901,
+      "model_prob_under": 0.7099,
       "ev_over": null,
-      "ev_under": 0.3951,
+      "ev_under": 0.3611,
       "projection": 13.0,
       "q_preds": {
         "0.1": 4.0,
@@ -770,7 +802,7 @@
         "0.9": 22.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5012
+      "market_prob_over": 0.4978
     },
     {
       "player_id": 22,
@@ -782,27 +814,27 @@
       "line": 8.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": -125.0,
-      "under_odds": 100.0,
-      "model_prob_over": 0.3308,
-      "model_prob_under": 0.6692,
+      "under_odds": 102.0,
+      "model_prob_over": 0.3276,
+      "model_prob_under": 0.6724,
       "ev_over": null,
-      "ev_under": 0.3384,
+      "ev_under": 0.3583,
       "projection": 7.0,
       "q_preds": {
         "0.1": 3.0,
         "0.2": 4.0,
-        "0.25": 4.0,
+        "0.25": 5.0,
         "0.33": 5.0,
         "0.4": 6.0,
         "0.5": 7.0,
         "0.6": 8.0,
-        "0.67": 9.0,
+        "0.67": 8.0,
         "0.75": 9.0,
         "0.8": 10.0,
         "0.9": 12.0
       },
       "book_key": "betway",
-      "market_prob_over": 0.5263
+      "market_prob_over": 0.5287999999999999
     },
     {
       "player_id": 22,
@@ -846,11 +878,11 @@
       "line": 0.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": -235.0,
-      "under_odds": 175.0,
+      "under_odds": 180.0,
       "model_prob_over": 0.39159999999999995,
       "model_prob_under": 0.6084,
       "ev_over": null,
-      "ev_under": 0.673,
+      "ev_under": 0.7034,
       "projection": 0.0,
       "q_preds": {
         "0.1": 0.0,
@@ -866,7 +898,7 @@
         "0.9": 2.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.6586000000000001
+      "market_prob_over": 0.6626000000000001
     },
     {
       "player_id": 254,
@@ -878,11 +910,11 @@
       "line": 1.5,
       "commence_time": "2026-05-08T01:40:00Z",
       "over_odds": 140.0,
-      "under_odds": -160.0,
+      "under_odds": -147.0,
       "model_prob_over": 0.31000000000000005,
       "model_prob_under": 0.69,
       "ev_over": null,
-      "ev_under": 0.1213,
+      "ev_under": 0.1595,
       "projection": 1.0,
       "q_preds": {
         "0.1": 0.0,
@@ -898,7 +930,7 @@
         "0.9": 2.0
       },
       "book_key": "caesars",
-      "market_prob_over": 0.40369999999999995
+      "market_prob_over": 0.41180000000000005
     },
     {
       "player_id": 192,
@@ -909,12 +941,12 @@
       "side": "UNDER",
       "line": 6.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -115.0,
-      "under_odds": 104.0,
-      "model_prob_over": 0.3083,
-      "model_prob_under": 0.6917,
+      "over_odds": -122.0,
+      "under_odds": 100.0,
+      "model_prob_over": 0.30510000000000004,
+      "model_prob_under": 0.6949,
       "ev_over": null,
-      "ev_under": 0.4111,
+      "ev_under": 0.3898,
       "projection": 5.0,
       "q_preds": {
         "0.1": 2.0,
@@ -926,11 +958,11 @@
         "0.6": 6.0,
         "0.67": 6.0,
         "0.75": 7.0,
-        "0.8": 8.0,
+        "0.8": 7.0,
         "0.9": 9.0
       },
-      "book_key": "betway",
-      "market_prob_over": 0.5218
+      "book_key": "caesars",
+      "market_prob_over": 0.5236000000000001
     },
     {
       "player_id": 192,
@@ -975,20 +1007,20 @@
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": 100.0,
       "under_odds": -112.0,
-      "model_prob_over": 0.4383,
-      "model_prob_under": 0.5617,
+      "model_prob_over": 0.4474,
+      "model_prob_under": 0.5526,
       "ev_over": null,
-      "ev_under": 0.0633,
-      "projection": 8.0,
+      "ev_under": 0.0459,
+      "projection": 9.0,
       "q_preds": {
         "0.1": 2.0,
         "0.2": 4.0,
         "0.25": 5.0,
         "0.33": 6.0,
         "0.4": 7.0,
-        "0.5": 8.0,
+        "0.5": 9.0,
         "0.6": 10.0,
-        "0.67": 11.0,
+        "0.67": 12.0,
         "0.75": 13.0,
         "0.8": 15.0,
         "0.9": 18.0
@@ -1006,7 +1038,7 @@
       "line": 0.5,
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": -155.0,
-      "under_odds": 120.0,
+      "under_odds": 125.0,
       "model_prob_over": 0.6528,
       "model_prob_under": 0.34719999999999995,
       "ev_over": 0.074,
@@ -1026,7 +1058,7 @@
         "0.9": 3.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5721
+      "market_prob_over": 0.5776
     },
     {
       "player_id": 56677826,
@@ -1037,12 +1069,12 @@
       "side": "UNDER",
       "line": 9.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -113.0,
-      "under_odds": 100.0,
-      "model_prob_over": 0.44810000000000005,
-      "model_prob_under": 0.5519,
+      "over_odds": -105.0,
+      "under_odds": 105.0,
+      "model_prob_over": 0.4544,
+      "model_prob_under": 0.5456,
       "ev_over": null,
-      "ev_under": 0.1037,
+      "ev_under": 0.1185,
       "projection": 9.0,
       "q_preds": {
         "0.1": 2.0,
@@ -1058,7 +1090,7 @@
         "0.9": 18.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.5147999999999999
+      "market_prob_over": 0.5122
     },
     {
       "player_id": 56677826,
@@ -1069,12 +1101,12 @@
       "side": "UNDER",
       "line": 3.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": 106.0,
+      "over_odds": -101.0,
       "under_odds": -114.0,
-      "model_prob_over": 0.4384,
-      "model_prob_under": 0.5616,
+      "model_prob_over": 0.43500000000000005,
+      "model_prob_under": 0.565,
       "ev_over": null,
-      "ev_under": 0.0543,
+      "ev_under": 0.0606,
       "projection": 3.0,
       "q_preds": {
         "0.1": 1.0,
@@ -1090,7 +1122,39 @@
         "0.9": 6.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.4768
+      "market_prob_over": 0.48540000000000005
+    },
+    {
+      "player_id": 56677826,
+      "player": "Ausar Thompson",
+      "game_id": 21709223,
+      "game": "Cleveland Cavaliers @ Detroit Pistons",
+      "stat": "blk",
+      "side": "UNDER",
+      "line": 1.5,
+      "commence_time": "2026-05-07T23:10:00Z",
+      "over_odds": 150.0,
+      "under_odds": -160.0,
+      "model_prob_over": 0.3499,
+      "model_prob_under": 0.6501,
+      "ev_over": null,
+      "ev_under": 0.0564,
+      "projection": 1.0,
+      "q_preds": {
+        "0.1": 0.0,
+        "0.2": 0.0,
+        "0.25": 0.0,
+        "0.33": 1.0,
+        "0.4": 1.0,
+        "0.5": 1.0,
+        "0.6": 1.0,
+        "0.67": 2.0,
+        "0.75": 2.0,
+        "0.8": 2.0,
+        "0.9": 3.0
+      },
+      "book_key": "betparx",
+      "market_prob_over": 0.39390000000000003
     },
     {
       "player_id": 322,
@@ -1099,14 +1163,14 @@
       "game": "Cleveland Cavaliers @ Detroit Pistons",
       "stat": "pts",
       "side": "UNDER",
-      "line": 24.5,
+      "line": 25.0,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -105.0,
+      "over_odds": 106.0,
       "under_odds": -102.0,
-      "model_prob_over": 0.30369999999999997,
-      "model_prob_under": 0.6963,
+      "model_prob_over": 0.2794,
+      "model_prob_under": 0.7206,
       "ev_over": null,
-      "ev_under": 0.379,
+      "ev_under": 0.4271,
       "projection": 20.0,
       "q_preds": {
         "0.1": 8.0,
@@ -1121,8 +1185,8 @@
         "0.8": 28.0,
         "0.9": 32.0
       },
-      "book_key": "betway",
-      "market_prob_over": 0.5036
+      "book_key": "betrivers",
+      "market_prob_over": 0.4901
     },
     {
       "player_id": 322,
@@ -1135,10 +1199,10 @@
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": -125.0,
       "under_odds": 120.0,
-      "model_prob_over": 0.4132,
-      "model_prob_under": 0.5868,
+      "model_prob_over": 0.405,
+      "model_prob_under": 0.595,
       "ev_over": null,
-      "ev_under": 0.291,
+      "ev_under": 0.3089,
       "projection": 3.0,
       "q_preds": {
         "0.1": 0.0,
@@ -1185,7 +1249,7 @@
         "0.8": 3.0,
         "0.9": 4.0
       },
-      "book_key": "draftkings",
+      "book_key": "betparx",
       "market_prob_over": 0.5147999999999999
     },
     {
@@ -1229,7 +1293,7 @@
       "side": "UNDER",
       "line": 0.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": 128.0,
+      "over_odds": 130.0,
       "under_odds": -170.0,
       "model_prob_over": 0.3062,
       "model_prob_under": 0.6938,
@@ -1250,7 +1314,39 @@
         "0.9": 2.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.41059999999999997
+      "market_prob_over": 0.4085
+    },
+    {
+      "player_id": 3547267,
+      "player": "Isaiah Stewart",
+      "game_id": 21709223,
+      "game": "Cleveland Cavaliers @ Detroit Pistons",
+      "stat": "reb",
+      "side": "UNDER",
+      "line": 2.5,
+      "commence_time": "2026-05-07T23:10:00Z",
+      "over_odds": -125.0,
+      "under_odds": 107.0,
+      "model_prob_over": 0.4689,
+      "model_prob_under": 0.5311,
+      "ev_over": null,
+      "ev_under": 0.0994,
+      "projection": 2.0,
+      "q_preds": {
+        "0.1": 0.0,
+        "0.2": 1.0,
+        "0.25": 1.0,
+        "0.33": 1.0,
+        "0.4": 2.0,
+        "0.5": 2.0,
+        "0.6": 3.0,
+        "0.67": 3.0,
+        "0.75": 4.0,
+        "0.8": 5.0,
+        "0.9": 6.0
+      },
+      "book_key": "betmgm",
+      "market_prob_over": 0.5348999999999999
     },
     {
       "player_id": 200,
@@ -1261,12 +1357,12 @@
       "side": "UNDER",
       "line": 6.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": 100.0,
+      "over_odds": -104.0,
       "under_odds": -118.0,
-      "model_prob_over": 0.4183,
-      "model_prob_under": 0.5817,
+      "model_prob_over": 0.41579999999999995,
+      "model_prob_under": 0.5842,
       "ev_over": null,
-      "ev_under": 0.0747,
+      "ev_under": 0.0792,
       "projection": 6.0,
       "q_preds": {
         "0.1": 2.0,
@@ -1282,7 +1378,7 @@
         "0.9": 10.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.48019999999999996
+      "market_prob_over": 0.485
     },
     {
       "player_id": 17896075,
@@ -1293,16 +1389,16 @@
       "side": "UNDER",
       "line": 27.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -112.0,
-      "under_odds": -110.0,
-      "model_prob_over": 0.41800000000000004,
-      "model_prob_under": 0.582,
+      "over_odds": 100.0,
+      "under_odds": -112.0,
+      "model_prob_over": 0.4222,
+      "model_prob_under": 0.5778,
       "ev_over": null,
-      "ev_under": 0.1112,
+      "ev_under": 0.0938,
       "projection": 26.0,
       "q_preds": {
         "0.1": 12.0,
-        "0.2": 17.0,
+        "0.2": 18.0,
         "0.25": 19.0,
         "0.33": 22.0,
         "0.4": 23.0,
@@ -1311,10 +1407,10 @@
         "0.67": 30.0,
         "0.75": 32.0,
         "0.8": 33.0,
-        "0.9": 37.0
+        "0.9": 38.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5021
+      "book_key": "betway",
+      "market_prob_over": 0.48619999999999997
     },
     {
       "player_id": 17896075,
@@ -1325,12 +1421,12 @@
       "side": "UNDER",
       "line": 9.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -125.0,
-      "under_odds": 112.0,
-      "model_prob_over": 0.3205,
-      "model_prob_under": 0.6795,
+      "over_odds": -118.0,
+      "under_odds": 100.0,
+      "model_prob_over": 0.3153,
+      "model_prob_under": 0.6847,
       "ev_over": null,
-      "ev_under": 0.4405,
+      "ev_under": 0.3694,
       "projection": 8.0,
       "q_preds": {
         "0.1": 3.0,
@@ -1345,8 +1441,8 @@
         "0.8": 11.0,
         "0.9": 12.0
       },
-      "book_key": "betmgm",
-      "market_prob_over": 0.5408
+      "book_key": "fanduel",
+      "market_prob_over": 0.5198
     },
     {
       "player_id": 17896075,
@@ -1390,11 +1486,11 @@
       "line": 0.5,
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": -148.0,
-      "under_odds": 112.0,
+      "under_odds": 110.0,
       "model_prob_over": 0.39,
       "model_prob_under": 0.61,
       "ev_over": null,
-      "ev_under": 0.2931,
+      "ev_under": 0.2809,
       "projection": 0.0,
       "q_preds": {
         "0.1": 0.0,
@@ -1410,7 +1506,7 @@
         "0.9": 2.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5585
+      "market_prob_over": 0.5562
     },
     {
       "player_id": 17896076,
@@ -1422,11 +1518,11 @@
       "line": 15.5,
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": -103.0,
-      "under_odds": -115.0,
-      "model_prob_over": 0.41369999999999996,
-      "model_prob_under": 0.5863,
+      "under_odds": -120.0,
+      "model_prob_over": 0.41790000000000005,
+      "model_prob_under": 0.5821,
       "ev_over": null,
-      "ev_under": 0.0961,
+      "ev_under": 0.0671,
       "projection": 14.0,
       "q_preds": {
         "0.1": 5.0,
@@ -1442,7 +1538,7 @@
         "0.9": 24.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.4868
+      "market_prob_over": 0.4819
     },
     {
       "player_id": 17896076,
@@ -1455,10 +1551,10 @@
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": 100.0,
       "under_odds": -110.0,
-      "model_prob_over": 0.3661,
-      "model_prob_under": 0.6339,
+      "model_prob_over": 0.3691,
+      "model_prob_under": 0.6309,
       "ev_over": null,
-      "ev_under": 0.2102,
+      "ev_under": 0.2044,
       "projection": 7.0,
       "q_preds": {
         "0.1": 3.0,
@@ -1518,59 +1614,27 @@
       "line": 11.5,
       "commence_time": "2026-05-07T23:10:00Z",
       "over_odds": -106.0,
-      "under_odds": -110.0,
-      "model_prob_over": 0.4357,
-      "model_prob_under": 0.5643,
+      "under_odds": -105.0,
+      "model_prob_over": 0.43820000000000003,
+      "model_prob_under": 0.5618,
       "ev_over": null,
-      "ev_under": 0.0772,
+      "ev_under": 0.0969,
       "projection": 10.0,
       "q_preds": {
         "0.1": 3.0,
         "0.2": 5.0,
         "0.25": 6.0,
-        "0.33": 7.0,
+        "0.33": 8.0,
         "0.4": 9.0,
         "0.5": 10.0,
         "0.6": 12.0,
-        "0.67": 13.0,
+        "0.67": 14.0,
         "0.75": 15.0,
         "0.8": 17.0,
         "0.9": 20.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.49550000000000005
-    },
-    {
-      "player_id": 397,
-      "player": "Duncan Robinson",
-      "game_id": 21709223,
-      "game": "Cleveland Cavaliers @ Detroit Pistons",
-      "stat": "reb",
-      "side": "UNDER",
-      "line": 2.5,
-      "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": 148.0,
-      "under_odds": -130.0,
-      "model_prob_over": 0.42000000000000004,
-      "model_prob_under": 0.58,
-      "ev_over": null,
-      "ev_under": 0.0262,
-      "projection": 2.0,
-      "q_preds": {
-        "0.1": 0.0,
-        "0.2": 1.0,
-        "0.25": 1.0,
-        "0.33": 1.0,
-        "0.4": 2.0,
-        "0.5": 2.0,
-        "0.6": 3.0,
-        "0.67": 3.0,
-        "0.75": 4.0,
-        "0.8": 4.0,
-        "0.9": 5.0
-      },
-      "book_key": "fanduel",
-      "market_prob_over": 0.4164
+      "market_prob_over": 0.5012
     },
     {
       "player_id": 397,
@@ -1581,12 +1645,12 @@
       "side": "UNDER",
       "line": 2.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -130.0,
-      "under_odds": 120.0,
+      "over_odds": -137.0,
+      "under_odds": 125.0,
       "model_prob_over": 0.4075,
       "model_prob_under": 0.5925,
       "ev_over": null,
-      "ev_under": 0.3035,
+      "ev_under": 0.3332,
       "projection": 2.0,
       "q_preds": {
         "0.1": 1.0,
@@ -1601,8 +1665,8 @@
         "0.8": 3.0,
         "0.9": 4.0
       },
-      "book_key": "betway",
-      "market_prob_over": 0.5543
+      "book_key": "caesars",
+      "market_prob_over": 0.5653
     },
     {
       "player_id": 397,
@@ -1709,12 +1773,12 @@
       "side": "UNDER",
       "line": 9.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -105.0,
-      "under_odds": -105.0,
-      "model_prob_over": 0.42300000000000004,
-      "model_prob_under": 0.577,
+      "over_odds": 100.0,
+      "under_odds": -106.0,
+      "model_prob_over": 0.4283,
+      "model_prob_under": 0.5717,
       "ev_over": null,
-      "ev_under": 0.1265,
+      "ev_under": 0.1111,
       "projection": 8.0,
       "q_preds": {
         "0.1": 2.0,
@@ -1729,8 +1793,8 @@
         "0.8": 13.0,
         "0.9": 16.0
       },
-      "book_key": "betmgm",
-      "market_prob_over": 0.5
+      "book_key": "betway",
+      "market_prob_over": 0.4928
     },
     {
       "player_id": 666908,
@@ -1741,7 +1805,7 @@
       "side": "UNDER",
       "line": 2.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": 138.0,
+      "over_odds": 140.0,
       "under_odds": -155.0,
       "model_prob_over": 0.25649999999999995,
       "model_prob_under": 0.7435,
@@ -1761,8 +1825,8 @@
         "0.8": 3.0,
         "0.9": 3.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.40869999999999995
+      "book_key": "betway",
+      "market_prob_over": 0.40669999999999995
     },
     {
       "player_id": 666908,
@@ -1773,12 +1837,12 @@
       "side": "UNDER",
       "line": 0.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -114.0,
-      "under_odds": -115.0,
+      "over_odds": -113.0,
+      "under_odds": -118.0,
       "model_prob_over": 0.35440000000000005,
       "model_prob_under": 0.6456,
       "ev_over": null,
-      "ev_under": 0.207,
+      "ev_under": 0.1927,
       "projection": 0.0,
       "q_preds": {
         "0.1": 0.0,
@@ -1794,7 +1858,39 @@
         "0.9": 2.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.499
+      "market_prob_over": 0.495
+    },
+    {
+      "player_id": 38017694,
+      "player": "Jalen Duren",
+      "game_id": 21709223,
+      "game": "Cleveland Cavaliers @ Detroit Pistons",
+      "stat": "pts",
+      "side": "UNDER",
+      "line": 15.5,
+      "commence_time": "2026-05-07T23:10:00Z",
+      "over_odds": 104.0,
+      "under_odds": -111.0,
+      "model_prob_over": 0.43079999999999996,
+      "model_prob_under": 0.5692,
+      "ev_over": null,
+      "ev_under": 0.082,
+      "projection": 14.0,
+      "q_preds": {
+        "0.1": 4.0,
+        "0.2": 8.0,
+        "0.25": 9.0,
+        "0.33": 11.0,
+        "0.4": 12.0,
+        "0.5": 14.0,
+        "0.6": 16.0,
+        "0.67": 17.0,
+        "0.75": 19.0,
+        "0.8": 20.0,
+        "0.9": 24.0
+      },
+      "book_key": "betparx",
+      "market_prob_over": 0.48240000000000005
     },
     {
       "player_id": 38017694,
@@ -1805,12 +1901,12 @@
       "side": "UNDER",
       "line": 11.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -103.0,
-      "under_odds": -104.0,
-      "model_prob_over": 0.2953,
-      "model_prob_under": 0.7047,
+      "over_odds": 100.0,
+      "under_odds": -110.0,
+      "model_prob_over": 0.2975,
+      "model_prob_under": 0.7025,
       "ev_over": null,
-      "ev_under": 0.3823,
+      "ev_under": 0.3411,
       "projection": 9.0,
       "q_preds": {
         "0.1": 4.0,
@@ -1825,8 +1921,8 @@
         "0.8": 13.0,
         "0.9": 15.0
       },
-      "book_key": "betrivers",
-      "market_prob_over": 0.4988
+      "book_key": "betway",
+      "market_prob_over": 0.48839999999999995
     },
     {
       "player_id": 38017694,
@@ -1837,11 +1933,11 @@
       "side": "OVER",
       "line": 0.5,
       "commence_time": "2026-05-07T23:10:00Z",
-      "over_odds": -137.0,
-      "under_odds": 102.0,
+      "over_odds": -136.0,
+      "under_odds": 105.0,
       "model_prob_over": 0.65,
       "model_prob_under": 0.35,
-      "ev_over": 0.1245,
+      "ev_over": 0.128,
       "ev_under": null,
       "projection": 1.0,
       "q_preds": {
@@ -1858,7 +1954,7 @@
         "0.9": 2.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5387
+      "market_prob_over": 0.5416
     }
   ],
   "upstream_statuses": {
