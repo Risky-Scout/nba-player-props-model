@@ -7,9 +7,15 @@
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "delivery_date": "2026-05-06",
   "finality_blocker_codes": [
+    "market_coverage_none",
     "role_bucket_missing"
   ],
   "finality_blockers": [
+    {
+      "code": "market_coverage_none",
+      "detail": "No book offered any line; no market_comparison rows.",
+      "required_to_resolve": "ODDS_API_KEY (with quota) and a fresh us+us2 fetch"
+    },
     {
       "code": "role_bucket_missing",
       "detail": "role_bucket could not be derived for at least one row (mp_bucket absent in predictions).",
@@ -19,26 +25,13 @@
   "finality_status": "provisional",
   "freshness_manifest": {
     "availability_freshness_status": "fresh",
-    "books_seen": [
-      "betmgm",
-      "betonlineag",
-      "betparx",
-      "betrivers",
-      "bovada",
-      "draftkings",
-      "espnbet",
-      "fanatics",
-      "fanduel",
-      "fliff",
-      "hardrockbet_fl",
-      "williamhill_us"
-    ],
-    "built_at_utc": "2026-05-06T23:34:37Z",
+    "books_seen": [],
+    "built_at_utc": "2026-05-07T00:49:36Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "not_ready",
     "path": "data/freshness_manifest/2026-05-06.json",
-    "predictions_mtime_utc": "2026-05-06T23:34:17.663418Z",
+    "predictions_mtime_utc": "2026-05-07T00:48:56.463231Z",
     "regions_requested": [
       "us",
       "us2"
@@ -49,14 +42,14 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-06T23:35:11+00:00",
+  "metadata_stamped_at_utc": "2026-05-07T00:50:05+00:00",
   "model_source": "champion_pointer",
-  "model_version": "ddd86a7#phase10c",
+  "model_version": "18b0a11#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-06T23:35:11+00:00",
+  "output_generated_at_utc": "2026-05-07T00:50:05+00:00",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
-  "pipeline_run_id": "09e7e52c-aca7-4158-8de6-a981ee8b71d2",
+  "pipeline_run_id": "26f5d323-6a29-48b6-9b99-34bcb71e4bd4",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "quality_rollup": {
     "calibration_confidence": {
@@ -72,7 +65,7 @@
       "unknown": 29
     },
     "market_coverage_status": {
-      "full": 111
+      "none": 111
     },
     "pmf_sum_error_max": 2.220446049250313e-16,
     "pmf_valid_ok_pct": 1.0,
@@ -84,49 +77,36 @@
   "row_counts": {
     "fair_odds_board": 2364,
     "full_pmfs_wide": 111,
-    "market_comparison": 762,
-    "publishable_edges": 709
+    "market_comparison": 0,
+    "publishable_edges": 0
   },
-  "snapshot_time_utc": "2026-05-06T23:35:06Z",
+  "snapshot_time_utc": "2026-05-07T00:50:01Z",
   "snapshot_type": "pre_close",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-06T23:33:25.223588Z",
+      "mtime_utc": "2026-05-07T00:48:56.161225Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-06T23:33:25.476588Z",
+      "mtime_utc": "2026-05-07T00:48:56.429230Z",
       "path": "deliveries/2026-05-06/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
       "sha256": "109e073f8dfe5bf4072d98011e7ece0f10297c8c120fad72deb933fd60776345"
     },
     "odds_snapshot": {
-      "books_seen": [
-        "betmgm",
-        "betonlineag",
-        "betparx",
-        "betrivers",
-        "bovada",
-        "draftkings",
-        "espnbet",
-        "fanatics",
-        "fanduel",
-        "fliff",
-        "hardrockbet_fl",
-        "williamhill_us"
-      ],
-      "coverage_status": "full",
-      "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-06T23:34:37.387362Z",
-      "path": "data/odds_api/processed/2026-05-06/odds_pairs_live_slate_close_or_lock_2026-05-06T233432Z.parquet"
+      "books_seen": [],
+      "coverage_status": "none",
+      "fetch_status": "skipped:no_disk_snapshot",
+      "mtime_utc": null,
+      "path": null
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-06T23:34:17.663418Z",
+      "mtime_utc": "2026-05-07T00:48:56.463231Z",
       "path": "predictions/all_props_2026-05-06.parquet"
     }
   },
-  "stamp_code_commit": "ddd86a7f2f299873db2f70f22486d1d8e6702be2",
+  "stamp_code_commit": "18b0a110d0a09a6885b9c0ebb40d3059a2a7247c",
   "target_stats": {
     "expected": [
       "pts",

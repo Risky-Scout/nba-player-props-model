@@ -5,16 +5,17 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **111**
-- books: **12**
-- market coverage: **full**
+- books: **0**
+- market coverage: **none**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 82, `missing`: 29
-- model: `ddd86a7#phase10c`
+- model: `18b0a11#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
+- `market_coverage_none` — No book offered any line; no market_comparison rows.
 - `role_bucket_missing` — role_bucket could not be derived for at least one row (mp_bucket absent in predictions).
 
 ---

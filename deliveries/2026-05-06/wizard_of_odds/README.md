@@ -5,16 +5,17 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **111**
-- books: **12**
-- market coverage: **full**
+- books: **0**
+- market coverage: **none**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 82, `missing`: 29
-- model: `ddd86a7#phase10c`
+- model: `18b0a11#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
+- `market_coverage_none` — No book offered any line; no market_comparison rows.
 - `role_bucket_missing` — role_bucket could not be derived for at least one row (mp_bucket absent in predictions).
 
 ---
@@ -34,15 +35,15 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['role_bucket_missing']`
-- **market_coverage_status**: `full`
-- **odds.fetch_status**: `consumed_from_disk`
-- **books_seen**: `12`
+- **finality_blockers**: `['market_coverage_none', 'role_bucket_missing']`
+- **market_coverage_status**: `none`
+- **odds.fetch_status**: `skipped:no_disk_snapshot`
+- **books_seen**: `0`
 - **freshness.overall_status**: `not_ready`
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 82, 'missing': 29}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=2364, full_pmfs_wide=111, market_comparison=762, publishable_edges=709
+- **row counts**: fair_odds_board=2364, full_pmfs_wide=111, market_comparison=0, publishable_edges=0
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
