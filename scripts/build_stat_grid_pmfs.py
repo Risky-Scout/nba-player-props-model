@@ -306,6 +306,12 @@ def _build_pipeline_state(target_date: str) -> dict:
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
     nba_report = get_nba_injury_report()
+    injury_report_fetched_at_utc = _now_utc_iso()
+    injury_freshness_status = "fresh" if nba_report else ("fresh" if injury_raw else "unknown")
+    injury_context_source = (
+        "bdl_plus_nba_official" if nba_report
+        else ("bdl_injuries_only" if injury_raw else "none")
+    )
     injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
     inactive_ids = {
         int(pid) for pid, info in injury_map.items()
@@ -341,6 +347,9 @@ def _build_pipeline_state(target_date: str) -> dict:
         "inactive_player_ids": inactive_ids,
         "availability_lookup": availability_lookup,
         "availability_builder": availability_builder,
+        "injury_freshness_status": injury_freshness_status,
+        "injury_context_source": injury_context_source,
+        "injury_report_fetched_at_utc": injury_report_fetched_at_utc,
     }
 
 
@@ -470,6 +479,9 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
             "minutes_mean": minutes_mean,
             "minutes_q50": minutes_q50,
             "p_inactive_used": p_inactive_used,
+            "injury_freshness_status": state.get("injury_freshness_status"),
+            "injury_context_source": state.get("injury_context_source"),
+            "injury_report_fetched_at_utc": state.get("injury_report_fetched_at_utc"),
             "stat": stat,
             "side": "MODEL_ONLY",
             "line": None,

@@ -393,6 +393,18 @@ def _stat_grid_rows(date: str) -> list[dict]:
                             if pd.notna(r.get("minutes_q50")) else None),
             "p_inactive_used": (r.get("p_inactive_used")
                                 if pd.notna(r.get("p_inactive_used")) else None),
+            "injury_freshness_status": (
+                r.get("injury_freshness_status")
+                if pd.notna(r.get("injury_freshness_status")) else None
+            ),
+            "injury_context_source": (
+                r.get("injury_context_source")
+                if pd.notna(r.get("injury_context_source")) else None
+            ),
+            "injury_report_fetched_at_utc": (
+                r.get("injury_report_fetched_at_utc")
+                if pd.notna(r.get("injury_report_fetched_at_utc")) else None
+            ),
             "support_min": 0,
             "support_max": (int(r["support_max"])
                               if pd.notna(r.get("support_max")) else None),
@@ -547,6 +559,13 @@ def _list_odds_pair_files(date: str) -> list[Path]:
     if not base.exists():
         return []
     return sorted(base.glob("odds_pairs_*.parquet"))
+
+
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT.resolve()))
+    except Exception:
+        return str(path)
 
 
 def _find_freshness_manifest(date: str) -> Path | None:
@@ -776,7 +795,10 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "calibration_confidence": _calibration_confidence(role),
             "market_coverage_status": "none",
             "tov_status": TOV_STATUS_CURRENT,
-            "injury_freshness_status": inj_fresh,
+            "injury_freshness_status": (
+                r.get("injury_freshness_status")
+                if pd.notna(r.get("injury_freshness_status")) else inj_fresh
+            ),
             "lineup_freshness_status": _lineup_freshness_for_row(r),
             "role_freshness_status": _role_freshness_for_row(r),
             "_pmf_arr": pmf,
@@ -1561,7 +1583,7 @@ def main() -> int:
         odds_path = odds_pair_files[-1] if odds_pair_files else None
     if odds_pair_files:
         for fp in odds_pair_files:
-            print(f"  odds_snapshot: {fp.relative_to(REPO_ROOT)}")
+            print(f"  odds_snapshot: {_display_path(fp)}")
     else:
         print("  odds_snapshot: <none>")
     odds = load_odds_snapshot(odds_path, all_paths=odds_pair_files)
@@ -1665,62 +1687,75 @@ def main() -> int:
     # Finality status — does this delivery have everything it needs to ship?
     # Each blocker is a stable string code with an explicit meaning.
     finality_blockers: list[dict] = []
-    if coverage == "none":
+
+    market_counts = quality_rollup.get("market_coverage_status", {})
+    market_none = int(market_counts.get("none", 0) or market_counts.get("None", 0) or 0)
+    if market_none:
         finality_blockers.append({
             "code": "market_coverage_none",
-            "detail": "No book offered any line; no market_comparison rows.",
-            "required_to_resolve": ("ODDS_API_KEY (with quota) and a "
-                                     "fresh us+us2 fetch"),
+            "detail": f"{market_none} rows have no market coverage.",
+            "required_to_resolve": "Attach a valid odds snapshot for this delivery date.",
         })
-    if _injury_freshness(injury_path) == "very_stale":
+
+    injury_counts = quality_rollup.get("injury_freshness_status", {})
+    injury_has_fresh = any(
+        str(k).lower() == "fresh" and int(v) > 0
+        for k, v in injury_counts.items()
+    )
+    if not injury_has_fresh:
         finality_blockers.append({
             "code": "injury_very_stale",
-            "detail": ("data/player_availability_asof.parquet age > 12 hr; "
-                       "predictions were produced against stale availability."),
-            "required_to_resolve": ("BDL_API_KEY for live BDL injury fetch "
-                                     "OR refreshed nba_injury_reports.parquet, "
-                                     "then re-run scripts/predict.py"),
+            "detail": (
+                "No row-level fresh injury context was present in the PMF "
+                "delivery quality rollup."
+            ),
+            "required_to_resolve": (
+                "Regenerate stat-grid PMFs in the Python 3.11 environment "
+                "with nbainjuries available, or provide a fresh injury context."
+            ),
         })
-    role_missing = (("missing" in
-                       (canonical.get("role_freshness_status",
-                                        pd.Series(dtype=str))
-                        .astype(str).unique().tolist()))
-                     if "role_freshness_status" in canonical.columns
-                     else True)
-    role_only_projected = (
-        not role_missing and
-        "confirmed_lineup" not in
-        (canonical["role_freshness_status"].astype(str).unique().tolist())
+
+    if missing_stats or extra_stats:
+        finality_blockers.append({
+            "code": "target_stats_mismatch",
+            "detail": (
+                f"missing={missing_stats}; "
+                f"extra_relative_to_supported={extra_stats}"
+            ),
+            "required_to_resolve": (
+                "Regenerate production PMFs so delivery stats are exactly "
+                "pts/reb/ast/fg3m/tov."
+            ),
+        })
+
+    lineup_counts = quality_rollup.get("lineup_freshness_status", {})
+    lineup_has_confirmed = any(
+        str(k).lower() == "confirmed" and int(v) > 0
+        for k, v in lineup_counts.items()
     )
+    if snapshot_type != "after_game" and not lineup_has_confirmed:
+        finality_blockers.append({
+            "code": "lineup_unconfirmed",
+            "detail": (
+                "No confirmed-lineup rows were present. This is acceptable "
+                "for morning/provisional outputs but not final lock outputs."
+            ),
+            "required_to_resolve": (
+                "Regenerate near lock after official lineups are available."
+            ),
+        })
+
+    role_counts = quality_rollup.get("role_freshness_status", {})
+    role_missing = int(role_counts.get("missing", 0) or role_counts.get("None", 0) or 0)
     if role_missing:
         finality_blockers.append({
             "code": "role_bucket_missing",
-            "detail": ("role_bucket could not be derived for at least one "
-                        "row (mp_bucket absent in predictions)."),
-            "required_to_resolve": ("predict.py must emit mp_bucket for "
-                                     "every (player, stat) row"),
+            "detail": f"{role_missing} rows have missing role_bucket.",
+            "required_to_resolve": (
+                "Regenerate stat-grid PMFs with role/minutes metadata."
+            ),
         })
-    elif role_only_projected:
-        finality_blockers.append({
-            "code": "lineup_unconfirmed",
-            "detail": ("role_bucket derived from projected minutes "
-                        "(mp_bucket); no confirmed-lineup source consumed."),
-            "required_to_resolve": ("confirmed lineups source "
-                                     "(BDL get_lineups or NBA injury report "
-                                     "starter flag) wired into predict.py"),
-        })
-    if missing_stats:
-        finality_blockers.append({
-            "code": f"missing_stats:{','.join(missing_stats)}",
-            "detail": (f"Predictions did not emit rows for {missing_stats}. "
-                        f"predict.py is market-driven; with no offered "
-                        f"market line, no row is generated for those stats."),
-            "required_to_resolve": ("Phase 11C player-stat-grid prediction "
-                                     "refactor: emit one model-only PMF row "
-                                     "per (player, eligible_stat) regardless "
-                                     "of whether a market line is offered. "
-                                     "See docs/phase11_tov_structural_refit_plan.md."),
-        })
+
     finality_status = "final" if not finality_blockers else "provisional"
     finality_blocker_codes = [b["code"] for b in finality_blockers]
 
