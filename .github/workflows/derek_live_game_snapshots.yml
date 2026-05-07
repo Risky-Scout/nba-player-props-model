@@ -17,43 +17,29 @@ name: Derek — Per-Game Live PMF Snapshots (T-25 / Close-Lock)
 
 on:
   schedule:
-    # Phase 13T — expanded UTC window so playoff matinee tips (~16:00
-    # UTC for early afternoon games on weekends) and late-night games
-    # (~04:00 UTC for West Coast tips) all fall inside dispatch
-    # coverage. Each cron firing checks the schedule and ONLY invokes
-    # the runner for games whose T-25 / close-lock target is actually
-    # due — no-op pending state is honest and silent at the workflow
-    # level.
     - cron: '0,10,20,30,40,50 16,17,18,19,20,21,22,23,0,1,2,3,4 * * *'
   workflow_dispatch:
-    # Manual dispatch trigger reindexed for corrected PMF workflow.
     inputs:
       delivery_date:
         description: "YYYY-MM-DD; blank = today UTC"
         required: false
         default: ""
       snapshot_type:
-        description: "Which snapshot to dispatch (both = t25 + close_lock; all = current_live + t25 + close_lock)"
+        description: "Snapshot type: current_live, t_minus_25, close_lock, both, or all"
         required: false
         default: "all"
-        type: choice
-        options: ["current_live", "t_minus_25", "close_lock", "both", "all"]
       allow_backfill_test:
-        description: "Skip wall-clock window check (for manual testing)"
+        description: "Skip wall-clock window check for manual testing"
         required: false
         default: "false"
-        type: choice
-        options: ["false", "true"]
       max_games:
-        description: "Limit games dispatched (testing)"
+        description: "Limit games dispatched for testing"
         required: false
         default: ""
       force:
-        description: "Overwrite existing snapshot folders (use to re-emit corrected manifests)"
+        description: "Overwrite existing snapshot folders"
         required: false
         default: "false"
-        type: choice
-        options: ["false", "true"]
 
 env:
   PYTHON_VERSION: "3.11"
