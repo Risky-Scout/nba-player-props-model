@@ -364,6 +364,10 @@ def _write_export(date: str, payload_aff: dict, payload_pmf: dict) -> None:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--date", required=True)
+    ap.add_argument("--allow-empty-affiliate", action="store_true",
+                    help=("allow affiliate_dashboard.json with zero rows; "
+                          "default refuses because daily WoO affiliate output "
+                          "must have market rows"))
     args = ap.parse_args(argv)
     date = args.date
 
@@ -392,6 +396,13 @@ def main(argv: list[str] | None = None) -> int:
 
     aff_rows = _build_affiliate_rows_from_delivery(market_df)
     pmf_players = _build_research_players_from_delivery(wide_df)
+
+    if not aff_rows and not args.allow_empty_affiliate:
+        raise SystemExit(
+            "FATAL: affiliate_dashboard would have zero rows. "
+            "Attach a valid odds snapshot and rebuild the dated WoO delivery, "
+            "or pass --allow-empty-affiliate only for explicit PMF-only emergency publication."
+        )
 
     payload_aff = {
         "schema_version": "1.0",
