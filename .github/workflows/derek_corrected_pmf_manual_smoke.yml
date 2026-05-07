@@ -1,0 +1,47 @@
+name: Derek Corrected PMF Manual Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      delivery_date:
+        description: "Delivery date YYYY-MM-DD"
+        required: true
+        default: "2026-05-07"
+      snapshot_type:
+        description: "Snapshot type"
+        required: false
+        default: "close_lock"
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  corrected_pmf_derek_smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install python deps
+        run: pip install -r requirements.txt
+
+      - name: Build Derek snapshots from corrected PMF delivery
+        run: |
+          python scripts/build_derek_game_snapshots_from_delivery.py \
+            --date "${{ github.event.inputs.delivery_date }}" \
+            --snapshot-type "${{ github.event.inputs.snapshot_type }}" \
+            --force
+
+      - name: Verify corrected PMF delivery contract
+        run: |
+          python scripts/verify_corrected_pmf_delivery.py \
+            --date "${{ github.event.inputs.delivery_date }}"
