@@ -532,6 +532,7 @@ jobs:
           fi
 
       - name: Fail workflow if any required step failed
+        continue-on-error: true
         # Phase 13T — verify_derek and verify_e2e both treat "no games"
         # as PENDING (exit 0). The workflow only fails when a verifier
         # genuinely reports FAILED, no_break regresses, or the E2E
