@@ -72,7 +72,8 @@ STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
 DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
-WOO_EXPORT = REPO_ROOT / "scripts" / "build_wizard_of_odds_public_export.py"
+WOO_EXPORT = REPO_ROOT / "scripts" / "publish_woo_public_export.py"
+WOO_DASHBOARD = REPO_ROOT / "scripts" / "build_woo_dashboard.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -196,39 +197,42 @@ def _woo_export(
     finality_status_override: str | None,
     only_date: str | None = None,
 ) -> int:
-    """Phase 12D-amend: build the public Wizard of Odds export folder.
+    """Build the protected customer-facing Wizard of Odds public export.
 
-    The public export is the monetization feed; it runs earlier in the
-    day than Derek's evaluation feed. `--snapshot-type-label` and
-    `--finality-status-override` are used by the WoO morning/afternoon
-    runs to label the public output as PROVISIONAL_EARLY_MARKET. For
-    derek_near_lineup / close_lock the wrapper omits the overrides so
-    the public export inherits the canonical run_manifest values.
-
-    The FTP deploy is triggered separately via the
-    wizard_of_odds_ftp_deploy.yml workflow_run hook; the wrapper does
-    not deploy directly so credentials remain isolated to that job."""
+    This intentionally uses publish_woo_public_export.py, not the legacy
+    build_wizard_of_odds_public_export.py. The protected publisher sources
+    from deliveries/{date}/wizard_of_odds/full_pmfs_wide.parquet, rejects
+    stale broad PMF packages, and refuses empty affiliate exports by default.
+    """
     if not WOO_EXPORT.exists():
         return 0
-    cmd = [PYTHON, str(WOO_EXPORT)]
-    if only_date:
-        cmd.extend(["--date", only_date])
-    else:
-        # Phase 12E — be explicit so the intent ("rebuild every available
-        # date") is visible in CI logs even though it's also the default.
-        cmd.append("--all-available")
-    if snapshot_type_label:
-        cmd.extend(["--snapshot-type-label", snapshot_type_label])
-    if finality_status_override:
-        cmd.extend(["--finality-status-override", finality_status_override])
-    label_bits = [snapshot_type_label or "default"]
-    if finality_status_override:
-        label_bits.append(finality_status_override)
-    return _run(
-        cmd,
-        allow_fail=True,
-        label=f"woo public export ({'/'.join(label_bits)})",
+
+    if not only_date:
+        sys.exit(
+            "FATAL: protected WoO publisher requires --date; refusing all-date "
+            "customer export from run_daily_delivery_pipeline.py"
+        )
+
+    if snapshot_type_label or finality_status_override:
+        print(
+            "  woo public export: legacy snapshot/finality labels are ignored; "
+            "protected JSON inherits the dated delivery manifest."
+        )
+
+    rc = _run(
+        [PYTHON, str(WOO_EXPORT), "--date", only_date],
+        allow_fail=False,
+        label=f"publish woo public JSON {only_date}",
     )
+
+    if WOO_DASHBOARD.exists():
+        _run(
+            [PYTHON, str(WOO_DASHBOARD), "--date", only_date],
+            allow_fail=False,
+            label=f"build woo dashboard {only_date}",
+        )
+
+    return rc
 
 
 def _load_tipoffs_utc(date: str) -> list[datetime]:
