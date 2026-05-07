@@ -416,6 +416,12 @@ jobs:
           # a positive record on origin/main, commit ONLY that file, and
           # exit 0.
           SNAPSHOT_DIR="deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots"
+          # Remove stale sentinel if real game subdirs now exist
+          if [ -d "$SNAPSHOT_DIR" ] \
+               && [ -n "$(find "$SNAPSHOT_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ] \
+               && [ -f "$SNAPSHOT_DIR/no_games_today.json" ]; then
+            git rm -f "$SNAPSHOT_DIR/no_games_today.json"
+          fi
           if [ ! -d "$SNAPSHOT_DIR" ] || [ -z "$(find "$SNAPSHOT_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ]; then
             echo "::notice::DEREK_NO_GAMES_TODAY date=${{ steps.d.outputs.date }} type=${{ steps.s.outputs.type }}"
             mkdir -p "$SNAPSHOT_DIR"
