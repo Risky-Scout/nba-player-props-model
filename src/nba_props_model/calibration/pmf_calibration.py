@@ -102,27 +102,152 @@ class PMFCalibrator:
     fold_spans: list[tuple[str, str]]
 
     def apply(self, pmf: np.ndarray) -> np.ndarray:
-        """Return calibrated PMF of same length as input."""
+        """Return calibrated PMF of same length as input.
+
+        Tail-safe PMF calibration.
+
+        This avoids transforming right-edge CDF knots and differencing the result,
+        which can create isolated tail atoms and terminal-bin residual dumps.
+        """
         if pmf is None or len(pmf) == 0:
             return pmf
-        raw_cdf = np.cumsum(pmf)
-        raw_cdf = np.clip(raw_cdf, 0.0, 1.0)
-        cal_cdf = self.isotonic.transform(raw_cdf)
-        # Clamp + monotone-enforce (isotonic already monotone, but
-        # numerical round-off can nudge the last entry off 1.0).
-        cal_cdf = np.clip(cal_cdf, 0.0, 1.0)
-        cal_cdf[-1] = max(cal_cdf[-1], 1.0 - 1e-9)
-        for i in range(1, len(cal_cdf)):
-            if cal_cdf[i] < cal_cdf[i - 1]:
-                cal_cdf[i] = cal_cdf[i - 1]
-        cal_pmf = np.empty_like(cal_cdf)
-        cal_pmf[0] = cal_cdf[0]
-        cal_pmf[1:] = np.diff(cal_cdf)
-        # Last defensive renormalisation.
-        s = cal_pmf.sum()
-        if s > 0:
-            cal_pmf = cal_pmf / s
-        return cal_pmf
+
+        raw = np.asarray(pmf, dtype=float)
+        raw = np.clip(
+            np.nan_to_num(raw, nan=0.0, posinf=0.0, neginf=0.0),
+            0.0,
+            None,
+        )
+
+        s = float(raw.sum())
+        if not np.isfinite(s) or s <= 0:
+            return np.full_like(raw, 1.0 / max(len(raw), 1))
+
+        raw = raw / s
+
+        raw_cdf = np.cumsum(raw)
+        u_mid = np.clip(raw_cdf - 0.5 * raw, 1e-6, 1.0 - 1e-6)
+
+        h = np.maximum(1e-4, np.minimum(0.02, 0.5 * np.maximum(raw, 1e-4)))
+        u_lo = np.clip(u_mid - h, 0.0, 1.0)
+        u_hi = np.clip(u_mid + h, 0.0, 1.0)
+
+        g_lo = np.asarray(self.isotonic.transform(u_lo), dtype=float)
+        g_hi = np.asarray(self.isotonic.transform(u_hi), dtype=float)
+
+        denom = np.maximum(u_hi - u_lo, 1e-6)
+        slope = np.clip((g_hi - g_lo) / denom, 0.05, 20.0)
+
+        corrected = raw * slope
+        corrected = np.clip(
+            np.nan_to_num(corrected, nan=0.0, posinf=0.0, neginf=0.0),
+            0.0,
+            None,
+        )
+
+        alpha = 0.70
+        calibrated = alpha * corrected + (1.0 - alpha) * raw
+
+        return _repair_basketball_tail_shape(raw, calibrated, self.stat)
+
+
+def _repair_basketball_tail_shape(raw: np.ndarray, cal: np.ndarray, stat: str) -> np.ndarray:
+    """Remove endpoint dumps and isolated tail atoms from an NBA stat PMF."""
+    raw = np.asarray(raw, dtype=float)
+    cal = np.asarray(cal, dtype=float)
+    n = len(raw)
+
+    if n == 0:
+        return cal
+
+    raw = np.clip(np.nan_to_num(raw, nan=0.0, posinf=0.0, neginf=0.0), 0.0, None)
+    raw_sum = float(raw.sum())
+    if not np.isfinite(raw_sum) or raw_sum <= 0:
+        raw = np.full(n, 1.0 / n)
+    else:
+        raw = raw / raw_sum
+
+    cal = np.clip(np.nan_to_num(cal, nan=0.0, posinf=0.0, neginf=0.0), 0.0, None)
+    cal_sum = float(cal.sum())
+    if not np.isfinite(cal_sum) or cal_sum <= 0:
+        return raw.copy()
+
+    cal = cal / cal_sum
+    stat_key = str(stat).lower()
+
+    tail_start_by_stat = {
+        "pts": 45,
+        "reb": 18,
+        "ast": 15,
+        "tov": 9,
+        "fg3m": 4,
+        "stl": 5,
+        "blk": 5,
+        "stocks": 8,
+    }
+
+    terminal_cap_by_stat = {
+        "pts": 5e-5,
+        "reb": 5e-5,
+        "ast": 5e-5,
+        "tov": 2e-4,
+        "fg3m": 1e-6,
+        "stl": 2e-4,
+        "blk": 2e-4,
+        "stocks": 2e-4,
+    }
+
+    start = tail_start_by_stat.get(stat_key, int(0.75 * n))
+    start = min(max(start, 0), n - 1)
+
+    terminal_cap = terminal_cap_by_stat.get(stat_key, 1e-4)
+    terminal_target = min(max(float(raw[-1]) * 2.0, 0.0), terminal_cap)
+    excess = max(0.0, float(cal[-1]) - terminal_target)
+
+    if excess > 0.0 and n >= 3:
+        cal[-1] -= excess
+
+        lo = start
+        hi = n - 1
+
+        if hi > lo:
+            weights = raw[lo:hi].copy()
+            if float(weights.sum()) <= 1e-12:
+                grid = np.arange(hi - lo, dtype=float)
+                weights = np.exp(-0.75 * grid)
+            weights = weights / float(weights.sum())
+            cal[lo:hi] += excess * weights
+        else:
+            body = raw[:-1].copy()
+            body_sum = float(body.sum())
+            if body_sum <= 1e-12:
+                body = np.ones(n - 1, dtype=float) / max(n - 1, 1)
+            else:
+                body = body / body_sum
+            cal[:-1] += excess * body
+
+    eps = 1e-12
+    for k in range(max(start, 1), n - 1):
+        if cal[k] > 2e-4 and cal[k - 1] <= eps and cal[k + 1] <= eps:
+            atom = float(cal[k])
+            cal[k] = 0.0
+
+            lo = max(start, k - 2)
+            hi = min(n - 1, k + 3)
+
+            weights = raw[lo:hi].copy()
+            if float(weights.sum()) <= 1e-12:
+                weights = np.ones(hi - lo, dtype=float)
+            weights = weights / float(weights.sum())
+            cal[lo:hi] += atom * weights
+
+    cal = np.clip(cal, 0.0, None)
+    cal_sum = float(cal.sum())
+    if not np.isfinite(cal_sum) or cal_sum <= 0:
+        return raw.copy()
+
+    return cal / cal_sum
+
 
 
 @dataclass
@@ -288,8 +413,25 @@ def _fit_calibrator_no_save(
     u_sorted = u_full[u_sorted_idx]
     empirical_q = (np.arange(1, len(u_sorted) + 1) - 0.5) / len(u_sorted)
     # Fit isotonic g: u -> empirical_q.
+    # pmf_cal_endpoint_anchors
+    u_fit = np.concatenate([
+        np.asarray([0.0, 1e-6], dtype=float),
+        np.asarray(u_sorted, dtype=float),
+        np.asarray([1.0 - 1e-6, 1.0], dtype=float),
+    ])
+    q_fit = np.concatenate([
+        np.asarray([0.0, 0.0], dtype=float),
+        np.asarray(empirical_q, dtype=float),
+        np.asarray([1.0, 1.0], dtype=float),
+    ])
+    w_fit = np.concatenate([
+        np.asarray([1000.0, 1000.0], dtype=float),
+        np.ones_like(np.asarray(u_sorted, dtype=float)),
+        np.asarray([1000.0, 1000.0], dtype=float),
+    ])
+    order = np.argsort(u_fit)
     iso = IsotonicRegression(y_min=0.0, y_max=1.0, out_of_bounds="clip")
-    iso.fit(u_sorted, empirical_q)
+    iso.fit(u_fit[order], q_fit[order], sample_weight=w_fit[order])
 
     return PMFCalibrator(
         stat=stat,

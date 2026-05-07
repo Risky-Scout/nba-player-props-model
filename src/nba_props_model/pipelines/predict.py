@@ -146,6 +146,7 @@ MIN_GAMES_SEASON = 20  # raised from 15 — filter fringe rotation players
 KELLY_FRAC       = 0.15  # fractional Kelly — conservative until edge verified on clean data
 MAX_UNITS_SINGLE = 1.5     # doc 7 §5: reduced from 2.0 — too much vol for current cal quality
 MAX_UNITS_SGP    = 1.0
+PMF_SIM_DRAWS = int(os.getenv("NBA_PMF_SIM_DRAWS", "50000"))
 
 # ── Deployment gates — calibrated from diagnostic 2026-03-19 ─────────────────
 # OVER: require prob >= 0.60 (tighter than before)
@@ -940,7 +941,7 @@ def main(argv=None):
                 return None
             pmf_obj = _simulate_stat_pmf(
                 stat=target, minutes_dist=minutes_dist,
-                feature_row=feature_row, n_draws=4000,
+                feature_row=feature_row, n_draws=PMF_SIM_DRAWS,
                 rng=np.random.default_rng(hash((target, feature_row.get("player_id", 0))) & 0xFFFFFFFF),
                 rate_q_override=q,
             )
