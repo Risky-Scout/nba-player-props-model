@@ -1,6 +1,6 @@
 # Derek Live Snapshots — 2026-05-07
 
-- generated_at_utc: 2026-05-07T20:55:56+00:00
+- generated_at_utc: 2026-05-07T21:44:31+00:00
 - passed: **False**
 - snapshot_count: 2 across 2 game folders
 
@@ -24,7 +24,7 @@
 | 21708301/close_lock/manifest_field_present:pmf_generated_at_utc | NO | value=None |
 | 21708301/close_lock/manifest_field_present:pmf_output_hash | NO | value=None |
 | 21708301/close_lock/pmf_row_count_positive | yes | rows=160 |
-| 21708301/close_lock/market_comparison_present | yes | rows=1290 |
+| 21708301/close_lock/market_comparison_present | yes | rows=1261 |
 | 21708301/close_lock/champion_metadata_matches_pointer | NO | manifest_champion=None pointer='challenger-2026-04-30' |
 | 21708301/close_lock/lineup_blocker_documented_when_unconfirmed | NO | lineup_confirmed=None blocker=None |
 | 21708301/close_lock/no_post_tip_data_used | NO | =None |
@@ -46,7 +46,7 @@
 | 21709223/close_lock/manifest_field_present:pmf_generated_at_utc | NO | value=None |
 | 21709223/close_lock/manifest_field_present:pmf_output_hash | NO | value=None |
 | 21709223/close_lock/pmf_row_count_positive | yes | rows=170 |
-| 21709223/close_lock/market_comparison_present | yes | rows=1126 |
+| 21709223/close_lock/market_comparison_present | yes | rows=1121 |
 | 21709223/close_lock/champion_metadata_matches_pointer | NO | manifest_champion=None pointer='challenger-2026-04-30' |
 | 21709223/close_lock/lineup_blocker_documented_when_unconfirmed | NO | lineup_confirmed=None blocker=None |
 | 21709223/close_lock/no_post_tip_data_used | NO | =None |
