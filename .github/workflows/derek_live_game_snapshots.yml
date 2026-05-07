@@ -115,77 +115,23 @@ jobs:
         run: |
           python scripts/verify_derek_slate_completeness.py --delivery-date ${{ steps.d.outputs.date }}
 
-      - name: Dispatch current_live (Phase 13U)
+      - name: Legacy dispatcher disabled: current_live
         id: dispatch_current_live
         if: steps.s.outputs.type == 'current_live' || steps.s.outputs.type == 'all'
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          STALE_FLAG=""
-          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
-            STALE_FLAG="--allow-backfill-test"
-          fi
-          MAX_FLAG=""
-          if [ -n "${{ github.event.inputs.max_games }}" ]; then
-            MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
-          fi
-          FORCE_FLAG=""
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            FORCE_FLAG="--force"
-          fi
-          python scripts/dispatch_derek_live_game_snapshots.py \
-            --delivery-date ${{ steps.d.outputs.date }} \
-            --snapshot-type current_live \
-            $STALE_FLAG $MAX_FLAG $FORCE_FLAG
+          echo "Legacy current_live dispatch disabled; corrected PMF builder is authoritative."
 
-      - name: Dispatch t_minus_25
+      - name: Legacy dispatcher disabled: t_minus_25
         id: dispatch_t25
         if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          STALE_FLAG=""
-          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
-            STALE_FLAG="--allow-backfill-test"
-          fi
-          MAX_FLAG=""
-          if [ -n "${{ github.event.inputs.max_games }}" ]; then
-            MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
-          fi
-          FORCE_FLAG=""
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            FORCE_FLAG="--force"
-          fi
-          python scripts/dispatch_derek_live_game_snapshots.py \
-            --delivery-date ${{ steps.d.outputs.date }} \
-            --snapshot-type t_minus_25 \
-            $STALE_FLAG $MAX_FLAG $FORCE_FLAG
+          echo "Legacy t_minus_25 dispatch disabled; corrected PMF builder is authoritative."
 
-      - name: Dispatch close_lock
+      - name: Legacy dispatcher disabled: close_lock
         id: dispatch_cl
         if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          STALE_FLAG=""
-          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
-            STALE_FLAG="--allow-backfill-test"
-          fi
-          MAX_FLAG=""
-          if [ -n "${{ github.event.inputs.max_games }}" ]; then
-            MAX_FLAG="--max-games ${{ github.event.inputs.max_games }}"
-          fi
-          FORCE_FLAG=""
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            FORCE_FLAG="--force"
-          fi
-          python scripts/dispatch_derek_live_game_snapshots.py \
-            --delivery-date ${{ steps.d.outputs.date }} \
-            --snapshot-type close_lock \
-            $STALE_FLAG $MAX_FLAG $FORCE_FLAG
+          echo "Legacy close_lock dispatch disabled; corrected PMF builder is authoritative."
 
       - name: Build Derek snapshots from corrected PMF delivery
         id: build_corrected_derek_snapshots
@@ -433,69 +379,8 @@ jobs:
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
-          # Bug A: no-games-day short-circuit. The dispatcher exits 0
-          # without creating deliveries/<date>/derek_game_snapshots/ on a
-          # no-games day (it writes a status JSON under
-          # artifacts/derek_live_snapshots/<date>/ instead — see
-          # scripts/dispatch_derek_live_game_snapshots.py line ~368).
-          # H6's hard-fail `git add` would otherwise trip on the missing
-          # path. Detect this case, write a sentinel manifest so we have
-          # a positive record on origin/main, commit ONLY that file, and
-          # exit 0.
-          SNAPSHOT_DIR="deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots"
-          # Remove stale sentinel if real game subdirs now exist
-          if [ -d "$SNAPSHOT_DIR" ] \
-               && [ -n "$(find "$SNAPSHOT_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ] \
-               && [ -f "$SNAPSHOT_DIR/no_games_today.json" ]; then
-            git rm -f "$SNAPSHOT_DIR/no_games_today.json"
-          fi
-          if [ ! -d "$SNAPSHOT_DIR" ] || [ -z "$(find "$SNAPSHOT_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)" ]; then
-            echo "::notice::DEREK_NO_GAMES_TODAY date=${{ steps.d.outputs.date }} type=${{ steps.s.outputs.type }}"
-            mkdir -p "$SNAPSHOT_DIR"
-            cat > "$SNAPSHOT_DIR/no_games_today.json" <<JSON
-          {
-            "schema_version": "1.0",
-            "delivery_date": "${{ steps.d.outputs.date }}",
-            "snapshot_type": "${{ steps.s.outputs.type }}",
-            "generated_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "status": "no_games_today",
-            "reason": "Dispatcher returned no schedule rows for this date. See artifacts/derek_live_snapshots/${{ steps.d.outputs.date }}/dispatch_*.json for the source-of-truth status emitted by scripts/dispatch_derek_live_game_snapshots.py."
-          }
-          JSON
-            if ! git add "$SNAPSHOT_DIR/no_games_today.json"; then
-              echo "::error::git add failed for no_games_today sentinel"
-              exit 1
-            fi
-            git diff --staged --quiet && echo "Sentinel unchanged" || \
-              git commit \
-                --author="Joseph Shackelford <josephshack@gmail.com>" \
-                -m "phase13u: Derek no-games-today ${{ steps.d.outputs.date }} (${{ steps.s.outputs.type }})"
-            # Bug F (Bug C pattern, no-games branch): verifier steps
-            # earlier in this job rewrite tracked files that the no-games
-            # branch deliberately does NOT commit (phase13l_no_breakage.{md,json},
-            # phase13x_woo_unchanged.json, several dated
-            # derek_*_<date>.{json,md} files, etc.). Reset whatever is
-            # still dirty so `git pull --rebase` can proceed.
-            DIRTY_REMAINING=$(git diff --name-only)
-            if [ -n "$DIRTY_REMAINING" ]; then
-              echo "::notice::Bug F defensive reset (no-games branch) — dirty tracked files:"
-              echo "$DIRTY_REMAINING"
-              git checkout -- $DIRTY_REMAINING 2>/dev/null || true
-            fi
-            PUSH_SUCCESS=0
-            for i in 1 2 3; do
-              if git pull --rebase origin main && git push origin main; then
-                PUSH_SUCCESS=1
-                break
-              fi
-              sleep 5
-            done
-            if [ "$PUSH_SUCCESS" != "1" ]; then
-              echo "::error::git push failed after 3 attempts"
-              exit 1
-            fi
-            exit 0
-          fi
+          # Corrected PMF builder/verifier owns game/no-game determination.
+          # Do not create a no_games sentinel from the legacy dispatcher path.
           AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
           PATHS_TO_ADD=(
             "deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots"
