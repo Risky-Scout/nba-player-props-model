@@ -116,7 +116,10 @@ def _stat_grid(date: str) -> int:
     without TOV when this step is skipped."""
     if not STAT_GRID.exists():
         return 0
-    cmd = [PYTHON, str(STAT_GRID), "--date", date]
+    cmd = [
+        PYTHON, str(STAT_GRID), "--date", date,
+        "--stats", "pts", "reb", "ast", "fg3m", "tov",
+    ]
     return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
 
 

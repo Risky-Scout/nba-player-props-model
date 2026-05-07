@@ -54,8 +54,11 @@ P_GE_COLS = [f"p_ge_{k}" for k in range(1, 21)]
 
 
 STAT_TO_WIDE_COL = {
-    "pts": "pts", "reb": "reb", "ast": "ast",
-    "tov": "turnover", "fg3m": "fg3m",
+    "pts": "pts",
+    "reb": "reb",
+    "ast": "ast",
+    "tov": "turnover",
+    "fg3m": "fg3m",
 }
 
 
@@ -108,6 +111,39 @@ def load_outcomes(args, delivery_date: str) -> pd.DataFrame:
 
 # ── PMF reconstruction from p_ge ladder ─────────────────────────────────
 
+
+def _pmf_from_json_like(x) -> np.ndarray | None:
+    """Parse full PMF from pmf_json/pmf when available."""
+    if x is None:
+        return None
+    try:
+        if isinstance(x, str):
+            d = json.loads(x)
+        elif isinstance(x, dict):
+            d = x
+        else:
+            return None
+        if not d:
+            return None
+        max_k = max(int(k) for k in d.keys())
+        pmf = np.zeros(max_k + 1, dtype=float)
+        for k, v in d.items():
+            pmf[int(k)] = float(v)
+        pmf = np.clip(np.nan_to_num(pmf, nan=0.0, posinf=0.0, neginf=0.0), 0.0, None)
+        total = float(pmf.sum())
+        return pmf / total if total > 0 else None
+    except Exception:
+        return None
+
+
+def _pmf_from_row(row: pd.Series) -> np.ndarray:
+    """Use full PMF when present; legacy p_ge ladder only as fallback."""
+    for col in ("pmf_json", "pmf"):
+        if col in row.index:
+            pmf = _pmf_from_json_like(row.get(col))
+            if pmf is not None:
+                return pmf
+    return _pmf_from_pge(row)
 
 def _pmf_from_pge(row: pd.Series, max_k: int = 21) -> np.ndarray:
     """Reconstruct PMF from p0 + p_ge_1 ... p_ge_20.
@@ -171,7 +207,7 @@ def score_pmf_rows(canonical: pd.DataFrame, outcomes: pd.DataFrame
     for _, r in df.iterrows():
         if pd.isna(r.get("outcome")):
             continue
-        pmf = _pmf_from_pge(r)
+        pmf = _pmf_from_row(r)
         outcome = int(r["outcome"])
         rec = dict(r.drop(labels=["outcome"], errors="ignore"))
         rec["actual_outcome"] = outcome

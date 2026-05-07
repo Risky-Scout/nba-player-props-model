@@ -90,9 +90,9 @@ _AVAILABILITY_COLS = (
 )
 _INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
 
-# Default to the full model-only stat grid used by Derek/WoO PMF deliveries.
+# Default to the production model-only stat grid used by Derek/WoO PMF deliveries.
 # The flag accepts any stat in build_prop_pmfs's output keyset.
-DEFAULT_STATS = ("pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks")
+DEFAULT_STATS = ("pts", "reb", "ast", "fg3m", "tov")
 ALLOWED_STATS = ("pts", "reb", "ast", "tov", "fg3m", "stl", "blk", "stocks")
 
 
@@ -480,7 +480,7 @@ def main() -> int:
     ap.add_argument("--stats", nargs="+", default=list(DEFAULT_STATS),
                      choices=list(ALLOWED_STATS),
                      help=f"stats to emit (default: {DEFAULT_STATS}; the "
-                           "default is the full model-only stat grid; restrict via "
+                           "default is the production model-only stat grid; expand/restrict via "
                            "--stats pts reb ast tov fg3m stl blk stocks)")
     ap.add_argument("--slate-source", choices=["recent_rosters", "all_props"],
                     default="recent_rosters",
