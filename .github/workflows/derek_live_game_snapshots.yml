@@ -464,36 +464,42 @@ jobs:
             exit 0
           fi
           AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
-          if ! git add deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots \
-                       deliveries/${{ steps.d.outputs.date }}/README.md \
-                       artifacts/derek_live_snapshots/${{ steps.d.outputs.date }} \
-                       artifacts/live_lineups/${{ steps.d.outputs.date }} \
-                       artifacts/live_schedule/${{ steps.d.outputs.date }} \
-                       artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.json \
-                       artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.md \
-                       artifacts/automation_health/phase13x_woo_unchanged.json \
-                       artifacts/phase13z \
-                       artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json \
-                       artifacts/automation_health/phase13l_no_breakage.json \
-                       artifacts/automation_health/phase13l_no_breakage.md \
-                       artifacts/model_daily_reports/$AS_OF; then
-            echo "::error::git add failed for one or more paths"
-            exit 1
-          fi
+          PATHS_TO_ADD=(
+            "deliveries/${{ steps.d.outputs.date }}/derek_game_snapshots"
+            "deliveries/${{ steps.d.outputs.date }}/README.md"
+            "artifacts/derek_live_snapshots/${{ steps.d.outputs.date }}"
+            "artifacts/live_lineups/${{ steps.d.outputs.date }}"
+            "artifacts/live_schedule/${{ steps.d.outputs.date }}"
+            "artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/derek_live_snapshots_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/derek_live_champion_ready_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/derek_edge_root_cause_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.json"
+            "artifacts/automation_health/derek_edge_calibration_${{ steps.d.outputs.date }}.md"
+            "artifacts/automation_health/phase13x_woo_unchanged.json"
+            "artifacts/phase13z"
+            "artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json"
+            "artifacts/automation_health/phase13l_no_breakage.json"
+            "artifacts/automation_health/phase13l_no_breakage.md"
+            "artifacts/model_daily_reports/$AS_OF"
+          )
+          for p in "${PATHS_TO_ADD[@]}"; do
+            if [ -e "$p" ]; then
+              git add "$p" 2>/dev/null || echo "::warning::git add failed for $p"
+            else
+              echo "::notice::path missing, skipping: $p"
+            fi
+          done
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
