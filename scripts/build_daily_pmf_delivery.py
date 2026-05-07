@@ -617,6 +617,56 @@ def _market_coverage_status(books_seen: list[str]) -> str:
     return "full"
 
 
+
+PRODUCTION_TARGET_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
+
+
+def _validate_production_model_only(df: pd.DataFrame, path: Path) -> None:
+    """Block stale all_props/broader sparse-stat canonical PMFs in production.
+
+    Research mode can opt out with NBA_ALLOW_RESEARCH_PMF_STATS=1.
+    """
+    if os.environ.get("NBA_ALLOW_RESEARCH_PMF_STATS", "").strip() == "1":
+        return
+
+    if "stat" not in df.columns:
+        raise SystemExit(f"MODEL_ONLY parquet missing stat column: {path}")
+
+    stats = set(df["stat"].astype(str).str.lower())
+    extra = sorted(stats - PRODUCTION_TARGET_STAT_SET)
+    missing = sorted(PRODUCTION_TARGET_STAT_SET - stats)
+    if extra or missing:
+        raise SystemExit(
+            "FATAL: production MODEL_ONLY stat set mismatch for "
+            f"{path}: expected={list(PRODUCTION_TARGET_STATS)} "
+            f"missing={missing} extra={extra}. "
+            "Regenerate from predictions/stat_grid_{date}.parquet; "
+            "do not use stale all_props canonical."
+        )
+
+    counts = df["stat"].astype(str).str.lower().value_counts()
+    if counts.empty or counts.min() != counts.max():
+        raise SystemExit(
+            "FATAL: production MODEL_ONLY stat counts are uneven for "
+            f"{path}: {counts.sort_index().to_dict()}. "
+            "This usually means stale market-row/all_props PMFs contaminated the delivery."
+        )
+
+    if "role_bucket" not in df.columns:
+        raise SystemExit(f"FATAL: production MODEL_ONLY missing role_bucket: {path}")
+
+    missing_roles = df["role_bucket"].isna() | (
+        df["role_bucket"].astype(str).str.lower().isin(["", "none", "nan", "unknown"])
+    )
+    if bool(missing_roles.any()):
+        raise SystemExit(
+            "FATAL: production MODEL_ONLY has missing role_bucket rows: "
+            f"{int(missing_roles.sum())}/{len(df)} in {path}. "
+            "Role-aware calibration cannot be trusted until stat_grid emits role metadata."
+        )
+
+
 # ── Loaders ───────────────────────────────────────────────────────────────
 
 
@@ -628,6 +678,7 @@ def load_model_only(parquet_path: Path) -> pd.DataFrame:
         df = df.rename(columns={"pmf_active": "pmf_json"})
     if "pmf_json" not in df.columns:
         raise SystemExit("MODEL_ONLY parquet missing pmf_json")
+    _validate_production_model_only(df, parquet_path)
     return df
 
 

@@ -13,9 +13,9 @@ Output layout (mirrors what the deployed front-end fetches):
   public_export/wizard_of_odds/pmf_research.json          (root copy)
 
 Source data:
-  predictions/all_props_<date>.parquet — canonical model output. PMFs,
-  market probabilities, edges, and EV all flow through unchanged. The
-  generator is a structural projection, not a model rerun.
+  deliveries/<date>/wizard_of_odds/full_pmfs_wide.parquet plus
+  market_comparison.parquet. These are the dated Derek/WoO PMF delivery
+  artifacts. The generator is a structural projection, not a model rerun.
 
 Hard rules:
   - PMF / model / market probabilities are NOT modified.
@@ -41,6 +41,7 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRED_DIR = REPO_ROOT / "predictions"
+DELIVERY_ROOT = REPO_ROOT / "deliveries"
 EXPORT_ROOT = REPO_ROOT / "public_export" / "wizard_of_odds"
 
 
@@ -209,6 +210,144 @@ def _build_research_players(df: pd.DataFrame) -> list[dict]:
     return out
 
 
+
+PRODUCTION_TARGET_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
+
+
+def _delivery_paths(date: str) -> tuple[Path, Path]:
+    woo_dir = DELIVERY_ROOT / date / "wizard_of_odds"
+    return woo_dir / "full_pmfs_wide.parquet", woo_dir / "market_comparison.parquet"
+
+
+def _validate_delivery_wide(df: pd.DataFrame, path: Path) -> None:
+    if "stat" not in df.columns:
+        raise SystemExit(f"WoO full_pmfs_wide missing stat column: {path}")
+
+    stats = set(df["stat"].astype(str).str.lower())
+    extra = sorted(stats - PRODUCTION_TARGET_STAT_SET)
+    missing = sorted(PRODUCTION_TARGET_STAT_SET - stats)
+    if extra or missing:
+        raise SystemExit(
+            "FATAL: public WoO export source has wrong production stat set: "
+            f"{path} expected={list(PRODUCTION_TARGET_STATS)} "
+            f"missing={missing} extra={extra}"
+        )
+
+    counts = df["stat"].astype(str).str.lower().value_counts()
+    if counts.empty or counts.min() != counts.max():
+        raise SystemExit(
+            "FATAL: public WoO export source has uneven stat coverage: "
+            f"{path} counts={counts.sort_index().to_dict()}"
+        )
+
+    if "role_bucket" in df.columns:
+        missing_roles = df["role_bucket"].isna() | (
+            df["role_bucket"].astype(str).str.lower().isin(["", "none", "nan", "unknown"])
+        )
+        if bool(missing_roles.any()):
+            raise SystemExit(
+                "FATAL: public WoO export source has missing role_bucket rows: "
+                f"{int(missing_roles.sum())}/{len(df)} in {path}"
+            )
+
+
+def _build_affiliate_rows_from_delivery(df: pd.DataFrame) -> list[dict]:
+    rows: list[dict] = []
+    if df is None or df.empty:
+        return rows
+
+    df = df.copy()
+    if "stat" in df.columns:
+        df = df[df["stat"].astype(str).str.lower().isin(PRODUCTION_TARGET_STAT_SET)]
+
+    for _, r in df.iterrows():
+        pid = r.get("player_id")
+        stat = r.get("stat")
+        line = _coerce_float(r.get("line"))
+        if pid is None or stat is None or line is None:
+            continue
+
+        rows.append({
+            "player_id": int(pid),
+            "player": r.get("player_name"),
+            "game": r.get("game"),
+            "team_id": int(r["team_id"]) if "team_id" in r.index and pd.notna(r.get("team_id")) else None,
+            "stat": stat,
+            "side": "OVER",
+            "line": line,
+            "book": r.get("book"),
+            "over_odds": _coerce_float(r.get("market_over_odds")),
+            "under_odds": _coerce_float(r.get("market_under_odds")),
+            "model_prob": _coerce_float(r.get("model_p_over")),
+            "market_prob": _coerce_float(r.get("market_no_vig_over_prob")),
+            "raw_edge": _coerce_float(r.get("edge")),
+            "ev": None,
+            "edge_publish_status": r.get("edge_publish_status"),
+            "calibration_support_status": r.get("calibration_support_status"),
+            "lineup_confirmed": (
+                r.get("lineup_freshness_status") == "confirmed"
+                if "lineup_freshness_status" in r.index else None
+            ),
+            "feature_set_id": r.get("contextual_feature_set_id"),
+        })
+    return rows
+
+
+def _build_research_players_from_delivery(df: pd.DataFrame) -> list[dict]:
+    players: dict[int, dict] = {}
+    if df is None or df.empty:
+        return []
+
+    df = df.copy()
+    df = df[df["stat"].astype(str).str.lower().isin(PRODUCTION_TARGET_STAT_SET)]
+
+    for _, r in df.iterrows():
+        pid = r.get("player_id")
+        if pid is None:
+            continue
+        try:
+            pid_int = int(pid)
+        except Exception:
+            continue
+
+        team = r.get("team")
+        opponent = r.get("opponent")
+        game = r.get("game")
+        if not game and team and opponent:
+            game = f"{team} vs {opponent}"
+
+        rec = players.setdefault(pid_int, {
+            "player_id": pid_int,
+            "player": r.get("player_name"),
+            "game": game,
+            "team_id": int(r["team_id"]) if "team_id" in r.index and pd.notna(r.get("team_id")) else None,
+            "stats": {},
+        })
+
+        stat = r.get("stat")
+        if not stat or stat in rec["stats"]:
+            continue
+
+        pmf = _parse_pmf(r.get("pmf_json") if "pmf_json" in r.index else r.get("pmf"))
+        if not pmf:
+            continue
+
+        total = sum(pmf.values()) or 1.0
+        norm = {k: v / total for k, v in pmf.items()}
+
+        rec["stats"][stat] = {
+            "support_points": _pmf_to_research_points(norm),
+            "expected_mean": float(sum(k * v for k, v in norm.items())),
+            "median": _coerce_float(r.get("median") or r.get("pmf_median") or r.get("q50")),
+            "p0": float(norm.get(0, 0.0)),
+        }
+
+    out = list(players.values())
+    out.sort(key=lambda p: p["player_id"])
+    return out
+
+
 def _write_export(date: str, payload_aff: dict, payload_pmf: dict) -> None:
     for parent in (EXPORT_ROOT / date,
                    EXPORT_ROOT / "latest",
@@ -228,26 +367,31 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     date = args.date
 
-    parquet = PRED_DIR / f"all_props_{date}.parquet"
-    if not parquet.exists():
+    wide_path, market_path = _delivery_paths(date)
+    if not wide_path.exists():
         payload = {
             "schema_version": "1.0",
             "date": date,
             "generated_at": _utc_iso(),
             "rows": [],
             "count": 0,
-            "reason": (f"predictions/all_props_{date}.parquet does not exist; "
-                       "daily prediction pipeline has not produced this slate."),
+            "reason": (f"deliveries/{date}/wizard_of_odds/full_pmfs_wide.parquet "
+                       "does not exist; dated Derek/WoO delivery has not been built."),
         }
         payload_pmf = {**payload, "players": []}
         _write_export(date, payload, payload_pmf)
         print(f"WOO_PUBLIC_EXPORT_PUBLISH_NODATA  date={date}  "
-              f"reason=missing_predictions_parquet")
+              f"reason=missing_delivery_full_pmfs_wide")
         return 0
 
-    df = pd.read_parquet(parquet)
-    aff_rows = _build_affiliate_rows(df)
-    pmf_players = _build_research_players(df)
+    wide_df = pd.read_parquet(wide_path)
+    _validate_delivery_wide(wide_df, wide_path)
+
+    market_df = (pd.read_parquet(market_path)
+                 if market_path.exists() else pd.DataFrame())
+
+    aff_rows = _build_affiliate_rows_from_delivery(market_df)
+    pmf_players = _build_research_players_from_delivery(wide_df)
 
     payload_aff = {
         "schema_version": "1.0",
@@ -255,7 +399,8 @@ def main(argv: list[str] | None = None) -> int:
         "generated_at": _utc_iso(),
         "rows": aff_rows,
         "count": len(aff_rows),
-        "games": int(df["game_id"].nunique()) if "game_id" in df.columns else 0,
+        "games": int(wide_df["game_id"].nunique()) if "game_id" in wide_df.columns else 0,
+        "source": str(wide_path.relative_to(REPO_ROOT)),
     }
     payload_pmf = {
         "schema_version": "1.0",
@@ -264,6 +409,7 @@ def main(argv: list[str] | None = None) -> int:
         "players": pmf_players,
         "count_players": len(pmf_players),
         "count_props": len(aff_rows),
+        "source": str(wide_path.relative_to(REPO_ROOT)),
         "tail_bucket_convention": (
             "PMF support points beyond the dense ladder are rendered as "
             "labeled tail buckets (e.g. '20+'), never as discrete "
@@ -274,6 +420,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print(f"WOO_PUBLIC_EXPORT_PUBLISH_PASS  date={date}  "
           f"affiliate_rows={len(aff_rows)}  pmf_players={len(pmf_players)}  "
+          f"source={wide_path.relative_to(REPO_ROOT)}  "
           f"out={(EXPORT_ROOT / date).relative_to(REPO_ROOT)}")
     return 0
 
