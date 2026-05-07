@@ -431,7 +431,7 @@ def cmd_historical_event_odds(args) -> int:
 def cmd_live_snapshot(args) -> int:
     api_key = _get_api_key()
     snap_iso = _now_iso()
-    target = snap_iso[:10]
+    target = args.target_date or snap_iso[:10]
     if args.dry_run:
         print("[dry-run] would capture full live slate"); return 0
     events, _ = fetch_live_events(api_key)
@@ -742,6 +742,7 @@ def main() -> int:
     s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--max-events", type=int, default=20)
+    s.add_argument("--target-date", default=None)
     s.add_argument("--dry-run", action="store_true")
 
     s = sub.add_parser("historical-lock-day",

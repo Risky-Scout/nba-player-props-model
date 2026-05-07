@@ -232,7 +232,8 @@ def _scan_dnt_for_date(date: str) -> dict:
 
 
 def _run_live_snapshot(*, regions: str, snapshot_type: str,
-                       max_events: int, dry_run: bool) -> dict:
+                       max_events: int, dry_run: bool,
+                       date: str) -> dict:
     """Invoke `scripts/oddsapi_nba_props.py live-snapshot` once.
 
     Returns a per-region status dict — never raises; failures are logged
@@ -245,6 +246,7 @@ def _run_live_snapshot(*, regions: str, snapshot_type: str,
         "--snapshot-type", snapshot_type,
         "--regions", regions,
         "--max-events", str(max_events),
+        "--target-date", date,
     ]
     if dry_run:
         cmd.append("--dry-run")
@@ -506,7 +508,8 @@ def main() -> int:
             for region in args.regions:
                 odds_runs.append(_run_live_snapshot(
                     regions=region, snapshot_type=args.snapshot_type,
-                    max_events=args.max_events, dry_run=args.dry_run))
+                    max_events=args.max_events, dry_run=args.dry_run,
+                    date=delivery_date))
             ok_count = sum(1 for r in odds_runs if r.get("status") == "ok")
             if ok_count == len(odds_runs) and odds_runs:
                 odds_status_summary = "ok"
