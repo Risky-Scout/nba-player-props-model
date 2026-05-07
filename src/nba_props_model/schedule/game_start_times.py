@@ -320,7 +320,7 @@ def _bdl_games_to_lookup(games: Iterable[dict]) -> dict[str, dict]:
         # BDL as providing only the date (no precise tip), and only
         # honor the cached/live Odds API result for tip timing.
         record = {
-            "commence_time_utc": None,  # BDL doesn't carry precise UTC tip
+            "commence_time_utc": g.get("datetime"),
             "event_id": gid,
             "source": "bdl_games",
             "bdl_status": g.get("status"),
