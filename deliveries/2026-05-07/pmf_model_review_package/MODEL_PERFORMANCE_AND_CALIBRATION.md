@@ -10,7 +10,7 @@ This file will be re-written by `scripts/score_daily_pmf_delivery_after_game.py`
 - props in delivery: **330**
 - finality_status: `provisional`
 - finality_blockers: lineup_unconfirmed
-- model_version: `4aa32b8#phase10c`
+- model_version: `c181c86#phase10c`
 
 ## What this file will contain after scoring
 
