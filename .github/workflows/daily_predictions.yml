@@ -168,6 +168,30 @@ jobs:
           DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/verify_daily_prediction_outputs.py --date "$DATE"
 
+      - name: Commit predictions and graded results
+        run: |
+          # Hard rule #6: every commit must show Joseph Shackelford as author.
+          git config user.name  "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add predictions/ artifacts/graded/ artifacts/automation_health/ \
+                  artifacts/scoring/ -f
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "Predictions $(TZ=America/New_York date +%Y-%m-%d)"
+          PUSH_SUCCESS=0
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
+
       - name: Verify WoO NBA props page (Phase 13AD)
         run: |
           DATE=$(TZ=America/New_York date +%Y-%m-%d)
@@ -239,30 +263,6 @@ jobs:
             --date "$DATE" --derek-date "$PREV_DAY" \
             --required-outcomes-through "$PREV_DAY" || { \
               echo "::error::operator daily check FAILED - see step log"; exit 1; }
-
-      - name: Commit predictions and graded results
-        run: |
-          # Hard rule #6: every commit must show Joseph Shackelford as author.
-          git config user.name  "Joseph Shackelford"
-          git config user.email "josephshack@gmail.com"
-          git add predictions/ artifacts/graded/ artifacts/automation_health/ \
-                  artifacts/scoring/ -f
-          git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit \
-              --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "Predictions $(TZ=America/New_York date +%Y-%m-%d)"
-          PUSH_SUCCESS=0
-          for i in 1 2 3; do
-            if git pull --rebase origin main && git push origin main; then
-              PUSH_SUCCESS=1
-              break
-            fi
-            sleep 5
-          done
-          if [ "$PUSH_SUCCESS" != "1" ]; then
-            echo "::error::git push failed after 3 attempts"
-            exit 1
-          fi
 
       - name: Upload predictions to server via SFTP
         env:
