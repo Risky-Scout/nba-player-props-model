@@ -75,6 +75,7 @@ DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
 DEREK_GAME_SNAPSHOTS_FROM_DELIVERY = REPO_ROOT / "scripts" / "build_derek_game_snapshots_from_delivery.py"
 WOO_EXPORT = REPO_ROOT / "scripts" / "publish_woo_public_export.py"
 WOO_DASHBOARD = REPO_ROOT / "scripts" / "build_woo_dashboard.py"
+CORRECTED_PMF_VERIFY = REPO_ROOT / "scripts" / "verify_corrected_pmf_delivery.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -254,6 +255,19 @@ def _woo_export(
         )
 
     return rc
+
+
+
+def _verify_corrected_pmf_delivery(date: str) -> int:
+    """Hard gate: Derek + WoO must both source the corrected core PMF delivery."""
+    if not CORRECTED_PMF_VERIFY.exists():
+        sys.exit(f"FATAL: corrected PMF verifier missing: {CORRECTED_PMF_VERIFY}")
+    return _run(
+        [PYTHON, str(CORRECTED_PMF_VERIFY), "--date", date],
+        allow_fail=False,
+        label=f"verify corrected PMF delivery {date}",
+    )
+
 
 
 def _load_tipoffs_utc(date: str) -> list[datetime]:
@@ -443,6 +457,7 @@ def run_derek_near_lineup(
         finality_status_override=None,
         only_date=date,
     )
+    _verify_corrected_pmf_delivery(date)
     _refresh_index()
     return 0
 
@@ -461,6 +476,7 @@ def run_close_lock(date: str, *, regions: list[str],
         finality_status_override=None,
         only_date=date,
     )
+    _verify_corrected_pmf_delivery(date)
     _refresh_index()
     return 0
 
