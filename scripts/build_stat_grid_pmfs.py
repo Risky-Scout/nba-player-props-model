@@ -76,6 +76,7 @@ from nba_props_model.features.availability_asof import (  # noqa: E402
     AvailabilityBuilder as _AvailabilityBuilder,
 )
 from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
+from nba_props_model.paths import MODEL_DIR  # noqa: E402
 
 PRED_DIR = REPO_ROOT / "predictions"
 DATA_DIR = REPO_ROOT / "data"
@@ -95,21 +96,43 @@ DEFAULT_STATS = ("pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks")
 ALLOWED_STATS = ("pts", "reb", "ast", "tov", "fg3m", "stl", "blk", "stocks")
 
 
+def _display_path(path: Path) -> str:
+    """Return repo-relative path when possible, otherwise absolute path."""
+    try:
+        return str(path.resolve().relative_to(REPO_ROOT.resolve()))
+    except Exception:
+        return str(path)
+
+
 def _now_utc_iso() -> str:
     return (datetime.now(timezone.utc).isoformat(timespec="seconds")
             .replace("+00:00", "Z"))
 
 
-def _fg3m_hurdle_model():
-    """Best-effort load of the FG3M hurdle model. Returns None if the
-    artifact directory is absent — fg3m is then simply dropped from the
-    grid (its PMF won't be computed). For TOV-only runs this never
-    matters."""
+def _fg3m_hurdle_model(*, required: bool = False):
+    """Load the FG3M hurdle model artifact.
+
+    If fg3m was requested, missing/unloadable artifacts are a hard failure.
+    Silent FG3M drops make Derek/WoO PMF packages incomplete.
+    """
+    path = MODEL_DIR / "fg3m_hurdle.pkl"
+
+    if not path.exists():
+        if required:
+            raise SystemExit(f"FATAL: missing FG3M hurdle artifact: {path}")
+        return None
+
     try:
         from nba_props_model.models.fg3m_hurdle import FG3MHurdleModel
-        return FG3MHurdleModel.load_default()
-    except Exception:
+        return FG3MHurdleModel.load(str(path))
+    except Exception as e:
+        if required:
+            raise SystemExit(
+                f"FATAL: failed to load FG3M hurdle artifact {path}: "
+                f"{type(e).__name__}: {e}"
+            )
         return None
+
 
 
 def _pmf_to_dict(pmf: np.ndarray) -> dict:
@@ -508,7 +531,7 @@ def main() -> int:
     print("=" * 72)
     print(f"build_stat_grid_pmfs — date={target_date} stats={args.stats}")
     print(f" slate source: {slate_source_label}")
-    print(f" output : {out_path.relative_to(REPO_ROOT)}")
+    print(f" output : {_display_path(out_path)}")
     print("=" * 72)
 
     print(f" slate (player_id, game_id) pairs: {len(keys)}")
@@ -516,7 +539,7 @@ def main() -> int:
         print(" WARN: empty slate — nothing to compute.")
         return 1
 
-    fg3m_model = _fg3m_hurdle_model() if "fg3m" in args.stats else None
+    fg3m_model = _fg3m_hurdle_model(required=("fg3m" in args.stats)) if "fg3m" in args.stats else None
 
     rows: list[dict] = []
     skipped = 0
@@ -539,7 +562,7 @@ def main() -> int:
     df = pd.DataFrame(rows)
     print(f"  per-stat counts:\n{df.groupby('stat').size().to_string()}")
     df.to_parquet(out_path, index=False)
-    print(f"\nwrote {out_path.relative_to(REPO_ROOT)}  ({_now_utc_iso()})")
+    print(f"\nwrote {_display_path(out_path)}  ({_now_utc_iso()})")
     return 0
 
 
