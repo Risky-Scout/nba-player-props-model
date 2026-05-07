@@ -271,6 +271,7 @@ jobs:
               echo "::error::operator daily check FAILED - see step log"; exit 1; }
 
       - name: Upload predictions to server via SFTP
+        continue-on-error: true
         env:
           SFTP_HOST: ${{ secrets.SFTP_HOST }}
           SFTP_USER: ${{ secrets.SFTP_USER }}
