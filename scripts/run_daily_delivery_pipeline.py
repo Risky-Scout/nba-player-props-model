@@ -69,6 +69,7 @@ BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
 SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
 PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
+CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
 DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
 WOO_EXPORT = REPO_ROOT / "scripts" / "build_wizard_of_odds_public_export.py"
@@ -119,10 +120,45 @@ def _stat_grid(date: str) -> int:
     return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
 
 
-def _build(date: str, *, snapshot: str, rebuild_canonical: bool) -> int:
+def _canonical_model_only_path(date: str) -> Path:
+    return (
+        REPO_ROOT
+        / "deliveries"
+        / date
+        / "canonical_source"
+        / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+
+
+def _canonical_from_stat_grid(date: str) -> Path | None:
+    """Build canonical MODEL_ONLY parquet from the PMF-only stat grid."""
+    if not CANONICAL_FROM_STAT_GRID.exists():
+        print(f" canonical_from_stat_grid: {CANONICAL_FROM_STAT_GRID} missing, skipping")
+        return None
+
+    cmd = [PYTHON, str(CANONICAL_FROM_STAT_GRID), "--date", date]
+    rc = _run(cmd, allow_fail=True, label=f"canonical_from_stat_grid {date}")
+    if rc != 0:
+        return None
+
+    p = _canonical_model_only_path(date)
+    return p if p.exists() else None
+
+
+def _build(
+    date: str,
+    *,
+    snapshot: str,
+    rebuild_canonical: bool,
+    model_only_path: Path | None = None,
+) -> int:
     cmd = [PYTHON, str(BUILD), "--date", date, "--snapshot", snapshot]
-    if rebuild_canonical:
+
+    if model_only_path is not None:
+        cmd.extend(["--model-only", str(model_only_path)])
+    elif rebuild_canonical:
         cmd.append("--rebuild-canonical")
+
     return _run(cmd, label=f"build {date} {snapshot}")
 
 
@@ -300,7 +336,8 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _stat_grid(date)
-    _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical)
+    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning")
     _refresh_index()
     return 0
@@ -321,7 +358,8 @@ def run_woo_morning_monetization(
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _stat_grid(date)
-    _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical)
+    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _woo_export(
         snapshot_type_label="woo_morning_monetization",
         finality_status_override="PROVISIONAL_EARLY_MARKET",
@@ -342,7 +380,8 @@ def run_woo_afternoon_refresh(
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _stat_grid(date)
-    _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical)
+    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _woo_export(
         snapshot_type_label="woo_afternoon_refresh",
         finality_status_override="PROVISIONAL_EARLY_MARKET",
@@ -364,7 +403,8 @@ def run_derek_near_lineup(
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _stat_grid(date)
-    _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical)
+    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup")
     _woo_export(
         snapshot_type_label=None,
@@ -379,7 +419,8 @@ def run_close_lock(date: str, *, regions: list[str],
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _stat_grid(date)
-    _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical)
+    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup")
     _woo_export(
         snapshot_type_label=None,
