@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "date": "2026-05-07",
-  "generated_at": "2026-05-07T20:22:49+00:00",
+  "generated_at": "2026-05-07T21:01:45+00:00",
   "players": [
     {
       "player_id": 9,
@@ -45059,7 +45059,7 @@
     }
   ],
   "count_players": 66,
-  "count_props": 2416,
+  "count_props": 2382,
   "source": "deliveries/2026-05-07/wizard_of_odds/full_pmfs_wide.parquet",
   "tail_bucket_convention": "PMF support points beyond the dense ladder are rendered as labeled tail buckets (e.g. '20+'), never as discrete P(X=k_max)."
 }
