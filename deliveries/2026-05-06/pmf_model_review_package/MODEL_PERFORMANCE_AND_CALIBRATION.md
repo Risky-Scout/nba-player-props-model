@@ -1,21 +1,49 @@
-# Model performance & calibration — 2026-05-06
+# Model Performance and Calibration — 2026-05-06
 
-**after_game_status**: `pending_outcomes`
+- champion_model_id: `challenger-2026-04-30`
+- trained_through_date: `2026-04-30`
+- calibrated_through_date: `2026-04-30`
+- after_game_status: **scored**
+- expected_target_stats: ['pts', 'reb', 'ast', 'fg3m', 'tov']
+- scored_target_stats: ['pts', 'reb', 'ast', 'fg3m', 'tov']
+- documented_blocked_target_stats: []
+- missing_target_stats (undocumented): []
 
-This file will be re-written by `scripts/score_daily_pmf_delivery_after_game.py` once box-score finals are loaded into `data/player_game_stats.parquet` for 2026-05-06.
+PMFs are model-only and are NOT market-anchored. Comparisons against
+market lines below use realized outcomes only.
 
-## Rollup at delivery time
+## Aggregate PMF metrics
 
-- delivery_date: `2026-05-06`
-- props in delivery: **111**
-- finality_status: `provisional`
-- finality_blockers: market_coverage_none, role_bucket_missing
-- model_version: `18b0a11#phase10c`
+- rows scored: 86
+- mean NLL: 1.9547
+- mean RPS: 0.0621
+- mean abs error: 2.0275
+- mean outcome_prob_assigned: 0.1743
 
-## What this file will contain after scoring
+## Per stat
 
-- props scored, PMF NLL, RPS, mean absolute error
-- assigned probability to the realized outcome
-- model logloss / Brier per (stat, role_bucket) where market lines exist
-- CLV summary where morning and close snapshots both exist
-- model vs market logloss / Brier comparison **only when directly measured** — no claims of market superiority otherwise
+| Stat | n | NLL | RPS | abs_mean_error |
+| --- | ---: | ---: | ---: | ---: |
+| ast | 13 | 1.9667 | 0.0435 | 1.2028 |
+| fg3m | 14 | 1.6418 | 0.0387 | 1.3063 |
+| pts | 16 | 2.6963 | 0.1467 | 5.4724 |
+| reb | 15 | 2.1650 | 0.0571 | 1.5117 |
+| tov | 28 | 1.5692 | 0.0368 | 1.0787 |
+
+## Per role bucket
+
+| Role | n | NLL | RPS | abs_mean_error |
+| --- | ---: | ---: | ---: | ---: |
+| bench | 6 | 1.9771 | 0.0492 | 1.3485 |
+| rotation | 18 | 2.1736 | 0.0704 | 2.1385 |
+| starter | 34 | 2.1524 | 0.0808 | 2.8699 |
+| nan | 28 | 1.5692 | 0.0368 | 1.0787 |
+
+## Market-line scoring (model only)
+
+- No market-line rows were scored for this delivery.
+
+## Model vs market
+
+- rows_paired: 0 — no overall delta computed for this slate.
+

@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "age_days=3.82 max=14",
+      "detail": "age_days=5.85 max=14",
       "name": "champion_freshness",
       "passed": true
     },
@@ -26,7 +26,7 @@
       "passed": true
     },
     {
-      "detail": "delivery_generated_at=None promoted_at_utc='2026-05-01T12:48:39+00:00' (advisory)",
+      "detail": "no woo_manifest at deliveries/2026-05-07/ (advisory)",
       "name": "latest_delivery_after_champion_promotion",
       "passed": true
     },
@@ -41,9 +41,9 @@
       "passed": true
     }
   ],
-  "code_commit": "cd51e43d40a8f7ce89acc69254a98655b84e412e",
+  "code_commit": "d67a4b4ede25795fc949230a43a84e783ea31c2c",
   "facts": {
-    "champion_age_days": 3.82,
+    "champion_age_days": 5.85,
     "champion_calibrated_through_date": "2026-04-30",
     "champion_calibrator_actual_sha_prefixes": {
       "ast": "aa73d678b1512d33",
@@ -65,7 +65,7 @@
     "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
     "champion_promoted_at_utc": "2026-05-01T12:48:39+00:00",
     "champion_trained_through_date": "2026-04-30",
-    "delivery_date_checked": "2026-05-04",
+    "delivery_date_checked": "2026-05-06",
     "delivery_manifest_stamped": {
       "derek": {
         "calibrated_through_date": "2026-04-30",
@@ -74,7 +74,7 @@
         "model_source": "champion_pointer",
         "model_version": null,
         "no_challenger_artifacts_used": true,
-        "path": "deliveries/2026-05-04/derek_forward_feed/feed_manifest.json",
+        "path": "deliveries/2026-05-06/derek_forward_feed/feed_manifest.json",
         "trained_through_date": "2026-04-30"
       },
       "woo": {
@@ -82,9 +82,9 @@
         "champion_model_id": "challenger-2026-04-30",
         "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
         "model_source": "champion_pointer",
-        "model_version": "c74808d#phase10c",
+        "model_version": "18b0a11#phase10c",
         "no_challenger_artifacts_used": true,
-        "path": "deliveries/2026-05-04/wizard_of_odds/run_manifest.json",
+        "path": "deliveries/2026-05-06/wizard_of_odds/run_manifest.json",
         "trained_through_date": "2026-04-30"
       }
     },
@@ -94,10 +94,9 @@
       "predict.py",
       "build_stat_grid_pmfs.py"
     ],
-    "latest_delivery_date": "2026-05-04",
-    "latest_delivery_generated_at": null
+    "latest_delivery_date": "2026-05-07"
   },
-  "generated_at_utc": "2026-05-05T08:34:37+00:00",
+  "generated_at_utc": "2026-05-07T09:13:04+00:00",
   "max_stale_days": 14,
   "passed": true,
   "schema_version": "1.0"

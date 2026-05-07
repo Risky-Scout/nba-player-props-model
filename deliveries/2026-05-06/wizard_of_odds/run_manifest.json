@@ -1,4 +1,14 @@
 {
+  "after_game": {
+    "abs_mean_error": 2.0274718286989,
+    "n_clv_rows": 0,
+    "n_scored_market_rows": 0,
+    "n_scored_pmf_rows": 86,
+    "nll_mean": 1.9547244754855018,
+    "rps_mean": 0.06208888951103101,
+    "scored_at_utc": "2026-05-07T09:12:58Z",
+    "status": "scored"
+  },
   "calibrated_through_date": "2026-04-30",
   "calibration_run_id": "nightly-20260501T124701",
   "champion_artifact_dir": "artifacts/models",
@@ -42,12 +52,12 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-07T00:50:05+00:00",
+  "metadata_stamped_at_utc": "2026-05-07T09:13:04+00:00",
   "model_source": "champion_pointer",
   "model_version": "18b0a11#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-07T00:50:05+00:00",
+  "output_generated_at_utc": "2026-05-07T09:13:04+00:00",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
   "pipeline_run_id": "26f5d323-6a29-48b6-9b99-34bcb71e4bd4",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
@@ -106,7 +116,7 @@
       "path": "predictions/all_props_2026-05-06.parquet"
     }
   },
-  "stamp_code_commit": "18b0a110d0a09a6885b9c0ebb40d3059a2a7247c",
+  "stamp_code_commit": "d67a4b4ede25795fc949230a43a84e783ea31c2c",
   "target_stats": {
     "expected": [
       "pts",
