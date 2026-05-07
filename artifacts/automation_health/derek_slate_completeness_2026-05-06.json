@@ -1,0 +1,42 @@
+{
+  "delivery_date": "2026-05-06",
+  "derek_game_folders": {},
+  "eligible_close_lock": [],
+  "eligible_current_live": [],
+  "eligible_t_minus_25": [],
+  "games_already_tipped": [
+    "21707973"
+  ],
+  "games_in_predictions": [
+    "21707973",
+    "21708674"
+  ],
+  "games_in_real_slate": [
+    "21707973",
+    "21708674"
+  ],
+  "games_missed_t_minus_25": [],
+  "games_missing_from_predictions": [],
+  "games_with_no_props": [],
+  "games_with_null_start_time": [
+    "21708674"
+  ],
+  "now_utc": "2026-05-07T02:31:27Z",
+  "predictions_parquet_present": true,
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 2,
+    "delivery_date": "2026-05-06",
+    "from_predictions_count": 1,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 4,
+    "pmf_display_matchups_parsed": 2,
+    "predictions_present": true,
+    "predictions_rows": 27,
+    "predictions_unique_games": 2,
+    "resolved_count": 1,
+    "unresolved_count": 1
+  }
+}
