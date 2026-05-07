@@ -156,6 +156,14 @@ jobs:
             exit 1
           fi
 
+      # Phase 13U Part D: enrich predictions parquet with game_start_time
+      # so the per-game snapshot dispatcher can compute T-25/close-lock
+      # windows. Without this, dispatcher misses every snapshot window.
+      - name: Enrich predictions with game_start_time (Phase 13U)
+        run: |
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
+          python scripts/enrich_predictions_game_start_times.py --delivery-date $DATE --no-backup
+
       # Phase 13AD: refresh nba_props_today.json so the WoO front-end
       # static fallback never goes stale, then run the prediction-output
       # verifier and the WoO page verifier. Failures here surface as
