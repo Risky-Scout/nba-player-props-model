@@ -160,6 +160,9 @@ jobs:
       # so the per-game snapshot dispatcher can compute T-25/close-lock
       # windows. Without this, dispatcher misses every snapshot window.
       - name: Enrich predictions with game_start_time (Phase 13U)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python scripts/enrich_predictions_game_start_times.py --delivery-date $DATE --no-backup
