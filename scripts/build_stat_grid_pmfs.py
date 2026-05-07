@@ -76,6 +76,7 @@ from nba_props_model.features.availability_asof import (  # noqa: E402
     AvailabilityBuilder as _AvailabilityBuilder,
 )
 from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
+from nba_props_model.calibration.role_buckets import role_bucket_features_from_minutes_dist  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
 
 PRED_DIR = REPO_ROOT / "predictions"
@@ -420,6 +421,21 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
     if mp_dist is None:
         return []
 
+    try:
+        role_features = role_bucket_features_from_minutes_dist(mp_dist)
+    except Exception:
+        role_features = {}
+
+    role_bucket = role_features.get("role_bucket")
+    role_source = "derived_from_projected_minutes" if role_bucket else "missing"
+    mp_bucket_val = role_features.get("mp_bucket")
+    usage_bucket_val = base.get("usage_bucket") if isinstance(base, dict) else None
+    minutes_mean = role_features.get("minutes_mean")
+    minutes_q50 = role_features.get("minutes_q50")
+    p_inactive_used = role_features.get("p_inactive_used", role_features.get("p_inactive"))
+    if p_inactive_used is None:
+        p_inactive_used = getattr(mp_dist, "p_inactive", None)
+
     # Build the PMF dict for this player. The interaction features added
     # in predict.py are per-stat; build_prop_pmfs only needs the base
     # feature row (it pulls per-stat sub-features internally).
@@ -447,6 +463,13 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
             "game": glabel,
             "is_home": bool(is_home),
             "opp_team_id": int(opp_id) if opp_id else None,
+            "role_bucket": role_bucket,
+            "role_source": role_source,
+            "mp_bucket": mp_bucket_val,
+            "usage_bucket": usage_bucket_val,
+            "minutes_mean": minutes_mean,
+            "minutes_q50": minutes_q50,
+            "p_inactive_used": p_inactive_used,
             "stat": stat,
             "side": "MODEL_ONLY",
             "line": None,

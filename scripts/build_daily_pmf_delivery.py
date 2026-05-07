@@ -378,14 +378,21 @@ def _stat_grid_rows(date: str) -> list[dict]:
             "game": r.get("game"),
             "game_start_et": commence_map.get(gid) if gid is not None else None,
             "stat": r.get("stat"),
-            # No mp_bucket → derive role only when we trust the source.
-            "role_bucket": None,
-            "role_source": "phase12_stat_grid",
-            "mp_bucket": None,
-            "usage_bucket": None,
-            "minutes_mean": None,
-            "minutes_q50": None,
-            "p_inactive_used": None,
+            "role_bucket": (r.get("role_bucket")
+                            if pd.notna(r.get("role_bucket")) else None),
+            "role_source": (r.get("role_source")
+                            if pd.notna(r.get("role_source"))
+                            else "phase12_stat_grid"),
+            "mp_bucket": (r.get("mp_bucket")
+                          if pd.notna(r.get("mp_bucket")) else None),
+            "usage_bucket": (r.get("usage_bucket")
+                             if pd.notna(r.get("usage_bucket")) else None),
+            "minutes_mean": (r.get("minutes_mean")
+                             if pd.notna(r.get("minutes_mean")) else None),
+            "minutes_q50": (r.get("minutes_q50")
+                            if pd.notna(r.get("minutes_q50")) else None),
+            "p_inactive_used": (r.get("p_inactive_used")
+                                if pd.notna(r.get("p_inactive_used")) else None),
             "support_min": 0,
             "support_max": (int(r["support_max"])
                               if pd.notna(r.get("support_max")) else None),
