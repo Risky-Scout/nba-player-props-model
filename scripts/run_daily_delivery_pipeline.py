@@ -72,6 +72,7 @@ STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
 DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
+DEREK_GAME_SNAPSHOTS_FROM_DELIVERY = REPO_ROOT / "scripts" / "build_derek_game_snapshots_from_delivery.py"
 WOO_EXPORT = REPO_ROOT / "scripts" / "publish_woo_public_export.py"
 WOO_DASHBOARD = REPO_ROOT / "scripts" / "build_woo_dashboard.py"
 
@@ -169,6 +170,26 @@ def _build(
 def _score(date: str) -> int:
     cmd = [PYTHON, str(SCORE), "--date", date]
     return _run(cmd, allow_fail=True, label=f"score {date}")
+
+
+
+def _derek_game_snapshots_from_delivery(date: str, *, snapshot_type: str) -> int:
+    """Build Derek per-game snapshots from corrected WoO PMF delivery.
+
+    This prevents false no_games_today.json when the corrected PMF delivery
+    has games, and guarantees Derek uses the same core PMF source as WoO.
+    """
+    if not DEREK_GAME_SNAPSHOTS_FROM_DELIVERY.exists():
+        print(f"  derek game snapshots: {DEREK_GAME_SNAPSHOTS_FROM_DELIVERY} missing, skipping")
+        return 0
+    cmd = [
+        PYTHON, str(DEREK_GAME_SNAPSHOTS_FROM_DELIVERY),
+        "--date", date,
+        "--snapshot-type", snapshot_type,
+        "--force",
+    ]
+    return _run(cmd, allow_fail=False, label=f"derek game snapshots from delivery ({snapshot_type})")
+
 
 
 def _refresh_index() -> int:
@@ -346,6 +367,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning")
+    _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
     _refresh_index()
     return 0
 
@@ -370,6 +392,7 @@ def run_woo_morning_monetization(
     _woo_export(
         snapshot_type_label="woo_morning_monetization",
         finality_status_override="PROVISIONAL_EARLY_MARKET",
+        only_date=date,
     )
     _refresh_index()
     return 0
@@ -392,6 +415,7 @@ def run_woo_afternoon_refresh(
     _woo_export(
         snapshot_type_label="woo_afternoon_refresh",
         finality_status_override="PROVISIONAL_EARLY_MARKET",
+        only_date=date,
     )
     _refresh_index()
     return 0
@@ -413,9 +437,11 @@ def run_derek_near_lineup(
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup")
+    _derek_game_snapshots_from_delivery(date, snapshot_type="lineup")
     _woo_export(
         snapshot_type_label=None,
         finality_status_override=None,
+        only_date=date,
     )
     _refresh_index()
     return 0
@@ -429,9 +455,11 @@ def run_close_lock(date: str, *, regions: list[str],
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup")
+    _derek_game_snapshots_from_delivery(date, snapshot_type="close_lock")
     _woo_export(
         snapshot_type_label=None,
         finality_status_override=None,
+        only_date=date,
     )
     _refresh_index()
     return 0
