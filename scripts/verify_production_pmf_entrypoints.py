@@ -134,7 +134,7 @@ def main() -> int:
                 f"{ftp_wf} must verify corrected PMF delivery before FTP deploy")
 
     # Existing Derek workflow must not keep old dispatcher/no-games path as production authority.
-    derek_wf = ".github/workflows/derek_live_game_snapshots.yml"
+    derek_wf = ".github/workflows/derek_game_snapshots.yml"
     derek_wf_s = read(derek_wf)
     require("Build Derek snapshots from corrected PMF delivery" in derek_wf_s,
             f"{derek_wf} must build from corrected PMF delivery")

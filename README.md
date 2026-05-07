@@ -112,7 +112,7 @@ Reports:
 | `.github/workflows/nightly_training_calibration.yml` | 5× daily cron (09:30/12:30/15:30/18:30/21:30 UTC). Pre-resolver BDL refresh + multi-cron deferred-retry. Halt = `TRAINING_VALID_SKIP_PASS` (exit 0), real crash = red. Writes audit artifacts and commits as Joseph Shackelford. |
 | `.github/workflows/daily_predictions.yml` | Daily 13:00 UTC predict + grade. Refreshes `nba_props_today.json`, runs `verify_daily_prediction_outputs`, `verify_woo_nba_props_page`, daily automation health, full production contract. |
 | `.github/workflows/daily_pmf_delivery.yml` | Multi-mode (`derek_near_lineup` / `woo_morning_monetization` / `woo_afternoon_refresh` / `after_game`). Near-lineup uses TZ=America/New_York date resolution; predict.py runs first if dated parquet missing. After-game cron (06:30 UTC) settles outcomes and re-runs scoring + experience study. |
-| `.github/workflows/derek_live_game_snapshots.yml` | Per-game current_live / T-25 / close-lock dispatcher every 15 min during the slate window. Hardened child-failure logging + `failed_snapshot_manifest.json` writer (Phase 13AJ). |
+| `.github/workflows/derek_game_snapshots.yml` | Per-game current_live / T-25 / close-lock dispatcher every 15 min during the slate window. Hardened child-failure logging + `failed_snapshot_manifest.json` writer (Phase 13AJ). |
 | `.github/workflows/wizard_of_odds_ftp_deploy.yml` | Pushes WoO public export artifacts to the FTP host that backs the deployed pages. |
 
 Each workflow honors:

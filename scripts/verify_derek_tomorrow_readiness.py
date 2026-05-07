@@ -11,7 +11,7 @@ Inputs:
 Checks:
   1. Daily PMF delivery workflow (`daily_pmf_delivery.yml`) has a
      scheduled `derek_near_lineup` cron firing well before tip.
-  2. Derek live snapshot workflow (`derek_live_game_snapshots.yml`) has
+  2. Derek live snapshot workflow (`derek_game_snapshots.yml`) has
      scheduled crons for current_live, t_minus_25, and close_lock that
      cover the slate window.
   3. Workflows resolve the slate using TZ=America/New_York rather than
@@ -78,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     # 2. derek_live_game_snapshots cron coverage
-    derek_live = REPO_ROOT / ".github" / "workflows" / "derek_live_game_snapshots.yml"
+    derek_live = REPO_ROOT / ".github" / "workflows" / "derek_game_snapshots.yml"
     derek_live_text = _read_text(derek_live)
     if not derek_live_text:
         failures.append(f"missing {derek_live.relative_to(REPO_ROOT)}")
@@ -86,12 +86,12 @@ def main(argv: list[str] | None = None) -> int:
         for snap_type in ("current_live", "t_minus_25", "close_lock"):
             if snap_type not in derek_live_text:
                 failures.append(
-                    f"derek_live_game_snapshots.yml does not reference "
+                    f"derek_game_snapshots.yml does not reference "
                     f"snapshot_type={snap_type!r}"
                 )
         if "BDL_API_KEY: ${{ secrets.BDL_API_KEY }}" not in derek_live_text:
             failures.append(
-                "derek_live_game_snapshots.yml does not pass BDL_API_KEY "
+                "derek_game_snapshots.yml does not pass BDL_API_KEY "
                 "through env"
             )
         # Cron coverage — at least 4 firings/hour during slate window.
@@ -100,7 +100,7 @@ def main(argv: list[str] | None = None) -> int:
         facts["derek_live_cron_count"] = len(cron_lines)
         if len(cron_lines) < 1:
             failures.append(
-                "derek_live_game_snapshots.yml has no scheduled crons"
+                "derek_game_snapshots.yml has no scheduled crons"
             )
 
     # 3. nightly training BDL env pass-through
