@@ -26,6 +26,7 @@ on:
     # level.
     - cron: '0,10,20,30,40,50 16,17,18,19,20,21,22,23,0,1,2,3,4 * * *'
   workflow_dispatch:
+    # Manual dispatch trigger reindexed for corrected PMF workflow.
     inputs:
       delivery_date:
         description: "YYYY-MM-DD; blank = today UTC"
