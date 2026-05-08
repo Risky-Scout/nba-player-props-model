@@ -1,18 +1,21 @@
 # PMF calibration run
 
-**Run at:** 2026-05-07T17:09:02.520473Z
+**Run at:** 2026-05-08T10:31:59.670308Z
 **Folds:** 4 walk-forward, 28-day validation, 365-day minimum training window.
-**Production artifact backup:** `/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/archive/aggregate_only_20260507_170901`
+**Production artifact backup:** `/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/archive/aggregate_only_20260508_103157`
 
 ## Per-stat result
 
 | Stat | N OOF rows | Calibrator fitted | PIT raw mean/std | PIT cal mean/std |
 |---|---:|---|---|---|
-| ast | 14,054 | no (insufficient data) | - | - |
-| fg3m | 14,902 | no (insufficient data) | - | - |
-| pts | 14,054 | no (insufficient data) | - | - |
-| reb | 14,054 | no (insufficient data) | - | - |
-| tov | 14,054 | no (insufficient data) | - | - |
+| ast | 15,546 | no (insufficient data) | - | - |
+| blk | 15,546 | no (insufficient data) | - | - |
+| fg3m | 15,546 | no (insufficient data) | - | - |
+| pts | 15,546 | no (insufficient data) | - | - |
+| reb | 15,546 | no (insufficient data) | - | - |
+| stl | 15,546 | no (insufficient data) | - | - |
+| stocks | 15,546 | no (insufficient data) | - | - |
+| tov | 15,546 | no (insufficient data) | - | - |
 
 ## Known caveat
 
