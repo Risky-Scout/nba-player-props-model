@@ -146,6 +146,11 @@ def main() -> int:
     require("snapshot_type=all" in pmf_delivery_s,
             f"{pmf_delivery_wf} must trigger all due Derek snapshot types")
 
+    require("github.event_name == 'workflow_run'" in pmf_delivery_s,
+            f"{pmf_delivery_wf} must run a delivery job after predictions workflow_run")
+    require("github.event.workflow_run.conclusion == 'success'" in pmf_delivery_s,
+            f"{pmf_delivery_wf} workflow_run delivery must require successful predictions")
+
     require("github.event.schedule == '25 22 * * *'" in pmf_delivery_s,
             f"{pmf_delivery_wf} Derek bridge must be gated to Derek near-lineup schedules")
     require("github.event.schedule == '25 3 * * *'" in pmf_delivery_s,

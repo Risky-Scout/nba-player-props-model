@@ -46,13 +46,10 @@ on:
   # near-tip / monetization / after-game runs that don't depend on a
   # fresh predict cycle.
   #
-  # NOTE: this workflow_run trigger is currently INERT. None of the 6
-  # jobs below have an `if:` clause that accepts
-  # `event_name == 'workflow_run'`, so workflow_run firings reach this
-  # workflow but no job runs (every job's gate requires either
-  # workflow_dispatch or a specific cron schedule). The actual morning
-  # publish runs via woo_morning_monetization on the 15:00 UTC cron.
-  # Left registered for future hookup; do not rely on it.
+  # Phase 13AN: workflow_run is ACTIVE. After the Daily Pipeline writes
+  # predictions/all_props_<date>.parquet, woo_morning_monetization runs
+  # automatically so the corrected PMF delivery package is generated
+  # without waiting for the next cron window.
   workflow_run:
     workflows: ["NBA Props Model — Daily Pipeline"]
     types: [completed]
@@ -248,7 +245,7 @@ jobs:
   woo_morning_monetization:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: |
+    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' || github.event.schedule == '0 15 * * *' }}
       (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization') ||
       github.event.schedule == '0 15 * * *'
     steps:
