@@ -989,3 +989,26 @@ jobs:
           else
             echo "::notice::AFTER_GAME_RAN date=${{ steps.d.outputs.date }}"
           fi
+
+  derek_schedule_bridge:
+    name: Derek schedule bridge from PMF delivery cron
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Trigger Derek due-snapshot workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
+          echo "Triggering Derek due-snapshot workflow for $DATE"
+          gh workflow run derek_live_game_snapshots.yml \
+            --repo "${{ github.repository }}" \
+            --ref main \
+            -f delivery_date="$DATE" \
+            -f snapshot_type=all \
+            -f allow_backfill_test=false \
+            -f force=false

@@ -135,6 +135,17 @@ def main() -> int:
     require("scripts/score_daily_pmf_delivery_after_game.py" in full_contract_s,
             f"{full_contract} must score corrected PMF delivery after game")
 
+    # Derek must also be triggered by an already-firing scheduled workflow,
+    # because GitHub scheduler can lag/drop direct Derek schedule registration.
+    pmf_delivery_wf = ".github/workflows/daily_pmf_delivery.yml"
+    pmf_delivery_s = read(pmf_delivery_wf)
+    require("derek_schedule_bridge" in pmf_delivery_s,
+            f"{pmf_delivery_wf} must include Derek schedule bridge")
+    require("gh workflow run derek_live_game_snapshots.yml" in pmf_delivery_s,
+            f"{pmf_delivery_wf} must trigger Derek live workflow")
+    require("snapshot_type=all" in pmf_delivery_s,
+            f"{pmf_delivery_wf} must trigger all due Derek snapshot types")
+
     # WoO FTP deploy must verify corrected PMF delivery before deploy.
     ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
     ftp_s = read(ftp_wf)
