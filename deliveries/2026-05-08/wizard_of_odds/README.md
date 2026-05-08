@@ -9,7 +9,7 @@
 - market coverage: **full**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 340
-- model: `bc70d9d#phase10c`
+- model: `12676b8#phase10c`
 
 ### Caveats
 
@@ -42,7 +42,7 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 340}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=7956, full_pmfs_wide=340, market_comparison=2274, publishable_edges=1578
+- **row counts**: fair_odds_board=7956, full_pmfs_wide=340, market_comparison=2263, publishable_edges=1576
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
