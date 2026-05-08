@@ -25,7 +25,7 @@ def fail(msg: str) -> None:
     raise SystemExit(f"FATAL: {msg}")
 
 
-def verify_date(date: str) -> None:
+def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
     delivery = REPO_ROOT / "deliveries" / date
     wide_path = delivery / "wizard_of_odds" / "full_pmfs_wide.parquet"
     if not wide_path.exists():
@@ -90,7 +90,7 @@ def verify_date(date: str) -> None:
             fail(f"{date} false Derek no_games_today.json exists despite games={game_ids}")
 
     manifests = sorted(derek_root.glob("*/*/snapshot_manifest.json"))
-    if (not args.skip_derek_snapshots) and (not manifests):
+    if (not skip_derek_snapshots) and (not manifests):
         fail(f"{date} missing Derek per-game snapshot manifests")
 
     for mpath in manifests:
@@ -122,7 +122,7 @@ def main() -> int:
         help="WoO/FTP-only verification: do not require Derek per-game snapshot manifests",
     )
     args = ap.parse_args()
-    verify_date(args.date)
+    verify_date(args.date, skip_derek_snapshots=args.skip_derek_snapshots)
     return 0
 
 
