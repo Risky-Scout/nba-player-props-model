@@ -1,0 +1,402 @@
+{
+  "date": "2026-05-08",
+  "generated_at": "2026-05-08T14:51:57.550389",
+  "props": [
+    {
+      "player_name": "Mitchell Robinson",
+      "game": "New York Knicks @ Philadelphia 76ers",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6441,
+      "market_prob": 0.3445,
+      "ev": 0.8036,
+      "edge": 0.2996,
+      "fair_odds_over": 181,
+      "fair_odds_under": -181,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -212,
+        "under_odds": 180,
+        "best_odds": 180
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6441,
+          "fair_odds": -181,
+          "display_prob": "64.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2212,
+          "fair_odds": 352,
+          "display_prob": "22.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1016,
+          "fair_odds": 884,
+          "display_prob": "10.2%"
+        }
+      ]
+    },
+    {
+      "player_name": "Anthony Edwards",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.742,
+      "market_prob": 0.4312,
+      "ev": 0.7437,
+      "edge": 0.3108,
+      "fair_odds_over": 288,
+      "fair_odds_under": -288,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -128,
+        "under_odds": 135,
+        "best_odds": 135
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.742,
+          "fair_odds": -288,
+          "display_prob": "74.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2032,
+          "fair_odds": 392,
+          "display_prob": "20.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0315,
+          "fair_odds": 3075,
+          "display_prob": "3.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Mike Conley",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 1.5,
+      "model_prob": 0.5982,
+      "market_prob": 0.3472,
+      "ev": 0.687,
+      "edge": 0.251,
+      "fair_odds_over": -149,
+      "fair_odds_under": 149,
+      "pmf_median": 2,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": 182,
+        "under_odds": -200,
+        "best_odds": 182
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1188,
+          "fair_odds": 742,
+          "display_prob": "11.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2829,
+          "fair_odds": 253,
+          "display_prob": "28.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2928,
+          "fair_odds": 242,
+          "display_prob": "29.3%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1884,
+          "fair_odds": 431,
+          "display_prob": "18.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0795,
+          "fair_odds": 1158,
+          "display_prob": "8.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0376,
+          "fair_odds": 2560,
+          "display_prob": "3.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Karl-Anthony Towns",
+      "game": "New York Knicks @ Philadelphia 76ers",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6023,
+      "market_prob": 0.3587,
+      "ev": 0.5659,
+      "edge": 0.2436,
+      "fair_odds_over": 151,
+      "fair_odds_under": -151,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -220,
+        "under_odds": 160,
+        "best_odds": 160
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6023,
+          "fair_odds": -151,
+          "display_prob": "60.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2595,
+          "fair_odds": 285,
+          "display_prob": "25.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1014,
+          "fair_odds": 886,
+          "display_prob": "10.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0052,
+          "fair_odds": 19131,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.005,
+          "fair_odds": 19900,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Mikal Bridges",
+      "game": "New York Knicks @ Philadelphia 76ers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.7274,
+      "market_prob": 0.4493,
+      "ev": 0.542,
+      "edge": 0.2781,
+      "fair_odds_over": 267,
+      "fair_odds_under": -267,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -137,
+        "under_odds": 112,
+        "best_odds": 112
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.3437,
+          "fair_odds": 191,
+          "display_prob": "34.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3837,
+          "fair_odds": 161,
+          "display_prob": "38.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2171,
+          "fair_odds": 361,
+          "display_prob": "21.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0555,
+          "fair_odds": 1702,
+          "display_prob": "5.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jaden McDaniels",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6781,
+      "market_prob": 0.4221,
+      "ev": 0.5392,
+      "edge": 0.256,
+      "fair_odds_over": 211,
+      "fair_odds_under": -211,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -152,
+        "under_odds": 127,
+        "best_odds": 127
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6781,
+          "fair_odds": -211,
+          "display_prob": "67.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2348,
+          "fair_odds": 326,
+          "display_prob": "23.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0571,
+          "fair_odds": 1651,
+          "display_prob": "5.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "OG Anunoby",
+      "game": "New York Knicks @ Philadelphia 76ers",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.651,
+      "market_prob": 0.396,
+      "ev": 0.5299,
+      "edge": 0.255,
+      "fair_odds_over": 187,
+      "fair_odds_under": -187,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -185,
+        "under_odds": 135,
+        "best_odds": 135
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.651,
+          "fair_odds": -187,
+          "display_prob": "65.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2206,
+          "fair_odds": 353,
+          "display_prob": "22.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.096,
+          "fair_odds": 942,
+          "display_prob": "9.6%"
+        }
+      ]
+    },
+    {
+      "player_name": "Anthony Edwards",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7477,
+      "market_prob": 0.4884,
+      "ev": 0.4954,
+      "edge": 0.2593,
+      "fair_odds_over": 296,
+      "fair_odds_under": -296,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -110,
+        "under_odds": 100,
+        "best_odds": 100
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1587,
+          "fair_odds": 530,
+          "display_prob": "15.9%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3059,
+          "fair_odds": 227,
+          "display_prob": "30.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2832,
+          "fair_odds": 253,
+          "display_prob": "28.3%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1657,
+          "fair_odds": 504,
+          "display_prob": "16.6%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0572,
+          "fair_odds": 1648,
+          "display_prob": "5.7%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0294,
+          "fair_odds": 3301,
+          "display_prob": "2.9%"
+        }
+      ]
+    }
+  ]
+}
