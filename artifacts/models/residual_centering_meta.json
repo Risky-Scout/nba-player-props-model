@@ -1,36 +1,36 @@
 {
   "fallback": {
-    "pts": 1.0200000000000005,
-    "ast": 0.030000000000000027,
-    "reb": 0.0,
+    "pts": 1.5700000000000003,
+    "ast": 0.0,
+    "reb": 0.004999999999999893,
     "fg3m": -0.004999999999999893
   },
   "meta": {
     "pts": {
-      "n": 44,
-      "cv_mae_mean": 9.04723768738186,
-      "cv_mae_std": 2.7838430233761495,
-      "target_median": 1.0200000000000005,
-      "target_mean": 1.6131818181818183,
-      "fallback_correction": 1.0200000000000005,
+      "n": 45,
+      "cv_mae_mean": 8.772707020432614,
+      "cv_mae_std": 2.505011221972993,
+      "target_median": 1.5700000000000003,
+      "target_mean": 1.6662222222222223,
+      "fallback_correction": 1.5700000000000003,
       "model_type": "Ridge"
     },
     "ast": {
-      "n": 56,
-      "cv_mae_mean": 2.0947905026008184,
-      "cv_mae_std": 0.6401612172773281,
-      "target_median": 0.030000000000000027,
-      "target_mean": 0.3357142857142858,
-      "fallback_correction": 0.030000000000000027,
+      "n": 57,
+      "cv_mae_mean": 2.0692423601126237,
+      "cv_mae_std": 0.3381903957205734,
+      "target_median": 0.0,
+      "target_mean": 0.31228070175438605,
+      "fallback_correction": 0.0,
       "model_type": "GradientBoostingRegressor"
     },
     "reb": {
-      "n": 81,
-      "cv_mae_mean": 2.824087915075357,
-      "cv_mae_std": 0.4332388464512302,
-      "target_median": 0.0,
-      "target_mean": 0.15049382716049384,
-      "fallback_correction": 0.0,
+      "n": 82,
+      "cv_mae_mean": 2.979703151269252,
+      "cv_mae_std": 0.36948936990890413,
+      "target_median": 0.004999999999999893,
+      "target_mean": 0.20963414634146343,
+      "fallback_correction": 0.004999999999999893,
       "model_type": "GradientBoostingRegressor"
     },
     "fg3m": {
