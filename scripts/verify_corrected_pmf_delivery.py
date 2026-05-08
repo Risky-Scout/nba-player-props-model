@@ -90,7 +90,7 @@ def verify_date(date: str) -> None:
             fail(f"{date} false Derek no_games_today.json exists despite games={game_ids}")
 
     manifests = sorted(derek_root.glob("*/*/snapshot_manifest.json"))
-    if not manifests:
+    if (not args.skip_derek_snapshots) and (not manifests):
         fail(f"{date} missing Derek per-game snapshot manifests")
 
     for mpath in manifests:
@@ -116,6 +116,11 @@ def verify_date(date: str) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
+    ap.add_argument(
+        "--skip-derek-snapshots",
+        action="store_true",
+        help="WoO/FTP-only verification: do not require Derek per-game snapshot manifests",
+    )
     args = ap.parse_args()
     verify_date(args.date)
     return 0

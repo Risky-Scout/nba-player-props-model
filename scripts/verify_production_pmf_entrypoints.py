@@ -173,6 +173,27 @@ def main() -> int:
     require("STAT_GRID_RECTANGULARIZE_WARN" in stat_grid_builder_s,
             f"{stat_grid_builder} must audit incomplete stat-grid drops")
 
+
+    pmf_delivery_wf = ".github/workflows/daily_pmf_delivery.yml"
+    pmf_delivery_s = read(pmf_delivery_wf)
+    require("daily-pmf-delivery-${{ github.ref }}" in pmf_delivery_s,
+            f"{pmf_delivery_wf} must serialize publish runs to avoid same-date git conflicts")
+
+    ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
+    ftp_wf_s = read(ftp_wf)
+    require("--skip-derek-snapshots" in ftp_wf_s,
+            f"{ftp_wf} must not require Derek snapshots before WoO FTP deploy")
+
+    corrected_verifier = "scripts/verify_corrected_pmf_delivery.py"
+    corrected_verifier_s = read(corrected_verifier)
+    require("--skip-derek-snapshots" in corrected_verifier_s,
+            f"{corrected_verifier} must support WoO/FTP-only verification")
+
+    nightly_wf = ".github/workflows/nightly_training_calibration.yml"
+    nightly_wf_s = read(nightly_wf)
+    require("TRAINING_DIAGNOSTIC_WARN" in nightly_wf_s,
+            f"{nightly_wf} must not hard-fail successful training solely on diagnostics")
+
     # WoO FTP deploy must verify corrected PMF delivery before deploy.
     ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
     ftp_s = read(ftp_wf)

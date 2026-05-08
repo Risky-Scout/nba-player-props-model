@@ -101,6 +101,11 @@ on:
         type: choice
         options: ["false", "true"]
 
+
+concurrency:
+  group: daily-pmf-delivery-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   PYTHON_VERSION: "3.11"
   # Phase 13AN-G: opt actions into Node 24.
