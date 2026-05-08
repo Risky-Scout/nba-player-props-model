@@ -1,11 +1,12 @@
 # Derek PMF Snapshots — May 8, 2026
 
-Generated 2026-05-08T23:31:07Z.
+Generated 2026-05-08T23:36:45Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
+| Spurs @ Timberwolves | Pending dispatch | Pending dispatch | Pending dispatch |
 | Knicks @ 76ers | Pending dispatch | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
@@ -20,6 +21,13 @@ Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; t
 - **Current-live snapshots without confirmed lineups are watchlist / baseline output**, not final confirmed-lineup action output. The `lineup_confirmed` column in `market_comparison.csv` and the `WATCHLIST_NOT_CONFIRMED_LINEUP` publish status make this explicit.
 
 ## Per-game files
+
+### Spurs @ Timberwolves
+
+_Game ID `21707974` (used in paths only). Tip time UTC: ``._
+
+- **T-minus-25**: Pending dispatch
+- **Close-lock**: Pending dispatch
 
 ### Knicks @ 76ers
 

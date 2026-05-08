@@ -1,8 +1,5 @@
 {
   "changed_files": [
-    "artifacts/automation_health/bdl_fetch_proof_2026-05-08.json",
-    "artifacts/automation_health/derek_edge_root_cause_2026-05-08.json",
-    "artifacts/automation_health/derek_edge_root_cause_2026-05-08.md",
     "artifacts/automation_health/derek_live_api_readiness.json",
     "artifacts/automation_health/derek_live_api_readiness.md",
     "artifacts/automation_health/derek_live_champion_ready_2026-05-08.json",
@@ -19,7 +16,7 @@
     "artifacts/live_schedule/2026-05-08/prediction_game_time_enrichment.md",
     "artifacts/phase13z/near_tip_snapshot_root_cause_2026-05-08.md",
     "deliveries/2026-05-08/README.md",
-    "deliveries/2026-05-08/derek_game_snapshots/",
+    "deliveries/2026-05-08/derek_game_snapshots/README.md",
     "predictions/all_props_2026-05-08.parquet",
     "predictions/all_props_2026-05-08.pre_game_time_enrichment_backup.parquet"
   ],

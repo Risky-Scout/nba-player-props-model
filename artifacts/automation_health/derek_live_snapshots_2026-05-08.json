@@ -6,10 +6,10 @@
       "passed": true
     }
   ],
-  "code_commit": "40e0f37822269834e938859c6edab0a3431a6726",
+  "code_commit": "42bd1bbdad1fe6632ff471392c0a47a21d76e3f3",
   "delivery_date": "2026-05-08",
   "facts": {
-    "game_count": 1,
+    "game_count": 2,
     "missed_post_tip_markers": [
       "21708677/t_minus_25",
       "21708677/close_lock"
@@ -25,7 +25,7 @@
     "slate_games": 2,
     "snapshot_count": 0
   },
-  "generated_at_utc": "2026-05-08T23:31:03+00:00",
+  "generated_at_utc": "2026-05-08T23:36:41+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
