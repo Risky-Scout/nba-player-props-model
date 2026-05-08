@@ -42,11 +42,11 @@
     "snapshot_type_emitted": "near_tip",
     "status": "near_tip_projected_lineup_snapshot"
   },
-  "metadata_stamped_at_utc": "2026-05-08T23:33:46+00:00",
+  "metadata_stamped_at_utc": "2026-05-08T23:53:51+00:00",
   "model_source": "champion_pointer",
   "morning": null,
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-05-08T23:33:46+00:00",
+  "output_generated_at_utc": "2026-05-08T23:53:51+00:00",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
@@ -207,7 +207,7 @@
     ]
   },
   "snapshot": "lineup",
-  "stamp_code_commit": "40e0f37822269834e938859c6edab0a3431a6726",
+  "stamp_code_commit": "4b2e5bdeaf80e8129315c85190b5435701d219ae",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"

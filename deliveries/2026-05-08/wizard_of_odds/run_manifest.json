@@ -35,70 +35,70 @@
       "hardrockbet_fl",
       "williamhill_us"
     ],
-    "built_at_utc": "2026-05-08T23:30:42Z",
+    "built_at_utc": "2026-05-08T23:51:03Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "not_ready",
     "path": "data/freshness_manifest/2026-05-08.json",
-    "predictions_mtime_utc": "2026-05-08T23:30:04.865596Z",
+    "predictions_mtime_utc": "2026-05-08T23:50:24.551831Z",
     "regions_requested": [
       "us",
       "us2"
     ],
     "role_freshness_status_rollup": {
-      "derived_from_projected_minutes": 340
+      "derived_from_projected_minutes": 335
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-08T23:33:46+00:00",
+  "metadata_stamped_at_utc": "2026-05-08T23:53:51+00:00",
   "model_source": "champion_pointer",
-  "model_version": "40e0f37#phase10c",
+  "model_version": "4b2e5bde#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-08T23:33:46+00:00",
+  "output_generated_at_utc": "2026-05-08T23:53:51+00:00",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v2",
-  "pipeline_run_id": "5e9470f7-91e8-4dd8-98b1-eb975b84439e",
+  "pipeline_run_id": "496dfdf3-c1da-4e63-ae13-555b47910571",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "quality_rollup": {
     "calibration_confidence": {
-      "high": 140,
+      "high": 135,
       "low": 65,
       "medium": 135
     },
     "injury_freshness_status": {
-      "fresh": 340
+      "fresh": 335
     },
     "lineup_freshness_status": {
-      "projected": 340
+      "projected": 335
     },
     "market_coverage_status": {
-      "full": 340
+      "full": 335
     },
-    "pmf_sum_error_max": 4.440892098500626e-16,
+    "pmf_sum_error_max": 3.3306690738754696e-16,
     "pmf_valid_ok_pct": 1.0,
     "role_freshness_status": {
-      "derived_from_projected_minutes": 340
+      "derived_from_projected_minutes": 335
     }
   },
   "row_counts": {
-    "fair_odds_board": 7956,
-    "full_pmfs_wide": 340,
-    "market_comparison": 1660,
-    "publishable_edges": 1084
+    "fair_odds_board": 7839,
+    "full_pmfs_wide": 335,
+    "market_comparison": 1639,
+    "publishable_edges": 1111
   },
-  "snapshot_time_utc": "2026-05-08T23:33:37Z",
-  "snapshot_type": "pre_close",
+  "snapshot_time_utc": "2026-05-08T23:53:45Z",
+  "snapshot_type": "morning",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-08T23:30:04.416596Z",
+      "mtime_utc": "2026-05-08T23:50:24.098828Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-08T23:30:04.810596Z",
+      "mtime_utc": "2026-05-08T23:53:45.576269Z",
       "path": "deliveries/2026-05-08/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "9b37d6094da0eb3b53105bdb243cee1b644bf5b98fe74e16a43069c59760d49a"
+      "sha256": "7ca4d5e8ce2cd83154cac9485cd98291d749940c4b5ddaa4c5a98fef8a4ec9d2"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -119,15 +119,15 @@
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-08T23:30:41.651537Z",
-      "path": "data/odds_api/processed/2026-05-08/odds_pairs_live_slate_close_or_lock_2026-05-08T233037Z.parquet"
+      "mtime_utc": "2026-05-08T23:51:03.065095Z",
+      "path": "data/odds_api/processed/2026-05-08/odds_pairs_live_slate_morning_7am_2026-05-08T235058Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-08T23:30:04.865596Z",
+      "mtime_utc": "2026-05-08T23:50:24.551831Z",
       "path": "predictions/all_props_2026-05-08.parquet"
     }
   },
-  "stamp_code_commit": "40e0f37822269834e938859c6edab0a3431a6726",
+  "stamp_code_commit": "4b2e5bdeaf80e8129315c85190b5435701d219ae",
   "target_stats": {
     "expected": [
       "pts",
