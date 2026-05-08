@@ -1,0 +1,10 @@
+{
+  "after_game_status": "scored",
+  "delivery_date": "2026-05-07",
+  "scored_at_utc": "2026-05-08T08:10:27Z",
+  "n_scored_pmf_rows": 220,
+  "n_scored_market_rows": 400,
+  "n_clv_rows": 0,
+  "outcomes_source": "data/player_game_stats.parquet",
+  "reason": null
+}

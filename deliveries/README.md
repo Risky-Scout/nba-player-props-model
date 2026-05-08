@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-08T03:56:21Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-08T08:10:26Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -16,7 +16,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-03** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 69 | 1780 | 489 | 462 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 524 | `present` | 524 | `scored` | `a9bdb1c#phase10c` |
 | **2026-05-04** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 65 | 1724 | 0 | 0 | `none` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 65 | `present` | 65 | `scored` | `c74808d#phase10c` |
 | **2026-05-06** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 111 | 2364 | 0 | 0 | `none` | `fresh` | `present` | `lineup_present` | 111 | `present` | 111 | `scored` | `18b0a11#phase10c` |
-| **2026-05-07** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 330 | 7722 | 400 | 300 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 645 | `n/a` | `d3dfb9a#phase10c` |
+| **2026-05-07** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 330 | 7722 | 400 | 300 | `full` | `fresh` | `present` | `lineup_present` | 645 | `present` | 645 | `scored` | `d3dfb9a#phase10c` |
 
 ## Per-date links
 
@@ -420,10 +420,13 @@ _lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-07/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-07/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — lineup=present · latest→lineup
+**Derek forward feed (PMF snapshots)** — morning rows=645 · lineup=present · latest→lineup
 
 - [FEED_README.md](2026-05-07/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-07/derek_forward_feed/feed_manifest.json)
+- [morning_snapshot.csv](2026-05-07/derek_forward_feed/morning_snapshot.csv)
+- [morning_snapshot.parquet](2026-05-07/derek_forward_feed/morning_snapshot.parquet)
+- [morning_snapshot.jsonl](2026-05-07/derek_forward_feed/morning_snapshot.jsonl)
 - [latest_available_snapshot.csv](2026-05-07/derek_forward_feed/latest_available_snapshot.csv)
 - [latest_available_snapshot.parquet](2026-05-07/derek_forward_feed/latest_available_snapshot.parquet)
 - [lineup_snapshot.csv](2026-05-07/derek_forward_feed/lineup_snapshot.csv)
@@ -440,6 +443,16 @@ _lineup_unconfirmed_
 - [market_comparison.csv](2026-05-07/wizard_of_odds/market_comparison.csv)
 - [publishable_edges.csv](2026-05-07/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-05-07/wizard_of_odds/run_manifest.json)
+
+**After-game scoring** (`scored`)
+
+- [after_game_summary.md](2026-05-07/after_game_scoring/after_game_summary.md)
+- [after_game_scoring.csv](2026-05-07/after_game_scoring/after_game_scoring.csv)
+- [calibration_by_stat.csv](2026-05-07/after_game_scoring/calibration_by_stat.csv)
+- [calibration_by_role_bucket.csv](2026-05-07/after_game_scoring/calibration_by_role_bucket.csv)
+- ~~clv_by_stat.csv~~
+- ~~clv_by_book.csv~~
+- [after_game_status.json](2026-05-07/after_game_scoring/after_game_status.json)
 
 
 ## Schedule (Phase 12D-amend)

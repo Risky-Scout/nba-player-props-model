@@ -1,0 +1,70 @@
+{
+  "all_accounted": true,
+  "all_actually_scored": true,
+  "blockers": [],
+  "delivery_date": "2026-05-07",
+  "documented_blocked_target_stats": [],
+  "expected_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov"
+  ],
+  "generated_at_utc": "2026-05-08T08:10:27Z",
+  "missing_target_stats": [],
+  "per_stat": [
+    {
+      "canonical_pmf_rows": 66,
+      "outcome_rows": 44,
+      "scored_rows": 44,
+      "stat": "pts",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 66,
+      "outcome_rows": 44,
+      "scored_rows": 44,
+      "stat": "reb",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 66,
+      "outcome_rows": 44,
+      "scored_rows": 44,
+      "stat": "ast",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 66,
+      "outcome_rows": 44,
+      "scored_rows": 44,
+      "stat": "fg3m",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 66,
+      "outcome_rows": 44,
+      "scored_rows": 44,
+      "stat": "tov",
+      "status": "scored"
+    }
+  ],
+  "schema_version": "1.0",
+  "scored_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov"
+  ],
+  "source_columns_checked": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "turnover"
+  ],
+  "tov_rows_scored": 44,
+  "tov_source_column": "turnover"
+}

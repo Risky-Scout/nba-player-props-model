@@ -11,7 +11,7 @@
   "output_generated_at_utc": "2026-05-08T08:10:32+00:00",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
   "stamp_code_commit": "6ac232ba46c004b589763471d501b6625f8f82ab",
-  "stamped_into": "deliveries/2026-05-07/derek_forward_feed/feed_manifest.json",
+  "stamped_into": "deliveries/2026-05-07/pmf_model_review_package/run_manifest.json",
   "trained_through_date": "2026-04-30",
   "training_run_id": "nightly-20260501T124701",
   "validation_run_id": "nightly-20260501T124701"
