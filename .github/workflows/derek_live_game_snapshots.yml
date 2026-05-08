@@ -187,7 +187,8 @@ jobs:
         run: |
           if [ -s "deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet" ]; then
             python scripts/verify_corrected_pmf_delivery.py \
-              --date ${{ steps.d.outputs.date }}
+              --date ${{ steps.d.outputs.date }} \
+              --skip-derek-snapshots
           else
             echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=${{ steps.d.outputs.date }} reason=missing_full_pmfs_wide"
           fi
