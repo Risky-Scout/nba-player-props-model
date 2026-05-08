@@ -9,7 +9,7 @@
 - market coverage: **full**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 330
-- model: `c181c86#phase10c`
+- model: `d00a537#phase10c`
 
 ### Caveats
 
