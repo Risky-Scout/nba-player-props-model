@@ -2,19 +2,21 @@
   "delivery_date": "2026-05-07",
   "derek_game_folders": {
     "21708301": [
-      "close_lock"
+      "close_lock",
+      "lineup"
     ],
     "21709223": [
-      "close_lock"
+      "close_lock",
+      "lineup"
     ]
   },
   "eligible_close_lock": [],
-  "eligible_current_live": [
+  "eligible_current_live": [],
+  "eligible_t_minus_25": [],
+  "games_already_tipped": [
     "21708301",
     "21709223"
   ],
-  "eligible_t_minus_25": [],
-  "games_already_tipped": [],
   "games_in_predictions": [
     "21708301",
     "21709223"
@@ -27,7 +29,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-07T21:44:17Z",
+  "now_utc": "2026-05-08T01:58:33Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {

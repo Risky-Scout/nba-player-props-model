@@ -1,7 +1,7 @@
 # Derek edge root-cause audit — 2026-05-07
 
 - snapshots audited: **2**
-- total calculation issues: **2382**
+- total calculation issues: **1484**
 - non-actionable rows: **0**
 
 ## Headline finding

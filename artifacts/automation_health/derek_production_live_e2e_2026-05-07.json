@@ -1,34 +1,98 @@
 {
   "facts": {
-    "any_target_in_past": false,
-    "any_target_overdue": false,
+    "any_target_in_past": true,
+    "any_target_overdue": true,
     "champion_pointer_contextual_pmf_engine": true,
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-07",
-    "now_utc": "2026-05-07T21:44:40Z",
-    "pending_reason": "all_targets_in_future",
+    "now_utc": "2026-05-08T01:58:48Z",
+    "overdue_missing_snapshots": [
+      "21708301/t_minus_25",
+      "21709223/t_minus_25"
+    ],
+    "overdue_unresolved": [
+      "21708301/t_minus_25",
+      "21709223/t_minus_25"
+    ],
+    "per_type_lines": [
+      {
+        "detail": "game=21708301 target_utc=2026-05-08T01:15:00Z now=2026-05-08T01:58:48Z  game tipped before snapshot was generated; no missed_snapshot_manifest.json \u2014 Phase 13Z dispatch should write one",
+        "outcome": "MISSED_POST_TIP_UNDOCUMENTED",
+        "type": "T_MINUS_25"
+      },
+      {
+        "detail": "game=21708301 issues=['snapshot_mode=None is not production_live']",
+        "outcome": "FAILED",
+        "type": "CLOSE_LOCK"
+      },
+      {
+        "detail": "game=21709223 target_utc=2026-05-07T22:45:00Z now=2026-05-08T01:58:48Z  game tipped before snapshot was generated; no missed_snapshot_manifest.json \u2014 Phase 13Z dispatch should write one",
+        "outcome": "MISSED_POST_TIP_UNDOCUMENTED",
+        "type": "T_MINUS_25"
+      },
+      {
+        "detail": "game=21709223 issues=['snapshot_mode=None is not production_live']",
+        "outcome": "FAILED",
+        "type": "CLOSE_LOCK"
+      }
+    ],
+    "phase13x_actionable_unconfirmed_failures": [],
+    "phase13x_blocker_threshold_failures": [],
+    "phase13x_publish_col_failures": [
+      "phase13x column scan failed: 'raw_edge'"
+    ],
+    "phase13x_reports_missing": [],
+    "pl_fail_count": 2,
+    "pl_fails": [
+      {
+        "feature_set_id": null,
+        "game_id": "21708301",
+        "issues": [
+          "snapshot_mode=None is not production_live"
+        ],
+        "snapshot_mode": null,
+        "snapshot_type": "close_lock"
+      },
+      {
+        "feature_set_id": null,
+        "game_id": "21709223",
+        "issues": [
+          "snapshot_mode=None is not production_live"
+        ],
+        "snapshot_mode": null,
+        "snapshot_type": "close_lock"
+      }
+    ],
+    "pl_pass_count": 0,
+    "pl_passes": [],
     "predictions_parquet_present": true,
     "schedule_eval": [
       {
-        "cl_overdue": false,
+        "cl_overdue": true,
         "cl_target_utc": "2026-05-08T01:35:00Z",
         "game_id": "21708301",
         "game_start_time": "2026-05-08T01:40:00Z",
-        "t25_overdue": false,
+        "t25_overdue": true,
         "t25_target_utc": "2026-05-08T01:15:00Z"
       },
       {
-        "cl_overdue": false,
+        "cl_overdue": true,
         "cl_target_utc": "2026-05-07T23:05:00Z",
         "game_id": "21709223",
         "game_start_time": "2026-05-07T23:10:00Z",
-        "t25_overdue": false,
+        "t25_overdue": true,
         "t25_target_utc": "2026-05-07T22:45:00Z"
       }
     ],
     "schedule_size": 2
   },
-  "outcome": "pending",
+  "failed_reasons": [
+    "phase13x_publish_col: phase13x column scan failed: 'raw_edge'",
+    "overdue_missing_snapshots=['21708301/t_minus_25', '21709223/t_minus_25']",
+    "snapshot 21708301/close_lock issues=['snapshot_mode=None is not production_live']",
+    "snapshot 21709223/close_lock issues=['snapshot_mode=None is not production_live']"
+  ],
+  "outcome": "failed",
   "schema_version": "1.0"
 }
