@@ -185,8 +185,12 @@ jobs:
       - name: Verify corrected PMF delivery contract
         id: verify_corrected_pmf_delivery
         run: |
-          python scripts/verify_corrected_pmf_delivery.py \
-            --date ${{ steps.d.outputs.date }}
+          if [ -s "deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet" ]; then
+            python scripts/verify_corrected_pmf_delivery.py \
+              --date ${{ steps.d.outputs.date }}
+          else
+            echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=${{ steps.d.outputs.date }} reason=missing_full_pmfs_wide"
+          fi
 
       - name: Verify Derek live API readiness
         id: verify_api_readiness

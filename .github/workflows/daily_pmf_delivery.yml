@@ -992,7 +992,7 @@ jobs:
 
   derek_schedule_bridge:
     name: Derek schedule bridge from PMF delivery cron
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ (github.event_name == 'schedule' && (github.event.schedule == '25 22 * * *' || github.event.schedule == '40,55 22 * * *' || github.event.schedule == '10,25,40,55 23,0,1,2 * * *' || github.event.schedule == '10 3 * * *' || github.event.schedule == '25 3 * * *')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_near_lineup' || github.event.inputs.mode == 'close_lock')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

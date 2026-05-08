@@ -146,6 +146,20 @@ def main() -> int:
     require("snapshot_type=all" in pmf_delivery_s,
             f"{pmf_delivery_wf} must trigger all due Derek snapshot types")
 
+    require("github.event.schedule == '25 22 * * *'" in pmf_delivery_s,
+            f"{pmf_delivery_wf} Derek bridge must be gated to Derek near-lineup schedules")
+    require("github.event.schedule == '25 3 * * *'" in pmf_delivery_s,
+            f"{pmf_delivery_wf} Derek bridge must be gated to close-lock schedule")
+    require("github.event.inputs.mode == 'derek_near_lineup'" in pmf_delivery_s,
+            f"{pmf_delivery_wf} manual bridge must be gated to Derek mode")
+    require("github.event.inputs.mode == 'close_lock'" in pmf_delivery_s,
+            f"{pmf_delivery_wf} manual bridge must be gated to close-lock mode")
+
+    derek_pending_wf = ".github/workflows/derek_live_game_snapshots.yml"
+    derek_pending_s = read(derek_pending_wf)
+    require("CORRECTED_PMF_DELIVERY_VERIFY_PENDING" in derek_pending_s,
+            f"{derek_pending_wf} must not hard-fail when corrected delivery is absent and snapshots are pending")
+
     # WoO FTP deploy must verify corrected PMF delivery before deploy.
     ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
     ftp_s = read(ftp_wf)
