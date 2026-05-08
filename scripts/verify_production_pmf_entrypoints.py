@@ -165,6 +165,14 @@ def main() -> int:
     require("CORRECTED_PMF_DELIVERY_VERIFY_PENDING" in derek_pending_s,
             f"{derek_pending_wf} must not hard-fail when corrected delivery is absent and snapshots are pending")
 
+
+    stat_grid_builder = "scripts/build_model_only_canonical_from_stat_grid.py"
+    stat_grid_builder_s = read(stat_grid_builder)
+    require("_enforce_complete_stat_grid" in stat_grid_builder_s,
+            f"{stat_grid_builder} must drop incomplete player-game stat grids before delivery")
+    require("STAT_GRID_RECTANGULARIZE_WARN" in stat_grid_builder_s,
+            f"{stat_grid_builder} must audit incomplete stat-grid drops")
+
     # WoO FTP deploy must verify corrected PMF delivery before deploy.
     ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
     ftp_s = read(ftp_wf)
