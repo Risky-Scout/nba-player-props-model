@@ -115,19 +115,19 @@ jobs:
         run: |
           python scripts/verify_derek_slate_completeness.py --delivery-date ${{ steps.d.outputs.date }}
 
-      - name: Legacy dispatcher disabled: current_live
+      - name: "Legacy dispatcher disabled: current_live"
         id: dispatch_current_live
         if: steps.s.outputs.type == 'current_live' || steps.s.outputs.type == 'all'
         run: |
           echo "Legacy current_live dispatch disabled; corrected PMF builder is authoritative."
 
-      - name: Legacy dispatcher disabled: t_minus_25
+      - name: "Legacy dispatcher disabled: t_minus_25"
         id: dispatch_t25
         if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
         run: |
           echo "Legacy t_minus_25 dispatch disabled; corrected PMF builder is authoritative."
 
-      - name: Legacy dispatcher disabled: close_lock
+      - name: "Legacy dispatcher disabled: close_lock"
         id: dispatch_cl
         if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
         run: |
@@ -187,7 +187,7 @@ jobs:
           python scripts/build_derek_snapshot_comparison.py \
             --delivery-date ${{ steps.d.outputs.date }} || true
 
-      - name: Legacy diagnostic: Verify Derek live snapshots
+      - name: "Legacy diagnostic: Verify Derek live snapshots"
         id: verify_derek
         continue-on-error: true
         run: |
@@ -198,7 +198,7 @@ jobs:
             echo "::warning::legacy verify_derek_live_snapshots failed; corrected PMF verifier is authoritative"
           fi
 
-      - name: Legacy diagnostic: Verify BDL fetch proof (Phase 13W)
+      - name: "Legacy diagnostic: Verify BDL fetch proof (Phase 13W)"
         id: verify_bdl_fetch
         continue-on-error: true
         run: |
@@ -209,7 +209,7 @@ jobs:
             echo "::warning::legacy BDL fetch proof failed; corrected PMF verifier is authoritative"
           fi
 
-      - name: Legacy diagnostic: Audit contextual delta variation (Phase 13W)
+      - name: "Legacy diagnostic: Audit contextual delta variation (Phase 13W)"
         id: audit_delta
         continue-on-error: true
         run: |
@@ -227,7 +227,7 @@ jobs:
           python scripts/build_derek_delivery_readme.py \
             --delivery-date ${{ steps.d.outputs.date }}
 
-      - name: Legacy diagnostic: Audit Derek edge root-cause (Phase 13X)
+      - name: "Legacy diagnostic: Audit Derek edge root-cause (Phase 13X)"
         id: audit_edge_rootcause
         continue-on-error: true
         run: |
@@ -282,7 +282,7 @@ jobs:
           echo "Skipped: corrected Derek builder writes outcome_level_probabilities directly from full PMFs."
           echo "Source of truth: deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet"
 
-      - name: Legacy diagnostic: Verify Derek long-form outcome PMF files (Phase 13AB)
+      - name: "Legacy diagnostic: Verify Derek long-form outcome PMF files (Phase 13AB)"
         id: verify_outcome_long
         continue-on-error: true
         run: |
@@ -418,10 +418,13 @@ jobs:
               echo "::notice::path missing, skipping: $p"
             fi
           done
-          git diff --staged --quiet && echo "Nothing to commit" || \
+          if git diff --staged --quiet; then
+            echo "Nothing to commit"
+          else
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
               -m "phase13u: Derek live snapshots + daily model report ${{ steps.d.outputs.date }}"
+          fi
           # Bug F (Bug C pattern, normal-day branch): the long git add
           # above already commits the dated derek_*_<date>.{json,md} files
           # plus phase13l_no_breakage.{md,json} and phase13x_woo_unchanged.json,
@@ -430,14 +433,14 @@ jobs:
           # the dispatcher's predict.py invocation. The defensive secondary
           # reset below catches anything else.
           git checkout -- data/player_game_stats.parquet 2>/dev/null || true
-          DIRTY_REMAINING=$(git diff --name-only)
-          if [ -n "$DIRTY_REMAINING" ]; then
+          if ! git diff --quiet; then
             echo "::notice::Bug F defensive reset (normal-day branch) — dirty tracked files:"
-            echo "$DIRTY_REMAINING"
-            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+            git diff --name-only
+            git diff --name-only -z | xargs -0 git checkout -- 2>/dev/null || true
           fi
           PUSH_SUCCESS=0
-          for i in 1 2 3; do
+          for attempt in 1 2 3; do
+            echo "git push attempt $attempt"
             if git pull --rebase origin main && git push origin main; then
               PUSH_SUCCESS=1
               break
