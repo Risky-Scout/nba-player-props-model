@@ -564,6 +564,29 @@ def _expected_target_stats_coverage(scoring: pd.DataFrame,
     missing_target_stats: list[str] = []
     documented_blocked_target_stats: list[dict] = []
     per_stat_records: list[dict] = []
+
+    if outcomes is None or outcomes.empty:
+        for stat in expected:
+            per_stat_records.append({
+                "stat": stat,
+                "status": "pending_outcomes",
+                "scored_rows": 0,
+                "canonical_pmf_rows": canonical_per_stat.get(stat, 0),
+                "outcome_rows": 0,
+            })
+        return {
+            "expected_target_stats": expected,
+            "scored_target_stats": [],
+            "missing_target_stats": [],
+            "documented_blocked_target_stats": [],
+            "per_stat": per_stat_records,
+            "all_accounted": True,
+            "all_actually_scored": False,
+            "pending_reason": "no_settled_outcomes",
+            "source_columns_checked": ["pts", "reb", "ast", "fg3m", "turnover"],
+            "tov_source_column": "turnover",
+            "tov_rows_scored": 0,
+        }
     for stat in expected:
         scored_n = scored_per_stat.get(stat, 0)
         canon_n = canonical_per_stat.get(stat, 0)
