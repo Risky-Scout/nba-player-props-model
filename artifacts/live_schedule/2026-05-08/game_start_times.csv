@@ -1,0 +1,3 @@
+game_id,team_abbr,opponent_abbr,resolved_game_start_time_utc,source_used,source_confidence,source_payload_hash,resolution_blocker
+21707974,MIN,SAS,2026-05-09T01:40:00Z,predictions_parquet_game_start_time,high,70c6178154f93ab7,
+21708677,NYK,PHI,2026-05-08T23:10:00Z,predictions_parquet_game_start_time,high,ccafa6872e976c7d,

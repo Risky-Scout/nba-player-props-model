@@ -1,0 +1,42 @@
+{
+  "delivery_date": "2026-05-08",
+  "generated_at_utc": "2026-05-08T18:04:11+00:00Z",
+  "records": [
+    {
+      "game_id": "21707974",
+      "opponent_abbr": "SAS",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-09T01:40:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "70c6178154f93ab7",
+      "source_used": "predictions_parquet_game_start_time",
+      "team_abbr": "MIN"
+    },
+    {
+      "game_id": "21708677",
+      "opponent_abbr": "PHI",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-08T23:10:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "ccafa6872e976c7d",
+      "source_used": "predictions_parquet_game_start_time",
+      "team_abbr": "NYK"
+    }
+  ],
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 2,
+    "delivery_date": "2026-05-08",
+    "from_predictions_count": 2,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 4,
+    "pmf_display_matchups_parsed": 2,
+    "predictions_present": true,
+    "predictions_rows": 74,
+    "predictions_unique_games": 2,
+    "resolved_count": 2,
+    "unresolved_count": 0
+  }
+}
