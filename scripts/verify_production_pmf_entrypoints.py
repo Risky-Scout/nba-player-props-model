@@ -149,7 +149,7 @@ def main() -> int:
                 f"{ftp_wf} must verify corrected PMF delivery before FTP deploy")
 
     # Derek scheduled snapshots must use the live dispatcher/direct-lineup path.
-    derek_wf = ".github/workflows/derek_game_snapshots.yml"
+    derek_wf = ".github/workflows/derek_live_game_snapshots.yml"
     derek_wf_s = read(derek_wf)
     require("Legacy dispatcher disabled" not in derek_wf_s,
             f"{derek_wf} must not disable the live Derek dispatcher")
