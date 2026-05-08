@@ -115,38 +115,71 @@ jobs:
         run: |
           python scripts/verify_derek_slate_completeness.py --delivery-date ${{ steps.d.outputs.date }}
 
-      - name: "Legacy dispatcher disabled: current_live"
+      - name: Dispatch Derek current_live snapshots
         id: dispatch_current_live
         if: steps.s.outputs.type == 'current_live' || steps.s.outputs.type == 'all'
-        run: |
-          echo "Legacy current_live dispatch disabled; corrected PMF builder is authoritative."
-
-      - name: "Legacy dispatcher disabled: t_minus_25"
-        id: dispatch_t25
-        if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
-        run: |
-          echo "Legacy t_minus_25 dispatch disabled; corrected PMF builder is authoritative."
-
-      - name: "Legacy dispatcher disabled: close_lock"
-        id: dispatch_cl
-        if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
-        run: |
-          echo "Legacy close_lock dispatch disabled; corrected PMF builder is authoritative."
-
-      - name: Build Derek snapshots from corrected PMF delivery
-        id: build_corrected_derek_snapshots
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          SNAPSHOT_TYPE="${{ steps.s.outputs.type }}"
-          if [ "$SNAPSHOT_TYPE" = "both" ] || [ "$SNAPSHOT_TYPE" = "all" ]; then
-            SNAPSHOT_TYPE="close_lock"
+          ARGS=()
+          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
+            ARGS+=(--allow-backfill-test)
           fi
-          python scripts/build_derek_game_snapshots_from_delivery.py \
-            --date ${{ steps.d.outputs.date }} \
-            --snapshot-type "$SNAPSHOT_TYPE" \
-            --force
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS+=(--force)
+          fi
+          if [ -n "${{ github.event.inputs.max_games }}" ]; then
+            ARGS+=(--max-games "${{ github.event.inputs.max_games }}")
+          fi
+          python scripts/dispatch_derek_live_game_snapshots.py \
+            --delivery-date "${{ steps.d.outputs.date }}" \
+            --snapshot-type current_live \
+            "${ARGS[@]}"
+
+      - name: Dispatch Derek t_minus_25 snapshots
+        id: dispatch_t25
+        if: steps.s.outputs.type == 't_minus_25' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          ARGS=()
+          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
+            ARGS+=(--allow-backfill-test)
+          fi
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS+=(--force)
+          fi
+          if [ -n "${{ github.event.inputs.max_games }}" ]; then
+            ARGS+=(--max-games "${{ github.event.inputs.max_games }}")
+          fi
+          python scripts/dispatch_derek_live_game_snapshots.py \
+            --delivery-date "${{ steps.d.outputs.date }}" \
+            --snapshot-type t_minus_25 \
+            "${ARGS[@]}"
+
+      - name: Dispatch Derek close_lock snapshots
+        id: dispatch_cl
+        if: steps.s.outputs.type == 'close_lock' || steps.s.outputs.type == 'both' || steps.s.outputs.type == 'all'
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          ARGS=()
+          if [ "${{ github.event.inputs.allow_backfill_test }}" = "true" ]; then
+            ARGS+=(--allow-backfill-test)
+          fi
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then
+            ARGS+=(--force)
+          fi
+          if [ -n "${{ github.event.inputs.max_games }}" ]; then
+            ARGS+=(--max-games "${{ github.event.inputs.max_games }}")
+          fi
+          python scripts/dispatch_derek_live_game_snapshots.py \
+            --delivery-date "${{ steps.d.outputs.date }}" \
+            --snapshot-type close_lock \
+            "${ARGS[@]}"
 
       - name: Verify corrected PMF delivery contract
         id: verify_corrected_pmf_delivery

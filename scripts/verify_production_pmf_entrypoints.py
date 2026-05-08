@@ -148,21 +148,33 @@ def main() -> int:
         require(ordered(ftp_wf, "scripts/verify_corrected_pmf_delivery.py", "scripts/deploy_wizard_of_odds_ftp.py"),
                 f"{ftp_wf} must verify corrected PMF delivery before FTP deploy")
 
-    # Existing Derek workflow must not keep old dispatcher/no-games path as production authority.
+    # Derek scheduled snapshots must use the live dispatcher/direct-lineup path.
     derek_wf = ".github/workflows/derek_game_snapshots.yml"
     derek_wf_s = read(derek_wf)
-    require("Build Derek snapshots from corrected PMF delivery" in derek_wf_s,
-            f"{derek_wf} must build from corrected PMF delivery")
-    require("Verify corrected PMF delivery contract" in derek_wf_s,
-            f"{derek_wf} must verify corrected PMF delivery")
-    require("scripts/build_derek_game_snapshots_from_delivery.py" in derek_wf_s,
-            f"{derek_wf} must call corrected Derek builder")
+    require("Legacy dispatcher disabled" not in derek_wf_s,
+            f"{derek_wf} must not disable the live Derek dispatcher")
+    require("scripts/dispatch_derek_live_game_snapshots.py" in derek_wf_s,
+            f"{derek_wf} must dispatch production-live Derek snapshots")
+    require("scripts/build_derek_game_snapshots_from_delivery.py" not in derek_wf_s,
+            f"{derek_wf} must not use WoO-copy builder as scheduled Derek authority")
     require("scripts/verify_corrected_pmf_delivery.py" in derek_wf_s,
-            f"{derek_wf} must call corrected delivery verifier")
-    require("scripts/dispatch_derek_live_game_snapshots.py" not in derek_wf_s,
-            f"{derek_wf} still calls legacy dispatcher; retire or isolate it from production")
+            f"{derek_wf} must still verify corrected delivery contract")
+
+    derek_dispatcher = "scripts/dispatch_derek_live_game_snapshots.py"
+    derek_dispatcher_s = read(derek_dispatcher)
+    require("scripts/run_derek_live_game_snapshot.py" in derek_dispatcher_s,
+            f"{derek_dispatcher} must invoke direct-lineup Derek runner")
+
+    derek_runner = "scripts/run_derek_live_game_snapshot.py"
+    derek_runner_s = read(derek_runner)
+    require("fetch_bdl_game_lineups.py" in derek_runner_s,
+            f"{derek_runner} must fetch official BDL lineups")
+    require("apply_direct_lineup_overlay" in derek_runner_s,
+            f"{derek_runner} must apply direct lineup features")
+    require("predict.py" in derek_runner_s,
+            f"{derek_runner} must recompute live PMFs through predict.py")
     require("no_games_today.json" not in derek_wf_s,
-            f"{derek_wf} still has no_games_today sentinel logic; corrected builder/verifier must own this")
+            f"{derek_wf} must not use no_games_today sentinel logic")
 
     # build_daily_pmf_delivery may still support all_props for legacy/backfill,
     # but production must reject stale broad packages.
