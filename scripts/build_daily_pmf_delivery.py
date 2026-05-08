@@ -103,7 +103,8 @@ CANONICAL_COLUMNS_BASE = [
     "game_id", "game_start_time", "stat",
     "line", "book",
     "market_over_odds", "market_under_odds", "market_no_vig_over_prob",
-    "pmf_source", "calibration_source", "role_bucket",
+    "pmf_source", "calibration_source", "cal_source", "role_bucket",
+    "role_source", "minutes_mean", "minutes_q50", "p_inactive_used",
     "mean", "median", "mode", "p0",
     *[f"p_ge_{k}" for k in P_GE_LADDER],
     "model_p_over", "fair_over_odds_american", "fair_under_odds_american",
@@ -247,6 +248,66 @@ def _prob_to_american(p: float | None) -> int | None:
     if p >= 0.5:
         return int(round(-100.0 * p / (1.0 - p)))
     return int(round(100.0 * (1.0 - p) / p))
+
+
+def _clean_optional_meta(v):
+    """Return None for missing metadata values, otherwise original value."""
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except Exception:
+        pass
+    if isinstance(v, str) and v.strip().lower() in {"", "none", "nan", "<na>"}:
+        return None
+    return v
+
+
+def _clean_optional_float(v) -> float | None:
+    v = _clean_optional_meta(v)
+    if v is None:
+        return None
+    try:
+        return float(v)
+    except Exception:
+        return None
+
+
+def _derive_cal_source(row) -> str | None:
+    """Derive a stable calibration-source label from explicit metadata or pmf_source.
+
+    Examples:
+      stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:core
+        -> role_aware_pmf_cal_v1
+      stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:bench
+        -> role_aware_pmf_cal_v1
+    """
+    for col in ("cal_source", "calibration_source"):
+        v = _clean_optional_meta(row.get(col))
+        if v is not None:
+            return str(v)
+
+    src = str(_clean_optional_meta(row.get("pmf_source")) or "")
+    if not src:
+        return None
+
+    parts = src.split(":")
+    middle = parts[1] if len(parts) >= 2 else src
+    tokens = [t for t in middle.split("+") if t]
+    cal_tokens = [t for t in tokens if "cal" in t.lower()]
+    return "+".join(cal_tokens) if cal_tokens else None
+
+
+def _repo_rel(path: Path | str | None) -> str | None:
+    """Return repo-relative path when possible; tolerate relative input paths."""
+    if path is None:
+        return None
+    q = Path(path)
+    try:
+        return str(q.resolve().relative_to(REPO_ROOT))
+    except Exception:
+        return str(q)
 
 
 def _calibration_confidence(role: str | None) -> str:
@@ -780,6 +841,11 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                            or "phase10c_role_aware_active_conditioned"),
             "calibration_source": "phase8_role_aware_pmf_cal_v2",
             "role_bucket": role,
+            "role_source": _clean_optional_meta(r.get("role_source")),
+            "minutes_mean": _clean_optional_float(r.get("minutes_mean")),
+            "minutes_q50": _clean_optional_float(r.get("minutes_q50")),
+            "p_inactive_used": _clean_optional_float(r.get("p_inactive_used")),
+            "cal_source": _derive_cal_source(r),
             "mean": smry["mean"], "median": smry["median"],
             "mode": smry["mode"], "p0": smry["p0"],
             **{f"p_ge_{k}": smry[f"p_ge_{k}"] for k in P_GE_LADDER},
@@ -1780,7 +1846,7 @@ def main() -> int:
         },
         "sources": {
             "model_only_parquet": {
-                "path": str(model_only_path.relative_to(REPO_ROOT)),
+                "path": _repo_rel(model_only_path),
                 "mtime_utc": _file_mtime_iso_utc(model_only_path),
                 "sha256": _file_sha256(model_only_path),
                 "auto_built_from_predictions": bool(canonical_built),
@@ -1801,7 +1867,7 @@ def main() -> int:
                 "freshness_status": _injury_freshness(injury_path),
             },
             "odds_snapshot": ({
-                "path": str(odds_path.relative_to(REPO_ROOT)),
+                "path": _repo_rel(odds_path),
                 "mtime_utc": _file_mtime_iso_utc(odds_path),
                 "books_seen": books_seen,
                 "coverage_status": coverage,

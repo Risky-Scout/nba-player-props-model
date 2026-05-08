@@ -3,7 +3,7 @@
   "delivery_date": "2026-05-07",
   "game_id": "21708301",
   "snapshot_type": "close_lock",
-  "generated_at_utc": "2026-05-07T21:44:24Z",
+  "generated_at_utc": "2026-05-08T00:23:13Z",
   "source": "deliveries/2026-05-07/wizard_of_odds/full_pmfs_wide.parquet",
   "pmf_source": "corrected_wizard_of_odds_full_pmfs_wide",
   "stats": [
@@ -14,11 +14,11 @@
     "tov"
   ],
   "rows": 160,
-  "market_rows": 1261,
+  "market_rows": 816,
   "outputs": {
     "prop_summary": 160,
     "full_pmf_wide": 160,
-    "market_comparison": 1261,
+    "market_comparison": 816,
     "outcome_level_probabilities": 3376
   },
   "lineup_freshness_status": {

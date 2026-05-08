@@ -1,15 +1,15 @@
 # Wizard of Odds — 2026-05-07
 
-## Run status — 2026-05-07 — snapshot `pre_close`
+## Run status — 2026-05-07 — snapshot `close_lock`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **330**
-- books: **14**
+- books: **8**
 - market coverage: **full**
 - injury freshness: **fresh**
 - role provenance: `derived_from_projected_minutes`: 330
-- model: `d00a537#phase10c`
+- model: `29fbb74#phase10c`
 
 ### Caveats
 
@@ -36,13 +36,13 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **finality_status**: `provisional`
 - **finality_blockers**: `['lineup_unconfirmed']`
 - **market_coverage_status**: `full`
-- **odds.fetch_status**: `consumed_from_disk`
-- **books_seen**: `14`
+- **odds.fetch_status**: `skipped:no_odds_fetch_flag`
+- **books_seen**: `8`
 - **freshness.overall_status**: `not_ready`
-- **availability_freshness_status**: `fresh`
+- **availability_freshness_status**: `very_stale`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 330}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=7722, full_pmfs_wide=330, market_comparison=1628, publishable_edges=1140
+- **row counts**: fair_odds_board=7722, full_pmfs_wide=330, market_comparison=1484, publishable_edges=0
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

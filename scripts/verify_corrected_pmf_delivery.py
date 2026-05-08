@@ -12,6 +12,14 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CORE_STATS = {"pts", "reb", "ast", "fg3m", "tov"}
 
+REQUIRED_CONTEXT_COLS = (
+    "role_source",
+    "minutes_mean",
+    "minutes_q50",
+    "p_inactive_used",
+    "cal_source",
+)
+
 
 def fail(msg: str) -> None:
     raise SystemExit(f"FATAL: {msg}")
@@ -44,6 +52,13 @@ def verify_date(date: str) -> None:
     )
     if bool(role_missing.any()):
         fail(f"{date} missing role_bucket rows: {int(role_missing.sum())}/{len(wide)}")
+
+    missing_context_cols = [c for c in REQUIRED_CONTEXT_COLS if c not in wide.columns]
+    if missing_context_cols:
+        fail(f"{date} full_pmfs_wide missing context columns: {missing_context_cols}")
+    for c in REQUIRED_CONTEXT_COLS:
+        if wide[c].isna().any():
+            fail(f"{date} full_pmfs_wide has null {c}: {int(wide[c].isna().sum())}/{len(wide)}")
 
     public_pmf = REPO_ROOT / "public_export" / "wizard_of_odds" / date / "pmf_research.json"
     public_aff = REPO_ROOT / "public_export" / "wizard_of_odds" / date / "affiliate_dashboard.json"
@@ -88,6 +103,12 @@ def verify_date(date: str) -> None:
             fail(f"{date} bad Derek snapshot stats in {mpath.parent}: {sorted(snap_stats)}")
         if "role_bucket" not in snap.columns or snap["role_bucket"].isna().any():
             fail(f"{date} Derek snapshot missing role_bucket in {mpath.parent}")
+        missing_snap_context = [c for c in REQUIRED_CONTEXT_COLS if c not in snap.columns]
+        if missing_snap_context:
+            fail(f"{date} Derek snapshot missing context columns in {mpath.parent}: {missing_snap_context}")
+        for c in REQUIRED_CONTEXT_COLS:
+            if snap[c].isna().any():
+                fail(f"{date} Derek snapshot has null {c} in {mpath.parent}: {int(snap[c].isna().sum())}/{len(snap)}")
 
     print(f"CORRECTED_PMF_DELIVERY_VERIFY_PASS date={date} rows={len(wide)} affiliate_count={aff.get('count')} derek_snapshots={len(manifests)}")
 
