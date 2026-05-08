@@ -139,6 +139,7 @@ def main(argv=None) -> int:
         df["pmf_variance"] = 0.0
         df["model_prob_from_pmf"] = 0.0
         df["market_prob_recomputed"] = 0.0
+        df["raw_edge"] = 0.0
         df["raw_edge_recomputed"] = 0.0
         df["ev_recomputed"] = 0.0
         df["ev_recomputed_pushinc"] = 0.0
@@ -201,9 +202,9 @@ def main(argv=None) -> int:
             df.at[i, "market_prob_recomputed"] = float(
                 audit.get("market_prob_recomputed") or 0.0
             )
-            df.at[i, "raw_edge_recomputed"] = float(
-                audit.get("raw_edge_recomputed") or 0.0
-            )
+            raw_edge = float(audit.get("raw_edge_recomputed") or audit.get("raw_edge") or 0.0)
+            df.at[i, "raw_edge"] = raw_edge
+            df.at[i, "raw_edge_recomputed"] = raw_edge
             df.at[i, "ev_recomputed"] = float(
                 audit.get("ev_recomputed_pushexc") or 0.0
             )

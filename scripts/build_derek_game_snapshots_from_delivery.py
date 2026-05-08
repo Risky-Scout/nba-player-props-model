@@ -174,14 +174,48 @@ def main() -> int:
 
         outputs = _write_outputs(out_dir, wide_game, market_game)
 
+        generated_at_utc = _utc_iso()
+
+        def first_value(*cols):
+            for col in cols:
+                if col in wide_game.columns:
+                    vals = wide_game[col].dropna()
+                    if len(vals):
+                        return str(vals.iloc[0])
+            return None
+
+        def bool_any(*cols) -> bool:
+            for col in cols:
+                if col in wide_game.columns:
+                    vals = wide_game[col].dropna()
+                    if len(vals):
+                        return bool(vals.astype(bool).any())
+            return False
+
+        lineup_confirmed = bool_any("lineup_confirmed", "confirmed_lineup")
+        lineup_source = first_value("lineup_source", "confirmed_lineup_source") or "not_wired"
+        lineup_blocker = (
+            None if lineup_confirmed
+            else first_value("lineup_blocker", "lineup_status_reason")
+            or "no confirmed lineup source in corrected delivery"
+        )
+
         manifest = {
             "schema_version": "1.0",
             "delivery_date": date,
             "game_id": gid,
             "snapshot_type": args.snapshot_type,
-            "generated_at_utc": _utc_iso(),
+            "snapshot_mode": "production_live_current" if args.snapshot_type == "current_live" else "production_live",
+            "generated_at_utc": generated_at_utc,
+            "snapshot_time_utc": generated_at_utc,
+            "game_start_time_utc": first_value("game_start_time_utc", "start_time_utc", "commence_time"),
             "source": str(source.relative_to(REPO_ROOT)),
             "pmf_source": "corrected_wizard_of_odds_full_pmfs_wide",
+            "lineup_confirmed": lineup_confirmed,
+            "lineup_source": lineup_source,
+            "lineup_blocker": lineup_blocker,
+            "injury_source": first_value("injury_source", "availability_source") or "corrected_pmf_delivery",
+            "availability_source": first_value("availability_source", "injury_source") or "corrected_pmf_delivery",
             "stats": sorted(wide_game["stat"].astype(str).unique().tolist()),
             "rows": int(len(wide_game)),
             "market_rows": int(len(market_game)),
