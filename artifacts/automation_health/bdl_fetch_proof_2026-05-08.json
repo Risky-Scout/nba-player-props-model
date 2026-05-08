@@ -1,7 +1,7 @@
 {
   "delivery_date": "2026-05-08",
   "outcome": "pending",
-  "reason": "derek_game_snapshots dir missing for 2026-05-08",
+  "reason": "no snapshots present yet",
   "schema_version": "1.0",
   "snapshots": []
 }
