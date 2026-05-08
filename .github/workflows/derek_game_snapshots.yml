@@ -450,33 +450,42 @@ jobs:
           fi
 
       - name: Fail workflow if any required step failed
-        continue-on-error: true
         # Phase 13T — verify_derek and verify_e2e both treat "no games"
         # as PENDING (exit 0). The workflow only fails when a verifier
         # genuinely reports FAILED, no_break regresses, or the E2E
         # check finds overdue-missing snapshots.
         #
-        # `if: always()` is required so this consolidator runs even after
-        # one of the now-hard-failing dispatchers (H3) terminates the job
-        # — without it, a dispatch failure would skip this step and the
-        # operator log wouldn't show the consolidated outcome line.
-        # `outcome == 'failure'` (not `!= 'success'`) is used for dispatchers
-        # so that skipped dispatches (type didn't include them) don't
-        # falsely trigger the consolidator.
-        if: ${{ always() && (
-            steps.verify_derek.outcome != 'success' ||
-            steps.verify_e2e.outcome != 'success' ||
-            steps.verify_no_break.outcome != 'success' ||
-            steps.dispatch_current_live.outcome == 'failure' ||
-            steps.dispatch_t25.outcome == 'failure' ||
-            steps.dispatch_cl.outcome == 'failure'
-          ) }}
+        # Keep the GitHub Actions `if:` expression simple so the workflow
+        # registers reliably; evaluate the detailed condition in bash.
+        if: ${{ always() }}
         run: |
+          dispatch_current_live="${{ steps.dispatch_current_live.outcome }}"
+          dispatch_t25="${{ steps.dispatch_t25.outcome }}"
+          dispatch_cl="${{ steps.dispatch_cl.outcome }}"
+          verify_derek="${{ steps.verify_derek.outcome }}"
+          verify_e2e="${{ steps.verify_e2e.outcome }}"
+          verify_no_break="${{ steps.verify_no_break.outcome }}"
+
+          echo "dispatch_current_live=$dispatch_current_live"
+          echo "dispatch_t25=$dispatch_t25"
+          echo "dispatch_cl=$dispatch_cl"
+          echo "verify_derek=$verify_derek"
+          echo "verify_e2e=$verify_e2e"
+          echo "verify_no_break=$verify_no_break"
+
+          should_fail=0
+
+          if [ "$verify_derek" != "success" ]; then should_fail=1; fi
+          if [ "$verify_e2e" != "success" ]; then should_fail=1; fi
+          if [ "$verify_no_break" != "success" ]; then should_fail=1; fi
+          if [ "$dispatch_current_live" = "failure" ]; then should_fail=1; fi
+          if [ "$dispatch_t25" = "failure" ]; then should_fail=1; fi
+          if [ "$dispatch_cl" = "failure" ]; then should_fail=1; fi
+
+          if [ "$should_fail" -eq 0 ]; then
+            echo "DEREK_LIVE_SNAPSHOT_WORKFLOW_CONSOLIDATED_PASS"
+            exit 0
+          fi
+
           echo "::error::A Derek live snapshot dispatcher or verifier failed. See uploaded artifacts."
-          echo "dispatch_current_live=${{ steps.dispatch_current_live.outcome }}"
-          echo "dispatch_t25=${{ steps.dispatch_t25.outcome }}"
-          echo "dispatch_cl=${{ steps.dispatch_cl.outcome }}"
-          echo "verify_derek=${{ steps.verify_derek.outcome }}"
-          echo "verify_e2e=${{ steps.verify_e2e.outcome }}"
-          echo "verify_no_break=${{ steps.verify_no_break.outcome }}"
           exit 1
