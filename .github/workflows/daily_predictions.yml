@@ -242,13 +242,21 @@ jobs:
           python3 scripts/verify_woo_snapshot_outputs.py --date "$DATE" || \
             echo "::warning::WoO t_minus_25/close_lock snapshots pending until tip — see step log"
 
-      - name: Score WoO previous-day predictions (Phase 13AH)
+      - name: Score corrected WoO PMF delivery after game (Phase 13AH)
         continue-on-error: true
         run: |
           PREV_DAY=$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d 2>/dev/null \
                      || TZ=America/New_York date -v-1d +%Y-%m-%d)
-          python3 scripts/score_woo_after_game.py --date "$PREV_DAY" || { \
-            echo "::error::WoO after-game scoring failed - see step log"; exit 1; }
+          CLOSE_SNAPSHOT="deliveries/${PREV_DAY}/wizard_of_odds/market_comparison.parquet"
+
+          if [ ! -f "$CLOSE_SNAPSHOT" ]; then
+            echo "::warning::Corrected WoO market comparison missing for $PREV_DAY: $CLOSE_SNAPSHOT"
+            exit 0
+          fi
+
+          python3 scripts/score_daily_pmf_delivery_after_game.py \
+            --date "$PREV_DAY" \
+            --close-snapshot "$CLOSE_SNAPSHOT"
 
       - name: Verify Derek email-claimed files (Phase 13AH)
         continue-on-error: true

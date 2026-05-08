@@ -428,14 +428,21 @@ def main(argv: list[str] | None = None) -> int:
         "rc": rc, "tail": [derek_score or "no pass line"],
     })
 
-    # 13. WoO after-game scoring
-    rc, out, err = _run([py, "scripts/score_woo_after_game.py",
-                          "--date", args.derek_date])
+    # 13. WoO after-game scoring from corrected PMF delivery.
+    close_snapshot = REPO_ROOT / "deliveries" / args.derek_date / "wizard_of_odds" / "market_comparison.parquet"
+    if not close_snapshot.exists():
+        rc, out, err = 0, f"CORRECTED_WOO_AFTER_GAME_SCORING_PENDING date={args.derek_date} reason=missing_market_comparison", ""
+    else:
+        rc, out, err = _run([
+            py, "scripts/score_daily_pmf_delivery_after_game.py",
+            "--date", args.derek_date,
+            "--close-snapshot", str(close_snapshot),
+        ])
     combined = out + "\n" + err
     woo_score = _grep(combined,
-                       "WOO_AFTER_GAME_SCORING_PASS",
-                       "WOO_AFTER_GAME_SCORING_FAILED",
-                       "WOO_AFTER_GAME_SCORING_PENDING")
+                       "MODEL_VS_MARKET_SCORING_PASS",
+                       "EXPECTED_TARGET_STATS_SCORED_FAILED",
+                       "CORRECTED_WOO_AFTER_GAME_SCORING_PENDING")
     if woo_score and "PASS" in woo_score:
         ws_status = "PASS"
     elif woo_score and "PENDING" in woo_score:
@@ -443,7 +450,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         ws_status = "FAIL"
     checks.append({
-        "name": "woo_after_game_scoring", "command": "score_woo_after_game",
+        "name": "woo_after_game_scoring", "command": "score_daily_pmf_delivery_after_game",
         "status": ws_status, "critical": True,
         "pass_line": woo_score if ws_status == "PASS" else None,
         "warn_line": woo_score if ws_status == "WARN" else None,
