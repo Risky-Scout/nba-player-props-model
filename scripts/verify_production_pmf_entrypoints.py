@@ -120,6 +120,21 @@ def main() -> int:
     warn("scripts/verify_corrected_pmf_delivery.py" in daily_s or "verify_corrected_pmf_delivery.py" in orch_s,
          f"{daily_wf} should expose corrected verifier directly or via orchestrator")
 
+    # WoO after-game scoring must use corrected PMF delivery, not legacy all_props.
+    daily_predictions_wf = ".github/workflows/daily_predictions.yml"
+    daily_predictions_s = read(daily_predictions_wf)
+    require("scripts/score_woo_after_game.py" not in daily_predictions_s,
+            f"{daily_predictions_wf} must not call legacy all_props WoO scorer")
+    require("scripts/score_daily_pmf_delivery_after_game.py" in daily_predictions_s,
+            f"{daily_predictions_wf} must score corrected PMF delivery after game")
+
+    full_contract = "scripts/verify_full_daily_production_contract.py"
+    full_contract_s = read(full_contract)
+    require("scripts/score_woo_after_game.py" not in full_contract_s,
+            f"{full_contract} must not call legacy all_props WoO scorer")
+    require("scripts/score_daily_pmf_delivery_after_game.py" in full_contract_s,
+            f"{full_contract} must score corrected PMF delivery after game")
+
     # WoO FTP deploy must verify corrected PMF delivery before deploy.
     ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
     ftp_s = read(ftp_wf)
