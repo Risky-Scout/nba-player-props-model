@@ -245,9 +245,7 @@ jobs:
   woo_morning_monetization:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' || github.event.schedule == '0 15 * * *' }}
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization') ||
-      github.event.schedule == '0 15 * * *'
+    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization') || github.event.schedule == '0 15 * * *' }}
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
