@@ -1068,13 +1068,45 @@ def main() -> int:
     # Writers — Phase 11C layout: every artifact also lives under
     # `after_game_scoring/`, and a status indicator is always written
     # so the deliveries index can detect `pending_outcomes`.
+    # Build scoring+CLV merge so the _clv_and_scoring outputs actually
+    # carry CLV columns (left-join on prop key; NaN where line not stable).
+    if not clv.empty:
+        _clv_cols = ["player_id", "stat", "line", "book",
+                     "clv_close_minus_morning_p",
+                     "clv_book_close_minus_morning_p",
+                     "model_edge_movement",
+                     "model_p_over_close", "model_p_over_morning",
+                     "market_no_vig_over_prob_close",
+                     "market_no_vig_over_prob_morning",
+                     "edge_close", "edge_morning"]
+        _clv_subset = clv[[c for c in _clv_cols if c in clv.columns]].copy()
+        # Coerce `line` to numeric on both sides (scoring sometimes stores it
+        # as object/string from upstream join; clv has it as float64).
+        _clv_subset["line"] = pd.to_numeric(_clv_subset["line"], errors="coerce")
+        _scoring_for_merge = scoring.copy()
+        _scoring_for_merge["line"] = pd.to_numeric(
+            _scoring_for_merge["line"], errors="coerce")
+        scoring_with_clv = _scoring_for_merge.merge(
+            _clv_subset,
+            on=["player_id", "stat", "line", "book"],
+            how="left")
+    else:
+        scoring_with_clv = scoring
+
     after_game_status = ("scored" if not scoring.empty
                          else "pending_outcomes")
     if not scoring.empty:
         _write(scoring, derek_dir / "after_game_scoring")
-        _write(scoring, woo_dir / "after_game_clv_and_scoring")
+        _write(scoring_with_clv, woo_dir / "after_game_clv_and_scoring")
         _write(scoring, after_game_dir / "after_game_scoring")
-        _write(scoring, after_game_dir / "after_game_clv_and_scoring")
+        _write(scoring_with_clv, after_game_dir / "after_game_clv_and_scoring")
+    # CLV lives at (player_id, stat, line, book) — different granularity
+    # than PMF scoring at (player_id, stat). Write CLV as its own artifact
+    # so the actual CLV rows are visible. The _clv_and_scoring left-join
+    # above produces NaN CLV columns by design (scoring lacks line/book).
+    if not clv.empty:
+        _write(clv, woo_dir / "after_game_clv")
+        _write(clv, after_game_dir / "after_game_clv")
     summary_path = derek_dir / "after_game_summary.md"
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     write_summary_md(scoring, market_scoring, clv,
