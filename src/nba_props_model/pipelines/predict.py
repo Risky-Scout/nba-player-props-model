@@ -19,6 +19,7 @@ Architecture:
 """
 
 from nba_props_model.calibration.stat_side_platt import IsotonicCalibrator  # needed for platt pkl loading
+from nba_props_model.calibration.role_buckets import role_bucket_from_minutes_dist  # phase14: role-aware live calibration
 import csv
 import json
 import logging
@@ -1177,14 +1178,39 @@ def main(argv=None):
                 if _pmf_arr is None:
                     continue
                 _cal = _pmf_calibrators.get(target)
+                _role_bucket = None
                 if _cal is not None:
-                    _pmf_arr = _cal.apply(_pmf_arr)
+                    # phase14: derive ex-ante role bucket from predicted
+                    # minutes distribution and pass into the calibrator.
+                    # RoleAwarePMFCalibrator returns global-only output when
+                    # role_bucket is None, so this is the line that actually
+                    # unlocks role-aware calibration in production. Verified
+                    # by Phase 14 Step 1 same-row A/B (commit c0c2236):
+                    # role_aware vs global_only on identical OOF rows
+                    # improves NLL by -0.0053 with no bucket regressions.
+                    try:
+                        _role_bucket = role_bucket_from_minutes_dist(_mp_dist)
+                    except Exception:
+                        _role_bucket = None
+                    try:
+                        _pmf_arr = _cal.apply(_pmf_arr, role_bucket=_role_bucket)
+                    except TypeError:
+                        # Calibrator class without role_bucket kwarg: fall
+                        # back to the legacy global apply for safety.
+                        _pmf_arr = _cal.apply(_pmf_arr)
                 _po, _pu = _score_prop_line(_pmf_arr, float(line))
                 prob_over = float(_po)
                 prob_under = float(_pu)
                 raw_over = prob_over
                 raw_under = prob_under
-                cal_src_over = "pmf_cal" if target in _pmf_calibrators else "pmf"
+                if target in _pmf_calibrators:
+                    _cal_v = getattr(_pmf_calibrators[target], "version", None)
+                    if _cal_v == "role_aware_pmf_cal_v1" and _role_bucket:
+                        cal_src_over = f"role_aware_pmf_cal_v1:{_role_bucket}"
+                    else:
+                        cal_src_over = "pmf_cal"
+                else:
+                    cal_src_over = "pmf"
                 cal_src_under = cal_src_over
                 cal_applied_over = (target in _pmf_calibrators)
                 cal_applied_under = cal_applied_over
