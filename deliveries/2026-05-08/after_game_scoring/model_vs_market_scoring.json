@@ -1,0 +1,237 @@
+{
+  "by_book": [
+    {
+      "book": "betonlineag",
+      "delta_brier": 0.006690438721142866,
+      "delta_logloss": 0.01625057688189951,
+      "market_brier": 0.24374781923201455,
+      "market_logloss": 0.6805265825473666,
+      "model_brier": 0.2504382579531575,
+      "model_logloss": 0.696777159429266,
+      "n": 39
+    },
+    {
+      "book": "bovada",
+      "delta_brier": 0.11135216595645203,
+      "delta_logloss": 0.4023571737520241,
+      "market_brier": 0.25204250633587844,
+      "market_logloss": 0.6959198710987623,
+      "model_brier": 0.3633946722923304,
+      "model_logloss": 1.0982770448507864,
+      "n": 34
+    },
+    {
+      "book": "draftkings",
+      "delta_brier": 0.06269881640987782,
+      "delta_logloss": 0.2160916542175437,
+      "market_brier": 0.2530154970223086,
+      "market_logloss": 0.6992928370480259,
+      "model_brier": 0.3157143134321864,
+      "model_logloss": 0.9153844912655696,
+      "n": 79
+    },
+    {
+      "book": "espnbet",
+      "delta_brier": 0.02791082639175879,
+      "delta_logloss": 0.15765950054847516,
+      "market_brier": 0.25570913860371786,
+      "market_logloss": 0.7049012154505648,
+      "model_brier": 0.28361996499547665,
+      "model_logloss": 0.8625607159990399,
+      "n": 56
+    },
+    {
+      "book": "fanduel",
+      "delta_brier": 0.05535430445898373,
+      "delta_logloss": 0.15849319795323924,
+      "market_brier": 0.252944848516252,
+      "market_logloss": 0.6986858116417625,
+      "model_brier": 0.30829915297523575,
+      "model_logloss": 0.8571790095950019,
+      "n": 63
+    },
+    {
+      "book": "fliff",
+      "delta_brier": 0.061820239373225935,
+      "delta_logloss": 0.22971706390869456,
+      "market_brier": 0.23175268696018506,
+      "market_logloss": 0.6553446921728006,
+      "model_brier": 0.293572926333411,
+      "model_logloss": 0.8850617560814952,
+      "n": 64
+    },
+    {
+      "book": "hardrockbet",
+      "delta_brier": 0.06220342705906376,
+      "delta_logloss": 0.22526051018063892,
+      "market_brier": 0.25203466770765637,
+      "market_logloss": 0.6977511461962088,
+      "model_brier": 0.3142380947667202,
+      "model_logloss": 0.9230116563768479,
+      "n": 75
+    },
+    {
+      "book": "hardrockbet_az",
+      "delta_brier": 0.06220342705906376,
+      "delta_logloss": 0.22526051018063892,
+      "market_brier": 0.25203466770765637,
+      "market_logloss": 0.6977511461962088,
+      "model_brier": 0.3142380947667202,
+      "model_logloss": 0.9230116563768479,
+      "n": 75
+    },
+    {
+      "book": "hardrockbet_fl",
+      "delta_brier": 0.09481411964991743,
+      "delta_logloss": 0.3645644614291004,
+      "market_brier": 0.2539264026525959,
+      "market_logloss": 0.700697723702998,
+      "model_brier": 0.3487405223025134,
+      "model_logloss": 1.0652621851320982,
+      "n": 40
+    },
+    {
+      "book": "williamhill_us",
+      "delta_brier": 0.04263951639129961,
+      "delta_logloss": 0.22789298157395158,
+      "market_brier": 0.2553635352917244,
+      "market_logloss": 0.7040575791620117,
+      "model_brier": 0.298003051683024,
+      "model_logloss": 0.9319505607359632,
+      "n": 45
+    }
+  ],
+  "by_edge_bucket": [
+    {
+      "delta_brier": 0.0035908052706276664,
+      "delta_logloss": 0.007191099894253695,
+      "edge_bucket": "near_zero",
+      "market_brier": 0.2208440534765454,
+      "market_logloss": 0.6342515647414302,
+      "model_brier": 0.22443485874717306,
+      "model_logloss": 0.6414426646356838,
+      "n": 36
+    },
+    {
+      "delta_brier": -0.007028098361396414,
+      "delta_logloss": -0.014807191990358192,
+      "edge_bucket": "over",
+      "market_brier": 0.2238816036922843,
+      "market_logloss": 0.6402017004685212,
+      "model_brier": 0.21685350533088785,
+      "model_logloss": 0.625394508478163,
+      "n": 30
+    },
+    {
+      "delta_brier": 0.03727152054618022,
+      "delta_logloss": 0.09110408440430778,
+      "edge_bucket": "very_over",
+      "market_brier": 0.2386670454804649,
+      "market_logloss": 0.6687212685831749,
+      "model_brier": 0.27593856602664507,
+      "model_logloss": 0.7598253529874828,
+      "n": 118
+    },
+    {
+      "delta_brier": 0.0800491271411874,
+      "delta_logloss": 0.3107226451716927,
+      "edge_bucket": "very_under",
+      "market_brier": 0.25576746606023065,
+      "market_logloss": 0.7051193295895841,
+      "model_brier": 0.33581659320141805,
+      "model_logloss": 1.0158419747612768,
+      "n": 369
+    }
+  ],
+  "by_role_bucket": [
+    {
+      "delta_brier": 0.15882598180585283,
+      "delta_logloss": 0.5915253240253665,
+      "market_brier": 0.2600766369146625,
+      "market_logloss": 0.7135499037924241,
+      "model_brier": 0.4189026187205153,
+      "model_logloss": 1.3050752278177902,
+      "n": 205,
+      "role_bucket": "core"
+    },
+    {
+      "delta_brier": -0.07777678041461299,
+      "delta_logloss": -0.17193277548399663,
+      "market_brier": 0.25344489712212354,
+      "market_logloss": 0.7045157077999613,
+      "model_brier": 0.17566811670751056,
+      "model_logloss": 0.5325829323159647,
+      "n": 73,
+      "role_bucket": "rotation"
+    },
+    {
+      "delta_brier": 0.029311321972207923,
+      "delta_logloss": 0.06834990334785566,
+      "market_brier": 0.24005743786579176,
+      "market_logloss": 0.6716604330999976,
+      "model_brier": 0.2693687598379996,
+      "model_logloss": 0.7400103364478533,
+      "n": 285,
+      "role_bucket": "starter"
+    }
+  ],
+  "by_stat": [
+    {
+      "delta_brier": 0.11637282223360954,
+      "delta_logloss": 0.3646960382727046,
+      "market_brier": 0.2556440785414642,
+      "market_logloss": 0.7049084487890409,
+      "model_brier": 0.37201690077507366,
+      "model_logloss": 1.0696044870617458,
+      "n": 107,
+      "stat": "ast"
+    },
+    {
+      "delta_brier": 0.10044273996715064,
+      "delta_logloss": 0.234514522227557,
+      "market_brier": 0.22494303733420556,
+      "market_logloss": 0.640987164163297,
+      "model_brier": 0.3253857773013562,
+      "model_logloss": 0.8755016863908542,
+      "n": 143,
+      "stat": "fg3m"
+    },
+    {
+      "delta_brier": -0.012023508205353625,
+      "delta_logloss": -0.023211472738486037,
+      "market_brier": 0.24593481623917973,
+      "market_logloss": 0.6850843952393155,
+      "model_brier": 0.23391130803382618,
+      "model_logloss": 0.6618729225008295,
+      "n": 166,
+      "stat": "pts"
+    },
+    {
+      "delta_brier": 0.05608067602444485,
+      "delta_logloss": 0.3496053290473528,
+      "market_brier": 0.26971778237908384,
+      "market_logloss": 0.7335158791334265,
+      "model_brier": 0.32579845840352867,
+      "model_logloss": 1.0831212081807793,
+      "n": 162,
+      "stat": "reb"
+    }
+  ],
+  "delivery_date": "2026-05-08",
+  "generated_at_utc": "2026-05-09T08:18:30Z",
+  "minimum_bucket_rows_threshold": 30,
+  "minimum_paired_rows_threshold": 20,
+  "minimum_sample_passed": true,
+  "overall": {
+    "delta_brier": 0.05865808122520783,
+    "delta_logloss": 0.2168529612539836,
+    "market_brier": 0.24920455187516175,
+    "market_logloss": 0.6914185995244296,
+    "model_brier": 0.30786263310036954,
+    "model_logloss": 0.9082715607784131,
+    "n": 578
+  },
+  "rows_paired": 578,
+  "rows_total": 578,
+  "schema_version": "1.0"
+}

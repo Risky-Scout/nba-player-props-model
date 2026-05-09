@@ -11,7 +11,7 @@
       "passed": true
     },
     {
-      "detail": "age_days=6.81 max=14",
+      "detail": "age_days=7.81 max=14",
       "name": "champion_freshness",
       "passed": true
     },
@@ -41,9 +41,9 @@
       "passed": true
     }
   ],
-  "code_commit": "6ac232ba46c004b589763471d501b6625f8f82ab",
+  "code_commit": "d2cf885ae7dfc4ddedf956a8e85e7d82ef17d679",
   "facts": {
-    "champion_age_days": 6.81,
+    "champion_age_days": 7.81,
     "champion_calibrated_through_date": "2026-04-30",
     "champion_calibrator_actual_sha_prefixes": {
       "ast": "aa73d678b1512d33",
@@ -65,7 +65,7 @@
     "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
     "champion_promoted_at_utc": "2026-05-01T12:48:39+00:00",
     "champion_trained_through_date": "2026-04-30",
-    "delivery_date_checked": "2026-05-07",
+    "delivery_date_checked": "2026-05-08",
     "delivery_manifest_stamped": {
       "derek": {
         "calibrated_through_date": "2026-04-30",
@@ -74,7 +74,7 @@
         "model_source": "champion_pointer",
         "model_version": null,
         "no_challenger_artifacts_used": true,
-        "path": "deliveries/2026-05-07/derek_forward_feed/feed_manifest.json",
+        "path": "deliveries/2026-05-08/derek_forward_feed/feed_manifest.json",
         "trained_through_date": "2026-04-30"
       },
       "woo": {
@@ -82,9 +82,9 @@
         "champion_model_id": "challenger-2026-04-30",
         "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
         "model_source": "champion_pointer",
-        "model_version": "d3dfb9a#phase10c",
+        "model_version": "4b4ce59b#phase10c",
         "no_challenger_artifacts_used": true,
-        "path": "deliveries/2026-05-07/wizard_of_odds/run_manifest.json",
+        "path": "deliveries/2026-05-08/wizard_of_odds/run_manifest.json",
         "trained_through_date": "2026-04-30"
       }
     },
@@ -94,10 +94,10 @@
       "predict.py",
       "build_stat_grid_pmfs.py"
     ],
-    "latest_delivery_date": "2026-05-07",
+    "latest_delivery_date": "2026-05-08",
     "latest_delivery_generated_at": null
   },
-  "generated_at_utc": "2026-05-08T08:10:33+00:00",
+  "generated_at_utc": "2026-05-09T08:18:36+00:00",
   "max_stale_days": 14,
   "passed": true,
   "schema_version": "1.0"
