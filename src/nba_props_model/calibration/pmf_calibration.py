@@ -66,22 +66,40 @@ ROLE_MIN_ROWS = {
 }
 
 ROLE_SHRINK_K = {
-    "inactive_risk": 700.0,
-    "fringe": 700.0,
-    "bench": 900.0,
-    "rotation": 1200.0,
-    "core": 1500.0,
-    "starter": 2000.0,
+    # Phase 14 promotion: monotone_inactive_global_v1
+    # Small/noisy buckets shrink heavily toward global; starter/core get more
+    # bucket signal where A/B paired-row evidence proved it safe.
+    "inactive_risk": 8000.0,
+    "fringe": 7000.0,
+    "bench": 5000.0,
+    "rotation": 3000.0,
+    "core": 2000.0,
+    "starter": 1500.0,
 }
 
 ROLE_WEIGHT_CAP = {
-    "inactive_risk": 0.85,
-    "fringe": 0.85,
-    "bench": 0.80,
-    "rotation": 0.75,
-    "core": 0.60,
-    "starter": 0.45,
+    # Phase 14 promotion: monotone_inactive_global_v1
+    # inactive_risk cap=0.0 is belt-and-suspenders; ROLE_GLOBAL_ONLY_BUCKETS
+    # short-circuits inactive_risk to global before this cap is consulted.
+    "inactive_risk": 0.0,
+    "fringe": 0.25,
+    "bench": 0.35,
+    "rotation": 0.50,
+    "core": 0.65,
+    "starter": 0.70,
 }
+
+# Buckets routed through global-only at apply time. Their fitted bucket
+# calibrators in the pickle are intentionally bypassed for these buckets,
+# regardless of bucket sample size. Per Phase 14 paired A/B: inactive_risk
+# bucket calibration on n=3,309 rows worsened fg3m|inactive_risk by +0.0126
+# NLL vs global; routing through global eliminates that residual exactly
+# (delta=0.0 vs global on the n=922 wedge cell).
+ROLE_GLOBAL_ONLY_BUCKETS = frozenset({"inactive_risk"})
+
+# Identifies the active blend policy for downstream audit/cal_source tagging.
+# When this changes, the pickle is unchanged but apply-time semantics differ.
+ROLE_AWARE_BLEND_POLICY = "monotone_inactive_global_v1"
 
 ROLE_AWARE_VERSION = "role_aware_pmf_cal_v1"
 
@@ -286,6 +304,10 @@ class RoleAwarePMFCalibrator:
 
         bucket_key = role_bucket if isinstance(role_bucket, str) else None
         if not bucket_key or bucket_key == "unknown":
+            return global_pmf
+        # Phase 14 monotone_inactive_global_v1: route configured buckets
+        # through global-only regardless of fitted bucket calibrator.
+        if bucket_key in ROLE_GLOBAL_ONLY_BUCKETS:
             return global_pmf
         bucket_cal = self.bucket_calibrators.get(bucket_key)
         if bucket_cal is None:
