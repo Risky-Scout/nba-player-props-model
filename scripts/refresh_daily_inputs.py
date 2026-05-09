@@ -396,7 +396,7 @@ def _model_artifacts_status() -> dict:
     all_present = all(f["exists"] for f in files)
     return {
         "files": files,
-        "calibration_source": "phase8_role_aware_pmf_cal_v2",
+        "calibration_source": "phase8_role_aware_pmf_cal_v1",
         "phase": "phase10c",
         "tov_overlay_status": "off",
         "tov_overlay_reason": ("Phase 10D/10D.2 overlay failed independent "
