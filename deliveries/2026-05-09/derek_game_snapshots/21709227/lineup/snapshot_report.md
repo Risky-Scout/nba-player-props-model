@@ -5,5 +5,5 @@
 - snapshot_type: `lineup`
 - source: `deliveries/2026-05-09/wizard_of_odds/full_pmfs_wide.parquet`
 - rows: **175**
-- market_rows: **191**
+- market_rows: **210**
 - stats: `['ast', 'fg3m', 'pts', 'reb', 'tov']`
