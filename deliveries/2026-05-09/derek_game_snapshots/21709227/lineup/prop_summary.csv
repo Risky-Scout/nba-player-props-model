@@ -1,0 +1,176 @@
+player_id,player_name,team,opponent,game_id,is_home,stat,line,book,market_over_odds,market_under_odds,market_no_vig_over_prob,model_p_over,edge,role_bucket,injury_freshness_status,lineup_freshness_status,market_coverage_status
+9,Jarrett Allen,CLE,DET,21709227,True,pts,,,,,,,,core,fresh,projected,full
+9,Jarrett Allen,CLE,DET,21709227,True,reb,,,,,,,,core,fresh,projected,full
+9,Jarrett Allen,CLE,DET,21709227,True,ast,,,,,,,,core,fresh,projected,full
+9,Jarrett Allen,CLE,DET,21709227,True,fg3m,,,,,,,,core,fresh,projected,full
+9,Jarrett Allen,CLE,DET,21709227,True,tov,,,,,,,,core,fresh,projected,full
+27,Lonzo Ball,CLE,DET,21709227,True,pts,,,,,,,,bench,fresh,projected,full
+27,Lonzo Ball,CLE,DET,21709227,True,reb,,,,,,,,bench,fresh,projected,full
+27,Lonzo Ball,CLE,DET,21709227,True,ast,,,,,,,,bench,fresh,projected,full
+27,Lonzo Ball,CLE,DET,21709227,True,fg3m,,,,,,,,bench,fresh,projected,full
+27,Lonzo Ball,CLE,DET,21709227,True,tov,,,,,,,,bench,fresh,projected,full
+74,Thomas Bryant,CLE,DET,21709227,True,pts,,,,,,,,fringe,fresh,projected,full
+74,Thomas Bryant,CLE,DET,21709227,True,reb,,,,,,,,fringe,fresh,projected,full
+74,Thomas Bryant,CLE,DET,21709227,True,ast,,,,,,,,fringe,fresh,projected,full
+74,Thomas Bryant,CLE,DET,21709227,True,fg3m,,,,,,,,fringe,fresh,projected,full
+74,Thomas Bryant,CLE,DET,21709227,True,tov,,,,,,,,fringe,fresh,projected,full
+192,James Harden,CLE,DET,21709227,True,pts,,,,,,,,starter,fresh,projected,full
+192,James Harden,CLE,DET,21709227,True,reb,,,,,,,,starter,fresh,projected,full
+192,James Harden,CLE,DET,21709227,True,ast,,,,,,,,starter,fresh,projected,full
+192,James Harden,CLE,DET,21709227,True,fg3m,,,,,,,,starter,fresh,projected,full
+192,James Harden,CLE,DET,21709227,True,tov,,,,,,,,starter,fresh,projected,full
+200,Tobias Harris,DET,CLE,21709227,False,pts,,,,,,,,starter,fresh,projected,full
+200,Tobias Harris,DET,CLE,21709227,False,reb,,,,,,,,starter,fresh,projected,full
+200,Tobias Harris,DET,CLE,21709227,False,ast,,,,,,,,starter,fresh,projected,full
+200,Tobias Harris,DET,CLE,21709227,False,fg3m,,,,,,,,starter,fresh,projected,full
+200,Tobias Harris,DET,CLE,21709227,False,tov,,,,,,,,starter,fresh,projected,full
+221,Kevin Huerter,DET,CLE,21709227,False,pts,,,,,,,,bench,fresh,projected,full
+221,Kevin Huerter,DET,CLE,21709227,False,reb,,,,,,,,bench,fresh,projected,full
+221,Kevin Huerter,DET,CLE,21709227,False,ast,,,,,,,,bench,fresh,projected,full
+221,Kevin Huerter,DET,CLE,21709227,False,fg3m,,,,,,,,bench,fresh,projected,full
+221,Kevin Huerter,DET,CLE,21709227,False,tov,,,,,,,,bench,fresh,projected,full
+277,Caris LeVert,DET,CLE,21709227,False,pts,,,,,,,,bench,fresh,projected,full
+277,Caris LeVert,DET,CLE,21709227,False,reb,,,,,,,,bench,fresh,projected,full
+277,Caris LeVert,DET,CLE,21709227,False,ast,,,,,,,,bench,fresh,projected,full
+277,Caris LeVert,DET,CLE,21709227,False,fg3m,,,,,,,,bench,fresh,projected,full
+277,Caris LeVert,DET,CLE,21709227,False,tov,,,,,,,,bench,fresh,projected,full
+322,Donovan Mitchell,CLE,DET,21709227,True,pts,,,,,,,,starter,fresh,projected,full
+322,Donovan Mitchell,CLE,DET,21709227,True,reb,,,,,,,,starter,fresh,projected,full
+322,Donovan Mitchell,CLE,DET,21709227,True,ast,,,,,,,,starter,fresh,projected,full
+322,Donovan Mitchell,CLE,DET,21709227,True,fg3m,,,,,,,,starter,fresh,projected,full
+322,Donovan Mitchell,CLE,DET,21709227,True,tov,,,,,,,,starter,fresh,projected,full
+340,Larry Nance Jr.,CLE,DET,21709227,True,pts,,,,,,,,fringe,fresh,projected,full
+340,Larry Nance Jr.,CLE,DET,21709227,True,reb,,,,,,,,fringe,fresh,projected,full
+340,Larry Nance Jr.,CLE,DET,21709227,True,ast,,,,,,,,fringe,fresh,projected,full
+340,Larry Nance Jr.,CLE,DET,21709227,True,fg3m,,,,,,,,fringe,fresh,projected,full
+340,Larry Nance Jr.,CLE,DET,21709227,True,tov,,,,,,,,fringe,fresh,projected,full
+397,Duncan Robinson,DET,CLE,21709227,False,pts,,,,,,,,core,fresh,projected,full
+397,Duncan Robinson,DET,CLE,21709227,False,reb,,,,,,,,core,fresh,projected,full
+397,Duncan Robinson,DET,CLE,21709227,False,ast,,,,,,,,core,fresh,projected,full
+397,Duncan Robinson,DET,CLE,21709227,False,fg3m,,,,,,,,core,fresh,projected,full
+397,Duncan Robinson,DET,CLE,21709227,False,tov,,,,,,,,core,fresh,projected,full
+409,Dennis Schroder,CLE,DET,21709227,True,pts,,,,,,,,rotation,fresh,projected,full
+409,Dennis Schroder,CLE,DET,21709227,True,reb,,,,,,,,rotation,fresh,projected,full
+409,Dennis Schroder,CLE,DET,21709227,True,ast,,,,,,,,rotation,fresh,projected,full
+409,Dennis Schroder,CLE,DET,21709227,True,fg3m,,,,,,,,rotation,fresh,projected,full
+409,Dennis Schroder,CLE,DET,21709227,True,tov,,,,,,,,rotation,fresh,projected,full
+666581,Darius Garland,LAC,CLE,21709227,False,pts,,,,,,,,core,fresh,projected,full
+666581,Darius Garland,LAC,CLE,21709227,False,reb,,,,,,,,core,fresh,projected,full
+666581,Darius Garland,LAC,CLE,21709227,False,ast,,,,,,,,core,fresh,projected,full
+666581,Darius Garland,LAC,CLE,21709227,False,fg3m,,,,,,,,core,fresh,projected,full
+666581,Darius Garland,LAC,CLE,21709227,False,tov,,,,,,,,core,fresh,projected,full
+666604,Javonte Green,DET,CLE,21709227,False,pts,,,,,,,,fringe,fresh,projected,full
+666604,Javonte Green,DET,CLE,21709227,False,reb,,,,,,,,fringe,fresh,projected,full
+666604,Javonte Green,DET,CLE,21709227,False,ast,,,,,,,,fringe,fresh,projected,full
+666604,Javonte Green,DET,CLE,21709227,False,fg3m,,,,,,,,fringe,fresh,projected,full
+666604,Javonte Green,DET,CLE,21709227,False,tov,,,,,,,,fringe,fresh,projected,full
+666908,Max Strus,CLE,DET,21709227,True,pts,,,,,,,,core,fresh,projected,full
+666908,Max Strus,CLE,DET,21709227,True,reb,,,,,,,,core,fresh,projected,full
+666908,Max Strus,CLE,DET,21709227,True,ast,,,,,,,,core,fresh,projected,full
+666908,Max Strus,CLE,DET,21709227,True,fg3m,,,,,,,,core,fresh,projected,full
+666908,Max Strus,CLE,DET,21709227,True,tov,,,,,,,,core,fresh,projected,full
+666940,Dean Wade,CLE,DET,21709227,True,pts,,,,,,,,rotation,fresh,projected,full
+666940,Dean Wade,CLE,DET,21709227,True,reb,,,,,,,,rotation,fresh,projected,full
+666940,Dean Wade,CLE,DET,21709227,True,ast,,,,,,,,rotation,fresh,projected,full
+666940,Dean Wade,CLE,DET,21709227,True,fg3m,,,,,,,,rotation,fresh,projected,full
+666940,Dean Wade,CLE,DET,21709227,True,tov,,,,,,,,rotation,fresh,projected,full
+3547267,Isaiah Stewart,DET,CLE,21709227,False,pts,,,,,,,,bench,fresh,projected,full
+3547267,Isaiah Stewart,DET,CLE,21709227,False,reb,,,,,,,,bench,fresh,projected,full
+3547267,Isaiah Stewart,DET,CLE,21709227,False,ast,,,,,,,,bench,fresh,projected,full
+3547267,Isaiah Stewart,DET,CLE,21709227,False,fg3m,,,,,,,,bench,fresh,projected,full
+3547267,Isaiah Stewart,DET,CLE,21709227,False,tov,,,,,,,,bench,fresh,projected,full
+3547270,Paul Reed,DET,CLE,21709227,False,pts,,,,,,,,fringe,fresh,projected,full
+3547270,Paul Reed,DET,CLE,21709227,False,reb,,,,,,,,fringe,fresh,projected,full
+3547270,Paul Reed,DET,CLE,21709227,False,ast,,,,,,,,fringe,fresh,projected,full
+3547270,Paul Reed,DET,CLE,21709227,False,fg3m,,,,,,,,fringe,fresh,projected,full
+3547270,Paul Reed,DET,CLE,21709227,False,tov,,,,,,,,fringe,fresh,projected,full
+3547299,Sam Merrill,CLE,DET,21709227,True,pts,,,,,,,,rotation,fresh,projected,full
+3547299,Sam Merrill,CLE,DET,21709227,True,reb,,,,,,,,rotation,fresh,projected,full
+3547299,Sam Merrill,CLE,DET,21709227,True,ast,,,,,,,,rotation,fresh,projected,full
+3547299,Sam Merrill,CLE,DET,21709227,True,fg3m,,,,,,,,rotation,fresh,projected,full
+3547299,Sam Merrill,CLE,DET,21709227,True,tov,,,,,,,,rotation,fresh,projected,full
+17896075,Cade Cunningham,DET,CLE,21709227,False,pts,,,,,,,,starter,fresh,projected,full
+17896075,Cade Cunningham,DET,CLE,21709227,False,reb,,,,,,,,starter,fresh,projected,full
+17896075,Cade Cunningham,DET,CLE,21709227,False,ast,,,,,,,,starter,fresh,projected,full
+17896075,Cade Cunningham,DET,CLE,21709227,False,fg3m,,,,,,,,starter,fresh,projected,full
+17896075,Cade Cunningham,DET,CLE,21709227,False,tov,,,,,,,,starter,fresh,projected,full
+17896076,Evan Mobley,CLE,DET,21709227,True,pts,,,,,,,,starter,fresh,projected,full
+17896076,Evan Mobley,CLE,DET,21709227,True,reb,,,,,,,,starter,fresh,projected,full
+17896076,Evan Mobley,CLE,DET,21709227,True,ast,,,,,,,,starter,fresh,projected,full
+17896076,Evan Mobley,CLE,DET,21709227,True,fg3m,,,,,,,,starter,fresh,projected,full
+17896076,Evan Mobley,CLE,DET,21709227,True,tov,,,,,,,,starter,fresh,projected,full
+38017682,Jaden Ivey,CHI,CLE,21709227,False,pts,,,,,,,,rotation,fresh,projected,full
+38017682,Jaden Ivey,CHI,CLE,21709227,False,reb,,,,,,,,rotation,fresh,projected,full
+38017682,Jaden Ivey,CHI,CLE,21709227,False,ast,,,,,,,,rotation,fresh,projected,full
+38017682,Jaden Ivey,CHI,CLE,21709227,False,fg3m,,,,,,,,rotation,fresh,projected,full
+38017682,Jaden Ivey,CHI,CLE,21709227,False,tov,,,,,,,,rotation,fresh,projected,full
+38017694,Jalen Duren,DET,CLE,21709227,False,pts,,,,,,,,starter,fresh,projected,full
+38017694,Jalen Duren,DET,CLE,21709227,False,reb,,,,,,,,starter,fresh,projected,full
+38017694,Jalen Duren,DET,CLE,21709227,False,ast,,,,,,,,starter,fresh,projected,full
+38017694,Jalen Duren,DET,CLE,21709227,False,fg3m,,,,,,,,starter,fresh,projected,full
+38017694,Jalen Duren,DET,CLE,21709227,False,tov,,,,,,,,starter,fresh,projected,full
+38017700,Wendell Moore Jr.,DET,CLE,21709227,False,pts,,,,,,,,fringe,fresh,projected,full
+38017700,Wendell Moore Jr.,DET,CLE,21709227,False,reb,,,,,,,,fringe,fresh,projected,full
+38017700,Wendell Moore Jr.,DET,CLE,21709227,False,ast,,,,,,,,fringe,fresh,projected,full
+38017700,Wendell Moore Jr.,DET,CLE,21709227,False,fg3m,,,,,,,,fringe,fresh,projected,full
+38017700,Wendell Moore Jr.,DET,CLE,21709227,False,tov,,,,,,,,fringe,fresh,projected,full
+38017714,Keon Ellis,CLE,DET,21709227,True,pts,,,,,,,,bench,fresh,projected,full
+38017714,Keon Ellis,CLE,DET,21709227,True,reb,,,,,,,,bench,fresh,projected,full
+38017714,Keon Ellis,CLE,DET,21709227,True,ast,,,,,,,,bench,fresh,projected,full
+38017714,Keon Ellis,CLE,DET,21709227,True,fg3m,,,,,,,,bench,fresh,projected,full
+38017714,Keon Ellis,CLE,DET,21709227,True,tov,,,,,,,,bench,fresh,projected,full
+56677792,Marcus Sasser,DET,CLE,21709227,False,pts,,,,,,,,fringe,fresh,projected,full
+56677792,Marcus Sasser,DET,CLE,21709227,False,reb,,,,,,,,fringe,fresh,projected,full
+56677792,Marcus Sasser,DET,CLE,21709227,False,ast,,,,,,,,fringe,fresh,projected,full
+56677792,Marcus Sasser,DET,CLE,21709227,False,fg3m,,,,,,,,fringe,fresh,projected,full
+56677792,Marcus Sasser,DET,CLE,21709227,False,tov,,,,,,,,fringe,fresh,projected,full
+56677826,Ausar Thompson,DET,CLE,21709227,False,pts,,,,,,,,core,fresh,projected,full
+56677826,Ausar Thompson,DET,CLE,21709227,False,reb,,,,,,,,core,fresh,projected,full
+56677826,Ausar Thompson,DET,CLE,21709227,False,ast,,,,,,,,core,fresh,projected,full
+56677826,Ausar Thompson,DET,CLE,21709227,False,fg3m,,,,,,,,core,fresh,projected,full
+56677826,Ausar Thompson,DET,CLE,21709227,False,tov,,,,,,,,core,fresh,projected,full
+56677872,Craig Porter,CLE,DET,21709227,True,pts,,,,,,,,bench,fresh,projected,full
+56677872,Craig Porter,CLE,DET,21709227,True,reb,,,,,,,,bench,fresh,projected,full
+56677872,Craig Porter,CLE,DET,21709227,True,ast,,,,,,,,bench,fresh,projected,full
+56677872,Craig Porter,CLE,DET,21709227,True,fg3m,,,,,,,,bench,fresh,projected,full
+56677872,Craig Porter,CLE,DET,21709227,True,tov,,,,,,,,bench,fresh,projected,full
+1028026508,Ronald Holland II,DET,CLE,21709227,False,pts,,,,,,,,fringe,fresh,projected,full
+1028026508,Ronald Holland II,DET,CLE,21709227,False,reb,,,,,,,,fringe,fresh,projected,full
+1028026508,Ronald Holland II,DET,CLE,21709227,False,ast,,,,,,,,fringe,fresh,projected,full
+1028026508,Ronald Holland II,DET,CLE,21709227,False,fg3m,,,,,,,,fringe,fresh,projected,full
+1028026508,Ronald Holland II,DET,CLE,21709227,False,tov,,,,,,,,fringe,fresh,projected,full
+1028028993,Jaylon Tyson,CLE,DET,21709227,True,pts,,,,,,,,rotation,fresh,projected,full
+1028028993,Jaylon Tyson,CLE,DET,21709227,True,reb,,,,,,,,rotation,fresh,projected,full
+1028028993,Jaylon Tyson,CLE,DET,21709227,True,ast,,,,,,,,rotation,fresh,projected,full
+1028028993,Jaylon Tyson,CLE,DET,21709227,True,fg3m,,,,,,,,rotation,fresh,projected,full
+1028028993,Jaylon Tyson,CLE,DET,21709227,True,tov,,,,,,,,rotation,fresh,projected,full
+1028205331,Isaac Jones,DET,CLE,21709227,False,pts,,,,,,,,inactive_risk,fresh,projected,full
+1028205331,Isaac Jones,DET,CLE,21709227,False,reb,,,,,,,,inactive_risk,fresh,projected,full
+1028205331,Isaac Jones,DET,CLE,21709227,False,ast,,,,,,,,inactive_risk,fresh,projected,full
+1028205331,Isaac Jones,DET,CLE,21709227,False,fg3m,,,,,,,,inactive_risk,fresh,projected,full
+1028205331,Isaac Jones,DET,CLE,21709227,False,tov,,,,,,,,inactive_risk,fresh,projected,full
+1028240128,Daniss Jenkins,DET,CLE,21709227,False,pts,,,,,,,,core,fresh,projected,full
+1028240128,Daniss Jenkins,DET,CLE,21709227,False,reb,,,,,,,,core,fresh,projected,full
+1028240128,Daniss Jenkins,DET,CLE,21709227,False,ast,,,,,,,,core,fresh,projected,full
+1028240128,Daniss Jenkins,DET,CLE,21709227,False,fg3m,,,,,,,,core,fresh,projected,full
+1028240128,Daniss Jenkins,DET,CLE,21709227,False,tov,,,,,,,,core,fresh,projected,full
+1028267166,Tolu Smith,DET,CLE,21709227,False,pts,,,,,,,,inactive_risk,fresh,projected,full
+1028267166,Tolu Smith,DET,CLE,21709227,False,reb,,,,,,,,inactive_risk,fresh,projected,full
+1028267166,Tolu Smith,DET,CLE,21709227,False,ast,,,,,,,,inactive_risk,fresh,projected,full
+1028267166,Tolu Smith,DET,CLE,21709227,False,fg3m,,,,,,,,inactive_risk,fresh,projected,full
+1028267166,Tolu Smith,DET,CLE,21709227,False,tov,,,,,,,,inactive_risk,fresh,projected,full
+1042560902,Nae'Qwan Tomlin,CLE,DET,21709227,True,pts,,,,,,,,fringe,fresh,projected,full
+1042560902,Nae'Qwan Tomlin,CLE,DET,21709227,True,reb,,,,,,,,fringe,fresh,projected,full
+1042560902,Nae'Qwan Tomlin,CLE,DET,21709227,True,ast,,,,,,,,fringe,fresh,projected,full
+1042560902,Nae'Qwan Tomlin,CLE,DET,21709227,True,fg3m,,,,,,,,fringe,fresh,projected,full
+1042560902,Nae'Qwan Tomlin,CLE,DET,21709227,True,tov,,,,,,,,fringe,fresh,projected,full
+1057389625,Chaz Lanier,DET,CLE,21709227,False,pts,,,,,,,,inactive_risk,fresh,projected,full
+1057389625,Chaz Lanier,DET,CLE,21709227,False,reb,,,,,,,,inactive_risk,fresh,projected,full
+1057389625,Chaz Lanier,DET,CLE,21709227,False,ast,,,,,,,,inactive_risk,fresh,projected,full
+1057389625,Chaz Lanier,DET,CLE,21709227,False,fg3m,,,,,,,,inactive_risk,fresh,projected,full
+1057389625,Chaz Lanier,DET,CLE,21709227,False,tov,,,,,,,,inactive_risk,fresh,projected,full
+1057395754,Tyrese Proctor,CLE,DET,21709227,True,pts,,,,,,,,fringe,fresh,projected,full
+1057395754,Tyrese Proctor,CLE,DET,21709227,True,reb,,,,,,,,fringe,fresh,projected,full
+1057395754,Tyrese Proctor,CLE,DET,21709227,True,ast,,,,,,,,fringe,fresh,projected,full
+1057395754,Tyrese Proctor,CLE,DET,21709227,True,fg3m,,,,,,,,fringe,fresh,projected,full
+1057395754,Tyrese Proctor,CLE,DET,21709227,True,tov,,,,,,,,fringe,fresh,projected,full
