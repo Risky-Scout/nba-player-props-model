@@ -47,6 +47,19 @@ CLI:
 """
 from __future__ import annotations
 
+# Phase 14 audit tag: source-of-truth for the active calibration blend policy.
+try:
+    import sys as _phase14_sys
+    from pathlib import Path as _phase14_Path
+    _SRC = _phase14_Path(__file__).resolve().parent.parent / "src"
+    if str(_SRC) not in _phase14_sys.path:
+        _phase14_sys.path.insert(0, str(_SRC))
+    from nba_props_model.calibration.pmf_calibration import (
+        ROLE_AWARE_BLEND_POLICY as _ROLE_AWARE_BLEND_POLICY,
+    )
+except Exception:
+    _ROLE_AWARE_BLEND_POLICY = None
+
 import argparse
 import hashlib
 import json
@@ -396,7 +409,12 @@ def _model_artifacts_status() -> dict:
     all_present = all(f["exists"] for f in files)
     return {
         "files": files,
-        "calibration_source": "phase8_role_aware_pmf_cal_v1",
+        "calibration_source": (
+            f"phase8_role_aware_pmf_cal_v1+{_ROLE_AWARE_BLEND_POLICY}"
+            if _ROLE_AWARE_BLEND_POLICY
+            else "phase8_role_aware_pmf_cal_v1"
+        ),
+        "blend_policy": _ROLE_AWARE_BLEND_POLICY,
         "phase": "phase10c",
         "tov_overlay_status": "off",
         "tov_overlay_reason": ("Phase 10D/10D.2 overlay failed independent "

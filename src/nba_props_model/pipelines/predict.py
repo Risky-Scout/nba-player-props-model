@@ -20,6 +20,7 @@ Architecture:
 
 from nba_props_model.calibration.stat_side_platt import IsotonicCalibrator  # needed for platt pkl loading
 from nba_props_model.calibration.role_buckets import role_bucket_from_minutes_dist  # phase14: role-aware live calibration
+from nba_props_model.calibration.pmf_calibration import ROLE_AWARE_BLEND_POLICY  # phase14: blend-policy audit tag
 import csv
 import json
 import logging
@@ -1206,7 +1207,14 @@ def main(argv=None):
                 if target in _pmf_calibrators:
                     _cal_v = getattr(_pmf_calibrators[target], "version", None)
                     if _cal_v == "role_aware_pmf_cal_v1" and _role_bucket:
-                        cal_src_over = f"role_aware_pmf_cal_v1:{_role_bucket}"
+                        # Phase 14 audit tag: include the active blend policy
+                        # so downstream consumers can identify which apply-time
+                        # policy produced the row. Existing substring matches
+                        # like "role_aware_pmf_cal_v1" in cal_source still hold.
+                        cal_src_over = (
+                            f"role_aware_pmf_cal_v1:{ROLE_AWARE_BLEND_POLICY}"
+                            f":{_role_bucket}"
+                        )
                     else:
                         cal_src_over = "pmf_cal"
                 else:

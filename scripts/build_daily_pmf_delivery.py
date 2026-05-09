@@ -46,6 +46,23 @@ case `market_*` columns are null and `market_coverage_status="none"`.
 """
 from __future__ import annotations
 
+# Phase 14 audit tag: source-of-truth for the active calibration blend policy.
+# Imported lazily so module-level use sites get the current value without
+# re-importing per call. Defensive try/except: if the import path is
+# unavailable in any execution context, fall back to None so the existing
+# hardcoded string is emitted unchanged.
+try:
+    import sys as _phase14_sys
+    from pathlib import Path as _phase14_Path
+    _SRC = _phase14_Path(__file__).resolve().parent.parent / "src"
+    if str(_SRC) not in _phase14_sys.path:
+        _phase14_sys.path.insert(0, str(_SRC))
+    from nba_props_model.calibration.pmf_calibration import (
+        ROLE_AWARE_BLEND_POLICY as _ROLE_AWARE_BLEND_POLICY,
+    )
+except Exception:
+    _ROLE_AWARE_BLEND_POLICY = None
+
 import argparse
 import hashlib
 import json
@@ -839,7 +856,11 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "market_no_vig_over_prob": None,
             "pmf_source": (r.get("pmf_source")
                            or "phase10c_role_aware_active_conditioned"),
-            "calibration_source": "phase8_role_aware_pmf_cal_v1",
+            "calibration_source": (
+                f"phase8_role_aware_pmf_cal_v1+{_ROLE_AWARE_BLEND_POLICY}"
+                if _ROLE_AWARE_BLEND_POLICY
+                else "phase8_role_aware_pmf_cal_v1"
+            ),
             "role_bucket": role,
             "role_source": _clean_optional_meta(r.get("role_source")),
             "minutes_mean": _clean_optional_float(r.get("minutes_mean")),
@@ -1831,7 +1852,12 @@ def main() -> int:
         "snapshot_type": snapshot_type,
         "snapshot_time_utc": snapshot_time_utc,
         "model_version": model_version,
-        "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1",
+        "phase8_calibration_source": (
+            f"phase8_role_aware_pmf_cal_v1+{_ROLE_AWARE_BLEND_POLICY}"
+            if _ROLE_AWARE_BLEND_POLICY
+            else "phase8_role_aware_pmf_cal_v1"
+        ),
+        "phase8_blend_policy": _ROLE_AWARE_BLEND_POLICY,
         "finality_status": finality_status,
         "finality_blocker_codes": finality_blocker_codes,
         "finality_blockers": finality_blockers,
