@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-09T00:11:21Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-09T03:56:18Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -17,7 +17,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-04** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 65 | 1724 | 0 | 0 | `none` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 65 | `present` | 65 | `scored` | `c74808d#phase10c` |
 | **2026-05-06** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 111 | 2364 | 0 | 0 | `none` | `fresh` | `present` | `lineup_present` | 111 | `present` | 111 | `scored` | `18b0a11#phase10c` |
 | **2026-05-07** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 330 | 7722 | 400 | 300 | `full` | `fresh` | `present` | `lineup_present` | 645 | `present` | 645 | `scored` | `d3dfb9a#phase10c` |
-| **2026-05-08** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 335 | 7839 | 1615 | 1094 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 1795 | `n/a` | `25209a77#phase10c` |
+| **2026-05-08** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 335 | 7839 | 624 | 537 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 866 | `n/a` | `4b4ce59b#phase10c` |
 
 ## Per-date links
 
@@ -115,8 +115,8 @@ _injury_very_stale, role_bucket_missing_
 - [after_game_scoring.csv](2026-04-29/after_game_scoring/after_game_scoring.csv)
 - [calibration_by_stat.csv](2026-04-29/after_game_scoring/calibration_by_stat.csv)
 - [calibration_by_role_bucket.csv](2026-04-29/after_game_scoring/calibration_by_role_bucket.csv)
-- ~~clv_by_stat.csv~~
-- ~~clv_by_book.csv~~
+- [clv_by_stat.csv](2026-04-29/after_game_scoring/clv_by_stat.csv)
+- [clv_by_book.csv](2026-04-29/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-04-29/after_game_scoring/after_game_status.json)
 
 ### 2026-04-30 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
@@ -163,8 +163,8 @@ _lineup_unconfirmed, missing_stats:tov_
 - [after_game_scoring.csv](2026-04-30/after_game_scoring/after_game_scoring.csv)
 - [calibration_by_stat.csv](2026-04-30/after_game_scoring/calibration_by_stat.csv)
 - [calibration_by_role_bucket.csv](2026-04-30/after_game_scoring/calibration_by_role_bucket.csv)
-- ~~clv_by_stat.csv~~
-- ~~clv_by_book.csv~~
+- [clv_by_stat.csv](2026-04-30/after_game_scoring/clv_by_stat.csv)
+- [clv_by_book.csv](2026-04-30/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-04-30/after_game_scoring/after_game_status.json)
 
 ### 2026-05-01 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
@@ -211,8 +211,8 @@ _lineup_unconfirmed, missing_stats:tov_
 - [after_game_scoring.csv](2026-05-01/after_game_scoring/after_game_scoring.csv)
 - [calibration_by_stat.csv](2026-05-01/after_game_scoring/calibration_by_stat.csv)
 - [calibration_by_role_bucket.csv](2026-05-01/after_game_scoring/calibration_by_role_bucket.csv)
-- ~~clv_by_stat.csv~~
-- ~~clv_by_book.csv~~
+- [clv_by_stat.csv](2026-05-01/after_game_scoring/clv_by_stat.csv)
+- [clv_by_book.csv](2026-05-01/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-01/after_game_scoring/after_game_status.json)
 
 ### 2026-05-02 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
@@ -259,8 +259,8 @@ _lineup_unconfirmed, missing_stats:tov_
 - [after_game_scoring.csv](2026-05-02/after_game_scoring/after_game_scoring.csv)
 - [calibration_by_stat.csv](2026-05-02/after_game_scoring/calibration_by_stat.csv)
 - [calibration_by_role_bucket.csv](2026-05-02/after_game_scoring/calibration_by_role_bucket.csv)
-- ~~clv_by_stat.csv~~
-- ~~clv_by_book.csv~~
+- [clv_by_stat.csv](2026-05-02/after_game_scoring/clv_by_stat.csv)
+- [clv_by_book.csv](2026-05-02/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-02/after_game_scoring/after_game_status.json)
 
 ### 2026-05-03 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
@@ -307,8 +307,8 @@ _lineup_unconfirmed, missing_stats:tov_
 - [after_game_scoring.csv](2026-05-03/after_game_scoring/after_game_scoring.csv)
 - [calibration_by_stat.csv](2026-05-03/after_game_scoring/calibration_by_stat.csv)
 - [calibration_by_role_bucket.csv](2026-05-03/after_game_scoring/calibration_by_role_bucket.csv)
-- ~~clv_by_stat.csv~~
-- ~~clv_by_book.csv~~
+- [clv_by_stat.csv](2026-05-03/after_game_scoring/clv_by_stat.csv)
+- [clv_by_book.csv](2026-05-03/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-03/after_game_scoring/after_game_status.json)
 
 ### 2026-05-04 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
@@ -451,8 +451,8 @@ _lineup_unconfirmed_
 - [after_game_scoring.csv](2026-05-07/after_game_scoring/after_game_scoring.csv)
 - [calibration_by_stat.csv](2026-05-07/after_game_scoring/calibration_by_stat.csv)
 - [calibration_by_role_bucket.csv](2026-05-07/after_game_scoring/calibration_by_role_bucket.csv)
-- ~~clv_by_stat.csv~~
-- ~~clv_by_book.csv~~
+- [clv_by_stat.csv](2026-05-07/after_game_scoring/clv_by_stat.csv)
+- [clv_by_book.csv](2026-05-07/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-07/after_game_scoring/after_game_status.json)
 
 ### 2026-05-08 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
