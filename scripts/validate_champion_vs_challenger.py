@@ -753,6 +753,13 @@ def evaluate_gates(
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Phase 14 dispatch — calibration A/B short-circuit (extension per
+    # Joseph + LLM spec). When invoked with --ab-mode, route to the
+    # same-row A/B comparison and exit; do not run champion/challenger.
+    _argv = list(argv) if argv is not None else sys.argv[1:]
+    if "--ab-mode" in _argv:
+        from _calibration_ab import ab_main as _ab_main
+        return _ab_main(_argv)
     p = argparse.ArgumentParser(description="Validate champion vs challenger.")
     p.add_argument("--as-of-date", required=True, help="YYYY-MM-DD")
     p.add_argument("--challenger-dir", help="Override challenger dir")

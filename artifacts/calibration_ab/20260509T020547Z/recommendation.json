@@ -1,0 +1,10 @@
+{
+  "evidence": {
+    "n_total": 77730,
+    "overall_delta": -0.005258748279104886,
+    "starter_delta": -0.007644636846144692,
+    "vs_raw_delta": -0.051581341646226075
+  },
+  "reason": "role_aware NLL 2.1855 beats legacy 2.1907 by +0.0053",
+  "recommendation": "PROMOTE_ROLE_AWARE"
+}
