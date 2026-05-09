@@ -83,7 +83,9 @@ warnings.filterwarnings("ignore")
 
 # ── Constants pinned to the delivery spec ────────────────────────────────
 
-SUPPORTED_STATS = ("pts", "reb", "ast", "tov", "fg3m")
+from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
+
+SUPPORTED_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
 ROLE_ORDER = ("inactive_risk", "fringe", "bench", "rotation", "core", "starter")
 HIGH_CONF_ROLES = ("starter", "core", "rotation")
 MED_CONF_ROLES = ("bench", "fringe")
@@ -715,7 +717,7 @@ def _market_coverage_status(books_seen: list[str]) -> str:
 
 
 
-PRODUCTION_TARGET_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+PRODUCTION_TARGET_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
 PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
 
 

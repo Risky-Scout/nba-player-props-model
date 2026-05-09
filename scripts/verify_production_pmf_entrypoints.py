@@ -62,7 +62,7 @@ def main() -> int:
     require("CORE_STATS" in verifier_s, f"{verifier} must define CORE_STATS")
     for stat in ["pts", "reb", "ast", "fg3m", "tov"]:
         require(stat in verifier_s, f"{verifier} missing core stat guard: {stat}")
-    for bad in ["stl", "blk", "stocks"]:
+    for bad in ["stocks"]:  # M4A2: stl/blk are now production base PMFs; stocks is M5 combo
         require(bad not in verifier_s or "extra" in verifier_s,
                 f"{verifier} must reject broad/extra stat leakage including {bad}")
     require("affiliate_dashboard count must be > 0" in verifier_s,
@@ -91,7 +91,7 @@ def main() -> int:
             f"{derek_builder} must source from dated wizard_of_odds delivery")
     require("no_games_today.json is illegal" in derek_builder_s or "false_no_games" in derek_builder_s,
             f"{derek_builder} must remove/reject false no_games_today.json")
-    for bad in ["stl", "blk", "stocks"]:
+    for bad in ["stocks"]:  # M4A2: stl/blk are now production base PMFs; stocks is M5 combo
         require(bad in derek_builder_s,
                 f"{derek_builder} should explicitly document/reject {bad} leakage")
 

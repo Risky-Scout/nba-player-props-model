@@ -74,7 +74,9 @@ ODDS_PROCESSED_DIR = REPO_ROOT / "data" / "odds_api" / "processed"
 FRESHNESS_DIR = REPO_ROOT / "data" / "freshness_manifest"
 DNT_RAW_DIR = REPO_ROOT / "data" / "dunks_and_threes"
 
-SUPPORTED_STATS = ("pts", "reb", "ast", "tov", "fg3m")
+from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
+
+SUPPORTED_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
 
 
 def _now_utc_iso() -> str:

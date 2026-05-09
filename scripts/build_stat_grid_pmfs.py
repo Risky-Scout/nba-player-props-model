@@ -78,6 +78,7 @@ from nba_props_model.features.availability_asof import (  # noqa: E402
 from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
 from nba_props_model.calibration.role_buckets import role_bucket_features_from_minutes_dist  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
+from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
 
 PRED_DIR = REPO_ROOT / "predictions"
 DATA_DIR = REPO_ROOT / "data"
@@ -93,7 +94,7 @@ _INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"
 
 # Default to the production model-only stat grid used by Derek/WoO PMF deliveries.
 # The flag accepts any stat in build_prop_pmfs's output keyset.
-DEFAULT_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+DEFAULT_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
 ALLOWED_STATS = ("pts", "reb", "ast", "tov", "fg3m", "stl", "blk", "stocks")
 
 

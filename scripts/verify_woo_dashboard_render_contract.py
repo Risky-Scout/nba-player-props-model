@@ -53,7 +53,9 @@ FORBIDDEN_PMF = [
     "offered-line",
     "isMode ? 'hist-bar mode' : 'hist-bar tail'",
 ]
-SUPPORTED_STATS = {"pts", "reb", "ast", "fg3m", "tov"}
+from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
+
+SUPPORTED_STATS = set(BASE_STATS_FULL)  # M4A2: was 5-stat set literal
 
 
 def main() -> int:
