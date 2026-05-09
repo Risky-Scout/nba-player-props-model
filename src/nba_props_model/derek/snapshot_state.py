@@ -24,10 +24,19 @@ from pathlib import Path
 from typing import Optional
 
 
-EARLY_TOLERANCE_MIN = 6
+EARLY_TOLERANCE_MIN = 6   # legacy fallback for current_live / unknown types
 LATE_TOLERANCE_MIN = 6
 T_MINUS_25_OFFSET_MIN = 25
 CLOSE_LOCK_OFFSET_MIN = 5
+
+# Per-snapshot-type firing tolerances (spec Part J):
+#   t_minus_25 must fire 20-30 min before tip  -> +/-5 around target=(tip-25)
+#   close_lock must fire  2- 8 min before tip  -> +/-3 around target=(tip-5)
+TOLERANCES_BY_TYPE = {
+    "t_minus_25": (5, 5),
+    "close_lock": (3, 3),
+    "current_live": (180, 0),
+}
 
 
 @dataclass(frozen=True)
@@ -73,9 +82,15 @@ def classify_snapshot_state(
     snapshot_type: str,
     snapshot_exists: bool,
     missed_marker_exists: bool = False,
-    early_tolerance_min: int = EARLY_TOLERANCE_MIN,
-    late_tolerance_min: int = LATE_TOLERANCE_MIN,
+    early_tolerance_min: Optional[int] = None,
+    late_tolerance_min: Optional[int] = None,
 ) -> SnapshotStateResult:
+    _type_tol = TOLERANCES_BY_TYPE.get(
+        snapshot_type, (EARLY_TOLERANCE_MIN, LATE_TOLERANCE_MIN))
+    if early_tolerance_min is None:
+        early_tolerance_min = _type_tol[0]
+    if late_tolerance_min is None:
+        late_tolerance_min = _type_tol[1]
     if snapshot_exists:
         gs = _parse_iso_to_utc(game_start_time_utc)
         target = snapshot_target(gs, snapshot_type) if gs else None
