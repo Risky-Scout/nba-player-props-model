@@ -19,11 +19,6 @@ player_id,player_name,team,opponent,game_id,is_home,stat,line,book,market_over_o
 104,Mike Conley,MIN,SAS,21707974,True,ast,,,,,,,,rotation,fresh,projected,full
 104,Mike Conley,MIN,SAS,21707974,True,fg3m,,,,,,,,rotation,fresh,projected,full
 104,Mike Conley,MIN,SAS,21707974,True,tov,,,,,,,,rotation,fresh,projected,full
-131,Donte DiVincenzo,MIN,SAS,21707974,True,pts,,,,,,,,core,fresh,projected,full
-131,Donte DiVincenzo,MIN,SAS,21707974,True,reb,,,,,,,,core,fresh,projected,full
-131,Donte DiVincenzo,MIN,SAS,21707974,True,ast,,,,,,,,core,fresh,projected,full
-131,Donte DiVincenzo,MIN,SAS,21707974,True,fg3m,,,,,,,,core,fresh,projected,full
-131,Donte DiVincenzo,MIN,SAS,21707974,True,tov,,,,,,,,core,fresh,projected,full
 161,De'Aaron Fox,SAS,MIN,21707974,False,pts,,,,,,,,starter,fresh,projected,full
 161,De'Aaron Fox,SAS,MIN,21707974,False,reb,,,,,,,,starter,fresh,projected,full
 161,De'Aaron Fox,SAS,MIN,21707974,False,ast,,,,,,,,starter,fresh,projected,full
