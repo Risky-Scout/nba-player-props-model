@@ -16,6 +16,8 @@
     "artifacts/live_schedule/2026-05-08/prediction_game_time_enrichment.md",
     "artifacts/phase13z/near_tip_snapshot_root_cause_2026-05-08.md",
     "deliveries/2026-05-08/README.md",
+    "deliveries/2026-05-08/derek_game_snapshots/21707974/close_lock/",
+    "deliveries/2026-05-08/derek_game_snapshots/21707974/t_minus_25/",
     "deliveries/2026-05-08/derek_game_snapshots/README.md",
     "predictions/all_props_2026-05-08.parquet",
     "predictions/all_props_2026-05-08.pre_game_time_enrichment_backup.parquet"

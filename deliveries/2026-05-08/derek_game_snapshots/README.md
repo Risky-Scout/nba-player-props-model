@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — May 8, 2026
 
-Generated 2026-05-09T00:14:50Z.
+Generated 2026-05-09T03:53:44Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Spurs @ Timberwolves | Pending dispatch | Pending dispatch | Pending dispatch |
+| Spurs @ Timberwolves | Pending dispatch | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 | Knicks @ 76ers | Pending dispatch | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
@@ -24,10 +24,12 @@ Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; t
 
 ### Spurs @ Timberwolves
 
-_Game ID `21707974` (used in paths only). Tip time UTC: ``._
+_Game ID `21707974` (used in paths only). Tip time UTC: `2026-05-09T01:40:00Z`._
 
-- **T-minus-25**: Pending dispatch
-- **Close-lock**: Pending dispatch
+- **T-minus-25** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21707974/t_minus_25/missed_snapshot_report.md)
+- **Close-lock** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21707974/close_lock/missed_snapshot_report.md)
 
 ### Knicks @ 76ers
 

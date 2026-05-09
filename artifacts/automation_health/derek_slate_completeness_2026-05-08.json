@@ -9,11 +9,10 @@
     ]
   },
   "eligible_close_lock": [],
-  "eligible_current_live": [
-    "21707974"
-  ],
+  "eligible_current_live": [],
   "eligible_t_minus_25": [],
   "games_already_tipped": [
+    "21707974",
     "21708677"
   ],
   "games_in_predictions": [
@@ -28,7 +27,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-09T00:14:35Z",
+  "now_utc": "2026-05-09T03:53:29Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {
