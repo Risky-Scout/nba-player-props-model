@@ -1,0 +1,787 @@
+{
+  "after_game_scoring": {
+    "blocker": "no after-game scoring summary found for as_of_date=2026-05-09",
+    "outcome": "pending"
+  },
+  "as_of_date": "2026-05-09",
+  "calibration_metrics_pending": {
+    "blocker": "PMF NLL / RPS / ECE / p0 calibration / mean bias / tail calibration are reported once nightly post-game scoring produces realized outcomes. The Phase 13S/13T after-game scoring writes DEREK_LIVE_SNAPSHOT_SCORING_PENDING when outcomes are not yet available."
+  },
+  "champion": {
+    "calibrated_through_date": "2026-04-30",
+    "calibration_manifest_path": "artifacts/models/challengers/2026-04-30/calibration_manifest.json",
+    "champion_model_id": "challenger-2026-04-30",
+    "contextual_pmf_engine": true,
+    "direct_lineup_pmf_driver": true,
+    "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+    "no_leakage_manifest_path": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual/no_leakage_manifest.json",
+    "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+    "promotion_decision_path": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual/promotion_decision.json",
+    "train_manifest_path": "artifacts/models/challengers/2026-04-30_direct_lineup_contextual/train_manifest.json",
+    "trained_through_date": "2026-04-30",
+    "training_run_id": "nightly-20260501T124701",
+    "validation_report_path": "artifacts/phase13s/validation_gates_report.json"
+  },
+  "generated_at_utc": "2026-05-10T16:34:41+00:00Z",
+  "metrics_per_target": {
+    "ast": {
+      "baseline_mse": 0.00956541013927596,
+      "challenger_mse": 0.00936500321057533,
+      "coef_l2_norm": 0.2546668781386493,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "ast",
+      "rel_improvement": 0.02095121126879354
+    },
+    "blk": {
+      "baseline_mse": 0.0025263674758437674,
+      "challenger_mse": 0.00252664098428671,
+      "coef_l2_norm": 0.0045842212987528335,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "blk",
+      "rel_improvement": -0.00010826154372146587
+    },
+    "fg3m": {
+      "baseline_mse": 0.005090403469792902,
+      "challenger_mse": 0.005087970646016061,
+      "coef_l2_norm": 0.016942672688397872,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "fg3m",
+      "rel_improvement": 0.000477923565642257
+    },
+    "minutes": {
+      "baseline_mse": 57.872896182869084,
+      "challenger_mse": 48.996196186148595,
+      "coef_l2_norm": 6.428713773075797,
+      "n_test": 16225,
+      "n_train": 64900,
+      "name": "minutes",
+      "rel_improvement": 0.15338268139668593
+    },
+    "pts": {
+      "baseline_mse": 0.09237721906787127,
+      "challenger_mse": 0.09206191372095038,
+      "coef_l2_norm": 0.11738608699428396,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "pts",
+      "rel_improvement": 0.0034132370524082986
+    },
+    "reb": {
+      "baseline_mse": 0.023284881841548352,
+      "challenger_mse": 0.023293277341277556,
+      "coef_l2_norm": 0.03165348061023367,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "reb",
+      "rel_improvement": -0.0003605558227151181
+    },
+    "stl": {
+      "baseline_mse": 0.004056016683900769,
+      "challenger_mse": 0.004055137537144285,
+      "coef_l2_norm": 0.017124369742035225,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "stl",
+      "rel_improvement": 0.00021675126731448974
+    },
+    "tov": {
+      "baseline_mse": 0.007029290828315467,
+      "challenger_mse": 0.007023776876647977,
+      "coef_l2_norm": 0.0259465759028686,
+      "n_test": 15770,
+      "n_train": 63078,
+      "name": "tov",
+      "rel_improvement": 0.0007844250298022434
+    }
+  },
+  "no_leakage": {
+    "no_leakage_manifest": {
+      "asof_cutoff_rule": "Phase 13S features are pre-game knowable: current_starter / confirmed_* are derived from PREVIOUS game's min (lagged); starter_proxy_lagged uses 10-game lagged minutes; team-aggregate composition features are computed from teammates whose previous game's min >= 1 (pre-game knowable expected-to-play set); injury / availability / vacated-opportunity features are joined as-of from the upstream live_context parquet.",
+      "calibrated_through_date": "2026-04-30",
+      "generated_at_utc": "2026-05-03T13:49:10+00:00",
+      "no_leakage_verified": true,
+      "no_same_game_performance_predictors": true,
+      "starter_proxy_safe_for_training": true,
+      "starter_proxy_used": true,
+      "trained_through_date": "2026-04-30"
+    },
+    "phase13s_no_leakage_report": {
+      "checked_dirs": [
+        "artifacts/models/challengers/2026-04-30_direct_lineup_contextual"
+      ],
+      "facts": {
+        "2026-04-30_direct_lineup_contextual/calibrated_through_date": "2026-04-30",
+        "2026-04-30_direct_lineup_contextual/feature_files_checked": 8,
+        "2026-04-30_direct_lineup_contextual/leakage_columns_seen": [],
+        "2026-04-30_direct_lineup_contextual/starter_proxy_safe_for_training": true,
+        "2026-04-30_direct_lineup_contextual/starter_proxy_used": true,
+        "2026-04-30_direct_lineup_contextual/trained_through_date": "2026-04-30"
+      },
+      "issues": [],
+      "schema_version": "1.0"
+    }
+  },
+  "promotion_status": {
+    "active_champion_model_id": "challenger-2026-04-30",
+    "champion_pointer_swapped_to_today": false,
+    "decision_promote_field": false,
+    "expected_today_challenger_id": "challenger-2026-05-09",
+    "manifest_promoted_field": true,
+    "promoted": false,
+    "promotion_decision": {
+      "as_of_date": "2026-05-09",
+      "challenger_metrics": {
+        "brier_logloss_at_market": null,
+        "by_line_bucket": {},
+        "by_role_bucket": {
+          "bench": {
+            "n": 4172,
+            "nll": 1.745177365365257,
+            "p0_err": 0.3856515777699808
+          },
+          "core": {
+            "n": 7602,
+            "nll": 1.915448909750424,
+            "p0_err": 0.26775768209253087
+          },
+          "fringe": {
+            "n": 1393,
+            "nll": 1.508555810885597,
+            "p0_err": 0.39273110058595073
+          },
+          "inactive_risk": {
+            "n": 1785,
+            "nll": 2.019932723217144,
+            "p0_err": 0.4163349815499365
+          },
+          "rotation": {
+            "n": 6461,
+            "nll": 1.8090917271371156,
+            "p0_err": 0.3264632288190856
+          },
+          "starter": {
+            "n": 4179,
+            "nll": 2.035042355136225,
+            "p0_err": 0.21799033705493795
+          }
+        },
+        "by_stat": {
+          "ast": {
+            "calibrator_present": true,
+            "mean_bias": -0.12165115907241777,
+            "nll": 1.8214966968960513,
+            "p0_err": 0.30758628710391483,
+            "rows_scored": 3656,
+            "rps": 0.9396105720075931
+          },
+          "blk": {
+            "calibrator_present": true,
+            "mean_bias": 0.04221128653840487,
+            "nll": 0.8354969624019112,
+            "p0_err": 0.36644180087370204,
+            "rows_scored": 3656,
+            "rps": 0.30043069690156626
+          },
+          "fg3m": {
+            "calibrator_present": true,
+            "mean_bias": 0.023495216158798123,
+            "nll": 2.5034626512011435,
+            "p0_err": 0.3172038632555903,
+            "rows_scored": 3656,
+            "rps": 0.6227980999701341
+          },
+          "pts": {
+            "calibrator_present": true,
+            "mean_bias": -0.5840867436445495,
+            "nll": 3.0521227412895042,
+            "p0_err": 0.14859775744976542,
+            "rows_scored": 3656,
+            "rps": 3.2686618745995775
+          },
+          "reb": {
+            "calibrator_present": true,
+            "mean_bias": -0.19933390500231177,
+            "nll": 2.205445949447647,
+            "p0_err": 0.18566801730343152,
+            "rows_scored": 3656,
+            "rps": 1.3514656631734685
+          },
+          "stl": {
+            "calibrator_present": true,
+            "mean_bias": 0.07334213761555936,
+            "nll": 1.1956482324969724,
+            "p0_err": 0.44369431748178667,
+            "rows_scored": 3656,
+            "rps": 0.4660544691443713
+          },
+          "tov": {
+            "calibrator_present": true,
+            "mean_bias": -0.06589541415432601,
+            "nll": 1.4448892353258187,
+            "p0_err": 0.40666276694191633,
+            "rows_scored": 3656,
+            "rps": 0.6171958673636009
+          }
+        },
+        "clv": null,
+        "ece": null,
+        "edge_buckets": null,
+        "holdout_window": {
+          "end": "2026-05-09",
+          "rows": 29248,
+          "start": "2026-02-03"
+        },
+        "market_comparison": null,
+        "mean_error": -0.11884551165154895,
+        "median_error": null,
+        "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-09",
+        "nll": 1.8655089241512925,
+        "p0_calibration": 0.3108364014871582,
+        "pmf_validity_issues": [],
+        "rows_scored_total": 25592,
+        "rps": 1.0808881775943302,
+        "tov": {
+          "mean_bias": -0.06589541415432601,
+          "nll": 1.4448892353258187,
+          "p0_error": 0.40666276694191633,
+          "rps": 0.6171958673636009
+        }
+      },
+      "champion_metrics": {
+        "brier_logloss_at_market": null,
+        "by_line_bucket": {},
+        "by_role_bucket": {
+          "bench": {
+            "n": 4172,
+            "nll": 1.7465118686034586,
+            "p0_err": 0.38461232597567047
+          },
+          "core": {
+            "n": 7602,
+            "nll": 1.9174120397071488,
+            "p0_err": 0.2682614600947692
+          },
+          "fringe": {
+            "n": 1393,
+            "nll": 1.5079900053606605,
+            "p0_err": 0.39455363823592005
+          },
+          "inactive_risk": {
+            "n": 1785,
+            "nll": 2.0176563861759313,
+            "p0_err": 0.4155773925484051
+          },
+          "rotation": {
+            "n": 6461,
+            "nll": 1.8108213737702934,
+            "p0_err": 0.32687458822451293
+          },
+          "starter": {
+            "n": 4179,
+            "nll": 2.0361611203949574,
+            "p0_err": 0.2174859233690063
+          }
+        },
+        "by_stat": {
+          "ast": {
+            "calibrator_present": true,
+            "mean_bias": -0.11578695584871192,
+            "nll": 1.8232536726222983,
+            "p0_err": 0.3081502035428964,
+            "rows_scored": 3656,
+            "rps": 0.9397818207011477
+          },
+          "blk": {
+            "calibrator_present": true,
+            "mean_bias": 0.044661042058474265,
+            "nll": 0.8358104499891377,
+            "p0_err": 0.36559413124061496,
+            "rows_scored": 3656,
+            "rps": 0.30060482640916153
+          },
+          "fg3m": {
+            "calibrator_present": true,
+            "mean_bias": 0.013398845848447024,
+            "nll": 2.50353784135437,
+            "p0_err": 0.3172274342811459,
+            "rows_scored": 3656,
+            "rps": 0.6225596814691412
+          },
+          "pts": {
+            "calibrator_present": true,
+            "mean_bias": -0.5582046188507994,
+            "nll": 3.0566501729898445,
+            "p0_err": 0.14931714915978614,
+            "rows_scored": 3656,
+            "rps": 3.2689420425642357
+          },
+          "reb": {
+            "calibrator_present": true,
+            "mean_bias": -0.18907621282483228,
+            "nll": 2.2067696986223586,
+            "p0_err": 0.18607101012357335,
+            "rows_scored": 3656,
+            "rps": 1.350876884011005
+          },
+          "stl": {
+            "calibrator_present": true,
+            "mean_bias": 0.05186517020697646,
+            "nll": 1.1967262787116009,
+            "p0_err": 0.44287780546760275,
+            "rows_scored": 3656,
+            "rps": 0.46615467135911826
+          },
+          "tov": {
+            "calibrator_present": true,
+            "mean_bias": -0.07185611565466443,
+            "nll": 1.4444277025919599,
+            "p0_err": 0.4069535943162512,
+            "rows_scored": 3656,
+            "rps": 0.617044065675565
+          }
+        },
+        "clv": null,
+        "ece": null,
+        "edge_buckets": null,
+        "holdout_window": {
+          "end": "2026-05-09",
+          "rows": 29248,
+          "start": "2026-02-03"
+        },
+        "market_comparison": null,
+        "mean_error": -0.11785697786644433,
+        "median_error": null,
+        "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models",
+        "nll": 1.866739402411653,
+        "p0_calibration": 0.3108844754474101,
+        "pmf_validity_issues": [],
+        "rows_scored_total": 25592,
+        "rps": 1.0808519988841963,
+        "tov": {
+          "mean_bias": -0.07185611565466443,
+          "nll": 1.4444277025919599,
+          "p0_error": 0.4069535943162512,
+          "rps": 0.617044065675565
+        }
+      },
+      "code_commit": "f166d1a6520c2c97ccccf86adcee3df3c76b4cf6",
+      "gates_failed": [
+        "promotion_clock_safe",
+        "market_logloss_non_inferior_or_better",
+        "market_brier_non_inferior_or_better",
+        "no_severe_market_stat_bucket_regression"
+      ],
+      "gates_passed": [
+        "nll_improves_or_non_worse",
+        "rps_improves_or_non_worse",
+        "calibration_error_improves",
+        "p0_error_improves_or_non_worse",
+        "mean_bias_does_not_worsen",
+        "tov_does_not_regress",
+        "starter_core_role_buckets_do_not_regress",
+        "bench_fringe_role_buckets_do_not_regress_materially",
+        "no_severe_stat_bucket_regression",
+        "pmf_validity",
+        "no_future_leakage",
+        "sufficient_calibration_samples",
+        "derek_feed_compatibility",
+        "woo_export_compatibility",
+        "no_phase10d_overlays_referenced",
+        "market_benchmark_available"
+      ],
+      "generated_at_utc": "2026-05-10T16:34:12+00:00",
+      "market_benchmark": {
+        "as_of_date": "2026-05-09",
+        "by_edge_bucket": [],
+        "by_role_bucket": [
+          {
+            "delta_brier": 0.06691554896705741,
+            "delta_logloss": 0.17078143688365283,
+            "market_brier": 0.2440069624915492,
+            "market_logloss": 0.6795893025858512,
+            "minimum_sample_passed": true,
+            "model_brier": 0.3109225114586066,
+            "model_logloss": 0.850370739469504,
+            "n": 212,
+            "role_bucket": "bench"
+          },
+          {
+            "delta_brier": 0.12138233726625372,
+            "delta_logloss": 0.4217960048482842,
+            "market_brier": 0.25995324956653304,
+            "market_logloss": 0.7134362980971167,
+            "minimum_sample_passed": true,
+            "model_brier": 0.3813355868327867,
+            "model_logloss": 1.135232302945401,
+            "n": 332,
+            "role_bucket": "core"
+          },
+          {
+            "delta_brier": 0.025158178175092763,
+            "delta_logloss": 0.05633999186534854,
+            "market_brier": 0.24209330890266462,
+            "market_logloss": 0.677404510486915,
+            "minimum_sample_passed": true,
+            "model_brier": 0.26725148707775737,
+            "model_logloss": 0.7337445023522636,
+            "n": 949,
+            "role_bucket": "rotation"
+          },
+          {
+            "delta_brier": -0.004338808057298658,
+            "delta_logloss": -0.009480576872989047,
+            "market_brier": 0.2329871287079047,
+            "market_logloss": 0.6573896295372371,
+            "minimum_sample_passed": true,
+            "model_brier": 0.22864832065060603,
+            "model_logloss": 0.647909052664248,
+            "n": 2847,
+            "role_bucket": "starter"
+          }
+        ],
+        "by_stat": [
+          {
+            "delta_brier": 0.013475452019447356,
+            "delta_logloss": 0.04414490466499802,
+            "market_brier": 0.24554969549137567,
+            "market_logloss": 0.6847103016211618,
+            "minimum_sample_passed": true,
+            "model_brier": 0.259025147510823,
+            "model_logloss": 0.7288552062861596,
+            "n": 750,
+            "stat": "ast"
+          },
+          {
+            "delta_brier": 0.007568767756425622,
+            "delta_logloss": 0.01602311916710563,
+            "market_brier": 0.22890064689855963,
+            "market_logloss": 0.6491938309640776,
+            "minimum_sample_passed": true,
+            "model_brier": 0.23646941465498528,
+            "model_logloss": 0.6652169501311832,
+            "n": 810,
+            "stat": "fg3m"
+          },
+          {
+            "delta_brier": 0.011436256943409908,
+            "delta_logloss": 0.02829773272965547,
+            "market_brier": 0.235231826140473,
+            "market_logloss": 0.6614950687414658,
+            "minimum_sample_passed": true,
+            "model_brier": 0.24666808308388288,
+            "model_logloss": 0.6897928014711211,
+            "n": 1512,
+            "stat": "pts"
+          },
+          {
+            "delta_brier": 0.02561407374347011,
+            "delta_logloss": 0.08978218552084984,
+            "market_brier": 0.24120863072048146,
+            "market_logloss": 0.6749358561728465,
+            "minimum_sample_passed": true,
+            "model_brier": 0.2668227044639516,
+            "model_logloss": 0.7647180416936963,
+            "n": 1268,
+            "stat": "reb"
+          }
+        ],
+        "code_commit": "f166d1a6520c2c97ccccf86adcee3df3c76b4cf6",
+        "dates_included": [
+          "2026-05-08",
+          "2026-05-07",
+          "2026-05-06",
+          "2026-05-04",
+          "2026-05-03",
+          "2026-05-02",
+          "2026-05-01",
+          "2026-04-30"
+        ],
+        "dates_missing": [
+          "2026-05-09",
+          "2026-05-05",
+          "2026-04-29",
+          "2026-04-28",
+          "2026-04-27",
+          "2026-04-26",
+          "2026-04-25",
+          "2026-04-24",
+          "2026-04-23",
+          "2026-04-22",
+          "2026-04-21",
+          "2026-04-20",
+          "2026-04-19",
+          "2026-04-18",
+          "2026-04-17",
+          "2026-04-16",
+          "2026-04-15",
+          "2026-04-14",
+          "2026-04-13",
+          "2026-04-12"
+        ],
+        "delta_brier": 0.015209114493651185,
+        "delta_logloss": 0.046709075611009385,
+        "generated_at_utc": "2026-05-10T16:33:48+00:00",
+        "market_brier": 0.23757946094109006,
+        "market_logloss": 0.6671380043458616,
+        "min_bucket_rows": 50,
+        "min_overall_rows": 500,
+        "minimum_sample_passed": true,
+        "minimum_sample_passed_per_stat": {
+          "ast": true,
+          "fg3m": true,
+          "pts": true,
+          "reb": true
+        },
+        "model_brier": 0.2527885754347412,
+        "model_logloss": 0.713847079956871,
+        "per_slate_summaries": [
+          {
+            "date": "2026-05-08",
+            "overall": {
+              "delta_brier": 0.05865808122520783,
+              "delta_logloss": 0.2168529612539836,
+              "market_brier": 0.24920455187516175,
+              "market_logloss": 0.6914185995244296,
+              "model_brier": 0.30786263310036954,
+              "model_logloss": 0.9082715607784131,
+              "n": 578
+            },
+            "rows_paired": 578,
+            "rows_total": 578
+          },
+          {
+            "date": "2026-05-07",
+            "overall": {
+              "delta_brier": 0.026396093505119258,
+              "delta_logloss": 0.06910367034367539,
+              "market_brier": 0.2567955943455557,
+              "market_logloss": 0.7082855129207926,
+              "model_brier": 0.283191687850675,
+              "model_logloss": 0.7773891832644679,
+              "n": 400
+            },
+            "rows_paired": 400,
+            "rows_total": 400
+          },
+          {
+            "date": "2026-05-06",
+            "overall": null,
+            "rows_paired": 0,
+            "rows_total": 0
+          },
+          {
+            "date": "2026-05-04",
+            "overall": null,
+            "rows_paired": 0,
+            "rows_total": 0
+          },
+          {
+            "date": "2026-05-03",
+            "overall": {
+              "delta_brier": -0.004996112752997523,
+              "delta_logloss": -0.01409474223962366,
+              "market_brier": 0.23226423186711187,
+              "market_logloss": 0.654120135271143,
+              "model_brier": 0.22726811911411435,
+              "model_logloss": 0.6400253930315194,
+              "n": 489
+            },
+            "rows_paired": 489,
+            "rows_total": 489
+          },
+          {
+            "date": "2026-05-02",
+            "overall": {
+              "delta_brier": 0.05552741851279544,
+              "delta_logloss": 0.13676583058275626,
+              "market_brier": 0.23703766005352775,
+              "market_logloss": 0.6661274089055593,
+              "model_brier": 0.2925650785663232,
+              "model_logloss": 0.8028932394883157,
+              "n": 406
+            },
+            "rows_paired": 406,
+            "rows_total": 406
+          },
+          {
+            "date": "2026-05-01",
+            "overall": {
+              "delta_brier": 0.01322563112080243,
+              "delta_logloss": 0.028488900614722285,
+              "market_brier": 0.23601795744796422,
+              "market_logloss": 0.6642631878469255,
+              "model_brier": 0.24924358856876663,
+              "model_logloss": 0.6927520884616478,
+              "n": 1202
+            },
+            "rows_paired": 1202,
+            "rows_total": 1202
+          },
+          {
+            "date": "2026-04-30",
+            "overall": {
+              "delta_brier": -0.011425686035537818,
+              "delta_logloss": -0.026200275407755876,
+              "market_brier": 0.22990380043087913,
+              "market_logloss": 0.651120914792373,
+              "model_brier": 0.21847811439534132,
+              "model_logloss": 0.6249206393846171,
+              "n": 1265
+            },
+            "rows_paired": 1265,
+            "rows_total": 1265
+          }
+        ],
+        "rows_non_push": 4340,
+        "rows_total": 4340,
+        "schema_version": "1.0",
+        "status": "ok",
+        "window_days": 28,
+        "window_end": "2026-05-09",
+        "window_start": "2026-04-12"
+      },
+      "market_benchmark_manifest_path": "artifacts/market_benchmark/2026-05-09/rolling_market_benchmark.json",
+      "market_gates_failed": [
+        "market_logloss_non_inferior_or_better",
+        "market_brier_non_inferior_or_better",
+        "no_severe_market_stat_bucket_regression"
+      ],
+      "market_gates_passed": [
+        "market_benchmark_available"
+      ],
+      "phase13g": {
+        "data_complete_for_target_date": null,
+        "resolved_training_cutoff_date": "2026-05-09",
+        "stale_fallback_target_date": null,
+        "stale_fallback_used": false,
+        "target_date_et": "2026-05-09",
+        "target_policy": "manual_override",
+        "training_run_id": "nightly-20260510T163244"
+      },
+      "promote": false,
+      "reason": "gate_failed:promotion_clock_safe",
+      "schema_version": "1.0",
+      "warnings": []
+    },
+    "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-09/promotion_decision.json",
+    "promotion_manifest": {
+      "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+      "code_commit": "5d6d79f8e9c4399918df4730fa82266f08855869",
+      "decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+      "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+      "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260503T135826p0000/champion_pointer.previous.json",
+      "promoted": true,
+      "promoted_at_utc": "2026-05-03T13:58:26+00:00",
+      "schema_version": "1.0"
+    },
+    "promotion_manifest_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-09/promotion_manifest.json",
+    "promotion_reason": "gate_failed:promotion_clock_safe"
+  },
+  "rolling_benchmark": {
+    "blocker": "no rolling Derek benchmark found for as_of_date=2026-05-09",
+    "outcome": "pending"
+  },
+  "schema_version": "1.0",
+  "sensitivity": {
+    "case_results": {
+      "case_1_direct_lineup": {
+        "abs_diff_minutes_delta": 2.8569507698959917,
+        "feature_vector_hash_post": "c6ef2fe8edb7777a",
+        "feature_vector_hash_pre": "9c834bc334605ad9",
+        "feature_vectors_changed": true,
+        "minutes_delta_post": 3.9246101550977954,
+        "minutes_delta_pre": 1.0676593852018037,
+        "pmf_mean_post": 33.924610155097795,
+        "pmf_mean_pre": 31.067659385201804,
+        "pmf_mean_shift": 2.8569507698959917
+      },
+      "case_2_lineup_composition": {
+        "abs_diff_minutes_delta": 2.4511298398661854,
+        "minutes_delta_a": 3.969769591266317,
+        "minutes_delta_b": 1.5186397514001317,
+        "team_lineup_num_high_usage_players_a": 1.0,
+        "team_lineup_num_high_usage_players_b": 3.0
+      },
+      "case_3_actionability": {
+        "injury_lineup_conflict": true,
+        "is_actionable": false,
+        "is_confirmed_out": true
+      },
+      "case_4_teammate_out": {
+        "abs_diff_minutes_delta": 0.00010795232668137089,
+        "minutes_delta_loaded": 3.9696616389396358,
+        "minutes_delta_quiet": 3.969769591266317
+      },
+      "case_5_market_only": {
+        "delta_hash_m1": "3297fe279984ab68",
+        "delta_hash_m2": "3297fe279984ab68",
+        "feature_vectors_equal": true
+      },
+      "case_6_no_change": {
+        "delta_hash_a": "3297fe279984ab68",
+        "delta_hash_b": "3297fe279984ab68",
+        "feature_vectors_equal": true
+      }
+    },
+    "issues_per_case": {
+      "case_1_direct_lineup": [],
+      "case_2_lineup_composition": [],
+      "case_3_actionability": [],
+      "case_4_teammate_out": [],
+      "case_5_market_only": [],
+      "case_6_no_change": []
+    }
+  },
+  "validation_gates": {
+    "any_positive_improvement": true,
+    "issues": [],
+    "minutes_min_rel_improvement": 0.05,
+    "report": {
+      "any_positive_improvement": true,
+      "facts": {
+        "2026-04-30_direct_lineup_contextual": {
+          "ast": {
+            "n_test": 15770,
+            "rel_improvement": 0.020951211268793356
+          },
+          "blk": {
+            "n_test": 15770,
+            "rel_improvement": -0.00010826154372129418
+          },
+          "fg3m": {
+            "n_test": 15770,
+            "rel_improvement": 0.00047792356564259775
+          },
+          "minutes": {
+            "n_test": 16225,
+            "rel_improvement": 0.15338268139668557
+          },
+          "pts": {
+            "n_test": 15770,
+            "rel_improvement": 0.0034132370524082986
+          },
+          "reb": {
+            "n_test": 15770,
+            "rel_improvement": -0.0003605558227151181
+          },
+          "stl": {
+            "n_test": 15770,
+            "rel_improvement": 0.00021675126731470355
+          },
+          "tov": {
+            "n_test": 15770,
+            "rel_improvement": 0.0007844250298021201
+          }
+        }
+      },
+      "issues": [],
+      "minutes_min_rel_improvement": 0.05,
+      "safe_noninferiority_threshold": -0.005,
+      "schema_version": "1.0"
+    },
+    "safe_noninferiority_threshold": -0.005
+  }
+}

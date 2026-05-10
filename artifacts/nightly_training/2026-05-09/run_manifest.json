@@ -1,0 +1,153 @@
+{
+  "as_of_date": "2026-05-09",
+  "code_commit": "f166d1a6520c2c97ccccf86adcee3df3c76b4cf6",
+  "dry_run": false,
+  "final_status": "halted_no_promotion",
+  "finished_at_utc": "2026-05-10T16:34:12+00:00",
+  "halted_reason": "promotion_clock_cutoff",
+  "no_promote": false,
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-09",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-09",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260510T163244"
+  },
+  "promotion_summary": {
+    "from_version": null,
+    "promoted": false,
+    "reason": null,
+    "to_version": null
+  },
+  "schema_version": "1.0",
+  "smoke_summary": {
+    "champion_pointer_smoke": true,
+    "derek_compat_smoke": true,
+    "woo_compat_smoke": true
+  },
+  "started_at_utc": "2026-05-10T16:32:44+00:00",
+  "steps": [
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/refresh_completed_game_data.py",
+        "--target-date",
+        "2026-05-09",
+        "--skip-if-fresh"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/source_data_refresh.log",
+      "name": "source_data_refresh",
+      "tail": "{\"status\": \"skipped_already_fresh\", \"target_date\": \"2026-05-09\"}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/verify_previous_day_source_completeness.py",
+        "--target-date",
+        "2026-05-09"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/previous_day_source_completeness.log",
+      "name": "previous_day_source_completeness",
+      "tail": "PREVIOUS_DAY_SOURCE_COMPLETENESS_PASS"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/check_daily_training_readiness.py",
+        "--date",
+        "2026-05-09"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/readiness.log",
+      "name": "readiness",
+      "tail": "{\"date\": \"2026-05-09\", \"overall_pass\": true, \"blocking_failed\": []}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/check_training_inputs.py",
+        "--as-of-date",
+        "2026-05-09"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/training_input_preflight.log",
+      "name": "training_input_preflight",
+      "tail": "{\"as_of_date\": \"2026-05-09\", \"all_required_present\": true, \"missing_advisory\": [\"data/training_table.parquet\"]}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/prepare_training_inputs.py",
+        "--as-of-date",
+        "2026-05-09"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/prepare_training_inputs.log",
+      "name": "prepare_training_inputs",
+      "tail": "{\"as_of_date\": \"2026-05-09\", \"stale_state_cleaned\": [\"aggregate_input/\"], \"inputs_present\": [\"fold_aggregate.parquet\", \"training_table.parquet\"]}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/train_daily_challenger_model.py",
+        "--as-of-date",
+        "2026-05-09",
+        "--no-dry-run"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/train_challenger.log",
+      "name": "train_challenger",
+      "tail": "}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/calibrate_daily_challenger_pmfs.py",
+        "--as-of-date",
+        "2026-05-09",
+        "--no-dry-run"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/calibrate_challenger.log",
+      "name": "calibrate_challenger",
+      "tail": "}"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/build_rolling_market_benchmark.py",
+        "--as-of-date",
+        "2026-05-09",
+        "--window-days",
+        "28"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/rolling_market_benchmark.log",
+      "name": "rolling_market_benchmark",
+      "tail": "  rows_total=4340 dates_included=8 delta_logloss=+0.0467 delta_brier=+0.0152"
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.11.15/x64/bin/python",
+        "scripts/validate_champion_vs_challenger.py",
+        "--as-of-date",
+        "2026-05-09"
+      ],
+      "exit_code": 0,
+      "log_path": "artifacts/nightly_training/2026-05-09/logs/validate.log",
+      "name": "validate",
+      "tail": "}"
+    },
+    {
+      "name": "promote",
+      "reason": "promotion_clock_unsafe_at_or_after_14:30_utc",
+      "skipped": true
+    }
+  ],
+  "training_run_id": "nightly-20260510T163244"
+}

@@ -1,0 +1,535 @@
+{
+  "as_of_date": "2026-05-09",
+  "challenger_metrics": {
+    "brier_logloss_at_market": null,
+    "by_line_bucket": {},
+    "by_role_bucket": {
+      "bench": {
+        "n": 4172,
+        "nll": 1.745177365365257,
+        "p0_err": 0.3856515777699808
+      },
+      "core": {
+        "n": 7602,
+        "nll": 1.915448909750424,
+        "p0_err": 0.26775768209253087
+      },
+      "fringe": {
+        "n": 1393,
+        "nll": 1.508555810885597,
+        "p0_err": 0.39273110058595073
+      },
+      "inactive_risk": {
+        "n": 1785,
+        "nll": 2.019932723217144,
+        "p0_err": 0.4163349815499365
+      },
+      "rotation": {
+        "n": 6461,
+        "nll": 1.8090917271371156,
+        "p0_err": 0.3264632288190856
+      },
+      "starter": {
+        "n": 4179,
+        "nll": 2.035042355136225,
+        "p0_err": 0.21799033705493795
+      }
+    },
+    "by_stat": {
+      "ast": {
+        "calibrator_present": true,
+        "mean_bias": -0.12165115907241777,
+        "nll": 1.8214966968960513,
+        "p0_err": 0.30758628710391483,
+        "rows_scored": 3656,
+        "rps": 0.9396105720075931
+      },
+      "blk": {
+        "calibrator_present": true,
+        "mean_bias": 0.04221128653840487,
+        "nll": 0.8354969624019112,
+        "p0_err": 0.36644180087370204,
+        "rows_scored": 3656,
+        "rps": 0.30043069690156626
+      },
+      "fg3m": {
+        "calibrator_present": true,
+        "mean_bias": 0.023495216158798123,
+        "nll": 2.5034626512011435,
+        "p0_err": 0.3172038632555903,
+        "rows_scored": 3656,
+        "rps": 0.6227980999701341
+      },
+      "pts": {
+        "calibrator_present": true,
+        "mean_bias": -0.5840867436445495,
+        "nll": 3.0521227412895042,
+        "p0_err": 0.14859775744976542,
+        "rows_scored": 3656,
+        "rps": 3.2686618745995775
+      },
+      "reb": {
+        "calibrator_present": true,
+        "mean_bias": -0.19933390500231177,
+        "nll": 2.205445949447647,
+        "p0_err": 0.18566801730343152,
+        "rows_scored": 3656,
+        "rps": 1.3514656631734685
+      },
+      "stl": {
+        "calibrator_present": true,
+        "mean_bias": 0.07334213761555936,
+        "nll": 1.1956482324969724,
+        "p0_err": 0.44369431748178667,
+        "rows_scored": 3656,
+        "rps": 0.4660544691443713
+      },
+      "tov": {
+        "calibrator_present": true,
+        "mean_bias": -0.06589541415432601,
+        "nll": 1.4448892353258187,
+        "p0_err": 0.40666276694191633,
+        "rows_scored": 3656,
+        "rps": 0.6171958673636009
+      }
+    },
+    "clv": null,
+    "ece": null,
+    "edge_buckets": null,
+    "holdout_window": {
+      "end": "2026-05-09",
+      "rows": 29248,
+      "start": "2026-02-03"
+    },
+    "market_comparison": null,
+    "mean_error": -0.11884551165154895,
+    "median_error": null,
+    "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-09",
+    "nll": 1.8655089241512925,
+    "p0_calibration": 0.3108364014871582,
+    "pmf_validity_issues": [],
+    "rows_scored_total": 25592,
+    "rps": 1.0808881775943302,
+    "tov": {
+      "mean_bias": -0.06589541415432601,
+      "nll": 1.4448892353258187,
+      "p0_error": 0.40666276694191633,
+      "rps": 0.6171958673636009
+    }
+  },
+  "champion_metrics": {
+    "brier_logloss_at_market": null,
+    "by_line_bucket": {},
+    "by_role_bucket": {
+      "bench": {
+        "n": 4172,
+        "nll": 1.7465118686034586,
+        "p0_err": 0.38461232597567047
+      },
+      "core": {
+        "n": 7602,
+        "nll": 1.9174120397071488,
+        "p0_err": 0.2682614600947692
+      },
+      "fringe": {
+        "n": 1393,
+        "nll": 1.5079900053606605,
+        "p0_err": 0.39455363823592005
+      },
+      "inactive_risk": {
+        "n": 1785,
+        "nll": 2.0176563861759313,
+        "p0_err": 0.4155773925484051
+      },
+      "rotation": {
+        "n": 6461,
+        "nll": 1.8108213737702934,
+        "p0_err": 0.32687458822451293
+      },
+      "starter": {
+        "n": 4179,
+        "nll": 2.0361611203949574,
+        "p0_err": 0.2174859233690063
+      }
+    },
+    "by_stat": {
+      "ast": {
+        "calibrator_present": true,
+        "mean_bias": -0.11578695584871192,
+        "nll": 1.8232536726222983,
+        "p0_err": 0.3081502035428964,
+        "rows_scored": 3656,
+        "rps": 0.9397818207011477
+      },
+      "blk": {
+        "calibrator_present": true,
+        "mean_bias": 0.044661042058474265,
+        "nll": 0.8358104499891377,
+        "p0_err": 0.36559413124061496,
+        "rows_scored": 3656,
+        "rps": 0.30060482640916153
+      },
+      "fg3m": {
+        "calibrator_present": true,
+        "mean_bias": 0.013398845848447024,
+        "nll": 2.50353784135437,
+        "p0_err": 0.3172274342811459,
+        "rows_scored": 3656,
+        "rps": 0.6225596814691412
+      },
+      "pts": {
+        "calibrator_present": true,
+        "mean_bias": -0.5582046188507994,
+        "nll": 3.0566501729898445,
+        "p0_err": 0.14931714915978614,
+        "rows_scored": 3656,
+        "rps": 3.2689420425642357
+      },
+      "reb": {
+        "calibrator_present": true,
+        "mean_bias": -0.18907621282483228,
+        "nll": 2.2067696986223586,
+        "p0_err": 0.18607101012357335,
+        "rows_scored": 3656,
+        "rps": 1.350876884011005
+      },
+      "stl": {
+        "calibrator_present": true,
+        "mean_bias": 0.05186517020697646,
+        "nll": 1.1967262787116009,
+        "p0_err": 0.44287780546760275,
+        "rows_scored": 3656,
+        "rps": 0.46615467135911826
+      },
+      "tov": {
+        "calibrator_present": true,
+        "mean_bias": -0.07185611565466443,
+        "nll": 1.4444277025919599,
+        "p0_err": 0.4069535943162512,
+        "rows_scored": 3656,
+        "rps": 0.617044065675565
+      }
+    },
+    "clv": null,
+    "ece": null,
+    "edge_buckets": null,
+    "holdout_window": {
+      "end": "2026-05-09",
+      "rows": 29248,
+      "start": "2026-02-03"
+    },
+    "market_comparison": null,
+    "mean_error": -0.11785697786644433,
+    "median_error": null,
+    "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models",
+    "nll": 1.866739402411653,
+    "p0_calibration": 0.3108844754474101,
+    "pmf_validity_issues": [],
+    "rows_scored_total": 25592,
+    "rps": 1.0808519988841963,
+    "tov": {
+      "mean_bias": -0.07185611565466443,
+      "nll": 1.4444277025919599,
+      "p0_error": 0.4069535943162512,
+      "rps": 0.617044065675565
+    }
+  },
+  "code_commit": "f166d1a6520c2c97ccccf86adcee3df3c76b4cf6",
+  "gates_failed": [
+    "promotion_clock_safe",
+    "market_logloss_non_inferior_or_better",
+    "market_brier_non_inferior_or_better",
+    "no_severe_market_stat_bucket_regression"
+  ],
+  "gates_passed": [
+    "nll_improves_or_non_worse",
+    "rps_improves_or_non_worse",
+    "calibration_error_improves",
+    "p0_error_improves_or_non_worse",
+    "mean_bias_does_not_worsen",
+    "tov_does_not_regress",
+    "starter_core_role_buckets_do_not_regress",
+    "bench_fringe_role_buckets_do_not_regress_materially",
+    "no_severe_stat_bucket_regression",
+    "pmf_validity",
+    "no_future_leakage",
+    "sufficient_calibration_samples",
+    "derek_feed_compatibility",
+    "woo_export_compatibility",
+    "no_phase10d_overlays_referenced",
+    "market_benchmark_available"
+  ],
+  "generated_at_utc": "2026-05-10T16:34:12+00:00",
+  "market_benchmark": {
+    "as_of_date": "2026-05-09",
+    "by_edge_bucket": [],
+    "by_role_bucket": [
+      {
+        "delta_brier": 0.06691554896705741,
+        "delta_logloss": 0.17078143688365283,
+        "market_brier": 0.2440069624915492,
+        "market_logloss": 0.6795893025858512,
+        "minimum_sample_passed": true,
+        "model_brier": 0.3109225114586066,
+        "model_logloss": 0.850370739469504,
+        "n": 212,
+        "role_bucket": "bench"
+      },
+      {
+        "delta_brier": 0.12138233726625372,
+        "delta_logloss": 0.4217960048482842,
+        "market_brier": 0.25995324956653304,
+        "market_logloss": 0.7134362980971167,
+        "minimum_sample_passed": true,
+        "model_brier": 0.3813355868327867,
+        "model_logloss": 1.135232302945401,
+        "n": 332,
+        "role_bucket": "core"
+      },
+      {
+        "delta_brier": 0.025158178175092763,
+        "delta_logloss": 0.05633999186534854,
+        "market_brier": 0.24209330890266462,
+        "market_logloss": 0.677404510486915,
+        "minimum_sample_passed": true,
+        "model_brier": 0.26725148707775737,
+        "model_logloss": 0.7337445023522636,
+        "n": 949,
+        "role_bucket": "rotation"
+      },
+      {
+        "delta_brier": -0.004338808057298658,
+        "delta_logloss": -0.009480576872989047,
+        "market_brier": 0.2329871287079047,
+        "market_logloss": 0.6573896295372371,
+        "minimum_sample_passed": true,
+        "model_brier": 0.22864832065060603,
+        "model_logloss": 0.647909052664248,
+        "n": 2847,
+        "role_bucket": "starter"
+      }
+    ],
+    "by_stat": [
+      {
+        "delta_brier": 0.013475452019447356,
+        "delta_logloss": 0.04414490466499802,
+        "market_brier": 0.24554969549137567,
+        "market_logloss": 0.6847103016211618,
+        "minimum_sample_passed": true,
+        "model_brier": 0.259025147510823,
+        "model_logloss": 0.7288552062861596,
+        "n": 750,
+        "stat": "ast"
+      },
+      {
+        "delta_brier": 0.007568767756425622,
+        "delta_logloss": 0.01602311916710563,
+        "market_brier": 0.22890064689855963,
+        "market_logloss": 0.6491938309640776,
+        "minimum_sample_passed": true,
+        "model_brier": 0.23646941465498528,
+        "model_logloss": 0.6652169501311832,
+        "n": 810,
+        "stat": "fg3m"
+      },
+      {
+        "delta_brier": 0.011436256943409908,
+        "delta_logloss": 0.02829773272965547,
+        "market_brier": 0.235231826140473,
+        "market_logloss": 0.6614950687414658,
+        "minimum_sample_passed": true,
+        "model_brier": 0.24666808308388288,
+        "model_logloss": 0.6897928014711211,
+        "n": 1512,
+        "stat": "pts"
+      },
+      {
+        "delta_brier": 0.02561407374347011,
+        "delta_logloss": 0.08978218552084984,
+        "market_brier": 0.24120863072048146,
+        "market_logloss": 0.6749358561728465,
+        "minimum_sample_passed": true,
+        "model_brier": 0.2668227044639516,
+        "model_logloss": 0.7647180416936963,
+        "n": 1268,
+        "stat": "reb"
+      }
+    ],
+    "code_commit": "f166d1a6520c2c97ccccf86adcee3df3c76b4cf6",
+    "dates_included": [
+      "2026-05-08",
+      "2026-05-07",
+      "2026-05-06",
+      "2026-05-04",
+      "2026-05-03",
+      "2026-05-02",
+      "2026-05-01",
+      "2026-04-30"
+    ],
+    "dates_missing": [
+      "2026-05-09",
+      "2026-05-05",
+      "2026-04-29",
+      "2026-04-28",
+      "2026-04-27",
+      "2026-04-26",
+      "2026-04-25",
+      "2026-04-24",
+      "2026-04-23",
+      "2026-04-22",
+      "2026-04-21",
+      "2026-04-20",
+      "2026-04-19",
+      "2026-04-18",
+      "2026-04-17",
+      "2026-04-16",
+      "2026-04-15",
+      "2026-04-14",
+      "2026-04-13",
+      "2026-04-12"
+    ],
+    "delta_brier": 0.015209114493651185,
+    "delta_logloss": 0.046709075611009385,
+    "generated_at_utc": "2026-05-10T16:33:48+00:00",
+    "market_brier": 0.23757946094109006,
+    "market_logloss": 0.6671380043458616,
+    "min_bucket_rows": 50,
+    "min_overall_rows": 500,
+    "minimum_sample_passed": true,
+    "minimum_sample_passed_per_stat": {
+      "ast": true,
+      "fg3m": true,
+      "pts": true,
+      "reb": true
+    },
+    "model_brier": 0.2527885754347412,
+    "model_logloss": 0.713847079956871,
+    "per_slate_summaries": [
+      {
+        "date": "2026-05-08",
+        "overall": {
+          "delta_brier": 0.05865808122520783,
+          "delta_logloss": 0.2168529612539836,
+          "market_brier": 0.24920455187516175,
+          "market_logloss": 0.6914185995244296,
+          "model_brier": 0.30786263310036954,
+          "model_logloss": 0.9082715607784131,
+          "n": 578
+        },
+        "rows_paired": 578,
+        "rows_total": 578
+      },
+      {
+        "date": "2026-05-07",
+        "overall": {
+          "delta_brier": 0.026396093505119258,
+          "delta_logloss": 0.06910367034367539,
+          "market_brier": 0.2567955943455557,
+          "market_logloss": 0.7082855129207926,
+          "model_brier": 0.283191687850675,
+          "model_logloss": 0.7773891832644679,
+          "n": 400
+        },
+        "rows_paired": 400,
+        "rows_total": 400
+      },
+      {
+        "date": "2026-05-06",
+        "overall": null,
+        "rows_paired": 0,
+        "rows_total": 0
+      },
+      {
+        "date": "2026-05-04",
+        "overall": null,
+        "rows_paired": 0,
+        "rows_total": 0
+      },
+      {
+        "date": "2026-05-03",
+        "overall": {
+          "delta_brier": -0.004996112752997523,
+          "delta_logloss": -0.01409474223962366,
+          "market_brier": 0.23226423186711187,
+          "market_logloss": 0.654120135271143,
+          "model_brier": 0.22726811911411435,
+          "model_logloss": 0.6400253930315194,
+          "n": 489
+        },
+        "rows_paired": 489,
+        "rows_total": 489
+      },
+      {
+        "date": "2026-05-02",
+        "overall": {
+          "delta_brier": 0.05552741851279544,
+          "delta_logloss": 0.13676583058275626,
+          "market_brier": 0.23703766005352775,
+          "market_logloss": 0.6661274089055593,
+          "model_brier": 0.2925650785663232,
+          "model_logloss": 0.8028932394883157,
+          "n": 406
+        },
+        "rows_paired": 406,
+        "rows_total": 406
+      },
+      {
+        "date": "2026-05-01",
+        "overall": {
+          "delta_brier": 0.01322563112080243,
+          "delta_logloss": 0.028488900614722285,
+          "market_brier": 0.23601795744796422,
+          "market_logloss": 0.6642631878469255,
+          "model_brier": 0.24924358856876663,
+          "model_logloss": 0.6927520884616478,
+          "n": 1202
+        },
+        "rows_paired": 1202,
+        "rows_total": 1202
+      },
+      {
+        "date": "2026-04-30",
+        "overall": {
+          "delta_brier": -0.011425686035537818,
+          "delta_logloss": -0.026200275407755876,
+          "market_brier": 0.22990380043087913,
+          "market_logloss": 0.651120914792373,
+          "model_brier": 0.21847811439534132,
+          "model_logloss": 0.6249206393846171,
+          "n": 1265
+        },
+        "rows_paired": 1265,
+        "rows_total": 1265
+      }
+    ],
+    "rows_non_push": 4340,
+    "rows_total": 4340,
+    "schema_version": "1.0",
+    "status": "ok",
+    "window_days": 28,
+    "window_end": "2026-05-09",
+    "window_start": "2026-04-12"
+  },
+  "market_benchmark_manifest_path": "artifacts/market_benchmark/2026-05-09/rolling_market_benchmark.json",
+  "market_gates_failed": [
+    "market_logloss_non_inferior_or_better",
+    "market_brier_non_inferior_or_better",
+    "no_severe_market_stat_bucket_regression"
+  ],
+  "market_gates_passed": [
+    "market_benchmark_available"
+  ],
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-09",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-09",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260510T163244"
+  },
+  "promote": false,
+  "reason": "gate_failed:promotion_clock_safe",
+  "schema_version": "1.0",
+  "warnings": []
+}

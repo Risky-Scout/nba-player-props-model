@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "training_cutoff_date": "2026-05-09",
+  "source_min_game_date": "2023-10-24",
+  "source_max_game_date": "2026-05-09",
+  "fold_aggregate_max_game_date": "2026-03-03",
+  "row_count": 84003,
+  "unique_game_dates": 104,
+  "no_leakage_pass": true,
+  "rule": "max input game_date <= training_cutoff_date",
+  "generated_at": "2026-05-10T16:34:13+00:00",
+  "source_files": {
+    "train_manifest": "artifacts/models/challengers/2026-05-09/train_manifest.json",
+    "fold_aggregate_parquet": "artifacts/models/challengers/2026-05-09/aggregate_input/fold_aggregate.parquet",
+    "fold_aggregate_parquet_present_locally": true
+  },
+  "fold_aggregate_sha256": "01221f0f18dc0a23a616e7cfc809310249f7657b3a82eb8093e00956930131a7"
+}
