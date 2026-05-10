@@ -112,30 +112,49 @@ def make_walk_forward_folds(
     fold_days: int = FOLD_DAYS,
     min_train_days: int = MIN_TRAIN_DAYS,
 ) -> list[tuple[pd.Timestamp, pd.Timestamp]]:
-    """Build (fold_start, fold_end) windows.
+    """Build walk-forward (fold_start, fold_end) windows.
 
-    Folds never straddle offseason (July/Aug/Sep). If a proposed fold
-    start lies in the offseason, the start is advanced to the next Oct 15.
+    ``fold_end`` is exclusive. Full folds use ``fold_start + fold_days``.
+    The final in-season fold is allowed to be shorter and ends at
+    ``last_observed_date + 1 day`` so the latest finalized game date can
+    contribute OOF calibration rows instead of being silently dropped.
+
+    Folds never start in the July/August/September offseason; offseason
+    starts are advanced to October 15.
     """
     sorted_dates = pd.to_datetime(all_dates).sort_values().reset_index(drop=True)
     if sorted_dates.empty:
         return []
+
     first = sorted_dates.iloc[0]
     last = sorted_dates.iloc[-1]
     fold_start = first + pd.Timedelta(days=min_train_days)
+
     folds: list[tuple[pd.Timestamp, pd.Timestamp]] = []
     while fold_start <= last:
         if _is_offseason(fold_start):
-            # Jump to Oct 15 of the season we're in (or the next one).
-            y = fold_start.year
-            fold_start = pd.Timestamp(year=y, month=10, day=15)
+            y = int(fold_start.year)
+            next_start = pd.Timestamp(year=y, month=10, day=15)
+            if next_start <= fold_start:
+                next_start = pd.Timestamp(year=y + 1, month=10, day=15)
+            fold_start = next_start
             continue
-        fold_end = fold_start + pd.Timedelta(days=fold_days)
-        if fold_end <= last:
-            folds.append((fold_start, fold_end))
-        fold_start = fold_end
-    return folds
 
+        nominal_end = fold_start + pd.Timedelta(days=fold_days)
+        fold_end = min(nominal_end, last + pd.Timedelta(days=1))
+
+        if fold_end > fold_start:
+            folds.append((fold_start, fold_end))
+
+        # If this was the trailing partial fold, stop. Because fold_end is
+        # exclusive, fold_end > last means the last observed game date is
+        # included by downstream validation filters using game_date < fold_end.
+        if fold_end > last:
+            break
+
+        fold_start = fold_end
+
+    return folds
 
 # ── artifact-directory rewiring ─────────────────────────────────────────────
 
