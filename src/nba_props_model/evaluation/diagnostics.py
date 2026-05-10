@@ -126,10 +126,40 @@ def ece(probs: np.ndarray, outcomes: np.ndarray, bins: int = 10) -> float:
 
 
 def calibration_slope_intercept(probs: np.ndarray, outcomes: np.ndarray) -> tuple[float, float]:
-    """Linear regression of outcomes on predicted probs."""
-    if len(probs) < 2:
+    """Linear regression of outcomes on predicted probs.
+
+    Returns (NaN, NaN) when input is degenerate (empty, single point,
+    all-constant probs, non-finite only, or polyfit's SVD raises on
+    rank-deficient input). Logged so Phase 8 diagnostics can audit
+    degenerate folds instead of crashing the run.
+    """
+    probs_arr = np.asarray(probs, dtype=float)
+    outcomes_arr = np.asarray(outcomes, dtype=float)
+    finite_mask = np.isfinite(probs_arr) & np.isfinite(outcomes_arr)
+    probs_arr = probs_arr[finite_mask]
+    outcomes_arr = outcomes_arr[finite_mask]
+    if len(probs_arr) < 2:
         return float("nan"), float("nan")
-    slope, intercept = np.polyfit(probs, outcomes.astype(float), 1)
+    if np.unique(probs_arr).size < 2:
+        logger.warning(
+            "calibration_slope_intercept: constant_probs n=%d; returning (nan, nan)",
+            len(probs_arr),
+        )
+        return float("nan"), float("nan")
+    try:
+        slope, intercept = np.polyfit(probs_arr, outcomes_arr, 1)
+    except (np.linalg.LinAlgError, ValueError, FloatingPointError) as exc:
+        logger.warning(
+            "calibration_slope_intercept: polyfit failed n=%d unique=%d exc=%r; returning (nan, nan)",
+            len(probs_arr), int(np.unique(probs_arr).size), exc,
+        )
+        return float("nan"), float("nan")
+    if not (np.isfinite(slope) and np.isfinite(intercept)):
+        logger.warning(
+            "calibration_slope_intercept: non-finite fit slope=%r intercept=%r; returning (nan, nan)",
+            slope, intercept,
+        )
+        return float("nan"), float("nan")
     return float(slope), float(intercept)
 
 
