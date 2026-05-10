@@ -167,6 +167,25 @@ def train_rate_models(
 # ── Inference ────────────────────────────────────────────────────────────────
 
 
+def _coerce_rate_feature_value(value):
+    """Coerce one feature value to a numeric scalar, mirroring training-time
+    pd.to_numeric(errors='coerce'). Late-season rows can include
+    object-dtype fields (e.g. is_returning_from_absence,
+    minutes_restriction_flag) that LightGBM rejects with
+    'pandas dtypes must be int, float or bool', causing every quantile
+    prediction to fail silently. Returning float (or NaN for unconvertible
+    values) lets LightGBM use its learned missing-value path.
+    """
+    if value is None:
+        return np.nan
+    if isinstance(value, (dict, list, tuple, set)):
+        return np.nan
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return np.nan
+
+
 _RATE_CACHE: dict[str, dict] = {}
 
 
@@ -192,18 +211,33 @@ def _load_rate_artifacts(stat: str) -> Optional[dict]:
 def rate_quantiles(stat: str, feature_row: dict) -> Optional[dict[int, float]]:
     """Predict per-minute rate quantiles for one player-game.
 
-    Returns None if the per-stat rate artifacts are not yet on disk.
+    Returns None when artifacts are unavailable or every quantile fails.
+    Coerces feature values to numeric (training-time pd.to_numeric semantics)
+    so object-dtype fields don't silently suppress OOF emission.
     """
     art = _load_rate_artifacts(stat)
     if art is None:
+        logger.warning("rate_quantiles[%s]: missing rate artifacts", stat)
         return None
-    feats = art["features"]
-    row = {f: feature_row.get(f, 0.0) for f in feats}
-    X = pd.DataFrame([row])
+    feats = list(art["features"])
+    row = {f: _coerce_rate_feature_value(feature_row.get(f, 0.0)) for f in feats}
+    X = pd.DataFrame([row], columns=feats)
     out: dict[int, float] = {}
+    failures: list[str] = []
     for qpct, m in art["quantiles"].items():
         try:
-            out[qpct] = float(max(0.0, m.predict(X)[0]))
-        except Exception:
-            continue
-    return out or None
+            pred = float(m.predict(X)[0])
+            if np.isfinite(pred):
+                out[qpct] = float(max(0.0, pred))
+            else:
+                failures.append(f"q{qpct}:nonfinite")
+        except Exception as exc:
+            failures.append(f"q{qpct}:{type(exc).__name__}:{exc}")
+    if not out:
+        logger.warning(
+            "rate_quantiles[%s]: all quantile predictions failed; "
+            "n_features=%d failures_sample=%s",
+            stat, len(feats), failures[:3],
+        )
+        return None
+    return out
