@@ -423,6 +423,15 @@ jobs:
           print(f"Known role_bucket share OK: {known}/{total} = {known / total:.2%}")
           PY
 
+      - name: Build combo OOF PMFs from aggregate base OOF
+        run: |
+          python scripts/build_combo_oof_pmfs_from_base_oof.py \
+            --in data/oof_pmfs.parquet \
+            --out data/oof_combo_pmfs.parquet \
+            --manifest data/oof_combo_pmfs.manifest.json \
+            --as-of-date "$(date -u +%F)" \
+            --n-draws 20000
+
       - name: Upload final calibration artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -431,6 +440,8 @@ jobs:
           path: |
             artifacts/models/pmf_cal_*.pkl
             data/oof_pmfs.parquet
+            data/oof_combo_pmfs.parquet
+            data/oof_combo_pmfs.manifest.json
             artifacts/docs/pmf_calibration_run.md
             artifacts/folds/fold_*.parquet
             artifacts/models/pmf_cal_meta.json
@@ -520,6 +531,8 @@ jobs:
             artifacts/models/pmf_cal_role_*.pkl
             artifacts/models/pmf_cal_meta.json
             data/oof_pmfs.parquet
+            data/oof_combo_pmfs.parquet
+            data/oof_combo_pmfs.manifest.json
           if-no-files-found: warn
           retention-days: 30
 
@@ -546,7 +559,9 @@ jobs:
           git config user.email "josephshack@gmail.com"
           if ! git add artifacts/models/pmf_cal_*.pkl \
                        artifacts/docs/ \
-                       data/oof_pmfs.parquet; then
+                       data/oof_pmfs.parquet \
+                       data/oof_combo_pmfs.parquet \
+                       data/oof_combo_pmfs.manifest.json; then
             echo "::error::git add failed for one or more Phase 8 output paths"
             exit 1
           fi
