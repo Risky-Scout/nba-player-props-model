@@ -17,8 +17,8 @@
   },
   "all_required_present": true,
   "as_of_date": "2026-05-09",
-  "code_commit": "5322976985f0b6dda7093e4523eb97e1f3017a7f",
-  "generated_at_utc": "2026-05-10T19:40:00+00:00",
+  "code_commit": "c24e3744a86fc3b021bb81111cd17f2c3a8010c8",
+  "generated_at_utc": "2026-05-10T22:14:10+00:00",
   "missing_advisory": [
     "data/training_table.parquet"
   ],
@@ -37,43 +37,43 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-09",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260510T193956"
+    "training_run_id": "nightly-20260510T221406"
   },
   "required_inputs": {
     "champion_pmf_cal_role_ast": {
       "path": "artifacts/models/pmf_cal_role_ast.pkl",
-      "sha256_prefix": "aa73d678b1512d33",
-      "size_bytes": 732597
+      "sha256_prefix": "95739abbefc7e55b",
+      "size_bytes": 354429
     },
     "champion_pmf_cal_role_blk": {
       "path": "artifacts/models/pmf_cal_role_blk.pkl",
-      "sha256_prefix": "8710eae23e6aab3e",
-      "size_bytes": 83752
+      "sha256_prefix": "34f3b048d3e97119",
+      "size_bytes": 341189
     },
     "champion_pmf_cal_role_fg3m": {
       "path": "artifacts/models/pmf_cal_role_fg3m.pkl",
-      "sha256_prefix": "6fb662716667fed4",
-      "size_bytes": 699597
+      "sha256_prefix": "57edf14dad60a827",
+      "size_bytes": 337405
     },
     "champion_pmf_cal_role_pts": {
       "path": "artifacts/models/pmf_cal_role_pts.pkl",
-      "sha256_prefix": "cef39bbf256f2d63",
-      "size_bytes": 727613
+      "sha256_prefix": "4133ebd730cec6bf",
+      "size_bytes": 354357
     },
     "champion_pmf_cal_role_reb": {
       "path": "artifacts/models/pmf_cal_role_reb.pkl",
-      "sha256_prefix": "4b018db3bff8f827",
-      "size_bytes": 732349
+      "sha256_prefix": "ef761e201f32102e",
+      "size_bytes": 354493
     },
     "champion_pmf_cal_role_stl": {
       "path": "artifacts/models/pmf_cal_role_stl.pkl",
-      "sha256_prefix": "56ff90c9d13f32a8",
-      "size_bytes": 83752
+      "sha256_prefix": "69a0f01a30bf81f5",
+      "size_bytes": 335661
     },
     "champion_pmf_cal_role_tov": {
       "path": "artifacts/models/pmf_cal_role_tov.pkl",
-      "sha256_prefix": "5b9d732536e30e33",
-      "size_bytes": 733301
+      "sha256_prefix": "deedd3f0ed6faedd",
+      "size_bytes": 354541
     },
     "champion_pointer": {
       "path": "artifacts/models/registry/champion_pointer.json",
@@ -82,8 +82,8 @@
     },
     "data/oof_pmfs.parquet": {
       "path": "data/oof_pmfs.parquet",
-      "sha256_prefix": "3e1ec9d4ea5918c5",
-      "size_bytes": 24279251
+      "sha256_prefix": "56df983bb0bedf2e",
+      "size_bytes": 29748435
     },
     "data/player_game_stats.parquet": {
       "path": "data/player_game_stats.parquet",

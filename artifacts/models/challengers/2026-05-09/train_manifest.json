@@ -11,54 +11,54 @@
       "--output-dir",
       "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-09"
     ],
-    "calibrate_pmf_elapsed_seconds": 78.7,
+    "calibrate_pmf_elapsed_seconds": 97.5,
     "calibrate_pmf_log": "artifacts/models/challengers/2026-05-09/calibrate_pmf.log",
     "challenger_kind": "real-aggregate-mode-from-rolling-oof",
     "files": [
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_ast.pkl",
-        "sha256": "c6542330d0c5c3b45d1cf2c9a394d0078cae0cb161826b6560c71ebbdba8274a"
+        "sha256": "95739abbefc7e55b5250f65a51f1aa3e69f393953f812af32194986aeef2cf4e"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_blk.pkl",
-        "sha256": "4840d5b7001f471e30bc01dd8406a4c890719e766ae4c0ef82c2f4ec8508be84"
+        "sha256": "34f3b048d3e97119e9af57ff470819fddd5ecc2d709a84b5a0d403d5cfe2bedf"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_fg3m.pkl",
-        "sha256": "d9403e485a568e8451303c8989160f718a36886fdcc2df42c45b118049db1cb1"
+        "sha256": "57edf14dad60a827bb7bda771a8b7723c48bc195c0bd90d6bda3a22bf72f852a"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_pts.pkl",
-        "sha256": "8f6a65f42d3dc2832e44ef0d58aec1f25dceced9f69e915550a08343faebdbb9"
+        "sha256": "4133ebd730cec6bf2401cb1e5707f3dd7eab502b693dca1886d39365d50c5eba"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_reb.pkl",
-        "sha256": "87191362740cc12b7b81f6dbdd3071d81d3fc770a255c03fd82b4c3c2eb53ccc"
+        "sha256": "ef761e201f32102ea70d76b8ad9047829eb40cb9d3efa7e958e526bb9ffca927"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_stl.pkl",
-        "sha256": "df6471b3af140911693d4f76799a32da6c10a38fad4feedd18cd1d3c6eb85f7c"
+        "sha256": "69a0f01a30bf81f54d817f8e1b71aa95cb190426a0eb09eff8eb3f5b51329ff7"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_stocks.pkl",
-        "sha256": "cce848fbfd4a1fb7f64ec71c41f5834e5005094616ccce3f16ee28669a61a32c"
+        "sha256": "6b2d1d96f33e4c520317cd863919544644bfae25538c7fe0d0a205fd2c4fcde9"
       },
       {
         "path": "artifacts/models/challengers/2026-05-09/pmf_cal_role_tov.pkl",
-        "sha256": "dcd51e019179d7d153f9578d3d0d6f604884e8a33f5228d4aaf4071871e61dfd"
+        "sha256": "deedd3f0ed6faedd5b5b40f9e539a7af6f0ed0753473352b45e88ffd8404ad0d"
       }
     ],
     "fold_aggregate_input": "artifacts/models/challengers/2026-05-09/aggregate_input/fold_aggregate.parquet",
-    "fold_aggregate_sha256": "01221f0f18dc0a23a616e7cfc809310249f7657b3a82eb8093e00956930131a7",
+    "fold_aggregate_sha256": "71fd0236eb6f1c488e262b71ecc0a81b6a9e0d66c5ca1d864cb074147450f2c2",
     "model_dir_reference": "artifacts/models/challengers/2026-05-09",
     "oof_pmfs_parquet": "artifacts/models/challengers/2026-05-09/oof_pmfs.parquet",
     "pmf_cal_meta_json": null,
     "training_table_sha256": null,
     "training_table_snapshot": null
   },
-  "code_commit": "5322976985f0b6dda7093e4523eb97e1f3017a7f",
+  "code_commit": "c24e3744a86fc3b021bb81111cd17f2c3a8010c8",
   "dry_run": false,
-  "finished_at_utc": "2026-05-10T19:41:21+00:00",
+  "finished_at_utc": "2026-05-10T22:15:50+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -68,7 +68,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-09",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260510T193956"
+    "training_run_id": "nightly-20260510T221406"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
@@ -76,7 +76,7 @@
     "model_version": "challenger-2026-04-30"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-10T19:40:03+00:00",
+  "started_at_utc": "2026-05-10T22:14:13+00:00",
   "stats_trained": [
     "pts",
     "reb",
@@ -89,9 +89,9 @@
   "status": "ok",
   "training_summary": {
     "aggregate_oof_future_rows_excluded": null,
-    "aggregate_oof_rows_after_cutoff": 124368,
-    "aggregate_oof_rows_pre_cutoff": 124368,
-    "calibrate_pmf_elapsed_seconds": 78.7,
+    "aggregate_oof_rows_after_cutoff": 153664,
+    "aggregate_oof_rows_pre_cutoff": 153664,
+    "calibrate_pmf_elapsed_seconds": 97.5,
     "future_rows_excluded": 0,
     "max_date": "2026-05-09",
     "min_date": "2023-10-24",

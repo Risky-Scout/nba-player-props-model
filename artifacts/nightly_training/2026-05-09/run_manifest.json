@@ -1,9 +1,9 @@
 {
   "as_of_date": "2026-05-09",
-  "code_commit": "5322976985f0b6dda7093e4523eb97e1f3017a7f",
+  "code_commit": "c24e3744a86fc3b021bb81111cd17f2c3a8010c8",
   "dry_run": false,
   "final_status": "halted_no_promotion",
-  "finished_at_utc": "2026-05-10T19:41:57+00:00",
+  "finished_at_utc": "2026-05-10T22:16:09+00:00",
   "halted_reason": "promotion_clock_cutoff",
   "no_promote": false,
   "phase10d_overlays_in_use": false,
@@ -14,7 +14,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-09",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260510T193956"
+    "training_run_id": "nightly-20260510T221406"
   },
   "promotion_summary": {
     "from_version": null,
@@ -28,7 +28,7 @@
     "derek_compat_smoke": true,
     "woo_compat_smoke": true
   },
-  "started_at_utc": "2026-05-10T19:39:56+00:00",
+  "started_at_utc": "2026-05-10T22:14:06+00:00",
   "steps": [
     {
       "command": [
@@ -149,5 +149,5 @@
       "skipped": true
     }
   ],
-  "training_run_id": "nightly-20260510T193956"
+  "training_run_id": "nightly-20260510T221406"
 }
