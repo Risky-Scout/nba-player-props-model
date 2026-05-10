@@ -211,7 +211,7 @@ jobs:
         run: |
           python - <<'PY'
           import json, os
-          n = int(os.environ.get("MAX_FOLDS", "4") or "4")
+          n = int(os.environ.get("MAX_FOLDS", "6") or "6")
           folds = list(range(1, n + 1))
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
               f.write(f"folds={json.dumps(folds)}\n")
