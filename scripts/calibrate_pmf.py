@@ -82,7 +82,12 @@ logger = logging.getLogger("calibrate_pmf")
 # ── configuration ───────────────────────────────────────────────────────────
 
 FOLD_DAYS = 28
-MIN_TRAIN_DAYS = 365        # at least one full season of training data
+MIN_TRAIN_DAYS = 365        # at least one full season of training data for model OOF folds
+# Final calibrator fitting is performed *inside the OOF rows*, whose current
+# in-season span can be much shorter than a full season. Using MIN_TRAIN_DAYS
+# here silently produced "no valid folds" and uploaded stale committed
+# calibrators. Keep this separate from the model OOF training horizon.
+FINAL_CAL_MIN_TRAIN_DAYS = 56
 MIN_VAL_ROWS_PER_STAT = 80  # under this we mark the fold insufficient
 DOMAIN_MAX_BY_STAT = {
     **{s: MAIN_DOMAIN_MAX[s] for s in RATE_STATS},
@@ -1344,7 +1349,7 @@ def _fit_final_calibrators_and_emit_report(
     }
     rng = np.random.default_rng(0)
     meta = fit_all(per_stat_inputs, fold_days=fold_days,
-                   min_train_days=MIN_TRAIN_DAYS, rng=rng)
+                   min_train_days=FINAL_CAL_MIN_TRAIN_DAYS, rng=rng)
     # Augment pmf_cal_meta.json with active-conditioning provenance —
     # ONLY when the precomputed pmf_active_uniform flag is True (every
     # OOF row in this fitting run carried a genuine pmf_active value).
@@ -1369,6 +1374,19 @@ def _fit_final_calibrators_and_emit_report(
             "Calibration was at least partially fit on raw pmf; "
             "live prediction will use the legacy raw-PMF path."
         )
+
+    fitted_stats = [
+        stat for stat, stat_meta in meta.get("stats", {}).items()
+        if stat_meta.get("fitted", False)
+    ]
+    if not fitted_stats:
+        raise RuntimeError(
+            "NO_FINAL_CALIBRATORS_FITTED: final calibration produced zero fitted "
+            f"stats from {sum(len(v[0]) for v in stacked.values()):,} OOF rows. "
+            "This usually means FINAL_CAL_MIN_TRAIN_DAYS is too high for the "
+            "available OOF span or the OOF date coverage is broken."
+        )
+    logger.info("Final calibrators fitted for stats: %s", ", ".join(sorted(fitted_stats)))
 
     logger.info("=" * 60)
     logger.info("Per-stat calibration results")
