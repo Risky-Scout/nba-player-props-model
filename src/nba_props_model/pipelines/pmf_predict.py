@@ -11,9 +11,21 @@ Pipeline per prop
 -----------------
   1. MinutesDistribution from state-aware minutes model
   2. Main-stat PMFs from minutes x rate simulation
-  3. Sparse-stat PMFs from hurdle models; stocks by component convolution
+  3. Sparse-stat PMFs from hurdle models (stl, blk marginals)
   4. FG3M PMF from the hurdle model's pmf() method
-  5. Combo PMFs (pra, pr, pa, ra) derived from component PMFs via copula
+  5. Mission combo PMFs (stocks, pa, pr, pra) from joint samples
+     via simulate_joint_stat_samples + build_combo_pmfs_for_group.
+     - pa/pr/pra: production-grade. pts/reb/ast share the minutes
+       draw in joint_simulation, preserving within-game correlation
+       that convolution/independence destroyed.
+     - stocks: routed through the same path for architectural
+       consistency and so the role-aware stocks calibrator sees its
+       training-time input distribution. BUT joint_simulation
+       samples stl and blk INDEPENDENTLY from their hurdle PMFs
+       (documented limitation in joint_simulation.py). M8.5 does
+       NOT close stocks correlation quality; that remains an open
+       M8.6/M9 item.
+     ra/reb_ast are intentionally NOT emitted (non-mission).
   6. Apply per-stat pmf_calibration if trained
   7. Convert to fair over/under at each offered line
   8. Bet-selection filter against market prices
@@ -36,6 +48,14 @@ import pandas as pd
 from nba_props_model.calibration.pmf_calibration import load_calibrator
 from nba_props_model.calibration.role_buckets import role_bucket_from_minutes_dist
 from nba_props_model.models import combos, simulation, sparse_hurdle
+from nba_props_model.models.joint_simulation import (
+    simulate_joint_stat_samples,
+    JOINT_SAMPLER_VERSION,
+)
+from nba_props_model.models.joint_combo_pmfs import (
+    build_combo_pmfs_for_group,
+    JOINT_COMBO_PMF_VERSION,
+)
 from nba_props_model.models.minutes import MinutesDistribution, minutes_distribution
 from nba_props_model.paths import MODEL_DIR
 from nba_props_model.selection.bet_selection import (
@@ -52,6 +72,24 @@ PMF_SIM_DRAWS = int(os.getenv("NBA_PMF_SIM_DRAWS", "50000"))
 MAIN_STATS = ("pts", "reb", "ast", "tov")
 SPARSE_STATS = ("stl", "blk")
 COMBO_STATS = tuple(combos.COMBO_COMPONENTS.keys())
+
+# M8.5: mission-required combos. The ONLY combos emitted to
+# production. stocks, pa, pr, and pra each route through joint
+# samples + role-aware calibrators, but the correctness story
+# differs by combo:
+#   - pa, pr, pra: production-grade. pts/reb/ast share the same
+#     minutes draw in simulate_joint_stat_samples, so the resulting
+#     PMFs preserve within-game correlation that convolution/
+#     independence destroyed.
+#   - stocks: routed through the same joint-sample path for
+#     architectural consistency and so the role-aware M6.2 stocks
+#     calibrator sees its training-time input distribution. BUT
+#     joint_simulation samples stl/blk INDEPENDENTLY from their
+#     hurdle PMFs (documented limitation). True stl/blk correlation
+#     is NOT closed by M8.5; M8.6/M9 must track stocks/stl/blk
+#     quality separately.
+# ra/reb_ast are intentionally NOT in this set.
+MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "pra")
 
 # Stats whose simulation embeds inactive/DNP zero-mass via
 # `minutes_dist.sample()` and therefore must be active-conditioned
@@ -104,15 +142,6 @@ def build_prop_pmfs(
             out[stat] = PropPMF(stat=stat, pmf=pmf, calibrated=False,
                                 model_version="hurdle_v1")
 
-    # stocks = convolution of stl + blk.
-    if "stl" in out and "blk" in out:
-        stocks_arr = sparse_hurdle.stocks_pmf(out["stl"].pmf, out["blk"].pmf)
-        if stocks_arr is not None:
-            out["stocks"] = PropPMF(
-                stat="stocks", pmf=stocks_arr, calibrated=False,
-                model_version="stocks_conv_v1",
-            )
-
     # FG3M via hurdle's pmf().
     if fg3m_hurdle_model is not None:
         try:
@@ -122,21 +151,71 @@ def build_prop_pmfs(
         except Exception as e:
             logger.debug(f"fg3m pmf failed: {e}")
 
-    # Combos — only if all components available.
-    main_stat_pmfs = {k: simulation.StatPMF(stat=k, pmf=out[k].pmf)
-                      for k in ("pts", "reb", "ast") if k in out}
-    for combo_key, component_stats in combos.COMBO_COMPONENTS.items():
-        if not all(s in main_stat_pmfs for s in component_stats):
-            continue
-        comp_map = {s: main_stat_pmfs[s] for s in component_stats}
-        combo_pmf = combos.build_combo_pmf(
-            combo_key, comp_map, correlation=None, rng=rng,
+    # M8.5: mission combo PMFs from joint samples (replaces legacy
+    # convolution stocks + independence pa/pr/pra). The M6.2 role-aware
+    # combo calibrators (pmf_cal_role_{stocks,pa,pr,pra}.pkl) were fit
+    # on joint-sample combo OOF; this path routes each of stocks, pa,
+    # pr, and pra through joint samples to match the calibrators'
+    # training input distribution. No ra/reb_ast (non-mission).
+    #
+    # Correctness story differs by combo:
+    #   - pa, pr, pra: production-grade. pts/reb/ast share the same
+    #     minutes draw in simulate_joint_stat_samples, preserving
+    #     within-game correlation.
+    #   - stocks: simulate_joint_stat_samples samples stl/blk
+    #     INDEPENDENTLY from their hurdle PMFs (documented limitation
+    #     in joint_simulation.py). M8.5 closes the train/serve skew
+    #     against the calibrator but does NOT capture true stl/blk
+    #     correlation. Stocks correlation quality is an open M8.6/M9
+    #     item.
+    try:
+        joint = simulate_joint_stat_samples(
+            minutes_dist=minutes_dist,
+            feature_row=feature_row,
+            n_draws=PMF_SIM_DRAWS,
+            rng=rng,
+            fg3m_hurdle_model=fg3m_hurdle_model,
         )
-        if combo_pmf is not None:
-            out[combo_key] = PropPMF(
-                stat=combo_key, pmf=combo_pmf.pmf, calibrated=False,
-                model_version="combo_independence_v1",
+    except Exception as e:
+        raise RuntimeError(
+            f"M8.5: simulate_joint_stat_samples failed: "
+            f"{type(e).__name__}: {e}. Production combo emission "
+            f"requires joint samples; cannot fall back to "
+            f"convolution/independence (would re-introduce M6.2 "
+            f"train/serve skew)."
+        )
+    if joint is None:
+        raise RuntimeError(
+            "M8.5: simulate_joint_stat_samples returned None. "
+            "Production mission combo emission requires joint samples; "
+            "cannot fall back to legacy stocks-convolution or combo-independence paths."
+        )
+    samples_df = pd.DataFrame({
+        "pts":  joint["pts"],
+        "reb":  joint["reb"],
+        "ast":  joint["ast"],
+        "tov":  joint["tov"],
+        "fg3m": joint["fg3m"],
+        "stl":  joint["stl"],
+        "blk":  joint["blk"],
+    })
+    combo_pmfs = build_combo_pmfs_for_group(
+        group=samples_df,
+        combos=MISSION_COMBOS,
+    )
+    combo_model_version = f"{JOINT_SAMPLER_VERSION}+{JOINT_COMBO_PMF_VERSION}"
+    for combo_key in MISSION_COMBOS:
+        arr = combo_pmfs.get(combo_key)
+        if arr is None:
+            raise RuntimeError(
+                f"M8.5: build_combo_pmfs_for_group returned None "
+                f"for mission combo {combo_key!r}. Cannot silently "
+                f"fall back."
             )
+        out[combo_key] = PropPMF(
+            stat=combo_key, pmf=arr, calibrated=False,
+            model_version=combo_model_version,
+        )
 
     # Ex-ante role bucket: depends only on the predicted minutes
     # distribution, never on realized minutes or outcomes. Used as the

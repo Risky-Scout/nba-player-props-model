@@ -103,6 +103,13 @@ _INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"
 DEFAULT_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 ALLOWED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 
+# M8.5: guard constants. Mission combos (stocks/pa/pr/pra) MUST come
+# from joint-sample-derived PMFs and MUST NOT carry legacy
+# convolution/independence model_version tags. These guards run in
+# the per-(player, game) emission loop below.
+M8_5_MISSION_COMBOS = frozenset({"stocks", "pa", "pr", "pra"})
+M8_5_LEGACY_COMBO_TAGS = ("stocks_conv_v1", "combo_independence_v1")
+
 
 def _display_path(path: Path) -> str:
     """Return repo-relative path when possible, otherwise absolute path."""
@@ -469,7 +476,35 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
     for stat in stats:
         prop = pmf_pack.get(stat)
         if prop is None or prop.pmf is None:
+            # M8.5: per-player missing for mission combos is a
+            # structural error, not a data-sparsity skip. The joint-
+            # sample combo path in pmf_predict.build_prop_pmfs
+            # produces all the mission combos or raises; an absent
+            # combo here means the function was reverted or has a bug.
+            if stat in M8_5_MISSION_COMBOS:
+                raise SystemExit(
+                    f"FATAL: STAT_GRID_MISSION_COMBO_MISSING "
+                    f"player_id={player_id} game_id={gid} stat={stat}: "
+                    f"mission combo absent from build_prop_pmfs output. "
+                    f"See M8.5."
+                )
             continue
+        # M8.5: defense-in-depth — mission combos must NOT carry the
+        # legacy convolution/independence model_version tags. If the
+        # joint-sample patch in pmf_predict is reverted or bypassed,
+        # this guard catches it before any delivery is written.
+        if stat in M8_5_MISSION_COMBOS:
+            mv = str(prop.model_version)
+            for legacy in M8_5_LEGACY_COMBO_TAGS:
+                if legacy in mv:
+                    raise SystemExit(
+                        f"FATAL: STAT_GRID_LEGACY_COMBO_PATH "
+                        f"player_id={player_id} game_id={gid} "
+                        f"stat={stat} model_version={mv!r}: mission "
+                        f"combo emitted via legacy convolution/"
+                        f"independence path. Must use "
+                        f"joint_sampler_v1+joint_combo_pmf_v1. See M8.5."
+                    )
         s = _pmf_summary(prop.pmf)
         out_rows.append({
             "player_id": int(player_id),
