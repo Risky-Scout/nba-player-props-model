@@ -432,6 +432,11 @@ jobs:
             --as-of-date "$(date -u +%F)" \
             --n-draws 20000
 
+      - name: Fit role-aware combo PMF calibrators (M6.2)
+        run: |
+          PYTHONPATH=src python scripts/fit_combo_pmf_calibrators.py \
+            --oof data/oof_combo_pmfs.parquet
+
       - name: Upload final calibration artifacts
         if: always()
         uses: actions/upload-artifact@v4
