@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "input": "/tmp/m5e_phase8_25636647720/phase8-outputs/data/oof_pmfs.parquet",
-  "output": "/tmp/m5c_combo_oof_full/data/oof_combo_pmfs.parquet",
+  "input": "data/oof_pmfs.parquet",
+  "output": "data/oof_combo_pmfs.parquet",
   "source_oof_path": "data/oof_pmfs.parquet",
   "rows": 76832,
   "player_games": 19208,
@@ -22,8 +22,8 @@
   "oof_window_start": "2025-12-10",
   "oof_window_end": "2026-05-09",
   "training_cutoff_date": "2026-05-09",
-  "as_of_date": "2026-05-10",
-  "days_since_oof_window_end": 1,
+  "as_of_date": "2026-05-11",
+  "days_since_oof_window_end": 2,
   "path_building_warning": "",
   "production_promoted": false,
   "final_calibration_ready": false,
@@ -40,6 +40,6 @@
   "calibration_status": "pending_m6_stat_role_calibration",
   "pmf_validity_rate": 1.0,
   "pmf_sum_error_max": 3.3306690738754696e-16,
-  "generated_at_utc": "2026-05-10T23:17:21+00:00",
+  "generated_at_utc": "2026-05-11T01:15:17+00:00",
   "note": "M5C foundation. Combo OOF dataset for downstream M6 role-aware calibrator fitting. Combo rows are calibrated=False / calibration_status=pending_m6_stat_role_calibration. NOT yet wired into production delivery; M7+ handles production wiring."
 }
