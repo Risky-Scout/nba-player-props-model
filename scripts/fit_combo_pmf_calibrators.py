@@ -70,7 +70,7 @@ CAL_META_BACKUP_PATH = MODEL_DIR / "pmf_cal_meta_base_only.json.bak"
 # Match calibrate_pmf.py's aggregate-mode thresholds so combo cells use
 # the same data-volume gates as base cells.
 MIN_VAL_ROWS_PER_STAT = 500
-FINAL_CAL_MIN_TRAIN_DAYS = 180
+FINAL_CAL_MIN_TRAIN_DAYS = 28
 
 # Required columns in the combo OOF parquet (M6.2 spec requirement #5).
 REQUIRED_COLUMNS = ("stat", "pmf", "outcome", "game_date", "role_bucket")
