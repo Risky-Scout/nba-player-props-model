@@ -60,8 +60,14 @@ def main() -> int:
     verifier = "scripts/verify_corrected_pmf_delivery.py"
     verifier_s = read(verifier)
     require("CORE_STATS" in verifier_s, f"{verifier} must define CORE_STATS")
-    for stat in ["pts", "reb", "ast", "fg3m", "tov"]:
-        require(stat in verifier_s, f"{verifier} missing core stat guard: {stat}")
+    # M8.6B: verify_corrected_pmf_delivery.py should enforce the
+    # 11-stat mission contract through the central target registry, not
+    # by hardcoded literal stat strings. A registry-driven guard avoids
+    # stale verifier failures when the mission set expands.
+    require("MISSION_REQUIRED_TARGETS_CANONICAL" in verifier_s,
+            f"{verifier} must use mission target registry for stat guard")
+    require("CORE_STATS = set(MISSION_REQUIRED_TARGETS_CANONICAL)" in verifier_s,
+            f"{verifier} must derive CORE_STATS from mission target registry")
     for bad in ["stocks"]:  # M4A2: stl/blk are now production base PMFs; stocks is M5 combo
         require(bad not in verifier_s or "extra" in verifier_s,
                 f"{verifier} must reject broad/extra stat leakage including {bad}")
