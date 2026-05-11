@@ -24,6 +24,7 @@ Hard rules:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
@@ -46,9 +47,19 @@ from nba_props_model.training_automation import (  # noqa: E402
     utcnow_iso,
     write_json_atomic,
 )
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
 
 
 # -- PMF validity ----------------------------------------------------------
+ROLE_AWARE_BLEND_POLICY = "stat_role_guarded_expanded_v1"
+M7_TARGET_STATS = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
+M7_ROLE_BUCKETS = ("inactive_risk", "fringe", "bench", "rotation", "core", "starter")
+M7_FORBIDDEN_STATS = {"ra", "reb_ast"}
+M6_3_MATRIX_PATH = REPO_ROOT / "artifacts" / "docs" / "m6_3_stat_role_calibration_matrix_2026-05-11.csv"
+M6_3_META_PATH = REPO_ROOT / "artifacts" / "docs" / "m6_3_stat_role_calibration_report_2026-05-11.meta.json"
+
 
 def pmf_validity_checks(challenger_artifacts_dir: Path) -> dict:
     """Verify that any PMF parquets under the challenger dir are well-formed.
@@ -446,6 +457,127 @@ def _compare_gate(
     return (name, passed, detail)
 
 
+
+def _load_m6_3_stat_role_policy() -> dict:
+    """Load M6.3's 66-cell report and build the M7 guarded fallback policy."""
+    expected_stats = set(M7_TARGET_STATS)
+    expected_roles = set(M7_ROLE_BUCKETS)
+
+    summary = {
+        "schema_version": "m7_m6_3_matrix_summary_v1",
+        "matrix_path": str(M6_3_MATRIX_PATH.relative_to(REPO_ROOT)),
+        "meta_path": str(M6_3_META_PATH.relative_to(REPO_ROOT)),
+        "expected_rows": len(expected_stats) * len(expected_roles),
+        "expected_stats": list(M7_TARGET_STATS),
+        "expected_role_buckets": list(M7_ROLE_BUCKETS),
+        "valid": False,
+        "issues": [],
+    }
+
+    rows: list[dict] = []
+    meta: dict = {}
+
+    if not M6_3_MATRIX_PATH.exists():
+        summary["issues"].append(f"missing matrix: {summary['matrix_path']}")
+    else:
+        with M6_3_MATRIX_PATH.open("r", newline="", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+
+    if not M6_3_META_PATH.exists():
+        summary["issues"].append(f"missing meta: {summary['meta_path']}")
+    else:
+        meta = read_json(M6_3_META_PATH)
+
+    observed_stats = {str(r.get("stat", "")) for r in rows}
+    observed_roles = {str(r.get("role_bucket", "")) for r in rows}
+    observed_cells = {(str(r.get("stat", "")), str(r.get("role_bucket", ""))) for r in rows}
+    expected_cells = {(s, rb) for s in expected_stats for rb in expected_roles}
+    forbidden_present = sorted((observed_stats | set(meta.get("observed_stats", []) or [])) & M7_FORBIDDEN_STATS)
+
+    status_counts: dict[str, int] = {}
+    for r in rows:
+        status = str(r.get("status", "UNKNOWN"))
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    missing_cells = sorted(f"{s}|{rb}" for s, rb in (expected_cells - observed_cells))
+    extra_cells = sorted(f"{s}|{rb}" for s, rb in (observed_cells - expected_cells))
+
+    if len(rows) != summary["expected_rows"]:
+        summary["issues"].append(f"expected 66 rows, found {len(rows)}")
+    if observed_stats != expected_stats:
+        summary["issues"].append(
+            f"stat mismatch missing={sorted(expected_stats - observed_stats)} extra={sorted(observed_stats - expected_stats)}"
+        )
+    if observed_roles != expected_roles:
+        summary["issues"].append(
+            f"role mismatch missing={sorted(expected_roles - observed_roles)} extra={sorted(observed_roles - expected_roles)}"
+        )
+    if missing_cells:
+        summary["issues"].append(f"missing_cells={missing_cells[:10]}")
+    if extra_cells:
+        summary["issues"].append(f"extra_cells={extra_cells[:10]}")
+    if forbidden_present:
+        summary["issues"].append(f"forbidden_stats_present={forbidden_present}")
+    if meta.get("m6_3_report_pass") is not True:
+        summary["issues"].append(f"m6_3_report_pass is not true: {meta.get('m6_3_report_pass')!r}")
+    if meta.get("market_eval_available") is not False:
+        summary["issues"].append(
+            f"market_eval_available must remain false for M7: {meta.get('market_eval_available')!r}"
+        )
+
+    def _cell_payload(r: dict) -> dict:
+        payload = {
+            "stat": str(r.get("stat", "")),
+            "role_bucket": str(r.get("role_bucket", "")),
+            "status": str(r.get("status", "")),
+        }
+        for k in ("n", "delta_nll_cal_minus_raw", "nll_threshold", "caveats"):
+            if k in r and r.get(k) not in (None, ""):
+                payload[k] = r.get(k)
+        return payload
+
+    pass_cells = [_cell_payload(r) for r in rows if str(r.get("status")) == "PASS"]
+    review_cells = [_cell_payload(r) for r in rows if str(r.get("status")) == "REVIEW"]
+    needs_more_data_cells = [_cell_payload(r) for r in rows if str(r.get("status")) == "NEEDS_MORE_DATA"]
+    guarded_fallback_cells = review_cells + needs_more_data_cells
+
+    policy = {
+        "policy_name": ROLE_AWARE_BLEND_POLICY,
+        "target_stats_canonical": list(M7_TARGET_STATS),
+        "role_buckets": list(M7_ROLE_BUCKETS),
+        "role_aware_allowed_cells": pass_cells,
+        "guarded_fallback_required_cells": guarded_fallback_cells,
+        "needs_more_data_fallback_required_cells": needs_more_data_cells,
+        "review_status_handling": "REVIEW cells are not promotion blockers if explicitly listed for guarded fallback.",
+        "market_eval_available": False,
+    }
+
+    summary.update({
+        "rows": len(rows),
+        "observed_stats": sorted(observed_stats),
+        "observed_role_buckets": sorted(observed_roles),
+        "missing_cells": missing_cells,
+        "extra_cells": extra_cells,
+        "forbidden_stats_present": forbidden_present,
+        "status_counts": status_counts,
+        "review_cells_count": len(review_cells),
+        "needs_more_data_cells_count": len(needs_more_data_cells),
+        "guarded_fallback_cells_count": len(guarded_fallback_cells),
+        "market_eval_available": meta.get("market_eval_available"),
+        "m6_3_report_pass": meta.get("m6_3_report_pass"),
+    })
+    summary["valid"] = not summary["issues"]
+    summary["detail"] = "valid" if summary["valid"] else "; ".join(summary["issues"])
+
+    return {
+        "summary": summary,
+        "review_cells": review_cells,
+        "needs_more_data_cells": needs_more_data_cells,
+        "stat_role_guarded_policy": policy,
+        "review_cells_require_guarded_fallback": bool(review_cells),
+    }
+
+
 def _load_rolling_market_benchmark(as_of_date: str) -> dict | None:
     """Phase 13K: load the rolling market benchmark for ``as_of_date`` if
     present. Returns the JSON payload or None when missing."""
@@ -476,6 +608,7 @@ def evaluate_gates(
     challenger_metrics: dict | None = None,
     market_benchmark: dict | None = None,
     allow_missing_market_benchmark: bool = False,
+    m6_3_policy: dict | None = None,
 ) -> tuple[list[dict], list[dict], str | None]:
     """Apply the Phase 13A/D promotion gates. Returns (passed, failed, blocking_reason)."""
     gates: list[tuple[str, bool, str]] = []
@@ -664,6 +797,30 @@ def evaluate_gates(
         )
     )
 
+    # ── M7: M6.3 stat×role guarded calibration policy gate ─────────────
+    m6_3_policy = m6_3_policy or {}
+    m6_3_summary = m6_3_policy.get("summary", {}) or {}
+    m6_3_review_cells = m6_3_policy.get("review_cells", []) or []
+    m6_3_policy_block = m6_3_policy.get("stat_role_guarded_policy", {}) or {}
+    guarded_cells = {
+        (str(c.get("stat")), str(c.get("role_bucket")))
+        for c in (m6_3_policy_block.get("guarded_fallback_required_cells") or [])
+    }
+    review_cells = {
+        (str(c.get("stat")), str(c.get("role_bucket")))
+        for c in m6_3_review_cells
+    }
+    gates.append((
+        "m6_3_stat_role_matrix_valid",
+        bool(m6_3_summary.get("valid")),
+        m6_3_summary.get("detail", "m6_3 summary missing"),
+    ))
+    gates.append((
+        "m6_3_review_cells_guarded",
+        bool(m6_3_summary.get("valid")) and review_cells.issubset(guarded_cells),
+        f"review_cells={len(review_cells)} guarded_cells={len(guarded_cells)}",
+    ))
+
     # ── Phase 13K: rolling model-vs-market benchmark gates ─────────────
     # Hard when sample threshold is met; explicit insufficient_sample
     # failure when not — never silent pass. allow_missing_market_benchmark
@@ -838,6 +995,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Phase 13K: load rolling market benchmark for the same as_of_date.
     market_benchmark = _load_rolling_market_benchmark(args.as_of_date)
+    m6_3_policy = _load_m6_3_stat_role_policy()
     passed, failed, blocking_reason = evaluate_gates(
         pointer=pointer,
         train_manifest=train_manifest,
@@ -849,6 +1007,7 @@ def main(argv: list[str] | None = None) -> int:
         challenger_metrics=challenger_metrics,
         market_benchmark=market_benchmark,
         allow_missing_market_benchmark=bool(args.allow_missing_market_benchmark),
+        m6_3_policy=m6_3_policy,
     )
 
     promote = len(failed) == 0
@@ -891,6 +1050,13 @@ def main(argv: list[str] | None = None) -> int:
             "code_commit": train_manifest.get("code_commit"),
             "metrics": challenger_metrics,
         },
+        "calibration_blend_policy": ROLE_AWARE_BLEND_POLICY,
+        "m6_3_stat_role_matrix_path": m6_3_policy["summary"]["matrix_path"],
+        "m6_3_matrix_summary": m6_3_policy["summary"],
+        "m6_3_review_cells": m6_3_policy["review_cells"],
+        "m6_3_needs_more_data_cells": m6_3_policy["needs_more_data_cells"],
+        "stat_role_guarded_policy": m6_3_policy["stat_role_guarded_policy"],
+        "review_cells_require_guarded_fallback": m6_3_policy["review_cells_require_guarded_fallback"],
         "pmf_validity": pmf_validity,
         "derek_compatibility": derek,
         "woo_compatibility": woo,
@@ -922,6 +1088,10 @@ def main(argv: list[str] | None = None) -> int:
         "gates_failed": [g["name"] for g in failed],
         "champion_metrics": champion_metrics,
         "challenger_metrics": challenger_metrics,
+        "calibration_blend_policy": ROLE_AWARE_BLEND_POLICY,
+        "m6_3_matrix_summary": m6_3_policy["summary"],
+        "m6_3_review_cells": m6_3_policy["review_cells"],
+        "stat_role_guarded_policy": m6_3_policy["stat_role_guarded_policy"],
         "market_benchmark": market_benchmark or None,
         "market_benchmark_manifest_path": (
             f"artifacts/market_benchmark/{args.as_of_date}/rolling_market_benchmark.json"

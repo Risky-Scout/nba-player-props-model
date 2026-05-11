@@ -51,6 +51,12 @@ from nba_props_model.training_automation import (  # noqa: E402
     utcnow_iso,
     write_json_atomic,
 )
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
+
+
+ROLE_AWARE_BLEND_POLICY = "stat_role_guarded_expanded_v1"
 
 
 def _no_promotion(ch_dir: Path, *, reason: str, decision: dict | None = None) -> dict:
@@ -246,7 +252,7 @@ def main(argv: list[str] | None = None) -> int:
             model_dir_rel = pointer.get("model_dir", "artifacts/models")
             champion_calibrator_paths = {
                 stat: f"{model_dir_rel}/pmf_cal_role_{stat}.pkl"
-                for stat in ("pts", "reb", "ast", "fg3m", "tov")
+                for stat in MISSION_REQUIRED_TARGETS_CANONICAL
             }
 
             # Data hashes drawn from the manifests' artifact records.
@@ -283,7 +289,7 @@ def main(argv: list[str] | None = None) -> int:
                 "created_at_utc": utcnow_iso(),
                 "promoted_at_utc": utcnow_iso(),
                 "model_dir": model_dir_rel,
-                "supported_stats": pointer.get("supported_stats"),
+                "supported_stats": list(MISSION_REQUIRED_TARGETS_CANONICAL),
                 "previous_pointer_backup": str(
                     (backup / "champion_pointer.previous.json").relative_to(REPO_ROOT)
                 ),
@@ -295,6 +301,12 @@ def main(argv: list[str] | None = None) -> int:
                 "champion_model_id": challenger_version,
                 "champion_artifact_dir": model_dir_rel,
                 "champion_calibrator_paths": champion_calibrator_paths,
+                "calibration_blend_policy": validation.get(
+                    "calibration_blend_policy", ROLE_AWARE_BLEND_POLICY
+                ),
+                "stat_role_guarded_policy": validation.get("stat_role_guarded_policy"),
+                "m6_3_matrix_summary": validation.get("m6_3_matrix_summary"),
+                "m6_3_review_cells": validation.get("m6_3_review_cells"),
                 "trained_through_date": cutoff,
                 "calibrated_through_date": cutoff,
                 "training_run_id": training_run_id,
@@ -343,7 +355,10 @@ def main(argv: list[str] | None = None) -> int:
                     "code_commit": git_commit(),
                     "registered_at_utc": utcnow_iso(),
                     "is_champion": True,
-                    "supported_stats": pointer.get("supported_stats"),
+                    "supported_stats": list(MISSION_REQUIRED_TARGETS_CANONICAL),
+                    "calibration_blend_policy": validation.get(
+                        "calibration_blend_policy", ROLE_AWARE_BLEND_POLICY
+                    ),
                     "model_dir": new_pointer["model_dir"],
                     "promoted_from_challenger_dir": str(ch_dir.relative_to(REPO_ROOT)),
                     "previous_model_version": from_version,
