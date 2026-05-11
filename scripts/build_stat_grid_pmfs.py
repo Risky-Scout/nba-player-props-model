@@ -78,7 +78,7 @@ from nba_props_model.features.availability_asof import (  # noqa: E402
 from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
 from nba_props_model.calibration.role_buckets import role_bucket_features_from_minutes_dist  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
-from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
+from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
 PRED_DIR = REPO_ROOT / "predictions"
 DATA_DIR = REPO_ROOT / "data"
@@ -92,10 +92,16 @@ _AVAILABILITY_COLS = (
 )
 _INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
 
-# Default to the production model-only stat grid used by Derek/WoO PMF deliveries.
-# The flag accepts any stat in build_prop_pmfs's output keyset.
-DEFAULT_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
-ALLOWED_STATS = ("pts", "reb", "ast", "tov", "fg3m", "stl", "blk", "stocks")
+# M8.4: full 11-stat mission canonical universe — 7 base (pts/reb/ast/
+# fg3m/tov/stl/blk) + 4 combos (stocks/pa/pr/pra). build_prop_pmfs is
+# expected to return all 11; missing-stat handling is enforced by the
+# end-of-run emission gate in main(). Combo derivation inside
+# pmf_predict.build_prop_pmfs is currently independence/convolution
+# (stocks_conv_v1, combo_independence_v1) — joint-sample derivation
+# is the M8.5 follow-up. M8.4 wires coverage, not derivation
+# correctness. No ra / reb_ast (non-mission).
+DEFAULT_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
+ALLOWED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 
 
 def _display_path(path: Path) -> str:
@@ -515,9 +521,9 @@ def main() -> int:
                      help="YYYY-MM-DD slate date (US/Eastern)")
     ap.add_argument("--stats", nargs="+", default=list(DEFAULT_STATS),
                      choices=list(ALLOWED_STATS),
-                     help=f"stats to emit (default: {DEFAULT_STATS}; the "
-                           "default is the production model-only stat grid; expand/restrict via "
-                           "--stats pts reb ast tov fg3m stl blk stocks)")
+                     help=("stats to emit (default: 11-stat mission "
+                           "canonical [pts reb ast fg3m tov stl blk "
+                           "stocks pa pr pra]); no ra/reb_ast (non-mission)"))
     ap.add_argument("--slate-source", choices=["recent_rosters", "all_props"],
                     default="recent_rosters",
                     help=("player-game slate source; default recent_rosters "
@@ -596,7 +602,28 @@ def main() -> int:
         return 1
 
     df = pd.DataFrame(rows)
+    per_stat_counts = df.groupby('stat').size().to_dict()
     print(f"  per-stat counts:\n{df.groupby('stat').size().to_string()}")
+
+    # M8.4: hard gate — every requested stat must have at least one
+    # emitted row. Silent zero-coverage on stocks/pa/pr/pra shipped
+    # 0/11 stats through deliveries 2026-05-01..05-09; this gate
+    # prevents recurrence. Per-player skips on missing prop are still
+    # permitted (data sparsity); zero coverage across the entire
+    # slate is a structural failure. Do not silently ship sub-11
+    # coverage.
+    requested = set(args.stats)
+    emitted = set(per_stat_counts.keys())
+    missing_at_run_level = sorted(requested - emitted)
+    if missing_at_run_level:
+        raise SystemExit(
+            f"FATAL: STAT_GRID_EMISSION_INCOMPLETE no rows emitted "
+            f"for requested stats={missing_at_run_level}; "
+            f"requested={sorted(requested)} emitted={sorted(emitted)} "
+            f"per_stat_counts={per_stat_counts}. See M8.4 patch "
+            "requirement."
+        )
+
     df.to_parquet(out_path, index=False)
     print(f"\nwrote {_display_path(out_path)}  ({_now_utc_iso()})")
     return 0

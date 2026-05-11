@@ -20,12 +20,18 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from build_daily_pmf_delivery import _stat_grid_rows
+from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
 
-
-REQUIRED_TARGET_STATS = ["ast", "fg3m", "pts", "reb", "tov"]
+# M8.4: full 11-stat mission canonical set. Sorted for deterministic
+# order in the rectangularize gate. Previous 5-stat set
+# (ast/fg3m/pts/reb/tov) silently dropped stl/blk/stocks/pa/pr/pra
+# rows from the canonical MODEL_ONLY parquet even when upstream
+# stat_grid emitted them. No ra/reb_ast (non-mission).
+REQUIRED_TARGET_STATS = sorted(MISSION_REQUIRED_TARGETS_CANONICAL)
 
 
 def _enforce_complete_stat_grid(df: pd.DataFrame) -> pd.DataFrame:
