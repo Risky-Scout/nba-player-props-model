@@ -38,6 +38,13 @@ from collections import Counter
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+import sys  # M8.1: defensive — already imported elsewhere is fine
+sys.path.insert(0, str(REPO_ROOT / "src"))  # noqa: E402
+
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
+
 PUBLIC_EXPORT = REPO_ROOT / "public_export" / "wizard_of_odds"
 PREDICTIONS_DIR = REPO_ROOT / "predictions"
 
@@ -54,7 +61,7 @@ PMF_MARKER         = "<!-- INJECT_PMF_DATA_HERE -->"
 # for the build-time audit print. Actual runtime filtering happens in
 # the templates' JS so the JSON we embed remains the unmodified output
 # of publish_woo_public_export.py.
-SUPPORTED_SINGLE_STATS = {"pts", "reb", "ast", "fg3m", "tov"}
+SUPPORTED_SINGLE_STATS = set(MISSION_REQUIRED_TARGETS_CANONICAL)  # M8.1: was 5-stat literal
 
 
 def _safe_json_for_inline_script(payload: dict) -> str:
@@ -180,9 +187,10 @@ def main():
     print("=" * 72)
     print()
     print(f"Allowlist: {sorted(SUPPORTED_SINGLE_STATS)}")
-    print("Anything outside the allowlist (stl, blk, combos like pra/pr/pa/ra)")
-    print("is filtered before render. The model does not currently estimate")
-    print("STL/BLK. Combos require a joint PMF the model does not emit.")
+    # M8.1: allowlist is now the 11-stat mission canonical; the only filtered
+    # tokens are non-mission stats like 'ra' and 'reb_ast'.
+    print("Allowlist source: nba_props_model.targets.MISSION_REQUIRED_TARGETS_CANONICAL.")
+    print("Anything outside the allowlist (e.g. 'ra', 'reb_ast') is filtered before render.")
     print()
 
     rc1 = render_dashboard(args.date, dry_run=args.dry_run)

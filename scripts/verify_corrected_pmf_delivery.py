@@ -10,7 +10,14 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-CORE_STATS = {"pts", "reb", "ast", "fg3m", "tov"}
+import sys  # M8.1: defensive — already imported elsewhere is fine
+sys.path.insert(0, str(REPO_ROOT / "src"))  # noqa: E402
+
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
+
+CORE_STATS = set(MISSION_REQUIRED_TARGETS_CANONICAL)  # M8.1: was 5-stat literal
 
 REQUIRED_CONTEXT_COLS = (
     "role_source",

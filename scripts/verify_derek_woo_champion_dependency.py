@@ -61,6 +61,11 @@ HEALTH_DIR = REPO_ROOT / "artifacts" / "automation_health"
 DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PUBLIC_EXPORT_WOO_DIR = REPO_ROOT / "public_export" / "wizard_of_odds"
 
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
+
+
 DELIVERY_SCRIPTS = (
     REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py",
     REPO_ROOT / "scripts" / "build_derek_forward_feed.py",
@@ -138,7 +143,7 @@ def check_champion_calibrators_present(report: DependencyReport, pointer: dict) 
     cdir = (REPO_ROOT / rel).resolve()
     missing: list[str] = []
     sha_prefixes: dict[str, str] = {}
-    for stat in ("pts", "reb", "ast", "fg3m", "tov"):
+    for stat in MISSION_REQUIRED_TARGETS_CANONICAL:  # M8.1: was 5-stat literal
         cand = cdir / f"pmf_cal_role_{stat}.pkl"
         if not cand.exists():
             missing.append(stat)
@@ -410,7 +415,7 @@ def check_delivery_does_not_use_stale_calibrators(report: DependencyReport, poin
     pointer_hashes = (pointer.get("data_hashes") or {}).get("champion_pickle_files") or []
 
     actual: dict[str, str] = {}
-    for stat in ("pts", "reb", "ast", "fg3m", "tov"):
+    for stat in MISSION_REQUIRED_TARGETS_CANONICAL:  # M8.1: was 5-stat literal
         p = cdir / f"pmf_cal_role_{stat}.pkl"
         if p.exists():
             actual[stat] = sha256_file(p)[:16]
@@ -431,7 +436,7 @@ def check_delivery_does_not_use_stale_calibrators(report: DependencyReport, poin
         sha = rec.get("sha256") if isinstance(rec, dict) else None
         if not path or not sha:
             continue
-        for stat in ("pts", "reb", "ast", "fg3m", "tov"):
+        for stat in MISSION_REQUIRED_TARGETS_CANONICAL:  # M8.1: was 5-stat literal
             if path.endswith(f"pmf_cal_role_{stat}.pkl"):
                 declared[stat] = sha[:16]
     drift = []

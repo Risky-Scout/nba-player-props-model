@@ -121,7 +121,8 @@ def _stat_grid(date: str) -> int:
         return 0
     cmd = [
         PYTHON, str(STAT_GRID), "--date", date,
-        "--stats", "pts", "reb", "ast", "fg3m", "tov",
+        # M8.1: mission canonical 11 (source of truth: nba_props_model.targets.MISSION_REQUIRED_TARGETS_CANONICAL)
+        "--stats", "pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks", "pa", "pr", "pra",
     ]
     return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
 

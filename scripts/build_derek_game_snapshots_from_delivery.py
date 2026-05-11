@@ -5,8 +5,8 @@ Source of truth:
   deliveries/{date}/wizard_of_odds/full_pmfs_wide.parquet
 
 Hard guards:
-  - production stats must be exactly pts/reb/ast/fg3m/tov
-  - no stl/blk/stocks
+  - production stats must be exactly the mission canonical 11
+    (pts/reb/ast/fg3m/tov/stl/blk/stocks/pa/pr/pra)
   - role_bucket must be present
   - no_games_today.json is illegal when PMF delivery has games
 """
@@ -24,7 +24,14 @@ from typing import Any
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-CORE_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+import sys  # M8.1: defensive — already imported elsewhere is fine
+sys.path.insert(0, str(REPO_ROOT / "src"))  # noqa: E402
+
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
+
+CORE_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: was 5-stat literal
 CORE_SET = set(CORE_STATS)
 
 

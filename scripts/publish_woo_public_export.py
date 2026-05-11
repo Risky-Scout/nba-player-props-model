@@ -40,6 +40,13 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+import sys  # M8.1: defensive — already imported elsewhere is fine
+sys.path.insert(0, str(REPO_ROOT / "src"))  # noqa: E402
+
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
+
 PRED_DIR = REPO_ROOT / "predictions"
 DELIVERY_ROOT = REPO_ROOT / "deliveries"
 EXPORT_ROOT = REPO_ROOT / "public_export" / "wizard_of_odds"
@@ -211,7 +218,7 @@ def _build_research_players(df: pd.DataFrame) -> list[dict]:
 
 
 
-PRODUCTION_TARGET_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+PRODUCTION_TARGET_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: was 5-stat literal
 PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
 
 

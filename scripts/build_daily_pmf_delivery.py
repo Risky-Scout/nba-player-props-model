@@ -83,9 +83,12 @@ warnings.filterwarnings("ignore")
 
 # ── Constants pinned to the delivery spec ────────────────────────────────
 
-from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
+from nba_props_model.targets import (  # noqa: E402
+    BASE_STATS_FULL,
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
 
-SUPPORTED_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
+SUPPORTED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 11-stat mission canonical (was 7-stat BASE_STATS_FULL pre-M8.1, 5-stat literal pre-M4A2)
 ROLE_ORDER = ("inactive_risk", "fringe", "bench", "rotation", "core", "starter")
 HIGH_CONF_ROLES = ("starter", "core", "rotation")
 MED_CONF_ROLES = ("bench", "fringe")
@@ -717,7 +720,7 @@ def _market_coverage_status(books_seen: list[str]) -> str:
 
 
 
-PRODUCTION_TARGET_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
+PRODUCTION_TARGET_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 11-stat mission canonical (was 7-stat BASE_STATS_FULL pre-M8.1, 5-stat literal pre-M4A2)
 PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
 
 
@@ -1758,7 +1761,7 @@ def main() -> int:
             else {},
     }
     # Target-stats completeness: expected vs in delivery.
-    expected_stats = list(SUPPORTED_STATS)  # pts, reb, ast, tov, fg3m
+    expected_stats = list(SUPPORTED_STATS)  # M8.1: mission canonical 11
     in_delivery_stats = sorted(canonical["stat"].astype(str).unique().tolist())
     missing_stats = sorted(set(expected_stats) - set(in_delivery_stats))
     extra_stats = sorted(set(in_delivery_stats) - set(expected_stats))
@@ -1812,8 +1815,8 @@ def main() -> int:
                 f"extra_relative_to_supported={extra_stats}"
             ),
             "required_to_resolve": (
-                "Regenerate production PMFs so delivery stats are exactly "
-                "pts/reb/ast/fg3m/tov."
+                "Regenerate production PMFs so delivery stats are exactly the "
+                "mission canonical 11 (pts/reb/ast/fg3m/tov/stl/blk/stocks/pa/pr/pra)."
             ),
         })
 

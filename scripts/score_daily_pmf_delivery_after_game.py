@@ -428,7 +428,7 @@ def write_summary_md(scoring: pd.DataFrame, market_scoring: pd.DataFrame,
 
 # ── Phase 13K helpers ─────────────────────────────────────────────────────
 
-EXPECTED_TARGET_STATS = ("pts", "reb", "ast", "fg3m", "tov")
+EXPECTED_TARGET_STATS = ("pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks", "pa", "pr", "pra")  # M8.1: mission canonical 11 (source: nba_props_model.targets.MISSION_REQUIRED_TARGETS_CANONICAL)
 
 # Documented upstream blockers per stat. Used by Phase 13K
 # expected_target_stats_coverage to record stats whose absence is a known,
