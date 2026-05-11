@@ -66,6 +66,67 @@ def _coerce_float(v):
     return f
 
 
+# M8.6H: server-side odds math for affiliate_dashboard.json.
+# The front-end already recomputes EV/Kelly for user-selected bankroll and
+# Kelly fraction. These fields make the JSON contract self-describing and
+# machine-usable: model probability + actual book odds -> EV per $1 and
+# full Kelly fraction. Stake dollars remain a front-end/user-bankroll concern.
+def _american_to_decimal_odds(american):
+    a = _coerce_float(american)
+    if a is None or abs(a) < 1e-12:
+        return None
+    if a > 0:
+        return 1.0 + (a / 100.0)
+    return 1.0 + (100.0 / abs(a))
+
+
+def _ev_per_dollar(model_prob, american):
+    p = _coerce_float(model_prob)
+    d = _american_to_decimal_odds(american)
+    if p is None or d is None:
+        return None
+    if p < 0.0 or p > 1.0:
+        return None
+    return float(p * d - 1.0)
+
+
+def _kelly_fraction_full(model_prob, american):
+    p = _coerce_float(model_prob)
+    d = _american_to_decimal_odds(american)
+    if p is None or d is None:
+        return None
+    if p < 0.0 or p > 1.0:
+        return None
+    b = d - 1.0
+    if b <= 0.0:
+        return None
+    raw = ((p * d) - 1.0) / b
+    if not math.isfinite(raw):
+        return None
+    return float(max(0.0, raw))
+
+
+def _kelly_payload(model_prob, american, edge):
+    full = _kelly_fraction_full(model_prob, american)
+    if full is None:
+        return {
+            "kelly_fraction_full": None,
+            "kelly_fraction_half": None,
+            "kelly_fraction_quarter": None,
+            "kelly_fraction_capped_5pct": None,
+            "kelly_recommendation_status": "unavailable",
+        }
+    edge_f = _coerce_float(edge)
+    status = "review" if edge_f is not None and abs(edge_f) >= 0.20 else "ok"
+    return {
+        "kelly_fraction_full": full,
+        "kelly_fraction_half": full * 0.5,
+        "kelly_fraction_quarter": full * 0.25,
+        "kelly_fraction_capped_5pct": min(0.05, full),
+        "kelly_recommendation_status": status,
+    }
+
+
 def _parse_pmf(blob):
     if blob is None or (isinstance(blob, float) and math.isnan(blob)):
         return None
@@ -104,10 +165,20 @@ def _build_affiliate_rows(df: pd.DataFrame) -> list[dict]:
         if pid is None or stat is None or line is None:
             continue
         side = str(r.get("side", "")).upper()
+        over_odds = _coerce_float(r.get("over_odds"))
+        under_odds = _coerce_float(r.get("under_odds"))
+        side_odds = over_odds if side == "OVER" else under_odds if side == "UNDER" else None
         model_prob = _coerce_float(r.get("model_prob_cal")) or _coerce_float(r.get("model_prob"))
         market_prob = _coerce_float(r.get("market_prob"))
-        ev = _coerce_float(r.get("ev"))
+        if model_prob is None or market_prob is None or side_odds is None:
+            continue
         edge = _coerce_float(r.get("raw_edge"))
+        if edge is None:
+            edge = float(model_prob - market_prob)
+        ev = _coerce_float(r.get("ev"))
+        if ev is None:
+            ev = _ev_per_dollar(model_prob, side_odds)
+        kelly = _kelly_payload(model_prob, side_odds, edge)
         rows.append({
             "player_id": int(pid),
             "player": r.get("player_name"),
@@ -117,12 +188,14 @@ def _build_affiliate_rows(df: pd.DataFrame) -> list[dict]:
             "side": side,
             "line": line,
             "book": r.get("bet_vendor"),
-            "over_odds": _coerce_float(r.get("over_odds")),
-            "under_odds": _coerce_float(r.get("under_odds")),
+            "over_odds": over_odds,
+            "under_odds": under_odds,
             "model_prob": model_prob,
             "market_prob": market_prob,
             "raw_edge": edge,
             "ev": ev,
+            "ev_per_dollar": ev,
+            **kelly,
             "edge_publish_status": r.get("edge_publish_status"),
             "calibration_support_status": r.get("calibration_support_status"),
             "lineup_confirmed": (
@@ -275,21 +348,42 @@ def _build_affiliate_rows_from_delivery(df: pd.DataFrame) -> list[dict]:
         if pid is None or stat is None or line is None:
             continue
 
+        # Current market_comparison rows are one row per OVER line/book.
+        # Under fair odds are still emitted in the delivery parquet, but
+        # affiliate_dashboard currently represents the OVER bet side.
+        side = "OVER"
+        over_odds = _coerce_float(r.get("market_over_odds"))
+        under_odds = _coerce_float(r.get("market_under_odds"))
+        side_odds = over_odds
+        model_prob = _coerce_float(r.get("model_p_over"))
+        market_prob = _coerce_float(r.get("market_no_vig_over_prob"))
+        if model_prob is None or market_prob is None or side_odds is None:
+            continue
+
+        edge = _coerce_float(r.get("edge"))
+        if edge is None:
+            edge = float(model_prob - market_prob)
+
+        ev = _ev_per_dollar(model_prob, side_odds)
+        kelly = _kelly_payload(model_prob, side_odds, edge)
+
         rows.append({
             "player_id": int(pid),
             "player": r.get("player_name"),
             "game": r.get("game"),
             "team_id": int(r["team_id"]) if "team_id" in r.index and pd.notna(r.get("team_id")) else None,
             "stat": stat,
-            "side": "OVER",
+            "side": side,
             "line": line,
             "book": r.get("book"),
-            "over_odds": _coerce_float(r.get("market_over_odds")),
-            "under_odds": _coerce_float(r.get("market_under_odds")),
-            "model_prob": _coerce_float(r.get("model_p_over")),
-            "market_prob": _coerce_float(r.get("market_no_vig_over_prob")),
-            "raw_edge": _coerce_float(r.get("edge")),
-            "ev": None,
+            "over_odds": over_odds,
+            "under_odds": under_odds,
+            "model_prob": model_prob,
+            "market_prob": market_prob,
+            "raw_edge": edge,
+            "ev": ev,
+            "ev_per_dollar": ev,
+            **kelly,
             "edge_publish_status": r.get("edge_publish_status"),
             "calibration_support_status": r.get("calibration_support_status"),
             "lineup_confirmed": (
