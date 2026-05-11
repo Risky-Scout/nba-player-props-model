@@ -52,6 +52,9 @@ from nba_props_model.calibration.role_buckets import (  # noqa: E402
 )
 from nba_props_model.models.minutes import minutes_distribution  # noqa: E402
 from nba_props_model.pipelines.pmf_predict import active_condition_pmf  # noqa: E402
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
 
 warnings.filterwarnings("ignore")
 
@@ -64,7 +67,12 @@ GAME_START_ET = {
     "Oklahoma City Thunder @ Phoenix Suns":   "2026-04-27T21:30:00-04:00",
     "Minnesota Timberwolves @ Denver Nuggets": "2026-04-27T22:30:00-04:00",
 }
-TARGET_STATS = ["pts", "reb", "ast", "tov", "fg3m"]
+# M6.5: TARGET_STATS now spans the full 11-stat mission canonical universe
+# (was 5-stat literal pre-M6.5). predict.py emits 7 base stats today;
+# the 4 mission combos (stocks, pa, pr, pra) are declared here but will
+# be NOTE-logged as missing at the stat-filter step until M8.4 wires
+# combo emission through joint-sample combo PMFs in predict.py.
+TARGET_STATS = list(MISSION_REQUIRED_TARGETS_CANONICAL)
 START_CUTOFF_ET_MIN = 20 * 60 + 29
 
 PHASE8_DIR = Path(
@@ -335,7 +343,8 @@ def main() -> None:
           f"pmf_active_available={cal_meta.get('pmf_active_available')}")
     use_active_cond = (cal_target == "active_conditioned_prop_live")
     calibrators: dict[str, RoleAwarePMFCalibrator] = {}
-    for s in ("pts", "reb", "ast", "tov", "fg3m"):
+    # M6.5: iterate the 11-stat mission canonical set (was 5-stat tuple)
+    for s in TARGET_STATS:
         p = PHASE8_DIR / f"pmf_cal_role_{s}.pkl"
         if p.exists():
             calibrators[s] = joblib.load(p)
@@ -667,7 +676,8 @@ def main() -> None:
 
     cal_dir = DELIVERY_DIR / "pmf_calibrators"
     cal_dir.mkdir(exist_ok=True)
-    for s in ("pts", "reb", "ast", "tov", "fg3m"):
+    # M6.5: iterate the 11-stat mission canonical set (was 5-stat tuple)
+    for s in TARGET_STATS:
         src = PHASE8_DIR / f"pmf_cal_role_{s}.pkl"
         if src.exists():
             shutil.copy(src, cal_dir / f"pmf_cal_role_{s}.pkl")
@@ -740,7 +750,7 @@ Earlier game (Detroit @ Orlando) is intentionally excluded.
 | `player_prop_pmfs_tonight_MARKET_ANCHORED_REFERENCE.parquet` | reference only — `pmf_json` is market-tilted; do NOT use for standalone-model evaluation |
 | `player_prop_pmfs_tonight_MARKET_ANCHORED_REFERENCE.csv` | reference only — same as above, CSV |
 | `player_prop_pmfs_tonight_MARKET_ANCHORED_REFERENCE.jsonl` | reference only — same as above, JSONL |
-| `pmf_calibrators/pmf_cal_role_*.pkl` | Phase 8 role-aware PMF calibrators (pts/reb/ast/tov/fg3m) |
+| `pmf_calibrators/pmf_cal_role_*.pkl` | Phase 8 role-aware PMF calibrators (11 mission canonical stats: pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, pra) |
 | `pmf_calibrators/pmf_cal_meta.json` | calibration metadata: target=`active_conditioned_prop_live`, version=`role_aware_pmf_cal_v1` |
 
 ## How the model-only PMF was built
@@ -776,9 +786,9 @@ equals the model PMF.
 MODEL-ONLY file:
 | Value | Path |
 |---|---|
-| `cal_role_aware_v1:{{role_bucket}}` | role-aware Phase 8 cal applied (pts/reb/ast/tov) |
+| `cal_role_aware_v1:{{role_bucket}}` | role-aware Phase 8 cal applied (11 mission canonical stats: pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, pra) |
 | `cal_role_aware_v1+fg3m_tail_shrink_k7_w0.2` | FG3M only; cal + tail-shrink |
-| `no_calibrator_fallback_raw` | calibrator missing for stat (should not occur for pts/reb/ast/tov/fg3m) |
+| `no_calibrator_fallback_raw` | calibrator missing for stat (should not occur for any of the 11 mission canonical stats: pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, pra) |
 
 MARKET-ANCHORED REFERENCE file: same tags as above with a trailing `+market_tilt` when the row had a finite line + market prob.
 
@@ -792,7 +802,7 @@ MARKET-ANCHORED REFERENCE file: same tags as above with a trailing `+market_tilt
 | `game_id`, `game_start_et`, `team`, `opponent`, `team_id`, `team_abbr` | game / team context |
 | `team_name_source`, `is_home`, `is_home_source` | how team & home/away were resolved |
 | `player_id`, `player_name` | identity |
-| `stat` | one of pts/reb/ast/tov/fg3m |
+| `stat` | one of the 11 mission canonical stats: pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, pra |
 | `role_bucket`, `role_source`, `minutes_mean`, `minutes_q50`, `p_inactive_used` | role-aware-cal context |
 | `pmf_source` | model-only PMF tag (see above) |
 | `support_min`, `support_max` | PMF support is `0..support_max` |
@@ -952,7 +962,7 @@ comparison of the model's PMF *shape* against a market-anchored CDF.
 
 **Calibrator bundle**:
 - `pmf_calibrators/pmf_cal_role_*.pkl` — Phase 8 role-aware calibrators
-  (pts/reb/ast/tov/fg3m)
+  (11 mission canonical stats: pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, pra)
 - `pmf_calibrators/pmf_cal_meta.json` — metadata (target, version,
   bucket counts)
 

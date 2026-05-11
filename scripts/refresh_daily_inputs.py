@@ -74,9 +74,17 @@ ODDS_PROCESSED_DIR = REPO_ROOT / "data" / "odds_api" / "processed"
 FRESHNESS_DIR = REPO_ROOT / "data" / "freshness_manifest"
 DNT_RAW_DIR = REPO_ROOT / "data" / "dunks_and_threes"
 
-from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
+from nba_props_model.targets import (  # noqa: E402
+    MISSION_REQUIRED_TARGETS_CANONICAL,
+)
 
-SUPPORTED_STATS = BASE_STATS_FULL  # M4A2: was 5-stat literal
+# M6.4: SUPPORTED_STATS now spans the full 11-stat mission target universe
+# (was 7-stat BASE_STATS_FULL pre-M6.4; was 5-stat literal pre-M4A2).
+SUPPORTED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
+
+# M6.4: stats explicitly excluded from the mission set; must NEVER be
+# treated as required by preflight or downstream gates.
+FORBIDDEN_MISSION_STATS: tuple[str, ...] = ("ra", "reb_ast")
 
 
 def _now_utc_iso() -> str:
@@ -393,13 +401,13 @@ def _predictions_status(date: str) -> dict:
 
 def _model_artifacts_status() -> dict:
     base = REPO_ROOT / "artifacts" / "models"
+    # M6.4: require meta JSON + legacy non-role-aware pts pkl (kept for
+    # backward-compat with any consumer still referencing it) + all 11
+    # mission canonical role-aware pkls.
     pmf_files = [base / "pmf_cal_meta.json",
-                 base / "pmf_cal_pts.pkl",
-                 base / "pmf_cal_role_pts.pkl",
-                 base / "pmf_cal_role_reb.pkl",
-                 base / "pmf_cal_role_ast.pkl",
-                 base / "pmf_cal_role_fg3m.pkl",
-                 base / "pmf_cal_role_tov.pkl"]
+                 base / "pmf_cal_pts.pkl"]  # legacy non-role-aware
+    for _stat in SUPPORTED_STATS:  # 11 mission canonical
+        pmf_files.append(base / f"pmf_cal_role_{_stat}.pkl")
     files = []
     for fp in pmf_files:
         files.append({
@@ -409,6 +417,19 @@ def _model_artifacts_status() -> dict:
             "sha256": _file_sha256(fp),
         })
     all_present = all(f["exists"] for f in files)
+    # M6.4: mission target coverage tracking. all_present remains the
+    # overall gate; the new fields surface exactly which mission
+    # canonical role-aware calibrators are missing and whether any
+    # forbidden (ra / reb_ast) calibrator pkls have been written.
+    required_calibrator_stats = list(SUPPORTED_STATS)
+    missing_calibrator_stats = sorted(
+        s for s in SUPPORTED_STATS
+        if not (base / f"pmf_cal_role_{s}.pkl").exists()
+    )
+    forbidden_stats_present = sorted(
+        s for s in FORBIDDEN_MISSION_STATS
+        if (base / f"pmf_cal_role_{s}.pkl").exists()
+    )
     return {
         "files": files,
         "calibration_source": (
@@ -422,6 +443,10 @@ def _model_artifacts_status() -> dict:
         "tov_overlay_reason": ("Phase 10D/10D.2 overlay failed independent "
                                "validation; see "
                                "docs/phase11_tov_structural_refit_plan.md"),
+        "target_stats_canonical": list(SUPPORTED_STATS),
+        "required_calibrator_stats": required_calibrator_stats,
+        "missing_calibrator_stats": missing_calibrator_stats,
+        "forbidden_stats_present": forbidden_stats_present,
         "all_present": bool(all_present),
     }
 
