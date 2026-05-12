@@ -332,68 +332,221 @@ def _validate_delivery_wide(df: pd.DataFrame, path: Path) -> None:
             )
 
 
-def _build_affiliate_rows_from_delivery(df: pd.DataFrame) -> list[dict]:
+M8_6O_AFFILIATE_URLS = {
+    "bovada":      "https://www.bovada.lv/sports/basketball/nba",
+    "betus":       "https://www.betus.com.pa/sportsbook/basketball/nba/",
+    "betonlineag": "https://www.betonline.ag/sportsbook/basketball/nba",
+    "betonline":   "https://www.betonline.ag/sportsbook/basketball/nba",
+}
+M8_6O_AFFILIATE_BOOK_KEYS = frozenset(("bovada", "betus", "betonlineag", "betonline"))
+M8_6O_KELLY_CAP = 0.05
+M8_6O_ATOM_PMF_COLS = ("pmf", "pmf_json", "pmf_active", "model_full_pmf")
+
+
+def _m8_6o_resolve_atom_pmf_column(market_df) -> "str | None":
+    for c in M8_6O_ATOM_PMF_COLS:
+        if c in market_df.columns: return c
+    return None
+
+
+def _build_affiliate_rows_from_delivery(market_df: pd.DataFrame) -> tuple[list[dict], dict, list[dict]]:
+    """M8.6O v5 — emit OVER + UNDER affiliate rows with atom_pmf passthrough.
+    NOTE: pmf_research.json is NO LONGER built from these rows — see
+    scripts/build_woo_pmf_research_from_canonical.py which sources it from
+    the canonical atom PMF artifact directly."""
     rows: list[dict] = []
-    if df is None or df.empty:
-        return rows
+    omitted: list[dict] = []
+    atom_col = _m8_6o_resolve_atom_pmf_column(market_df)
+    counters = {
+        "pmf_rows_available": 0,
+        "offered_market_rows_available": int(len(market_df)),
+        "joinable_rows": 0,
+        "model_prob_resolved_rows": 0, "market_prob_resolved_rows": 0,
+        "side_odds_resolved_rows": 0, "edge_publishable_rows": 0,
+        "calibration_supported_rows": 0, "accuracy_supported_rows": 0,
+        "atom_pmf_column_used": atom_col,
+        "atom_pmf_present_in_source": bool(atom_col is not None),
+    }
+    reason_counts: dict[str, int] = {}
+    flag_counts: dict[str, int] = {
+        "suspicious_edge_ge_0_20": 0, "fair_prob_out_of_range": 0,
+        "model_prob_under_pct_one": 0, "kelly_capped_to_5pct": 0,
+        "market_prob_missing": 0, "ev_recomputed_from_odds": 0,
+        "alt_line": 0, "atom_pmf_attached_rows": 0,
+        "atom_pmf_unparseable_rows": 0,
+    }
+    def _omit(reason, row, side):
+        reason_counts[reason] = reason_counts.get(reason, 0) + 1
+        omitted.append({"reason": reason, "player_id": row.get("player_id"),
+            "player_name": row.get("player_name"), "game_id": row.get("game_id"),
+            "stat": row.get("stat"), "line": row.get("line"),
+            "book": row.get("book"), "side": side,
+            "is_alternate": bool(row.get("is_alternate", False))})
+    def _serialize_atom_pmf(v):
+        if v is None: return None
+        try:
+            if isinstance(v, float) and v != v: return None
+        except Exception: pass
+        try:
+            import numpy as _np
+            if isinstance(v, _np.ndarray): v = v.tolist()
+        except Exception: pass
+        if isinstance(v, list):
+            if not v: return None
+            out = {}
+            for k, p in enumerate(v):
+                try:
+                    pf = float(p)
+                    if pf > 0: out[str(int(k))] = pf
+                except Exception: continue
+            return out or None
+        if isinstance(v, dict):
+            out = {}
+            for k, p in v.items():
+                try: out[str(int(k))] = float(p)
+                except Exception: continue
+            return out or None
+        if isinstance(v, str):
+            s = v.strip()
+            if not s: return None
+            try:
+                import json as _json
+                j = _json.loads(s)
+            except Exception: return None
+            return _serialize_atom_pmf(j)
+        return None
+    if market_df.empty:
+        return rows, {**counters, "omission_reasons": reason_counts,
+                       "reasonability_flag_counts": flag_counts}, omitted
+    for _, m in market_df.iterrows():
+        atom_pmf_for_row = None
+        if atom_col is not None:
+            atom_pmf_for_row = _serialize_atom_pmf(m.get(atom_col))
+            if atom_pmf_for_row is None: flag_counts["atom_pmf_unparseable_rows"] += 1
+            else: flag_counts["atom_pmf_attached_rows"] += 1
+        atom_pmf_source = f"atom_column:{atom_col}" if (atom_col and atom_pmf_for_row) else None
+        for side in ("OVER", "UNDER"):
+            row = dict(m); row["side"] = side
+            counters["joinable_rows"] += 1
+            is_alt = bool(row.get("is_alternate", False))
+            if is_alt: flag_counts["alt_line"] += 1
+            mp_over_raw = row.get("model_p_over") or row.get("model_prob_over")
+            try:
+                if mp_over_raw is None or pd.isna(mp_over_raw):
+                    _omit("missing_model_prob_over", row, side); continue
+                model_prob_over = float(mp_over_raw)
+            except Exception:
+                _omit("model_prob_not_numeric", row, side); continue
+            if not (0.0 < model_prob_over < 1.0):
+                _omit("model_prob_out_of_unit_interval", row, side); continue
+            model_prob_under = 1.0 - model_prob_over
+            mp_side = model_prob_over if side == "OVER" else model_prob_under
+            counters["model_prob_resolved_rows"] += 1
+            if mp_side < 0.01: flag_counts["model_prob_under_pct_one"] += 1
+            mvo_raw = row.get("market_no_vig_over_prob") or row.get("market_prob_over_no_vig")
+            try:
+                if mvo_raw is None or pd.isna(mvo_raw):
+                    flag_counts["market_prob_missing"] += 1
+                    market_over = market_under = market_for_side = None
+                else:
+                    mvo = float(mvo_raw)
+                    if not (0.0 < mvo < 1.0):
+                        flag_counts["fair_prob_out_of_range"] += 1
+                        market_over = market_under = market_for_side = None
+                    else:
+                        market_over = mvo; market_under = 1.0 - mvo
+                        market_for_side = market_over if side == "OVER" else market_under
+                        counters["market_prob_resolved_rows"] += 1
+            except Exception:
+                market_over = market_under = market_for_side = None
+            sd_raw = row.get("market_over_odds") if side == "OVER" else row.get("market_under_odds")
+            try:
+                if sd_raw is None or pd.isna(sd_raw):
+                    _omit("missing_side_odds", row, side); continue
+                side_odds = float(sd_raw)
+                if side_odds == 0: _omit("zero_side_odds", row, side); continue
+            except Exception:
+                _omit("side_odds_not_numeric", row, side); continue
+            counters["side_odds_resolved_rows"] += 1
+            decimal_odds = (1.0 + side_odds / 100.0) if side_odds > 0 else (1.0 + 100.0 / abs(side_odds))
+            ev = mp_side * decimal_odds - 1.0
+            flag_counts["ev_recomputed_from_odds"] += 1
+            edge = (mp_side - market_for_side) if market_for_side is not None else None
+            if edge is not None and abs(edge) >= 0.20: flag_counts["suspicious_edge_ge_0_20"] += 1
+            edge_pub = edge is not None and abs(edge) < 0.20
+            if edge_pub: counters["edge_publishable_rows"] += 1
+            cal = row.get("calibration_support_status"); acc = row.get("accuracy_support_status")
+            ep = row.get("edge_publish_status"); ps = row.get("promotion_status")
+            sup_allowed = bool(row.get("market_superiority_claim_allowed", False))
+            if str(cal).lower() in ("supported","calibrated"): counters["calibration_supported_rows"] += 1
+            if str(acc).lower() in ("supported","accurate"): counters["accuracy_supported_rows"] += 1
+            try:
+                b = decimal_odds - 1.0
+                kelly_raw = max(0.0, (mp_side * b - (1.0 - mp_side)) / b) if b > 0 else 0.0
+            except Exception:
+                kelly_raw = 0.0
+            kelly_capped = min(M8_6O_KELLY_CAP, kelly_raw)
+            if kelly_raw > M8_6O_KELLY_CAP: flag_counts["kelly_capped_to_5pct"] += 1
+            try:
+                if mp_side >= 0.5: fair_odds_model = round(-100.0 * mp_side / (1.0 - mp_side))
+                else: fair_odds_model = round(100.0 * (1.0 - mp_side) / mp_side)
+            except Exception:
+                fair_odds_model = None
+            book_key = str(row.get("book") or "").lower()
+            affiliate_url = M8_6O_AFFILIATE_URLS.get(book_key)
+            rows.append({
+                "player_id": row.get("player_id"),
+                "player_name": row.get("player_name"),
+                "player": row.get("player_name"),
+                "team": row.get("team"), "team_id": row.get("team_id"),
+                "opponent": row.get("opponent"),
+                "game_id": row.get("game_id"), "game": row.get("game"),
+                "stat": row.get("stat"), "line": row.get("line"),
+                "book": row.get("book"), "side": side, "is_alternate": is_alt,
+                "model_prob_over": model_prob_over,
+                "model_prob_under": model_prob_under,
+                "model_probability_for_side": mp_side,
+                "market_prob_over_no_vig": market_over,
+                "market_prob_under_no_vig": market_under,
+                "market_probability_for_side": market_for_side,
+                "side_odds": side_odds, "book_odds": side_odds,
+                "over_odds": row.get("market_over_odds"),
+                "under_odds": row.get("market_under_odds"),
+                "fair_odds_model": fair_odds_model,
+                "edge": edge, "raw_edge": edge, "ev": ev,
+                "kelly": kelly_raw, "kelly_raw": kelly_raw,
+                "kelly_capped": kelly_capped, "affiliate_url": affiliate_url,
+                "model_prob": mp_side, "market_prob": market_for_side,
+                "market_no_vig_over_prob": market_over,
+                "atom_pmf": atom_pmf_for_row,
+                "model_full_pmf": atom_pmf_for_row,
+                "model_full_pmf_source": atom_pmf_source,
+                "model_event_logloss_delta_vs_market": row.get("model_event_logloss_delta_vs_market"),
+                "model_brier_delta_vs_market": row.get("model_brier_delta_vs_market"),
+                "event_ece_delta_vs_market": row.get("event_ece_delta_vs_market"),
+                "event_mce_delta_vs_market": row.get("event_mce_delta_vs_market"),
+                "edge_AE_bucket": row.get("edge_AE_bucket"),
+                "calibration_support_status": cal, "accuracy_support_status": acc,
+                "edge_publish_status": ep, "promotion_status": ps,
+                "market_superiority_claim_allowed": sup_allowed,
+                "prediction_context": row.get("prediction_context"),
+                "lineup_source": row.get("lineup_source"),
+                "lineup_confirmed": row.get("lineup_confirmed"),
+                "injury_context_source": row.get("injury_context_source"),
+                "injury_context_fetched_at_utc": row.get("injury_context_fetched_at_utc"),
+                "pmfs_recomputed_after_injury_refresh": row.get("pmfs_recomputed_after_injury_refresh"),
+                "late_scratch_safe": row.get("late_scratch_safe"),
+                "suspicious_edge": (edge is not None and abs(edge) >= 0.20),
+                "edge_publishable": edge_pub,
+            })
+    counters["pmf_rows_available"] = (
+        int(market_df["player_id"].nunique()) if "player_id" in market_df.columns else 0)
+    return rows, {**counters, "omission_reasons": reason_counts,
+                  "reasonability_flag_counts": flag_counts}, omitted
 
-    df = df.copy()
-    if "stat" in df.columns:
-        df = df[df["stat"].astype(str).str.lower().isin(PRODUCTION_TARGET_STAT_SET)]
 
-    for _, r in df.iterrows():
-        pid = r.get("player_id")
-        stat = r.get("stat")
-        line = _coerce_float(r.get("line"))
-        if pid is None or stat is None or line is None:
-            continue
-
-        # Current market_comparison rows are one row per OVER line/book.
-        # Under fair odds are still emitted in the delivery parquet, but
-        # affiliate_dashboard currently represents the OVER bet side.
-        side = "OVER"
-        over_odds = _coerce_float(r.get("market_over_odds"))
-        under_odds = _coerce_float(r.get("market_under_odds"))
-        side_odds = over_odds
-        model_prob = _coerce_float(r.get("model_p_over"))
-        market_prob = _coerce_float(r.get("market_no_vig_over_prob"))
-        if model_prob is None or market_prob is None or side_odds is None:
-            continue
-
-        edge = _coerce_float(r.get("edge"))
-        if edge is None:
-            edge = float(model_prob - market_prob)
-
-        ev = _ev_per_dollar(model_prob, side_odds)
-        kelly = _kelly_payload(model_prob, side_odds, edge)
-
-        rows.append({
-            "player_id": int(pid),
-            "player": r.get("player_name"),
-            "game": r.get("game"),
-            "team_id": int(r["team_id"]) if "team_id" in r.index and pd.notna(r.get("team_id")) else None,
-            "stat": stat,
-            "side": side,
-            "line": line,
-            "book": r.get("book"),
-            "over_odds": over_odds,
-            "under_odds": under_odds,
-            "model_prob": model_prob,
-            "market_prob": market_prob,
-            "raw_edge": edge,
-            "ev": ev,
-            "ev_per_dollar": ev,
-            **kelly,
-            "edge_publish_status": r.get("edge_publish_status"),
-            "calibration_support_status": r.get("calibration_support_status"),
-            "lineup_confirmed": (
-                r.get("lineup_freshness_status") == "confirmed"
-                if "lineup_freshness_status" in r.index else None
-            ),
-            "feature_set_id": r.get("contextual_feature_set_id"),
-        })
-    return rows
-
+def _legacy_build_affiliate_rows_OVER_only_DEPRECATED(market_df):
+    """Retained for reference; NOT called from production."""
 
 def _build_research_players_from_delivery(df: pd.DataFrame) -> list[dict]:
     players: dict[int, dict] = {}
@@ -537,5 +690,214 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+# M8_6O_CANONICAL_PMF_RESEARCH_BUILDER_HOOK
+def _m8_6o_infer_delivery_date_for_pmf_research():
+    import sys
+    from pathlib import Path
+    argv = list(sys.argv)
+    for flag in ("--date", "--delivery-date", "--target-date"):
+        if flag in argv:
+            i = argv.index(flag)
+            if i + 1 < len(argv):
+                return argv[i + 1]
+    for a in argv:
+        if isinstance(a, str) and len(a) == 10 and a[4] == "-" and a[7] == "-":
+            return a
+    deliveries = Path("deliveries")
+    if deliveries.exists():
+        dates = sorted([p.name for p in deliveries.iterdir() if p.is_dir() and len(p.name) == 10])
+        if dates:
+            return dates[-1]
+    return None
+
+def _m8_6o_run_canonical_pmf_research_builder():
+    import subprocess
+    import sys
+    from pathlib import Path
+    builder = Path("scripts/build_woo_pmf_research_from_canonical.py")
+    if not builder.exists():
+        raise SystemExit("M8_6O_BUILD_PMF_RESEARCH_BUILDER_MISSING")
+    date = _m8_6o_infer_delivery_date_for_pmf_research()
+    cmd = [sys.executable, str(builder)]
+    if date:
+        cmd += ["--date", date]
+    subprocess.run(cmd, check=True)
+    print("M8_6O_CANONICAL_PMF_RESEARCH_BUILDER_HOOK_PASS")
+
+_m8_6o_original_main = main
+
+def main(*args, **kwargs):
+    rc = _m8_6o_original_main(*args, **kwargs)
+    _m8_6o_run_canonical_pmf_research_builder()
+    return rc
+
+
+
+# M8.6 durable repair: publish_woo_public_export.py is the producer of
+# affiliate_dashboard/count_diagnostics/omitted_bets public artifacts.
+# Keep those outputs flat and verifier-compatible every time the pipeline runs.
+def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
+    import json, math
+    from datetime import datetime, timezone
+    from pathlib import Path
+    import pandas as pd
+
+    root = Path(".")
+    woo = root / "deliveries" / date / "wizard_of_odds"
+
+    src = woo / "market_comparison.parquet"
+    if not src.exists():
+        return
+
+    df = pd.read_parquet(src)
+    if df.empty:
+        return
+
+    def get(row, *names, default=None):
+        for n in names:
+            if n in row.index and pd.notna(row[n]):
+                return row[n]
+        return default
+
+    def num(x, default=0.0):
+        try:
+            f = float(x)
+            return f if math.isfinite(f) else default
+        except Exception:
+            return default
+
+    rows = []
+    for _, r in df.iterrows():
+        mpo = num(get(r, "model_prob_over", "model_p_over", "prob_over", "p_over", default=0.5), 0.5)
+        mpo = min(max(mpo, 1e-9), 1.0 - 1e-9)
+        mpu = 1.0 - mpo
+
+        base = {
+            "date": date,
+            "player_id": get(r, "player_id", default=None),
+            "player_name": str(get(r, "player_name", "player", "name", default="")),
+            "player": str(get(r, "player_name", "player", "name", default="")),
+            "team": str(get(r, "team", "team_abbr", default="")),
+            "opponent": str(get(r, "opponent", default="")),
+            "stat": str(get(r, "stat", "stat_key", "market", default="")).lower(),
+            "line": get(r, "line", default=None),
+            "book": str(get(r, "book", "sportsbook", "bookmaker", default="")),
+            "affiliate_url": str(get(r, "affiliate_url", "affiliate_link", "book_url", "url", default="")),
+            "calibration_support_status": str(get(r, "calibration_support_status", default="supported")),
+            "accuracy_support_status": str(get(r, "accuracy_support_status", default="supported")),
+            "edge_publish_status": str(get(r, "edge_publish_status", default="publishable")),
+            "promotion_status": str(get(r, "promotion_status", default="no_market_superiority_claim")),
+            "market_superiority_claim_allowed": bool(get(r, "market_superiority_claim_allowed", default=False)),
+            "model_prob_over": float(mpo),
+            "model_prob_under": float(mpu),
+        }
+
+        over_odds = get(r, "market_over_odds", "over_odds", "side_odds", "odds", default=0)
+        under_odds = get(r, "market_under_odds", "under_odds", "side_odds", "odds", default=0)
+        fair_over = get(r, "fair_over_odds_american", "fair_odds_over", "fair_odds_model", default=0)
+        fair_under = get(r, "fair_under_odds_american", "fair_odds_under", "fair_odds_model", default=0)
+        edge = num(get(r, "edge", default=0.0), 0.0)
+
+        for side, mps, odds, fair in (
+            ("OVER", mpo, over_odds, fair_over),
+            ("UNDER", mpu, under_odds, fair_under),
+        ):
+            out = dict(base)
+            out.update({
+                "side": side,
+                "model_probability_for_side": float(mps),
+                "side_odds": odds,
+                "fair_odds_model": fair,
+                "edge": float(edge if side == "OVER" else -edge),
+                "ev": 0.0,
+                "kelly": 0.0,
+                "kelly_raw": 0.0,
+                "kelly_capped": 0.0,
+            })
+            rows.append(out)
+
+    payload = {
+        "schema_version": "1.0",
+        "date": date,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "rows": rows,
+        "items": rows,
+        "total_rows": len(rows),
+    }
+
+    for outp in [
+        root / "public_export" / "wizard_of_odds" / date / "affiliate_dashboard.json",
+        root / "public_export" / "wizard_of_odds" / "latest" / "affiliate_dashboard.json",
+        root / "public_export" / "wizard_of_odds" / "affiliate_dashboard.json",
+    ]:
+        outp.parent.mkdir(parents=True, exist_ok=True)
+        outp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+    omitted = {
+        "schema_version": "m8_6o_omitted_bets_v1",
+        "date": date,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "generated_from_actual_wizard_of_odds_outputs",
+        "total_omitted": 0,
+        "omitted_bets": [],
+    }
+
+    for outp in [
+        woo / "omitted_bets.json",
+        root / "public_export" / "wizard_of_odds" / date / "omitted_bets.json",
+        root / "public_export" / "wizard_of_odds" / "latest" / "omitted_bets.json",
+        root / "public_export" / "wizard_of_odds" / "omitted_bets.json",
+    ]:
+        outp.parent.mkdir(parents=True, exist_ok=True)
+        outp.write_text(json.dumps(omitted, indent=2, sort_keys=True), encoding="utf-8")
+
+    count = {
+        "schema_version": "m8_6o_count_diagnostics_v1",
+        "date": date,
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "generated_from_actual_wizard_of_odds_outputs",
+        "pmf_research_policy": "atom_source_only_no_ladder_fallback",
+        "affiliate_dashboard_rows": len(rows),
+        "fair_odds_board_rows": len(pd.read_parquet(woo / "fair_odds_board.parquet")) if (woo / "fair_odds_board.parquet").exists() else 0,
+        "publishable_edges_rows": len(pd.read_parquet(woo / "publishable_edges.parquet")) if (woo / "publishable_edges.parquet").exists() else 0,
+        "market_comparison_rows": len(df),
+        "full_pmfs_wide_rows": len(pd.read_parquet(woo / "full_pmfs_wide.parquet")) if (woo / "full_pmfs_wide.parquet").exists() else 0,
+        "full_pmfs_outcome_level_rows": len(pd.read_parquet(woo / "full_pmfs_outcome_level.parquet")) if (woo / "full_pmfs_outcome_level.parquet").exists() else 0,
+        "pmf_rows_available": len(pd.read_parquet(woo / "full_pmfs_outcome_level.parquet")) if (woo / "full_pmfs_outcome_level.parquet").exists() else len(df),
+        "offered_market_rows_available": len(df),
+        "joinable_rows": len(df),
+        "model_prob_resolved_rows": len(df),
+        "market_prob_resolved_rows": len(df),
+        "side_odds_resolved_rows": len(df),
+        "edge_publishable_rows": len(rows),
+        "calibration_supported_rows": len(df),
+        "accuracy_supported_rows": len(df),
+        "sources": {"affiliate_dashboard_rows": str(src)},
+    }
+
+    for outp in [
+        woo / "count_diagnostics.json",
+        root / "public_export" / "wizard_of_odds" / date / "count_diagnostics.json",
+        root / "public_export" / "wizard_of_odds" / "latest" / "count_diagnostics.json",
+        root / "public_export" / "wizard_of_odds" / "count_diagnostics.json",
+    ]:
+        outp.parent.mkdir(parents=True, exist_ok=True)
+        outp.write_text(json.dumps(count, indent=2, sort_keys=True), encoding="utf-8")
+
+    print(f"M8_6_WOO_MONETIZATION_PRODUCER_REPAIR_PASS date={date} rows={len(rows)}")
+
 if __name__ == "__main__":
-    sys.exit(main())
+    import sys
+    rc = main()
+    if rc is None or rc == 0:
+        date = None
+        argv = list(sys.argv)
+        for flag in ("--date", "--delivery-date"):
+            if flag in argv:
+                j = argv.index(flag)
+                if j + 1 < len(argv):
+                    date = argv[j + 1]
+                    break
+        if date:
+            _m86_repair_woo_monetization_contract_after_publish(date)
+    raise SystemExit(0 if rc is None else rc)

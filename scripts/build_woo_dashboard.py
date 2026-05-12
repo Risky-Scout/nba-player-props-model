@@ -69,6 +69,34 @@ def _safe_json_for_inline_script(payload: dict) -> str:
     return s.replace("</", "<\\/")
 
 
+
+def _m8_6_normalize_dashboard_rows(rows):
+    """Normalize WoO dashboard JSON rows into a flat list[dict].
+
+    Some public exports are shaped as nested lists/groups. The dashboard audit
+    and renderer require dict rows with .get(...).
+    """
+    out = []
+
+    def walk(x):
+        if x is None:
+            return
+        if isinstance(x, dict):
+            for key in ("rows", "data", "items", "props", "pmfs"):
+                val = x.get(key)
+                if isinstance(val, list):
+                    walk(val)
+                    return
+            out.append(x)
+            return
+        if isinstance(x, list):
+            for item in x:
+                walk(item)
+            return
+
+    walk(rows)
+    return out
+
 def _audit_dashboard_stats(rows: list) -> None:
     if not rows:
         print("  (audit) no rows to audit")
@@ -86,25 +114,39 @@ def _audit_dashboard_stats(rows: list) -> None:
         print(f"  (audit) total filtered:                          {filtered}  ({', '.join(sorted(flt))})")
 
 
-def _audit_pmf_stats(players: list) -> None:
-    if not players:
-        print("  (audit) no players to audit")
-        return
-    counts = Counter()
-    for p in players:
-        for s in (p.get("stats") or {}).keys():
-            counts[str(s).lower()] += 1
-    print("  (audit) pmf_research.json stats present (across all players):")
-    for s, n in sorted(counts.items(), key=lambda x: -x[1]):
-        marker = "WILL DISPLAY" if s in SUPPORTED_SINGLE_STATS else "filtered (not supported)"
-        print(f"    {s:<10s} {n:>4d} player-distributions  -> {marker}")
-    will_display = sum(n for s, n in counts.items() if s in SUPPORTED_SINGLE_STATS)
-    will_filter  = sum(n for s, n in counts.items() if s not in SUPPORTED_SINGLE_STATS)
-    print(f"  (audit) total PMF distributions that will display: {will_display}")
-    if will_filter:
-        flt = {s for s in counts if s not in SUPPORTED_SINGLE_STATS}
-        print(f"  (audit) total filtered:                            {will_filter}  ({', '.join(sorted(flt))})")
+def _audit_pmf_stats(players):
+    from collections import Counter
 
+    counts = Counter()
+    total = 0
+
+    for p in players or []:
+        if not isinstance(p, dict):
+            continue
+
+        stats_obj = p.get("stats") or p.get("pmfs") or p.get("props") or []
+
+        if isinstance(stats_obj, dict):
+            iterable = stats_obj.keys()
+        elif isinstance(stats_obj, list):
+            iterable = []
+            for item in stats_obj:
+                if isinstance(item, dict):
+                    iterable.append(item.get("stat") or item.get("stat_key") or "")
+                elif isinstance(item, str):
+                    iterable.append(item)
+        else:
+            iterable = []
+
+        for stat in iterable:
+            stat = str(stat or "").lower()
+            counts[stat] += 1
+            total += 1
+
+    print("  (audit) pmf_research stats present:")
+    for stat, n in counts.most_common():
+        print(f"    {stat:10s} {n:7d} rows")
+    print(f"  (audit) total pmf research rows: {total}")
 
 def render_dashboard(date: str, dry_run: bool = False) -> int:
     src = PUBLIC_EXPORT / date / "affiliate_dashboard.json"
@@ -121,6 +163,7 @@ def render_dashboard(date: str, dry_run: bool = False) -> int:
     rows = payload.get("rows") or []
     print(f"  affiliate_dashboard.json: {len(rows)} rows, "
           f"date={payload.get('date')}, schema_version={payload.get('schema_version')}")
+    rows = _m8_6_normalize_dashboard_rows(rows)
     _audit_dashboard_stats(rows)
 
     template = DASHBOARD_TEMPLATE.read_text()

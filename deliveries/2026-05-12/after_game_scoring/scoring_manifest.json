@@ -1,0 +1,29 @@
+{
+  "canonical_model_rows": 341,
+  "date": "2026-05-12",
+  "fair_odds_board_rows": 7347,
+  "files": {
+    "canonical_model_pmfs_for_scoring": "canonical_model_pmfs_for_scoring.parquet",
+    "fair_odds_board_for_scoring": "fair_odds_board_for_scoring.parquet",
+    "market_comparison_for_scoring": "market_comparison_for_scoring.parquet",
+    "publishable_edges_for_scoring": "publishable_edges_for_scoring.parquet"
+  },
+  "finality_status": "finals_pending",
+  "generated_at_utc": "2026-05-12T21:14:22.739282+00:00",
+  "market_comparison_rows": 1263,
+  "market_superiority_claim_allowed": false,
+  "metrics_pending": [
+    "brier",
+    "logloss",
+    "nll",
+    "rps",
+    "clv",
+    "calibration_by_stat",
+    "calibration_by_role",
+    "calibration_by_snapshot_group"
+  ],
+  "publishable_edges_rows": 0,
+  "schema_version": "m8_6_after_game_scoring_package_v1",
+  "source_policy": "event_level_market_rows_only_no_market_implied_pmfs",
+  "status": "provisional_finals_pending"
+}
