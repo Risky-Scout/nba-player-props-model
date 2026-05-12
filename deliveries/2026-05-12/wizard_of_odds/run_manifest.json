@@ -1,0 +1,152 @@
+{
+  "delivery_date": "2026-05-12",
+  "pipeline_run_id": "6532ad32-e85c-4109-81cb-a4d8504b58ba",
+  "snapshot_type": "close_lock",
+  "snapshot_time_utc": "2026-05-12T21:20:12Z",
+  "model_version": "41e2363a#phase10c",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+  "phase8_blend_policy": "monotone_inactive_global_v1",
+  "finality_status": "provisional",
+  "finality_blocker_codes": [
+    "lineup_unconfirmed"
+  ],
+  "finality_blockers": [
+    {
+      "code": "lineup_unconfirmed",
+      "detail": "No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.",
+      "required_to_resolve": "Regenerate near lock after official lineups are available."
+    }
+  ],
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "present",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "tov",
+      "stl",
+      "blk",
+      "stocks",
+      "pa",
+      "pr",
+      "pra"
+    ],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
+    ],
+    "missing": [],
+    "extra_relative_to_supported": []
+  },
+  "sources": {
+    "model_only_parquet": {
+      "path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "2026-05-12T21:20:11.830774Z",
+      "sha256": "7185d03686a93e0bc494a28937e03afc57f463b7a97c6f3bb1f0b234c7f88e7d",
+      "auto_built_from_predictions": false
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-05-12.parquet",
+      "mtime_utc": null
+    },
+    "availability_table": {
+      "path": "data/player_availability_asof.parquet",
+      "mtime_utc": "2026-05-07T03:42:11.511500Z",
+      "freshness_status": "very_stale"
+    },
+    "odds_snapshot": {
+      "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.parquet",
+      "mtime_utc": "2026-05-12T20:50:16.454958Z",
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betparx",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl",
+        "williamhill_us"
+      ],
+      "coverage_status": "full",
+      "fetch_status": "consumed_from_disk"
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 7347,
+    "full_pmfs_wide": 341,
+    "market_comparison": 1285,
+    "publishable_edges": 0
+  },
+  "quality_rollup": {
+    "pmf_valid_ok_pct": 1.0,
+    "pmf_sum_error_max": 5.551115123125783e-16,
+    "calibration_confidence": {
+      "high": 154,
+      "low": 99,
+      "medium": 88
+    },
+    "market_coverage_status": {
+      "full": 341
+    },
+    "injury_freshness_status": {
+      "fresh": 341
+    },
+    "lineup_freshness_status": {
+      "projected": 341
+    },
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 341
+    }
+  },
+  "warnings": [],
+  "no_odds_fetch": false,
+  "freshness_manifest": {
+    "path": "data/freshness_manifest/2026-05-12.json",
+    "built_at_utc": "2026-05-12T21:20:09Z",
+    "overall_status": "not_ready",
+    "odds_status": "ok",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betparx",
+      "bovada",
+      "draftkings",
+      "espnbet",
+      "fanatics",
+      "fanduel",
+      "fliff",
+      "hardrockbet",
+      "hardrockbet_az",
+      "hardrockbet_fl",
+      "williamhill_us"
+    ],
+    "tov_status": "missing_from_prediction_source",
+    "predictions_mtime_utc": null,
+    "availability_freshness_status": "very_stale",
+    "finals_finality_status": "finals_pending",
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 341
+    }
+  }
+}
