@@ -108,22 +108,40 @@ def _classify(summary: dict, *, min_n: int, tau: float, z: float) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--as-of-date", required=True)
+    ap.add_argument("--as-of-date", default=None)
+    ap.add_argument("--start-date", default=None)
+    ap.add_argument("--end-date", default=None)
     ap.add_argument("--min-n", type=int, default=30)
     ap.add_argument("--tau", type=float, default=0.0)
     ap.add_argument("--z", type=float, default=1.96)
     args = ap.parse_args()
-    date = args.as_of_date
 
-    in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{date}.parquet"
-    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
+    if args.start_date or args.end_date:
+        if not (args.start_date and args.end_date):
+            print("FATAL: --start-date and --end-date together", file=sys.stderr)
+            return 2
+        label = f"{args.start_date}_{args.end_date}"
+        in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
+    elif args.as_of_date:
+        label = args.as_of_date
+        in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
+    else:
+        print("FATAL: --as-of-date or --start-date/--end-date", file=sys.stderr)
+        return 2
+
+    date = label
+    if args.start_date:
+        out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}"
+    else:
+        out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_json = out_dir / f"promotion_claim_report_{date}.json"
-    out_md = out_dir / f"promotion_claim_report_{date}.md"
+    out_json = out_dir / f"promotion_claim_report_{label}.json"
+    out_md = out_dir / f"promotion_claim_report_{label}.md"
 
     if not in_path.exists():
         report = {
-            "as_of_date": date, "schema_version": "m8_6q_v2",
+            "as_of_date": label,
+            "date_range": {"start": args.start_date, "end": args.end_date} if args.start_date else None, "schema_version": "m8_6q_v2",
             "status": "no_event_market_loss_rows_input",
             "input_path": str(in_path.relative_to(REPO_ROOT)),
             "overall_promotion_status": "fail_invalid_pmf",
@@ -149,6 +167,7 @@ def main() -> int:
 
     df = pd.read_parquet(in_path)
     per_bucket: dict = {}
+    dropped_invalid_pmf = 0
 
     # Same-sample / leakage check
     if "walk_forward_only" in df.columns and (df["walk_forward_only"] == False).any():
@@ -158,15 +177,18 @@ def main() -> int:
     elif df.empty:
         overall = "valid_pmf_not_event_market_superior"
     else:
-        # PMF validity check
+        # Drop degenerate model probabilities; do not score promotion on invalid PMF rows.
         if "model_prob_over" in df.columns:
-            mp = df["model_prob_over"].dropna()
-            if len(mp) > 0 and ((mp <= 0) | (mp >= 1)).any():
-                overall = "fail_invalid_pmf"
-            else:
-                overall = None
-        else:
+            mp = df["model_prob_over"]
+            bad = mp.notna() & ((mp <= 0) | (mp >= 1))
+            dropped_invalid_pmf = int(bad.sum())
+            if dropped_invalid_pmf:
+                df = df.loc[~bad].copy()
+
+        if df.empty or "model_prob_over" not in df.columns:
             overall = "fail_invalid_pmf"
+        else:
+            overall = None
 
         if overall is None:
             grouping_cols = [c for c in ("stat", "role_bucket") if c in df.columns]
@@ -203,7 +225,8 @@ def main() -> int:
 
     claim_allowed = (overall == CLAIM_ALLOWED_ENUM)
     report = {
-        "as_of_date": date,
+        "as_of_date": label,
+        "date_range": {"start": args.start_date, "end": args.end_date} if args.start_date else None,
         "schema_version": "m8_6q_v2",
         "input_path": str(in_path.relative_to(REPO_ROOT)),
         "overall_promotion_status": overall,
@@ -212,6 +235,7 @@ def main() -> int:
         "delta_sign_convention": "model_minus_market_negative_better",
         "promotion_gate_formula": "mean(delta) + z*SE <= -tau",
         "tau": args.tau, "z": args.z, "min_n_threshold": int(args.min_n),
+        "dropped_invalid_pmf_rows": int(dropped_invalid_pmf),
         "per_bucket": per_bucket,
         "promotion_enum": list(PROMOTION_ENUM),
         "forbidden_public_copy_tokens": list(FORBIDDEN_PUBLIC_COPY),

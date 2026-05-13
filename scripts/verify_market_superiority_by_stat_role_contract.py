@@ -19,7 +19,9 @@ META = REPO_ROOT / "artifacts" / "models" / "pmf_cal_meta.json"
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--date", required=True)
+    ap.add_argument("--date", default=None)
+    ap.add_argument("--start-date", default=None)
+    ap.add_argument("--end-date", default=None)
     ap.add_argument(
         "--allow-provisional-block",
         action="store_true",
@@ -27,9 +29,18 @@ def main() -> int:
         "(CI / historical replay without full market proof).",
     )
     args = ap.parse_args()
-    date = args.date
+    if args.start_date or args.end_date:
+        if not (args.start_date and args.end_date):
+            print("FATAL: --start-date and --end-date together", file=sys.stderr)
+            return 2
+        label = f"{args.start_date}_{args.end_date}"
+    elif args.date:
+        label = args.date
+    else:
+        print("FATAL: pass --date or --start-date/--end-date", file=sys.stderr)
+        return 2
 
-    sup_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{date}"
+    sup_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}"
     summ_path = sup_dir / "summary.json"
     sr_path = sup_dir / "stat_role_market_superiority.csv"
     if not summ_path.exists() or not sr_path.exists():

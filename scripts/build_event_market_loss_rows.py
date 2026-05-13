@@ -410,18 +410,12 @@ def _binary_over_hit(actual: int | None, line: float | None) -> int | None:
     return None  # push on integer line
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--as-of-date", required=True)
-    ap.add_argument("--snapshot-substr", default="close_or_lock")
-    args = ap.parse_args()
-    date = args.as_of_date
-
+def _main_single_date(date: str, snapshot_substr: str) -> int:
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"event_market_loss_rows_{date}.parquet"
 
-    odds_path = _find_odds_pairs_file(date, args.snapshot_substr)
+    odds_path = _find_odds_pairs_file(date, snapshot_substr)
     oof_single_path = REPO_ROOT / "data" / "oof_pmfs.parquet"
     oof_combo_path = REPO_ROOT / "data" / "oof_combo_pmfs.parquet"
 
@@ -866,6 +860,87 @@ def main() -> int:
     print(f"  pmf_col_single={pmf_col_single} pmf_col_combo={pmf_col_combo}")
     print(f"  sign_convention=model_minus_market_negative_better")
     return 0
+
+
+def _main_date_range(start: str, end: str, snapshot_substr: str) -> int:
+    from datetime import date as dt_date, timedelta
+
+    frames: list[pd.DataFrame] = []
+    metas: list[dict] = []
+    cur = dt_date.fromisoformat(start)
+    end_d = dt_date.fromisoformat(end)
+    while cur <= end_d:
+        s = cur.isoformat()
+        rc = _main_single_date(s, snapshot_substr)
+        if rc != 0:
+            return rc
+        p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{s}.parquet"
+        if p.exists():
+            frames.append(pd.read_parquet(p))
+            mp = Path(str(p) + ".meta.json")
+            if mp.exists():
+                try:
+                    metas.append(json.loads(mp.read_text(encoding="utf-8")))
+                except Exception:
+                    metas.append({})
+        cur += timedelta(days=1)
+    if not frames:
+        print("FATAL: date range produced no daily event_market_loss_rows", file=sys.stderr)
+        return 1
+    combo = pd.concat(frames, ignore_index=True)
+    leaked = [c for c in combo.columns if c.lower() in {x.lower() for x in FORBIDDEN_OUTPUT_COLS}]
+    if leaked:
+        raise SystemExit(f"FATAL: M8_6Q_FORBIDDEN_COLUMNS_LEAKED {leaked}")
+    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
+    out_path = out_dir / f"event_market_loss_rows_{start}_{end}.parquet"
+    combo.to_parquet(out_path, index=False)
+    matched_count = int((combo["join_status"] == "matched").sum()) if len(combo) else 0
+    scored_count = 0
+    if len(combo):
+        scored_mask = (
+            combo["model_prob_over"].notna()
+            & combo["market_prob_over_no_vig"].notna()
+            & combo["hit_result"].notna()
+            & combo["model_event_logloss"].notna()
+            & combo["market_event_logloss"].notna()
+            & combo["event_logloss_delta"].notna()
+            & combo["model_brier"].notna()
+            & combo["market_brier"].notna()
+            & combo["brier_delta"].notna()
+        )
+        scored_count = int(scored_mask.sum())
+    agg_meta = {
+        "schema_version": "m8_6q_v2",
+        "date_range": {"start": start, "end": end},
+        "rows": int(len(combo)),
+        "matched_rows": matched_count,
+        "scored_rows_all_fields_nonnull": scored_count,
+        "daily_meta": metas,
+        "combined_output": str(out_path.relative_to(REPO_ROOT)),
+    }
+    Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
+    print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (range)")
+    print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
+    print(f"  wrote: {out_path.relative_to(REPO_ROOT)}")
+    return 0
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--as-of-date", default=None)
+    ap.add_argument("--start-date", default=None)
+    ap.add_argument("--end-date", default=None)
+    ap.add_argument("--snapshot-substr", default="close_or_lock")
+    args = ap.parse_args()
+    if args.start_date or args.end_date:
+        if not (args.start_date and args.end_date):
+            print("FATAL: --start-date and --end-date must be used together", file=sys.stderr)
+            return 2
+        return _main_date_range(args.start_date, args.end_date, args.snapshot_substr)
+    if not args.as_of_date:
+        print("FATAL: pass --as-of-date or --start-date/--end-date", file=sys.stderr)
+        return 2
+    return _main_single_date(args.as_of_date, args.snapshot_substr)
 
 
 if __name__ == "__main__":

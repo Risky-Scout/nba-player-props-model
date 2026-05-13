@@ -24,7 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
-REQUIRED_STATS = list(MISSION_REQUIRED_TARGETS_CANONICAL)
+REQUIRED_STATS = [str(s).lower() for s in MISSION_REQUIRED_TARGETS_CANONICAL]
 DEFAULT_MIN_SCORED = 100
 DEFAULT_MIN_JOINED = 100
 
@@ -122,13 +122,26 @@ def _agg_segment(sub: pd.DataFrame, *, min_scored: int, min_joined: int) -> dict
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--date", required=True)
+    ap.add_argument("--date", default=None)
+    ap.add_argument("--start-date", default=None)
+    ap.add_argument("--end-date", default=None)
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     ap.add_argument("--min-market-joined-rows", type=int, default=DEFAULT_MIN_JOINED)
     args = ap.parse_args()
-    date = args.date
 
-    eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{date}.parquet"
+    if args.start_date or args.end_date:
+        if not (args.start_date and args.end_date):
+            print("FATAL: --start-date and --end-date together", file=sys.stderr)
+            return 2
+        label = f"{args.start_date}_{args.end_date}"
+        eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{args.start_date}_{args.end_date}.parquet"
+    elif args.date:
+        label = args.date
+        eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{args.date}.parquet"
+    else:
+        print("FATAL: pass --date or --start-date/--end-date", file=sys.stderr)
+        return 2
+
     if not eml_path.exists():
         print(f"FATAL missing {eml_path}", file=sys.stderr)
         return 1
@@ -137,12 +150,13 @@ def main() -> int:
         eml = eml.copy()
         eml["role_bucket"] = "unknown"
 
-    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{date}"
+    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    roles = sorted(set(eml["role_bucket"].astype(str).unique()) | {"unknown"})
     rows_sr = []
-    for stat in sorted(eml["stat"].astype(str).str.lower().unique()):
-        for role in sorted(eml["role_bucket"].astype(str).unique()):
+    for stat in REQUIRED_STATS:
+        for role in roles:
             sub = eml[(eml["stat"].astype(str).str.lower() == stat) & (eml["role_bucket"].astype(str) == role)]
             agg = _agg_segment(
                 sub,
@@ -150,7 +164,7 @@ def main() -> int:
                 min_joined=args.min_market_joined_rows,
             )
             rows_sr.append({
-                "date": date,
+                "date": label,
                 "stat": stat,
                 "role_bucket": role,
                 **agg,
@@ -196,7 +210,7 @@ def main() -> int:
         pd.DataFrame(columns=["snapshot_type"]).to_csv(out_dir / "snapshot_market_superiority.csv", index=False)
 
     present_stats = set(eml["stat"].astype(str).str.lower().unique())
-    missing_required = sorted(set(REQUIRED_STATS) - present_stats)
+    missing_required = [s for s in REQUIRED_STATS if s not in present_stats]
     n_pass = int(df_sr["market_superiority_pass"].sum()) if len(df_sr) else 0
     n_fail = int((~df_sr["market_superiority_pass"]).sum()) if len(df_sr) else 0
     elig = df_sr[df_sr["market_superiority_eligible"] == True]
@@ -206,7 +220,8 @@ def main() -> int:
         and not missing_required
     )
     summary = {
-        "date": date,
+        "date": label,
+        "date_range": {"start": args.start_date, "end": args.end_date} if args.start_date else None,
         "global_market_superiority_claim_allowed": global_ok,
         "n_segments_total": int(len(df_sr)),
         "n_segments_passed": n_pass,
