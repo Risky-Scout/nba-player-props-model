@@ -114,6 +114,8 @@ def main() -> int:
         return 1
 
     pmf_col = "pmf_active" if "pmf_active" in df.columns else "pmf"
+    alt_pmf = "pmf" if pmf_col == "pmf_active" and "pmf" in df.columns else None
+
     rows_out: list[dict] = []
     for (stat, role), sub in df.groupby(["stat", "role_bucket"], dropna=False):
         pit_u: list[float] = []
@@ -124,7 +126,10 @@ def main() -> int:
         nlls: list[float] = []
         rpss: list[float] = []
         for _, r in sub.iterrows():
-            d = _parse_pmf_cell(r.get(pmf_col))
+            raw = r.get(pmf_col)
+            if alt_pmf and (raw is None or (isinstance(raw, float) and raw != raw)):
+                raw = r.get(alt_pmf)
+            d = _parse_pmf_cell(raw)
             if d is None:
                 continue
             try:
