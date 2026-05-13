@@ -55,6 +55,9 @@ def _load_audit_final_reasons(label: str) -> dict[str, str]:
         st = str(row.get("stat", "")).lower()
         out[st] = str(row.get("final_missing_reason") or row.get("missing_reason") or "")
     return out
+
+
+def _finite_mean(s: pd.Series) -> float | None:
     x = pd.to_numeric(s, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if x.empty:
         return None
@@ -155,6 +158,14 @@ def main() -> int:
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     ap.add_argument("--min-market-joined-rows", type=int, default=DEFAULT_MIN_JOINED)
     args = ap.parse_args()
+
+    modes = sum(bool(x) for x in (args.date, (args.start_date and args.end_date), args.dates_file))
+    if modes > 1:
+        print("FATAL: use only one of --date, --start-date/--end-date, --dates-file", file=sys.stderr)
+        return 2
+    if modes == 0:
+        print("FATAL: pass --date, --start-date/--end-date, or --dates-file", file=sys.stderr)
+        return 2
 
     dates_used, label, meta = resolve_event_market_label(
         date=args.date,
@@ -265,11 +276,43 @@ def main() -> int:
     market_subset_stats = sorted(stats_with_matched & set(REQUIRED_STATS))
     sub_df = df_sr[df_sr["stat"].isin(market_subset_stats)]
     sub_elig = sub_df[sub_df["market_superiority_eligible"] == True]
-    eligible_subset_claim = (
-        len(sub_elig) > 0 and bool(sub_elig["market_superiority_pass"].all())
+    eligible_subset_claim = bool(
+        len(sub_elig) > 0 and sub_elig["market_superiority_pass"].all()
     )
 
     model_cal_ok = model_only_calibration_claim_allowed(REPO_ROOT)
+
+    claim_blockers: list[dict] = []
+    if missing_required:
+        claim_blockers.append(
+            {"kind": "stats_absent_from_event_market_loss_rows", "stats": missing_required}
+        )
+    if required_stats_without_event_market_coverage:
+        claim_blockers.append(
+            {
+                "kind": "stats_without_matched_market_join",
+                "stats": required_stats_without_event_market_coverage,
+            }
+        )
+    if len(elig) == 0:
+        claim_blockers.append(
+            {
+                "kind": "no_eligible_stat_role_segments",
+                "detail": f"need n_scored>={args.min_scored_rows} and n_market_joined>={args.min_market_joined_rows}",
+            }
+        )
+    else:
+        failed_elig = elig[~elig["market_superiority_pass"]]
+        if len(failed_elig) > 0:
+            claim_blockers.append(
+                {
+                    "kind": "eligible_segments_failed_market_superiority",
+                    "count": int(len(failed_elig)),
+                    "failure_reasons": failed_elig["failure_reason"].astype(str).value_counts().head(12).to_dict(),
+                }
+            )
+    if not global_ok and not claim_blockers:
+        claim_blockers.append({"kind": "global_superiority_gate_failed", "detail": "see segment metrics"})
 
     summary = {
         "date": label,
@@ -295,6 +338,7 @@ def main() -> int:
         "eligible_segments_failed": int((~elig["market_superiority_pass"]).sum()) if len(elig) else 0,
         "blocked_segments_total": int(n_fail),
         "blocked_segment_reasons": dict(blocked_reasons),
+        "claim_blockers": claim_blockers,
         "n_segments_total": int(len(df_sr)),
         "n_segments_passed": n_pass,
         "n_segments_failed": n_fail,

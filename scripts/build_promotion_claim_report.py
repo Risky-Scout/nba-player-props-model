@@ -109,6 +109,7 @@ def _classify(summary: dict, *, min_n: int, tau: float, z: float) -> str:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--as-of-date", default=None)
+    ap.add_argument("--date", default=None, help="Alias for --as-of-date (single slate).")
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
     ap.add_argument("--dates-file", default=None)
@@ -118,11 +119,17 @@ def main() -> int:
     ap.add_argument("--z", type=float, default=1.96)
     args = ap.parse_args()
 
+    single = args.as_of_date or args.date
+    modes = sum(bool(x) for x in (single, (args.start_date and args.end_date), args.dates_file))
+    if modes > 1:
+        print("FATAL: use only one of --as-of-date/--date, --start-date/--end-date, --dates-file", file=sys.stderr)
+        return 2
+
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
     from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
 
     dates_used, label, meta = resolve_event_market_label(
-        date=args.as_of_date,
+        date=single,
         start_date=args.start_date,
         end_date=args.end_date,
         dates_file=args.dates_file,

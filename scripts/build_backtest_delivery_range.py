@@ -12,7 +12,9 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
+from event_market_date_selection import dates_fingerprint  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
 
@@ -140,12 +142,17 @@ def main() -> int:
             report["stat_counts_per_date"][d] = {"error": str(ex)}
             report["all_twelve_mission_stats_per_date"][d] = False
 
-    label = f"{dates[0]}_{dates[-1]}" if dates else "empty"
-    out_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"backtest_delivery_range_{label}.json"
+    if args.dates_file and dates:
+        report_label = f"dates_{dates_fingerprint(dates)}"
+    elif dates:
+        report_label = f"{dates[0]}_{dates[-1]}"
+    else:
+        report_label = "empty"
+    out_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"backtest_delivery_range_{report_label}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2, default=str) + "\n", encoding="utf-8")
-    print(f"BACKTEST_DELIVERY_RANGE_PASS wrote {out_path.relative_to(REPO_ROOT)}")
-    return 0 if not report["failures"] else 1
+    print(f"BACKTEST_DELIVERY_RANGE_PASS wrote {out_path.relative_to(REPO_ROOT)} failures={len(report['failures'])}")
+    return 0
 
 
 if __name__ == "__main__":

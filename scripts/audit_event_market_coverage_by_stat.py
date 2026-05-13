@@ -311,6 +311,14 @@ def main() -> int:
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     args = ap.parse_args()
 
+    modes = sum(bool(x) for x in (args.date, (args.start_date and args.end_date), args.dates_file))
+    if modes > 1:
+        print("FATAL: use only one of --date, --start-date/--end-date, --dates-file", file=sys.stderr)
+        return 2
+    if modes == 0:
+        print("FATAL: pass --date, --start-date/--end-date, or --dates-file", file=sys.stderr)
+        return 2
+
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
     from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
 

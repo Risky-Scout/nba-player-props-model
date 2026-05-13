@@ -32,6 +32,14 @@ def main() -> int:
     )
     args = ap.parse_args()
 
+    modes = sum(bool(x) for x in (args.date, (args.start_date and args.end_date), args.dates_file))
+    if modes > 1:
+        print("FATAL: use only one of --date, --start-date/--end-date, --dates-file", file=sys.stderr)
+        return 2
+    if modes == 0:
+        print("FATAL: pass --date, --start-date/--end-date, or --dates-file", file=sys.stderr)
+        return 2
+
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
     from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
 
@@ -73,7 +81,14 @@ def main() -> int:
         )
         return 1
 
-    if len(failed_eligible) == 0 and global_ok and not summary.get("required_stats_missing_in_event_rows"):
+    miss_rows = summary.get("required_stats_missing_in_event_rows") or []
+    no_mkt = summary.get("required_stats_without_event_market_coverage") or []
+    if (
+        len(failed_eligible) == 0
+        and global_ok
+        and len(miss_rows) == 0
+        and len(no_mkt) == 0
+    ):
         print("MARKET_SUPERIORITY_BY_STAT_ROLE_CONTRACT_PASS")
         return 0
 
@@ -92,7 +107,8 @@ def main() -> int:
         f"failed_eligible_segments={len(failed_eligible)} global_claim={global_ok} "
         f"missing_event_rows={summary.get('required_stats_missing_in_event_rows')} "
         f"no_market_coverage_stats={summary.get('required_stats_without_event_market_coverage')} "
-        f"subset_claim={summary.get('eligible_market_subset_superiority_claim_allowed')}",
+        f"subset_claim={summary.get('eligible_market_subset_superiority_claim_allowed')} "
+        f"claim_blockers={summary.get('claim_blockers')}",
         file=sys.stderr,
     )
     return 1

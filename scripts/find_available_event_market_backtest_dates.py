@@ -142,6 +142,7 @@ def main() -> int:
 
         has_stat_grid = stat_grid_path.exists()
         has_canonical = canonical_path.exists()
+        has_model_pmfs = has_stat_grid or has_canonical
         has_daily_pmf_delivery = daily_review.exists() or woo_manifest.exists()
 
         raw_paths, raw_keys, _ = _scan_raw(d)
@@ -160,6 +161,12 @@ def main() -> int:
         if has_stat_grid:
             sg = pd.read_parquet(stat_grid_path, columns=["stat"])
             model_stats_present = sorted(sg["stat"].astype(str).str.lower().unique().tolist())
+        elif has_canonical:
+            try:
+                cg = pd.read_parquet(canonical_path, columns=["stat"])
+                model_stats_present = sorted(cg["stat"].astype(str).str.lower().unique().tolist())
+            except Exception:
+                model_stats_present = []
 
         future_or_unscored = False
         if d > today:
@@ -177,7 +184,7 @@ def main() -> int:
             reasons.append("no_box_score_actuals")
         if tw <= 0:
             reasons.append("no_two_way_market_rows")
-        if not (has_stat_grid or has_canonical):
+        if not has_model_pmfs:
             reasons.append("no_model_pmfs")
         if future_or_unscored:
             reasons.append("future_or_unscored_game_date")
@@ -189,6 +196,7 @@ def main() -> int:
             "date": d,
             "has_stat_grid": has_stat_grid,
             "has_canonical_delivery": has_canonical,
+            "has_model_pmfs": has_model_pmfs,
             "has_daily_pmf_delivery": has_daily_pmf_delivery,
             "has_processed_odds": has_processed_odds,
             "has_raw_odds": has_raw_odds,
