@@ -10,6 +10,7 @@ from nba_props_model.evaluation.diagnostics import (
     american_to_prob,
     bootstrap_ci,
     brier,
+    calibration_line_fit,
     calibration_slope_intercept,
     devig_pair,
     discrete_crps,
@@ -75,6 +76,18 @@ def test_brier_and_ece_cover_trivial_cases():
     assert 0.0 <= b <= 1.0
     # ECE is small for a reasonable ordering.
     assert 0.0 <= ece(probs, outcomes, bins=5) <= 0.5
+
+
+def test_calibration_line_fit_constant_probs():
+    probs = np.full(100, 0.37)
+    outcomes = np.random.default_rng(0).integers(0, 2, size=100).astype(float)
+    fit = calibration_line_fit(probs, outcomes)
+    assert fit["calibration_slope_status"] == "constant_probs"
+    assert fit["slope"] is None and fit["intercept"] is None
+    assert fit["constant_prob_n"] == 100
+    assert fit["constant_prob_value"] == pytest.approx(0.37)
+    slope, intercept = calibration_slope_intercept(probs, outcomes)
+    assert np.isnan(slope) and np.isnan(intercept)
 
 
 def test_calibration_slope_1_for_perfect_cal():

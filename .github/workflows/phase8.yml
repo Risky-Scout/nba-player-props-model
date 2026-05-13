@@ -1,10 +1,10 @@
-name: NBA Props Model — Phase 8 (PMF calibration + diagnostics + market eval)
+name: NBA Props Model — Phase 8 (PMF calibration + diagnostics + event-market validation)
 
 # Split into three dependent jobs to stay inside GitHub Actions timeouts and
 # let any single stage be rerun without paying the cost of the others:
 #   A. build-table     — regenerate data/training_table.parquet
 #   B. calibrate       — walk-forward OOF PMF calibration (fold-capped)
-#   C. diagnostics     — matched diagnostics + de-vigged market evaluation
+#   C. diagnostics     — OOF diagnostics + M8.6 event-market stack (when required)
 # Artifacts flow A -> B -> C via actions/upload-artifact + download-artifact.
 # Only the final job pushes back to origin/main.
 
@@ -454,7 +454,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-  # ─── C. Diagnostics + market-relative evaluation ─────────────────────────
+  # ─── C. Diagnostics + M8.6 event-market validation ────────────────────────
   diagnostics:
     needs: [build-table, aggregate-calibration]
     # H1B chain gate combined with existing val_rows_limit profiling check.
@@ -497,33 +497,24 @@ jobs:
           # parquet under data/, markdown under artifacts/docs/.
           path: .
 
-      - name: Run diagnostics
+      - name: Run diagnostics + M8.6 event-market validation
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
+          set -euo pipefail
           RUN_DATE=$(date -u +%Y-%m-%d)
-          ARGS="--run-date $RUN_DATE"
+          echo "RUN_DATE=$RUN_DATE" >> "$GITHUB_ENV"
+          ARGS="--run-date $RUN_DATE --require-market-eval --allow-provisional-block --start-date 2026-04-01 --end-date $RUN_DATE --snapshot-substr close_or_lock"
           if [ "${{ github.event.inputs.core_props_only }}" = "true" ]; then
             ARGS="$ARGS --core-props-only"
           fi
           python scripts/run_diagnostics.py $ARGS
-
-      - name: Run market-relative evaluation
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-        run: |
-          # NOTE: scripts/run_diagnostics.py does NOT currently join
-          # de-vigged opening-line probabilities into the OOF parquet.
-          # The "logloss lift" column in the diagnostics markdown is
-          # measured against a neutral 0.5 baseline, not real market
-          # probabilities. The helpers in
-          # src/nba_props_model/evaluation/market_baseline.py expose
-          # devigged_main_line / market_implied_cdf_from_alt_lines /
-          # market_pmf_from_cdf for a future alt-line ladder join.
-          # Until that join is wired in, the diagnostics report emits
-          # `market_eval_available=false` and the lift column is NaN.
-          echo "Market-relative eval not available; baseline-only metrics emitted."
-          echo "::warning::market_eval_not_wired - see scripts/run_diagnostics.py NOTE about alt-line ladder join"
+          python scripts/verify_phase8_market_eval_contract.py \
+            --meta "artifacts/docs/diagnostics_${RUN_DATE}.meta.json" \
+            --expect-workflow-market-eval
+          python scripts/verify_no_unexplained_calibration_nans.py \
+            --meta "artifacts/docs/diagnostics_${RUN_DATE}.meta.json"
 
       - name: Upload Phase 8 outputs
         uses: actions/upload-artifact@v4
@@ -531,6 +522,10 @@ jobs:
           name: phase8-outputs
           path: |
             artifacts/docs/diagnostics_*.md
+            artifacts/docs/diagnostics_*.meta.json
+            artifacts/model_diagnostics/event_market_backtest_date_inventory.csv
+            artifacts/model_diagnostics/backtest_delivery_range_*.json
+            artifacts/model_diagnostics/event_market_superiority_*/summary.json
             artifacts/docs/pmf_calibration_run.md
             artifacts/models/pmf_cal_*.pkl
             artifacts/models/pmf_cal_role_*.pkl
@@ -559,9 +554,25 @@ jobs:
 
       - name: Commit Phase 8 artifacts back to origin/main
         if: success()
+        env:
+          RUN_DATE: ${{ env.RUN_DATE }}
         run: |
           git config user.name  "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+          META="artifacts/docs/diagnostics_${RUN_DATE}.meta.json"
+          COMMIT_MSG="Phase 8: PMF calibration + diagnostics"
+          if python3 - <<PY
+          import json, sys
+          from pathlib import Path
+          p = Path("${META}")
+          if not p.is_file():
+              sys.exit(1)
+          m = json.loads(p.read_text(encoding="utf-8"))
+          sys.exit(0 if m.get("market_eval_status") == "event_market_scored" else 1)
+          PY
+          then
+            COMMIT_MSG="Phase 8: PMF calibration + diagnostics + event-market scored"
+          fi
           if ! git add artifacts/models/pmf_cal_*.pkl \
                        artifacts/docs/ \
                        data/oof_pmfs.parquet \
@@ -573,7 +584,7 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "Phase 8: PMF calibration + diagnostics + market eval"
+              -m "$COMMIT_MSG"
           git config http.postBuffer 524288000
           PUSH_SUCCESS=0
           for i in 1 2 3 4 5; do

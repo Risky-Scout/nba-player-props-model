@@ -125,42 +125,93 @@ def ece(probs: np.ndarray, outcomes: np.ndarray, bins: int = 10) -> float:
     return float(total)
 
 
-def calibration_slope_intercept(probs: np.ndarray, outcomes: np.ndarray) -> tuple[float, float]:
-    """Linear regression of outcomes on predicted probs.
+def calibration_line_fit(probs: np.ndarray, outcomes: np.ndarray) -> dict:
+    """Linear regression of outcomes on predicted probabilities with explicit status.
 
-    Returns (NaN, NaN) when input is degenerate (empty, single point,
-    all-constant probs, non-finite only, or polyfit's SVD raises on
-    rank-deficient input). Logged so Phase 8 diagnostics can audit
-    degenerate folds instead of crashing the run.
+    Returns dict with keys:
+      slope, intercept (float or None — use None in JSON, not NaN),
+      calibration_slope_status,
+      calibration_slope_valid,
+      constant_prob_n, constant_prob_value (set when status is constant_probs).
     """
     probs_arr = np.asarray(probs, dtype=float)
     outcomes_arr = np.asarray(outcomes, dtype=float)
     finite_mask = np.isfinite(probs_arr) & np.isfinite(outcomes_arr)
     probs_arr = probs_arr[finite_mask]
     outcomes_arr = outcomes_arr[finite_mask]
-    if len(probs_arr) < 2:
-        return float("nan"), float("nan")
-    if np.unique(probs_arr).size < 2:
-        logger.warning(
-            "calibration_slope_intercept: constant_probs n=%d; returning (nan, nan)",
-            len(probs_arr),
+    n = int(len(probs_arr))
+    base = {
+        "slope": None,
+        "intercept": None,
+        "calibration_slope_status": "insufficient_points",
+        "calibration_slope_valid": False,
+        "constant_prob_n": None,
+        "constant_prob_value": None,
+    }
+    if n < 2:
+        return base
+    uq = np.unique(probs_arr)
+    if uq.size < 2:
+        v = float(uq[0]) if uq.size else None
+        logger.info(
+            "calibration_line_fit: constant_probs n=%d value=%r — slope/intercept undefined",
+            n, v,
         )
-        return float("nan"), float("nan")
+        return {
+            "slope": None,
+            "intercept": None,
+            "calibration_slope_status": "constant_probs",
+            "calibration_slope_valid": False,
+            "constant_prob_n": n,
+            "constant_prob_value": v,
+        }
     try:
         slope, intercept = np.polyfit(probs_arr, outcomes_arr, 1)
     except (np.linalg.LinAlgError, ValueError, FloatingPointError) as exc:
         logger.warning(
-            "calibration_slope_intercept: polyfit failed n=%d unique=%d exc=%r; returning (nan, nan)",
-            len(probs_arr), int(np.unique(probs_arr).size), exc,
+            "calibration_line_fit: polyfit failed n=%d unique=%d exc=%r",
+            n, int(uq.size), exc,
         )
-        return float("nan"), float("nan")
+        return {
+            "slope": None,
+            "intercept": None,
+            "calibration_slope_status": "polyfit_failed",
+            "calibration_slope_valid": False,
+            "constant_prob_n": None,
+            "constant_prob_value": None,
+        }
     if not (np.isfinite(slope) and np.isfinite(intercept)):
         logger.warning(
-            "calibration_slope_intercept: non-finite fit slope=%r intercept=%r; returning (nan, nan)",
+            "calibration_line_fit: non-finite fit slope=%r intercept=%r",
             slope, intercept,
         )
-        return float("nan"), float("nan")
-    return float(slope), float(intercept)
+        return {
+            "slope": None,
+            "intercept": None,
+            "calibration_slope_status": "non_finite_fit",
+            "calibration_slope_valid": False,
+            "constant_prob_n": None,
+            "constant_prob_value": None,
+        }
+    return {
+        "slope": float(slope),
+        "intercept": float(intercept),
+        "calibration_slope_status": "ok",
+        "calibration_slope_valid": True,
+        "constant_prob_n": None,
+        "constant_prob_value": None,
+    }
+
+
+def calibration_slope_intercept(probs: np.ndarray, outcomes: np.ndarray) -> tuple[float, float]:
+    """Backward-compatible (slope, intercept); NaN when undefined. Prefer calibration_line_fit for JSON."""
+    fit = calibration_line_fit(probs, outcomes)
+    s = fit["slope"]
+    i = fit["intercept"]
+    return (
+        float(s) if s is not None else float("nan"),
+        float(i) if i is not None else float("nan"),
+    )
 
 
 def edge_decile_monotonicity(
@@ -242,9 +293,25 @@ class FoldMetrics:
     cal_intercept: float
     market_logscore_lift: float
     edge_monotonicity_rho: float
+    cal_slope_status: str = "unknown"
+    cal_slope_valid: bool = True
+    constant_prob_n: Optional[int] = None
+    constant_prob_value: Optional[float] = None
 
     def as_dict(self) -> dict:
-        return asdict(self)
+        raw = asdict(self)
+        out: dict = {}
+        for k, v in raw.items():
+            if isinstance(v, float) and not np.isfinite(v):
+                out[k] = None
+            else:
+                out[k] = v
+        if not self.cal_slope_valid or self.cal_slope_status in (
+            "constant_probs", "insufficient_points", "polyfit_failed", "non_finite_fit",
+        ):
+            out["cal_slope"] = None
+            out["cal_intercept"] = None
+        return out
 
 
 def evaluate_fold(
@@ -264,7 +331,9 @@ def evaluate_fold(
     ks = pit_ks_distance(pit)
     bs = brier(over_probs_model, over_realised)
     ece_v = ece(over_probs_model, over_realised)
-    slope, intercept = calibration_slope_intercept(over_probs_model, over_realised)
+    fit = calibration_line_fit(over_probs_model, over_realised)
+    slope = float(fit["slope"]) if fit["slope"] is not None else float("nan")
+    intercept = float(fit["intercept"]) if fit["intercept"] is not None else float("nan")
     log_s = log_score(pmfs, outcomes)
     crps_v = discrete_crps(pmfs, outcomes)
 
@@ -291,6 +360,10 @@ def evaluate_fold(
         cal_slope=slope, cal_intercept=intercept,
         market_logscore_lift=lift,
         edge_monotonicity_rho=rho,
+        cal_slope_status=str(fit["calibration_slope_status"]),
+        cal_slope_valid=bool(fit["calibration_slope_valid"]),
+        constant_prob_n=fit["constant_prob_n"],
+        constant_prob_value=fit["constant_prob_value"],
     )
 
 
