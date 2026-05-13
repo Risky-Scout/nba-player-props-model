@@ -33,28 +33,27 @@ from urllib.parse import urlencode
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+_SRC = str(REPO_ROOT / "src")
+if _SRC not in sys.path:
+    sys.path.insert(0, _SRC)
+from nba_props_model.markets.oddsapi_markets import (
+    ODDSAPI_MARKET_REGISTRY_SOURCE,
+    ODDSAPI_MARKET_REGISTRY_VERSION,
+    ODDSAPI_NBA_DEFAULT_MARKETS,
+    stat_for_market_key,
+)
+
 ODDS_RAW_DIR = REPO_ROOT / "data" / "odds_api" / "raw"
 ODDS_PROCESSED_DIR = REPO_ROOT / "data" / "odds_api" / "processed"
 SPORT_KEY = "basketball_nba"
 BASE_URL = "https://api.the-odds-api.com/v4"
 
-MAIN_MARKETS = [
-    "player_points", "player_rebounds", "player_assists",
-    "player_turnovers", "player_threes",
-]
-ALT_MARKETS = [
-    "player_points_alternate", "player_rebounds_alternate",
-    "player_assists_alternate", "player_turnovers_alternate",
-    "player_threes_alternate",
-]
-DEFAULT_MARKETS = MAIN_MARKETS + ALT_MARKETS
-MARKET_TO_STAT = {
-    "player_points": "pts", "player_points_alternate": "pts",
-    "player_rebounds": "reb", "player_rebounds_alternate": "reb",
-    "player_assists": "ast", "player_assists_alternate": "ast",
-    "player_turnovers": "tov", "player_turnovers_alternate": "tov",
-    "player_threes": "fg3m", "player_threes_alternate": "fg3m",
-}
+
+def _markets_from_cli(raw: str | None) -> tuple[str, ...]:
+    """Normalize --markets into a tuple of Odds API market keys."""
+    if raw and str(raw).strip():
+        return tuple(m.strip() for m in str(raw).split(",") if m.strip())
+    return ODDSAPI_NBA_DEFAULT_MARKETS
 
 
 # ── HTTP helpers ────────────────────────────────────────────────────────
@@ -192,7 +191,7 @@ def flatten_event_odds(event_blob: Any, snapshot_meta: dict) -> list[dict]:
         bk_last = bk.get("last_update", "")
         for m in bk.get("markets", []) or []:
             mkey = m.get("key", "")
-            stat = MARKET_TO_STAT.get(mkey)
+            stat = stat_for_market_key(mkey)
             if not stat:
                 continue
             mlast = m.get("last_update", "")
@@ -337,8 +336,14 @@ def save_raw_json(blob, target_date: str, name: str, overwrite: bool = False) ->
     return path
 
 
-def save_processed(quotes_df: pd.DataFrame, pairs_df: pd.DataFrame,
-                   target_date: str, suffix: str) -> tuple[Path, Path]:
+def save_processed(
+    quotes_df: pd.DataFrame,
+    pairs_df: pd.DataFrame,
+    target_date: str,
+    suffix: str,
+    *,
+    requested_market_keys: tuple[str, ...] | None = None,
+) -> tuple[Path, Path]:
     out_dir = ODDS_PROCESSED_DIR / target_date
     out_dir.mkdir(parents=True, exist_ok=True)
     suffix = _safe_filename(suffix)
@@ -354,6 +359,30 @@ def save_processed(quotes_df: pd.DataFrame, pairs_df: pd.DataFrame,
     quotes_df.to_csv(q_csv, index=False)
     pairs_df.to_parquet(p_pq, index=False)
     pairs_df.to_csv(p_csv, index=False)
+
+    req = tuple(requested_market_keys or ODDSAPI_NBA_DEFAULT_MARKETS)
+    if len(quotes_df) and "market_key" in quotes_df.columns:
+        returned_keys = sorted(
+            quotes_df["market_key"].dropna().astype(str).unique().tolist()
+        )
+        returned_stats = sorted(
+            quotes_df["market_stat"].dropna().astype(str).unique().tolist()
+        ) if "market_stat" in quotes_df.columns else []
+    else:
+        returned_keys = []
+        returned_stats = []
+    seen = set(returned_keys)
+    manifest = {
+        "requested_market_keys": list(req),
+        "returned_market_keys": returned_keys,
+        "missing_requested_market_keys": [m for m in req if m not in seen],
+        "returned_market_stats": returned_stats,
+        "market_registry_version": ODDSAPI_MARKET_REGISTRY_VERSION,
+        "oddsapi_market_registry_source": ODDSAPI_MARKET_REGISTRY_SOURCE,
+    }
+    mf = out_dir / f"odds_capture_manifest_{suffix}.json"
+    mf.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+
     return q_pq, p_pq
 
 
@@ -382,15 +411,18 @@ def cmd_live_event_odds(args) -> int:
     target = args.target_date or snap_iso[:10]
     if args.dry_run:
         print(f"[dry-run] would fetch live odds for {args.event_id}"); return 0
-    markets = args.markets.split(",")
+    markets = list(_markets_from_cli(args.markets))
     odds, _ = fetch_live_event_odds(api_key, args.event_id, markets, args.regions)
     p_raw = save_raw_json(odds, target, f"live_event_{args.event_id}_{snap_iso}")
     meta = make_snapshot_meta(args.snapshot_type, snap_iso, "live",
                               str(p_raw.relative_to(REPO_ROOT)))
     quotes = flatten_event_odds(odds, meta)
     pairs = pair_quotes(quotes)
-    save_processed(pd.DataFrame(quotes), pd.DataFrame(pairs), target,
-                   f"live_event_{args.event_id}_{snap_iso}")
+    save_processed(
+        pd.DataFrame(quotes), pd.DataFrame(pairs), target,
+        f"live_event_{args.event_id}_{snap_iso}",
+        requested_market_keys=_markets_from_cli(args.markets),
+    )
     print(f"event {args.event_id}: {len(quotes)} quotes, {len(pairs)} pairs")
     return 0
 
@@ -413,7 +445,7 @@ def cmd_historical_event_odds(args) -> int:
     if args.dry_run:
         print(f"[dry-run] would fetch historical odds for {args.event_id} at {args.snapshot_time_utc}")
         return 0
-    markets = args.markets.split(",")
+    markets = list(_markets_from_cli(args.markets))
     blob, _ = fetch_historical_event_odds(api_key, args.event_id,
                                           args.snapshot_time_utc, markets, args.regions)
     p_raw = save_raw_json(blob, target,
@@ -422,8 +454,11 @@ def cmd_historical_event_odds(args) -> int:
                               "historical", str(p_raw.relative_to(REPO_ROOT)))
     quotes = flatten_event_odds(blob, meta)
     pairs = pair_quotes(quotes)
-    save_processed(pd.DataFrame(quotes), pd.DataFrame(pairs), target,
-                   f"hist_event_{args.event_id}_{args.snapshot_time_utc}")
+    save_processed(
+        pd.DataFrame(quotes), pd.DataFrame(pairs), target,
+        f"hist_event_{args.event_id}_{args.snapshot_time_utc}",
+        requested_market_keys=_markets_from_cli(args.markets),
+    )
     print(f"historical event {args.event_id}: {len(quotes)} quotes, {len(pairs)} pairs")
     return 0
 
@@ -437,7 +472,7 @@ def cmd_live_snapshot(args) -> int:
     events, _ = fetch_live_events(api_key)
     save_raw_json(events, target, f"live_events_{snap_iso}")
     print(f"Live events: {len(events)}")
-    markets = args.markets.split(",")
+    markets = list(_markets_from_cli(args.markets))
     all_quotes, all_pairs = [], []
     for i, ev in enumerate(events[: args.max_events]):
         eid = ev.get("id");
@@ -449,8 +484,11 @@ def cmd_live_snapshot(args) -> int:
         q = flatten_event_odds(odds, meta)
         all_quotes.extend(q); all_pairs.extend(pair_quotes(q))
         time.sleep(0.4)
-    save_processed(pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
-                   f"live_slate_{args.snapshot_type}_{snap_iso}")
+    save_processed(
+        pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
+        f"live_slate_{args.snapshot_type}_{snap_iso}",
+        requested_market_keys=_markets_from_cli(args.markets),
+    )
     print(f"Live slate: {len(events[: args.max_events])} events captured; "
           f"{len(all_quotes)} quotes, {len(all_pairs)} pairs")
     return 0
@@ -469,7 +507,7 @@ def cmd_historical_snapshot(args) -> int:
     if args.commence_before:
         events = [e for e in events if e.get("commence_time", "") <= args.commence_before]
     print(f"Historical events at {args.snapshot_time_utc}: {len(events)}")
-    markets = args.markets.split(",")
+    markets = list(_markets_from_cli(args.markets))
     all_quotes, all_pairs = [], []
     for ev in events[: args.max_events]:
         eid = ev.get("id");
@@ -483,8 +521,11 @@ def cmd_historical_snapshot(args) -> int:
         q = flatten_event_odds(eb, meta)
         all_quotes.extend(q); all_pairs.extend(pair_quotes(q))
         time.sleep(0.4)
-    save_processed(pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
-                   f"hist_slate_{args.snapshot_type}_{args.snapshot_time_utc}")
+    save_processed(
+        pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
+        f"hist_slate_{args.snapshot_type}_{args.snapshot_time_utc}",
+        requested_market_keys=_markets_from_cli(args.markets),
+    )
     print(f"Historical slate: {len(events[: args.max_events])} events captured; "
           f"{len(all_quotes)} quotes, {len(all_pairs)} pairs")
     return 0
@@ -535,7 +576,7 @@ def cmd_historical_lock_day(args) -> int:
     events.sort(key=lambda e: e.get("commence_time", ""))
     selected = events[: args.max_events]
     print(f"  selecting first {len(selected)} of {len(events)} events")
-    markets = args.markets.split(",") if args.markets else DEFAULT_MARKETS
+    markets = list(_markets_from_cli(args.markets))
 
     all_quotes: list[dict] = []
     all_pairs: list[dict] = []
@@ -565,8 +606,11 @@ def cmd_historical_lock_day(args) -> int:
         print(f"    quotes: {len(q)}  pairs: {len(p)}")
         time.sleep(0.4)
 
-    save_processed(pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
-                   f"hist_lockday_{target}")
+    save_processed(
+        pd.DataFrame(all_quotes), pd.DataFrame(all_pairs), target,
+        f"hist_lockday_{target}",
+        requested_market_keys=_markets_from_cli(args.markets),
+    )
     print(f"\nLOCK-DAY summary:")
     print(f"  events captured:       {len(selected)}")
     print(f"  total raw quote rows:  {len(all_quotes)}")
@@ -576,7 +620,7 @@ def cmd_historical_lock_day(args) -> int:
 
 def cmd_smoke_test(args) -> int:
     api_key = _get_api_key()
-    markets = args.markets.split(",") if args.markets else DEFAULT_MARKETS
+    markets = list(_markets_from_cli(args.markets))
 
     print("=" * 72)
     print("SMOKE TEST — LIVE")
@@ -602,7 +646,10 @@ def cmd_smoke_test(args) -> int:
         quotes = flatten_event_odds(odds, meta)
         pairs = pair_quotes(quotes)
         q_df = pd.DataFrame(quotes); p_df = pd.DataFrame(pairs)
-        save_processed(q_df, p_df, target, f"smoke_live_{eid}_{snap_iso}")
+        save_processed(
+            q_df, p_df, target, f"smoke_live_{eid}_{snap_iso}",
+            requested_market_keys=_markets_from_cli(args.markets),
+        )
         print(f"\nLIVE smoke metrics:")
         print(f"  event_id:           {eid}")
         print(f"  teams:              {ev.get('away_team')} @ {ev.get('home_team')}")
@@ -625,11 +672,12 @@ def cmd_smoke_test(args) -> int:
             print(f"  no-vig over min/max: {p_df['no_vig_over_prob'].min():.4f} / "
                   f"{p_df['no_vig_over_prob'].max():.4f}")
         seen = set(q_df["market_key"].unique()) if not q_df.empty else set()
-        missing = [m for m in DEFAULT_MARKETS if m not in seen]
+        reqm = _markets_from_cli(args.markets)
+        missing = [m for m in reqm if m not in seen]
         if missing:
             print(f"  WARN: target markets NOT returned for this event: {missing}")
         else:
-            print(f"  ALL 10 target markets returned ✓")
+            print(f"  ALL {len(reqm)} requested markets returned ✓")
     else:
         print("  WARN: no live events available; LIVE smoke skipped.")
 
@@ -669,8 +717,11 @@ def cmd_smoke_test(args) -> int:
     h_quotes = flatten_event_odds(h_blob, meta_h)
     h_pairs = pair_quotes(h_quotes)
     h_q_df = pd.DataFrame(h_quotes); h_p_df = pd.DataFrame(h_pairs)
-    save_processed(h_q_df, h_p_df, target_h,
-                   f"smoke_hist_{h_eid}_{snap_h}")
+    save_processed(
+        h_q_df, h_p_df, target_h,
+        f"smoke_hist_{h_eid}_{snap_h}",
+        requested_market_keys=_markets_from_cli(args.markets),
+    )
     print(f"\nHISTORICAL smoke metrics:")
     print(f"  event_id:           {h_eid}")
     print(f"  raw quote rows:     {len(h_q_df)}")
@@ -687,11 +738,12 @@ def cmd_smoke_test(args) -> int:
             print(f"  no-vig over min/max: {h_p_df['no_vig_over_prob'].min():.4f} / "
                   f"{h_p_df['no_vig_over_prob'].max():.4f}")
         seen_h = set(h_q_df["market_key"].unique())
-        missing_h = [m for m in DEFAULT_MARKETS if m not in seen_h]
+        reqm_h = _markets_from_cli(args.markets)
+        missing_h = [m for m in reqm_h if m not in seen_h]
         if missing_h:
             print(f"  WARN: target markets NOT returned at this historical snapshot: {missing_h}")
         else:
-            print(f"  ALL 10 target markets returned ✓")
+            print(f"  ALL {len(reqm_h)} requested markets returned ✓")
     else:
         print("  WARN: historical event-odds returned no props at this snapshot.")
     return 0
@@ -706,7 +758,7 @@ def main() -> int:
 
     s = sub.add_parser("smoke-test")
     s.add_argument("--max-events", type=int, default=1)
-    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--markets", default=",".join(ODDSAPI_NBA_DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--dry-run", action="store_true")
 
@@ -716,7 +768,7 @@ def main() -> int:
 
     s = sub.add_parser("live-event-odds")
     s.add_argument("--event-id", required=True)
-    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--markets", default=",".join(ODDSAPI_NBA_DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--snapshot-type", default="live")
     s.add_argument("--target-date", default=None)
@@ -730,7 +782,7 @@ def main() -> int:
     s = sub.add_parser("historical-event-odds")
     s.add_argument("--event-id", required=True)
     s.add_argument("--snapshot-time-utc", required=True)
-    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--markets", default=",".join(ODDSAPI_NBA_DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--snapshot-type", default="historical")
     s.add_argument("--target-date", default=None)
@@ -739,7 +791,7 @@ def main() -> int:
     s = sub.add_parser("live-snapshot")
     s.add_argument("--snapshot-type", required=True,
                    choices=["morning_7am", "close_or_lock", "live", "smoke"])
-    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--markets", default=",".join(ODDSAPI_NBA_DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--max-events", type=int, default=20)
     s.add_argument("--target-date", default=None)
@@ -753,7 +805,7 @@ def main() -> int:
     s.add_argument("--commence-after", default=None)
     s.add_argument("--commence-before", default=None)
     s.add_argument("--max-events", type=int, default=2)
-    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--markets", default=",".join(ODDSAPI_NBA_DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--lock-offset-minutes", type=int, default=5)
     s.add_argument("--dry-run", action="store_true")
@@ -764,7 +816,7 @@ def main() -> int:
                    choices=["historical_close", "historical_7am",
                             "historical_morning", "historical_lock", "historical"])
     s.add_argument("--target-date", default=None)
-    s.add_argument("--markets", default=",".join(DEFAULT_MARKETS))
+    s.add_argument("--markets", default=",".join(ODDSAPI_NBA_DEFAULT_MARKETS))
     s.add_argument("--regions", default="us")
     s.add_argument("--max-events", type=int, default=20)
     s.add_argument("--commence-after", default=None)

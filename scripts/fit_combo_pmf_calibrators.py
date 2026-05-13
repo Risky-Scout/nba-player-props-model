@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""M6.2 — Fit role-aware PMF calibrators for the 4 mission combo stats.
+"""M6.2 — Fit role-aware PMF calibrators for mission combo stats (incl. RA).
 
 Reads data/oof_combo_pmfs.parquet, iterates
-MISSION_REQUIRED_COMBOS_CANONICAL = ("stocks", "pa", "pr", "pra"),
+MISSION_REQUIRED_COMBOS_CANONICAL from targets (stocks, pa, pr, ra, pra),
 calls fit_all() with 4-tuple (pmfs, outcomes, dates, role_buckets)
 inputs per combo, and writes:
 
@@ -10,26 +10,26 @@ inputs per combo, and writes:
     artifacts/models/pmf_cal_role_pa.pkl
     artifacts/models/pmf_cal_role_pr.pkl
     artifacts/models/pmf_cal_role_pra.pkl
+    artifacts/models/pmf_cal_role_ra.pkl
 
 Important: fit_all() unconditionally overwrites
 artifacts/models/pmf_cal_meta.json. This script reads the existing
 meta first (containing the 7 base-stat entries written earlier in
 the same aggregate-calibration job by `calibrate_pmf.py
---aggregate-mode`), calls fit_all() for the 4 combos only, then
+--aggregate-mode`), calls fit_all() for the mission combos, then
 merges the base entries back in so the final meta.json contains all
-11 mission-required canonical stats:
+12 mission-required canonical stats:
 
-    pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, pra
+    pts, reb, ast, fg3m, tov, stl, blk, stocks, pa, pr, ra, pra
 
 The merged meta is tagged with combo-calibration provenance fields:
 
     combo_calibration_status: "fitted_m6_role_aware"
-    combo_target_stats_canonical: ["stocks", "pa", "pr", "pra"]
-    combo_target_stats_mission:   ["stl_blk", "pts_ast", "pts_reb", "pts_reb_ast"]
+    combo_target_stats_canonical: ["stocks", "pa", "pr", "ra", "pra"]
+    combo_target_stats_mission:   ["stl_blk", "pts_ast", "pts_reb", "reb_ast", "pts_reb_ast"]
 
 Invariants (drift guards from 02_CLAUDE_CONTROL_NOTES.md):
-  #4 — Never fits 'ra' / 'reb_ast'. Uses MISSION_REQUIRED_COMBOS_CANONICAL,
-       not the codebase-compat COMBO_STATS_CANONICAL (which contains 'ra').
+  #4 — Fits RA from combo OOF rows where stat=='ra' (canonical reb+ast).
   #6 — Produces RoleAwarePMFCalibrator instances via fit_all → loadable
        with joblib.load, exposes .apply(pmf, role_bucket) API.
   #8 — Never uses pickle.load; only joblib (indirectly via fit_all).
@@ -59,6 +59,7 @@ if str(REPO_ROOT / "src") not in sys.path:
 from nba_props_model.targets import (  # noqa: E402
     MISSION_REQUIRED_COMBOS_CANONICAL,
     MISSION_REQUIRED_COMBOS_MISSION,
+    MISSION_REQUIRED_TARGETS_CANONICAL,
 )
 from nba_props_model.calibration.pmf_calibration import fit_all  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
@@ -78,12 +79,8 @@ REQUIRED_COLUMNS = ("stat", "pmf", "outcome", "game_date", "role_bucket")
 # PMF validity tolerance (M6.2 spec requirement #7).
 PMF_SUM_TOL = 1e-6
 
-# Mission-required canonical 11 stats — the union M6.2's merged meta
-# MUST contain at job end.
-MISSION_REQUIRED_CANONICAL_11 = (
-    "pts", "reb", "ast", "fg3m", "tov", "stl", "blk",
-    "stocks", "pa", "pr", "pra",
-)
+# Mission-required canonical stats — union base + combos for merged meta check.
+MISSION_REQUIRED_CANONICAL_ALL = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
 
 logger = logging.getLogger("fit_combo_pmf_calibrators")
 
@@ -160,7 +157,7 @@ def _validate_pmfs(pmfs: np.ndarray, stat: str) -> int:
 
 
 def _build_per_stat_inputs(df: pd.DataFrame) -> tuple[dict[str, tuple], int]:
-    """Build the fit_all input dict for the 4 mission combos.
+    """Build the fit_all input dict for mission combo stats.
 
     Returns ({combo: (pmfs, outcomes, dates, role_buckets)}, exit_code).
     exit_code is 0 on success; nonzero if any combo has missing rows,
@@ -301,24 +298,12 @@ def main() -> int:
     if rc != 0:
         return rc
 
-    # Drift guard #4: never fit ra / reb_ast.
-    forbidden = {"ra", "reb_ast"} & set(df["stat"].unique())
-    if forbidden:
-        logger.error(
-            f"Combo OOF contains forbidden stat(s): {sorted(forbidden)} — "
-            "DRIFT GUARD #4 VIOLATION. Mission combos must be only "
-            "stocks/pa/pr/pra. Investigate "
-            "scripts/build_combo_oof_pmfs_from_base_oof.py COMBO_DEFS."
-        )
-        return 3
-
-    # M6.2 spec requirement #6: validate each combo stat is present.
-    missing_combos = set(MISSION_REQUIRED_COMBOS_CANONICAL) - set(df["stat"].unique())
+    # M6.2 spec requirement #6: validate each mission combo stat is present.
+    missing_combos = set(MISSION_REQUIRED_COMBOS_CANONICAL) - set(df["stat"].astype(str).unique())
     if missing_combos:
         logger.error(
             f"Combo OOF missing mission combos: {sorted(missing_combos)}. "
-            "Phase 8 aggregate-calibration must produce all 4 of "
-            f"{MISSION_REQUIRED_COMBOS_CANONICAL}."
+            f"Expected all of {tuple(MISSION_REQUIRED_COMBOS_CANONICAL)}."
         )
         return 4
 
@@ -370,7 +355,7 @@ def main() -> int:
                 f"  EXPECTED pkl missing after fit_all: {pkl}"
             )
 
-    # Merge base + combo and rewrite pmf_cal_meta.json with all 11.
+    # Merge base + combo and rewrite pmf_cal_meta.json with all mission stats.
     merged_meta = _merge_meta(base_meta, combo_meta)
     with open(CAL_META_PATH, "w") as f:
         json.dump(merged_meta, f, indent=2, default=str)
@@ -396,23 +381,20 @@ def main() -> int:
         )
         return 6
 
-    # M6 acceptance self-check: merged meta should cover all 11.
+    # M6 acceptance self-check: merged meta should cover all 12 mission stats.
     missing_in_merged = (
-        set(MISSION_REQUIRED_CANONICAL_11) - set(merged_stats)
+        set(MISSION_REQUIRED_CANONICAL_ALL) - set(merged_stats)
     )
     if missing_in_merged:
         logger.warning(
             f"Merged meta is missing {sorted(missing_in_merged)} from "
-            "the 11-stat mission set. This indicates calibrate_pmf.py "
-            "--aggregate-mode did not produce one of the base stats "
-            "earlier in the job. M6 acceptance §'all 11 fitted stats in "
-            "pmf_cal_meta.json' will fail downstream — investigate "
-            "before promoting to production."
+            "the 12-stat mission set. Investigate calibrate_pmf.py "
+            "--aggregate-mode base outputs and combo fit coverage."
         )
     else:
         logger.info(
-            "Merged meta covers all 11 mission canonical stats: "
-            f"{sorted(MISSION_REQUIRED_CANONICAL_11)}"
+            "Merged meta covers all 12 mission canonical stats: "
+            f"{sorted(MISSION_REQUIRED_CANONICAL_ALL)}"
         )
 
     logger.info("=" * 60)

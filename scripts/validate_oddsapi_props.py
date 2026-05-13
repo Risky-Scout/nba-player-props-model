@@ -15,6 +15,11 @@ import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from nba_props_model.markets.oddsapi_markets import (
+    ODDSAPI_NBA_MARKET_TO_STAT,
+    ODDSAPI_NBA_REQUIRED_CANONICAL_STATS,
+)
 DEFAULT_INPUT = REPO_ROOT / "data" / "odds_api" / "processed"
 
 REQUIRED_QUOTE_COLS = [
@@ -38,14 +43,8 @@ REQUIRED_PAIR_COLS = [
     "bookmaker_last_update", "market_last_update",
     "over_sid", "under_sid", "pair_key", "fetched_at_utc",
 ]
-TARGET_STATS = {"pts", "reb", "ast", "tov", "fg3m"}
-TARGET_MARKETS = {
-    "player_points", "player_rebounds", "player_assists",
-    "player_turnovers", "player_threes",
-    "player_points_alternate", "player_rebounds_alternate",
-    "player_assists_alternate", "player_turnovers_alternate",
-    "player_threes_alternate",
-}
+TARGET_STATS = set(ODDSAPI_NBA_REQUIRED_CANONICAL_STATS)
+TARGET_MARKETS = set(ODDSAPI_NBA_MARKET_TO_STAT.keys())
 
 
 def _find_latest_pair(input_dir: Path) -> tuple[Path | None, Path | None]:

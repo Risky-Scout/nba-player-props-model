@@ -13,19 +13,10 @@ Pipeline per prop
   2. Main-stat PMFs from minutes x rate simulation
   3. Sparse-stat PMFs from hurdle models (stl, blk marginals)
   4. FG3M PMF from the hurdle model's pmf() method
-  5. Mission combo PMFs (stocks, pa, pr, pra) from joint samples
+  5. Mission combo PMFs (stocks, pa, pr, ra, pra) from joint samples
      via simulate_joint_stat_samples + build_combo_pmfs_for_group.
-     - pa/pr/pra: production-grade. pts/reb/ast share the minutes
-       draw in joint_simulation, preserving within-game correlation
-       that convolution/independence destroyed.
-     - stocks: routed through the same path for architectural
-       consistency and so the role-aware stocks calibrator sees its
-       training-time input distribution. BUT joint_simulation
-       samples stl and blk INDEPENDENTLY from their hurdle PMFs
-       (documented limitation in joint_simulation.py). M8.5 does
-       NOT close stocks correlation quality; that remains an open
-       M8.6/M9 item.
-     ra/reb_ast are intentionally NOT emitted (non-mission).
+     - pa/pr/ra/pra: pts/reb/ast share the minutes draw (RA = reb+ast).
+     - stocks: joint path with documented independent stl/blk marginals.
   6. Apply per-stat pmf_calibration if trained
   7. Convert to fair over/under at each offered line
   8. Bet-selection filter against market prices
@@ -73,23 +64,11 @@ MAIN_STATS = ("pts", "reb", "ast", "tov")
 SPARSE_STATS = ("stl", "blk")
 COMBO_STATS = tuple(combos.COMBO_COMPONENTS.keys())
 
-# M8.5: mission-required combos. The ONLY combos emitted to
-# production. stocks, pa, pr, and pra each route through joint
-# samples + role-aware calibrators, but the correctness story
-# differs by combo:
-#   - pa, pr, pra: production-grade. pts/reb/ast share the same
-#     minutes draw in simulate_joint_stat_samples, so the resulting
-#     PMFs preserve within-game correlation that convolution/
-#     independence destroyed.
-#   - stocks: routed through the same joint-sample path for
-#     architectural consistency and so the role-aware M6.2 stocks
-#     calibrator sees its training-time input distribution. BUT
-#     joint_simulation samples stl/blk INDEPENDENTLY from their
-#     hurdle PMFs (documented limitation). True stl/blk correlation
-#     is NOT closed by M8.5; M8.6/M9 must track stocks/stl/blk
-#     quality separately.
-# ra/reb_ast are intentionally NOT in this set.
-MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "pra")
+# M8.6: mission-required combos (12-target mission). All emitted combos
+# use joint samples + build_combo_pmfs_for_group (no independence fallback).
+# RA uses reb+ast from the same joint draw as PA/PR/PRA. Role calibrator for
+# RA may be absent until pmf_cal_role_ra.pkl exists (uncalibrated raw joint PMF).
+MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "ra", "pra")
 
 # Stats whose simulation embeds inactive/DNP zero-mass via
 # `minutes_dist.sample()` and therefore must be active-conditioned
@@ -151,12 +130,9 @@ def build_prop_pmfs(
         except Exception as e:
             logger.debug(f"fg3m pmf failed: {e}")
 
-    # M8.5: mission combo PMFs from joint samples (replaces legacy
-    # convolution stocks + independence pa/pr/pra). The M6.2 role-aware
-    # combo calibrators (pmf_cal_role_{stocks,pa,pr,pra}.pkl) were fit
-    # on joint-sample combo OOF; this path routes each of stocks, pa,
-    # pr, and pra through joint samples to match the calibrators'
-    # training input distribution. No ra/reb_ast (non-mission).
+    # M8.6: mission combo PMFs from joint samples + joint_combo_pmfs.
+    # Role-aware calibrators exist for stocks, pa, pr, pra; RA may be
+    # uncalibrated until pmf_cal_role_ra.pkl is trained.
     #
     # Correctness story differs by combo:
     #   - pa, pr, pra: production-grade. pts/reb/ast share the same

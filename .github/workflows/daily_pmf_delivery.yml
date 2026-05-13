@@ -18,17 +18,21 @@ name: NBA PMF Delivery — Daily Pipeline
 #
 # Wrapper invocations (per scripts/run_daily_delivery_pipeline.py):
 #   1. scripts/refresh_daily_inputs.py      (us+us2 odds + freshness manifest)
-#   2. scripts/predict.py                   (woo_morning_monetization /
+#   2. scripts/build_availability_table.py --slate-date <date>  (preflight; merges into data/player_availability_asof.parquet)
+#   3. scripts/verify_oddsapi_market_registry_contract.py
+#   4. scripts/verify_availability_freshness.py
+#   5. scripts/build_stat_grid_pmfs.py      (12-stat mission grid incl. RA)
+#   6. scripts/predict.py                   (woo_morning_monetization /
 #                                            morning / full_day, --predict only)
-#   3. scripts/build_daily_pmf_delivery.py  (snapshot=mode-specific)
-#   4. scripts/build_derek_forward_feed.py  (derek_near_lineup, close_lock,
+#   7. scripts/build_daily_pmf_delivery.py  (snapshot=mode-specific)
+#   8. scripts/build_derek_forward_feed.py  (derek_near_lineup, close_lock,
 #                                            after_game)
-#   5. scripts/build_wizard_of_odds_public_export.py
+#   9. scripts/build_wizard_of_odds_public_export.py
 #                                           (woo_*, derek_near_lineup,
 #                                            close_lock; with monetization
 #                                            labels for woo_* runs)
-#   6. scripts/score_daily_pmf_delivery_after_game.py  (after_game)
-#   7. scripts/build_deliveries_index.py    (always, last)
+#  10. scripts/score_daily_pmf_delivery_after_game.py  (after_game)
+#  11. scripts/build_deliveries_index.py    (always, last)
 #
 # Hard rules echoed by every job:
 #   - never log ODDS_API_KEY, BDL_API_KEY, or affiliate config secrets
@@ -108,6 +112,9 @@ concurrency:
 
 env:
   PYTHON_VERSION: "3.11"
+  PYTHONPATH: src
+  STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+  SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
   # Phase 13AN-G: opt actions into Node 24.
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
@@ -312,6 +319,18 @@ jobs:
           python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
+      - name: M8.6 post-delivery verifiers
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/verify_oddsapi_market_registry_contract.py
+          python3 scripts/verify_no_legacy_prediction_artifacts.py
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D" \
+            --allow-missing after_game_scoring derek_forward_feed
+          python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
+          python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
       - name: Stage and commit approved files
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -444,6 +463,18 @@ jobs:
           python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
+      - name: M8.6 post-delivery verifiers
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/verify_oddsapi_market_registry_contract.py
+          python3 scripts/verify_no_legacy_prediction_artifacts.py
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D" \
+            --allow-missing after_game_scoring derek_forward_feed
+          python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
+          python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -596,6 +627,19 @@ jobs:
           python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
 
+      - name: M8.6 post-delivery verifiers
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/verify_oddsapi_market_registry_contract.py
+          python3 scripts/verify_no_legacy_prediction_artifacts.py
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D" \
+            --allow-missing after_game_scoring
+          python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
+          python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
+
       # Phase 13AJ: enforce the near-lineup contract — predictions
       # parquet present, near-lineup output produced, no UTC/ET date
       # rollover mismatch. Hard-fails so the operator notices when the
@@ -737,6 +781,18 @@ jobs:
           python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
+      - name: M8.6 post-delivery verifiers
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/verify_oddsapi_market_registry_contract.py
+          python3 scripts/verify_no_legacy_prediction_artifacts.py
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D" \
+            --allow-missing after_game_scoring
+          python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
+          python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -887,6 +943,17 @@ jobs:
         run: |
           python scripts/verify_after_game_scoring_package_consistency.py \
             --delivery-date ${{ steps.d.outputs.date }}
+      - name: M8.6 after-game delivery contract verifiers
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/verify_oddsapi_market_registry_contract.py
+          python3 scripts/verify_no_legacy_prediction_artifacts.py
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D"
+          python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
+          python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
       - name: Phase 13K — rolling market benchmark
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |

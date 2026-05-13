@@ -1,6 +1,9 @@
 """Single orchestrator for the daily PMF delivery lifecycle.
 
 Wraps `refresh_daily_inputs.py`, optionally `predict.py`,
+`build_availability_table.py` (slate-date merge preflight),
+`verify_oddsapi_market_registry_contract.py`,
+`verify_availability_freshness.py`, `build_stat_grid_pmfs.py`,
 `build_daily_pmf_delivery.py`, and `score_daily_pmf_delivery_after_game.py`
 behind one CLI so the GitHub Actions workflow (and the on-call operator)
 can invoke a full snapshot run with a single command.
@@ -70,6 +73,9 @@ SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
 PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
+BUILD_AVAILABILITY = REPO_ROOT / "scripts" / "build_availability_table.py"
+VERIFY_AVAILABILITY = REPO_ROOT / "scripts" / "verify_availability_freshness.py"
+VERIFY_ODDSAPI_REGISTRY = REPO_ROOT / "scripts" / "verify_oddsapi_market_registry_contract.py"
 INDEX = REPO_ROOT / "scripts" / "build_deliveries_index.py"
 DEREK_FEED = REPO_ROOT / "scripts" / "build_derek_forward_feed.py"
 DEREK_GAME_SNAPSHOTS_FROM_DELIVERY = REPO_ROOT / "scripts" / "build_derek_game_snapshots_from_delivery.py"
@@ -112,18 +118,43 @@ def _predict(date: str) -> int:
     return _run(cmd, allow_fail=True, label=f"predict {date}")
 
 
+def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
+    """M8.6: rebuild today's availability slice, verify Odds API registry,
+    then enforce availability freshness before PMF stat grid."""
+    if BUILD_AVAILABILITY.exists():
+        _run(
+            [PYTHON, str(BUILD_AVAILABILITY), "--slate-date", date],
+            label=f"build_availability_table --slate-date {date}",
+        )
+    if VERIFY_ODDSAPI_REGISTRY.exists():
+        _run(
+            [PYTHON, str(VERIFY_ODDSAPI_REGISTRY)],
+            label="verify_oddsapi_market_registry_contract",
+        )
+    if VERIFY_AVAILABILITY.exists():
+        _run(
+            [
+                PYTHON, str(VERIFY_AVAILABILITY),
+                "--date", date,
+                "--mode", availability_mode,
+            ],
+            label=f"verify_availability_freshness ({availability_mode})",
+        )
+    return 0
+
+
 def _stat_grid(date: str) -> int:
     """Phase 12 Part G: emit `predictions/stat_grid_{date}.parquet` so
     the canonical build can include TOV (and any other model-only stats
     BDL doesn't sell). Allowed to fail — the canonical build still works
-    without TOV when this step is skipped."""
+    without TOV when this step is skipped.
+
+    Default stats are the 12-stat mission grid from
+    ``build_stat_grid_pmfs.DEFAULT_STATS`` (includes ``ra``).
+    """
     if not STAT_GRID.exists():
         return 0
-    cmd = [
-        PYTHON, str(STAT_GRID), "--date", date,
-        # M8.1: mission canonical 11 (source of truth: nba_props_model.targets.MISSION_REQUIRED_TARGETS_CANONICAL)
-        "--stats", "pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks", "pa", "pr", "pra",
-    ]
+    cmd = [PYTHON, str(STAT_GRID), "--date", date]
     return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
 
 
@@ -378,6 +409,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
         _predict(date)
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
+    _preflight_before_stat_grid(date, availability_mode="close_lock")
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
@@ -401,6 +433,7 @@ def run_woo_morning_monetization(
         _predict(date)
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
+    _preflight_before_stat_grid(date, availability_mode="close_lock")
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
@@ -424,6 +457,7 @@ def run_woo_afternoon_refresh(
     yet. Does not touch Derek's evaluation feed."""
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
+    _preflight_before_stat_grid(date, availability_mode="close_lock")
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
@@ -448,6 +482,7 @@ def run_derek_near_lineup(
     manifest's snapshot_type / finality_status (no override)."""
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
+    _preflight_before_stat_grid(date, availability_mode="close_lock")
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
@@ -467,6 +502,7 @@ def run_close_lock(date: str, *, regions: list[str],
                      rebuild_canonical: bool) -> int:
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
+    _preflight_before_stat_grid(date, availability_mode="close_lock")
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)

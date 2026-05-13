@@ -44,6 +44,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import warnings
 from datetime import datetime, timezone
 from pathlib import Path
@@ -76,6 +77,9 @@ from nba_props_model.features.availability_asof import (  # noqa: E402
     AvailabilityBuilder as _AvailabilityBuilder,
 )
 from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
+from nba_props_model.calibration.source_pmf_recalibration import (  # noqa: E402
+    load_stat_grid_delivery_recalibrator,
+)
 from nba_props_model.calibration.role_buckets import role_bucket_features_from_minutes_dist  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
@@ -92,22 +96,15 @@ _AVAILABILITY_COLS = (
 )
 _INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
 
-# M8.4: full 11-stat mission canonical universe — 7 base (pts/reb/ast/
-# fg3m/tov/stl/blk) + 4 combos (stocks/pa/pr/pra). build_prop_pmfs is
-# expected to return all 11; missing-stat handling is enforced by the
-# end-of-run emission gate in main(). Combo derivation inside
-# pmf_predict.build_prop_pmfs is currently independence/convolution
-# (stocks_conv_v1, combo_independence_v1) — joint-sample derivation
-# is the M8.5 follow-up. M8.4 wires coverage, not derivation
-# correctness. No ra / reb_ast (non-mission).
+# M8.6: full 12-stat mission canonical universe — 7 base + 5 combos
+# (stocks/pa/pr/ra/pra). build_prop_pmfs must return joint-sample combo
+# PMFs for mission combos (no legacy convolution / independence tags).
 DEFAULT_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 ALLOWED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 
-# M8.5: guard constants. Mission combos (stocks/pa/pr/pra) MUST come
-# from joint-sample-derived PMFs and MUST NOT carry legacy
-# convolution/independence model_version tags. These guards run in
-# the per-(player, game) emission loop below.
-M8_5_MISSION_COMBOS = frozenset({"stocks", "pa", "pr", "pra"})
+# M8.6: guard constants. Mission combos MUST come from joint-sample-derived
+# PMFs and MUST NOT carry legacy convolution/independence model_version tags.
+M8_5_MISSION_COMBOS = frozenset({"stocks", "pa", "pr", "ra", "pra"})
 M8_5_LEGACY_COMBO_TAGS = ("stocks_conv_v1", "combo_independence_v1")
 
 
@@ -350,6 +347,31 @@ def _build_pipeline_state(target_date: str) -> dict:
     except FileNotFoundError:
         availability_builder = None
 
+    av_path = DATA_DIR / "player_availability_asof.parquet"
+    suppress_inactive_risk = False
+    availability_table_freshness = "unknown"
+    availability_age_hours: float | None = None
+    if av_path.exists():
+        availability_age_hours = (time.time() - av_path.stat().st_mtime) / 3600.0
+        if availability_age_hours > 6.0:
+            availability_table_freshness = "stale"
+            suppress_inactive_risk = True
+        else:
+            availability_table_freshness = "fresh"
+    else:
+        availability_table_freshness = "missing"
+        suppress_inactive_risk = True
+    if os.environ.get("NBA_FORCE_AVAILABILITY_FRESH", "").strip() == "1":
+        suppress_inactive_risk = False
+        availability_table_freshness = "forced_fresh"
+
+    if suppress_inactive_risk:
+        print(
+            "  availability guard: suppress_inactive_risk=True "
+            f"freshness={availability_table_freshness!r} "
+            f"age_hours={availability_age_hours}"
+        )
+
     games_by_id = {int(g["id"]): g for g in games if g.get("id")}
 
     return {
@@ -364,11 +386,14 @@ def _build_pipeline_state(target_date: str) -> dict:
         "injury_freshness_status": injury_freshness_status,
         "injury_context_source": injury_context_source,
         "injury_report_fetched_at_utc": injury_report_fetched_at_utc,
+        "suppress_inactive_risk": suppress_inactive_risk,
+        "availability_table_freshness": availability_table_freshness,
+        "availability_table_age_hours": availability_age_hours,
     }
 
 
 def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
-                            state: dict, fg3m_model, stats: list[str]) -> list[dict]:
+                            state: dict, fg3m_model, stats: list[str], recalibrator=None) -> list[dict]:
     """Compute PMFs for one (player, game). Returns list of canonical
     delivery rows — one per stat in `stats` — or an empty list if the
     feature build / minutes model fails."""
@@ -445,7 +470,10 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
         return []
 
     try:
-        role_features = role_bucket_features_from_minutes_dist(mp_dist)
+        role_features = role_bucket_features_from_minutes_dist(
+            mp_dist,
+            suppress_inactive_risk=bool(state.get("suppress_inactive_risk")),
+        )
     except Exception:
         role_features = {}
 
@@ -505,7 +533,22 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
                         f"independence path. Must use "
                         f"joint_sampler_v1+joint_combo_pmf_v1. See M8.5."
                     )
-        s = _pmf_summary(prop.pmf)
+        pmf_out = np.asarray(prop.pmf, dtype=float).ravel()
+        recal_meta = {}
+        if recalibrator is not None:
+            try:
+                pmf_out, recal_meta = recalibrator.apply(
+                    pmf_out, stat=stat, role_bucket=role_bucket
+                )
+            except Exception as e:
+                raise SystemExit(
+                    f"FATAL: STAT_GRID_SOURCE_RECALIBRATION_FAILED "
+                    f"player_id={player_id} game_id={gid} stat={stat} "
+                    f"role_bucket={role_bucket}: {type(e).__name__}: {e}"
+                )
+
+        s = _pmf_summary(pmf_out)
+        recal_applied = bool(recal_meta.get("source_recalibration_applied", False))
         out_rows.append({
             "player_id": int(player_id),
             "player_name": player_name,
@@ -524,13 +567,23 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
             "injury_freshness_status": state.get("injury_freshness_status"),
             "injury_context_source": state.get("injury_context_source"),
             "injury_report_fetched_at_utc": state.get("injury_report_fetched_at_utc"),
+            "availability_table_freshness": state.get("availability_table_freshness"),
+            "availability_table_age_hours": state.get("availability_table_age_hours"),
+            "suppress_inactive_risk": bool(state.get("suppress_inactive_risk")),
+            "availability_blocks_market_superiority": bool(
+                state.get("suppress_inactive_risk")
+            ),
             "stat": stat,
             "side": "MODEL_ONLY",
             "line": None,
             "odds": None,
             "model_version": prop.model_version,
-            "calibrated": bool(prop.calibrated),
-            "pmf": json.dumps(_pmf_to_dict(prop.pmf)),
+            "calibrated": bool(prop.calibrated or recal_applied),
+            "source_recalibration_applied": recal_applied,
+            "source_recalibration_version": recal_meta.get("source_recalibration_version"),
+            "source_recalibration_stage": recal_meta.get("source_recalibration_stage"),
+            "source_recalibration_role_bucket": role_bucket,
+            "pmf": json.dumps(_pmf_to_dict(pmf_out)),
             "pmf_summary_mean": s["mean"],
             "pmf_summary_median": s["median"],
             "pmf_summary_mode": s["mode"],
@@ -556,9 +609,9 @@ def main() -> int:
                      help="YYYY-MM-DD slate date (US/Eastern)")
     ap.add_argument("--stats", nargs="+", default=list(DEFAULT_STATS),
                      choices=list(ALLOWED_STATS),
-                     help=("stats to emit (default: 11-stat mission "
+                     help=("stats to emit (default: 12-stat mission "
                            "canonical [pts reb ast fg3m tov stl blk "
-                           "stocks pa pr pra]); no ra/reb_ast (non-mission)"))
+                           "stocks pa pr ra pra])"))
     ap.add_argument("--slate-source", choices=["recent_rosters", "all_props"],
                     default="recent_rosters",
                     help=("player-game slate source; default recent_rosters "
@@ -618,12 +671,20 @@ def main() -> int:
 
     fg3m_model = _fg3m_hurdle_model(required=("fg3m" in args.stats)) if "fg3m" in args.stats else None
 
+    recalibrator = load_stat_grid_delivery_recalibrator()
+    print(
+        "  source recalibrator: "
+        f"enabled={getattr(recalibrator, 'enabled', None)} "
+        f"version={getattr(recalibrator, 'version', None)}"
+    )
+
     rows: list[dict] = []
     skipped = 0
     for pid, gid in keys:
         produced = _row_for_player_game(
             pid, gid, target_date=target_date, state=state,
             fg3m_model=fg3m_model, stats=args.stats,
+            recalibrator=recalibrator,
         )
         if not produced:
             skipped += 1
@@ -640,13 +701,10 @@ def main() -> int:
     per_stat_counts = df.groupby('stat').size().to_dict()
     print(f"  per-stat counts:\n{df.groupby('stat').size().to_string()}")
 
-    # M8.4: hard gate — every requested stat must have at least one
-    # emitted row. Silent zero-coverage on stocks/pa/pr/pra shipped
-    # 0/11 stats through deliveries 2026-05-01..05-09; this gate
-    # prevents recurrence. Per-player skips on missing prop are still
-    # permitted (data sparsity); zero coverage across the entire
-    # slate is a structural failure. Do not silently ship sub-11
-    # coverage.
+    # M8.6: hard gate — every requested stat must have at least one
+    # emitted row. Zero coverage across the entire slate for any
+    # requested stat is a structural failure (do not silently ship
+    # sub-12 coverage when 12 are requested).
     requested = set(args.stats)
     emitted = set(per_stat_counts.keys())
     missing_at_run_level = sorted(requested - emitted)

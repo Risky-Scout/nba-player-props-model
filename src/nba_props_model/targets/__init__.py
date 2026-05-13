@@ -87,17 +87,14 @@ CANONICAL_TO_MISSION: dict[str, str] = {
 }
 MISSION_TO_CANONICAL: dict[str, str] = {v: k for k, v in CANONICAL_TO_MISSION.items()}
 
-# ── Mission-required subset (per master prompt: 7 base + 4 combo = 11) ──
-# The master prompt's ALL_TARGET_STATS does NOT include reb_ast/ra. The
-# registry exposes ra/reb_ast for codebase compatibility but flags the
-# 11-target subset that the mission specifically requires.
+# ── Mission-required subset: 7 base + 5 combo = 12 (includes RA / reb_ast) ──
 
 MISSION_REQUIRED_BASE: tuple[str, ...] = BASE_STATS_FULL  # all 7
 MISSION_REQUIRED_COMBOS_CANONICAL: tuple[str, ...] = (
-    "stocks", "pa", "pr", "pra",
+    "stocks", "pa", "pr", "ra", "pra",
 )
 MISSION_REQUIRED_COMBOS_MISSION: tuple[str, ...] = (
-    "stl_blk", "pts_ast", "pts_reb", "pts_reb_ast",
+    "stl_blk", "pts_ast", "pts_reb", "reb_ast", "pts_reb_ast",
 )
 MISSION_REQUIRED_TARGETS_CANONICAL: tuple[str, ...] = (
     MISSION_REQUIRED_BASE + MISSION_REQUIRED_COMBOS_CANONICAL
@@ -238,8 +235,8 @@ def _self_test() -> None:
     assert len(COMBO_STATS_CANONICAL) == 5
     assert len(ALL_TARGETS_CANONICAL) == 12
     assert len(ALL_TARGETS_MISSION) == 12
-    assert len(MISSION_REQUIRED_TARGETS_CANONICAL) == 11
-    assert len(MISSION_REQUIRED_TARGETS_MISSION) == 11
+    assert len(MISSION_REQUIRED_TARGETS_CANONICAL) == 12
+    assert len(MISSION_REQUIRED_TARGETS_MISSION) == 12
     # Known-name closure
     for s in ALL_TARGETS_CANONICAL:
         assert is_known(s)
@@ -247,8 +244,7 @@ def _self_test() -> None:
         assert is_known(s)
     # PMF subsets partition base stats
     assert set(BASE_STATS_PMF_TRAINED + BASE_STATS_PMF_PENDING) == set(BASE_STATS_FULL)
-    # Mission-required combos = full combos minus "ra"
-    assert set(MISSION_REQUIRED_COMBOS_CANONICAL) == set(COMBO_STATS_CANONICAL) - {"ra"}
+    assert set(MISSION_REQUIRED_COMBOS_CANONICAL) == set(COMBO_STATS_CANONICAL)
     # normalize() round-trips canonical
     assert normalize(COMBO_STATS_CANONICAL) == COMBO_STATS_CANONICAL
     # normalize() converts mission to canonical

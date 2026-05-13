@@ -10,17 +10,14 @@ from pathlib import Path
 
 import requests
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
+from nba_props_model.markets.oddsapi_markets import ODDSAPI_NBA_DEFAULT_MARKETS
 from nba_props_model.paths import DATA_DIR
 
 ODDS_API_KEY = os.environ.get("ODDS_API_KEY", "")
 DATE = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 OUT = DATA_DIR / f"opening_lines_{DATE}.json"
-
-MARKETS = [
-    "player_points", "player_rebounds", "player_assists",
-    "player_threes", "player_steals", "player_blocks",
-]
 
 
 def fetch_events():
@@ -36,7 +33,7 @@ def fetch_props(event_id):
     url = (
         f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds"
         f"?apiKey={ODDS_API_KEY}&regions=us,us2"
-        f"&markets={','.join(MARKETS)}&oddsFormat=american"
+        f"&markets={','.join(ODDSAPI_NBA_DEFAULT_MARKETS)}&oddsFormat=american"
     )
     r = requests.get(url, timeout=15)
     if r.status_code != 200:
