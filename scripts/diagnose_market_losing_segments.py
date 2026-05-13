@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Deep diagnosis for segments with model_logloss_not_better (Phase 8 follow-up)."""
+"""Deep diagnosis for the 12 eligible stat-role segments that fail market logloss."""
 from __future__ import annotations
 
 import argparse
 import json
 import math
 import sys
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -13,266 +14,382 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+FAILING = [
+    ("pts", "core"),
+    ("pts", "starter"),
+    ("reb", "core"),
+    ("reb", "rotation"),
+    ("ast", "core"),
+    ("ast", "starter"),
+    ("fg3m", "core"),
+    ("fg3m", "starter"),
+    ("pa", "starter"),
+    ("pr", "starter"),
+    ("ra", "core"),
+    ("pra", "starter"),
+]
 
-def _logit(p: np.ndarray) -> np.ndarray:
-    p = np.clip(p.astype(float), 1e-12, 1.0 - 1e-12)
-    return np.log(p / (1.0 - p))
+
+def _parse_pmf(cell) -> dict[int, float] | None:
+    if cell is None or (isinstance(cell, float) and math.isnan(cell)):
+        return None
+    if isinstance(cell, dict):
+        raw = cell
+    else:
+        s = str(cell)
+        if not s.startswith("{"):
+            return None
+        raw = json.loads(s)
+    out: dict[int, float] = {}
+    for k, v in raw.items():
+        try:
+            out[int(k)] = float(v)
+        except Exception:
+            continue
+    s = sum(out.values())
+    if s <= 0:
+        return None
+    return {k: p / s for k, p in out.items()}
 
 
-def _event_ll(p: np.ndarray, y: np.ndarray) -> np.ndarray:
-    p = np.clip(p.astype(float), 1e-12, 1.0 - 1e-12)
-    return -(y * np.log(p) + (1.0 - y) * np.log(1.0 - p))
+def _pmf_mean_var_p0(d: dict[int, float]) -> tuple[float, float, float]:
+    m = sum(k * p for k, p in d.items())
+    m2 = sum(k * k * p for k, p in d.items())
+    v = max(m2 - m * m, 0.0)
+    return m, v, float(d.get(0, 0.0))
 
 
-def _brier(p: np.ndarray, y: np.ndarray) -> np.ndarray:
-    return (p - y) ** 2
-
-
-def _suspected_cause(
-    m_bias: float,
-    mk_bias: float,
-    mean_m: float,
-    mean_mk: float,
-    hit_rate: float,
-) -> str:
-    if abs(m_bias) > abs(mk_bias) + 0.05:
-        if m_bias > 0:
+def _classify_row(r: pd.Series) -> str:
+    """Heuristic row-level root-cause tag (best-effort, not contractual)."""
+    mp = float(r.get("model_prob_over") or np.nan)
+    mk = float(r.get("market_probability_for_side") or np.nan)
+    nv = float(r.get("market_prob_over_no_vig") or np.nan)
+    mkt = mk if np.isfinite(mk) else nv
+    y = float(r.get("hit_result") or np.nan)
+    if not np.isfinite(mp) or not np.isfinite(y):
+        return "unknown"
+    err = mp - y
+    merr = (mp - mkt) if np.isfinite(mkt) else np.nan
+    if np.isfinite(merr):
+        if merr > 0.12:
             return "model_prob_too_high"
+        if merr < -0.12:
+            return "model_prob_too_low"
+    if err > 0.2:
+        return "model_prob_too_high"
+    if err < -0.2:
         return "model_prob_too_low"
-    if abs(mean_m - mean_mk) > 0.08:
-        return "mean_bias"
-    if abs(hit_rate - 0.5) < 0.02:
-        return "sparse_sample_noise"
-    return "calibration_map_worsened_logloss"
+    mm = float(r.get("model_mean") or np.nan)
+    act = float(r.get("actual") or np.nan)
+    if np.isfinite(mm) and np.isfinite(act):
+        if mm - act > 1.5:
+            return "mean_too_high"
+        if mm - act < -1.5:
+            return "mean_too_low"
+    mv = float(r.get("model_variance") or np.nan)
+    if np.isfinite(mv) and np.isfinite(act):
+        if mv < 1.0 and abs(act - mm) > 4:
+            return "variance_too_narrow"
+        if mv > 80:
+            return "variance_too_wide"
+    return "unknown"
+
+
+def _dominant(c: Counter) -> str:
+    if not c:
+        return "unknown"
+    return c.most_common(1)[0][0]
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--label", required=True)
-    ap.add_argument(
-        "--diagnostics-meta",
-        type=Path,
-        default=REPO_ROOT / "artifacts" / "docs" / "diagnostics_2026-05-13.meta.json",
-        help="Optional diagnostics meta JSON (fold / calibration context).",
-    )
     args = ap.parse_args()
     label = args.label.strip()
 
-    meta_diag = args.diagnostics_meta
     eml = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
-    seg_fail = (
-        REPO_ROOT
-        / "artifacts"
-        / "model_diagnostics"
-        / f"event_market_superiority_{label}"
-        / "segment_failure_diagnosis.csv"
-    )
-    sr_path = (
+    sr_csv = (
         REPO_ROOT
         / "artifacts"
         / "model_diagnostics"
         / f"event_market_superiority_{label}"
         / "stat_role_market_superiority.csv"
     )
-    tt_path = REPO_ROOT / "data" / "training_table.parquet"
+    if not eml.is_file():
+        print(f"MISSING {eml}", file=sys.stderr)
+        return 2
+    if not sr_csv.is_file():
+        print(f"MISSING {sr_csv}", file=sys.stderr)
+        return 2
 
-    for p in (eml, seg_fail, sr_path):
-        if not p.exists():
-            print(f"MISSING {p}", file=sys.stderr)
-            return 2
+    em = pd.read_parquet(eml)
+    sr = pd.read_csv(sr_csv)
 
-    combo = pd.read_parquet(eml)
-    fails = pd.read_csv(seg_fail)
-    fails = fails[fails.get("precise_failure_reason", "") == "model_logloss_not_better"]
-    tt = pd.read_parquet(tt_path) if tt_path.exists() else None
+    pgs_path = REPO_ROOT / "data" / "player_game_stats.parquet"
+    pgs = None
+    if pgs_path.is_file():
+        try:
+            pgs = pd.read_parquet(pgs_path, columns=["player_id", "game_id", "min"])
+        except Exception:
+            pgs = None
 
-    out_root = REPO_ROOT / "artifacts" / "model_diagnostics" / f"market_losing_segments_{label}"
-    out_root.mkdir(parents=True, exist_ok=True)
+    base = em[
+        (em["join_status"] == "matched")
+        & (em["settled"] == True)
+        & em["model_event_logloss"].notna()
+        & em["market_event_logloss"].notna()
+    ].copy()
+
+    if pgs is not None and "game_id" in base.columns:
+        pgs2 = pgs.copy()
+        pgs2["game_id"] = pgs2["game_id"].astype(str)
+        pgs2["player_id"] = pgs2["player_id"].astype(str)
+        base["game_id"] = base["game_id"].astype(str)
+        base["player_id"] = base["player_id"].astype(str)
+        base = base.merge(
+            pgs2[["player_id", "game_id", "min"]],
+            on=["player_id", "game_id"],
+            how="left",
+            suffixes=("", "_actual"),
+        )
+        base.rename(columns={"min": "actual_minutes"}, inplace=True)
+    else:
+        base["actual_minutes"] = np.nan
+
+    pmf_means: list[float] = []
+    pmf_vars: list[float] = []
+    pmf_p0s: list[float] = []
+    for cell in base.get("model_pmf", []):
+        d = _parse_pmf(cell)
+        if d is None:
+            pmf_means.append(np.nan)
+            pmf_vars.append(np.nan)
+            pmf_p0s.append(np.nan)
+        else:
+            m, v, p0 = _pmf_mean_var_p0(d)
+            pmf_means.append(m)
+            pmf_vars.append(v)
+            pmf_p0s.append(p0)
+    base["model_pmf_mean"] = pmf_means
+    base["model_pmf_variance"] = pmf_vars
+    base["model_p0"] = pmf_p0s
+
+    base["logloss_gap"] = base["model_event_logloss"] - base["market_event_logloss"]
+    base["row_rc"] = base.apply(_classify_row, axis=1)
+
+    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"market_losing_segments_{label}"
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     seg_rows: list[dict] = []
-    bin_rows: list[dict] = []
-    worst_parts: list[pd.DataFrame] = []
+    bin_parts: list[pd.DataFrame] = []
+    summ_by_seg: dict[str, dict] = {}
 
-    for _, fr in fails.iterrows():
-        stat = str(fr["stat"]).lower()
-        role = str(fr["role_bucket"])
-        sub = combo[
-            (combo["stat"].astype(str).str.lower() == stat)
-            & (combo["role_bucket"].astype(str) == role)
-            & (combo["join_status"] == "matched")
-            & (combo["settled"] == True)
+    for stat, role in FAILING:
+        sub = base[
+            (base["stat"].astype(str).str.lower() == stat)
+            & (base["role_bucket"].astype(str) == role)
         ].copy()
         if sub.empty:
             continue
-        p_m = pd.to_numeric(sub["model_probability_for_side"], errors="coerce")
-        p_k = pd.to_numeric(sub["market_probability_for_side"], errors="coerce")
-        y = pd.to_numeric(sub["hit_result"], errors="coerce")
-        mask = p_m.notna() & p_k.notna() & y.notna() & y.isin([0.0, 1.0])
-        sub = sub.loc[mask]
-        p_m = p_m[mask].to_numpy()
-        p_k = p_k[mask].to_numpy()
-        y = y[mask].to_numpy()
-        n = len(sub)
-        hit_rate = float(np.mean(y)) if n else float("nan")
-        mean_m = float(np.mean(p_m)) if n else float("nan")
-        mean_mk = float(np.mean(p_k)) if n else float("nan")
-        m_ll = float(np.mean(_event_ll(p_m, y))) if n else float("nan")
-        k_ll = float(np.mean(_event_ll(p_k, y))) if n else float("nan")
-        m_br = float(np.mean(_brier(p_m, y))) if n else float("nan")
-        k_br = float(np.mean(_brier(p_k, y))) if n else float("nan")
+        hit = pd.to_numeric(sub["hit_result"], errors="coerce")
+        mpo = pd.to_numeric(sub["model_prob_over"], errors="coerce")
+        mkt = pd.to_numeric(sub.get("market_probability_for_side"), errors="coerce")
+        if not mkt.notna().any():
+            mkt = pd.to_numeric(sub.get("market_prob_over_no_vig"), errors="coerce")
         line = pd.to_numeric(sub["line"], errors="coerce")
-        mmean = pd.to_numeric(sub.get("model_mean"), errors="coerce")
-        mvar = pd.to_numeric(sub.get("model_variance"), errors="coerce")
-        p0s = []
-        if "model_pmf" in sub.columns:
-            for js in sub["model_pmf"].dropna().head(5000):
-                try:
-                    d = json.loads(js) if isinstance(js, str) else js
-                    if isinstance(d, dict) and d:
-                        ks = sorted(int(k) for k in d)
-                        p0s.append(float(d.get(str(ks[0]), d.get(ks[0], 0)) or 0))
-                except Exception:
-                    pass
-        avg_p0 = float(np.mean(p0s)) if p0s else float("nan")
-        mm_mean = float(mmean.mean()) if mmean is not None and mmean.notna().any() else float("nan")
-        mm_var = float(mvar.mean()) if mvar is not None and mvar.notna().any() else float("nan")
-        minutes_mean = float("nan")
-        actual_minutes_mean = float("nan")
-        if tt is not None and "minutes_mean" in tt.columns and "actual" in tt.columns:
-            tts = tt[tt["stat"].astype(str).str.lower() == stat]
-            if len(tts) and "player_id" in sub.columns and "game_id" in sub.columns:
-                key = sub.merge(
-                    tts[["player_id", "game_id", "minutes_mean", "actual"]],
-                    on=["player_id", "game_id"],
-                    how="left",
-                )
-                minutes_mean = float(pd.to_numeric(key["minutes_mean"], errors="coerce").mean())
-                actual_minutes_mean = float(pd.to_numeric(key["actual"], errors="coerce").mean())
+        summ = {
+            "stat": stat,
+            "role_bucket": role,
+            "n": int(len(sub)),
+            "model_logloss": float(sub["model_event_logloss"].mean()),
+            "market_logloss": float(sub["market_event_logloss"].mean()),
+            "delta_logloss": float(sub["logloss_gap"].mean()),
+            "model_brier": float(sub["model_brier"].mean()),
+            "market_brier": float(sub["market_brier"].mean()),
+            "delta_brier": float((sub["model_brier"] - sub["market_brier"]).mean()),
+            "actual_hit_rate": float(hit.mean()),
+            "mean_model_prob": float(mpo.mean()),
+            "mean_market_prob": float(mkt.mean()) if mkt.notna().any() else None,
+            "model_prob_bias": float((mpo - hit).mean()),
+            "market_prob_bias": float((mkt - hit).mean()) if mkt.notna().any() else None,
+            "mean_line": float(line.mean()) if line.notna().any() else None,
+            "line_p25": float(line.quantile(0.25)) if line.notna().any() else None,
+            "line_p50": float(line.quantile(0.50)) if line.notna().any() else None,
+            "line_p75": float(line.quantile(0.75)) if line.notna().any() else None,
+            "line_min": float(line.min()) if line.notna().any() else None,
+            "line_max": float(line.max()) if line.notna().any() else None,
+            "model_pmf_mean_avg": float(np.nanmean(sub["model_pmf_mean"].to_numpy())),
+            "model_pmf_variance_avg": float(np.nanmean(sub["model_pmf_variance"].to_numpy())),
+            "model_p0_avg": float(np.nanmean(sub["model_p0"].to_numpy())),
+            "actual_stat_mean": float(pd.to_numeric(sub["actual"], errors="coerce").mean()),
+            "mean_error": float(
+                (pd.to_numeric(sub["model_mean"], errors="coerce")
+                 - pd.to_numeric(sub["actual"], errors="coerce")).mean()
+            ),
+            "minutes_pred_mean": None,
+            "actual_minutes_mean": float(sub["actual_minutes"].mean())
+            if "actual_minutes" in sub.columns and sub["actual_minutes"].notna().any()
+            else None,
+            "top_book_share": float(sub["bookmaker_key"].value_counts(normalize=True).iloc[0])
+            if "bookmaker_key" in sub.columns and len(sub)
+            else None,
+            "top_date_share": float(sub["date"].astype(str).value_counts(normalize=True).iloc[0])
+            if len(sub)
+            else None,
+            "dominant_row_root_cause": _dominant(Counter(sub["row_rc"].astype(str))),
+        }
+        mpb = summ["model_prob_bias"]
+        mmb = summ.get("mean_market_prob")
+        dll = summ["delta_logloss"]
+        if summ["dominant_row_root_cause"] == "unknown":
+            if mmb is not None and summ["mean_model_prob"] > float(mmb) + 0.03 and dll > 0.02:
+                summ["dominant_segment_heuristic"] = "model_prob_too_high_vs_market"
+            elif mpb < -0.05 and dll > 0.02:
+                summ["dominant_segment_heuristic"] = "model_prob_too_low_vs_outcome"
+            elif summ.get("mean_error") is not None and abs(summ["mean_error"]) > 2.0:
+                summ["dominant_segment_heuristic"] = "mean_bias_pmf_vs_actual"
+            elif summ.get("top_book_share") and summ["top_book_share"] > 0.55:
+                summ["dominant_segment_heuristic"] = "book_or_snapshot_concentration"
+            else:
+                summ["dominant_segment_heuristic"] = "distribution_mismatch_unclassified"
+        else:
+            summ["dominant_segment_heuristic"] = summ["dominant_row_root_cause"]
+        summ_by_seg[f"{stat}|{role}"] = summ
+        seg_rows.append(summ)
 
-        seg_rows.append(
-            {
-                "stat": stat,
-                "role_bucket": role,
-                "n": n,
-                "model_logloss": m_ll,
-                "market_logloss": k_ll,
-                "delta_logloss": m_ll - k_ll,
-                "model_brier": m_br,
-                "market_brier": k_br,
-                "delta_brier": m_br - k_br,
-                "actual_hit_rate": hit_rate,
-                "mean_model_prob": mean_m,
-                "mean_market_prob": mean_mk,
-                "model_prob_bias": mean_m - hit_rate,
-                "market_prob_bias": mean_mk - hit_rate,
-                "mean_line": float(line.mean()) if n else float("nan"),
-                "line_min": float(line.min()) if n else float("nan"),
-                "line_p25": float(line.quantile(0.25)) if n else float("nan"),
-                "line_p50": float(line.quantile(0.50)) if n else float("nan"),
-                "line_p75": float(line.quantile(0.75)) if n else float("nan"),
-                "line_max": float(line.max()) if n else float("nan"),
-                "avg_model_mean": mm_mean,
-                "avg_model_variance": mm_var,
-                "avg_model_p0": avg_p0,
-                "avg_minutes_mean": minutes_mean,
-                "actual_minutes_mean": actual_minutes_mean,
-                "minutes_bias": (minutes_mean - actual_minutes_mean)
-                if math.isfinite(minutes_mean) and math.isfinite(actual_minutes_mean)
-                else float("nan"),
-                "suspected_cause": _suspected_cause(mean_m - hit_rate, mean_mk - hit_rate, mean_m, mean_mk, hit_rate),
-            }
-        )
-
-        # decile bins on model prob
-        if n >= 10:
-            sub2 = sub.copy()
-            sub2["_pm"] = p_m
-            sub2["_pk"] = p_k
-            sub2["_y"] = y
+        # decile bins for calibration table
+        if mpo.notna().sum() >= 30:
             try:
-                sub2["prob_bin"] = pd.qcut(sub2["_pm"], q=min(10, n), duplicates="drop")
+                sub2 = sub.assign(_bin=pd.qcut(mpo.rank(method="first"), 10, duplicates="drop"))
             except Exception:
-                sub2["prob_bin"] = "all"
-            for bin_id, g in sub2.groupby("prob_bin", observed=False):
-                pm = g["_pm"].to_numpy()
-                pk = g["_pk"].to_numpy()
-                yy = g["_y"].to_numpy()
-                bn = len(g)
-                bin_rows.append(
-                    {
-                        "stat": stat,
-                        "role_bucket": role,
-                        "prob_bin": str(bin_id),
-                        "n": bn,
-                        "mean_model_prob": float(np.mean(pm)),
-                        "mean_market_prob": float(np.mean(pk)),
-                        "actual_hit_rate": float(np.mean(yy)),
-                        "model_logloss": float(np.mean(_event_ll(pm, yy))),
-                        "market_logloss": float(np.mean(_event_ll(pk, yy))),
-                        "delta_logloss": float(np.mean(_event_ll(pm, yy) - _event_ll(pk, yy))),
-                        "model_brier": float(np.mean(_brier(pm, yy))),
-                        "market_brier": float(np.mean(_brier(pk, yy))),
-                        "delta_brier": float(np.mean(_brier(pm, yy) - _brier(pk, yy))),
-                    }
+                sub2 = sub.assign(_bin=pd.cut(mpo, 10, duplicates="drop"))
+            g = sub2.groupby("_bin", observed=False)
+            for b, chunk in g:
+                hit_b = pd.to_numeric(chunk["hit_result"], errors="coerce")
+                bin_parts.append(
+                    pd.DataFrame(
+                        {
+                            "stat": stat,
+                            "role_bucket": role,
+                            "bin": [str(b)],
+                            "n": [len(chunk)],
+                            "mean_model_prob": [float(chunk["model_prob_over"].mean())],
+                            "mean_market_prob": [
+                                float(chunk["market_probability_for_side"].mean())
+                                if "market_probability_for_side" in chunk.columns
+                                else float("nan")
+                            ],
+                            "actual_rate": [float(hit_b.mean())],
+                        }
+                    )
                 )
 
-        d_ll = _event_ll(p_m, y) - _event_ll(p_k, y)
-        sub_w = sub.assign(_dll=d_ll).sort_values("_dll", ascending=False).head(50)
-        worst_parts.append(sub_w)
-
-    worst = pd.concat(worst_parts, ignore_index=True) if worst_parts else pd.DataFrame()
-    keep_cols = [
-        c
-        for c in [
-            "date",
-            "game_id",
-            "player_id",
-            "player_name",
-            "stat",
-            "role_bucket",
-            "line",
-            "model_prob_over",
-            "market_prob_over_no_vig",
-            "hit_result",
-            "actual",
-            "model_mean",
-            "model_variance",
-            "model_pmf",
-            "bookmaker_key",
-        ]
-        if c in worst.columns
+    worst = base.nlargest(100, "logloss_gap", keep="all")
+    worst_cols = [
+        "date",
+        "game_id",
+        "player_id",
+        "player_name",
+        "stat",
+        "role_bucket",
+        "line",
+        "model_prob_over",
+        "market_probability_for_side",
+        "market_prob_over_no_vig",
+        "hit_result",
+        "actual",
+        "model_mean",
+        "model_variance",
+        "model_p0",
+        "actual_minutes",
+        "odds_snapshot_family",
+        "bookmaker_key",
+        "model_event_logloss",
+        "market_event_logloss",
+        "logloss_gap",
     ]
-    if keep_cols:
-        worst = worst[keep_cols]
+    worst = worst[[c for c in worst_cols if c in worst.columns]]
 
-    pd.DataFrame(seg_rows).to_csv(out_root / "segment_summary.csv", index=False)
-    pd.DataFrame(bin_rows).to_csv(out_root / "bin_calibration.csv", index=False)
-    worst.to_csv(out_root / "worst_rows.csv", index=False)
+    pd.DataFrame(seg_rows).to_csv(out_dir / "segment_summary.csv", index=False)
+    if bin_parts:
+        pd.concat(bin_parts, ignore_index=True).to_csv(out_dir / "bin_calibration.csv", index=False)
+    else:
+        (out_dir / "bin_calibration.csv").write_text("stat,role_bucket,bin,n,mean_model_prob,mean_market_prob,actual_rate\n")
+    worst.to_csv(out_dir / "worst_rows.csv", index=False)
 
-    meta_extra = {}
-    if meta_diag.exists():
-        try:
-            meta_extra = json.loads(meta_diag.read_text(encoding="utf-8"))
-        except Exception:
-            pass
+    # recommendations
+    lines = [
+        f"# Root-cause recommendations — `{label}`",
+        "",
+        "Heuristic tags aggregate row-level `_classify_row` outputs; validate on held-out dates before model changes.",
+        "",
+    ]
+    for s in seg_rows:
+        key = f"{s['stat']}|{s['role_bucket']}"
+        dom = s["dominant_row_root_cause"]
+        heur = s.get("dominant_segment_heuristic", dom)
+        lines.append(f"## {key}")
+        lines.append(
+            f"- **Dominant row tag:** `{dom}`; **segment heuristic:** `{heur}` "
+            f"(Δlogloss={s['delta_logloss']:.4f}, ΔBrier={s['delta_brier']:.4f}, n={s['n']})."
+        )
+        tag = heur if heur != "unknown" else dom
+        if tag in (
+            "model_prob_too_high",
+            "mean_too_high",
+            "model_prob_too_high_vs_market",
+        ):
+            lines.append(
+                "  - **Repair:** deflate over-side tail / temperature or shrink line-aware "
+                "calibration for high-volume roles; check sparse prop lines vs model mean."
+            )
+        elif tag in ("model_prob_too_low", "mean_too_low", "model_prob_too_low_vs_outcome"):
+            lines.append(
+                "  - **Repair:** lift under-side probability mass; review hurdle/p0 for low props."
+            )
+        elif tag == "mean_bias_pmf_vs_actual":
+            lines.append(
+                "  - **Repair:** align PMF location/shape with realized box scores; check role-aware means."
+            )
+        elif tag == "book_or_snapshot_concentration":
+            lines.append(
+                "  - **Repair:** diversify book coverage or stabilize no-vig extraction for concentrated books."
+            )
+        elif dom == "variance_too_narrow":
+            lines.append(
+                "  - **Repair:** widen PMF dispersion (negative binomial / tail lift) for this stat-role."
+            )
+        elif dom == "variance_too_wide":
+            lines.append("  - **Repair:** tighten variance / tail calibration for this stat-role.")
+        else:
+            lines.append(
+                "  - **Repair:** inspect top `worst_rows` for book/snapshot concentration; "
+                "consider line transform audit and minutes/role join quality."
+            )
+        if s.get("top_book_share") and s["top_book_share"] > 0.5:
+            lines.append(
+                f"  - **Concentration:** book share {s['top_book_share']:.2f} — verify multi-book de-vig stability."
+            )
+        lines.append("")
+
+    (out_dir / "root_cause_recommendations.md").write_text("\n".join(lines), encoding="utf-8")
+
     summary = {
         "label": label,
-        "n_losing_segments": len(seg_rows),
-        "diagnostics_meta_keys": list(meta_extra.keys())[:40],
-        "training_table_used": tt_path.exists(),
+        "n_failing_segments_diagnosed": len(seg_rows),
+        "dominant_root_causes": {
+            f"{r['stat']}|{r['role_bucket']}": r.get("dominant_segment_heuristic", r["dominant_row_root_cause"])
+            for r in seg_rows
+        },
+        "artifacts": {
+            "segment_summary_csv": str(out_dir / "segment_summary.csv"),
+            "bin_calibration_csv": str(out_dir / "bin_calibration.csv"),
+            "worst_rows_csv": str(out_dir / "worst_rows.csv"),
+            "recommendations_md": str(out_dir / "root_cause_recommendations.md"),
+        },
     }
-    (out_root / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-    readme = [
-        "# Market losing segments diagnosis",
-        "",
-        f"Label `{label}` — segments with `model_logloss_not_better` from segment_failure_diagnosis.csv.",
-        "",
-        "- `segment_summary.csv` — segment aggregates",
-        "- `bin_calibration.csv` — decile bins on model probability",
-        "- `worst_rows.csv` — top loss-gap rows per segment",
-    ]
-    (out_root / "README.md").write_text("\n".join(readme) + "\n", encoding="utf-8")
-    print(f"Wrote {out_root}")
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    print(f"MARKET_LOSING_SEGMENTS_DIAGNOSE_PASS out={out_dir.relative_to(REPO_ROOT)}")
     return 0
 
 

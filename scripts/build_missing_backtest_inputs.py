@@ -130,7 +130,7 @@ def main() -> int:
     ap.add_argument("--fetch-historical-odds", action="store_true")
     ap.add_argument("--snapshot-family", default="hist_lockday")
     ap.add_argument("--max-events", type=int, default=50)
-    ap.add_argument("--regions", default="us")
+    ap.add_argument("--regions", default="us,us2")
     ap.add_argument("--lock-offset-minutes", type=int, default=5)
     ap.add_argument("--estimate-credits", action="store_true")
     ap.add_argument("--limit-dates", type=int, default=None)
@@ -263,11 +263,24 @@ def main() -> int:
                 pass
             blocker = ";".join(blockers) if blockers else "ready"
 
+            deliv = REPO_ROOT / "deliveries" / d / "canonical_source" / "manifest.json"
+            has_delivery_manifest = deliv.is_file()
+            can_eligible = bool(has_act and (has_proc or need_fetch))
+            if not has_act:
+                risk = "high"
+            elif not has_proc and need_fetch:
+                risk = "low"
+            elif not has_sg or not has_can:
+                risk = "medium"
+            else:
+                risk = "low"
+
             plan_rows.append(
                 {
                     "date": d,
                     "snapshot_substr": substr,
                     "need_fetch_hist_lockday": bool(need_fetch),
+                    "needs_historical_fetch": bool(need_fetch),
                     "has_processed_pairs_file": has_proc,
                     "processed_quotes_rows_max": qn,
                     "processed_pairs_rows_max": pn,
@@ -276,6 +289,9 @@ def main() -> int:
                     "has_actuals": has_act,
                     "has_stat_grid": has_sg,
                     "has_canonical_delivery": has_can,
+                    "has_delivery_manifest": has_delivery_manifest,
+                    "can_be_made_eligible": can_eligible,
+                    "risk_level": risk,
                     "blocker": blocker,
                     "fetch_command": json.dumps(fetch_cmd),
                     "build_command": json.dumps(build_cmd),

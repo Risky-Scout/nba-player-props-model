@@ -1061,7 +1061,7 @@ def _main_dates_file_list(
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--as-of-date", default=None)
+    ap.add_argument("--as-of-date", "--date", dest="as_of_date", default=None)
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
     ap.add_argument("--dates-file", default=None)
@@ -1084,7 +1084,9 @@ def main() -> int:
             return 2
         event_cal = json.loads(pcal.read_text(encoding="utf-8"))
 
-    modes = sum(bool(x) for x in (args.as_of_date, (args.start_date and args.end_date), args.dates_file))
+    modes = sum(
+        bool(x) for x in (args.as_of_date, (args.start_date and args.end_date), args.dates_file)
+    )
     if modes > 1:
         print("FATAL: use only one of --as-of-date, --start-date/--end-date, --dates-file", file=sys.stderr)
         return 2
