@@ -17,7 +17,7 @@ Usage
         --date 2026-04-27 \
         --snapshot morning \
         [--predictions predictions/all_props_2026-04-27.parquet] \
-        [--model-only deliveries/2026-04-27/live_after_2029_et/player_prop_pmfs_tonight_MODEL_ONLY.parquet] \
+        [--model-only deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet] \
         [--odds-snapshot data/odds_api/processed/2026-04-27/odds_pairs_*.parquet] \
         [--no-odds-fetch]
 
@@ -80,6 +80,10 @@ import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from delivery_model_only_paths import find_model_only_parquet_for_date  # noqa: E402
 warnings.filterwarnings("ignore")
 
 # ── Constants pinned to the delivery spec ────────────────────────────────
@@ -707,15 +711,16 @@ def build_canonical_from_predictions(predictions_path: Path, *,
 
 
 def _find_model_only_parquet(date: str) -> Path | None:
-    """Locate the canonical MODEL_ONLY parquet emitted by the prediction
-    export. The legacy daily export uses
-    `deliveries/{date}/live_after_2029_et/...` and recent ones may use
-    additional named subfolders. We scan the per-date delivery folder."""
-    base = REPO_ROOT / "deliveries" / date
-    if not base.exists():
-        return None
-    candidates = sorted(base.rglob("player_prop_pmfs_tonight_MODEL_ONLY.parquet"))
-    return candidates[-1] if candidates else None
+    """Locate MODEL_ONLY parquet under ``deliveries/{date}/``.
+
+    Prefer ``canonical_source/`` (stat_grid-backed rectangular canonical).
+    If absent, fall back to legacy rglob discovery (lexicographic last),
+    emitting a warning when multiple candidates exist.
+    """
+    chosen, _cands, warn = find_model_only_parquet_for_date(REPO_ROOT, date)
+    if warn:
+        print(warn)
+    return chosen
 
 
 def _find_odds_snapshot(date: str) -> Path | None:
