@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Ensure data/oof_minutes_predictions.parquet exists (delegates to train)."""
+"""Ensure `data/oof_minutes_predictions.parquet` exists (delegates to train)."""
 from __future__ import annotations
 
 import subprocess
@@ -15,7 +15,7 @@ def main() -> int:
         print(f"MINUTES_OOF_ALREADY_PRESENT {OOF}")
         return 0
     return subprocess.call(
-        [sys.executable, str(REPO_ROOT / "scripts" / "train_minutes_model.py"), "--walk-forward"],
+        [sys.executable, str(REPO_ROOT / "scripts" / "train_minutes_model.py")],
         cwd=str(REPO_ROOT),
     )
 
