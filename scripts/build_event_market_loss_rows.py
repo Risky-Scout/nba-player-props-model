@@ -376,6 +376,15 @@ def _load_player_actuals_long(date: str) -> dict[tuple[int, str], int]:
     return out
 
 
+def _box_score_rows_for_date(date: str) -> int:
+    """Count rows in player_game_stats for calendar date (local parquet)."""
+    pgs = REPO_ROOT / "data" / "player_game_stats.parquet"
+    if not pgs.exists():
+        return 0
+    bx = pd.read_parquet(pgs, columns=["game_date"])
+    return int(bx["game_date"].astype(str).str.startswith(date).sum())
+
+
 def _binary_over_hit(actual: int | None, line: float | None) -> int | None:
     """OVER hit for settled props: half-lines strict >; integer lines exclude push."""
     if actual is None or line is None:
@@ -592,6 +601,8 @@ def main() -> int:
     matched["join_status"] = "matched"
 
     actual_lookup = _load_player_actuals_long(date)
+    n_box_rows_date = _box_score_rows_for_date(date)
+    n_odds_rows = int(len(odds))
 
     rows_out = []
     for _, r in matched.iterrows():
@@ -641,6 +652,13 @@ def main() -> int:
         if mkt_under_f is None and mkt_over_f is not None:
             mkt_under_f = 1.0 - mkt_over_f
 
+        two_way_ok = (
+            mkt_over_f is not None
+            and mkt_under_f is not None
+            and math.isfinite(mkt_over_f)
+            and math.isfinite(mkt_under_f)
+        )
+
         # Side default OVER (event-level rows; per-side derivation downstream)
         side = "OVER"
         model_prob_for_side = mp_over if side == "OVER" else mp_under
@@ -662,6 +680,19 @@ def main() -> int:
         if pmf and actual_int is not None and actual_int in pmf:
             p_obs = max(min(pmf[actual_int], 1.0 - 1e-12), 1e-12)
             model_nll_dist = -math.log(p_obs)
+
+        scoring_blocker = None
+        if not two_way_ok:
+            scoring_blocker = "missing_two_way_odds"
+        elif mp_over is None:
+            scoring_blocker = "model_pmf_unusable"
+        elif hit_result is None:
+            if n_box_rows_date <= 0:
+                scoring_blocker = "no_actuals_for_date"
+            elif actual_int is None:
+                scoring_blocker = "player_actual_missing"
+            else:
+                scoring_blocker = "push_or_nonbinary_outcome"
 
         out_row = {
             "date": date,
@@ -721,6 +752,7 @@ def main() -> int:
             "same_sample_predictions_used": False,
             "join_status": rd.get("join_status", "matched"),
             "join_blockers": rd.get("join_blockers"),
+            "scoring_blocker": scoring_blocker,
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
         }
@@ -733,6 +765,10 @@ def main() -> int:
         mkt_over = rd.get("no_vig_over_prob")
         try: mkt_over_f = float(mkt_over) if mkt_over is not None and pd.notna(mkt_over) else None
         except Exception: mkt_over_f = None
+        mkt_under_f = (1.0 - mkt_over_f) if mkt_over_f is not None else None
+        sb_un = "market_join_failed"
+        if mkt_over_f is None or mkt_under_f is None:
+            sb_un = "missing_two_way_odds"
         rows_out.append({
             "date": date,
             "game_id": rd.get("game_id") or rd.get("event_id"),
@@ -745,6 +781,7 @@ def main() -> int:
             "side": "OVER",
             "bookmaker_key": rd.get("bookmaker_key"),
             "is_alternate": bool(rd.get("is_alternate", False)),
+            "scoring_blocker": sb_un,
             "model_pmf": None,
             "model_mean": None,
             "model_variance": None,
@@ -769,6 +806,7 @@ def main() -> int:
             "join_status": "no_oof_match",
             "join_blockers": "player_id_and_name_no_match",
             "m8_6q_schema_version": "v2",
+            "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
         })
 
     out = pd.DataFrame(rows_out)
@@ -798,16 +836,26 @@ def main() -> int:
         )
         scored_count = int(scored_mask.sum())
 
+    overlap_ratio = (matched_count / n_odds_rows) if n_odds_rows else 0.0
+    sb_counts = {}
+    if len(out) and "scoring_blocker" in out.columns:
+        sb_counts = out["scoring_blocker"].fillna("none").astype(str).value_counts().to_dict()
+
     Path(str(out_path) + ".meta.json").write_text(json.dumps({
         **early_meta,
         "rows": int(len(out)),
         "matched_rows": matched_count,
         "scored_rows_all_fields_nonnull": scored_count,
+        "odds_rows": n_odds_rows,
+        "market_overlap_ratio": round(overlap_ratio, 6),
+        "insufficient_market_overlap": bool(overlap_ratio < 0.35 and n_odds_rows > 10),
+        "scoring_blocker_counts": sb_counts,
         "odds_pairs_source": str(odds_path.relative_to(REPO_ROOT)),
         "oof_single_rows": int(len(oof_single)),
         "oof_combo_rows": int(len(oof_combo)),
         "model_source_mode": model_source_mode,
-        "box_score_actual_rows_for_date": len(actual_lookup),
+        "box_score_rows_for_as_of_date": int(n_box_rows_date),
+        "box_score_actual_lookup_keys": len(actual_lookup),
         "pmf_col_single": pmf_col_single,
         "pmf_col_combo": pmf_col_combo,
     }, indent=2) + "\n")

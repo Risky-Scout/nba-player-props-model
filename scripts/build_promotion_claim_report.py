@@ -178,15 +178,28 @@ def main() -> int:
                     summary = _summary(sub)
                     status = _classify(summary, min_n=args.min_n, tau=args.tau, z=args.z)
                     per_bucket["|".join(str(k) for k in keys)] = {"summary": summary, "status": status}
-            statuses = [v["status"] for v in per_bucket.values()]
-            if CLAIM_ALLOWED_ENUM in statuses:
-                overall = CLAIM_ALLOWED_ENUM
-            elif "calibrated_but_not_more_accurate_than_market" in statuses:
-                overall = "calibrated_but_not_more_accurate_than_market"
-            elif "accurate_but_not_well_calibrated" in statuses:
-                overall = "accurate_but_not_well_calibrated"
-            else:
+            # Global claim only if EVERY bucket with n_settled >= min_n passes the promotion enum.
+            eligible = [
+                v for v in per_bucket.values()
+                if (v["summary"].get("n_settled") or 0) >= args.min_n
+            ]
+            if not eligible:
                 overall = "valid_pmf_not_event_market_superior"
+            else:
+                elig_statuses = [v["status"] for v in eligible]
+                if all(s == CLAIM_ALLOWED_ENUM for s in elig_statuses):
+                    overall = CLAIM_ALLOWED_ENUM
+                elif any(
+                    s == "calibrated_but_not_more_accurate_than_market"
+                    for s in elig_statuses
+                ):
+                    overall = "calibrated_but_not_more_accurate_than_market"
+                elif any(
+                    s == "accurate_but_not_well_calibrated" for s in elig_statuses
+                ):
+                    overall = "accurate_but_not_well_calibrated"
+                else:
+                    overall = "valid_pmf_not_event_market_superior"
 
     claim_allowed = (overall == CLAIM_ALLOWED_ENUM)
     report = {

@@ -1,5 +1,14 @@
 """Refresh `data/player_game_stats.parquet` with finalized BDL box scores.
 
+Why max(game_date) can lag the calendar:
+  - This script was not run after games finished (default fetch window is
+    latest parquet date + 1 through today US/Eastern; override with
+    ``--start-date`` / ``--end-date``).
+  - BDL has no **Final** rows yet for those games (in-progress / postponed);
+    non-final games and players with ``min < 1`` are dropped.
+  - ``BDL_API_KEY`` is unset (refresh exits immediately).
+  - A wrong ``--season`` filter removed all rows.
+
 This is the season-to-date player×game box-score table used by every
 downstream feature builder (predict.py, build_availability_table.py,
 build_daily_pmf_delivery.py …). It is the source of truth for the

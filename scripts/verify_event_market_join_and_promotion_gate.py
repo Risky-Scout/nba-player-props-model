@@ -117,10 +117,29 @@ def main() -> int:
 
     if odds_has_close_or_lock and args.require_scored_rows_on_overlap:
         if scored_rows < args.min_scored_rows:
-            _fail("G3_INSUFFICIENT_SCORED_ROWS",
-                  f"date={date} odds_has_close_or_lock=True matched={matched_count} "
-                  f"scored_rows={scored_rows} min_required={args.min_scored_rows} "
-                  f"(B8: matched-only is insufficient; need all 9 fields non-null)")
+            pgs_path = REPO_ROOT / "data" / "player_game_stats.parquet"
+            box_n = 0
+            if pgs_path.exists():
+                bg = pd.read_parquet(pgs_path, columns=["game_date"])
+                box_n = int(bg["game_date"].astype(str).str.startswith(date).sum())
+            if box_n <= 0:
+                _fail(
+                    "G3_ACTUALS_UNAVAILABLE_FOR_DATE",
+                    f"date={date} odds_has_close_or_lock=True matched={matched_count} "
+                    f"scored_rows={scored_rows} min_required={args.min_scored_rows} "
+                    f"box_score_rows_in_player_game_stats={box_n} "
+                    f"(cannot score event markets without finals in data/player_game_stats.parquet; "
+                    f"run scripts/refresh_bdl_player_game_stats.py --start-date <day_after_max> "
+                    f"--end-date <today>)",
+                )
+            _fail(
+                "G3_INSUFFICIENT_SCORED_ROWS",
+                f"date={date} odds_has_close_or_lock=True matched={matched_count} "
+                f"scored_rows={scored_rows} min_required={args.min_scored_rows} "
+                f"box_score_rows={box_n} "
+                f"(B8: matched-only is insufficient; need all 9 fields non-null — "
+                f"investigate scoring_blocker / joins / missing_two_way_odds)",
+            )
 
     # G4 — promotion report
     if not pcr_path.exists(): _fail("G4_PCR_MISSING", str(pcr_path))
