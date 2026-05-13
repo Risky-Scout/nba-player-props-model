@@ -38,11 +38,20 @@ def main() -> int:
         if not isinstance(v, dict):
             fails.append(f"bad_segment:{k}")
             continue
-        if v.get("type") != "platt":
+        t = str(v.get("type") or "").lower()
+        if t == "platt":
+            for fld in ("a", "b"):
+                if fld not in v:
+                    fails.append(f"missing_{fld}:{k}")
+        elif t == "line_aware":
+            for fld in ("a", "b", "c", "line_mu", "line_std"):
+                if fld not in v:
+                    fails.append(f"missing_{fld}:{k}")
+        elif t == "isotonic":
+            if "x_thresholds" not in v or "y_thresholds" not in v:
+                fails.append(f"missing_iso_thresholds:{k}")
+        else:
             fails.append(f"unsupported_type:{k}")
-        for fld in ("a", "b"):
-            if fld not in v:
-                fails.append(f"missing_{fld}:{k}")
     if fails:
         print("GUARDED_EVENT_CALIBRATION_VERIFY_FAIL", file=sys.stderr)
         for f in fails:

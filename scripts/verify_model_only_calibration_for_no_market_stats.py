@@ -29,23 +29,36 @@ def _parse_pmf_cell(v) -> dict[int, float] | None:
             return None
     except Exception:
         pass
+    raw: dict | list | np.ndarray | None = None
     if isinstance(v, dict):
         raw = v
+    elif isinstance(v, (list, tuple, np.ndarray)):
+        arr = np.asarray(v, dtype=float).ravel()
+        if arr.size == 0 or not np.all(np.isfinite(arr)):
+            return None
+        s = float(arr.sum())
+        if s <= 0:
+            return None
+        raw = {int(i): float(arr[i]) / s for i in range(int(arr.size))}
     else:
         s = str(v)
         if not s.startswith("{"):
             return None
         raw = json.loads(s)
-    out: dict[int, float] = {}
-    for k, p in raw.items():
-        try:
-            out[int(k)] = float(p)
-        except Exception:
-            continue
-    s = sum(out.values())
-    if s <= 0:
+    if raw is None:
         return None
-    return {k: float(p) / s for k, p in out.items()}
+    if isinstance(raw, dict):
+        out: dict[int, float] = {}
+        for kk, p in raw.items():
+            try:
+                out[int(kk)] = float(p)
+            except Exception:
+                continue
+        ssum = sum(out.values())
+        if ssum <= 0:
+            return None
+        return {k: float(p) / ssum for k, p in out.items()}
+    return None
 
 
 def _mean_var(d: dict[int, float]) -> tuple[float, float]:
@@ -85,11 +98,15 @@ def main() -> int:
     label = args.label.strip()
 
     oof_path = REPO_ROOT / "data" / "oof_pmfs.parquet"
+    combo_path = REPO_ROOT / "data" / "oof_combo_pmfs.parquet"
     if not oof_path.is_file():
         print(f"MISSING {oof_path}", file=sys.stderr)
         return 2
 
-    df = pd.read_parquet(oof_path)
+    parts: list[pd.DataFrame] = [pd.read_parquet(oof_path)]
+    if combo_path.is_file():
+        parts.append(pd.read_parquet(combo_path))
+    df = pd.concat(parts, ignore_index=True)
     df["stat"] = df["stat"].astype(str).str.lower()
     df = df[df["stat"].isin(NO_MARKET_STATS)].copy()
     if df.empty:
@@ -179,7 +196,8 @@ def main() -> int:
         "n_segments_meeting_min_n": len(sub_elig),
         "model_only_calibration_claim_allowed": claim,
         "market_superiority_claim_allowed": False,
-        "note": "OOF-only internal gates; not comparable to market superiority.",
+        "note": "OOF-only internal gates; not comparable to market superiority. "
+        "Combines data/oof_pmfs.parquet + data/oof_combo_pmfs.parquet (when present) for combo stats.",
     }
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print("MODEL_ONLY_NO_MARKET_CALIBRATION_VERIFY_DONE")

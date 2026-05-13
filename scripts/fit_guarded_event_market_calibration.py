@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Fit Platt scaling on model line probabilities using outcomes only (no market label).
+"""Guarded line-probability calibration on event-market rows (outcomes only, no market label).
 
-Walk-forward by date within the loss-row parquet: each date is held out once;
-Platt parameters (a,b) are fit on other dates only, evaluated on held-out date.
-A segment is selected only if every held-out fold improves logloss and does not
-worsen Brier vs raw on that fold.
+Walk-forward by date: each date is held out; fit on other dates; accept only if every
+fold improves logloss and does not worsen Brier vs raw on the held-out fold.
+
+Candidates (per segment, pick first that passes all folds, else none):
+  - platt: logit(p') = a + b*logit(p)
+  - line_aware: logit(p') = a + b*logit(p) + c*z_line (z from training fold mean/std)
+  - isotonic: 1D isotonic regression on raw p (sklearn), serialized as thresholds
 """
 from __future__ import annotations
 
@@ -16,6 +19,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
+from sklearn.isotonic import IsotonicRegression
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,8 +37,6 @@ def _metrics(p: np.ndarray, y: np.ndarray) -> tuple[float, float]:
 
 
 def _fit_platt(p: np.ndarray, y: np.ndarray) -> tuple[float, float]:
-    """Return (a, b) for logit(p') = a + b*logit(p)."""
-
     def nll(ab: np.ndarray) -> float:
         a, b = float(ab[0]), float(ab[1])
         z = a + b * _logit(p)
@@ -52,6 +54,177 @@ def _apply_platt(p: np.ndarray, a: float, b: float) -> np.ndarray:
     return np.clip(q, 1e-9, 1.0 - 1e-9)
 
 
+def _fit_line_aware(p: np.ndarray, y: np.ndarray, z: np.ndarray) -> tuple[float, float, float]:
+    """logit(p') = a + b*logit(p) + c*z."""
+
+    def nll(abc: np.ndarray) -> float:
+        a, b, c = float(abc[0]), float(abc[1]), float(abc[2])
+        s = a + b * _logit(p) + c * z.astype(float)
+        q = 1.0 / (1.0 + np.exp(-np.clip(s, -30, 30)))
+        q = np.clip(q, 1e-9, 1.0 - 1e-9)
+        return float(-np.mean(y * np.log(q) + (1.0 - y) * np.log(1.0 - q)))
+
+    res = minimize(
+        nll,
+        x0=np.array([0.0, 1.0, 0.0]),
+        method="L-BFGS-B",
+        bounds=[(-4.0, 4.0), (0.2, 5.0), (-3.0, 3.0)],
+    )
+    return float(res.x[0]), float(res.x[1]), float(res.x[2])
+
+
+def _apply_line_aware(p: np.ndarray, z: np.ndarray, a: float, b: float, c: float) -> np.ndarray:
+    s = a + b * _logit(p) + c * z.astype(float)
+    q = 1.0 / (1.0 + np.exp(-np.clip(s, -30, 30)))
+    return np.clip(q, 1e-9, 1.0 - 1e-9)
+
+
+def _fit_apply_isotonic(p_tr: np.ndarray, y_tr: np.ndarray, p_va: np.ndarray) -> np.ndarray:
+    order = np.argsort(p_tr)
+    iso = IsotonicRegression(y_min=1e-6, y_max=1.0 - 1e-6, out_of_bounds="clip")
+    iso.fit(p_tr[order], y_tr[order])
+    return np.clip(iso.predict(p_va), 1e-9, 1.0 - 1e-9), iso
+
+
+def _iso_to_spec(iso: IsotonicRegression) -> dict:
+    return {
+        "type": "isotonic",
+        "x_thresholds": [float(x) for x in iso.X_thresholds_],
+        "y_thresholds": [float(y) for y in iso.y_thresholds_],
+    }
+
+
+def _eval_method_date_folds(
+    *,
+    sub: pd.DataFrame,
+    dates: list[str],
+    p_fit_col: str,
+    min_rows: int,
+    method: str,
+) -> tuple[bool, dict | None, list[dict]]:
+    """Return (all_folds_ok, spec_for_full_refit, rollback_rows)."""
+    roll: list[dict] = []
+    dvals = sub["date"].astype(str).to_numpy()
+    y_all = pd.to_numeric(sub["hit_result"], errors="coerce").to_numpy()
+    p_all = pd.to_numeric(sub[p_fit_col], errors="coerce").to_numpy()
+    line_all = pd.to_numeric(sub["line"], errors="coerce").to_numpy() if "line" in sub.columns else None
+
+    if len(dates) < 2:
+        m = np.isfinite(p_all) & np.isin(y_all, [0.0, 1.0])
+        p0, y0 = p_all[m], y_all[m]
+        if len(p0) < min_rows * 2:
+            return False, None, [{"reason": "insufficient_rows_single_split"}]
+        if method == "platt":
+            a, b = _fit_platt(p0, y0)
+            raw_ll, raw_br = _metrics(p0, y0)
+            new_ll, new_br = _metrics(_apply_platt(p0, a, b), y0)
+            if new_ll >= raw_ll or new_br > raw_br + 1e-6:
+                return False, None, [{"reason": "single_split_worse", "raw_ll": raw_ll, "new_ll": new_ll}]
+            return True, {"type": "platt", "a": a, "b": b}, []
+        if method == "line_aware" and line_all is not None and np.nanstd(line_all[m]) > 1e-9:
+            mu = float(np.nanmean(line_all[m]))
+            sig = float(np.nanstd(line_all[m])) or 1.0
+            z0 = (line_all[m] - mu) / sig
+            a, b, c = _fit_line_aware(p0, y0, z0)
+            raw_ll, raw_br = _metrics(p0, y0)
+            new_ll, new_br = _metrics(_apply_line_aware(p0, z0, a, b, c), y0)
+            if new_ll >= raw_ll or new_br > raw_br + 1e-6:
+                return False, None, [{"reason": "single_split_worse_line"}]
+            return True, {"type": "line_aware", "a": a, "b": b, "c": c, "line_mu": mu, "line_std": sig}, []
+        if method == "isotonic":
+            raw_ll, raw_br = _metrics(p0, y0)
+            cal, iso = _fit_apply_isotonic(p0, y0, p0)
+            new_ll, new_br = _metrics(cal, y0)
+            if new_ll >= raw_ll or new_br > raw_br + 1e-6:
+                return False, None, [{"reason": "single_split_worse_iso"}]
+            return True, _iso_to_spec(iso), []
+        return False, None, [{"reason": "method_not_applicable"}]
+
+    last_spec: dict | None = None
+    for held in dates:
+        tr = sub[dvals != held]
+        va = sub[dvals == held]
+        if len(tr) < min_rows or len(va) < min_rows:
+            roll.append({"held_date": held, "reason": "small_fold"})
+            return False, None, roll
+        pt = pd.to_numeric(tr[p_fit_col], errors="coerce").to_numpy()
+        yt = pd.to_numeric(tr["hit_result"], errors="coerce").to_numpy()
+        mtr = np.isfinite(pt) & np.isin(yt, [0.0, 1.0])
+        pt, yt = pt[mtr], yt[mtr]
+        if len(pt) < min_rows:
+            roll.append({"held_date": held, "reason": "small_train"})
+            return False, None, roll
+
+        pv = pd.to_numeric(va[p_fit_col], errors="coerce").to_numpy()
+        yv = pd.to_numeric(va["hit_result"], errors="coerce").to_numpy()
+        mv = np.isfinite(pv) & np.isin(yv, [0.0, 1.0])
+        pv, yv = pv[mv], yv[mv]
+        if len(pv) < 5:
+            roll.append({"held_date": held, "reason": "small_val"})
+            return False, None, roll
+
+        raw_ll, raw_br = _metrics(pv, yv)
+
+        if method == "platt":
+            a, b = _fit_platt(pt, yt)
+            cal = _apply_platt(pv, a, b)
+            spec_fold = {"type": "platt", "a": a, "b": b}
+        elif method == "line_aware" and "line" in tr.columns and "line" in va.columns:
+            lt = pd.to_numeric(tr["line"], errors="coerce").to_numpy()[mtr]
+            lv = pd.to_numeric(va["line"], errors="coerce").to_numpy()[mv]
+            mu = float(np.nanmean(lt))
+            sig = float(np.nanstd(lt)) or 1.0
+            if not np.isfinite(sig) or sig < 1e-9:
+                roll.append({"held_date": held, "reason": "line_std_zero"})
+                return False, None, roll
+            zt = (lt - mu) / sig
+            zv = (lv - mu) / sig
+            a, b, c = _fit_line_aware(pt, yt, zt)
+            cal = _apply_line_aware(pv, zv, a, b, c)
+            spec_fold = {"type": "line_aware", "a": a, "b": b, "c": c, "line_mu": mu, "line_std": sig}
+        elif method == "isotonic":
+            _, iso = _fit_apply_isotonic(pt, yt, pv)
+            cal = np.clip(iso.predict(pv), 1e-9, 1.0 - 1e-9)
+            spec_fold = _iso_to_spec(iso)
+        else:
+            return False, None, [{"reason": "unknown_method"}]
+
+        new_ll, new_br = _metrics(cal, yv)
+        if new_ll >= raw_ll or new_br > raw_br + 1e-6:
+            roll.append(
+                {
+                    "held_date": held,
+                    "raw_ll": raw_ll,
+                    "new_ll": new_ll,
+                    "raw_br": raw_br,
+                    "new_br": new_br,
+                    "reason": "rollback_fold_worse",
+                    "method": method,
+                }
+            )
+            return False, None, roll
+        last_spec = spec_fold
+
+    # Refit final spec on all rows for storage (parameters stable for platt/line; isotonic refit on all)
+    m = np.isfinite(p_all) & np.isin(y_all, [0.0, 1.0])
+    p0, y0 = p_all[m], y_all[m]
+    if method == "platt":
+        a, b = _fit_platt(p0, y0)
+        return True, {"type": "platt", "a": a, "b": b}, roll
+    if method == "line_aware" and line_all is not None:
+        mu = float(np.nanmean(line_all[m]))
+        sig = float(np.nanstd(line_all[m])) or 1.0
+        if sig < 1e-9:
+            return False, None, roll
+        z0 = (line_all[m] - mu) / sig
+        a, b, c = _fit_line_aware(p0, y0, z0)
+        return True, {"type": "line_aware", "a": a, "b": b, "c": c, "line_mu": mu, "line_std": sig}, roll
+    if method == "isotonic":
+        _, iso = _fit_apply_isotonic(p0, y0, p0)
+        return True, _iso_to_spec(iso), roll
+    return bool(last_spec), last_spec, roll
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--label", required=True)
@@ -61,7 +234,11 @@ def main() -> int:
 
     eml = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
     diag = (
-        REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}" / "segment_failure_diagnosis.csv"
+        REPO_ROOT
+        / "artifacts"
+        / "model_diagnostics"
+        / f"event_market_superiority_{label}"
+        / "segment_failure_diagnosis.csv"
     )
     if not eml.is_file():
         print(f"MISSING {eml}", file=sys.stderr)
@@ -90,6 +267,7 @@ def main() -> int:
     roll_rows: list[dict] = []
 
     dates = sorted(combo["date"].astype(str).unique()) if "date" in combo.columns else []
+    method_order = ["platt", "line_aware", "isotonic"]
 
     for stat, role in targets:
         sub = combo[
@@ -108,83 +286,43 @@ def main() -> int:
             roll_rows.append(
                 {"stat": stat, "role_bucket": role, "reason": "insufficient_rows_or_no_dates"}
             )
+            cand_rows.append(
+                {"stat": stat, "role_bucket": role, "n": int(len(p)), "method": "none", "selected": False}
+            )
             continue
-        dvals = sub["date"].astype(str).to_numpy()
-        ok_folds = True
-        a_b = (0.0, 1.0)
-        if len(dates) >= 2:
-            for held in dates:
-                tr = sub[dvals != held]
-                va = sub[dvals == held]
-                if len(tr) < args.min_rows_per_fold or len(va) < args.min_rows_per_fold:
-                    ok_folds = False
-                    roll_rows.append({"stat": stat, "role_bucket": role, "reason": f"small_fold_{held}"})
-                    break
-                pt = pd.to_numeric(tr[p_fit_col], errors="coerce").to_numpy()
-                yt = pd.to_numeric(tr["hit_result"], errors="coerce").to_numpy()
-                mtr = pt == pt
-                pt, yt = pt[mtr], yt[mtr]
-                yt = yt[np.isin(yt, [0, 1])]
-                pt = pt[: len(yt)]
-                if len(pt) < args.min_rows_per_fold:
-                    ok_folds = False
-                    break
-                a, b = _fit_platt(pt, yt)
-                pv = pd.to_numeric(va[p_fit_col], errors="coerce").to_numpy()
-                yv = pd.to_numeric(va["hit_result"], errors="coerce").to_numpy()
-                mv = np.isfinite(pv) & np.isin(yv, [0, 1])
-                pv, yv = pv[mv], yv[mv]
-                if len(pv) < 5:
-                    ok_folds = False
-                    break
-                raw_ll, raw_br = _metrics(pv, yv)
-                cal = _apply_platt(pv, a, b)
-                new_ll, new_br = _metrics(cal, yv)
-                if new_ll >= raw_ll or new_br > raw_br + 1e-6:
-                    ok_folds = False
-                    roll_rows.append(
-                        {
-                            "stat": stat,
-                            "role_bucket": role,
-                            "held_date": held,
-                            "raw_ll": raw_ll,
-                            "new_ll": new_ll,
-                            "raw_br": raw_br,
-                            "new_br": new_br,
-                            "reason": "rollback_fold_worse",
-                        }
-                    )
-                    break
-                a_b = (a, b)
-        else:
-            a, b = _fit_platt(p, y)
-            raw_ll, raw_br = _metrics(p, y)
-            new_ll, new_br = _metrics(_apply_platt(p, a, b), y)
-            if new_ll >= raw_ll or new_br > raw_br + 1e-6:
-                ok_folds = False
-                roll_rows.append({"stat": stat, "role_bucket": role, "reason": "single_split_worse"})
-            a_b = (a, b)
+
+        picked: dict | None = None
+        picked_method = "none"
+        for method in method_order:
+            if method == "line_aware" and "line" not in sub.columns:
+                continue
+            ok, spec, rolls = _eval_method_date_folds(
+                sub=sub, dates=dates, p_fit_col=p_fit_col, min_rows=args.min_rows_per_fold, method=method
+            )
+            for r in rolls:
+                roll_rows.append({"stat": stat, "role_bucket": role, **r})
+            if ok and spec:
+                picked = spec
+                picked_method = method
+                break
 
         cand_rows.append(
             {
                 "stat": stat,
                 "role_bucket": role,
                 "n": int(len(p)),
-                "type": "platt",
-                "a": a_b[0],
-                "b": a_b[1],
-                "selected": bool(ok_folds),
+                "method": picked_method,
+                "selected": picked is not None,
             }
         )
-        if ok_folds:
-            key = f"{stat}|{role}"
-            selected[key] = {"type": "platt", "a": a_b[0], "b": a_b[1]}
+        if picked:
+            selected[f"{stat}|{role}"] = picked
 
     out_model = REPO_ROOT / "artifacts" / "models" / "guarded_event_calibration.json"
     out_model.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "event_calibration_applied": True,
-        "event_calibration_version": "guarded_platt_v1",
+        "event_calibration_version": "guarded_line_iso_platt_v1",
         "event_calibration_stage": "oof_date_holdout_one_fold_per_date",
         "event_calibration_source": "guarded_oof_actuals_only",
         "market_pmf_used": False,
@@ -201,7 +339,11 @@ def main() -> int:
     pd.DataFrame(roll_rows).to_csv(diag_dir / "rollback_report.csv", index=False)
     (diag_dir / "summary.json").write_text(
         json.dumps(
-            {"n_selected": len(selected), "n_rollbacks": len(roll_rows), "out_model": str(out_model.relative_to(REPO_ROOT))},
+            {
+                "n_selected": len(selected),
+                "n_rollbacks": len(roll_rows),
+                "out_model": str(out_model.relative_to(REPO_ROOT)),
+            },
             indent=2,
         )
         + "\n",

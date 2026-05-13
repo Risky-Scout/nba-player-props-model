@@ -6,6 +6,8 @@ import math
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 
 def load_event_calibration(path: Path | str) -> dict[str, Any]:
     p = Path(path)
@@ -67,6 +69,24 @@ def apply_segment_calibration(
         b = float(spec.get("b", 1.0))
         z = a + b * logit(p0)
         return sigmoid(z), True, seg_id
+    if t == "line_aware":
+        a = float(spec.get("a", 0.0))
+        b = float(spec.get("b", 1.0))
+        c = float(spec.get("c", 0.0))
+        mu = float(spec.get("line_mu", 0.0))
+        sig = float(spec.get("line_std", 1.0)) or 1.0
+        z_line = 0.0
+        if line is not None and math.isfinite(float(line)) and math.isfinite(sig):
+            z_line = (float(line) - mu) / sig
+        z = a + b * logit(p0) + c * z_line
+        return sigmoid(z), True, seg_id
+    if t == "isotonic":
+        xt = np.asarray(spec.get("x_thresholds") or [], dtype=float)
+        yt = np.asarray(spec.get("y_thresholds") or [], dtype=float)
+        if xt.size < 2 or yt.size < 2 or xt.size != yt.size:
+            return p0, False, None
+        p_clip = float(np.clip(p0, float(xt[0]), float(xt[-1])))
+        return float(np.interp(p_clip, xt, yt)), True, seg_id
     if t == "identity":
         return p0, True, seg_id
     return p0, False, None
