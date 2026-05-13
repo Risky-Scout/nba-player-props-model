@@ -1,0 +1,14 @@
+{
+  "fitted_at_utc": "2026-05-13T07:13:27+00:00",
+  "oof_rows": 81032,
+  "mae_model": 5.263803965346055,
+  "mae_baseline_roll10": 5.191159347003026,
+  "rmse_model": 6.896992058648425,
+  "dnp_brier": 0.009124912380294203,
+  "active_logloss": 0.030971183207355486,
+  "q10_coverage": 0.10098479612992398,
+  "q50_coverage": 0.48801707967222824,
+  "q90_coverage": 0.8934618422351663,
+  "sklearn_ridge": true,
+  "oof_path": "data/oof_minutes_predictions.parquet"
+}

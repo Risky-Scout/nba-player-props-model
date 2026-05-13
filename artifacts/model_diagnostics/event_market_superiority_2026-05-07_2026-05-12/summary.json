@@ -1,0 +1,22 @@
+{
+  "date": "2026-05-07_2026-05-12",
+  "date_range": {
+    "start": "2026-05-07",
+    "end": "2026-05-12"
+  },
+  "global_market_superiority_claim_allowed": false,
+  "n_segments_total": 96,
+  "n_segments_passed": 0,
+  "n_segments_failed": 96,
+  "required_stats_missing_in_event_rows": [
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "min_scored_rows": 100,
+  "min_market_joined_rows": 100
+}

@@ -1,0 +1,93 @@
+{
+  "schema_version": "m8_6q_v2",
+  "date_range": {
+    "start": "2026-05-07",
+    "end": "2026-05-12"
+  },
+  "rows": 2276,
+  "matched_rows": 1330,
+  "scored_rows_all_fields_nonnull": 1330,
+  "daily_meta": [
+    {
+      "as_of_date": "2026-05-07",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "rows": 1502,
+      "matched_rows": 864,
+      "scored_rows_all_fields_nonnull": 864,
+      "odds_rows": 1502,
+      "market_overlap_ratio": 0.575233,
+      "insufficient_market_overlap": false,
+      "scoring_blocker_counts": {
+        "none": 864,
+        "market_join_failed": 638
+      },
+      "odds_pairs_source": "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet",
+      "oof_single_rows": 344,
+      "oof_combo_rows": 215,
+      "model_source_mode": "oof_date_slice",
+      "box_score_rows_for_as_of_date": 44,
+      "box_score_actual_lookup_keys": 528,
+      "pmf_col_single": "pmf",
+      "pmf_col_combo": "pmf"
+    },
+    {
+      "as_of_date": "2026-05-08",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "rows": 0,
+      "join_status": "no_odds_pairs_file"
+    },
+    {
+      "as_of_date": "2026-05-09",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "rows": 0,
+      "join_status": "no_odds_pairs_file"
+    },
+    {
+      "as_of_date": "2026-05-10",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "rows": 0,
+      "join_status": "no_odds_pairs_file"
+    },
+    {
+      "as_of_date": "2026-05-11",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "rows": 0,
+      "join_status": "no_odds_pairs_file"
+    },
+    {
+      "as_of_date": "2026-05-12",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "rows": 774,
+      "matched_rows": 466,
+      "scored_rows_all_fields_nonnull": 466,
+      "odds_rows": 774,
+      "market_overlap_ratio": 0.602067,
+      "insufficient_market_overlap": false,
+      "scoring_blocker_counts": {
+        "none": 466,
+        "market_join_failed": 308
+      },
+      "odds_pairs_source": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.parquet",
+      "oof_single_rows": 153664,
+      "oof_combo_rows": 96040,
+      "model_source_mode": "oof_date_slice",
+      "box_score_rows_for_as_of_date": 27,
+      "box_score_actual_lookup_keys": 324,
+      "pmf_col_single": "pmf",
+      "pmf_col_combo": "pmf"
+    }
+  ],
+  "combined_output": "artifacts/model_diagnostics/event_market_loss_rows_2026-05-07_2026-05-12.parquet"
+}

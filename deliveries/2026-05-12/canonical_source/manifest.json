@@ -1,6 +1,6 @@
 {
   "schema_version": "m8_6m_v1",
-  "created_at_utc": "2026-05-12T21:20:11.838393+00:00",
+  "created_at_utc": "2026-05-13T07:37:08.555010+00:00",
   "date": "2026-05-12",
   "canonical_source_type": "MODEL_ONLY_TRUE_ATOM_PMF",
   "atom_pmf_policy": "atom_source_only_no_ladder_fallback",
@@ -14,7 +14,7 @@
     "pmf_active"
   ],
   "canonical_outputs": {
-    "rows": 341,
+    "rows": 384,
     "columns": [
       "player_id",
       "player_name",
@@ -49,7 +49,7 @@
     "model_only_parquet": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "model_only_parquet_path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "parquet_path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-    "parquet_sha256": "7185d03686a93e0bc494a28937e03afc57f463b7a97c6f3bb1f0b234c7f88e7d",
+    "parquet_sha256": "9d5829edfa330e5e53728b2b1c7300160201703331e7d12cef5f24739d86a0d8",
     "atom_pmf_present": true,
     "atom_pmf_column": "pmf_active",
     "atom_pmf_columns": [
@@ -63,12 +63,13 @@
       "pr",
       "pra",
       "pts",
+      "ra",
       "reb",
       "stl",
       "stocks",
       "tov"
     ],
-    "players": 31
+    "players": 32
   },
   "forbidden_pmf_sources": [
     "ladder",

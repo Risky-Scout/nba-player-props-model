@@ -1,0 +1,282 @@
+{
+  "dates": [
+    "2026-05-12"
+  ],
+  "label": "2026-05-12",
+  "min_scored_rows": 100,
+  "oddsapi_default_market_count": 23,
+  "snapshot_substr": "close_or_lock",
+  "stats": [
+    {
+      "books_count": 6,
+      "canonical_rows": 32,
+      "event_market_rows": 248,
+      "games_count": 7,
+      "market_keys_requested": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_points"
+      ],
+      "market_keys_seen_raw": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "matched_rows": 142,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 34,
+      "players_count": 16,
+      "processed_odds_rows": 248,
+      "raw_odds_rows": 200,
+      "scored_rows": 142,
+      "stat": "pts",
+      "two_way_odds_rows": 248
+    },
+    {
+      "books_count": 6,
+      "canonical_rows": 32,
+      "event_market_rows": 187,
+      "games_count": 6,
+      "market_keys_requested": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_rebounds"
+      ],
+      "market_keys_seen_raw": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "matched_rows": 118,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 34,
+      "players_count": 15,
+      "processed_odds_rows": 187,
+      "raw_odds_rows": 200,
+      "scored_rows": 118,
+      "stat": "reb",
+      "two_way_odds_rows": 187
+    },
+    {
+      "books_count": 6,
+      "canonical_rows": 32,
+      "event_market_rows": 180,
+      "games_count": 7,
+      "market_keys_requested": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_assists"
+      ],
+      "market_keys_seen_raw": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "matched_rows": 109,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 34,
+      "players_count": 16,
+      "processed_odds_rows": 180,
+      "raw_odds_rows": 200,
+      "scored_rows": 109,
+      "stat": "ast",
+      "two_way_odds_rows": 180
+    },
+    {
+      "books_count": 6,
+      "canonical_rows": 32,
+      "event_market_rows": 159,
+      "games_count": 7,
+      "market_keys_requested": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_threes"
+      ],
+      "market_keys_seen_raw": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "matched_rows": 97,
+      "missing_reason": "insufficient_scored_rows",
+      "model_stat_grid_rows": 32,
+      "players_count": 14,
+      "processed_odds_rows": 159,
+      "raw_odds_rows": 192,
+      "scored_rows": 97,
+      "stat": "fg3m",
+      "two_way_odds_rows": 159
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_turnovers",
+        "player_turnovers_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "tov",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_steals",
+        "player_steals_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "stl",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_blocks",
+        "player_blocks_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "blk",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_blocks_steals"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "stocks",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_points_assists",
+        "player_points_assists_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "pa",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_points_rebounds",
+        "player_points_rebounds_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "pr",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_rebounds_assists",
+        "player_rebounds_assists_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "ra",
+      "two_way_odds_rows": 0
+    },
+    {
+      "books_count": 0,
+      "canonical_rows": 32,
+      "event_market_rows": 0,
+      "games_count": 0,
+      "market_keys_requested": [
+        "player_points_rebounds_assists",
+        "player_points_rebounds_assists_alternate"
+      ],
+      "market_keys_seen_processed": [],
+      "market_keys_seen_raw": [],
+      "matched_rows": 0,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 34,
+      "players_count": 0,
+      "processed_odds_rows": 0,
+      "raw_odds_rows": 0,
+      "scored_rows": 0,
+      "stat": "pra",
+      "two_way_odds_rows": 0
+    }
+  ]
+}

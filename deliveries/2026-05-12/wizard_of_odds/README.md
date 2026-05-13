@@ -1,15 +1,15 @@
 # Wizard of Odds — 2026-05-12
 
-## Run status — 2026-05-12 — snapshot `close_lock`
+## Run status — 2026-05-12 — snapshot `morning`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
-- props: **341**
+- props: **384**
 - books: **13**
 - market coverage: **full**
 - injury freshness: **fresh**
-- role provenance: `derived_from_projected_minutes`: 341
-- model: `41e2363a#phase10c`
+- role provenance: `derived_from_projected_minutes`: 384
+- model: `78f9ba3c#phase10c`
 
 ### Caveats
 
@@ -29,6 +29,7 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 | `market_comparison.{csv,parquet}` | one row per (player, stat, line, book) joining the model fair odds to the book's offered odds and no-vig probability. |
 | `publishable_edges.{csv,parquet}` | subset of `market_comparison` filtered by `\|edge\| ≥ threshold` and quality flags. |
 | `run_manifest.json` | sources, snapshot lifecycle, quality rollup, model version, finality status, and the freshness manifest passthrough. |
+| `count_diagnostics.json` | fair-odds board null-odds / degenerate-probability counters (see `count_diagnostics` in the manifest). |
 | `after_game_clv_and_scoring.{csv,parquet,md}` | post-tip CLV + scoring artifacts (added by `scripts/score_daily_pmf_delivery_after_game.py`). |
 
 ## Run summary
@@ -40,9 +41,10 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **books_seen**: `13`
 - **freshness.overall_status**: `not_ready`
 - **availability_freshness_status**: `very_stale`
-- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 341}`
+- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 384}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=7347, full_pmfs_wide=341, market_comparison=1285, publishable_edges=0
+- **row counts**: fair_odds_board=8224, full_pmfs_wide=384, market_comparison=1285, publishable_edges=1087
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 1148, 'fair_under_odds_null_count': 1148, 'zero_or_one_prob_count': 667}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
