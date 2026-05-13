@@ -34,6 +34,10 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from event_line_calibration import apply_segment_calibration  # noqa: E402
 from odds_snapshot_selection import select_odds_pairs_parquet  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL
+from nba_props_model.calibration.event_neutral_probability_scale import (  # noqa: E402
+    apply_manifest_to_probability,
+    load_probability_scale_manifest,
+)
 
 MISSION_STATS_CANONICAL = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
 FORBIDDEN_OUTPUT_COLS = {
@@ -404,7 +408,12 @@ def _binary_over_hit(actual: int | None, line: float | None) -> int | None:
     return None  # push on integer line
 
 
-def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = None) -> int:
+def _main_single_date(
+    date: str,
+    snapshot_substr: str,
+    event_cal: dict | None = None,
+    prob_manifest: dict | None = None,
+) -> int:
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"event_market_loss_rows_{date}.parquet"
@@ -432,6 +441,15 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
             "market_prob_used_as_training_label": bool(
                 event_cal.get("market_prob_used_as_training_label", False)
             ),
+        }
+    if prob_manifest:
+        early_meta = {
+            **early_meta,
+            "event_neutral_probability_scale_manifest": True,
+            "probability_scale_repair_version": prob_manifest.get("version"),
+            "canonical_pmf_unchanged": True,
+            "market_odds_used_as_features": False,
+            "market_odds_used_for_edge_only": True,
         }
 
     if odds_path is None:
@@ -634,7 +652,21 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
             )
             if cal_applied and mp2 is not None:
                 mp_over = mp2
-        mp_under = (1.0 - mp_over) if mp_over is not None else None
+        p_pre_scale = float(mp_over) if mp_over is not None and mp_over == mp_over else None
+        stc = str(rd.get("stat_canonical") or "").lower()
+        rb = str(rd.get("role_bucket_mdl") or rd.get("role_bucket") or "unknown")
+        p_active, ps_scope, ps_method, ps_applied = apply_manifest_to_probability(
+            p_pre_scale,
+            stat=stc,
+            role_bucket=rb,
+            manifest=prob_manifest,
+        )
+        p_calibrated = float(p_active) if ps_applied and p_active is not None else None
+        if p_active is None:
+            mp_over_active = None
+        else:
+            mp_over_active = float(p_active)
+        mp_under = (1.0 - mp_over_active) if mp_over_active is not None else None
         m_mean, m_var = _pmf_mean_variance(pmf)
         # Actual outcome (for scoring): OOF row if present, else box score lookup
         actual = rd.get("actual_value")
@@ -680,7 +712,7 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
 
         # Side default OVER (event-level rows; per-side derivation downstream)
         side = "OVER"
-        model_prob_for_side = mp_over if side == "OVER" else mp_under
+        model_prob_for_side = mp_over_active if side == "OVER" else mp_under
         market_prob_for_side = mkt_over_f if side == "OVER" else mkt_under_f
 
         # B3 — sign convention: delta = model − market (negative = model better)
@@ -703,7 +735,7 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
         scoring_blocker = None
         if not two_way_ok:
             scoring_blocker = "missing_two_way_odds"
-        elif mp_over is None:
+        elif mp_over_active is None:
             scoring_blocker = "model_pmf_unusable"
         elif hit_result is None:
             if n_box_rows_date <= 0:
@@ -736,7 +768,15 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
             "model_pmf": json.dumps({str(k): v for k, v in pmf.items()}) if pmf else None,
             "model_mean": m_mean,
             "model_variance": m_var,
-            "model_prob_over": mp_over,
+            "model_prob_over_raw": mp_over_raw,
+            "model_prob_over_calibrated": p_calibrated,
+            "model_prob_over_active": mp_over_active,
+            "probability_scale_repair_scope": ps_scope,
+            "probability_scale_repair_method": ps_method if ps_applied else None,
+            "probability_scale_repair_version": (
+                str(prob_manifest.get("version")) if prob_manifest and ps_applied else None
+            ),
+            "model_prob_over": mp_over_active,
             "model_prob_under": mp_under,
             "model_probability_for_side": model_prob_for_side,
 
@@ -815,6 +855,12 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
             "model_pmf": None,
             "model_mean": None,
             "model_variance": None,
+            "model_prob_over_raw": None,
+            "model_prob_over_calibrated": None,
+            "model_prob_over_active": None,
+            "probability_scale_repair_scope": None,
+            "probability_scale_repair_method": None,
+            "probability_scale_repair_version": None,
             "model_prob_over": None,
             "model_prob_under": None,
             "model_probability_for_side": None,
@@ -865,15 +911,15 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
     scored_count = 0
     if len(out):
         scored_mask = (
-            out["model_prob_over"].notna() &
-            out["market_prob_over_no_vig"].notna() &
-            out["hit_result"].notna() &
-            out["model_event_logloss"].notna() &
-            out["market_event_logloss"].notna() &
-            out["event_logloss_delta"].notna() &
-            out["model_brier"].notna() &
-            out["market_brier"].notna() &
-            out["brier_delta"].notna()
+            out["model_prob_over_active"].notna()
+            & out["market_prob_over_no_vig"].notna()
+            & out["hit_result"].notna()
+            & out["model_event_logloss"].notna()
+            & out["market_event_logloss"].notna()
+            & out["event_logloss_delta"].notna()
+            & out["model_brier"].notna()
+            & out["market_brier"].notna()
+            & out["brier_delta"].notna()
         )
         scored_count = int(scored_mask.sum())
 
@@ -909,7 +955,13 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
     return 0
 
 
-def _main_date_range(start: str, end: str, snapshot_substr: str, event_cal: dict | None = None) -> int:
+def _main_date_range(
+    start: str,
+    end: str,
+    snapshot_substr: str,
+    event_cal: dict | None = None,
+    prob_manifest: dict | None = None,
+) -> int:
     from datetime import date as dt_date, timedelta
 
     frames: list[pd.DataFrame] = []
@@ -918,7 +970,7 @@ def _main_date_range(start: str, end: str, snapshot_substr: str, event_cal: dict
     end_d = dt_date.fromisoformat(end)
     while cur <= end_d:
         s = cur.isoformat()
-        rc = _main_single_date(s, snapshot_substr, event_cal)
+        rc = _main_single_date(s, snapshot_substr, event_cal, prob_manifest)
         if rc != 0:
             return rc
         p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{s}.parquet"
@@ -945,7 +997,7 @@ def _main_date_range(start: str, end: str, snapshot_substr: str, event_cal: dict
     scored_count = 0
     if len(combo):
         scored_mask = (
-            combo["model_prob_over"].notna()
+            combo["model_prob_over_active"].notna()
             & combo["market_prob_over_no_vig"].notna()
             & combo["hit_result"].notna()
             & combo["model_event_logloss"].notna()
@@ -978,6 +1030,16 @@ def _main_date_range(start: str, end: str, snapshot_substr: str, event_cal: dict
                 ),
             }
         )
+    if prob_manifest:
+        agg_meta.update(
+            {
+                "event_neutral_probability_scale_manifest": True,
+                "probability_scale_repair_version": prob_manifest.get("version"),
+                "canonical_pmf_unchanged": True,
+                "market_odds_used_as_features": False,
+                "market_odds_used_for_edge_only": True,
+            }
+        )
     Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
     print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (range)")
     print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
@@ -986,13 +1048,17 @@ def _main_date_range(start: str, end: str, snapshot_substr: str, event_cal: dict
 
 
 def _main_dates_file_list(
-    dates: list[str], snapshot_substr: str, label: str, event_cal: dict | None = None
+    dates: list[str],
+    snapshot_substr: str,
+    label: str,
+    event_cal: dict | None = None,
+    prob_manifest: dict | None = None,
 ) -> int:
     """Concatenate daily event_market_loss rows for explicit date list (inventory-driven)."""
     frames: list[pd.DataFrame] = []
     metas: list[dict] = []
     for d in sorted(set(dates)):
-        rc = _main_single_date(d, snapshot_substr, event_cal)
+        rc = _main_single_date(d, snapshot_substr, event_cal, prob_manifest)
         if rc != 0:
             return rc
         p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{d}.parquet"
@@ -1018,7 +1084,7 @@ def _main_dates_file_list(
     scored_count = 0
     if len(combo):
         scored_mask = (
-            combo["model_prob_over"].notna()
+            combo["model_prob_over_active"].notna()
             & combo["market_prob_over_no_vig"].notna()
             & combo["hit_result"].notna()
             & combo["model_event_logloss"].notna()
@@ -1052,6 +1118,16 @@ def _main_dates_file_list(
                 ),
             }
         )
+    if prob_manifest:
+        agg_meta.update(
+            {
+                "event_neutral_probability_scale_manifest": True,
+                "probability_scale_repair_version": prob_manifest.get("version"),
+                "canonical_pmf_unchanged": True,
+                "market_odds_used_as_features": False,
+                "market_odds_used_for_edge_only": True,
+            }
+        )
     Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
     print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (dates-file)")
     print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
@@ -1072,6 +1148,11 @@ def main() -> int:
         default=None,
         help="Optional JSON from fit_guarded_event_market_calibration (Platt on line prob, eval only).",
     )
+    ap.add_argument(
+        "--event-prob-calibration-manifest",
+        default=None,
+        help="Optional JSON from fit_event_neutral_probability_scale_repair (event probs only).",
+    )
     args = ap.parse_args()
 
     event_cal: dict | None = None
@@ -1083,6 +1164,16 @@ def main() -> int:
             print(f"FATAL: --event-calibration-model not found: {pcal}", file=sys.stderr)
             return 2
         event_cal = json.loads(pcal.read_text(encoding="utf-8"))
+
+    prob_manifest: dict | None = None
+    if args.event_prob_calibration_manifest:
+        pm = Path(args.event_prob_calibration_manifest)
+        if not pm.is_absolute():
+            pm = REPO_ROOT / pm
+        if not pm.is_file():
+            print(f"FATAL: --event-prob-calibration-manifest not found: {pm}", file=sys.stderr)
+            return 2
+        prob_manifest = load_probability_scale_manifest(pm)
 
     modes = sum(
         bool(x) for x in (args.as_of_date, (args.start_date and args.end_date), args.dates_file)
@@ -1104,17 +1195,19 @@ def main() -> int:
             dates_file=args.dates_file,
             include_ineligible=args.include_ineligible,
         )
-        return _main_dates_file_list(dates, args.snapshot_substr, label, event_cal)
+        return _main_dates_file_list(dates, args.snapshot_substr, label, event_cal, prob_manifest)
 
     if args.start_date or args.end_date:
         if not (args.start_date and args.end_date):
             print("FATAL: --start-date and --end-date must be used together", file=sys.stderr)
             return 2
-        return _main_date_range(args.start_date, args.end_date, args.snapshot_substr, event_cal)
+        return _main_date_range(
+            args.start_date, args.end_date, args.snapshot_substr, event_cal, prob_manifest
+        )
     if not args.as_of_date:
         print("FATAL: pass --as-of-date, --start-date/--end-date, or --dates-file", file=sys.stderr)
         return 2
-    return _main_single_date(args.as_of_date, args.snapshot_substr, event_cal)
+    return _main_single_date(args.as_of_date, args.snapshot_substr, event_cal, prob_manifest)
 
 
 if __name__ == "__main__":
