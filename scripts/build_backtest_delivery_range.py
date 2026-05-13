@@ -120,9 +120,14 @@ def main() -> int:
             )
             continue
 
+        # Do not pass --rebuild-canonical: canonical was just built from
+        # predictions/stat_grid_{date}.parquet via
+        # build_model_only_canonical_from_stat_grid.py (rectangular MODEL_ONLY).
+        # Rebuilding from all_props here reintroduces uneven per-stat row counts
+        # when all_props omits sparse stats (e.g. fg3m) for some players.
         ok = _step(
             "build_daily_pmf_delivery.py",
-            ["--snapshot", "pre_close", "--no-odds-fetch", "--rebuild-canonical"],
+            ["--snapshot", "pre_close", "--no-odds-fetch"],
         )
         if not ok:
             report["failures"].append(

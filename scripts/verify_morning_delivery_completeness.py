@@ -32,6 +32,31 @@ def main() -> int:
         p = root / d
         if not p.is_dir():
             fails.append(f"missing_dir:{d}")
+        elif d == "after_game_scoring":
+            ag = root / "after_game_scoring"
+            placeholder = ag / "after_game_scoring_placeholder_manifest.json"
+            status_json = ag / "after_game_status.json"
+            has_scoring = (ag / "after_game_scoring.parquet").exists() or (
+                ag / "after_game_scoring.csv"
+            ).exists()
+            pending = False
+            if placeholder.is_file():
+                try:
+                    pm = json.loads(placeholder.read_text(encoding="utf-8"))
+                    pending = str(pm.get("after_game_scoring_status", "")) == "pending_actuals"
+                except Exception:
+                    fails.append("invalid_after_game_scoring_placeholder_manifest_json")
+            elif status_json.is_file():
+                try:
+                    sm = json.loads(status_json.read_text(encoding="utf-8"))
+                    st = str(sm.get("after_game_status", ""))
+                    pending = st in ("pending_outcomes", "pending_actuals")
+                except Exception:
+                    fails.append("invalid_after_game_status_json")
+            if not has_scoring and not pending:
+                fails.append(
+                    "after_game_scoring_missing_scoring_and_no_pending_placeholder"
+                )
 
     woo = root / "wizard_of_odds" / "run_manifest.json"
     if woo.is_file():

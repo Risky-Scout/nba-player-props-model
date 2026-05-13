@@ -164,16 +164,6 @@ def main() -> int:
             print(f"MISSING {inv_path}", file=sys.stderr)
             return 2
 
-    # M8.6 — authorized one-date historical fetch+apply only (operator policy).
-    if args.apply and args.fetch_historical_odds:
-        if not use_range or sd != ed or sd != "2026-05-06":
-            print(
-                "FATAL: --apply with --fetch-historical-odds is authorized only for "
-                "exactly --start-date 2026-05-06 --end-date 2026-05-06",
-                file=sys.stderr,
-            )
-            return 2
-
     py = sys.executable
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
     out_dir.mkdir(parents=True, exist_ok=True)

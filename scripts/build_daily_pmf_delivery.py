@@ -688,6 +688,11 @@ def build_canonical_from_predictions(predictions_path: Path, *,
               f"(stats: {sorted(appended_stats)})")
 
     df = pd.DataFrame(rows)
+    # M8.6 — drop incomplete (player, game) pairs so production MODEL_ONLY
+    # always has equal counts per mission stat (same gate as stat_grid path).
+    from build_model_only_canonical_from_stat_grid import _enforce_complete_stat_grid
+
+    df = _enforce_complete_stat_grid(df)
     canonical_dir.mkdir(parents=True, exist_ok=True)
     pq_path = canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
     df.to_parquet(pq_path, index=False)

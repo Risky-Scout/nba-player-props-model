@@ -331,6 +331,23 @@ jobs:
             --allow-missing after_game_scoring derek_forward_feed
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
+      - name: M8.6 morning completeness + OddsAPI/BDL coverage (slate date)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/verify_morning_delivery_completeness.py --date "$D"
+          python3 scripts/verify_oddsapi_bdl_full_prop_coverage.py --date "$D" --snapshot-substr auto --ensure-audit
+      - name: Upload diagnostics on failure (woo morning)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: woo-morning-fail-${{ steps.d.outputs.date }}
+          if-no-files-found: ignore
+          path: |
+            artifacts/automation_health
+            artifacts/model_diagnostics
       - name: Stage and commit approved files
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |

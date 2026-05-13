@@ -48,6 +48,7 @@ Hard rules echoed from the spec:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
@@ -236,6 +237,32 @@ def _refresh_index() -> int:
         return 0
     cmd = [PYTHON, str(INDEX)]
     return _run(cmd, allow_fail=True, label="refresh deliveries index")
+
+
+def _ensure_after_game_scoring_pending_placeholder(date: str) -> None:
+    """When the after-game scorer has not run, keep a rectangular delivery tree.
+
+    ``verify_morning_delivery_completeness.py`` accepts this manifest instead of
+    scored parquet/CSV (M8.6 morning automation contract).
+    """
+    after_game_dir = REPO_ROOT / "deliveries" / date / "after_game_scoring"
+    if (after_game_dir / "after_game_scoring.parquet").exists():
+        return
+    if (after_game_dir / "after_game_scoring.csv").exists():
+        return
+    after_game_dir.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "after_game_scoring_status": "pending_actuals",
+        "delivery_date": date,
+        "reason": (
+            "Box-score outcomes not yet available; placeholder until "
+            "scripts/score_daily_pmf_delivery_after_game.py runs."
+        ),
+    }
+    (after_game_dir / "after_game_scoring_placeholder_manifest.json").write_text(
+        json.dumps(payload, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _derek_feed(date: str, *, snapshot: str) -> int:
@@ -442,6 +469,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning")
     _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
+    _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
     return 0
 
@@ -469,6 +497,7 @@ def run_woo_morning_monetization(
         finality_status_override="PROVISIONAL_EARLY_MARKET",
         only_date=date,
     )
+    _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
     return 0
 
