@@ -218,7 +218,20 @@ def main() -> int:
     ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     ap.add_argument("--min-market-joined-rows", type=int, default=DEFAULT_MIN_JOINED)
+    ap.add_argument(
+        "--event-calibration-model",
+        default=None,
+        help="Optional guarded event calibration JSON; merged into summary.json metadata.",
+    )
     args = ap.parse_args()
+
+    if args.event_calibration_model:
+        p = Path(args.event_calibration_model)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if not p.is_file():
+            print(f"FATAL: --event-calibration-model not found: {p}", file=sys.stderr)
+            return 2
 
     modes = sum(bool(x) for x in (args.date, (args.start_date and args.end_date), args.dates_file))
     if modes > 1:
@@ -407,6 +420,12 @@ def main() -> int:
         "min_scored_rows": args.min_scored_rows,
         "min_market_joined_rows": args.min_market_joined_rows,
     }
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from event_line_calibration import merge_event_calibration_report_meta  # noqa: E402
+
+    summary.update(
+        merge_event_calibration_report_meta(REPO_ROOT, label, args.event_calibration_model)
+    )
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"STAT_ROLE_MARKET_SUPERIORITY_REPORT_PASS out={out_dir.relative_to(REPO_ROOT)}")
     return 0

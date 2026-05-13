@@ -30,6 +30,8 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+from event_line_calibration import apply_segment_calibration  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL
 
 MISSION_STATS_CANONICAL = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
@@ -410,7 +412,7 @@ def _binary_over_hit(actual: int | None, line: float | None) -> int | None:
     return None  # push on integer line
 
 
-def _main_single_date(date: str, snapshot_substr: str) -> int:
+def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = None) -> int:
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"event_market_loss_rows_{date}.parquet"
@@ -425,6 +427,18 @@ def _main_single_date(date: str, snapshot_substr: str) -> int:
         "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
         "forbidden_columns_check": "no_market_full_pmf_columns",
     }
+    if event_cal:
+        early_meta = {
+            **early_meta,
+            "event_calibration_applied": True,
+            "event_calibration_version": event_cal.get("event_calibration_version"),
+            "event_calibration_stage": event_cal.get("event_calibration_stage"),
+            "event_calibration_source": event_cal.get("event_calibration_source"),
+            "market_pmf_used": bool(event_cal.get("market_pmf_used", False)),
+            "market_prob_used_as_training_label": bool(
+                event_cal.get("market_prob_used_as_training_label", False)
+            ),
+        }
 
     if odds_path is None:
         empty = pd.DataFrame(columns=[
@@ -609,6 +623,23 @@ def _main_single_date(date: str, snapshot_substr: str) -> int:
 
         # B2 — compute model_prob_over from PMF directly
         mp_over = _prob_over(pmf, line)
+        mp_over_raw = mp_over
+        cal_applied = False
+        cal_seg_id = None
+        if event_cal is not None and mp_over is not None:
+            stc = str(rd.get("stat_canonical") or "").lower()
+            rb = str(rd.get("role_bucket_mdl") or rd.get("role_bucket") or "unknown")
+            line_f = None
+            try:
+                if line is not None and line == line:
+                    line_f = float(line)
+            except Exception:
+                line_f = None
+            mp2, cal_applied, cal_seg_id = apply_segment_calibration(
+                float(mp_over), stat=stc, role_bucket=rb, cal=event_cal, line=line_f,
+            )
+            if cal_applied and mp2 is not None:
+                mp_over = mp2
         mp_under = (1.0 - mp_over) if mp_over is not None else None
         m_mean, m_var = _pmf_mean_variance(pmf)
         # Actual outcome (for scoring): OOF row if present, else box score lookup
@@ -747,6 +778,16 @@ def _main_single_date(date: str, snapshot_substr: str) -> int:
             "join_status": rd.get("join_status", "matched"),
             "join_blockers": rd.get("join_blockers"),
             "scoring_blocker": scoring_blocker,
+
+            "model_prob_over_pre_event_calibration": mp_over_raw,
+            "event_calibration_applied": bool(cal_applied),
+            "event_calibration_version": (event_cal or {}).get("event_calibration_version"),
+            "event_calibration_stage": (event_cal or {}).get("event_calibration_stage"),
+            "event_calibration_source": (event_cal or {}).get("event_calibration_source"),
+            "event_calibration_segment": cal_seg_id,
+            "market_pmf_used": False,
+            "market_prob_used_as_training_label": False,
+
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
         }
@@ -799,6 +840,16 @@ def _main_single_date(date: str, snapshot_substr: str) -> int:
             "walk_forward_only": True,
             "join_status": "no_oof_match",
             "join_blockers": "player_id_and_name_no_match",
+
+            "model_prob_over_pre_event_calibration": None,
+            "event_calibration_applied": False,
+            "event_calibration_version": (event_cal or {}).get("event_calibration_version"),
+            "event_calibration_stage": (event_cal or {}).get("event_calibration_stage"),
+            "event_calibration_source": (event_cal or {}).get("event_calibration_source"),
+            "event_calibration_segment": None,
+            "market_pmf_used": False,
+            "market_prob_used_as_training_label": False,
+
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
         })
@@ -862,7 +913,7 @@ def _main_single_date(date: str, snapshot_substr: str) -> int:
     return 0
 
 
-def _main_date_range(start: str, end: str, snapshot_substr: str) -> int:
+def _main_date_range(start: str, end: str, snapshot_substr: str, event_cal: dict | None = None) -> int:
     from datetime import date as dt_date, timedelta
 
     frames: list[pd.DataFrame] = []
@@ -871,7 +922,7 @@ def _main_date_range(start: str, end: str, snapshot_substr: str) -> int:
     end_d = dt_date.fromisoformat(end)
     while cur <= end_d:
         s = cur.isoformat()
-        rc = _main_single_date(s, snapshot_substr)
+        rc = _main_single_date(s, snapshot_substr, event_cal)
         if rc != 0:
             return rc
         p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{s}.parquet"
@@ -918,6 +969,19 @@ def _main_date_range(start: str, end: str, snapshot_substr: str) -> int:
         "daily_meta": metas,
         "combined_output": str(out_path.relative_to(REPO_ROOT)),
     }
+    if event_cal:
+        agg_meta.update(
+            {
+                "event_calibration_applied": True,
+                "event_calibration_version": event_cal.get("event_calibration_version"),
+                "event_calibration_stage": event_cal.get("event_calibration_stage"),
+                "event_calibration_source": event_cal.get("event_calibration_source"),
+                "market_pmf_used": bool(event_cal.get("market_pmf_used", False)),
+                "market_prob_used_as_training_label": bool(
+                    event_cal.get("market_prob_used_as_training_label", False)
+                ),
+            }
+        )
     Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
     print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (range)")
     print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
@@ -925,12 +989,14 @@ def _main_date_range(start: str, end: str, snapshot_substr: str) -> int:
     return 0
 
 
-def _main_dates_file_list(dates: list[str], snapshot_substr: str, label: str) -> int:
+def _main_dates_file_list(
+    dates: list[str], snapshot_substr: str, label: str, event_cal: dict | None = None
+) -> int:
     """Concatenate daily event_market_loss rows for explicit date list (inventory-driven)."""
     frames: list[pd.DataFrame] = []
     metas: list[dict] = []
     for d in sorted(set(dates)):
-        rc = _main_single_date(d, snapshot_substr)
+        rc = _main_single_date(d, snapshot_substr, event_cal)
         if rc != 0:
             return rc
         p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{d}.parquet"
@@ -977,6 +1043,19 @@ def _main_dates_file_list(dates: list[str], snapshot_substr: str, label: str) ->
         "daily_meta": metas,
         "combined_output": str(out_path.relative_to(REPO_ROOT)),
     }
+    if event_cal:
+        agg_meta.update(
+            {
+                "event_calibration_applied": True,
+                "event_calibration_version": event_cal.get("event_calibration_version"),
+                "event_calibration_stage": event_cal.get("event_calibration_stage"),
+                "event_calibration_source": event_cal.get("event_calibration_source"),
+                "market_pmf_used": bool(event_cal.get("market_pmf_used", False)),
+                "market_prob_used_as_training_label": bool(
+                    event_cal.get("market_prob_used_as_training_label", False)
+                ),
+            }
+        )
     Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
     print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (dates-file)")
     print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
@@ -992,7 +1071,22 @@ def main() -> int:
     ap.add_argument("--dates-file", default=None)
     ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument("--snapshot-substr", default="close_or_lock")
+    ap.add_argument(
+        "--event-calibration-model",
+        default=None,
+        help="Optional JSON from fit_guarded_event_market_calibration (Platt on line prob, eval only).",
+    )
     args = ap.parse_args()
+
+    event_cal: dict | None = None
+    if args.event_calibration_model:
+        pcal = Path(args.event_calibration_model)
+        if not pcal.is_absolute():
+            pcal = REPO_ROOT / pcal
+        if not pcal.is_file():
+            print(f"FATAL: --event-calibration-model not found: {pcal}", file=sys.stderr)
+            return 2
+        event_cal = json.loads(pcal.read_text(encoding="utf-8"))
 
     modes = sum(bool(x) for x in (args.as_of_date, (args.start_date and args.end_date), args.dates_file))
     if modes > 1:
@@ -1012,17 +1106,17 @@ def main() -> int:
             dates_file=args.dates_file,
             include_ineligible=args.include_ineligible,
         )
-        return _main_dates_file_list(dates, args.snapshot_substr, label)
+        return _main_dates_file_list(dates, args.snapshot_substr, label, event_cal)
 
     if args.start_date or args.end_date:
         if not (args.start_date and args.end_date):
             print("FATAL: --start-date and --end-date must be used together", file=sys.stderr)
             return 2
-        return _main_date_range(args.start_date, args.end_date, args.snapshot_substr)
+        return _main_date_range(args.start_date, args.end_date, args.snapshot_substr, event_cal)
     if not args.as_of_date:
         print("FATAL: pass --as-of-date, --start-date/--end-date, or --dates-file", file=sys.stderr)
         return 2
-    return _main_single_date(args.as_of_date, args.snapshot_substr)
+    return _main_single_date(args.as_of_date, args.snapshot_substr, event_cal)
 
 
 if __name__ == "__main__":

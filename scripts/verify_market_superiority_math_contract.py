@@ -32,9 +32,21 @@ def main() -> int:
     ap.add_argument("--alpha", type=float, default=0.05)
     ap.add_argument("--allow-provisional-block", action="store_true")
     ap.add_argument("--diagnostics-meta", type=Path, default=None)
+    ap.add_argument(
+        "--event-calibration-model",
+        default=None,
+        help="Optional guarded event calibration JSON; merged into math contract summary.json.",
+    )
     args = ap.parse_args()
 
     label = args.label.strip()
+    if args.event_calibration_model:
+        p = Path(args.event_calibration_model)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if not p.is_file():
+            print(f"FATAL: --event-calibration-model not found: {p}", file=sys.stderr)
+            return 2
     eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
     sr_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}" / "stat_role_market_superiority.csv"
     prom_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}" / "summary.json"
@@ -139,6 +151,10 @@ def main() -> int:
         "calibration_contract_pass": calib_ok,
         "global_math_pass": global_pass,
     }
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from event_line_calibration import merge_event_calibration_report_meta  # noqa: E402
+
+    summary.update(merge_event_calibration_report_meta(REPO_ROOT, label, args.event_calibration_model))
     (out_root / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     readme = [
         "# Market superiority math contract",

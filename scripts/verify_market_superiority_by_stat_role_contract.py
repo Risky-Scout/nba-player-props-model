@@ -30,6 +30,11 @@ def main() -> int:
         help="Exit 0 with MARKET_SUPERIORITY_CONTRACT_BLOCKED when claim disallowed "
         "(CI / historical replay without full market proof).",
     )
+    ap.add_argument(
+        "--event-calibration-model",
+        default=None,
+        help="Optional; if set must exist. Echoed in verifier output for provenance.",
+    )
     args = ap.parse_args()
 
     modes = sum(bool(x) for x in (args.date, (args.start_date and args.end_date), args.dates_file))
@@ -39,6 +44,14 @@ def main() -> int:
     if modes == 0:
         print("FATAL: pass --date, --start-date/--end-date, or --dates-file", file=sys.stderr)
         return 2
+
+    if args.event_calibration_model:
+        p = Path(args.event_calibration_model)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if not p.is_file():
+            print(f"FATAL: --event-calibration-model not found: {p}", file=sys.stderr)
+            return 2
 
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
     from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
@@ -90,6 +103,8 @@ def main() -> int:
         and len(no_mkt) == 0
     ):
         print("MARKET_SUPERIORITY_BY_STAT_ROLE_CONTRACT_PASS")
+        if args.event_calibration_model:
+            print(f"  event_calibration_model={args.event_calibration_model}")
         return 0
 
     if args.allow_provisional_block:

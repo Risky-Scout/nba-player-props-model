@@ -114,6 +114,11 @@ def main() -> int:
     ap.add_argument("--end-date", default=None)
     ap.add_argument("--dates-file", default=None)
     ap.add_argument("--include-ineligible", action="store_true")
+    ap.add_argument(
+        "--event-calibration-model",
+        default=None,
+        help="Optional guarded event calibration JSON; merged into report JSON metadata.",
+    )
     ap.add_argument("--min-n", type=int, default=30)
     ap.add_argument("--tau", type=float, default=0.0)
     ap.add_argument("--z", type=float, default=1.96)
@@ -135,6 +140,20 @@ def main() -> int:
         dates_file=args.dates_file,
         include_ineligible=args.include_ineligible,
     )
+
+    if args.event_calibration_model:
+        p = Path(args.event_calibration_model)
+        if not p.is_absolute():
+            p = REPO_ROOT / p
+        if not p.is_file():
+            print(f"FATAL: --event-calibration-model not found: {p}", file=sys.stderr)
+            return 2
+
+    def _ec_meta() -> dict:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        from event_line_calibration import merge_event_calibration_report_meta  # noqa: WPS433
+
+        return merge_event_calibration_report_meta(REPO_ROOT, label, args.event_calibration_model)
 
     in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
     date = label
@@ -175,6 +194,7 @@ def main() -> int:
             "tau": args.tau, "z": args.z, "min_n_threshold": args.min_n,
             "forbidden_public_copy_tokens": list(FORBIDDEN_PUBLIC_COPY),
         }
+        report.update(_ec_meta())
         out_json.write_text(json.dumps(report, indent=2, default=str) + "\n")
         out_md.write_text(
             f"# Promotion Claim Report — {date}\n\n"
@@ -270,6 +290,7 @@ def main() -> int:
         "promotion_enum": list(PROMOTION_ENUM),
         "forbidden_public_copy_tokens": list(FORBIDDEN_PUBLIC_COPY),
     }
+    report.update(_ec_meta())
     out_json.write_text(json.dumps(report, indent=2, default=str) + "\n")
 
     md = [f"# Promotion Claim Report — {date}\n",
