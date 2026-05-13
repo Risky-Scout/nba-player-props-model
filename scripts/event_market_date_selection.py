@@ -41,6 +41,55 @@ def load_dates_from_inventory_csv(
     return dates, work
 
 
+def resolve_event_market_label(
+    *,
+    date: str | None,
+    start_date: str | None,
+    end_date: str | None,
+    dates_file: str | None,
+    include_ineligible: bool,
+) -> tuple[list[str], str, dict]:
+    """Return (dates_used, label, meta)."""
+    from datetime import date as dt_date, timedelta
+
+    modes = sum(bool(x) for x in (date, (start_date and end_date), dates_file))
+    if modes > 1:
+        print("FATAL: use only one of --date, --start-date/--end-date, --dates-file", file=sys.stderr)
+        raise SystemExit(2)
+    if (start_date or end_date) and not (start_date and end_date):
+        print("FATAL: --start-date and --end-date together", file=sys.stderr)
+        raise SystemExit(2)
+
+    meta: dict = {"mode": None, "dates_fingerprint": None}
+    if dates_file:
+        dates, _inv = load_dates_from_inventory_csv(
+            Path(dates_file),
+            eligible_only=not include_ineligible,
+        )
+        if not dates:
+            print("FATAL: no dates after inventory filter", file=sys.stderr)
+            raise SystemExit(2)
+        fp = dates_fingerprint(dates)
+        meta.update({"mode": "dates_file", "dates_fingerprint": fp, "inventory_path": dates_file})
+        return dates, dates_label_from_fingerprint(fp), meta
+    if date:
+        meta["mode"] = "single_date"
+        return [date], date, meta
+    if start_date and end_date:
+        s = dt_date.fromisoformat(start_date)
+        e = dt_date.fromisoformat(end_date)
+        dlist: list[str] = []
+        while s <= e:
+            dlist.append(s.isoformat())
+            s += timedelta(days=1)
+        meta["mode"] = "date_range"
+        meta["start_date"] = start_date
+        meta["end_date"] = end_date
+        return dlist, f"{start_date}_{end_date}", meta
+    print("FATAL: pass --date, --start-date/--end-date, or --dates-file", file=sys.stderr)
+    raise SystemExit(2)
+
+
 def latest_oof_verification_summary(repo_root: Path | None = None) -> dict | None:
     """Newest verification_summary.json under optimizer verification trees."""
     root = repo_root or REPO_ROOT

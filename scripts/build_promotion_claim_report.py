@@ -111,41 +111,56 @@ def main() -> int:
     ap.add_argument("--as-of-date", default=None)
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
+    ap.add_argument("--dates-file", default=None)
+    ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument("--min-n", type=int, default=30)
     ap.add_argument("--tau", type=float, default=0.0)
     ap.add_argument("--z", type=float, default=1.96)
     args = ap.parse_args()
 
-    if args.start_date or args.end_date:
-        if not (args.start_date and args.end_date):
-            print("FATAL: --start-date and --end-date together", file=sys.stderr)
-            return 2
-        label = f"{args.start_date}_{args.end_date}"
-        in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
-    elif args.as_of_date:
-        label = args.as_of_date
-        in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
-    else:
-        print("FATAL: --as-of-date or --start-date/--end-date", file=sys.stderr)
-        return 2
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
 
+    dates_used, label, meta = resolve_event_market_label(
+        date=args.as_of_date,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        dates_file=args.dates_file,
+        include_ineligible=args.include_ineligible,
+    )
+
+    in_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
     date = label
-    if args.start_date:
-        out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}"
-    else:
-        out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
+    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_json = out_dir / f"promotion_claim_report_{label}.json"
     out_md = out_dir / f"promotion_claim_report_{label}.md"
 
+    sup_summ: dict = {}
+    sup_path = out_dir / "summary.json"
+    if sup_path.exists():
+        try:
+            sup_summ = json.loads(sup_path.read_text(encoding="utf-8"))
+        except Exception:
+            sup_summ = {}
+
     if not in_path.exists():
         report = {
             "as_of_date": label,
-            "date_range": {"start": args.start_date, "end": args.end_date} if args.start_date else None, "schema_version": "m8_6q_v2",
+            "dates_used": dates_used,
+            "date_range": {"start": meta.get("start_date"), "end": meta.get("end_date")}
+            if meta.get("mode") == "date_range"
+            else None,
+            "schema_version": "m8_6q_v2",
             "status": "no_event_market_loss_rows_input",
             "input_path": str(in_path.relative_to(REPO_ROOT)),
             "overall_promotion_status": "fail_invalid_pmf",
             "market_superiority_claim_allowed": False,
+            "global_market_superiority_claim_allowed": sup_summ.get("global_market_superiority_claim_allowed", False),
+            "eligible_market_subset_superiority_claim_allowed": sup_summ.get(
+                "eligible_market_subset_superiority_claim_allowed", False
+            ),
+            "model_only_calibration_claim_allowed": sup_summ.get("model_only_calibration_claim_allowed", False),
             "per_bucket": {},
             "claim_allowed_enum": CLAIM_ALLOWED_ENUM,
             "delta_sign_convention": "model_minus_market_negative_better",
@@ -226,11 +241,19 @@ def main() -> int:
     claim_allowed = (overall == CLAIM_ALLOWED_ENUM)
     report = {
         "as_of_date": label,
-        "date_range": {"start": args.start_date, "end": args.end_date} if args.start_date else None,
+        "dates_used": dates_used,
+        "date_range": {"start": meta.get("start_date"), "end": meta.get("end_date")}
+        if meta.get("mode") == "date_range"
+        else None,
         "schema_version": "m8_6q_v2",
         "input_path": str(in_path.relative_to(REPO_ROOT)),
         "overall_promotion_status": overall,
         "market_superiority_claim_allowed": bool(claim_allowed),
+        "global_market_superiority_claim_allowed": sup_summ.get("global_market_superiority_claim_allowed", False),
+        "eligible_market_subset_superiority_claim_allowed": sup_summ.get(
+            "eligible_market_subset_superiority_claim_allowed", False
+        ),
+        "model_only_calibration_claim_allowed": sup_summ.get("model_only_calibration_claim_allowed", False),
         "claim_allowed_enum": CLAIM_ALLOWED_ENUM,
         "delta_sign_convention": "model_minus_market_negative_better",
         "promotion_gate_formula": "mean(delta) + z*SE <= -tau",

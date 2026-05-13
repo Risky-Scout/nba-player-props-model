@@ -925,20 +925,102 @@ def _main_date_range(start: str, end: str, snapshot_substr: str) -> int:
     return 0
 
 
+def _main_dates_file_list(dates: list[str], snapshot_substr: str, label: str) -> int:
+    """Concatenate daily event_market_loss rows for explicit date list (inventory-driven)."""
+    frames: list[pd.DataFrame] = []
+    metas: list[dict] = []
+    for d in sorted(set(dates)):
+        rc = _main_single_date(d, snapshot_substr)
+        if rc != 0:
+            return rc
+        p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{d}.parquet"
+        if p.exists():
+            frames.append(pd.read_parquet(p))
+            mp = Path(str(p) + ".meta.json")
+            if mp.exists():
+                try:
+                    metas.append(json.loads(mp.read_text(encoding="utf-8")))
+                except Exception:
+                    metas.append({})
+    if not frames:
+        print("FATAL: dates-file produced no daily event_market_loss_rows", file=sys.stderr)
+        return 1
+    combo = pd.concat(frames, ignore_index=True)
+    leaked = [c for c in combo.columns if c.lower() in {x.lower() for x in FORBIDDEN_OUTPUT_COLS}]
+    if leaked:
+        raise SystemExit(f"FATAL: M8_6Q_FORBIDDEN_COLUMNS_LEAKED {leaked}")
+    out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
+    out_path = out_dir / f"event_market_loss_rows_{label}.parquet"
+    combo.to_parquet(out_path, index=False)
+    matched_count = int((combo["join_status"] == "matched").sum()) if len(combo) else 0
+    scored_count = 0
+    if len(combo):
+        scored_mask = (
+            combo["model_prob_over"].notna()
+            & combo["market_prob_over_no_vig"].notna()
+            & combo["hit_result"].notna()
+            & combo["model_event_logloss"].notna()
+            & combo["market_event_logloss"].notna()
+            & combo["event_logloss_delta"].notna()
+            & combo["model_brier"].notna()
+            & combo["market_brier"].notna()
+            & combo["brier_delta"].notna()
+        )
+        scored_count = int(scored_mask.sum())
+    agg_meta = {
+        "schema_version": "m8_6q_v2",
+        "dates_used": sorted(set(dates)),
+        "label": label,
+        "rows": int(len(combo)),
+        "matched_rows": matched_count,
+        "scored_rows_all_fields_nonnull": scored_count,
+        "daily_meta": metas,
+        "combined_output": str(out_path.relative_to(REPO_ROOT)),
+    }
+    Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
+    print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (dates-file)")
+    print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
+    print(f"  wrote: {out_path.relative_to(REPO_ROOT)}")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--as-of-date", default=None)
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
+    ap.add_argument("--dates-file", default=None)
+    ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument("--snapshot-substr", default="close_or_lock")
     args = ap.parse_args()
+
+    modes = sum(bool(x) for x in (args.as_of_date, (args.start_date and args.end_date), args.dates_file))
+    if modes > 1:
+        print("FATAL: use only one of --as-of-date, --start-date/--end-date, --dates-file", file=sys.stderr)
+        return 2
+
+    if args.dates_file:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        from event_market_date_selection import (  # noqa: WPS433
+            resolve_event_market_label,
+        )
+
+        dates, label, _meta = resolve_event_market_label(
+            date=None,
+            start_date=None,
+            end_date=None,
+            dates_file=args.dates_file,
+            include_ineligible=args.include_ineligible,
+        )
+        return _main_dates_file_list(dates, args.snapshot_substr, label)
+
     if args.start_date or args.end_date:
         if not (args.start_date and args.end_date):
             print("FATAL: --start-date and --end-date must be used together", file=sys.stderr)
             return 2
         return _main_date_range(args.start_date, args.end_date, args.snapshot_substr)
     if not args.as_of_date:
-        print("FATAL: pass --as-of-date or --start-date/--end-date", file=sys.stderr)
+        print("FATAL: pass --as-of-date, --start-date/--end-date, or --dates-file", file=sys.stderr)
         return 2
     return _main_single_date(args.as_of_date, args.snapshot_substr)
 

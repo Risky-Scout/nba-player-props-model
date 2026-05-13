@@ -22,6 +22,8 @@ def main() -> int:
     ap.add_argument("--date", default=None)
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
+    ap.add_argument("--dates-file", default=None)
+    ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument(
         "--allow-provisional-block",
         action="store_true",
@@ -29,16 +31,17 @@ def main() -> int:
         "(CI / historical replay without full market proof).",
     )
     args = ap.parse_args()
-    if args.start_date or args.end_date:
-        if not (args.start_date and args.end_date):
-            print("FATAL: --start-date and --end-date together", file=sys.stderr)
-            return 2
-        label = f"{args.start_date}_{args.end_date}"
-    elif args.date:
-        label = args.date
-    else:
-        print("FATAL: pass --date or --start-date/--end-date", file=sys.stderr)
-        return 2
+
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
+
+    _dates_used, label, _meta = resolve_event_market_label(
+        date=args.date,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        dates_file=args.dates_file,
+        include_ineligible=args.include_ineligible,
+    )
 
     sup_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_superiority_{label}"
     summ_path = sup_dir / "summary.json"
@@ -78,13 +81,18 @@ def main() -> int:
         print(
             "MARKET_SUPERIORITY_CONTRACT_BLOCKED "
             f"failed_eligible={len(failed_eligible)} global_ok={global_ok} "
-            f"summary={summary.get('n_segments_passed')}/{summary.get('n_segments_total')}"
+            f"summary={summary.get('n_segments_passed')}/{summary.get('n_segments_total')} "
+            f"missing_stats={summary.get('required_stats_missing_in_event_rows')} "
+            f"no_market_stats={summary.get('required_stats_without_event_market_coverage')}"
         )
         return 0
 
     print(
         "MARKET_SUPERIORITY_BY_STAT_ROLE_CONTRACT_FAIL "
-        f"failed_eligible_segments={len(failed_eligible)} global_claim={global_ok}",
+        f"failed_eligible_segments={len(failed_eligible)} global_claim={global_ok} "
+        f"missing_event_rows={summary.get('required_stats_missing_in_event_rows')} "
+        f"no_market_coverage_stats={summary.get('required_stats_without_event_market_coverage')} "
+        f"subset_claim={summary.get('eligible_market_subset_superiority_claim_allowed')}",
         file=sys.stderr,
     )
     return 1

@@ -17,11 +17,18 @@ import json
 import sys
 from pathlib import Path
 
+from collections import Counter
+
 import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+from event_market_date_selection import (  # noqa: E402
+    model_only_calibration_claim_allowed,
+    resolve_event_market_label,
+)
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
 REQUIRED_STATS = [str(s).lower() for s in MISSION_REQUIRED_TARGETS_CANONICAL]
@@ -29,7 +36,25 @@ DEFAULT_MIN_SCORED = 100
 DEFAULT_MIN_JOINED = 100
 
 
-def _finite_mean(s: pd.Series) -> float | None:
+def _load_audit_final_reasons(label: str) -> dict[str, str]:
+    p = (
+        REPO_ROOT
+        / "artifacts"
+        / "model_diagnostics"
+        / f"event_market_coverage_{label}"
+        / "coverage_by_stat.json"
+    )
+    if not p.exists():
+        return {}
+    try:
+        data = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    out: dict[str, str] = {}
+    for row in data.get("stats", []):
+        st = str(row.get("stat", "")).lower()
+        out[st] = str(row.get("final_missing_reason") or row.get("missing_reason") or "")
+    return out
     x = pd.to_numeric(s, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna()
     if x.empty:
         return None
@@ -125,23 +150,21 @@ def main() -> int:
     ap.add_argument("--date", default=None)
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
+    ap.add_argument("--dates-file", default=None)
+    ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     ap.add_argument("--min-market-joined-rows", type=int, default=DEFAULT_MIN_JOINED)
     args = ap.parse_args()
 
-    if args.start_date or args.end_date:
-        if not (args.start_date and args.end_date):
-            print("FATAL: --start-date and --end-date together", file=sys.stderr)
-            return 2
-        label = f"{args.start_date}_{args.end_date}"
-        eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{args.start_date}_{args.end_date}.parquet"
-    elif args.date:
-        label = args.date
-        eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{args.date}.parquet"
-    else:
-        print("FATAL: pass --date or --start-date/--end-date", file=sys.stderr)
-        return 2
+    dates_used, label, meta = resolve_event_market_label(
+        date=args.date,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        dates_file=args.dates_file,
+        include_ineligible=args.include_ineligible,
+    )
 
+    eml_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
     if not eml_path.exists():
         print(f"FATAL missing {eml_path}", file=sys.stderr)
         return 1
@@ -211,18 +234,67 @@ def main() -> int:
 
     present_stats = set(eml["stat"].astype(str).str.lower().unique())
     missing_required = [s for s in REQUIRED_STATS if s not in present_stats]
+
+    matched_eml = eml[eml.get("join_status", "") == "matched"] if "join_status" in eml.columns else eml.iloc[0:0]
+    stats_with_matched = set(matched_eml["stat"].astype(str).str.lower().unique()) if len(matched_eml) else set()
+    required_stats_without_event_market_coverage = [s for s in REQUIRED_STATS if s not in stats_with_matched]
+    required_stats_with_event_market_coverage = [s for s in REQUIRED_STATS if s in stats_with_matched]
+
+    audit_reasons = _load_audit_final_reasons(label)
+
+    def _audit_bucket(reason: str) -> list[str]:
+        return sorted({s for s, r in audit_reasons.items() if r == reason})
+
+    no_offered = _audit_bucket("no_offered_market")
+    not_requested = _audit_bucket("not_requested_from_odds_api")
+    parser_dropped = _audit_bucket("processed_parser_dropped_market")
+    join_failed = _audit_bucket("event_market_join_failed")
+
     n_pass = int(df_sr["market_superiority_pass"].sum()) if len(df_sr) else 0
     n_fail = int((~df_sr["market_superiority_pass"]).sum()) if len(df_sr) else 0
     elig = df_sr[df_sr["market_superiority_eligible"] == True]
+    blocked_reasons = Counter(df_sr.loc[~df_sr["market_superiority_pass"], "failure_reason"].astype(str))
+
     global_ok = (
         len(elig) > 0
         and bool(elig["market_superiority_pass"].all())
         and not missing_required
+        and len(required_stats_without_event_market_coverage) == 0
     )
+
+    market_subset_stats = sorted(stats_with_matched & set(REQUIRED_STATS))
+    sub_df = df_sr[df_sr["stat"].isin(market_subset_stats)]
+    sub_elig = sub_df[sub_df["market_superiority_eligible"] == True]
+    eligible_subset_claim = (
+        len(sub_elig) > 0 and bool(sub_elig["market_superiority_pass"].all())
+    )
+
+    model_cal_ok = model_only_calibration_claim_allowed(REPO_ROOT)
+
     summary = {
         "date": label,
-        "date_range": {"start": args.start_date, "end": args.end_date} if args.start_date else None,
+        "dates_used": dates_used,
+        "date_range": {"start": meta.get("start_date"), "end": meta.get("end_date")}
+        if meta.get("mode") == "date_range"
+        else None,
+        "dates_file_mode": meta.get("mode") == "dates_file",
+        "dates_fingerprint": meta.get("dates_fingerprint"),
         "global_market_superiority_claim_allowed": global_ok,
+        "eligible_market_subset_superiority_claim_allowed": eligible_subset_claim,
+        "model_only_calibration_claim_allowed": model_cal_ok,
+        "required_stats_total": len(REQUIRED_STATS),
+        "required_stats_with_event_market_coverage": required_stats_with_event_market_coverage,
+        "required_stats_without_event_market_coverage": required_stats_without_event_market_coverage,
+        "no_offered_market_stats": no_offered,
+        "not_requested_market_stats": not_requested,
+        "parser_dropped_market_stats": parser_dropped,
+        "join_failed_market_stats": join_failed,
+        "insufficient_sample_stats": _audit_bucket("insufficient_scored_rows"),
+        "eligible_segments_total": int(len(elig)),
+        "eligible_segments_passed": int(elig["market_superiority_pass"].sum()) if len(elig) else 0,
+        "eligible_segments_failed": int((~elig["market_superiority_pass"]).sum()) if len(elig) else 0,
+        "blocked_segments_total": int(n_fail),
+        "blocked_segment_reasons": dict(blocked_reasons),
         "n_segments_total": int(len(df_sr)),
         "n_segments_passed": n_pass,
         "n_segments_failed": n_fail,

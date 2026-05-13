@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Event-market coverage audit by canonical stat (M8.6).
 
-Traces model → canonical → raw Odds API → processed odds → event_market_loss_rows
-for each mission stat. Does not count model-only rows as market coverage.
+Evidence-backed classification: `no_offered_market` only when registry-requested keys
+are absent from raw Odds API JSON (raw files must exist).
 
 Run:
   python3 scripts/audit_event_market_coverage_by_stat.py --date 2026-05-12
   python3 scripts/audit_event_market_coverage_by_stat.py --start-date 2026-05-07 --end-date 2026-05-12
+  python3 scripts/audit_event_market_coverage_by_stat.py --dates-file artifacts/.../inventory.csv
 """
 from __future__ import annotations
 
@@ -14,7 +15,6 @@ import argparse
 import json
 import sys
 from collections import Counter
-from datetime import date, timedelta
 from pathlib import Path
 
 import numpy as np
@@ -31,32 +31,8 @@ from nba_props_model.markets.oddsapi_markets import (  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
 REQUIRED_STATS = [str(s).lower() for s in MISSION_REQUIRED_TARGETS_CANONICAL]
-
-MISSING_REASONS = frozenset({
-    "covered",
-    "no_offered_market",
-    "not_requested_from_odds_api",
-    "raw_parser_dropped_market",
-    "processed_parser_dropped_market",
-    "missing_two_way_odds",
-    "player_join_failed",
-    "line_join_failed",
-    "book_join_failed",
-    "no_actuals",
-    "insufficient_scored_rows",
-})
-
+REGISTRY_SOURCE = "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS"
 DEFAULT_MIN_SCORED = 100
-
-
-def _iter_dates(start_s: str, end_s: str) -> list[str]:
-    s = date.fromisoformat(start_s)
-    e = date.fromisoformat(end_s)
-    out: list[str] = []
-    while s <= e:
-        out.append(s.isoformat())
-        s += timedelta(days=1)
-    return out
 
 
 def _norm_stat(s) -> str | None:
@@ -89,16 +65,16 @@ def _find_odds_pairs_file(d: str, snapshot_substr: str) -> Path | None:
     return fallback[-1] if fallback else None
 
 
-def _scan_raw_market_keys(day: str) -> tuple[int, set[str], Counter]:
-    """Return (approx_row_count, unique_market_keys, key_counts) from raw JSON."""
+def _scan_raw_detail(day: str) -> tuple[list[str], set[str], Counter]:
     raw_dir = REPO_ROOT / "data" / "odds_api" / "raw" / day
-    if not raw_dir.exists():
-        return 0, set(), Counter()
+    paths: list[str] = []
     keys: Counter = Counter()
-    rows = 0
+    if not raw_dir.exists():
+        return paths, set(), keys
     for p in sorted(raw_dir.glob("*.json")):
         if p.name.startswith("live_events_") or p.name.startswith("smoke_"):
             continue
+        paths.append(str(p.relative_to(REPO_ROOT)))
         try:
             blob = json.loads(p.read_text(encoding="utf-8"))
         except Exception:
@@ -112,10 +88,7 @@ def _scan_raw_market_keys(day: str) -> tuple[int, set[str], Counter]:
                 if not k:
                     continue
                 keys[k] += 1
-                rows += 1
-                for o in m.get("outcomes") or []:
-                    rows += 1
-    return rows, set(keys.keys()), keys
+    return paths, set(keys.keys()), keys
 
 
 def _load_processed_for_day(day: str, snapshot_substr: str) -> pd.DataFrame:
@@ -171,7 +144,10 @@ def _aggregate_canonical(dates: list[str]) -> dict[str, int]:
     return dict(counts)
 
 
-def _load_eml_for_dates(dates: list[str]) -> pd.DataFrame:
+def _load_eml_for_label(dates: list[str], label: str) -> pd.DataFrame:
+    p_dates = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{label}.parquet"
+    if p_dates.exists():
+        return pd.read_parquet(p_dates)
     if len(dates) > 1:
         r = (
             REPO_ROOT
@@ -201,56 +177,127 @@ def _box_rows_for_dates(dates: list[str]) -> int:
     return int(m.sum())
 
 
-def _classify_stat(
-    stat: str,
+def _final_classify(
     *,
-    keys_for_stat: tuple[str, ...],
-    requested_global: frozenset[str],
-    seen_raw_keys: set[str],
-    seen_proc_keys: set[str],
+    expected_keys: tuple[str, ...],
+    registry: frozenset[str],
+    raw_json_files_checked: int,
+    raw_market_keys_seen_for_stat: set[str],
     proc_rows: int,
     proc_two_way: int,
     eml_rows: int,
     matched: int,
     scored: int,
-    box_rows: int,
     min_scored: int,
-) -> str:
-    keys_for_stat_set = set(keys_for_stat)
-    if any(k not in requested_global for k in keys_for_stat):
-        return "not_requested_from_odds_api"
+) -> tuple[str, str, str, str, str, str]:
+    exp_set = set(expected_keys)
+    missing_from_registry = sorted(exp_set - registry)
+    requested = sorted(exp_set & registry)
+    req_status = (
+        "all_expected_keys_in_registry"
+        if not missing_from_registry
+        else "missing_expected_keys_from_registry"
+    )
+    if missing_from_registry:
+        return (
+            "not_requested_from_odds_api",
+            req_status,
+            "not_evaluated",
+            "not_evaluated",
+            "not_evaluated",
+            json.dumps(requested),
+        )
 
-    raw_hits = keys_for_stat_set & seen_raw_keys
+    raw_pres = (
+        "no_raw_json_files"
+        if raw_json_files_checked == 0
+        else (
+            "expected_keys_present_in_raw"
+            if raw_market_keys_seen_for_stat
+            else "expected_keys_absent_in_raw"
+        )
+    )
 
-    if not raw_hits:
-        return "no_offered_market"
+    if raw_json_files_checked == 0:
+        return (
+            "event_market_join_failed",
+            req_status,
+            raw_pres,
+            "unknown_no_processed_context",
+            "blocked_no_raw_odds_evidence",
+            json.dumps(requested),
+        )
 
-    # Raw contained at least one registered key for this stat, but processed
-    # odds_pairs has no rows for this canonical stat (parser/filter/stat mapping).
-    if raw_hits and proc_rows == 0:
-        return "processed_parser_dropped_market"
+    if not raw_market_keys_seen_for_stat:
+        return (
+            "no_offered_market",
+            req_status,
+            raw_pres,
+            "no_processed_rows_for_stat",
+            "no_event_rows_expected",
+            json.dumps(requested),
+        )
 
-    if proc_rows > 0 and proc_two_way == 0:
-        return "missing_two_way_odds"
+    proc_pres = (
+        "processed_rows_for_stat_absent"
+        if proc_rows == 0
+        else ("two_way_absent" if proc_two_way == 0 else "two_way_present")
+    )
 
-    if proc_rows > 0 and eml_rows == 0:
-        return "player_join_failed"
+    if proc_rows == 0:
+        return (
+            "processed_parser_dropped_market",
+            req_status,
+            raw_pres,
+            proc_pres,
+            "no_event_rows",
+            json.dumps(requested),
+        )
 
-    if eml_rows > 0 and matched == 0:
-        return "player_join_failed"
+    if proc_two_way == 0:
+        return (
+            "event_market_join_failed",
+            req_status,
+            raw_pres,
+            proc_pres,
+            "blocked_missing_two_way_odds",
+            json.dumps(requested),
+        )
 
-    if matched > 0 and scored == 0:
-        if box_rows <= 0:
-            return "no_actuals"
-        return "missing_two_way_odds"
+    join_pres = (
+        "no_event_market_rows"
+        if eml_rows == 0
+        else ("no_matched_rows" if matched == 0 else "matched_rows_present")
+    )
 
-    if scored > 0 and scored < min_scored:
-        return "insufficient_scored_rows"
+    if eml_rows == 0 or matched == 0:
+        return (
+            "event_market_join_failed",
+            req_status,
+            raw_pres,
+            proc_pres,
+            join_pres,
+            json.dumps(requested),
+        )
 
-    if scored >= min_scored:
-        return "covered"
+    if scored < min_scored:
+        return (
+            "insufficient_scored_rows",
+            req_status,
+            raw_pres,
+            proc_pres,
+            "matched_but_insufficient_scored_sample",
+            json.dumps(requested),
+        )
 
-    return "insufficient_scored_rows"
+    return (
+        "covered",
+        req_status,
+        raw_pres,
+        proc_pres,
+        "scored_sample_sufficient",
+        json.dumps(requested),
+    )
 
 
 def main() -> int:
@@ -258,65 +305,74 @@ def main() -> int:
     ap.add_argument("--date", default=None)
     ap.add_argument("--start-date", default=None)
     ap.add_argument("--end-date", default=None)
+    ap.add_argument("--dates-file", default=None)
+    ap.add_argument("--include-ineligible", action="store_true")
     ap.add_argument("--snapshot-substr", default="close_or_lock")
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     args = ap.parse_args()
 
-    if args.date:
-        dates = [args.date]
-        label = args.date
-    elif args.start_date and args.end_date:
-        dates = _iter_dates(args.start_date, args.end_date)
-        label = f"{args.start_date}_{args.end_date}"
-    else:
-        print("FATAL: pass --date YYYY-MM-DD or --start-date and --end-date", file=sys.stderr)
-        return 2
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    from event_market_date_selection import resolve_event_market_label  # noqa: WPS433
 
-    requested_global = frozenset(ODDSAPI_NBA_DEFAULT_MARKETS)
+    dates, label, meta = resolve_event_market_label(
+        date=args.date,
+        start_date=args.start_date,
+        end_date=args.end_date,
+        dates_file=args.dates_file,
+        include_ineligible=args.include_ineligible,
+    )
+    dates_fp = meta.get("dates_fingerprint")
+    registry = frozenset(ODDSAPI_NBA_DEFAULT_MARKETS)
 
-    raw_rows_total = 0
+    all_raw_paths: list[str] = []
     all_raw_keys: set[str] = set()
     raw_key_counts: Counter = Counter()
-
+    odds_snapshots_checked: list[str] = []
     proc_frames: list[pd.DataFrame] = []
-    proc_rows_total = 0
+
     for d in dates:
-        raw_r, raw_k, raw_c = _scan_raw_market_keys(d)
-        raw_rows_total += raw_r
-        all_raw_keys |= raw_k
-        raw_key_counts += raw_c
+        rp, rk, rc = _scan_raw_detail(d)
+        all_raw_paths.extend(rp)
+        all_raw_keys |= rk
+        raw_key_counts += rc
+        op = _find_odds_pairs_file(d, args.snapshot_substr)
+        if op and op.exists():
+            odds_snapshots_checked.append(str(op.relative_to(REPO_ROOT)))
         proc_frames.append(_load_processed_for_day(d, args.snapshot_substr))
 
     proc_all = pd.concat(proc_frames, ignore_index=True) if proc_frames else pd.DataFrame()
-    proc_rows_total = len(proc_all)
     seen_proc_keys: set[str] = set()
-    if proc_rows_total and "market_key" in proc_all.columns:
+    if len(proc_all) and "market_key" in proc_all.columns:
         seen_proc_keys = set(proc_all["market_key"].dropna().astype(str).unique())
 
     sg_counts = _aggregate_stat_grid(dates)
     can_counts = _aggregate_canonical(dates)
-    eml = _load_eml_for_dates(dates)
-    box_rows = _box_rows_for_dates(dates)
+    eml = _load_eml_for_label(dates, label)
+    raw_json_n = len(all_raw_paths)
 
     rows_out: list[dict] = []
     for stat in REQUIRED_STATS:
-        keys_for_stat = tuple(market_keys_for_stat(stat, include_alternates=True))
-        market_keys_requested = list(keys_for_stat)
-        keys_for_stat_set = set(keys_for_stat)
-        seen_proc_for_stat = sorted(keys_for_stat_set & seen_proc_keys)
+        expected_keys = tuple(market_keys_for_stat(stat, include_alternates=True))
+        keys_for_stat_set = set(expected_keys)
+        raw_seen_stat = keys_for_stat_set & all_raw_keys
+        proc_keys_stat = sorted(keys_for_stat_set & seen_proc_keys)
 
-        sub_proc = proc_all[proc_all["stat_canonical"].astype(str).str.lower() == stat] if len(proc_all) else pd.DataFrame()
+        sub_proc = (
+            proc_all[proc_all["stat_canonical"].astype(str).str.lower() == stat]
+            if len(proc_all)
+            else pd.DataFrame()
+        )
         pr = int(len(sub_proc))
         if pr and "no_vig_over_prob" in sub_proc.columns and "no_vig_under_prob" in sub_proc.columns:
-            tw = sub_proc[
-                sub_proc["no_vig_over_prob"].notna()
-                & sub_proc["no_vig_under_prob"].notna()
-            ]
-            ptw = int(len(tw))
+            ptw = int((sub_proc["no_vig_over_prob"].notna() & sub_proc["no_vig_under_prob"].notna()).sum())
         else:
             ptw = 0
 
-        sub_eml = eml[eml["stat"].astype(str).str.lower() == stat] if len(eml) and "stat" in eml.columns else pd.DataFrame()
+        sub_eml = (
+            eml[eml["stat"].astype(str).str.lower() == stat]
+            if len(eml) and "stat" in eml.columns
+            else pd.DataFrame()
+        )
         er = int(len(sub_eml))
         matched = int((sub_eml["join_status"] == "matched").sum()) if er and "join_status" in sub_eml.columns else 0
         scored = 0
@@ -334,18 +390,16 @@ def main() -> int:
         players = int(sub_eml["player_id"].nunique()) if er and "player_id" in sub_eml.columns else 0
         games = int(sub_eml["game_id"].nunique()) if er and "game_id" in sub_eml.columns else 0
 
-        reason = _classify_stat(
-            stat,
-            keys_for_stat=keys_for_stat,
-            requested_global=requested_global,
-            seen_raw_keys=all_raw_keys,
-            seen_proc_keys=seen_proc_keys,
+        final, req_cov, raw_pres, proc_pres, join_pres, requested_json = _final_classify(
+            expected_keys=expected_keys,
+            registry=registry,
+            raw_json_files_checked=raw_json_n,
+            raw_market_keys_seen_for_stat=raw_seen_stat,
             proc_rows=pr,
             proc_two_way=ptw,
             eml_rows=er,
             matched=matched,
             scored=scored,
-            box_rows=box_rows,
             min_scored=args.min_scored_rows,
         )
 
@@ -364,25 +418,49 @@ def main() -> int:
             "books_count": books,
             "players_count": players,
             "games_count": games,
-            "market_keys_requested": market_keys_requested,
-            "market_keys_seen_raw": sorted(keys_for_stat_set & all_raw_keys),
-            "market_keys_seen_processed": seen_proc_for_stat,
-            "missing_reason": reason,
+            "expected_market_keys_for_stat": list(expected_keys),
+            "requested_market_keys": json.loads(requested_json),
+            "raw_market_keys_seen_for_stat": sorted(raw_seen_stat),
+            "processed_market_keys_seen_for_stat": proc_keys_stat,
+            "odds_snapshot_files_checked": odds_snapshots_checked,
+            "raw_json_files_checked": raw_json_n,
+            "raw_json_paths_checked": all_raw_paths,
+            "request_registry_source": REGISTRY_SOURCE,
+            "request_coverage_status": req_cov,
+            "raw_market_presence_status": raw_pres,
+            "processed_market_presence_status": proc_pres,
+            "event_join_presence_status": join_pres,
+            "final_missing_reason": final,
+            "missing_reason": final,
+            "market_keys_requested": list(expected_keys),
+            "market_keys_seen_raw": sorted(raw_seen_stat),
+            "market_keys_seen_processed": proc_keys_stat,
         })
 
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_coverage_{label}"
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows_out)
-    # Expand list columns for CSV — use JSON strings
     df_csv = df.copy()
-    df_csv["market_keys_requested"] = df_csv["market_keys_requested"].apply(json.dumps)
-    df_csv["market_keys_seen_raw"] = df_csv["market_keys_seen_raw"].apply(json.dumps)
-    df_csv["market_keys_seen_processed"] = df_csv["market_keys_seen_processed"].apply(json.dumps)
+    for col in (
+        "expected_market_keys_for_stat",
+        "requested_market_keys",
+        "raw_market_keys_seen_for_stat",
+        "processed_market_keys_seen_for_stat",
+        "odds_snapshot_files_checked",
+        "raw_json_paths_checked",
+        "market_keys_requested",
+        "market_keys_seen_raw",
+        "market_keys_seen_processed",
+    ):
+        if col in df_csv.columns:
+            df_csv[col] = df_csv[col].apply(lambda x: json.dumps(x) if isinstance(x, (list, dict)) else x)
     df_csv.to_csv(out_dir / "coverage_by_stat.csv", index=False)
 
     payload = {
         "label": label,
         "dates": dates,
+        "dates_fingerprint": dates_fp,
+        "dates_used": dates,
         "snapshot_substr": args.snapshot_substr,
         "min_scored_rows": args.min_scored_rows,
         "oddsapi_default_market_count": len(ODDSAPI_NBA_DEFAULT_MARKETS),
@@ -401,26 +479,23 @@ def main() -> int:
         "",
         "## Summary",
         "",
-        "| stat | processed_rows | two_way | eml_rows | matched | scored | missing_reason |",
-        "|---|---:|---:|---:|---:|---:|---|",
+        "| stat | processed | two_way | eml | matched | scored | final_missing_reason | raw_presence |",
+        "|---|---:|---:|---:|---:|---:|---|---|",
     ]
     for r in rows_out:
         md_lines.append(
             f"| {r['stat']} | {r['processed_odds_rows']} | {r['two_way_odds_rows']} | "
-            f"{r['event_market_rows']} | {r['matched_rows']} | {r['scored_rows']} | `{r['missing_reason']}` |"
+            f"{r['event_market_rows']} | {r['matched_rows']} | {r['scored_rows']} | "
+            f"`{r['final_missing_reason']}` | `{r['raw_market_presence_status']}` |"
         )
     md_lines.extend([
         "",
-        "## Interpretation",
+        "## Rules",
         "",
-        "- **no_offered_market**: Odds API responses for this slate did not include any "
-        "registered market key for the stat (books did not offer / API omitted).",
-        "- **processed_parser_dropped_market**: Raw JSON contained the market key but "
-        "processed `odds_pairs` did not — investigate `oddsapi_nba_props.py` pairing/filtering.",
-        "- **not_requested_from_odds_api**: A registered market key for this stat is missing "
-        "from `ODDSAPI_NBA_DEFAULT_MARKETS` (fetch/registry bug).",
-        "- **insufficient_scored_rows**: End-to-end rows exist but scored count is below "
-        f"the audit threshold ({args.min_scored_rows}); use multi-date aggregation for superiority.",
+        "- **`no_offered_market`** only when requested registry keys are **absent** from raw JSON "
+        "and at least one raw JSON file was scanned.",
+        "- **`not_requested_from_odds_api`** when expected keys are missing from the default registry.",
+        "- **`event_market_join_failed`** includes missing raw files (cannot prove offer) or join gaps.",
         "",
     ])
     (out_dir / "missing_market_diagnosis.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
