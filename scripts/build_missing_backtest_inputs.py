@@ -25,6 +25,17 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from odds_snapshot_selection import select_odds_pairs_parquet  # noqa: E402
 
+VERIFY_STAT_GRID = REPO_ROOT / "scripts" / "verify_stat_grid_mission_stats_contract.py"
+
+
+def _mission_stat_grid_contract_ok(py: str, day: str) -> bool | None:
+    """Return True/False if stat_grid exists; None if file missing."""
+    sg = REPO_ROOT / "predictions" / f"stat_grid_{day}.parquet"
+    if not sg.is_file():
+        return None
+    rc, _ = _run(py, [py, str(VERIFY_STAT_GRID), "--date", day])
+    return rc == 0
+
 
 def _as_bool(v) -> bool:
     if isinstance(v, bool):
@@ -219,6 +230,7 @@ def main() -> int:
             )
             has_sg = stat_grid.is_file()
             has_can = canonical.is_file()
+            mission_contract_pass = _mission_stat_grid_contract_ok(py, d) if has_sg else None
             need_fetch = args.fetch_historical_odds and not has_proc
             if args.estimate_credits or args.fetch_historical_odds:
                 est = _estimate_hist_lockday_requests(d, args.max_events)
@@ -255,7 +267,9 @@ def main() -> int:
                 blockers.append("missing_raw_hist_event_odds_json")
             if not has_act:
                 blockers.append("no_actuals")
-            if has_sg and has_can and not args.force:
+            if has_sg and mission_contract_pass is False:
+                blockers.append("BAD_STAT_GRID_MISSION_STATS")
+            if has_sg and has_can and not args.force and mission_contract_pass is True:
                 blockers.append("skip_existing_stat_grid_and_canonical")
             elif has_proc and has_act and (not has_sg or not has_can):
                 pass  # buildable
@@ -288,6 +302,7 @@ def main() -> int:
                     "has_raw_hist_event_lock_odds": has_raw_event_odds,
                     "has_actuals": has_act,
                     "has_stat_grid": has_sg,
+                    "stat_grid_mission_contract_pass": mission_contract_pass,
                     "has_canonical_delivery": has_can,
                     "has_delivery_manifest": has_delivery_manifest,
                     "can_be_made_eligible": can_eligible,
@@ -348,7 +363,8 @@ def main() -> int:
                     continue
                 has_sg2 = stat_grid.is_file()
                 has_can2 = canonical.is_file()
-                if has_sg2 and has_can2 and not args.force:
+                mission_ok = _mission_stat_grid_contract_ok(py, d) if has_sg2 else None
+                if has_sg2 and has_can2 and not args.force and mission_ok is True:
                     continue
                 brc2, bout2 = _run(py, build_cmd)
                 result_rows.append(
@@ -371,8 +387,11 @@ def main() -> int:
             has_can = _as_bool(row.get("has_canonical_delivery", False))
             if not (has_proc and has_act):
                 continue
-            if not args.force and has_sg and has_can:
-                continue
+            stat_disk = REPO_ROOT / "predictions" / f"stat_grid_{d}.parquet"
+            sg_disk = stat_disk.is_file()
+            if not args.force and sg_disk and has_can:
+                if _mission_stat_grid_contract_ok(py, d):
+                    continue
             cmd = [
                 py,
                 str(REPO_ROOT / "scripts" / "build_backtest_delivery_range.py"),

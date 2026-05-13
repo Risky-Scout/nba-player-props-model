@@ -17,6 +17,11 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from event_market_date_selection import dates_fingerprint  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
+VERIFY_STAT_GRID = REPO_ROOT / "scripts" / "verify_stat_grid_mission_stats_contract.py"
+DIAGNOSE_STAT_GRID = REPO_ROOT / "scripts" / "diagnose_stat_grid_integrity.py"
+BUILD_STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
+MISSION_STATS_ARGS = list(MISSION_REQUIRED_TARGETS_CANONICAL)
+
 
 def _run(cmd: list[str]) -> tuple[int, str]:
     r = subprocess.run(
@@ -27,6 +32,35 @@ def _run(cmd: list[str]) -> tuple[int, str]:
     )
     out = (r.stdout or "") + (r.stderr or "")
     return r.returncode, out
+
+
+def _verify_stat_grid_contract(py: str, d: str) -> tuple[int, str]:
+    cmd = [py, str(VERIFY_STAT_GRID), "--date", d]
+    rc, out = _run(cmd)
+    return rc, out
+
+
+def _diagnose_before_rebuild(py: str, d: str) -> tuple[int, str]:
+    cmd = [
+        py,
+        str(DIAGNOSE_STAT_GRID),
+        "--date",
+        d,
+        "--require-mission-stats",
+    ]
+    return _run(cmd)
+
+
+def _build_stat_grid_mission(py: str, d: str) -> tuple[int, str]:
+    cmd = [
+        py,
+        str(BUILD_STAT_GRID),
+        "--date",
+        d,
+        "--stats",
+        *MISSION_STATS_ARGS,
+    ]
+    return _run(cmd)
 
 
 def main() -> int:
@@ -71,6 +105,8 @@ def main() -> int:
         "all_twelve_mission_stats_per_date": {},
     }
 
+    exit_code = 0
+
     for d in dates:
         stat_grid = REPO_ROOT / "predictions" / f"stat_grid_{d}.parquet"
         canonical = (
@@ -80,8 +116,26 @@ def main() -> int:
             / "canonical_source"
             / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
         )
-        if args.skip_existing and stat_grid.exists() and canonical.exists():
-            report["dates_skipped"].append({"date": d, "reason": "stat_grid_and_canonical_exist"})
+
+        contract_rc: int | None = None
+        contract_out = ""
+        if stat_grid.exists():
+            contract_rc, contract_out = _verify_stat_grid_contract(py, d)
+            if contract_rc == 0:
+                sys.stdout.write(contract_out)
+                if not contract_out.endswith("\n"):
+                    sys.stdout.write("\n")
+            else:
+                print("BAD_STAT_GRID_MISSION_STATS", d, file=sys.stderr)
+                sys.stderr.write(contract_out[-4000:])
+
+        if (
+            args.skip_existing
+            and stat_grid.exists()
+            and canonical.exists()
+            and contract_rc == 0
+        ):
+            report["dates_skipped"].append({"date": d, "reason": "stat_grid_and_canonical_exist_contract_ok"})
             try:
                 sg = pd.read_parquet(stat_grid, columns=["stat"])
                 report["stat_counts_per_date"][d] = (
@@ -91,6 +145,23 @@ def main() -> int:
                 report["stat_counts_per_date"][d] = {}
             continue
 
+        if stat_grid.exists() and contract_rc != 0:
+            if not args.force:
+                report["failures"].append(
+                    {
+                        "date": d,
+                        "stage": "BAD_STAT_GRID_MISSION_STATS",
+                        "log": {"rc": contract_rc, "tail": contract_out[-4000:]},
+                    }
+                )
+                exit_code = 1
+                break
+
+            drc, dout = _diagnose_before_rebuild(py, d)
+            report.setdefault("stat_grid_diagnostics", []).append(
+                {"date": d, "diagnose_rc": drc, "tail": dout[-2000:]}
+            )
+
         step_log: list[dict] = []
 
         def _step(script: str, extra: list[str]) -> bool:
@@ -99,17 +170,46 @@ def main() -> int:
             step_log.append({"script": script, "cmd": cmd, "rc": rc, "tail": out[-4000:]})
             return rc == 0
 
+        rebuild_sg = (not stat_grid.exists()) or args.force or (stat_grid.exists() and contract_rc != 0)
         ok = True
-        if args.force or not stat_grid.exists():
-            ok = _step("build_stat_grid_pmfs.py", [])
-        if not ok:
-            report["failures"].append(
-                {"date": d, "stage": "build_stat_grid_pmfs", "log": step_log[-1]}
+        if rebuild_sg:
+            brc, bout = _build_stat_grid_mission(py, d)
+            step_log.append(
+                {
+                    "script": "build_stat_grid_pmfs.py (mission explicit)",
+                    "cmd": [py, str(BUILD_STAT_GRID), "--date", d, "--stats", *MISSION_STATS_ARGS],
+                    "rc": brc,
+                    "tail": bout[-4000:],
+                }
             )
-            continue
+            ok = brc == 0
+        if not ok:
+            report["failures"].append({"date": d, "stage": "build_stat_grid_pmfs", "log": step_log[-1]})
+            exit_code = 1
+            break
 
-        if args.force or not canonical.exists():
+        vrc, vout = _verify_stat_grid_contract(py, d)
+        if vrc != 0:
+            print("BAD_STAT_GRID_MISSION_STATS post_rebuild", d, file=sys.stderr)
+            sys.stderr.write(vout[-4000:])
+            report["failures"].append(
+                {
+                    "date": d,
+                    "stage": "verify_stat_grid_mission_stats_contract_post_build",
+                    "log": {"rc": vrc, "tail": vout[-4000:]},
+                }
+            )
+            exit_code = 1
+            break
+        sys.stdout.write(vout)
+        if not vout.endswith("\n"):
+            sys.stdout.write("\n")
+
+        rebuild_canonical = rebuild_sg or args.force or not canonical.exists()
+        if rebuild_canonical:
             ok = _step("build_model_only_canonical_from_stat_grid.py", [])
+        else:
+            ok = True
         if not ok:
             report["failures"].append(
                 {
@@ -118,22 +218,25 @@ def main() -> int:
                     "log": step_log[-1],
                 }
             )
-            continue
+            exit_code = 1
+            break
 
-        # Do not pass --rebuild-canonical: canonical was just built from
-        # predictions/stat_grid_{date}.parquet via
-        # build_model_only_canonical_from_stat_grid.py (rectangular MODEL_ONLY).
-        # Rebuilding from all_props here reintroduces uneven per-stat row counts
-        # when all_props omits sparse stats (e.g. fg3m) for some players.
         ok = _step(
             "build_daily_pmf_delivery.py",
-            ["--snapshot", "pre_close", "--no-odds-fetch"],
+            [
+                "--snapshot",
+                "pre_close",
+                "--no-odds-fetch",
+                "--model-only",
+                str(canonical),
+            ],
         )
         if not ok:
             report["failures"].append(
                 {"date": d, "stage": "build_daily_pmf_delivery", "log": step_log[-1]}
             )
-            continue
+            exit_code = 1
+            break
 
         report["dates_built"].append(d)
         try:
@@ -156,8 +259,9 @@ def main() -> int:
     out_path = REPO_ROOT / "artifacts" / "model_diagnostics" / f"backtest_delivery_range_{report_label}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2, default=str) + "\n", encoding="utf-8")
-    print(f"BACKTEST_DELIVERY_RANGE_PASS wrote {out_path.relative_to(REPO_ROOT)} failures={len(report['failures'])}")
-    return 0
+    tag = "BACKTEST_DELIVERY_RANGE_FAIL" if exit_code != 0 else "BACKTEST_DELIVERY_RANGE_PASS"
+    print(f"{tag} wrote {out_path.relative_to(REPO_ROOT)} failures={len(report['failures'])}")
+    return exit_code
 
 
 if __name__ == "__main__":

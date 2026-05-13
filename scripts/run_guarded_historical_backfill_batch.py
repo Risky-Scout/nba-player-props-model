@@ -15,10 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from odds_snapshot_selection import select_odds_pairs_parquet  # noqa: E402
 
-MISSION_STATS = frozenset(
-    {"pts", "reb", "ast", "fg3m", "tov", "stl", "blk", "stocks", "pa", "pr", "ra", "pra"}
-)
-
+VERIFY_STAT_GRID = REPO_ROOT / "scripts" / "verify_stat_grid_mission_stats_contract.py"
 
 def _run(cmd: list[str]) -> tuple[int, str]:
     r = subprocess.run(cmd, cwd=str(REPO_ROOT), capture_output=True, text=True)
@@ -165,9 +162,31 @@ def main() -> int:
     stopped: str | None = None
     for d in dates:
         inv_row = _inventory_row(d)
+        need_force_delivery = bool(args.force)
         if args.skip_existing and _eligible(inv_row) and not args.force:
-            result_rows.append({"date": d, "step": "skip_eligible_inventory", "rc": 0, "tail": ""})
-            continue
+            sg_skip = REPO_ROOT / "predictions" / f"stat_grid_{d}.parquet"
+            contract_ok = False
+            vout_skip = ""
+            if sg_skip.is_file():
+                vrc_skip, vout_skip = _run([py, str(VERIFY_STAT_GRID), "--date", d])
+                contract_ok = vrc_skip == 0
+            if contract_ok:
+                result_rows.append({"date": d, "step": "skip_eligible_inventory", "rc": 0, "tail": ""})
+                continue
+            print(
+                "BAD_STAT_GRID_MISSION_STATS eligible_skip_overridden "
+                f"(rebuilding stat_grid/canonical/delivery) date={d}",
+                file=sys.stderr,
+            )
+            result_rows.append(
+                {
+                    "date": d,
+                    "step": "eligible_but_stat_grid_contract_fail_override_force",
+                    "rc": 0,
+                    "tail": vout_skip[-2000:] if sg_skip.is_file() else "missing_stat_grid",
+                }
+            )
+            need_force_delivery = True
 
         p_pairs, _meta = select_odds_pairs_parquet(REPO_ROOT, d, substr)
         has_proc = bool(p_pairs and p_pairs.is_file())
@@ -221,7 +240,7 @@ def main() -> int:
             d,
             "--no-public-export",
         ]
-        if not args.force:
+        if not need_force_delivery:
             build_cmd.append("--skip-existing")
         else:
             build_cmd.append("--force")
@@ -231,22 +250,14 @@ def main() -> int:
             stopped = f"{d}:build_backtest_delivery_range_rc={rc}"
             break
 
-        sg_path = REPO_ROOT / "predictions" / f"stat_grid_{d}.parquet"
-        if sg_path.is_file():
-            try:
-                sg = pd.read_parquet(sg_path, columns=["stat"])
-                have = set(sg["stat"].astype(str).str.lower().unique())
-                miss = sorted(MISSION_STATS - have)
-                if miss:
-                    stopped = f"{d}:stat_grid_missing_mission_stats={miss}"
-                    result_rows.append(
-                        {"date": d, "step": "guard_stat_grid_mission_stats", "rc": 1, "tail": stopped}
-                    )
-                    break
-            except Exception as ex:
-                stopped = f"{d}:stat_grid_read_error:{ex!r}"
-                result_rows.append({"date": d, "step": "guard_stat_grid_read", "rc": 1, "tail": stopped})
-                break
+        vcmd_sg = [py, str(VERIFY_STAT_GRID), "--date", d]
+        vrc_sg, vout_sg = _run(vcmd_sg)
+        result_rows.append(
+            {"date": d, "step": "verify_stat_grid_mission_stats_contract", "rc": vrc_sg, "tail": vout_sg[-2000:]}
+        )
+        if vrc_sg != 0:
+            stopped = f"{d}:STAT_GRID_MISSION_STATS_CONTRACT_FAIL"
+            break
 
         vcmd = [
             py,
