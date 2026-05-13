@@ -82,6 +82,12 @@ DEREK_GAME_SNAPSHOTS_FROM_DELIVERY = REPO_ROOT / "scripts" / "build_derek_game_s
 WOO_EXPORT = REPO_ROOT / "scripts" / "publish_woo_public_export.py"
 WOO_DASHBOARD = REPO_ROOT / "scripts" / "build_woo_dashboard.py"
 CORRECTED_PMF_VERIFY = REPO_ROOT / "scripts" / "verify_corrected_pmf_delivery.py"
+BUILD_EVENT_MARKET_LOSS = REPO_ROOT / "scripts" / "build_event_market_loss_rows.py"
+BUILD_PROMOTION_CLAIM = REPO_ROOT / "scripts" / "build_promotion_claim_report.py"
+BUILD_STAT_ROLE_SUPERIORITY = REPO_ROOT / "scripts" / "build_stat_role_market_superiority_report.py"
+DIAGNOSE_MARKET_SUPERIORITY = REPO_ROOT / "scripts" / "diagnose_market_superiority_failures.py"
+VERIFY_RA_ROLE_CALIBRATION = REPO_ROOT / "scripts" / "verify_ra_role_calibration_contract.py"
+VERIFY_COMBO_ROLE_CALIBRATION = REPO_ROOT / "scripts" / "verify_combo_role_calibration_contract.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -301,6 +307,27 @@ def _verify_corrected_pmf_delivery(date: str) -> int:
     )
 
 
+def _m86_event_market_validation_bundle(date: str) -> int:
+    """M8.6 — event-market loss rows, promotion report, stat-role superiority rollup.
+
+    Best-effort (allow_fail): does not block the near-lineup publish when
+    OOF↔market joins are incomplete; CI can run the same scripts with strict gates.
+    """
+    steps: list[tuple[Path, list[str]]] = [
+        (BUILD_EVENT_MARKET_LOSS, ["--as-of-date", date]),
+        (BUILD_PROMOTION_CLAIM, ["--as-of-date", date]),
+        (BUILD_STAT_ROLE_SUPERIORITY, ["--date", date]),
+        (DIAGNOSE_MARKET_SUPERIORITY, ["--date", date]),
+        (VERIFY_RA_ROLE_CALIBRATION, ["--date", date]),
+        (VERIFY_COMBO_ROLE_CALIBRATION, ["--date", date]),
+    ]
+    for path, extra in steps:
+        if not path.exists():
+            continue
+        _run([PYTHON, str(path), *extra], allow_fail=True, label=path.name)
+    return 0
+
+
 
 def _load_tipoffs_utc(date: str) -> list[datetime]:
     """Best-effort load of today's tipoff times in UTC. Reads from
@@ -494,6 +521,7 @@ def run_derek_near_lineup(
         only_date=date,
     )
     _verify_corrected_pmf_delivery(date)
+    _m86_event_market_validation_bundle(date)
     _refresh_index()
     return 0
 
@@ -514,6 +542,7 @@ def run_close_lock(date: str, *, regions: list[str],
         only_date=date,
     )
     _verify_corrected_pmf_delivery(date)
+    _m86_event_market_validation_bundle(date)
     _refresh_index()
     return 0
 
