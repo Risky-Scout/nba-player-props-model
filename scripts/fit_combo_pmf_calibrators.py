@@ -252,6 +252,7 @@ def _merge_meta(base_meta: dict | None, combo_meta: dict) -> dict:
     merged["combo_calibration_combos_fitted"] = sorted(
         combo_meta.get("stats", {}).keys()
     )
+    merged.pop("combo_calibration_gaps", None)
     return merged
 
 

@@ -2,7 +2,10 @@
 """M8.6Q B2/B3/B9 — event-market loss rows from OOF model PMF + odds_pairs.
 
 Key M8.6Q contract:
-  - The MODEL probability comes from the OOF model PMF, parsed directly.
+  - The MODEL probability comes from the OOF model PMF when available for the
+    slate date; if the OOF slice is empty for `--as-of-date`, the builder falls
+    back to the same-day **model-only canonical** atom PMF (`pmf_active`), which
+    is still a model PMF (never market-implied PMF).
     No reliance on preexisting model_p_over / prob_over columns.
   - For each joined offered line:
       model_prob_over = sum_{y > line} p_model(y)
@@ -280,6 +283,124 @@ def _norm_player(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _canonical_delivery_path(date: str) -> Path:
+    return (
+        REPO_ROOT
+        / "deliveries"
+        / date
+        / "canonical_source"
+        / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+
+
+def _enrich_odds_player_ids(odds: pd.DataFrame, date: str) -> pd.DataFrame:
+    """Odds pairs often lack player_id; map from same-slate canonical model rows."""
+    odds = odds.copy()
+    if "player_id" not in odds.columns:
+        odds["player_id"] = pd.NA
+    cpath = _canonical_delivery_path(date)
+    if not cpath.exists():
+        return odds
+    can = pd.read_parquet(cpath, columns=["player_id", "player_name", "stat"])
+    can["stat_canonical"] = can["stat"].apply(_norm_stat)
+    can["_player_name_norm"] = (
+        can["player_name"].astype(str).str.lower().str.strip()
+    )
+    mp = can.drop_duplicates(subset=["_player_name_norm", "stat_canonical"])[
+        ["_player_name_norm", "stat_canonical", "player_id"]
+    ]
+    odds = odds.merge(
+        mp,
+        left_on=["_player_name_norm", "stat_canonical"],
+        right_on=["_player_name_norm", "stat_canonical"],
+        how="left",
+        suffixes=("", "_canon"),
+    )
+    pid_new = odds.get("player_id_canon")
+    if pid_new is not None:
+        odds["player_id"] = odds["player_id"].where(
+            odds["player_id"].notna(), pid_new
+        )
+        odds = odds.drop(columns=["player_id_canon"], errors="ignore")
+    return odds
+
+
+def _load_canonical_model_pmfs(date: str) -> pd.DataFrame:
+    """Same-day atom PMFs from model-only canonical (not market-implied PMF)."""
+    cpath = _canonical_delivery_path(date)
+    if not cpath.exists():
+        return pd.DataFrame()
+    can = pd.read_parquet(cpath)
+    pmf_col = _resolve_pmf_column(can) or "pmf_active"
+    can = can.copy()
+    can["stat_canonical"] = can["stat"].apply(_norm_stat)
+    can = can[can["stat_canonical"].isin(MISSION_STATS_CANONICAL)].copy()
+    can["player_id"] = pd.to_numeric(can["player_id"], errors="coerce").astype("Int64")
+    can["pmf_kind"] = "delivery_atom_canonical"
+    can["_pmf_col_used"] = pmf_col
+    if "role_bucket" not in can.columns:
+        can["role_bucket"] = None
+    if "game_id" not in can.columns:
+        can["game_id"] = None
+    can["game_date"] = date
+    return can
+
+
+def _load_player_actuals_long(date: str) -> dict[tuple[int, str], int]:
+    """Box-score outcomes for slate date (empty dict if no rows locally)."""
+    pgs = REPO_ROOT / "data" / "player_game_stats.parquet"
+    if not pgs.exists():
+        return {}
+    bx = pd.read_parquet(pgs)
+    bx = bx[bx["game_date"].astype(str).str.startswith(date)].copy()
+    if bx.empty:
+        return {}
+    bx["tov"] = bx["turnover"]
+    bx["stocks"] = bx["stl"] + bx["blk"]
+    bx["pa"] = bx["pts"] + bx["ast"]
+    bx["pr"] = bx["pts"] + bx["reb"]
+    bx["ra"] = bx["reb"] + bx["ast"]
+    bx["pra"] = bx["pts"] + bx["reb"] + bx["ast"]
+    out: dict[tuple[int, str], int] = {}
+    stat_cols = [s for s in MISSION_STATS_CANONICAL if s in bx.columns]
+    for _, r in bx.iterrows():
+        try:
+            pid = int(r["player_id"])
+        except Exception:
+            continue
+        for st in stat_cols:
+            try:
+                out[(pid, st)] = int(r[st])
+            except Exception:
+                continue
+    return out
+
+
+def _binary_over_hit(actual: int | None, line: float | None) -> int | None:
+    """OVER hit for settled props: half-lines strict >; integer lines exclude push."""
+    if actual is None or line is None:
+        return None
+    try:
+        a = int(actual)
+        L = float(line)
+    except Exception:
+        return None
+    if L != L:  # NaN
+        return None
+    frac2 = abs(L * 2.0 % 2.0 - 1.0) < 0.25  # .5 line
+    if frac2:
+        if a > L:
+            return 1
+        if a < L:
+            return 0
+        return None
+    if a > L:
+        return 1
+    if a < L:
+        return 0
+    return None  # push on integer line
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--as-of-date", required=True)
@@ -324,7 +445,12 @@ def main() -> int:
         odds["stat_canonical"] = None
     odds = odds[odds["stat_canonical"].isin(MISSION_STATS_CANONICAL)].copy()
 
-    if not (oof_single_path.exists() or oof_combo_path.exists()):
+    can_path = _canonical_delivery_path(date)
+    if not (
+        oof_single_path.exists()
+        or oof_combo_path.exists()
+        or can_path.exists()
+    ):
         empty = pd.DataFrame(columns=[
             "date","stat","line","model_prob_over","join_status","m8_6q_schema_version",
         ])
@@ -340,62 +466,122 @@ def main() -> int:
     pmf_col_single = _resolve_pmf_column(oof_single) if not oof_single.empty else None
     pmf_col_combo = _resolve_pmf_column(oof_combo) if not oof_combo.empty else None
 
-    oof_frames = []
-    for df, kind, pmf_col in ((oof_single, "single", pmf_col_single),
-                                (oof_combo, "combo", pmf_col_combo)):
-        if df.empty: continue
+    oof_frames: list[pd.DataFrame] = []
+    for df, kind, pmf_col in (
+        (oof_single, "oof_single", pmf_col_single),
+        (oof_combo, "oof_combo", pmf_col_combo),
+    ):
+        if df.empty:
+            continue
         df = df.copy()
-        df["stat_canonical"] = (df["stat"] if "stat" in df.columns else None).apply(_norm_stat) \
-            if "stat" in df.columns else None
+        df["stat_canonical"] = (
+            df["stat"].apply(_norm_stat) if "stat" in df.columns else None
+        )
         df = df[df["stat_canonical"].isin(MISSION_STATS_CANONICAL)].copy()
         df["pmf_kind"] = kind
         df["_pmf_col_used"] = pmf_col
         oof_frames.append(df)
 
-    if not oof_frames:
+    model_source_mode = "oof_date_slice"
+    if oof_frames:
+        model_df = pd.concat(oof_frames, ignore_index=True)
+    else:
+        model_df = pd.DataFrame()
+
+    if model_df.empty:
+        model_df = _load_canonical_model_pmfs(date)
+        model_source_mode = (
+            "delivery_canonical_fallback"
+            if (oof_single_path.exists() or oof_combo_path.exists())
+            else "delivery_canonical_only"
+        )
+
+    if model_df.empty:
         empty = pd.DataFrame(columns=[
             "date","stat","line","model_prob_over","join_status","m8_6q_schema_version",
         ])
         empty.to_parquet(out_path, index=False)
         Path(str(out_path) + ".meta.json").write_text(
-            json.dumps({**early_meta, "rows": 0,
-                        "join_status": "no_oof_after_filter",
-                        "pmf_col_single": pmf_col_single,
-                        "pmf_col_combo": pmf_col_combo}, indent=2) + "\n")
-        print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS rows=0 status=no_oof_after_filter")
+            json.dumps(
+                {
+                    **early_meta,
+                    "rows": 0,
+                    "join_status": "no_model_pmf_rows",
+                    "pmf_col_single": pmf_col_single,
+                    "pmf_col_combo": pmf_col_combo,
+                    "canonical_path": str(can_path) if can_path.exists() else None,
+                },
+                indent=2,
+            )
+            + "\n",
+        )
+        print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS rows=0 status=no_model_pmf_rows")
         return 0
 
-    oof = pd.concat(oof_frames, ignore_index=True)
-    oof = _norm_player(oof)
-    odds = _norm_player(odds)
+    # Prefer base OOF over combo OOF when both exist for same (player, stat).
+    _prio = {"oof_single": 0, "oof_combo": 1, "delivery_atom_canonical": 2}
+    model_df = model_df.assign(
+        _pmf_kind_prio=model_df["pmf_kind"].map(lambda x: _prio.get(str(x), 9))
+    )
+    model_df = model_df.sort_values(
+        by=["_pmf_kind_prio"],
+        ascending=True,
+        kind="mergesort",
+    ).drop(columns=["_pmf_kind_prio"])
+    model_df = model_df.drop_duplicates(
+        subset=["player_id", "stat_canonical"], keep="first"
+    )
 
-    if "line" in oof.columns:
-        oof["_line_f"] = pd.to_numeric(oof["line"], errors="coerce")
-    else:
-        oof["_line_f"] = np.nan
+    model_df = _norm_player(model_df)
+    odds = _norm_player(odds)
+    odds = _enrich_odds_player_ids(odds, date)
+    odds["_player_id_str"] = pd.to_numeric(
+        odds["player_id"], errors="coerce"
+    ).astype("Int64").astype(str)
+
     if "line" in odds.columns:
         odds["_line_f"] = pd.to_numeric(odds["line"], errors="coerce")
     else:
         odds["_line_f"] = np.nan
 
-    # Join odds → oof on (stat, player_id, line); fallback (stat, name, line)
-    join_keys_id = ["stat_canonical", "_player_id_str", "_line_f"]
-    join_keys_name = ["stat_canonical", "_player_name_norm", "_line_f"]
-    oof_id = oof.dropna(subset=["stat_canonical","_line_f"]).drop_duplicates(subset=join_keys_id)
-    merged_id = odds.merge(oof_id, on=join_keys_id, how="left",
-                            suffixes=("", "_oof"), indicator=True)
+    join_keys_id = ["stat_canonical", "_player_id_str"]
+    mdl = model_df.dropna(subset=["stat_canonical", "_player_id_str"]).drop_duplicates(
+        subset=join_keys_id
+    )
+    merged_id = odds.merge(
+        mdl,
+        on=join_keys_id,
+        how="left",
+        suffixes=("", "_mdl"),
+        indicator=True,
+    )
     matched_id = merged_id[merged_id["_merge"] == "both"].copy()
+    matched_id = matched_id.drop(columns=["_merge"], errors="ignore")
     unmatched_id = merged_id[merged_id["_merge"] == "left_only"].copy()
 
     if not unmatched_id.empty:
-        unmatched_id = unmatched_id.drop(columns=["_merge"])
-        oof_cols_added = [c for c in oof.columns if c not in odds.columns and c not in join_keys_id]
-        unmatched_id = unmatched_id.drop(columns=[c for c in oof_cols_added if c in unmatched_id.columns],
-                                          errors="ignore")
-        oof_name = oof.dropna(subset=["stat_canonical","_line_f"]).drop_duplicates(subset=join_keys_name)
-        merged_name = unmatched_id.merge(oof_name, on=join_keys_name, how="left",
-                                          suffixes=("", "_oof"), indicator=True)
+        unmatched_id = unmatched_id.drop(columns=["_merge"], errors="ignore")
+        drop_cols = [
+            c
+            for c in model_df.columns
+            if c not in odds.columns and c not in join_keys_id
+        ]
+        unmatched_id = unmatched_id.drop(
+            columns=[c for c in drop_cols if c in unmatched_id.columns],
+            errors="ignore",
+        )
+        mdl_name = model_df.dropna(
+            subset=["stat_canonical", "_player_name_norm"]
+        ).drop_duplicates(subset=["stat_canonical", "_player_name_norm"])
+        merged_name = unmatched_id.merge(
+            mdl_name,
+            on=["stat_canonical", "_player_name_norm"],
+            how="left",
+            suffixes=("", "_mdl2"),
+            indicator=True,
+        )
         matched_name = merged_name[merged_name["_merge"] == "both"].copy()
+        matched_name = matched_name.drop(columns=["_merge"], errors="ignore")
         unmatched_total = merged_name[merged_name["_merge"] == "left_only"].copy()
         unmatched_total["join_status"] = "no_oof_match"
         unmatched_total["join_blockers"] = "player_id_and_name_no_match"
@@ -404,6 +590,8 @@ def main() -> int:
         matched = matched_id
         unmatched_total = pd.DataFrame()
     matched["join_status"] = "matched"
+
+    actual_lookup = _load_player_actuals_long(date)
 
     rows_out = []
     for _, r in matched.iterrows():
@@ -418,18 +606,30 @@ def main() -> int:
         mp_over = _prob_over(pmf, line)
         mp_under = (1.0 - mp_over) if mp_over is not None else None
         m_mean, m_var = _pmf_mean_variance(pmf)
-        # Actual outcome (for scoring)
+        # Actual outcome (for scoring): OOF row if present, else box score lookup
         actual = rd.get("actual_value")
-        if actual is None: actual = rd.get("settled_value")
-        if actual is None: actual = rd.get("actual")
-        if actual is None: actual = rd.get("y")
-        # hit_result: derive from actual vs line if needed
-        hit_result = rd.get("hit_result")
-        if hit_result is None and actual is not None and line is not None:
+        if actual is None:
+            actual = rd.get("settled_value")
+        if actual is None:
+            actual = rd.get("actual")
+        if actual is None:
+            actual = rd.get("y")
+        pid_raw = rd.get("player_id")
+        st_raw = rd.get("stat_canonical")
+        if actual is None and pid_raw is not None and st_raw is not None:
             try:
-                hit_result = 1 if float(actual) > float(line) else 0
+                actual = actual_lookup.get((int(pid_raw), str(st_raw)))
             except Exception:
-                hit_result = None
+                pass
+
+        try:
+            actual_int = int(actual) if actual is not None and pd.notna(actual) else None
+        except Exception:
+            actual_int = None
+
+        hit_result = rd.get("hit_result")
+        if hit_result is None:
+            hit_result = _binary_over_hit(actual_int, line)
 
         # Market no-vig
         mkt_over = rd.get("no_vig_over_prob")
@@ -455,8 +655,6 @@ def main() -> int:
         market_br = _brier(market_prob_for_side, hit_result) if hit_result in (0,1) else None
         br_delta = (model_br - market_br) if (model_br is not None and market_br is not None) else None
 
-        try: actual_int = int(actual) if actual is not None and pd.notna(actual) else None
-        except Exception: actual_int = None
         rps = _rps(pmf, actual_int)
 
         # NLL of model PMF at the observed outcome (used for distributional fit)
@@ -479,7 +677,7 @@ def main() -> int:
             "stat": rd.get("stat_canonical"),
             "line": line,
             "side": side,
-            "role_bucket": rd.get("role_bucket"),
+            "role_bucket": rd.get("role_bucket_mdl") or rd.get("role_bucket"),
             "pmf_kind": rd.get("pmf_kind"),
             "pmf_col_used": pmf_col_used,
             "is_alternate": bool(rd.get("is_alternate", False)),
@@ -519,7 +717,7 @@ def main() -> int:
             "model_nll": model_nll_dist,
             "model_rps": rps,
 
-            "walk_forward_only": True,
+            "walk_forward_only": str(rd.get("pmf_kind", "")).startswith("oof"),
             "same_sample_predictions_used": False,
             "join_status": rd.get("join_status", "matched"),
             "join_blockers": rd.get("join_blockers"),
@@ -608,6 +806,8 @@ def main() -> int:
         "odds_pairs_source": str(odds_path.relative_to(REPO_ROOT)),
         "oof_single_rows": int(len(oof_single)),
         "oof_combo_rows": int(len(oof_combo)),
+        "model_source_mode": model_source_mode,
+        "box_score_actual_rows_for_date": len(actual_lookup),
         "pmf_col_single": pmf_col_single,
         "pmf_col_combo": pmf_col_combo,
     }, indent=2) + "\n")

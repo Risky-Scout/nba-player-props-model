@@ -1,20 +1,22 @@
 {
   "schema_version": "1.0",
-  "input": "data/oof_pmfs.parquet",
-  "output": "data/oof_combo_pmfs.parquet",
+  "input": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/oof_pmfs.parquet",
+  "output": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/oof_combo_pmfs.parquet",
   "source_oof_path": "data/oof_pmfs.parquet",
-  "rows": 76832,
+  "rows": 96040,
   "player_games": 19208,
   "combos_canonical": [
     "stocks",
     "pa",
     "pr",
+    "ra",
     "pra"
   ],
   "combos_mission": [
     "stl_blk",
     "pts_ast",
     "pts_reb",
+    "reb_ast",
     "pts_reb_ast"
   ],
   "combo_pmf_version": "combo_oof_pmf_v1",
@@ -22,15 +24,15 @@
   "oof_window_start": "2025-12-10",
   "oof_window_end": "2026-05-09",
   "training_cutoff_date": "2026-05-09",
-  "as_of_date": "2026-05-11",
-  "days_since_oof_window_end": 2,
+  "as_of_date": "2026-05-12",
+  "days_since_oof_window_end": 3,
   "path_building_warning": "",
   "production_promoted": false,
   "final_calibration_ready": false,
   "staleness_warn_days": 7,
   "method_counts": {
-    "prior_actual_corr_gaussian_copula_v1": 75772,
-    "independence_cold_start_v1": 1060
+    "prior_actual_corr_gaussian_copula_v1": 94715,
+    "independence_cold_start_v1": 1325
   },
   "n_draws_default": 20000,
   "min_prior_rows_for_copula": 200,
@@ -40,6 +42,6 @@
   "calibration_status": "pending_m6_stat_role_calibration",
   "pmf_validity_rate": 1.0,
   "pmf_sum_error_max": 3.3306690738754696e-16,
-  "generated_at_utc": "2026-05-11T06:03:31+00:00",
+  "generated_at_utc": "2026-05-13T05:33:09+00:00",
   "note": "M5C foundation. Combo OOF dataset for downstream M6 role-aware calibrator fitting. Combo rows are calibrated=False / calibration_status=pending_m6_stat_role_calibration. NOT yet wired into production delivery; M7+ handles production wiring."
 }
