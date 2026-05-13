@@ -52,6 +52,7 @@ def _suspected_cause(
     over_probs: np.ndarray,
     outcomes: np.ndarray,
     val: float,
+    stat: str,
 ) -> str:
     n = len(over_probs)
     if n < 2:
@@ -65,8 +66,21 @@ def _suspected_cause(
     if val <= 1e-6 or val >= 1.0 - 1e-6:
         return "line_probability_saturation"
     if np.nanstd(over_probs) < 1e-12:
+        if stat in ("stl", "blk", "stocks") and float(np.mean(pmfs[:, 0])) > 0.35:
+            return "sparse_stat_all_zero_like"
         return "calibration_map_collapsed"
     return "unknown"
+
+
+def _recommended_fix(cause: str) -> str:
+    return {
+        "bug_same_pmf_reused": "Fix OOF emission / join keys so PMFs are not duplicated across rows.",
+        "calibration_map_collapsed": "Review role-aware calibrator / isotonic mapping for degenerate outputs.",
+        "line_probability_saturation": "Check support truncation and line placement vs PMF mass.",
+        "sparse_stat_all_zero_like": "Sparse-stat hurdle / tail calibration; verify raw PMF variance before calibration.",
+        "true_low_information_baseline": "No code change if fold outcomes degenerate; widen folds or drop segment.",
+        "unknown": "Investigate PMF variance and calibration path for this fold.",
+    }.get(cause, "Investigate manually.")
 
 
 def main() -> int:
@@ -116,11 +130,16 @@ def main() -> int:
                 if float(np.std(over_probs)) > args.eps:
                     continue
                 val = float(np.mean(over_probs))
-                cause = _suspected_cause(pmfs, over_probs, out, val)
+                cause = _suspected_cause(pmfs, over_probs, out, val, stat)
+                p0_mean = float(np.mean(pmfs[:, 0]))
+                mean_atom = float(np.sum(np.arange(pmfs.shape[1]) * pmfs, axis=1).mean())
+                pos_rate = float(np.mean(out > ref_line))
+                mf = "combo" if label == "combo_oof" else "new"
                 ex = chunk.iloc[0]
                 rows_out.append(
                     {
                         "source": label,
+                        "model_family": mf,
                         "stat": stat,
                         "role_bucket": str(ex.get(role_col, "")),
                         "n": len(chunk),
@@ -130,6 +149,9 @@ def main() -> int:
                         "model_version": "",
                         "calibration_stage": "oof_fold_chunk",
                         "source_recalibration_stage": "",
+                        "actual_positive_rate": pos_rate,
+                        "mean_model_pmf_mean": mean_atom,
+                        "mean_model_p0": p0_mean,
                         "ref_line": ref_line,
                         "fold_start": str(ex.get("fold_start", "")),
                         "fold_end": str(ex.get("fold_end", "")),
@@ -137,6 +159,7 @@ def main() -> int:
                         "example_game_id": int(ex["game_id"]) if pd.notna(ex.get("game_id")) else "",
                         "example_game_date": str(ex.get("game_date", "")),
                         "suspected_cause": cause,
+                        "recommended_fix": _recommended_fix(cause),
                     }
                 )
 

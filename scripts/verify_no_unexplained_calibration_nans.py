@@ -75,6 +75,7 @@ def main() -> int:
             return 1
 
     print("CALIBRATION_JSON_HYGIENE_VERIFIER_PASS")
+    print("NO_UNEXPLAINED_CALIBRATION_NANS_PASS")
     return 0
 
 

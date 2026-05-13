@@ -50,6 +50,10 @@ def main() -> int:
         meta_path = cands[0]
         print(f"Using newest meta: {meta_path}")
 
+    if not meta_path.is_file():
+        print(f"FAIL: meta file not found: {meta_path}", file=sys.stderr)
+        return 2
+
     data = json.loads(meta_path.read_text(encoding="utf-8"))
     bad = _walk_nonfinite(data)
     if bad:

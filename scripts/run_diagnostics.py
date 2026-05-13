@@ -185,6 +185,11 @@ def main() -> None:
         action="store_true",
         help="Pass through to market superiority verifier after strict check.",
     )
+    parser.add_argument(
+        "--training-table",
+        default=str(DATA_DIR / "training_table.parquet"),
+        help="Path to training_table.parquet (legacy ladder join). Default: data/training_table.parquet",
+    )
     args = parser.parse_args()
     if args.require_market_eval and args.allow_baseline_only:
         parser.error("--require-market-eval and --allow-baseline-only are mutually exclusive")
@@ -200,6 +205,32 @@ def main() -> None:
     logger.info("Diagnostics — legacy direct-total vs new PMF path")
     logger.info("=" * 60)
 
+    training_table_path = Path(args.training_table)
+    if not training_table_path.exists():
+        DOCS_DIR.mkdir(parents=True, exist_ok=True)
+        sidecar = DOCS_DIR / f"diagnostics_{args.run_date}.meta.json"
+        miss = {
+            "diagnostics_status": "failed_preflight",
+            "failure_code": "MISSING_TRAINING_TABLE",
+            "missing_path": str(training_table_path.resolve()),
+            "market_eval_status": "not_run_missing_training_table",
+            "market_superiority_claim_allowed": False,
+            "global_market_superiority_claim_allowed": False,
+            "eligible_market_subset_superiority_claim_allowed": False,
+            "model_only_calibration_claim_allowed": False,
+            "require_market_eval": bool(args.require_market_eval),
+            "allow_baseline_only": bool(args.allow_baseline_only),
+            "strict_contract_result": "not_run",
+            "promotion_status": "no_market_superiority_claim",
+        }
+        sidecar.write_text(json.dumps(miss, indent=2) + "\n", encoding="utf-8")
+        logger.error(
+            "MISSING_TRAINING_TABLE at %s — wrote %s (exit 3)",
+            training_table_path,
+            sidecar,
+        )
+        sys.exit(3)
+
     oof_path = Path(args.oof_path)
     if not oof_path.exists():
         logger.error(
@@ -209,7 +240,7 @@ def main() -> None:
         sys.exit(1)
 
     stats_df = pd.read_parquet(DATA_DIR / "player_game_stats.parquet")
-    training_df = pd.read_parquet(DATA_DIR / "training_table.parquet")
+    training_df = pd.read_parquet(training_table_path)
     training_df["game_date"] = training_df["game_date"].astype(str).str[:10]
 
     oof = pd.read_parquet(oof_path)
@@ -542,6 +573,7 @@ def main() -> None:
                     else "devigged_opening_line"
                 ),
                 "run_date": args.run_date,
+                "training_table": str(Path(args.training_table).resolve()),
                 "require_market_eval": bool(args.require_market_eval),
                 "allow_baseline_only": bool(args.allow_baseline_only),
                 **em_payload,

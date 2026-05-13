@@ -64,6 +64,56 @@ def _finite_mean(s: pd.Series) -> float | None:
     return float(x.mean())
 
 
+def _precise_segment_failure_reason(
+    sub: pd.DataFrame,
+    *,
+    min_scored: int,
+    n_scored_core: int,
+    n_market_joined: int,
+    mb: float | None,
+    mm: float | None,
+    ml: float | None,
+    mk: float | None,
+    mr: float | None,
+    mkr: float | None,
+) -> str:
+    """Replace vague 'model_metrics_missing_or_join_incomplete' with actionable codes."""
+    core_cols = (
+        "model_prob_over",
+        "market_prob_over_no_vig",
+        "hit_result",
+        "model_brier",
+        "market_brier",
+        "model_event_logloss",
+        "market_event_logloss",
+    )
+    missing_cols = [c for c in core_cols if c not in sub.columns]
+    if missing_cols:
+        return "join_incomplete"
+    for col, reason in (
+        ("model_prob_over", "missing_model_prob_over"),
+        ("market_prob_over_no_vig", "missing_market_prob_over"),
+        ("hit_result", "missing_actual_outcome"),
+        ("model_brier", "missing_model_brier"),
+        ("market_brier", "missing_market_brier"),
+        ("model_event_logloss", "missing_model_logloss"),
+        ("market_event_logloss", "missing_market_logloss"),
+    ):
+        if int(sub[col].notna().sum()) == 0 and len(sub) > 0:
+            return reason
+    if n_scored_core < min_scored:
+        return "insufficient_scored_rows"
+    if mb is None or mm is None or ml is None or mk is None:
+        return "unknown_bug"
+    if ml >= mk:
+        return "model_logloss_not_better"
+    if mb >= mm:
+        return "model_brier_not_better"
+    if mkr is not None and mr is not None and mr >= mkr:
+        return "model_rps_not_better"
+    return "unknown_bug"
+
+
 def _agg_segment(sub: pd.DataFrame, *, min_scored: int, min_joined: int) -> dict:
     n_rows = int(len(sub))
     joined = sub[sub.get("join_status", pd.Series(["unknown"] * len(sub))) == "matched"]
@@ -104,7 +154,7 @@ def _agg_segment(sub: pd.DataFrame, *, min_scored: int, min_joined: int) -> dict
     elif n_market_joined < min_joined:
         out["failure_reason"] = "insufficient_market_overlap"
     else:
-        out["failure_reason"] = "model_metrics_missing_or_join_incomplete"
+        out["failure_reason"] = ""
 
     mb, mm = out["model_brier_avg"], out["market_brier_avg"]
     ml, mk = out["model_logloss_avg"], out["market_logloss_avg"]
@@ -128,7 +178,18 @@ def _agg_segment(sub: pd.DataFrame, *, min_scored: int, min_joined: int) -> dict
             out["market_superiority_pass"] = True
             out["failure_reason"] = ""
     if out["failure_reason"] == "" and not out["market_superiority_pass"]:
-        out["failure_reason"] = "model_probabilities_worse_than_market"
+        out["failure_reason"] = _precise_segment_failure_reason(
+            sub,
+            min_scored=min_scored,
+            n_scored_core=n_scored_core,
+            n_market_joined=n_market_joined,
+            mb=mb,
+            mm=mm,
+            ml=ml,
+            mk=mk,
+            mr=mr,
+            mkr=mkr,
+        )
 
     out["model_beats_market_brier"] = bool(mb is not None and mm is not None and mb < mm)
     out["model_beats_market_logloss"] = bool(ml is not None and mk is not None and ml < mk)
