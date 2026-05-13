@@ -783,8 +783,17 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             "line": get(r, "line", default=None),
             "book": str(get(r, "book", "sportsbook", "bookmaker", default="")),
             "affiliate_url": str(get(r, "affiliate_url", "affiliate_link", "book_url", "url", default="")),
-            "calibration_support_status": str(get(r, "calibration_support_status", default="supported")),
-            "accuracy_support_status": str(get(r, "accuracy_support_status", default="supported")),
+            # FW3 — status flag gated on market_superiority_claim_allowed.
+            "calibration_support_status": (
+                str(get(r, "calibration_support_status", default="supported"))
+                if bool(get(r, "market_superiority_claim_allowed", default=False))
+                else "internal_oof_improved_not_market_validated"
+            ),
+            "accuracy_support_status": (
+                str(get(r, "accuracy_support_status", default="supported"))
+                if bool(get(r, "market_superiority_claim_allowed", default=False))
+                else "unknown_pending_market_validation"
+            ),
             "edge_publish_status": str(get(r, "edge_publish_status", default="publishable")),
             "promotion_status": str(get(r, "promotion_status", default="no_market_superiority_claim")),
             "market_superiority_claim_allowed": bool(get(r, "market_superiority_claim_allowed", default=False)),
@@ -870,8 +879,15 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         "market_prob_resolved_rows": len(df),
         "side_odds_resolved_rows": len(df),
         "edge_publishable_rows": len(rows),
-        "calibration_supported_rows": len(df),
-        "accuracy_supported_rows": len(df),
+        # FW3 — counters now reflect actual row status, not len(df).
+        "calibration_supported_rows": sum(
+            1 for _r in rows
+            if str(_r.get("calibration_support_status", "")).lower() in ("supported", "calibrated")
+        ),
+        "accuracy_supported_rows": sum(
+            1 for _r in rows
+            if str(_r.get("accuracy_support_status", "")).lower() in ("supported", "accurate")
+        ),
         "sources": {"affiliate_dashboard_rows": str(src)},
     }
 
