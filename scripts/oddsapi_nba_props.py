@@ -21,10 +21,12 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import date as dt_date
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -57,6 +59,51 @@ def _markets_from_cli(raw: str | None) -> tuple[str, ...]:
 
 
 # ── HTTP helpers ────────────────────────────────────────────────────────
+
+_PLACEHOLDER_DATE_LITERALS = frozenset({"YYYY-MM-DD"})
+_PLACEHOLDER_TIMESTAMP_SUBSTRINGS = (
+    "YYYY-MM-DDTHH:MM:SSZ",
+    "YYYY-MM-DDTHHMMSSZ",
+    "THH:MM:SSZ",
+)
+
+
+def _validate_target_date_or_exit(s: str, *, field: str) -> str:
+    """Reject template dates and non-ISO calendar dates before any I/O."""
+    t = str(s).strip()
+    if t in _PLACEHOLDER_DATE_LITERALS:
+        print("ODDSAPI_INVALID_DATE_ARGUMENT", t)
+        sys.exit(2)
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", t) is None:
+        print("ODDSAPI_INVALID_DATE_ARGUMENT", t)
+        sys.exit(2)
+    try:
+        dt_date.fromisoformat(t)
+    except ValueError:
+        print("ODDSAPI_INVALID_DATE_ARGUMENT", t)
+        sys.exit(2)
+    return t
+
+
+def _validate_snapshot_time_utc_or_exit(s: str) -> str:
+    """Reject template timestamps; require Zulu ...T..:..:..Z."""
+    t = str(s).strip()
+    for tok in _PLACEHOLDER_TIMESTAMP_SUBSTRINGS:
+        if tok in t:
+            print("ODDSAPI_INVALID_TIMESTAMP_ARGUMENT", t)
+            sys.exit(2)
+    if t in _PLACEHOLDER_DATE_LITERALS:
+        print("ODDSAPI_INVALID_TIMESTAMP_ARGUMENT", t)
+        sys.exit(2)
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", t) is None:
+        print("ODDSAPI_INVALID_TIMESTAMP_ARGUMENT", t)
+        sys.exit(2)
+    try:
+        datetime.strptime(t, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError:
+        print("ODDSAPI_INVALID_TIMESTAMP_ARGUMENT", t)
+        sys.exit(2)
+    return t
 
 
 def _get_api_key() -> str:
@@ -394,9 +441,11 @@ def _now_iso() -> str:
 
 
 def cmd_live_events(args) -> int:
-    api_key = _get_api_key()
+    if args.target_date:
+        _validate_target_date_or_exit(args.target_date, field="target_date")
     if args.dry_run:
         print("[dry-run] would fetch live events"); return 0
+    api_key = _get_api_key()
     events, _ = fetch_live_events(api_key)
     snap_iso = _now_iso()
     target = args.target_date or snap_iso[:10]
@@ -406,11 +455,16 @@ def cmd_live_events(args) -> int:
 
 
 def cmd_live_event_odds(args) -> int:
+    if args.target_date:
+        _validate_target_date_or_exit(args.target_date, field="target_date")
+    if args.dry_run:
+        snap_iso = _now_iso()
+        target = args.target_date or snap_iso[:10]
+        print(f"[dry-run] would fetch live odds for {args.event_id} target={target}")
+        return 0
     api_key = _get_api_key()
     snap_iso = _now_iso()
     target = args.target_date or snap_iso[:10]
-    if args.dry_run:
-        print(f"[dry-run] would fetch live odds for {args.event_id}"); return 0
     markets = list(_markets_from_cli(args.markets))
     odds, _ = fetch_live_event_odds(api_key, args.event_id, markets, args.regions)
     p_raw = save_raw_json(odds, target, f"live_event_{args.event_id}_{snap_iso}")
@@ -428,10 +482,16 @@ def cmd_live_event_odds(args) -> int:
 
 
 def cmd_historical_events(args) -> int:
-    api_key = _get_api_key()
-    target = args.target_date or args.snapshot_time_utc[:10]
+    ts = _validate_snapshot_time_utc_or_exit(args.snapshot_time_utc)
+    args.snapshot_time_utc = ts
+    if args.target_date:
+        _validate_target_date_or_exit(args.target_date, field="target_date")
+    else:
+        _validate_target_date_or_exit(ts[:10], field="target_date_derived")
     if args.dry_run:
         print(f"[dry-run] would fetch historical events at {args.snapshot_time_utc}"); return 0
+    api_key = _get_api_key()
+    target = args.target_date or args.snapshot_time_utc[:10]
     blob, _ = fetch_historical_events(api_key, args.snapshot_time_utc)
     p = save_raw_json(blob, target, f"hist_events_{args.snapshot_time_utc}")
     n = len(blob.get("data", []) or []) if isinstance(blob, dict) else 0
@@ -440,11 +500,17 @@ def cmd_historical_events(args) -> int:
 
 
 def cmd_historical_event_odds(args) -> int:
-    api_key = _get_api_key()
-    target = args.target_date or args.snapshot_time_utc[:10]
+    ts = _validate_snapshot_time_utc_or_exit(args.snapshot_time_utc)
+    args.snapshot_time_utc = ts
+    if args.target_date:
+        _validate_target_date_or_exit(args.target_date, field="target_date")
+    else:
+        _validate_target_date_or_exit(ts[:10], field="target_date_derived")
     if args.dry_run:
         print(f"[dry-run] would fetch historical odds for {args.event_id} at {args.snapshot_time_utc}")
         return 0
+    api_key = _get_api_key()
+    target = args.target_date or args.snapshot_time_utc[:10]
     markets = list(_markets_from_cli(args.markets))
     blob, _ = fetch_historical_event_odds(api_key, args.event_id,
                                           args.snapshot_time_utc, markets, args.regions)
@@ -464,11 +530,13 @@ def cmd_historical_event_odds(args) -> int:
 
 
 def cmd_live_snapshot(args) -> int:
+    if args.target_date:
+        _validate_target_date_or_exit(args.target_date, field="target_date")
+    if args.dry_run:
+        print("[dry-run] would capture full live slate"); return 0
     api_key = _get_api_key()
     snap_iso = _now_iso()
     target = args.target_date or snap_iso[:10]
-    if args.dry_run:
-        print("[dry-run] would capture full live slate"); return 0
     events, _ = fetch_live_events(api_key)
     save_raw_json(events, target, f"live_events_{snap_iso}")
     print(f"Live events: {len(events)}")
@@ -495,10 +563,16 @@ def cmd_live_snapshot(args) -> int:
 
 
 def cmd_historical_snapshot(args) -> int:
-    api_key = _get_api_key()
-    target = args.target_date or args.snapshot_time_utc[:10]
+    ts = _validate_snapshot_time_utc_or_exit(args.snapshot_time_utc)
+    args.snapshot_time_utc = ts
+    if args.target_date:
+        _validate_target_date_or_exit(args.target_date, field="target_date")
+    else:
+        _validate_target_date_or_exit(ts[:10], field="target_date_derived")
     if args.dry_run:
         print("[dry-run] would capture full historical slate"); return 0
+    api_key = _get_api_key()
+    target = args.target_date or args.snapshot_time_utc[:10]
     blob, _ = fetch_historical_events(api_key, args.snapshot_time_utc)
     save_raw_json(blob, target, f"hist_events_{args.snapshot_time_utc}")
     events = blob.get("data", []) if isinstance(blob, dict) else []
@@ -547,15 +621,13 @@ def cmd_historical_lock_day(args) -> int:
     `snapshot_time_utc = commence_time_utc - <lock_offset_minutes>` (default 5).
     Guarantees `snapshot_time_utc <= commence_time_utc` (no leakage).
     """
-    api_key = _get_api_key()
-    target = args.target_date
-    # Initial events list snapshot: 11:00 UTC (≈07:00 ET) of the target date —
-    # at that time every game is upcoming, so the event list is complete.
+    target = _validate_target_date_or_exit(args.target_date, field="target_date")
     list_snap = f"{target}T11:00:00Z"
     if args.dry_run:
         print(f"[dry-run] would fetch historical events at {list_snap}")
         return 0
 
+    api_key = _get_api_key()
     print(f"=" * 72)
     print(f"HISTORICAL LOCK DAY — target {target}")
     print(f"  events list snapshot: {list_snap}")

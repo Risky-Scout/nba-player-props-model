@@ -43,6 +43,10 @@ def main() -> int:
             for fld in ("a", "b"):
                 if fld not in v:
                     fails.append(f"missing_{fld}:{k}")
+        elif t == "log_mass_ratio":
+            for fld in ("a", "b", "c"):
+                if fld not in v:
+                    fails.append(f"missing_{fld}:{k}")
         elif t == "line_aware":
             for fld in ("a", "b", "c", "line_mu", "line_std"):
                 if fld not in v:

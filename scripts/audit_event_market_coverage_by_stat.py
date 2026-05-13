@@ -21,8 +21,10 @@ import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from odds_snapshot_selection import select_odds_pairs_parquet  # noqa: E402
 from nba_props_model.markets.oddsapi_markets import (  # noqa: E402
     ODDSAPI_NBA_DEFAULT_MARKETS,
     market_keys_for_stat,
@@ -55,14 +57,8 @@ def _norm_stat(s) -> str | None:
 
 
 def _find_odds_pairs_file(d: str, snapshot_substr: str) -> Path | None:
-    base = REPO_ROOT / "data" / "odds_api" / "processed" / d
-    if not base.exists():
-        return None
-    cand = sorted(base.glob(f"odds_pairs_*{snapshot_substr}*.parquet"))
-    if cand:
-        return cand[-1]
-    fallback = sorted(base.glob("odds_pairs_*.parquet"))
-    return fallback[-1] if fallback else None
+    p, _ = select_odds_pairs_parquet(REPO_ROOT, d, snapshot_substr)
+    return p
 
 
 def _scan_raw_detail(day: str) -> tuple[list[str], set[str], Counter]:
@@ -307,7 +303,7 @@ def main() -> int:
     ap.add_argument("--end-date", default=None)
     ap.add_argument("--dates-file", default=None)
     ap.add_argument("--include-ineligible", action="store_true")
-    ap.add_argument("--snapshot-substr", default="close_or_lock")
+    ap.add_argument("--snapshot-substr", default="auto")
     ap.add_argument("--min-scored-rows", type=int, default=DEFAULT_MIN_SCORED)
     args = ap.parse_args()
 
@@ -335,6 +331,7 @@ def main() -> int:
     all_raw_paths: list[str] = []
     all_raw_keys: set[str] = set()
     raw_key_counts: Counter = Counter()
+    odds_snapshots_by_date: dict[str, dict] = {}
     odds_snapshots_checked: list[str] = []
     proc_frames: list[pd.DataFrame] = []
 
@@ -343,9 +340,10 @@ def main() -> int:
         all_raw_paths.extend(rp)
         all_raw_keys |= rk
         raw_key_counts += rc
-        op = _find_odds_pairs_file(d, args.snapshot_substr)
-        if op and op.exists():
-            odds_snapshots_checked.append(str(op.relative_to(REPO_ROOT)))
+        _p, smeta = select_odds_pairs_parquet(REPO_ROOT, d, args.snapshot_substr)
+        odds_snapshots_by_date[d] = {**smeta, "odds_pairs_selected_exists": bool(_p and _p.exists())}
+        if _p and _p.exists():
+            odds_snapshots_checked.append(str(_p.relative_to(REPO_ROOT)))
         proc_frames.append(_load_processed_for_day(d, args.snapshot_substr))
 
     proc_all = pd.concat(proc_frames, ignore_index=True) if proc_frames else pd.DataFrame()
@@ -472,6 +470,7 @@ def main() -> int:
         "snapshot_substr": args.snapshot_substr,
         "min_scored_rows": args.min_scored_rows,
         "oddsapi_default_market_count": len(ODDSAPI_NBA_DEFAULT_MARKETS),
+        "odds_snapshots_by_date": odds_snapshots_by_date,
         "stats": rows_out,
     }
     (out_dir / "coverage_by_stat.json").write_text(

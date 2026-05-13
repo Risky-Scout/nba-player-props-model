@@ -69,6 +69,14 @@ def apply_segment_calibration(
         b = float(spec.get("b", 1.0))
         z = a + b * logit(p0)
         return sigmoid(z), True, seg_id
+    if t == "log_mass_ratio":
+        a = float(spec.get("a", 0.0))
+        b = float(spec.get("b", 0.0))
+        c = float(spec.get("c", 0.0))
+        lp = math.log(max(p0, 1e-12))
+        l1p = math.log(max(1.0 - p0, 1e-12))
+        z = a + b * lp + c * l1p
+        return sigmoid(z), True, seg_id
     if t == "line_aware":
         a = float(spec.get("a", 0.0))
         b = float(spec.get("b", 1.0))

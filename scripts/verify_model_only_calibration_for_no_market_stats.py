@@ -17,6 +17,12 @@ import pandas as pd
 from scipy import stats
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from nba_props_model.calibration.model_only_pmf_calibration import (  # noqa: E402
+    apply_model_only_segment_calibration,
+    load_model_only_calibration,
+)
 
 NO_MARKET_STATS = frozenset({"stl", "blk", "stocks", "pa", "pr", "ra", "pra"})
 
@@ -94,8 +100,15 @@ def main() -> int:
     ap.add_argument("--min-n", type=int, default=50)
     ap.add_argument("--pit-p-min", type=float, default=0.01)
     ap.add_argument("--max-mean-abs-err", type=float, default=0.45)
+    ap.add_argument(
+        "--calibration-model",
+        default=None,
+        help="Optional JSON from fit_model_only_pmf_calibration_for_no_market_stats.py",
+    )
     args = ap.parse_args()
     label = args.label.strip()
+
+    cal = load_model_only_calibration(args.calibration_model) if args.calibration_model else None
 
     oof_path = REPO_ROOT / "data" / "oof_pmfs.parquet"
     combo_path = REPO_ROOT / "data" / "oof_combo_pmfs.parquet"
@@ -132,6 +145,12 @@ def main() -> int:
             d = _parse_pmf_cell(raw)
             if d is None:
                 continue
+            if cal is not None:
+                d2, _, _ = apply_model_only_segment_calibration(
+                    d, stat=str(stat), role_bucket=str(role), cal=cal
+                )
+                if d2:
+                    d = d2
             try:
                 y = int(r["outcome"])
             except Exception:

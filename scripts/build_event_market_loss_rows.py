@@ -32,6 +32,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from event_line_calibration import apply_segment_calibration  # noqa: E402
+from odds_snapshot_selection import select_odds_pairs_parquet  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL
 
 MISSION_STATS_CANONICAL = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
@@ -224,15 +225,6 @@ def _rps(pmf: dict, observed_y: "int | None") -> "float | None":
 
 
 # ─── Loaders ─────────────────────────────────────────────────────────────────
-def _find_odds_pairs_file(date: str, snapshot_substr: str) -> "Path | None":
-    base = REPO_ROOT / "data" / "odds_api" / "processed" / date
-    if not base.exists(): return None
-    cand = sorted(base.glob(f"odds_pairs_*{snapshot_substr}*.parquet"))
-    if cand: return cand[-1]
-    fallback = sorted(base.glob("odds_pairs_*.parquet"))
-    return fallback[-1] if fallback else None
-
-
 def _load_oof_for_date(path: Path, date: str) -> pd.DataFrame:
     if not path.exists(): return pd.DataFrame()
     df = pd.read_parquet(path)
@@ -417,7 +409,8 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"event_market_loss_rows_{date}.parquet"
 
-    odds_path = _find_odds_pairs_file(date, snapshot_substr)
+    odds_path, odds_sel_meta = select_odds_pairs_parquet(REPO_ROOT, date, snapshot_substr)
+    snap_cols = {k: v for k, v in odds_sel_meta.items() if str(k).startswith("odds_snapshot")}
     oof_single_path = REPO_ROOT / "data" / "oof_pmfs.parquet"
     oof_combo_path = REPO_ROOT / "data" / "oof_combo_pmfs.parquet"
 
@@ -426,6 +419,7 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
         "schema_version": "m8_6q_v2",
         "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
         "forbidden_columns_check": "no_market_full_pmf_columns",
+        **snap_cols,
     }
     if event_cal:
         early_meta = {
@@ -790,6 +784,7 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
 
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
+            **snap_cols,
         }
         rows_out.append(out_row)
 
@@ -852,6 +847,7 @@ def _main_single_date(date: str, snapshot_substr: str, event_cal: dict | None = 
 
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
+            **snap_cols,
         })
 
     out = pd.DataFrame(rows_out)
@@ -1070,7 +1066,7 @@ def main() -> int:
     ap.add_argument("--end-date", default=None)
     ap.add_argument("--dates-file", default=None)
     ap.add_argument("--include-ineligible", action="store_true")
-    ap.add_argument("--snapshot-substr", default="close_or_lock")
+    ap.add_argument("--snapshot-substr", default="auto")
     ap.add_argument(
         "--event-calibration-model",
         default=None,

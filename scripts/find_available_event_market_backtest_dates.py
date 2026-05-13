@@ -12,8 +12,10 @@ from pathlib import Path
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from odds_snapshot_selection import select_odds_pairs_parquet  # noqa: E402
 from nba_props_model.markets.oddsapi_markets import stat_for_market_key  # noqa: E402
 
 
@@ -68,28 +70,19 @@ def _scan_raw(day: str) -> tuple[list[str], set[str], Counter]:
     return paths, set(keys.keys()), keys
 
 
-def _find_odds_pairs(day: str, snapshot_substr: str) -> list[Path]:
-    base = REPO_ROOT / "data" / "odds_api" / "processed" / day
-    if not base.exists():
-        return []
-    cand = sorted(base.glob(f"odds_pairs_*{snapshot_substr}*.parquet"))
-    if cand:
-        return [cand[-1]]
-    fallback = sorted(base.glob("odds_pairs_*.parquet"))
-    return [fallback[-1]] if fallback else []
-
-
 def _processed_summary(day: str, snapshot_substr: str) -> dict:
-    paths = _find_odds_pairs(day, snapshot_substr)
-    rel = [str(p.relative_to(REPO_ROOT)) for p in paths]
-    if not paths:
+    path, meta = select_odds_pairs_parquet(REPO_ROOT, day, snapshot_substr)
+    snap_meta = {k: v for k, v in meta.items() if str(k).startswith("odds_snapshot")}
+    rel = [str(path.relative_to(REPO_ROOT))] if path is not None else []
+    if path is None or not path.exists():
         return {
             "processed_odds_paths": rel,
             "processed_stats_present": [],
             "processed_market_keys_seen": [],
             "two_way_market_rows": 0,
+            **snap_meta,
         }
-    df = pd.read_parquet(paths[0])
+    df = pd.read_parquet(path)
     mk_seen: set[str] = set()
     if "market_key" in df.columns:
         mk_seen = set(df["market_key"].dropna().astype(str).unique())
@@ -110,6 +103,7 @@ def _processed_summary(day: str, snapshot_substr: str) -> dict:
         "processed_stats_present": sorted(stats),
         "processed_market_keys_seen": sorted(mk_seen),
         "two_way_market_rows": tw,
+        **snap_meta,
     }
 
 
@@ -117,7 +111,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--start-date", required=True)
     ap.add_argument("--end-date", required=True)
-    ap.add_argument("--snapshot-substr", default="close_or_lock")
+    ap.add_argument("--snapshot-substr", default="auto")
     args = ap.parse_args()
 
     pgs_path = REPO_ROOT / "data" / "player_game_stats.parquet"
@@ -192,6 +186,7 @@ def main() -> int:
         eligible = not reasons
         missing_reason = "eligible" if eligible else ";".join(reasons)
 
+        snap_cols = {k: v for k, v in proc.items() if str(k).startswith("odds_snapshot")}
         rows_out.append({
             "date": d,
             "has_stat_grid": has_stat_grid,
@@ -214,6 +209,7 @@ def main() -> int:
             "estimated_joinable_rows": joinable,
             "eligible_for_event_market_backtest": eligible,
             "missing_reason": missing_reason,
+            **snap_cols,
         })
 
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
