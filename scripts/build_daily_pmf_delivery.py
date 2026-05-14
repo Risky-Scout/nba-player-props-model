@@ -997,6 +997,15 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
     rows = []
     inj_fresh = _injury_freshness(injury_path)
     for _, r in model_only.iterrows():
+        minutes_q50 = _clean_optional_float(r.get("minutes_q50"))
+        minutes_mean = _clean_optional_float(r.get("minutes_mean"))
+        if minutes_mean is None:
+            minutes_mean = minutes_q50
+        p_inactive_used = _clean_optional_float(r.get("p_inactive_used"))
+        if p_inactive_used is None:
+            p_inactive_used = 0.0
+        role_source = _clean_optional_meta(r.get("role_source")) or ROLE_SOURCE_UNKNOWN
+        cal_source = _derive_cal_source(r) or "phase8_pmf_cal"
         pmf = _pmf_to_array(r.get("pmf_json"))
         smry = _pmf_summary(pmf)
         role = r.get("role_bucket")
@@ -1030,11 +1039,11 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                 else "phase8_role_aware_pmf_cal_v1"
             ),
             "role_bucket": role,
-            "role_source": _clean_optional_meta(r.get("role_source")),
-            "minutes_mean": _clean_optional_float(r.get("minutes_mean")),
-            "minutes_q50": _clean_optional_float(r.get("minutes_q50")),
-            "p_inactive_used": _clean_optional_float(r.get("p_inactive_used")),
-            "cal_source": _derive_cal_source(r),
+            "role_source": role_source,
+            "minutes_mean": minutes_mean,
+            "minutes_q50": minutes_q50,
+            "p_inactive_used": p_inactive_used,
+            "cal_source": cal_source,
             "mean": smry["mean"], "median": smry["median"],
             "mode": smry["mode"], "p0": smry["p0"],
             **{f"p_ge_{k}": smry[f"p_ge_{k}"] for k in P_GE_LADDER},

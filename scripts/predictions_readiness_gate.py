@@ -139,8 +139,12 @@ def _hard_fail(token: str, date: str, mode: str, detail: str = "") -> int:
     return 1
 
 
-def _run_predict_py(date: str) -> tuple[int, str]:
-    """Invoke scripts/predict.py and stream its output. Return (rc, tail)."""
+def _run_predict_py(date: str) -> tuple[int, str, bool]:
+    """Invoke scripts/predict.py and stream its output.
+
+    Returns:
+        (return_code, tail, no_games_hint)
+    """
     cmd = [
         sys.executable,
         str(REPO_ROOT / "scripts" / "predict.py"),
@@ -158,7 +162,7 @@ def _run_predict_py(date: str) -> tuple[int, str]:
             timeout=45 * 60,
         )
     except subprocess.TimeoutExpired as exc:
-        return 124, f"predict.py timed out after {exc.timeout}s"
+        return 124, f"predict.py timed out after {exc.timeout}s", False
     # Echo predict.py output verbatim so the operator audit trail in CI
     # captures everything (per Phase 13AM hard rule: surface stdout/stderr
     # when predict fails).
@@ -168,9 +172,11 @@ def _run_predict_py(date: str) -> tuple[int, str]:
         sys.stderr.write(proc.stderr)
     sys.stdout.flush()
     sys.stderr.flush()
+    combined = f"{proc.stdout or ''}\n{proc.stderr or ''}"
     tail_src = proc.stderr or proc.stdout or ""
     tail = "\n".join(tail_src.splitlines()[-25:])
-    return proc.returncode, tail
+    no_games_hint = ("No games today." in combined) or ("no_games_slate" in combined)
+    return proc.returncode, tail, no_games_hint
 
 
 def _run_verifier(date: str) -> int:
@@ -318,7 +324,7 @@ def main() -> int:
         "::warning::predictions missing and predict cron should have fired; "
         f"invoking predict.py for slate={date} mode={mode}"
     )
-    rc, tail = _run_predict_py(date)
+    rc, tail, no_games_hint = _run_predict_py(date)
     if rc != 0:
         return _hard_fail(
             "PREDICT_PY_FAILED",
@@ -329,6 +335,10 @@ def main() -> int:
 
     still_missing = _missing(date)
     if still_missing:
+        # Some mainline predict.py versions log "No games today." and exit 0
+        # without writing dated artifacts. Treat this as a valid no-game skip.
+        if no_games_hint or _is_no_game_slate(date):
+            return _valid_skip(date, mode, reason="no_games_slate_after_predict")
         return _hard_fail(
             "PREDICT_OUTPUTS_MISSING",
             date,
