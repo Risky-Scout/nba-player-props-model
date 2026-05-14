@@ -63,6 +63,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from nba_props_model.data.bdl_client import get_games
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PREDICTIONS_DIR = REPO_ROOT / "predictions"
 
@@ -100,6 +102,19 @@ def _now_utc() -> _dt.datetime:
 
 def _emit(line: str) -> None:
     print(line, flush=True)
+
+
+def _is_no_game_slate(date: str) -> bool:
+    """Return True when BDL reports no games for the target slate date."""
+    try:
+        games = get_games(date)
+        return len(games) == 0
+    except Exception as exc:
+        _emit(
+            "::notice::no-game slate precheck unavailable; "
+            f"continuing with readiness checks detail={exc}"
+        )
+        return False
 
 
 def _proceed(date: str, mode: str) -> int:
@@ -215,6 +230,9 @@ def main() -> int:
 
     date = args.date
     mode = args.mode
+
+    if _is_no_game_slate(date):
+        return _valid_skip(date, mode, reason="no_games_slate")
 
     missing = _missing(date)
     if not missing:
