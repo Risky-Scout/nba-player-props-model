@@ -27,11 +27,11 @@ from typing import Optional
 EARLY_TOLERANCE_MIN = 6   # legacy fallback for current_live / unknown types
 LATE_TOLERANCE_MIN = 6
 T_MINUS_25_OFFSET_MIN = 25
-CLOSE_LOCK_OFFSET_MIN = 5
+CLOSE_LOCK_OFFSET_MIN = 6
 
 # Per-snapshot-type firing tolerances (spec Part J):
 #   t_minus_25 must fire 20-30 min before tip  -> +/-5 around target=(tip-25)
-#   close_lock must fire  2- 8 min before tip  -> +/-3 around target=(tip-5)
+#   close_lock must fire  3- 9 min before tip  -> +/-3 around target=(tip-6)
 TOLERANCES_BY_TYPE = {
     "t_minus_25": (5, 5),
     "close_lock": (3, 3),

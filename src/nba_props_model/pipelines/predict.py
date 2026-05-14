@@ -536,6 +536,55 @@ def save_all_props_snapshot(rows: list, target_date: str):
         logger.warning(f"Parquet save failed ({e}); wrote {fallback} instead")
 
 
+def write_no_game_outputs(target_date: str) -> None:
+    """Emit explicit no-game artifacts so downstream jobs can valid-skip."""
+    reason = "no_games_slate"
+
+    # Keep parquet schema minimally compatible with downstream verifiers.
+    all_props_path = PRED_DIR / f"all_props_{target_date}.parquet"
+    empty_cols = ["player_id", "stat", "line", "model_prob", "pmf", "game_id"]
+    pd.DataFrame(columns=empty_cols).to_parquet(all_props_path, index=False)
+
+    generated_at = datetime.utcnow().isoformat()
+    singles_out = {
+        "date": target_date,
+        "generated_at": generated_at,
+        "version": "2026-03-17-v13",
+        "total_picks": 0,
+        "picks": [],
+        "reason": reason,
+    }
+    with open(PRED_DIR / f"singles_{target_date}.json", "w") as f:
+        json.dump(singles_out, f, indent=2, default=str)
+
+    pmf_display = {
+        "date": target_date,
+        "generated_at": generated_at,
+        "props": [],
+        "reason": reason,
+    }
+    with open(PRED_DIR / f"pmf_display_{target_date}.json", "w") as f:
+        json.dump(pmf_display, f, indent=2, default=str)
+
+    sgps_out = {
+        "date": target_date,
+        "generated_at": generated_at,
+        "version": "2026-03-17-v13",
+        "two_leg": 0,
+        "three_leg": 0,
+        "sgps": [],
+        "reason": reason,
+    }
+    with open(PRED_DIR / f"sgps_{target_date}.json", "w") as f:
+        json.dump(sgps_out, f, indent=2, default=str)
+
+    logger.info(
+        "No-game slate artifacts written for %s (reason=%s)",
+        target_date,
+        reason,
+    )
+
+
 # ── Console summary ────────────────────────────────────────────────────────────
 
 def print_singles_summary(picks: list):
@@ -987,7 +1036,8 @@ def main(argv=None):
     logger.info(f"Fetching today's games ({target_date})...")
     games = get_games(start_date=target_date, end_date=target_date)
     if not games:
-        logger.warning("No games today.")
+        logger.info("No games today.")
+        write_no_game_outputs(target_date)
         return 0
     # Phase 13M-bis: filter slate to one game in Derek live-snapshot mode.
     if derek and derek_game_id_filter:

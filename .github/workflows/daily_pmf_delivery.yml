@@ -476,6 +476,7 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode woo_afternoon_refresh \
             --regions us us2 \
+            --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
@@ -640,6 +641,7 @@ jobs:
             --date $DATE \
             --mode derek_near_lineup \
             --regions us us2 \
+            --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
 
@@ -815,6 +817,7 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode close_lock \
             --regions us us2 \
+            --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
@@ -1019,7 +1022,7 @@ jobs:
         run: |
           python scripts/build_rolling_market_benchmark.py \
             --as-of-date ${{ steps.d.outputs.date }} \
-            --window-days 28 || echo "::warning::rolling market benchmark insufficient_sample"
+            --window-days 28 || echo "::notice::rolling market benchmark insufficient_sample"
       - name: Phase 13AA — PMF variance experience study (non-blocking)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         # Runs after after-game scoring so settled outcomes are joined.
@@ -1032,10 +1035,10 @@ jobs:
             --as-of-date ${{ steps.d.outputs.date }} \
             --lookback-days 60 \
             --min-bucket-n 30 || \
-            echo "::warning::pmf variance experience study insufficient_sample_or_missing_inputs"
+            echo "::notice::pmf variance experience study insufficient_sample_or_missing_inputs"
           python scripts/verify_pmf_variance_experience_study.py \
             --as-of-date ${{ steps.d.outputs.date }} || \
-            echo "::warning::pmf variance experience verifier WARN/FAILED — see step log"
+            echo "::notice::pmf variance experience verifier WARN/FAILED — see step log"
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |

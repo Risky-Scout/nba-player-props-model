@@ -42,10 +42,10 @@ DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PRED_DIR = REPO_ROOT / "predictions"
 DISPATCH_DIR = REPO_ROOT / "artifacts" / "derek_live_snapshots"
 
-# Execution windows per spec Part J. close_lock uses -5 minutes from tip
+# Execution windows per spec Part J. close_lock uses -6 minutes from tip
 # to absorb GitHub Actions runner latency.
 T_MINUS_25_OFFSET_MIN = 25
-CLOSE_LOCK_OFFSET_MIN = 5
+CLOSE_LOCK_OFFSET_MIN = 6
 T_MINUS_25_WINDOW = (-5, 7)        # (target - 5min, target + 7min)
 CLOSE_LOCK_WINDOW = (-5, -1)       # (target - 5min, target - 1min) i.e. tip-10 to tip-6
 

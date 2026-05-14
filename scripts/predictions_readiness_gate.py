@@ -65,6 +65,10 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PREDICTIONS_DIR = REPO_ROOT / "predictions"
+_SRC = REPO_ROOT / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+from nba_props_model.data.bdl_client import get_games
 
 
 def _emit_github_output(key: str, value: str) -> None:
@@ -100,6 +104,16 @@ def _now_utc() -> _dt.datetime:
 
 def _emit(line: str) -> None:
     print(line, flush=True)
+
+
+def _is_no_game_slate(date: str) -> bool | None:
+    """Return True when BDL has no games for date; None if indeterminate."""
+    try:
+        games = get_games(start_date=date, end_date=date)
+        return len(games) == 0
+    except Exception as exc:
+        _emit(f"[gate] could not verify slate game count: {type(exc).__name__}: {exc}")
+        return None
 
 
 def _proceed(date: str, mode: str) -> int:
@@ -217,6 +231,9 @@ def main() -> int:
     mode = args.mode
 
     missing = _missing(date)
+    no_games = _is_no_game_slate(date)
+    if no_games is True:
+        return _valid_skip(date, mode, reason="no_games_slate")
     if not missing:
         # Predictions exist — refresh nba_props_today.json from the dated
         # artifacts, then verify them before proceeding so we never hand

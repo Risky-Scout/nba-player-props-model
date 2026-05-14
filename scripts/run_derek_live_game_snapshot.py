@@ -80,11 +80,10 @@ PRED_DIR = REPO_ROOT / "predictions"
 PREDICT_SCRIPT = REPO_ROOT / "scripts" / "predict.py"
 
 # Per-snapshot offset from game_start_time. close_lock is conservative at
-# 5 minutes pre-tip to absorb GitHub Actions runner latency; if the runner
-# is reliably faster, an operator can lower this to 2 minutes.
+# 6 minutes pre-tip to absorb GitHub Actions runner latency.
 SNAPSHOT_OFFSETS_MINUTES = {
     "t_minus_25": 25,
-    "close_lock": 5,
+    "close_lock": 6,
     # current_live snapshots stamp snapshot_target_time_utc =
     # actual_run_started_at_utc; the offset is treated as 0 for the
     # manifest's offset calculation and the verifier accepts it.
@@ -1096,7 +1095,7 @@ def _write_phase13w_human_readable_reports(*, out_root: Path, sub,
     snapshot_type_label = {
         "current_live": "current_live  (best-available pre-tip baseline)",
         "t_minus_25": "t_minus_25  (~25 minutes before tip)",
-        "close_lock": "close_lock  (~5 minutes before tip)",
+        "close_lock": "close_lock  (~6 minutes before tip)",
     }.get(snapshot_type, snapshot_type)
 
     lineup_confirmed = bool(manifest.get("lineup_confirmed"))
@@ -1523,23 +1522,11 @@ def _build_snapshot_manifest(*,
     # on disk — does not count as recomputation and the manifest must not
     # claim it does. Snapshot_mode disambiguates the path.
     pmfs_recomputed = invoked_predict_ok
-    current_live_canonical_reuse = bool(
-        predict_info.get("current_live_canonical_reuse")
-    )
     if allow_backfill:
         snapshot_mode = "backfill_demo"
-    elif snapshot_type == "current_live":
-        snapshot_mode = "production_live_current"
-        # Phase 13U: contextual PMF engine re-scored the canonical
-        # predictions for this game inside _apply_contextual_scoring
-        # below, so we honestly mark pmfs_recomputed=True with a
-        # current-live-specific source string the verifier accepts.
-        pmfs_recomputed = True
     else:
         snapshot_mode = "production_live"
-    if snapshot_mode == "production_live_current" and current_live_canonical_reuse:
-        pmf_source = "live_snapshot_recomputed_canonical_current"
-    elif pmfs_recomputed:
+    if pmfs_recomputed:
         pmf_source = "live_snapshot_recomputed"
     elif backfill_reused:
         pmf_source = "live_snapshot_reused_canonical"
@@ -2060,24 +2047,14 @@ def main(argv: list[str] | None = None) -> int:
     # Ensure fresh predictions. Two modes:
     #   - backfill_demo (--allow-backfill-test): reuse canonical
     #     predictions/all_props_<date>.parquet, then filter to game.
-    #   - production_live: invoke predict.py with --derek-live-snapshot and
-    #     consume the per-snapshot derek_live_predictions.parquet directly.
+    #   - production_live (includes current_live/t_minus_25/close_lock):
+    #     invoke predict.py with --derek-live-snapshot and consume the
+    #     per-snapshot derek_live_predictions.parquet directly.
     out_root_pre = (
         DELIVERIES_DIR / args.delivery_date / "derek_game_snapshots"
         / str(args.game_id) / args.snapshot_type
     )
-    if args.allow_backfill_test or args.snapshot_type == "current_live":
-        # Phase 13U — current_live snapshots reuse the canonical
-        # predictions/all_props_<date>.parquet (it carries Phase 13S
-        # contextual columns + the game_start_time enrichment) and
-        # apply the contextual scoring overlay below. We do NOT
-        # re-invoke predict.py for current_live because the canonical
-        # slate already reflects today's odds + lineup state at the
-        # moment it was built; calling predict.py again would require
-        # full BDL/Odds upstream refresh that may not be available
-        # mid-day. The snapshot's ``snapshot_mode`` is set to
-        # ``production_live_current`` upstream so consumers can tell
-        # this from the strict T-25 / close-lock production_live runs.
+    if args.allow_backfill_test:
         parquet, predict_info = _ensure_fresh_predictions(
             target_date=args.delivery_date,
             run_started_at=run_started,
@@ -2094,10 +2071,6 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  reason: filter_to_game_failed:{exc}", file=sys.stderr)
             return 1
         lineup_integration_summary = None
-        # Tag the predict_info so downstream manifest fields can record
-        # canonical-current-live provenance honestly.
-        if args.snapshot_type == "current_live" and not args.allow_backfill_test:
-            predict_info["current_live_canonical_reuse"] = True
     else:
         # Production-live: invoke predict.py with Derek live args.
         out_root_pre.mkdir(parents=True, exist_ok=True)

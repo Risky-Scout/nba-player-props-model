@@ -134,6 +134,13 @@ jobs:
           SKIP_SGPS: "1"
         run: python scripts/predict.py
 
+      - name: Fetch morning lineup baseline for all slate games
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          DATE=$(TZ=America/New_York date +%Y-%m-%d)
+          python3 scripts/fetch_morning_projected_lineups.py --delivery-date "$DATE"
+
       # HARD FAIL: all 4 prediction files must exist non-empty or the whole job fails visibly.
       # predict.py writes sgps_*.json even when SKIP_SGPS=1 (empty sgps array), so the
       # check is unconditional.
@@ -154,10 +161,14 @@ jobs:
             exit 1
           fi
           COUNT=$(python3 -c "import json; d=json.load(open('predictions/singles_${DATE}.json')); print(len(d.get('picks',d.get('singles',[]))))")
-          echo "Predictions written: $COUNT picks"
-          if [ "$COUNT" -eq "0" ]; then
+          REASON=$(python3 -c "import json; d=json.load(open('predictions/singles_${DATE}.json')); print(d.get('reason',''))")
+          echo "Predictions written: $COUNT picks  reason=${REASON:-none}"
+          if [ "$COUNT" -eq "0" ] && [ "$REASON" != "no_games_slate" ]; then
             echo "::error::0 picks written - check API keys and model files"
             exit 1
+          fi
+          if [ "$COUNT" -eq "0" ] && [ "$REASON" = "no_games_slate" ]; then
+            echo "::notice::No-game slate detected; prediction artifacts are intentional empty outputs."
           fi
 
       # Phase 13U Part D: enrich predictions parquet with game_start_time
@@ -226,7 +237,7 @@ jobs:
                      || TZ=America/New_York date -v-1d +%Y-%m-%d)
           python3 scripts/verify_player_game_stats_freshness.py \
             --required-through-date "$PREV_DAY" || \
-            echo "::warning::player_game_stats stale through $PREV_DAY — training/scoring blocked until BDL backfills"
+            echo "::notice::player_game_stats stale through $PREV_DAY — training/scoring blocked until BDL backfills"
 
       # Phase 13AH: publish the morning WoO snapshot, score the previous-
       # day's WoO predictions against settled outcomes, and run the full
@@ -244,7 +255,7 @@ jobs:
         run: |
           DATE=$(TZ=America/New_York date +%Y-%m-%d)
           python3 scripts/verify_woo_snapshot_outputs.py --date "$DATE" || \
-            echo "::warning::WoO t_minus_25/close_lock snapshots pending until tip — see step log"
+            echo "::notice::WoO t_minus_25/close_lock snapshots pending until tip — see step log"
 
       - name: Score corrected WoO PMF delivery after game (Phase 13AH)
         continue-on-error: true
@@ -254,7 +265,7 @@ jobs:
           CLOSE_SNAPSHOT="deliveries/${PREV_DAY}/wizard_of_odds/market_comparison.parquet"
 
           if [ ! -f "$CLOSE_SNAPSHOT" ]; then
-            echo "::warning::Corrected WoO market comparison missing for $PREV_DAY: $CLOSE_SNAPSHOT"
+            echo "::notice::Corrected WoO market comparison missing for $PREV_DAY: $CLOSE_SNAPSHOT"
             exit 0
           fi
 

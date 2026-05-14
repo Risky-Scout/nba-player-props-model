@@ -65,6 +65,7 @@ from nba_props_model.delivery.delivery_contract import (  # noqa: E402
     PIPELINE_MODE_BY_RUN_MODE,
     RunMode,
 )
+from nba_props_model.data.bdl_client import get_games  # noqa: E402
 
 # Phase 12D — first publishable scheduled run is at earliest tipoff − 35
 # minutes (default 22:25 UTC during NBA playoffs). Refreshes fire every
@@ -98,6 +99,7 @@ DIAGNOSE_MARKET_SUPERIORITY = REPO_ROOT / "scripts" / "diagnose_market_superiori
 VERIFY_RA_ROLE_CALIBRATION = REPO_ROOT / "scripts" / "verify_ra_role_calibration_contract.py"
 VERIFY_COMBO_ROLE_CALIBRATION = REPO_ROOT / "scripts" / "verify_combo_role_calibration_contract.py"
 AUDIT_DAILY_DELIVERY = REPO_ROOT / "scripts" / "audit_daily_delivery_completeness.py"
+AUDIT_DELIVERY_CLEANLINESS_HARD = REPO_ROOT / "scripts" / "audit_delivery_cleanliness_hard.py"
 VERIFY_DEREK_CONTRACT = REPO_ROOT / "scripts" / "verify_derek_forward_feed_contract.py"
 AUDIT_INJURY_LINEUP = REPO_ROOT / "scripts" / "audit_injury_lineup_run_modes.py"
 AUDIT_GITHUB_AUTOMATION = REPO_ROOT / "scripts" / "audit_github_delivery_automation.py"
@@ -456,6 +458,12 @@ def _check_tipoff_window(
     schedule is the primary timing control."""
     if force:
         return True, "force-run override"
+    try:
+        slate_games = get_games(start_date=date, end_date=date)
+        if not slate_games:
+            return False, f"no games scheduled for {date}"
+    except Exception as e:  # pragma: no cover — defensive
+        print(f"  [gate] could not verify BDL slate games: {e!r}")
     # WoO monetization runs and morning backfills are scheduled at fixed
     # clock times; they're intentionally allowed to fire ahead of any
     # game's tipoff. Only Derek's near-lineup / close-lock evaluation
@@ -572,6 +580,19 @@ def _verify_m88_delivery_bundle(
         (
             "verify_derek_forward_feed_contract",
             [PYTHON, str(VERIFY_DEREK_CONTRACT), "--date", date],
+        ),
+        (
+            "audit_delivery_cleanliness_hard",
+            [
+                PYTHON,
+                str(AUDIT_DELIVERY_CLEANLINESS_HARD),
+                "--start-date",
+                date,
+                "--end-date",
+                date,
+                "--out-dir",
+                str(REPO_ROOT / "artifacts" / "model_diagnostics" / "delivery_cleanliness_hard_last_run"),
+            ],
         ),
         (
             "audit_injury_lineup_run_modes",

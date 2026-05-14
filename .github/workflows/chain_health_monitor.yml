@@ -83,7 +83,7 @@ jobs:
               success|skipped)
                 ;;
               in_progress)
-                echo "::warning::$wf still running (run $RUN_ID) — monitor fired before chain completed"
+                echo "::notice::$wf still running (run $RUN_ID) — monitor fired before chain completed"
                 ;;
               *)
                 echo "::error::$wf most recent run conclusion=$CONCLUSION (run $RUN_ID)"
