@@ -188,10 +188,25 @@ jobs:
       - name: Verify corrected PMF delivery contract
         id: verify_corrected_pmf_delivery
         run: |
-          if [ -s "deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet" ]; then
-            python scripts/verify_corrected_pmf_delivery.py \
-              --date ${{ steps.d.outputs.date }} \
-              --skip-derek-snapshots
+          PMF_PATH="deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet"
+          if [ -s "$PMF_PATH" ]; then
+            ROWS=$(python3 - <<'PY'
+import pandas as pd
+from pathlib import Path
+p = Path("deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet")
+try:
+    print(len(pd.read_parquet(p)))
+except Exception:
+    print(-1)
+PY
+)
+            if [ "$ROWS" = "0" ]; then
+              echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=${{ steps.d.outputs.date }} reason=no_games_empty_full_pmfs_wide"
+            else
+              python scripts/verify_corrected_pmf_delivery.py \
+                --date ${{ steps.d.outputs.date }} \
+                --skip-derek-snapshots
+            fi
           else
             echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=${{ steps.d.outputs.date }} reason=missing_full_pmfs_wide"
           fi
