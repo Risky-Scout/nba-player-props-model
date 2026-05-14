@@ -130,7 +130,12 @@ def build_injury_lineup_features(repo_root: Path, date: str, run_mode: RunMode) 
     base["unavailable_reason"] = ""
     base.loc[base["availability_status"].isna(), "unavailable_reason"] = "source_unavailable"
     if run_mode in (RunMode.T25, RunMode.T5) and not official_available:
-        base["unavailable_reason"] = base["unavailable_reason"].replace("", "official_lineup_not_available_yet")
+        has_reason = base["unavailable_reason"].astype(str).str.strip() != ""
+        base.loc[~has_reason, "unavailable_reason"] = "official_lineup_not_available_yet"
+        base.loc[has_reason, "unavailable_reason"] = (
+            base.loc[has_reason, "unavailable_reason"].astype(str).str.strip()
+            + ";official_lineup_not_available_yet"
+        )
     base["expected_lineup_mislabeled_as_official_flag"] = False
     base["official_lineup_source"] = str(lineup_blob.get("official_lineup_source") or ("source_unavailable" if not official_available else "official_lineup_feed"))
     base["injury_source"] = base["availability_source"].fillna("source_unavailable")

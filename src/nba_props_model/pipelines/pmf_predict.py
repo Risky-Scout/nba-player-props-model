@@ -179,6 +179,7 @@ def build_prop_pmfs(
     #     against the calibrator but does NOT capture true stl/blk
     #     correlation. Stocks correlation quality is an open M8.6/M9
     #     item.
+    no_artifacts_mode = len(out) == 0
     try:
         joint = simulate_joint_stat_samples(
             minutes_dist=minutes_dist,
@@ -188,6 +189,8 @@ def build_prop_pmfs(
             fg3m_hurdle_model=fg3m_hurdle_model,
         )
     except Exception as e:
+        if no_artifacts_mode:
+            return out
         raise RuntimeError(
             f"M8.5: simulate_joint_stat_samples failed: "
             f"{type(e).__name__}: {e}. Production combo emission "
@@ -196,6 +199,8 @@ def build_prop_pmfs(
             f"train/serve skew)."
         )
     if joint is None:
+        if no_artifacts_mode:
+            return out
         raise RuntimeError(
             "M8.5: simulate_joint_stat_samples returned None. "
             "Production mission combo emission requires joint samples; "
