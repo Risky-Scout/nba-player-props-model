@@ -656,6 +656,23 @@ jobs:
             --allow-missing after_game_scoring
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
+      - name: M8.8 delivery + Derek contract audits (strict for t25)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/audit_daily_delivery_completeness.py \
+            --start-date "$D" --end-date "$D" \
+            --include-current-if-present \
+            --out-dir artifacts/model_diagnostics/daily_delivery_completeness \
+            --run-mode t25
+          python3 scripts/verify_derek_forward_feed_contract.py --date "$D"
+          PREV=$(python3 -c "import datetime as d; print((d.date.fromisoformat('${{ steps.d.outputs.date }}')-d.timedelta(days=1)).isoformat())")
+          python3 scripts/audit_injury_lineup_run_modes.py \
+            --date "$D" \
+            --latest-completed-date "$PREV"
+          python3 scripts/audit_github_delivery_automation.py
 
       # Phase 13AJ: enforce the near-lineup contract — predictions
       # parquet present, near-lineup output produced, no UTC/ET date
@@ -810,6 +827,21 @@ jobs:
             --allow-missing after_game_scoring
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
+      - name: M8.8 delivery + Derek contract audits (strict for t5)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          PYTHONPATH: src
+        run: |
+          D="${{ steps.d.outputs.date }}"
+          python3 scripts/audit_daily_delivery_completeness.py \
+            --start-date "$D" --end-date "$D" \
+            --include-current-if-present \
+            --out-dir artifacts/model_diagnostics/daily_delivery_completeness \
+            --run-mode t5
+          python3 scripts/verify_derek_forward_feed_contract.py --date "$D"
+          PREV=$(python3 -c "import datetime as d; print((d.date.fromisoformat('${{ steps.d.outputs.date }}')-d.timedelta(days=1)).isoformat())")
+          python3 scripts/audit_injury_lineup_run_modes.py --date "$D" --latest-completed-date "$PREV"
+          python3 scripts/audit_github_delivery_automation.py
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |

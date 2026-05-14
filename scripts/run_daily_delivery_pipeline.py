@@ -12,13 +12,13 @@ Modes
 -----
     woo_morning_monetization   first WoO public run of the day. Refresh inputs,
                                build canonical delivery (snapshot=morning), build
+                               Derek morning forward feed (expected-lineup stamp),
                                public WoO export with snapshot_type_label=
                                woo_morning_monetization and finality_status_override=
-                               PROVISIONAL_EARLY_MARKET, refresh index. Never
-                               touches Derek's evaluation feed.
+                               PROVISIONAL_EARLY_MARKET, refresh index.
     woo_afternoon_refresh      mid-afternoon WoO public refresh. Same as above
                                but with snapshot=pre_close and snapshot_type_label=
-                               woo_afternoon_refresh. Never touches Derek's feed.
+                               woo_afternoon_refresh. Never builds Derek forward feed.
     derek_near_lineup          Derek's first evaluation-grade snapshot. Refresh
                                inputs, build delivery (snapshot=pre_close), build
                                Derek forward feed (--snapshot lineup), refresh
@@ -57,6 +57,14 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PYTHON = sys.executable
+_SRC = REPO_ROOT / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
+from nba_props_model.delivery.delivery_contract import (  # noqa: E402
+    PIPELINE_MODE_BY_RUN_MODE,
+    RunMode,
+)
 
 # Phase 12D — first publishable scheduled run is at earliest tipoff − 35
 # minutes (default 22:25 UTC during NBA playoffs). Refreshes fire every
@@ -89,13 +97,19 @@ BUILD_STAT_ROLE_SUPERIORITY = REPO_ROOT / "scripts" / "build_stat_role_market_su
 DIAGNOSE_MARKET_SUPERIORITY = REPO_ROOT / "scripts" / "diagnose_market_superiority_failures.py"
 VERIFY_RA_ROLE_CALIBRATION = REPO_ROOT / "scripts" / "verify_ra_role_calibration_contract.py"
 VERIFY_COMBO_ROLE_CALIBRATION = REPO_ROOT / "scripts" / "verify_combo_role_calibration_contract.py"
+AUDIT_DAILY_DELIVERY = REPO_ROOT / "scripts" / "audit_daily_delivery_completeness.py"
+VERIFY_DEREK_CONTRACT = REPO_ROOT / "scripts" / "verify_derek_forward_feed_contract.py"
+AUDIT_INJURY_LINEUP = REPO_ROOT / "scripts" / "audit_injury_lineup_run_modes.py"
+AUDIT_GITHUB_AUTOMATION = REPO_ROOT / "scripts" / "audit_github_delivery_automation.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
     """Inherit stdout/stderr so subprocess output is visible in CI logs.
     Returns the exit code; raises on non-zero unless allow_fail."""
     print(f"\n[$] {label or ' '.join(cmd)}")
-    res = subprocess.run(cmd, cwd=str(REPO_ROOT))
+    env = os.environ.copy()
+    env.setdefault("PYTHONPATH", str(REPO_ROOT / "src"))
+    res = subprocess.run(cmd, cwd=str(REPO_ROOT), env=env)
     if res.returncode != 0 and not allow_fail:
         sys.exit(f"FATAL: step exited {res.returncode}: {label or cmd[0]}")
     return int(res.returncode)
@@ -265,7 +279,7 @@ def _ensure_after_game_scoring_pending_placeholder(date: str) -> None:
     )
 
 
-def _derek_feed(date: str, *, snapshot: str) -> int:
+def _derek_feed(date: str, *, snapshot: str, run_mode_stamp: str | None = None) -> int:
     """Phase 12C: build Derek's forward-looking PMF feed for the date.
 
     `morning` snapshot is built whenever the canonical model_only.parquet
@@ -275,6 +289,8 @@ def _derek_feed(date: str, *, snapshot: str) -> int:
     if not DEREK_FEED.exists():
         return 0
     cmd = [PYTHON, str(DEREK_FEED), "--date", date, "--snapshot", snapshot]
+    if run_mode_stamp:
+        cmd.extend(["--run-mode", run_mode_stamp])
     return _run(cmd, allow_fail=True, label=f"derek forward feed ({snapshot})")
 
 
@@ -450,6 +466,122 @@ def _check_tipoff_window(
     )
 
 
+# ── M8.8 verification + run-mode resolution ───────────────────────────────
+
+
+LEGACY_MODE_TO_RUN_STAMP: dict[str, str] = {
+    "woo_morning_monetization": "morning_expected",
+    "woo_afternoon_refresh": "morning_expected",
+    "derek_near_lineup": "t25",
+    "pre_close": "t25",
+    "close_lock": "t5",
+    "after_game": "final_after_game",
+    "morning": "morning_expected",
+    "full_day": "unspecified",
+}
+
+
+def _predictions_or_stat_grid_exists(date: str) -> bool:
+    p1 = REPO_ROOT / "predictions" / f"all_props_{date}.parquet"
+    p2 = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+    return p1.is_file() or p2.is_file()
+
+
+def _resolve_internal_pipeline_mode(args: argparse.Namespace) -> str:
+    if getattr(args, "run_mode", None):
+        return PIPELINE_MODE_BY_RUN_MODE[RunMode(args.run_mode)]
+    m = getattr(args, "mode", None)
+    if not m:
+        sys.exit("FATAL: internal mode unresolved")
+    return str(m)
+
+
+def _resolve_run_mode_stamp(args: argparse.Namespace) -> str:
+    if getattr(args, "run_mode", None):
+        return str(args.run_mode)
+    m = getattr(args, "mode", None)
+    if m:
+        return LEGACY_MODE_TO_RUN_STAMP.get(str(m), "unspecified")
+    return "unspecified"
+
+
+def _same_day_source_inputs_ok(date: str) -> tuple[bool, list[str]]:
+    miss: list[str] = []
+    canon = _canonical_model_only_path(date)
+    if not canon.is_file():
+        miss.append(str(canon.relative_to(REPO_ROOT)))
+    if not _predictions_or_stat_grid_exists(date):
+        miss.append("predictions/all_props_<date>.parquet_or_stat_grid_<date>.parquet")
+    return (len(miss) == 0), miss
+
+
+def _verify_m88_delivery_bundle(
+    date: str,
+    run_stamp: str,
+    *,
+    fail_on_missing: bool,
+) -> int:
+    """Run delivery completeness + Derek contract + injury-lineup + GitHub audits."""
+
+    outd = REPO_ROOT / "artifacts" / "model_diagnostics" / "daily_delivery_completeness_last_run"
+    prev = (datetime.strptime(date, "%Y-%m-%d").date() - timedelta(days=1)).isoformat()
+    steps: list[tuple[str, list[str]]] = [
+        (
+            "audit_daily_delivery_completeness",
+            [
+                PYTHON,
+                str(AUDIT_DAILY_DELIVERY),
+                "--start-date",
+                date,
+                "--end-date",
+                date,
+                "--out-dir",
+                str(outd),
+                "--include-current-if-present",
+                "--run-mode",
+                run_stamp,
+            ],
+        ),
+        (
+            "verify_derek_forward_feed_contract",
+            [PYTHON, str(VERIFY_DEREK_CONTRACT), "--date", date],
+        ),
+        (
+            "audit_injury_lineup_run_modes",
+            [
+                PYTHON,
+                str(AUDIT_INJURY_LINEUP),
+                "--date",
+                date,
+                "--latest-completed-date",
+                prev,
+            ],
+        ),
+        ("audit_github_delivery_automation", [PYTHON, str(AUDIT_GITHUB_AUTOMATION)]),
+    ]
+    worst = 0
+    env = os.environ.copy()
+    env.setdefault("PYTHONPATH", str(REPO_ROOT / "src"))
+    for label, cmd in steps:
+        if not Path(cmd[1]).exists():
+            print(f"  [verify] skip missing script {cmd[1]}")
+            continue
+        print(f"\n[$] {label}")
+        rc = subprocess.run(cmd, cwd=str(REPO_ROOT), env=env).returncode
+        worst = max(worst, int(rc))
+    if run_stamp == "morning_expected":
+        ok, miss = _same_day_source_inputs_ok(date)
+        if not ok:
+            print("SAME_DAY_SOURCE_INPUTS_MISSING")
+            for m in miss:
+                print(f"  - {m}")
+            if fail_on_missing:
+                return max(worst, 3)
+    if worst != 0 and fail_on_missing:
+        sys.exit(worst)
+    return worst
+
+
 # ── Mode dispatchers ──────────────────────────────────────────────────────
 
 
@@ -467,7 +599,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
-    _derek_feed(date, snapshot="morning")
+    _derek_feed(date, snapshot="morning", run_mode_stamp="morning_expected")
     _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
@@ -492,6 +624,8 @@ def run_woo_morning_monetization(
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
+    _derek_feed(date, snapshot="morning", run_mode_stamp="morning_expected")
+    _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
     _woo_export(
         snapshot_type_label="woo_morning_monetization",
         finality_status_override="PROVISIONAL_EARLY_MARKET",
@@ -522,6 +656,7 @@ def run_woo_afternoon_refresh(
         finality_status_override="PROVISIONAL_EARLY_MARKET",
         only_date=date,
     )
+    _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
     return 0
 
@@ -542,7 +677,7 @@ def run_derek_near_lineup(
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
-    _derek_feed(date, snapshot="lineup")
+    _derek_feed(date, snapshot="lineup", run_mode_stamp="t25")
     _derek_game_snapshots_from_delivery(date, snapshot_type="lineup")
     _woo_export(
         snapshot_type_label=None,
@@ -551,6 +686,7 @@ def run_derek_near_lineup(
     )
     _verify_corrected_pmf_delivery(date)
     _m86_event_market_validation_bundle(date)
+    _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
     return 0
 
@@ -563,7 +699,7 @@ def run_close_lock(date: str, *, regions: list[str],
     _stat_grid(date)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
-    _derek_feed(date, snapshot="lineup")
+    _derek_feed(date, snapshot="lineup", run_mode_stamp="t5")
     _derek_game_snapshots_from_delivery(date, snapshot_type="close_lock")
     _woo_export(
         snapshot_type_label=None,
@@ -572,6 +708,7 @@ def run_close_lock(date: str, *, regions: list[str],
     )
     _verify_corrected_pmf_delivery(date)
     _m86_event_market_validation_bundle(date)
+    _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
     return 0
 
@@ -583,7 +720,7 @@ def run_after_game(date: str) -> int:
     # Preserve any existing forward-feed files; rebuild the snapshot
     # pointer so latest_available_snapshot reflects the freshest snapshot
     # on disk. If neither morning nor lineup sources exist this no-ops.
-    _derek_feed(date, snapshot="both")
+    _derek_feed(date, snapshot="both", run_mode_stamp="final_after_game")
     _refresh_index()
     return 0
 
@@ -610,11 +747,14 @@ def run_full_day(date: str, *, regions: list[str],
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--date", required=True,
-                     help="delivery calendar date YYYY-MM-DD (US/Eastern)")
     ap.add_argument(
-        "--mode",
+        "--date",
         required=True,
+        help="delivery calendar date YYYY-MM-DD (US/Eastern)",
+    )
+    mx = ap.add_mutually_exclusive_group(required=True)
+    mx.add_argument(
+        "--mode",
         choices=[
             "woo_morning_monetization",
             "woo_afternoon_refresh",
@@ -622,68 +762,125 @@ def main() -> int:
             "close_lock",
             "after_game",
             "full_day",
-            # legacy aliases
             "morning",
             "pre_close",
         ],
+        help="legacy pipeline mode (Phase 12D)",
+    )
+    mx.add_argument(
+        "--run-mode",
+        dest="run_mode",
+        choices=[m.value for m in RunMode],
+        help="M8.8 consumer run mode (preferred). Maps to internal --mode.",
     )
     ap.add_argument("--regions", nargs="+", default=["us", "us2"])
-    ap.add_argument("--rebuild-canonical", action="store_true",
-                     help="passes through to build_daily_pmf_delivery.py")
-    ap.add_argument("--predict", action="store_true",
-                     help="run scripts/predict.py before refresh in "
-                           "morning / full_day modes (requires BDL_API_KEY)")
-    ap.add_argument("--force-run", action="store_true",
-                     help="bypass the tipoff-window gate (Phase 12D); used "
-                           "for manual backfills outside the lineup window")
+    ap.add_argument(
+        "--rebuild-canonical",
+        action="store_true",
+        help="passes through to build_daily_pmf_delivery.py",
+    )
+    ap.add_argument(
+        "--predict",
+        action="store_true",
+        help="run scripts/predict.py before refresh in morning / full_day modes",
+    )
+    ap.add_argument(
+        "--force-run",
+        action="store_true",
+        help="bypass the tipoff-window gate (Phase 12D)",
+    )
+    ap.add_argument(
+        "--verify",
+        action="store_true",
+        help="run M8.8 delivery completeness + Derek contract + audits after pipeline",
+    )
+    ap.add_argument(
+        "--fail-on-missing-delivery",
+        action="store_true",
+        help="non-zero exit if any verifier fails (implies --verify)",
+    )
     args = ap.parse_args()
+    if args.fail_on_missing_delivery:
+        args.verify = True
+
+    internal = _resolve_internal_pipeline_mode(args)
+    stamp = _resolve_run_mode_stamp(args)
 
     print("=" * 72)
-    print(f"daily delivery pipeline — date={args.date}  mode={args.mode}")
-    print(f"  regions={args.regions}  rebuild_canonical={args.rebuild_canonical}"
-          f"  predict={args.predict}  force_run={args.force_run}")
-    print(f"  started_at_utc={datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')}")
+    print(
+        f"daily delivery pipeline — date={args.date}  internal_mode={internal}  "
+        f"run_mode_stamp={stamp}"
+    )
+    print(
+        f"  regions={args.regions}  rebuild_canonical={args.rebuild_canonical}"
+        f"  predict={args.predict}  force_run={args.force_run}  verify={args.verify}"
+    )
+    print(
+        f"  started_at_utc={datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')}"
+    )
     print("=" * 72)
 
     proceed, reason = _check_tipoff_window(
-        args.date, mode=args.mode, force=args.force_run)
+        args.date, mode=internal, force=args.force_run
+    )
     print(f"[gate] proceed={proceed}  reason={reason}")
     if not proceed:
         print("No games in lineup-refresh window; nothing to publish.")
         return 0
 
-    if args.mode == "morning":
-        return run_morning(args.date, regions=args.regions,
-                            rebuild_canonical=args.rebuild_canonical,
-                            do_predict=args.predict)
-    if args.mode == "woo_morning_monetization":
-        return run_woo_morning_monetization(
-            args.date, regions=args.regions,
+    rc = 0
+    if internal == "morning":
+        rc = run_morning(
+            args.date,
+            regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
             do_predict=args.predict,
         )
-    if args.mode == "woo_afternoon_refresh":
-        return run_woo_afternoon_refresh(
-            args.date, regions=args.regions,
+    elif internal == "woo_morning_monetization":
+        rc = run_woo_morning_monetization(
+            args.date,
+            regions=args.regions,
+            rebuild_canonical=args.rebuild_canonical,
+            do_predict=args.predict,
+        )
+    elif internal == "woo_afternoon_refresh":
+        rc = run_woo_afternoon_refresh(
+            args.date,
+            regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
         )
-    # `pre_close` is retained as an alias for `derek_near_lineup` so
-    # existing CI configs and operators don't break mid-flight.
-    if args.mode in {"derek_near_lineup", "pre_close"}:
-        return run_derek_near_lineup(
-            args.date, regions=args.regions,
+    elif internal in {"derek_near_lineup", "pre_close"}:
+        rc = run_derek_near_lineup(
+            args.date,
+            regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
         )
-    if args.mode == "close_lock":
-        return run_close_lock(args.date, regions=args.regions,
-                                rebuild_canonical=args.rebuild_canonical)
-    if args.mode == "after_game":
-        return run_after_game(args.date)
-    if args.mode == "full_day":
-        return run_full_day(args.date, regions=args.regions,
-                             rebuild_canonical=args.rebuild_canonical,
-                             do_predict=args.predict)
-    return 1
+    elif internal == "close_lock":
+        rc = run_close_lock(
+            args.date,
+            regions=args.regions,
+            rebuild_canonical=args.rebuild_canonical,
+        )
+    elif internal == "after_game":
+        rc = run_after_game(args.date)
+    elif internal == "full_day":
+        rc = run_full_day(
+            args.date,
+            regions=args.regions,
+            rebuild_canonical=args.rebuild_canonical,
+            do_predict=args.predict,
+        )
+    else:
+        return 1
+
+    if args.verify:
+        vrc = _verify_m88_delivery_bundle(
+            args.date,
+            stamp,
+            fail_on_missing=bool(args.fail_on_missing_delivery),
+        )
+        rc = max(rc, vrc)
+    return rc
 
 
 if __name__ == "__main__":
