@@ -1,12 +1,18 @@
 {
+  "calibrated_through_date": "2026-04-30",
+  "calibration_run_id": "nightly-20260501T124701",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "count_diagnostics": {
+    "fair_odds_board": {
+      "fair_over_odds_null_count": 2698,
+      "fair_under_odds_null_count": 2698,
+      "zero_or_one_prob_count": 1742
+    }
+  },
   "delivery_date": "2026-05-15",
-  "pipeline_run_id": "27597c5b-0a41-4570-9b57-940f8d28ed55",
-  "snapshot_type": "morning",
-  "snapshot_time_utc": "2026-05-14T14:37:02Z",
-  "model_version": "8611c657#phase10c",
-  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "phase8_blend_policy": "monotone_inactive_global_v1",
-  "finality_status": "provisional",
   "finality_blocker_codes": [
     "lineup_unconfirmed"
   ],
@@ -17,60 +23,91 @@
       "required_to_resolve": "Regenerate near lock after official lineups are available."
     }
   ],
-  "tov_overlay": "off",
-  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
-  "tov_status": "present",
-  "target_stats": {
-    "expected": [
-      "pts",
-      "reb",
-      "ast",
-      "fg3m",
-      "tov",
-      "stl",
-      "blk",
-      "stocks",
-      "pa",
-      "pr",
-      "ra",
-      "pra"
+  "finality_status": "provisional",
+  "freshness_manifest": {
+    "availability_freshness_status": "fresh",
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betparx",
+      "bovada",
+      "draftkings",
+      "espnbet",
+      "fanatics",
+      "fanduel",
+      "fliff",
+      "hardrockbet",
+      "hardrockbet_az",
+      "hardrockbet_fl",
+      "williamhill_us"
     ],
-    "in_delivery": [
-      "ast",
-      "blk",
-      "fg3m",
-      "pa",
-      "pr",
-      "pra",
-      "pts",
-      "ra",
-      "reb",
-      "stl",
-      "stocks",
-      "tov"
+    "built_at_utc": "2026-05-14T14:33:30Z",
+    "finals_finality_status": "finals_pending",
+    "odds_status": "ok",
+    "overall_status": "not_ready",
+    "path": "data/freshness_manifest/2026-05-15.json",
+    "predictions_mtime_utc": null,
+    "regions_requested": [
+      "us",
+      "us2"
     ],
-    "missing": [],
-    "extra_relative_to_supported": []
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 792
+    },
+    "tov_status": "missing_from_prediction_source"
   },
+  "metadata_stamped_at_utc": "2026-05-14T18:02:08+00:00",
+  "model_source": "champion_pointer",
+  "model_version": "8611c657#phase10c",
+  "no_challenger_artifacts_used": true,
+  "no_odds_fetch": false,
+  "output_generated_at_utc": "2026-05-14T18:02:08+00:00",
+  "phase8_blend_policy": "monotone_inactive_global_v1",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+  "pipeline_run_id": "27597c5b-0a41-4570-9b57-940f8d28ed55",
+  "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+  "quality_rollup": {
+    "calibration_confidence": {
+      "high": 366,
+      "low": 168,
+      "medium": 258
+    },
+    "injury_freshness_status": {
+      "fresh": 792
+    },
+    "lineup_freshness_status": {
+      "projected": 792
+    },
+    "market_coverage_status": {
+      "full": 792
+    },
+    "pmf_sum_error_max": 4.440892098500626e-16,
+    "pmf_valid_ok_pct": 1.0,
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 792
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 16962,
+    "full_pmfs_wide": 792,
+    "market_comparison": 4428,
+    "publishable_edges": 3545
+  },
+  "snapshot_time_utc": "2026-05-14T14:37:02Z",
+  "snapshot_type": "morning",
   "sources": {
-    "model_only_parquet": {
-      "path": "deliveries/2026-05-15/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "mtime_utc": "2026-05-14T14:37:02.419090Z",
-      "sha256": "becc63db9c7af4dabe1829e029de822b9961942b2f1d06a3255cef968836c6ad",
-      "auto_built_from_predictions": true
-    },
-    "predictions_parquet": {
-      "path": "predictions/all_props_2026-05-15.parquet",
-      "mtime_utc": "2026-05-14T14:34:03.419446Z"
-    },
     "availability_table": {
-      "path": "data/player_availability_asof.parquet",
+      "freshness_status": "fresh",
       "mtime_utc": "2026-05-14T14:30:29.800248Z",
-      "freshness_status": "fresh"
+      "path": "data/player_availability_asof.parquet"
+    },
+    "model_only_parquet": {
+      "auto_built_from_predictions": true,
+      "mtime_utc": "2026-05-14T14:37:02.419090Z",
+      "path": "deliveries/2026-05-15/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "sha256": "becc63db9c7af4dabe1829e029de822b9961942b2f1d06a3255cef968836c6ad"
     },
     "odds_snapshot": {
-      "path": "data/odds_api/processed/2026-05-15/odds_pairs_live_slate_morning_7am_2026-05-14T143327Z.parquet",
-      "mtime_utc": "2026-05-14T14:33:30.122740Z",
       "books_seen": [
         "betmgm",
         "betonlineag",
@@ -87,75 +124,53 @@
         "williamhill_us"
       ],
       "coverage_status": "full",
-      "fetch_status": "consumed_from_disk"
+      "fetch_status": "consumed_from_disk",
+      "mtime_utc": "2026-05-14T14:33:30.122740Z",
+      "path": "data/odds_api/processed/2026-05-15/odds_pairs_live_slate_morning_7am_2026-05-14T143327Z.parquet"
+    },
+    "predictions_parquet": {
+      "mtime_utc": "2026-05-14T14:34:03.419446Z",
+      "path": "predictions/all_props_2026-05-15.parquet"
     }
   },
-  "row_counts": {
-    "fair_odds_board": 16962,
-    "full_pmfs_wide": 792,
-    "market_comparison": 4428,
-    "publishable_edges": 3545
-  },
-  "count_diagnostics": {
-    "fair_odds_board": {
-      "fair_over_odds_null_count": 2698,
-      "fair_under_odds_null_count": 2698,
-      "zero_or_one_prob_count": 1742
-    }
-  },
-  "quality_rollup": {
-    "pmf_valid_ok_pct": 1.0,
-    "pmf_sum_error_max": 4.440892098500626e-16,
-    "calibration_confidence": {
-      "high": 366,
-      "medium": 258,
-      "low": 168
-    },
-    "market_coverage_status": {
-      "full": 792
-    },
-    "injury_freshness_status": {
-      "fresh": 792
-    },
-    "lineup_freshness_status": {
-      "projected": 792
-    },
-    "role_freshness_status": {
-      "derived_from_projected_minutes": 792
-    }
-  },
-  "warnings": [],
-  "no_odds_fetch": false,
-  "freshness_manifest": {
-    "path": "data/freshness_manifest/2026-05-15.json",
-    "built_at_utc": "2026-05-14T14:33:30Z",
-    "overall_status": "not_ready",
-    "odds_status": "ok",
-    "regions_requested": [
-      "us",
-      "us2"
+  "stamp_code_commit": "e11f4ed673b1c2727ca2d3c075ce820a0580c3b6",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "tov",
+      "stl",
+      "blk",
+      "stocks",
+      "pa",
+      "pr",
+      "ra",
+      "pra"
     ],
-    "books_seen": [
-      "betmgm",
-      "betonlineag",
-      "betparx",
-      "bovada",
-      "draftkings",
-      "espnbet",
-      "fanatics",
-      "fanduel",
-      "fliff",
-      "hardrockbet",
-      "hardrockbet_az",
-      "hardrockbet_fl",
-      "williamhill_us"
+    "extra_relative_to_supported": [],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "ra",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
     ],
-    "tov_status": "missing_from_prediction_source",
-    "predictions_mtime_utc": null,
-    "availability_freshness_status": "fresh",
-    "finals_finality_status": "finals_pending",
-    "role_freshness_status_rollup": {
-      "derived_from_projected_minutes": 792
-    }
-  }
+    "missing": []
+  },
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "present",
+  "trained_through_date": "2026-04-30",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_run_id": "nightly-20260501T124701",
+  "warnings": []
 }

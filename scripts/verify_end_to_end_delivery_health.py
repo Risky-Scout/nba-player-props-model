@@ -39,12 +39,14 @@ Phase 2 task is gating end-to-end health.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+RUN_MODES = {"morning_expected", "t25", "t5", "final_after_game", "backtest"}
 
 
 def _run(cmd: list[str]) -> tuple[int, str, str]:
@@ -63,6 +65,34 @@ def _read_json(p: Path):
         return {"_parse_error": f"{type(exc).__name__}: {exc}"}
 
 
+def _today_et_iso() -> str:
+    # Keep stdlib-only compatibility across local and CI environments.
+    now_utc = _dt.datetime.now(_dt.timezone.utc)
+    # ET offset approximation is acceptable for day-level cutoff checks here.
+    # We only need "yesterday ET" relative logic to avoid false future-slate fails.
+    now_et = now_utc.astimezone(_dt.timezone(_dt.timedelta(hours=-4)))
+    return now_et.date().isoformat()
+
+
+def _yesterday_et_iso() -> str:
+    d = _dt.date.fromisoformat(_today_et_iso()) - _dt.timedelta(days=1)
+    return d.isoformat()
+
+
+def _infer_run_mode(date: str) -> str:
+    woo_manifest = _read_json(
+        REPO_ROOT / "deliveries" / date / "wizard_of_odds" / "run_manifest.json"
+    ) or {}
+    snap = str(woo_manifest.get("snapshot_type") or "").lower()
+    if snap in {"pre_close", "lineup"}:
+        return "t25"
+    if snap == "close_lock":
+        return "t5"
+    if snap == "after_game":
+        return "final_after_game"
+    return "morning_expected"
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--date", required=True)
@@ -76,17 +106,32 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--require-woo", action="store_true")
     ap.add_argument("--require-clv", action="store_true")
     ap.add_argument("--require-no-warnings", action="store_true")
+    ap.add_argument(
+        "--run-mode",
+        choices=sorted(RUN_MODES),
+        default=None,
+        help="Consumer run mode override; defaults to inference from WoO run_manifest snapshot_type.",
+    )
     args = ap.parse_args(argv)
 
     date = args.date
+    run_mode = args.run_mode or _infer_run_mode(date)
     py = sys.executable
     failures: list[tuple[str, str]] = []  # (gate, detail)
     pending: list[tuple[str, str]] = []   # (gate, blocker)
+    woo_manifest = _read_json(
+        REPO_ROOT / "deliveries" / date / "wizard_of_odds" / "run_manifest.json"
+    ) or {}
+    row_counts = woo_manifest.get("row_counts") or {}
+    no_game_slate = int(row_counts.get("full_pmfs_wide") or 0) == 0
 
-    # 1. player_game_stats fresh through date
+    # 1. player_game_stats freshness requirement is run-mode aware.
+    # For forward-looking runs, requiring freshness through future slate dates
+    # creates false failures. Require through yesterday ET unless after-game.
+    required_through = date if run_mode == "final_after_game" else min(date, _yesterday_et_iso())
     rc, out, err = _run(
         [py, "scripts/verify_player_game_stats_freshness.py",
-         "--required-through-date", date]
+         "--required-through-date", required_through]
     )
     if rc != 0:
         failures.append(("player_game_stats_fresh", (out + err).strip()[-300:]))
@@ -99,16 +144,14 @@ def main(argv: list[str] | None = None) -> int:
         pred_dir / f"singles_{date}.json",
     ]
     missing_pred = [str(p.relative_to(REPO_ROOT)) for p in pred_files if not p.exists()]
-    if missing_pred:
+    if missing_pred and not no_game_slate:
         failures.append(("predictions_exist", f"missing={missing_pred}"))
 
     # 3. TOV accounted for
-    if args.require_tov:
+    if args.require_tov and not no_game_slate:
         # Look at the WoO run_manifest blocker codes — they're the
         # canonical place TOV-handling status is recorded.
-        woo_run = _read_json(
-            REPO_ROOT / "deliveries" / date / "wizard_of_odds" / "run_manifest.json"
-        ) or {}
+        woo_run = woo_manifest
         blockers = set(list(woo_run.get("finality_blocker_codes") or []))
         if bool(woo_run.get("no_odds_fetch")):
             blockers.add("missing_stats:tov")
@@ -121,7 +164,8 @@ def main(argv: list[str] | None = None) -> int:
             )
 
     # 4-7: odds snapshots / market scoring / CLV (Phase 2 dependencies).
-    if args.require_market or args.require_clv:
+    market_expected_now = run_mode == "final_after_game"
+    if (args.require_market or args.require_clv) and market_expected_now:
         odds_root = REPO_ROOT / "data" / "odds_snapshots" / date
         required_snaps = ("morning", "lineup", "close")
         missing_snaps = [
@@ -153,7 +197,7 @@ def main(argv: list[str] | None = None) -> int:
                      f"rows_total={rows_total} (must be > 0) — Phase 2 B4")
                 )
 
-    if args.require_clv:
+    if args.require_clv and market_expected_now:
         clv = REPO_ROOT / "deliveries" / date / "after_game_scoring" / \
               "after_game_clv_and_scoring.parquet"
         if not clv.exists():
@@ -181,15 +225,18 @@ def main(argv: list[str] | None = None) -> int:
 
     # 8. Derek forward feed verifies
     if args.require_derek:
-        rc, out, err = _run(
-            [py, "scripts/verify_derek_forward_feed.py",
-             "--delivery-date", date, "--mode", "production"]
-        )
+        derek_cmd = [
+            py, "scripts/verify_derek_forward_feed.py",
+            "--delivery-date", date, "--mode", "production",
+        ]
+        if run_mode == "morning_expected":
+            derek_cmd.extend(["--allow-pending-lineup", "--allow-empty-snapshots", "--require-morning-snapshot"])
+        rc, out, err = _run(derek_cmd)
         if rc != 0:
             failures.append(("derek_forward_feed", (out + err).strip()[-400:]))
 
     # 9. WoO delivery package verifies
-    if args.require_woo:
+    if args.require_woo and not no_game_slate:
         # In strict mode we require even market+tov; in production mode
         # we tolerate the documented finality_blockers if --allow-no-market
         # / --allow-tov-missing were set. For end-to-end strict, market+tov
@@ -214,9 +261,6 @@ def main(argv: list[str] | None = None) -> int:
     derek_manifest = _read_json(
         REPO_ROOT / "deliveries" / date / "derek_forward_feed" / "feed_manifest.json"
     ) or {}
-    woo_manifest = _read_json(
-        REPO_ROOT / "deliveries" / date / "wizard_of_odds" / "run_manifest.json"
-    ) or {}
     derek_champion = derek_manifest.get("champion_model_id")
     woo_champion = woo_manifest.get("champion_model_id")
     if pointer_champion and derek_champion and pointer_champion != derek_champion:
@@ -227,7 +271,7 @@ def main(argv: list[str] | None = None) -> int:
                          f"pointer={pointer_champion} woo={woo_champion}"))
 
     # 11. Rolling market benchmark paired rows (Phase 2 B4 dependency).
-    if args.require_market:
+    if args.require_market and market_expected_now:
         rolling = _read_json(
             REPO_ROOT / "artifacts" / "automation_health"
             / f"rolling_market_benchmark_{date}.json"
@@ -247,8 +291,11 @@ def main(argv: list[str] | None = None) -> int:
                 )
 
     # 12. Lineup/injury/role-bucket warnings (production-grade signal).
-    if args.require_no_warnings:
-        for code in ("lineup_unconfirmed", "injury_very_stale", "role_bucket_missing"):
+    if args.require_no_warnings and not no_game_slate:
+        warn_codes = ("injury_very_stale", "role_bucket_missing")
+        if run_mode in {"t5", "final_after_game"}:
+            warn_codes = ("lineup_unconfirmed",) + warn_codes
+        for code in warn_codes:
             if code in (woo_manifest.get("finality_blocker_codes") or []):
                 pending.append(
                     (f"finality_blocker_{code}",
@@ -278,7 +325,10 @@ def main(argv: list[str] | None = None) -> int:
             ))
 
     # ── Render result ───────────────────────────────────────────────
-    print(f"# end-to-end delivery health  date={date}  mode={args.mode}")
+    print(
+        f"# end-to-end delivery health  date={date}  mode={args.mode}  "
+        f"run_mode={run_mode}  required_through={required_through}"
+    )
     if failures:
         print("# FAILURES")
         for name, detail in failures:

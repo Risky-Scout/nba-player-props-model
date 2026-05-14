@@ -1,0 +1,5 @@
+{
+  "status": "pending_lineup_snapshot",
+  "reason": "No pre_close/close_lock/lineup snapshot is on disk for deliveries/2026-05-15/wizard_of_odds/. The current wizard_of_odds/run_manifest.json snapshot_type is 'morning'. Run scripts/run_daily_delivery_pipeline.py --date 2026-05-15 --mode pre_close (or close_lock) to produce a lineup-aware delivery.",
+  "checked_at_utc": "2026-05-14T14:58:06Z"
+}
