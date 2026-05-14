@@ -113,6 +113,22 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Fail if every row in lineup_snapshot is model-only (no market).",
     )
+    ap.add_argument(
+        "--allow-pending-lineup",
+        action="store_true",
+        help=(
+            "Allow missing lineup_snapshot.* files when "
+            "lineup_snapshot_status.json declares pending_lineup_snapshot."
+        ),
+    )
+    ap.add_argument(
+        "--allow-empty-snapshots",
+        action="store_true",
+        help=(
+            "Allow zero-row snapshot parquet files (used for honest no-game "
+            "slates that still emit full Derek package structure)."
+        ),
+    )
     args = ap.parse_args(argv)
 
     date = args.delivery_date
@@ -129,17 +145,25 @@ def main(argv: list[str] | None = None) -> int:
             "DEREK_FORWARD_FEED_VERIFICATION_FAILED", date, mode, len(failures)
         )
 
+    lineup_status = _read_json(feed_dir / "lineup_snapshot_status.json") or {}
+    lineup_pending = str(lineup_status.get("status") or "") == "pending_lineup_snapshot"
+
     # ── Required files ──────────────────────────────────────────────
     required = [
-        "lineup_snapshot.csv",
-        "lineup_snapshot.jsonl",
-        "lineup_snapshot.parquet",
         "latest_available_snapshot.csv",
         "latest_available_snapshot.parquet",
         "feed_manifest.json",
         "feed_manifest.champion_stamp.json",
         "FEED_README.md",
     ]
+    if not (args.allow_pending_lineup and lineup_pending):
+        required.extend(
+            [
+                "lineup_snapshot.csv",
+                "lineup_snapshot.jsonl",
+                "lineup_snapshot.parquet",
+            ]
+        )
     for name in required:
         p = feed_dir / name
         if not p.exists():
@@ -246,7 +270,8 @@ def main(argv: list[str] | None = None) -> int:
             return
         rows = len(df)
         if rows == 0:
-            failures.append(f"{label} parquet has zero rows: {parquet_path.name}")
+            if not args.allow_empty_snapshots:
+                failures.append(f"{label} parquet has zero rows: {parquet_path.name}")
             return
         missing_cols = REQUIRED_COLS - set(df.columns)
         if missing_cols:
@@ -312,7 +337,8 @@ def main(argv: list[str] | None = None) -> int:
                         f"(--require-market set)"
                     )
 
-    _check_snapshot("lineup_snapshot", feed_dir / "lineup_snapshot.parquet")
+    if not (args.allow_pending_lineup and lineup_pending):
+        _check_snapshot("lineup_snapshot", feed_dir / "lineup_snapshot.parquet")
     _check_snapshot(
         "latest_available_snapshot",
         feed_dir / "latest_available_snapshot.parquet",
