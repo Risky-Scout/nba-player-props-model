@@ -38,6 +38,10 @@ from nba_props_model.calibration.event_neutral_probability_scale import (  # noq
     apply_manifest_to_probability,
     load_probability_scale_manifest,
 )
+from nba_props_model.calibration.pmf_mean_shift_repair import (  # noqa: E402
+    apply_mean_shift_manifest_to_pmf,
+    load_mean_shift_manifest,
+)
 
 MISSION_STATS_CANONICAL = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
 FORBIDDEN_OUTPUT_COLS = {
@@ -413,6 +417,7 @@ def _main_single_date(
     snapshot_substr: str,
     event_cal: dict | None = None,
     prob_manifest: dict | None = None,
+    pmf_mean_manifest: dict | None = None,
 ) -> int:
     out_dir = REPO_ROOT / "artifacts" / "model_diagnostics"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -450,6 +455,13 @@ def _main_single_date(
             "canonical_pmf_unchanged": True,
             "market_odds_used_as_features": False,
             "market_odds_used_for_edge_only": True,
+        }
+    if pmf_mean_manifest:
+        early_meta = {
+            **early_meta,
+            "pmf_mean_shift_repair_manifest": True,
+            "pmf_mean_shift_repair_version": pmf_mean_manifest.get("version"),
+            "canonical_pmf_unchanged": True,
         }
 
     if odds_path is None:
@@ -629,18 +641,38 @@ def _main_single_date(
         rd = r.to_dict()
         pmf_col_used = rd.get("_pmf_col_used") or _resolve_pmf_column(pd.DataFrame([rd]))
         raw_pmf = rd.get(pmf_col_used) if pmf_col_used else None
-        pmf = _parse_pmf_value(raw_pmf)
-        pmf = _normalize_pmf(pmf) if pmf else {}
+        if raw_pmf is None:
+            pmf_raw_dict = {}
+        elif isinstance(raw_pmf, float) and pd.isna(raw_pmf):
+            pmf_raw_dict = {}
+        elif isinstance(raw_pmf, np.ndarray) and raw_pmf.size == 0:
+            pmf_raw_dict = {}
+        else:
+            pmf_raw_dict = _normalize_pmf(_parse_pmf_value(raw_pmf))
         line = rd.get("_line_f")
+        stc = str(rd.get("stat_canonical") or "").lower()
+        rb = str(rd.get("role_bucket_mdl") or rd.get("role_bucket") or "unknown")
 
-        # B2 — compute model_prob_over from PMF directly
-        mp_over = _prob_over(pmf, line)
-        mp_over_raw = mp_over
+        pmf_rep, ms_scope, ms_method, ms_applied, pmf_ms_row_rr = apply_mean_shift_manifest_to_pmf(
+            dict(pmf_raw_dict) if pmf_raw_dict else {},
+            stat=stc,
+            role_bucket=rb,
+            manifest=pmf_mean_manifest,
+        )
+        if pmf_rep is None or not pmf_rep:
+            pmf_rep = dict(pmf_raw_dict)
+            ms_applied = False
+        elif not ms_applied:
+            pmf_rep = dict(pmf_raw_dict)
+        pmf = pmf_rep
+
+        mp_line_raw = _prob_over(pmf_raw_dict, line) if pmf_raw_dict else None
+        mp_after_ms = _prob_over(pmf, line) if pmf else None
+
+        mp_over = mp_after_ms
         cal_applied = False
         cal_seg_id = None
         if event_cal is not None and mp_over is not None:
-            stc = str(rd.get("stat_canonical") or "").lower()
-            rb = str(rd.get("role_bucket_mdl") or rd.get("role_bucket") or "unknown")
             line_f = None
             try:
                 if line is not None and line == line:
@@ -653,8 +685,6 @@ def _main_single_date(
             if cal_applied and mp2 is not None:
                 mp_over = mp2
         p_pre_scale = float(mp_over) if mp_over is not None and mp_over == mp_over else None
-        stc = str(rd.get("stat_canonical") or "").lower()
-        rb = str(rd.get("role_bucket_mdl") or rd.get("role_bucket") or "unknown")
         p_active, ps_scope, ps_method, ps_applied = apply_manifest_to_probability(
             p_pre_scale,
             stat=stc,
@@ -668,6 +698,21 @@ def _main_single_date(
             mp_over_active = float(p_active)
         mp_under = (1.0 - mp_over_active) if mp_over_active is not None else None
         m_mean, m_var = _pmf_mean_variance(pmf)
+        pmf_mean_raw, _pmf_v0 = _pmf_mean_variance(pmf_raw_dict) if pmf_raw_dict else (None, None)
+        pmf_mean_repaired = m_mean
+
+        pmf_shift_param = ""
+        if pmf_mean_manifest and ms_applied and ms_scope:
+            sp = (pmf_mean_manifest.get("segments") or {}).get(ms_scope, {})
+            smet = str(sp.get("selected_method") or "")
+            if smet == "additive" and sp.get("delta") is not None:
+                pmf_shift_param = f"delta={sp.get('delta')}"
+            elif smet == "multiplicative_gamma" and sp.get("gamma") is not None:
+                pmf_shift_param = f"gamma={sp.get('gamma')}"
+            elif smet == "shrink_parent_additive":
+                pmf_shift_param = (
+                    f"alpha={sp.get('alpha')};d_sr={sp.get('delta_stat_role')};d_st={sp.get('delta_stat')}"
+                )
         # Actual outcome (for scoring): OOF row if present, else box score lookup
         actual = rd.get("actual_value")
         if actual is None:
@@ -765,10 +810,24 @@ def _main_single_date(
             "is_alternate": bool(rd.get("is_alternate", False)),
 
             # ── B2 CONTRACT FIELDS — PMF-derived ──
+            "model_pmf_raw": json.dumps({str(k): v for k, v in pmf_raw_dict.items()}) if pmf_raw_dict else None,
             "model_pmf": json.dumps({str(k): v for k, v in pmf.items()}) if pmf else None,
             "model_mean": m_mean,
             "model_variance": m_var,
-            "model_prob_over_raw": mp_over_raw,
+            "pmf_mean_raw": pmf_mean_raw,
+            "pmf_mean_repaired": pmf_mean_repaired,
+            "pmf_mean_shift_delta_or_gamma": pmf_shift_param if ms_applied else None,
+            "pmf_mean_shift_repair_applied": bool(ms_applied),
+            "pmf_mean_shift_repair_scope": ms_scope if ms_applied else None,
+            "pmf_mean_shift_repair_method": ms_method if ms_applied else None,
+            "pmf_mean_shift_repair_version": (
+                str(pmf_mean_manifest.get("version")) if pmf_mean_manifest and ms_applied else None
+            ),
+            "pmf_mean_shift_row_rollback_reason": (
+                pmf_ms_row_rr if pmf_mean_manifest else None
+            ),
+            "model_prob_over_raw": mp_line_raw,
+            "model_prob_over_after_pmf_mean_shift": mp_after_ms,
             "model_prob_over_calibrated": p_calibrated,
             "model_prob_over_active": mp_over_active,
             "probability_scale_repair_scope": ps_scope,
@@ -813,7 +872,7 @@ def _main_single_date(
             "join_blockers": rd.get("join_blockers"),
             "scoring_blocker": scoring_blocker,
 
-            "model_prob_over_pre_event_calibration": mp_over_raw,
+            "model_prob_over_pre_event_calibration": mp_after_ms,
             "event_calibration_applied": bool(cal_applied),
             "event_calibration_version": (event_cal or {}).get("event_calibration_version"),
             "event_calibration_stage": (event_cal or {}).get("event_calibration_stage"),
@@ -844,18 +903,34 @@ def _main_single_date(
             "game_id": rd.get("game_id") or rd.get("event_id"),
             "event_id": rd.get("event_id"),
             "snapshot_type": rd.get("snapshot_type") or "close_or_lock",
+            "snapshot_time_utc": rd.get("snapshot_time_utc"),
+            "home_team": rd.get("home_team"),
+            "away_team": rd.get("away_team"),
             "player_id": rd.get("player_id"),
             "player_name": rd.get("player_name") or rd.get("player"),
             "stat": rd.get("stat_canonical"),
             "line": line,
             "side": "OVER",
+            "role_bucket": rd.get("role_bucket"),
+            "pmf_kind": None,
+            "pmf_col_used": None,
             "bookmaker_key": rd.get("bookmaker_key"),
             "is_alternate": bool(rd.get("is_alternate", False)),
             "scoring_blocker": sb_un,
+            "model_pmf_raw": None,
             "model_pmf": None,
             "model_mean": None,
             "model_variance": None,
+            "pmf_mean_raw": None,
+            "pmf_mean_repaired": None,
+            "pmf_mean_shift_delta_or_gamma": None,
+            "pmf_mean_shift_repair_applied": False,
+            "pmf_mean_shift_repair_scope": None,
+            "pmf_mean_shift_repair_method": None,
+            "pmf_mean_shift_repair_version": None,
+            "pmf_mean_shift_row_rollback_reason": None,
             "model_prob_over_raw": None,
+            "model_prob_over_after_pmf_mean_shift": None,
             "model_prob_over_calibrated": None,
             "model_prob_over_active": None,
             "probability_scale_repair_scope": None,
@@ -961,6 +1036,7 @@ def _main_date_range(
     snapshot_substr: str,
     event_cal: dict | None = None,
     prob_manifest: dict | None = None,
+    pmf_mean_manifest: dict | None = None,
 ) -> int:
     from datetime import date as dt_date, timedelta
 
@@ -970,7 +1046,7 @@ def _main_date_range(
     end_d = dt_date.fromisoformat(end)
     while cur <= end_d:
         s = cur.isoformat()
-        rc = _main_single_date(s, snapshot_substr, event_cal, prob_manifest)
+        rc = _main_single_date(s, snapshot_substr, event_cal, prob_manifest, pmf_mean_manifest)
         if rc != 0:
             return rc
         p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{s}.parquet"
@@ -1040,6 +1116,14 @@ def _main_date_range(
                 "market_odds_used_for_edge_only": True,
             }
         )
+    if pmf_mean_manifest:
+        agg_meta.update(
+            {
+                "pmf_mean_shift_repair_manifest": True,
+                "pmf_mean_shift_repair_version": pmf_mean_manifest.get("version"),
+                "canonical_pmf_unchanged": True,
+            }
+        )
     Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
     print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (range)")
     print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
@@ -1053,12 +1137,13 @@ def _main_dates_file_list(
     label: str,
     event_cal: dict | None = None,
     prob_manifest: dict | None = None,
+    pmf_mean_manifest: dict | None = None,
 ) -> int:
     """Concatenate daily event_market_loss rows for explicit date list (inventory-driven)."""
     frames: list[pd.DataFrame] = []
     metas: list[dict] = []
     for d in sorted(set(dates)):
-        rc = _main_single_date(d, snapshot_substr, event_cal, prob_manifest)
+        rc = _main_single_date(d, snapshot_substr, event_cal, prob_manifest, pmf_mean_manifest)
         if rc != 0:
             return rc
         p = REPO_ROOT / "artifacts" / "model_diagnostics" / f"event_market_loss_rows_{d}.parquet"
@@ -1128,6 +1213,14 @@ def _main_dates_file_list(
                 "market_odds_used_for_edge_only": True,
             }
         )
+    if pmf_mean_manifest:
+        agg_meta.update(
+            {
+                "pmf_mean_shift_repair_manifest": True,
+                "pmf_mean_shift_repair_version": pmf_mean_manifest.get("version"),
+                "canonical_pmf_unchanged": True,
+            }
+        )
     Path(str(out_path) + ".meta.json").write_text(json.dumps(agg_meta, indent=2) + "\n", encoding="utf-8")
     print("M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (dates-file)")
     print(f"  rows={len(combo)} matched={matched_count} scored_all_fields={scored_count}")
@@ -1153,6 +1246,11 @@ def main() -> int:
         default=None,
         help="Optional JSON from fit_event_neutral_probability_scale_repair (event probs only).",
     )
+    ap.add_argument(
+        "--pmf-mean-shift-manifest",
+        default=None,
+        help="Optional JSON from fit_pmf_mean_shift_repair (PMF lattice repair; raw PMF preserved).",
+    )
     args = ap.parse_args()
 
     event_cal: dict | None = None
@@ -1175,6 +1273,16 @@ def main() -> int:
             return 2
         prob_manifest = load_probability_scale_manifest(pm)
 
+    pmf_mean_manifest: dict | None = None
+    if args.pmf_mean_shift_manifest:
+        pms = Path(args.pmf_mean_shift_manifest)
+        if not pms.is_absolute():
+            pms = REPO_ROOT / pms
+        if not pms.is_file():
+            print(f"FATAL: --pmf-mean-shift-manifest not found: {pms}", file=sys.stderr)
+            return 2
+        pmf_mean_manifest = load_mean_shift_manifest(pms)
+
     modes = sum(
         bool(x) for x in (args.as_of_date, (args.start_date and args.end_date), args.dates_file)
     )
@@ -1195,19 +1303,26 @@ def main() -> int:
             dates_file=args.dates_file,
             include_ineligible=args.include_ineligible,
         )
-        return _main_dates_file_list(dates, args.snapshot_substr, label, event_cal, prob_manifest)
+        return _main_dates_file_list(
+            dates, args.snapshot_substr, label, event_cal, prob_manifest, pmf_mean_manifest
+        )
 
     if args.start_date or args.end_date:
         if not (args.start_date and args.end_date):
             print("FATAL: --start-date and --end-date must be used together", file=sys.stderr)
             return 2
         return _main_date_range(
-            args.start_date, args.end_date, args.snapshot_substr, event_cal, prob_manifest
+            args.start_date,
+            args.end_date,
+            args.snapshot_substr,
+            event_cal,
+            prob_manifest,
+            pmf_mean_manifest,
         )
     if not args.as_of_date:
         print("FATAL: pass --as-of-date, --start-date/--end-date, or --dates-file", file=sys.stderr)
         return 2
-    return _main_single_date(args.as_of_date, args.snapshot_substr, event_cal, prob_manifest)
+    return _main_single_date(args.as_of_date, args.snapshot_substr, event_cal, prob_manifest, pmf_mean_manifest)
 
 
 if __name__ == "__main__":

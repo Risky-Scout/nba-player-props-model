@@ -19,9 +19,10 @@ from nba_props_model.calibration.event_neutral_probability_scale import (  # noq
 
 
 def _sha_model_pmf(df: pd.DataFrame) -> str:
-    if "model_pmf" not in df.columns:
+    col = "model_pmf_raw" if "model_pmf_raw" in df.columns else "model_pmf"
+    if col not in df.columns:
         return ""
-    s = df["model_pmf"].fillna("").astype(str)
+    s = df[col].fillna("").astype(str)
     h = hashlib.sha256()
     for v in s.values:
         h.update(v.encode("utf-8", errors="replace"))
