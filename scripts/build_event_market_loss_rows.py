@@ -790,6 +790,24 @@ def _main_single_date(
             else:
                 scoring_blocker = "push_or_nonbinary_outcome"
 
+        diag_feature_cols = (
+            "injury_status_current",
+            "official_lineup_status",
+            "expected_lineup_status",
+            "projected_minutes",
+            "minutes_q10",
+            "minutes_q50",
+            "minutes_q90",
+            "p_inactive",
+            "p_starter",
+            "usage_projection",
+            "opponent_def_rating_recent",
+            "expected_steal_opportunities",
+            "cov_pts_reb_player",
+            "cov_pts_ast_player",
+            "cov_reb_ast_player",
+            "combo_covariance_sample_size",
+        )
         out_row = {
             "date": date,
             "game_id": rd.get("game_id") or rd.get("event_id"),
@@ -883,6 +901,7 @@ def _main_single_date(
 
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
+            **{c: rd.get(c) for c in diag_feature_cols},
             **snap_cols,
         }
         rows_out.append(out_row)
@@ -898,6 +917,24 @@ def _main_single_date(
         sb_un = "market_join_failed"
         if mkt_over_f is None or mkt_under_f is None:
             sb_un = "missing_two_way_odds"
+        diag_feature_cols = (
+            "injury_status_current",
+            "official_lineup_status",
+            "expected_lineup_status",
+            "projected_minutes",
+            "minutes_q10",
+            "minutes_q50",
+            "minutes_q90",
+            "p_inactive",
+            "p_starter",
+            "usage_projection",
+            "opponent_def_rating_recent",
+            "expected_steal_opportunities",
+            "cov_pts_reb_player",
+            "cov_pts_ast_player",
+            "cov_reb_ast_player",
+            "combo_covariance_sample_size",
+        )
         rows_out.append({
             "date": date,
             "game_id": rd.get("game_id") or rd.get("event_id"),
@@ -968,6 +1005,7 @@ def _main_single_date(
 
             "m8_6q_schema_version": "v2",
             "m8_6q_delta_sign_convention": "model_minus_market_negative_better",
+            **{c: rd.get(c) for c in diag_feature_cols},
             **snap_cols,
         })
 

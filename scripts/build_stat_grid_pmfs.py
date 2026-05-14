@@ -626,6 +626,11 @@ def main() -> int:
                      default=None,
                      help=("output parquet path; "
                             "default predictions/stat_grid_{date}.parquet"))
+    ap.add_argument(
+        "--feature-snapshot",
+        default=None,
+        help="Optional player-prop feature snapshot parquet to merge on player_id/stat.",
+    )
     args = ap.parse_args()
 
     target_date = args.date
@@ -698,6 +703,23 @@ def main() -> int:
         return 1
 
     df = pd.DataFrame(rows)
+    if args.feature_snapshot:
+        snap_path = Path(args.feature_snapshot)
+        if not snap_path.is_absolute():
+            snap_path = REPO_ROOT / snap_path
+        if not snap_path.is_file():
+            raise SystemExit(f"FATAL: feature snapshot missing: {snap_path}")
+        snap_df = pd.read_parquet(snap_path)
+        join_cols = [c for c in ("player_id", "stat") if c in snap_df.columns and c in df.columns]
+        if len(join_cols) < 2:
+            raise SystemExit(
+                "FATAL: feature snapshot missing join keys player_id/stat for parity merge"
+            )
+        keep_cols = [c for c in snap_df.columns if c not in set(df.columns) or c in ("player_id", "stat")]
+        snap_df = snap_df[keep_cols].drop_duplicates(subset=join_cols)
+        df = df.merge(snap_df, on=join_cols, how="left")
+        df["feature_snapshot_attached"] = True
+        df["feature_snapshot_path"] = str(snap_path)
     per_stat_counts = df.groupby('stat').size().to_dict()
     print(f"  per-stat counts:\n{df.groupby('stat').size().to_string()}")
 

@@ -101,6 +101,7 @@ AUDIT_DAILY_DELIVERY = REPO_ROOT / "scripts" / "audit_daily_delivery_completenes
 VERIFY_DEREK_CONTRACT = REPO_ROOT / "scripts" / "verify_derek_forward_feed_contract.py"
 AUDIT_INJURY_LINEUP = REPO_ROOT / "scripts" / "audit_injury_lineup_run_modes.py"
 AUDIT_GITHUB_AUTOMATION = REPO_ROOT / "scripts" / "audit_github_delivery_automation.py"
+BUILD_FEATURE_SNAPSHOT = REPO_ROOT / "scripts" / "build_player_prop_feature_snapshot.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -164,7 +165,31 @@ def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
     return 0
 
 
-def _stat_grid(date: str) -> int:
+def _feature_snapshot(date: str, *, run_mode_stamp: str) -> Path | None:
+    """Build feature snapshot for the run mode (best-effort)."""
+    if not BUILD_FEATURE_SNAPSHOT.exists():
+        return None
+    out = REPO_ROOT / "data" / "features" / f"player_prop_features_{date}_{run_mode_stamp}.parquet"
+    rc = _run(
+        [
+            PYTHON,
+            str(BUILD_FEATURE_SNAPSHOT),
+            "--date",
+            date,
+            "--run-mode",
+            run_mode_stamp,
+            "--out",
+            str(out),
+        ],
+        allow_fail=True,
+        label=f"feature_snapshot {date} {run_mode_stamp}",
+    )
+    if rc != 0:
+        return None
+    return out if out.is_file() else None
+
+
+def _stat_grid(date: str, *, feature_snapshot_path: Path | None = None) -> int:
     """Phase 12 Part G: emit `predictions/stat_grid_{date}.parquet` so
     the canonical build can include TOV (and any other model-only stats
     BDL doesn't sell). Allowed to fail — the canonical build still works
@@ -176,6 +201,8 @@ def _stat_grid(date: str) -> int:
     if not STAT_GRID.exists():
         return 0
     cmd = [PYTHON, str(STAT_GRID), "--date", date]
+    if feature_snapshot_path is not None and feature_snapshot_path.is_file():
+        cmd.extend(["--feature-snapshot", str(feature_snapshot_path)])
     return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
 
 
@@ -596,7 +623,8 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    _stat_grid(date)
+    fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    _stat_grid(date, feature_snapshot_path=fs)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning", run_mode_stamp="morning_expected")
@@ -621,7 +649,8 @@ def run_woo_morning_monetization(
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    _stat_grid(date)
+    fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    _stat_grid(date, feature_snapshot_path=fs)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning", run_mode_stamp="morning_expected")
@@ -648,7 +677,8 @@ def run_woo_afternoon_refresh(
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    _stat_grid(date)
+    fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    _stat_grid(date, feature_snapshot_path=fs)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _woo_export(
@@ -674,7 +704,8 @@ def run_derek_near_lineup(
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    _stat_grid(date)
+    fs = _feature_snapshot(date, run_mode_stamp="t25")
+    _stat_grid(date, feature_snapshot_path=fs)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup", run_mode_stamp="t25")
@@ -696,7 +727,8 @@ def run_close_lock(date: str, *, regions: list[str],
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    _stat_grid(date)
+    fs = _feature_snapshot(date, run_mode_stamp="t5")
+    _stat_grid(date, feature_snapshot_path=fs)
     model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup", run_mode_stamp="t5")

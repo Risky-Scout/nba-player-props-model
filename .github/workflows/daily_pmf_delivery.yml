@@ -184,7 +184,9 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode morning \
             --regions us us2 \
-            --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
+            --rebuild-canonical \
+            --verify --fail-on-missing-delivery \
+            $PREDICT_FLAG $FORCE_FLAG
       - name: Stage and commit approved files
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -308,7 +310,9 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode woo_morning_monetization \
             --regions us us2 \
-            --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG
+            --rebuild-canonical \
+            --verify --fail-on-missing-delivery \
+            $PREDICT_FLAG $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new
       # pipeline so the public export is authoritatively from the new
       # builder, not the legacy build_wizard_of_odds_public_export.py.
@@ -471,7 +475,9 @@ jobs:
           python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
             --mode woo_afternoon_refresh \
-            --regions us us2 $FORCE_FLAG
+            --regions us us2 \
+            --verify --fail-on-missing-delivery \
+            $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
       - name: Phase 13AM WoO new pipeline (publish/build/verify)
         if: steps.predict_gate.outputs.should_proceed == 'true'
@@ -633,7 +639,9 @@ jobs:
           python scripts/run_daily_delivery_pipeline.py \
             --date $DATE \
             --mode derek_near_lineup \
-            --regions us us2 $FORCE_FLAG
+            --regions us us2 \
+            --verify --fail-on-missing-delivery \
+            $FORCE_FLAG
 
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
       - name: Phase 13AM WoO new pipeline (publish/build/verify)
@@ -806,7 +814,9 @@ jobs:
           python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
             --mode close_lock \
-            --regions us us2 $FORCE_FLAG
+            --regions us us2 \
+            --verify --fail-on-missing-delivery \
+            $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
       - name: Phase 13AM WoO new pipeline (publish/build/verify)
         if: steps.predict_gate.outputs.should_proceed == 'true'
@@ -966,7 +976,8 @@ jobs:
         run: |
           python scripts/run_daily_delivery_pipeline.py \
             --date ${{ steps.d.outputs.date }} \
-            --mode after_game
+            --mode after_game \
+            --verify --fail-on-missing-delivery
       - name: Phase 13K — re-run scorer for canonical artifacts
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:

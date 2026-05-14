@@ -551,6 +551,26 @@ def _stat_grid_rows(date: str) -> list[dict]:
             "stat": r.get("stat"),
             "role_bucket": (r.get("role_bucket")
                             if pd.notna(r.get("role_bucket")) else None),
+            "hard_role_bucket": (r.get("hard_role_bucket")
+                                  if pd.notna(r.get("hard_role_bucket"))
+                                  else (r.get("role_bucket") if pd.notna(r.get("role_bucket")) else None)),
+            "role_mixture_enabled": (
+                bool(r.get("role_mixture_enabled"))
+                if pd.notna(r.get("role_mixture_enabled"))
+                else None
+            ),
+            "role_mixture_weights_json": (
+                r.get("role_mixture_weights_json")
+                if pd.notna(r.get("role_mixture_weights_json"))
+                else None
+            ),
+            "role_entropy": (r.get("role_entropy")
+                              if pd.notna(r.get("role_entropy")) else None),
+            "role_bucket_confidence": (
+                r.get("role_bucket_confidence")
+                if pd.notna(r.get("role_bucket_confidence"))
+                else None
+            ),
             "role_source": (r.get("role_source")
                             if pd.notna(r.get("role_source"))
                             else "phase12_stat_grid"),
@@ -576,6 +596,23 @@ def _stat_grid_rows(date: str) -> list[dict]:
                 r.get("injury_report_fetched_at_utc")
                 if pd.notna(r.get("injury_report_fetched_at_utc")) else None
             ),
+            "expected_lineup_status": (
+                r.get("expected_lineup_status")
+                if pd.notna(r.get("expected_lineup_status"))
+                else None
+            ),
+            "official_lineup_status": (
+                r.get("official_lineup_status")
+                if pd.notna(r.get("official_lineup_status"))
+                else None
+            ),
+            "projected_minutes": (
+                r.get("projected_minutes")
+                if pd.notna(r.get("projected_minutes"))
+                else None
+            ),
+            "minutes_q10": (r.get("minutes_q10") if pd.notna(r.get("minutes_q10")) else None),
+            "minutes_q90": (r.get("minutes_q90") if pd.notna(r.get("minutes_q90")) else None),
             "support_min": 0,
             "support_max": (int(r["support_max"])
                               if pd.notna(r.get("support_max")) else None),
@@ -652,6 +689,11 @@ def build_canonical_from_predictions(predictions_path: Path, *,
             "game_start_et": commence_map.get(gid) if gid is not None else None,
             "stat": r.get("stat"),
             "role_bucket": role_bucket,
+            "hard_role_bucket": role_bucket,
+            "role_mixture_enabled": None,
+            "role_mixture_weights_json": None,
+            "role_entropy": None,
+            "role_bucket_confidence": None,
             "role_source": role_source,
             "mp_bucket": (int(mp_b) if pd.notna(mp_b) else None),
             "usage_bucket": (int(r.get("usage_bucket"))
@@ -659,6 +701,11 @@ def build_canonical_from_predictions(predictions_path: Path, *,
             "minutes_mean": None,
             "minutes_q50": r.get("q50"),
             "p_inactive_used": None,
+            "expected_lineup_status": None,
+            "official_lineup_status": None,
+            "projected_minutes": None,
+            "minutes_q10": None,
+            "minutes_q90": None,
             "support_min": 0,
             "support_max": None,
             "line": r.get("line"),

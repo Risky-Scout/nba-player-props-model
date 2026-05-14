@@ -30,6 +30,12 @@ def main() -> int:
     ap.add_argument("--start-date", required=True)
     ap.add_argument("--end-date", required=True)
     ap.add_argument("--out", type=Path, default=REPO_ROOT / "data" / "training_table.parquet")
+    ap.add_argument(
+        "--feature-snapshot",
+        type=Path,
+        default=None,
+        help="Optional as-of feature snapshot parquet to validate parity metadata against.",
+    )
     ap.add_argument("--force", action="store_true", help="Overwrite --out if it exists.")
     ap.add_argument("--dry-run", action="store_true", help="Print plan only.")
     args = ap.parse_args()
@@ -65,6 +71,7 @@ def main() -> int:
         "default_output": str(built_path),
         "requested_output": str(args.out),
         "note": "train.py always writes data/training_table.parquet; use cp if --out differs.",
+        "feature_snapshot": str(args.feature_snapshot) if args.feature_snapshot else None,
     }
     if args.dry_run:
         print(json.dumps(manifest, indent=2))
@@ -112,6 +119,20 @@ def main() -> int:
         shutil.copy2(built_path, args.out)
 
     meta_side = REPO_ROOT / "artifacts" / "model_diagnostics" / "training_table_build_manifest.json"
+    if args.feature_snapshot:
+        fs = args.feature_snapshot if args.feature_snapshot.is_absolute() else REPO_ROOT / args.feature_snapshot
+        manifest["feature_snapshot_exists"] = fs.is_file()
+        if fs.is_file():
+            try:
+                import pandas as pd
+
+                tdf = pd.read_parquet(args.out)
+                sdf = pd.read_parquet(fs)
+                manifest["feature_snapshot_training_overlap_columns"] = sorted(
+                    set(map(str, tdf.columns)).intersection(set(map(str, sdf.columns)))
+                )[:200]
+            except Exception as exc:
+                manifest["feature_snapshot_parity_read_error"] = str(exc)
     meta_side.parent.mkdir(parents=True, exist_ok=True)
     meta_side.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"TRAINING_TABLE_BUILD_OK -> {args.out}")
