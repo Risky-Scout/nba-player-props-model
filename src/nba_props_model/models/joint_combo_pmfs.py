@@ -9,10 +9,8 @@ Mission-required combos:
     stocks  (mission: stl_blk)     = stl + blk
     pa      (mission: pts_ast)     = pts + ast
     pr      (mission: pts_reb)     = pts + reb
-    pra     (mission: pts_reb_ast) = pts + reb + ast
-
-Optional non-mission combo:
     ra      (mission: reb_ast)     = reb + ast
+    pra     (mission: pts_reb_ast) = pts + reb + ast
 
 This module is the M5A foundation. It is consumed by
 scripts/build_combo_pmfs_from_joint_samples.py. M5A does NOT wire combo
@@ -43,9 +41,9 @@ MODEL_VERSION_TAG = "joint_combo_pmf_v1"
 CALIBRATION_STATUS_PENDING_M6 = "pending_m6_stat_role_calibration"
 
 # Mission-required combos per acceptance section 1 + master prompt section 5.
-DEFAULT_MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "pra")
+DEFAULT_MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "ra", "pra")
 # All combos this module knows how to build (canonical names).
-ALL_KNOWN_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "pra", "ra")
+ALL_KNOWN_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "ra", "pra")
 
 
 # ── Component domain bounds ────────────────────────────────────────────────

@@ -1,0 +1,13 @@
+stat,model_stat_grid_rows,canonical_rows,raw_odds_rows,processed_odds_rows,two_way_odds_rows,event_market_rows,matched_rows,scored_rows,books_count,players_count,games_count,market_keys_requested,market_keys_seen_raw,market_keys_seen_processed,missing_reason
+pts,100,231,560,733,733,733,422,422,6,49,9,"[""player_points"", ""player_points_alternate""]","[""player_points"", ""player_points_alternate""]","[""player_points""]",covered
+reb,100,231,558,576,576,576,345,345,6,45,8,"[""player_rebounds"", ""player_rebounds_alternate""]","[""player_rebounds"", ""player_rebounds_alternate""]","[""player_rebounds""]",covered
+ast,100,231,560,471,471,471,280,280,6,44,9,"[""player_assists"", ""player_assists_alternate""]","[""player_assists"", ""player_assists_alternate""]","[""player_assists""]",covered
+fg3m,98,231,538,491,491,491,282,282,6,42,9,"[""player_threes"", ""player_threes_alternate""]","[""player_threes"", ""player_threes_alternate""]","[""player_threes""]",covered
+tov,100,231,9,5,5,5,1,1,1,1,1,"[""player_turnovers"", ""player_turnovers_alternate""]","[""player_turnovers""]","[""player_turnovers""]",insufficient_scored_rows
+stl,34,32,0,0,0,0,0,0,0,0,0,"[""player_steals"", ""player_steals_alternate""]",[],[],no_offered_market
+blk,34,32,0,0,0,0,0,0,0,0,0,"[""player_blocks"", ""player_blocks_alternate""]",[],[],no_offered_market
+stocks,34,32,0,0,0,0,0,0,0,0,0,"[""player_blocks_steals""]",[],[],no_offered_market
+pa,34,32,0,0,0,0,0,0,0,0,0,"[""player_points_assists"", ""player_points_assists_alternate""]",[],[],no_offered_market
+pr,34,32,0,0,0,0,0,0,0,0,0,"[""player_points_rebounds"", ""player_points_rebounds_alternate""]",[],[],no_offered_market
+ra,34,32,0,0,0,0,0,0,0,0,0,"[""player_rebounds_assists"", ""player_rebounds_assists_alternate""]",[],[],no_offered_market
+pra,34,32,0,0,0,0,0,0,0,0,0,"[""player_points_rebounds_assists"", ""player_points_rebounds_assists_alternate""]",[],[],no_offered_market

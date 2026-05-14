@@ -27,13 +27,23 @@ ROLE_BUCKETS = (
 )
 
 
-def role_bucket_from_minutes_dist(minutes_dist) -> str:
+def role_bucket_from_minutes_dist(
+    minutes_dist,
+    *,
+    suppress_inactive_risk: bool = False,
+) -> str:
     """Ex-ante role bucket for PMF calibration.
 
     Uses only the predicted minutes distribution (mean, q25, p_inactive),
     never actual minutes. Safe for OOF calibration and live inference.
 
-    Bucket definitions (predicted-minutes mean μ):
+    When ``suppress_inactive_risk`` is True (e.g. availability inputs are
+    stale for this run), the ``inactive_risk`` bucket is never returned;
+    the player is mapped to ``bench`` instead so downstream pipelines
+    do not treat DNP-risk as fully identified from stale injury data.
+
+    Bucket definitions (predicted-minutes mean μ) when inactive_risk is
+    not suppressed:
       inactive_risk  P(inactive) >= 0.12 OR predicted q25 <= 3.0
       fringe         μ < 12.0
       bench          12.0 <= μ < 18.0
@@ -56,6 +66,8 @@ def role_bucket_from_minutes_dist(minutes_dist) -> str:
 
     # High DNP / role-collapse risk dominates.
     if p_inactive >= 0.12 or q25 <= 3.0:
+        if suppress_inactive_risk:
+            return "bench"
         return "inactive_risk"
     if mu < 12.0:
         return "fringe"
@@ -68,7 +80,11 @@ def role_bucket_from_minutes_dist(minutes_dist) -> str:
     return "starter"
 
 
-def role_bucket_features_from_minutes_dist(minutes_dist) -> dict:
+def role_bucket_features_from_minutes_dist(
+    minutes_dist,
+    *,
+    suppress_inactive_risk: bool = False,
+) -> dict:
     """Persistable metadata for OOF calibration rows.
 
     Returns the role bucket plus the predicted minutes summary statistics
@@ -107,7 +123,9 @@ def role_bucket_features_from_minutes_dist(minutes_dist) -> dict:
         q10 = q25 = q50 = q75 = q90 = float("nan")
 
     return {
-        "role_bucket": role_bucket_from_minutes_dist(minutes_dist),
+        "role_bucket": role_bucket_from_minutes_dist(
+            minutes_dist, suppress_inactive_risk=suppress_inactive_risk,
+        ),
         "minutes_mean": mu,
         "minutes_std": sd,
         "minutes_q10": q10,

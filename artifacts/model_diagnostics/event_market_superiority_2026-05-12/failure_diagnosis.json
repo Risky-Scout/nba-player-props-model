@@ -1,0 +1,295 @@
+{
+  "date": "2026-05-12",
+  "n_failed_segments": 24,
+  "event_market_join_rate": 0.6020671834625323,
+  "failures": [
+    {
+      "stat": "ast",
+      "role_bucket": NaN,
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "ast",
+      "role_bucket": "core",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "ast",
+      "role_bucket": "fringe",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "ast",
+      "role_bucket": "inactive_risk",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "ast",
+      "role_bucket": "rotation",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "ast",
+      "role_bucket": "starter",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "fg3m",
+      "role_bucket": NaN,
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "fg3m",
+      "role_bucket": "core",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "fg3m",
+      "role_bucket": "fringe",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "fg3m",
+      "role_bucket": "inactive_risk",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "fg3m",
+      "role_bucket": "rotation",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "fg3m",
+      "role_bucket": "starter",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "pts",
+      "role_bucket": NaN,
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "pts",
+      "role_bucket": "core",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "pts",
+      "role_bucket": "fringe",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "pts",
+      "role_bucket": "inactive_risk",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "pts",
+      "role_bucket": "rotation",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "pts",
+      "role_bucket": "starter",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "reb",
+      "role_bucket": NaN,
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "reb",
+      "role_bucket": "core",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "reb",
+      "role_bucket": "fringe",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "reb",
+      "role_bucket": "inactive_risk",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "reb",
+      "role_bucket": "rotation",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    },
+    {
+      "stat": "reb",
+      "role_bucket": "starter",
+      "primary_failure_reason": "insufficient_scored_rows",
+      "secondary_failure_reasons": [],
+      "exact_metric_gap": {
+        "brier_delta_model_minus_market": NaN,
+        "logloss_delta_model_minus_market": NaN
+      },
+      "recommended_fix": "Improve OOF join (player_id alignment), refresh availability, or extend OOF rows for combos (RA).",
+      "required_script_or_module_to_patch": "scripts/build_event_market_loss_rows.py"
+    }
+  ]
+}

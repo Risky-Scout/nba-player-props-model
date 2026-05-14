@@ -1,7 +1,7 @@
 """Build combo OOF PMF dataset from base OOF PMFs (NBA Props Model M5C).
 
 For each (game_date, game_id, player_id) group in data/oof_pmfs.parquet,
-derive leakage-safe combo OOF PMFs for stocks, pa, pr, pra using a
+derive leakage-safe combo OOF PMFs for stocks, pa, pr, ra, pra using a
 Gaussian copula whose correlation matrix is estimated from PRIOR dates
 only. If insufficient prior data exists, fall back to independence
 sampling and label the row accordingly.
@@ -10,6 +10,7 @@ Combos derived (canonical -> mission alias):
     stocks -> stl_blk      = stl + blk
     pa     -> pts_ast      = pts + ast
     pr     -> pts_reb      = pts + reb
+    ra     -> reb_ast      = reb + ast
     pra    -> pts_reb_ast  = pts + reb + ast
 
 Methodology:
@@ -99,6 +100,7 @@ COMBO_DEFS: dict[str, tuple[str, tuple[str, ...]]] = {
     "stocks": ("stl_blk",     ("stl", "blk")),
     "pa":     ("pts_ast",     ("pts", "ast")),
     "pr":     ("pts_reb",     ("pts", "reb")),
+    "ra":     ("reb_ast",     ("reb", "ast")),
     "pra":    ("pts_reb_ast", ("pts", "reb", "ast")),
 }
 

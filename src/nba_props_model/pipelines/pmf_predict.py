@@ -13,19 +13,10 @@ Pipeline per prop
   2. Main-stat PMFs from minutes x rate simulation
   3. Sparse-stat PMFs from hurdle models (stl, blk marginals)
   4. FG3M PMF from the hurdle model's pmf() method
-  5. Mission combo PMFs (stocks, pa, pr, pra) from joint samples
+  5. Mission combo PMFs (stocks, pa, pr, ra, pra) from joint samples
      via simulate_joint_stat_samples + build_combo_pmfs_for_group.
-     - pa/pr/pra: production-grade. pts/reb/ast share the minutes
-       draw in joint_simulation, preserving within-game correlation
-       that convolution/independence destroyed.
-     - stocks: routed through the same path for architectural
-       consistency and so the role-aware stocks calibrator sees its
-       training-time input distribution. BUT joint_simulation
-       samples stl and blk INDEPENDENTLY from their hurdle PMFs
-       (documented limitation in joint_simulation.py). M8.5 does
-       NOT close stocks correlation quality; that remains an open
-       M8.6/M9 item.
-     ra/reb_ast are intentionally NOT emitted (non-mission).
+     - pa/pr/ra/pra: pts/reb/ast share the minutes draw (RA = reb+ast).
+     - stocks: joint path with documented independent stl/blk marginals.
   6. Apply per-stat pmf_calibration if trained
   7. Convert to fair over/under at each offered line
   8. Bet-selection filter against market prices
@@ -46,6 +37,8 @@ import numpy as np
 import pandas as pd
 
 from nba_props_model.calibration.pmf_calibration import load_calibrator
+from nba_props_model.calibration.sparse_stat_hurdle_recalibration import SparseHurdleCalibrator
+from nba_props_model.calibration.monotone_pmf_cdf_calibration import MonotonePMFCDFCalibrator
 from nba_props_model.calibration.role_buckets import role_bucket_from_minutes_dist
 from nba_props_model.models import combos, simulation, sparse_hurdle
 from nba_props_model.models.joint_simulation import (
@@ -68,28 +61,49 @@ logger = logging.getLogger(__name__)
 
 PMF_SIM_DRAWS = int(os.getenv("NBA_PMF_SIM_DRAWS", "50000"))
 
+_SPARSE_HURDLE_CAL: Optional[SparseHurdleCalibrator] = None
+_SPARSE_HURDLE_CAL_LOADED: bool = False
+_MONOTONE_CDF_CAL: Optional[MonotonePMFCDFCalibrator] = None
+_MONOTONE_CDF_CAL_LOADED: bool = False
+
+
+def _load_sparse_hurdle_calibrator() -> Optional[SparseHurdleCalibrator]:
+    global _SPARSE_HURDLE_CAL, _SPARSE_HURDLE_CAL_LOADED
+    if _SPARSE_HURDLE_CAL_LOADED:
+        return _SPARSE_HURDLE_CAL
+    _SPARSE_HURDLE_CAL_LOADED = True
+    p = MODEL_DIR / "sparse_hurdle_offsets.json"
+    try:
+        _SPARSE_HURDLE_CAL = SparseHurdleCalibrator.load(p)  # type: ignore[arg-type]
+    except Exception as e:
+        logger.warning(f"sparse hurdle calibrator load failed: {e}")
+        _SPARSE_HURDLE_CAL = None
+    return _SPARSE_HURDLE_CAL
+
+
+def _load_monotone_cdf_calibrator() -> Optional[MonotonePMFCDFCalibrator]:
+    global _MONOTONE_CDF_CAL, _MONOTONE_CDF_CAL_LOADED
+    if _MONOTONE_CDF_CAL_LOADED:
+        return _MONOTONE_CDF_CAL
+    _MONOTONE_CDF_CAL_LOADED = True
+    p = MODEL_DIR / "monotone_pmf_cdf_v0.json"
+    try:
+        _MONOTONE_CDF_CAL = MonotonePMFCDFCalibrator.load(p)  # type: ignore[arg-type]
+    except Exception as e:
+        logger.warning(f"monotone cdf calibrator load failed: {e}")
+        _MONOTONE_CDF_CAL = None
+    return _MONOTONE_CDF_CAL
+
 
 MAIN_STATS = ("pts", "reb", "ast", "tov")
 SPARSE_STATS = ("stl", "blk")
 COMBO_STATS = tuple(combos.COMBO_COMPONENTS.keys())
 
-# M8.5: mission-required combos. The ONLY combos emitted to
-# production. stocks, pa, pr, and pra each route through joint
-# samples + role-aware calibrators, but the correctness story
-# differs by combo:
-#   - pa, pr, pra: production-grade. pts/reb/ast share the same
-#     minutes draw in simulate_joint_stat_samples, so the resulting
-#     PMFs preserve within-game correlation that convolution/
-#     independence destroyed.
-#   - stocks: routed through the same joint-sample path for
-#     architectural consistency and so the role-aware M6.2 stocks
-#     calibrator sees its training-time input distribution. BUT
-#     joint_simulation samples stl/blk INDEPENDENTLY from their
-#     hurdle PMFs (documented limitation). True stl/blk correlation
-#     is NOT closed by M8.5; M8.6/M9 must track stocks/stl/blk
-#     quality separately.
-# ra/reb_ast are intentionally NOT in this set.
-MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "pra")
+# M8.6: mission-required combos (12-target mission). All emitted combos
+# use joint samples + build_combo_pmfs_for_group (no independence fallback).
+# RA uses reb+ast from the same joint draw as PA/PR/PRA. Role calibrator for
+# RA may be absent until pmf_cal_role_ra.pkl exists (uncalibrated raw joint PMF).
+MISSION_COMBOS: tuple[str, ...] = ("stocks", "pa", "pr", "ra", "pra")
 
 # Stats whose simulation embeds inactive/DNP zero-mass via
 # `minutes_dist.sample()` and therefore must be active-conditioned
@@ -151,12 +165,9 @@ def build_prop_pmfs(
         except Exception as e:
             logger.debug(f"fg3m pmf failed: {e}")
 
-    # M8.5: mission combo PMFs from joint samples (replaces legacy
-    # convolution stocks + independence pa/pr/pra). The M6.2 role-aware
-    # combo calibrators (pmf_cal_role_{stocks,pa,pr,pra}.pkl) were fit
-    # on joint-sample combo OOF; this path routes each of stocks, pa,
-    # pr, and pra through joint samples to match the calibrators'
-    # training input distribution. No ra/reb_ast (non-mission).
+    # M8.6: mission combo PMFs from joint samples + joint_combo_pmfs.
+    # Role-aware calibrators exist for stocks, pa, pr, pra; RA may be
+    # uncalibrated until pmf_cal_role_ra.pkl is trained.
     #
     # Correctness story differs by combo:
     #   - pa, pr, pra: production-grade. pts/reb/ast share the same
@@ -168,6 +179,7 @@ def build_prop_pmfs(
     #     against the calibrator but does NOT capture true stl/blk
     #     correlation. Stocks correlation quality is an open M8.6/M9
     #     item.
+    no_artifacts_mode = len(out) == 0
     try:
         joint = simulate_joint_stat_samples(
             minutes_dist=minutes_dist,
@@ -177,6 +189,8 @@ def build_prop_pmfs(
             fg3m_hurdle_model=fg3m_hurdle_model,
         )
     except Exception as e:
+        if no_artifacts_mode:
+            return out
         raise RuntimeError(
             f"M8.5: simulate_joint_stat_samples failed: "
             f"{type(e).__name__}: {e}. Production combo emission "
@@ -185,6 +199,8 @@ def build_prop_pmfs(
             f"train/serve skew)."
         )
     if joint is None:
+        if no_artifacts_mode:
+            return out
         raise RuntimeError(
             "M8.5: simulate_joint_stat_samples returned None. "
             "Production mission combo emission requires joint samples; "
@@ -249,6 +265,15 @@ def build_prop_pmfs(
             target_pmf = prop.pmf
             active_tag = ""
 
+        # Optional sparse-stat hurdle recalibration (p0 + positive-tail tilt).
+        sparse_cal = _load_sparse_hurdle_calibrator()
+        if sparse_cal is not None and stat in {"stl", "blk", "stocks", "tov", "fg3m"}:
+            try:
+                target_pmf = sparse_cal.apply(target_pmf, stat=stat, role_bucket=role_bucket)
+                active_tag += f"+sparse_hurdle_guarded"
+            except Exception as e:
+                logger.warning(f"sparse_hurdle_cal apply failed stat={stat}: {e}")
+
         cal = load_calibrator(stat)
         if cal is None:
             # No calibrator artifact for this stat. In active mode we
@@ -272,6 +297,16 @@ def build_prop_pmfs(
         else:
             cal_pmf = cal.apply(target_pmf)
             version_tag = "pmf_cal_v1"
+
+        # Optional monotone PIT/CDF calibration layer (stat-role/stat/role/global).
+        mono = _load_monotone_cdf_calibrator()
+        if mono is not None:
+            try:
+                cal_pmf = mono.apply(cal_pmf, stat=stat, role_bucket=role_bucket)
+                version_tag += "+monotone_pit_cdf_v1"
+            except Exception as e:
+                logger.warning(f"monotone_cdf_cal apply failed stat={stat}: {e}")
+
         out[stat] = PropPMF(
             stat=stat, pmf=cal_pmf, calibrated=True,
             model_version=f"{prop.model_version}+{version_tag}{active_tag}",

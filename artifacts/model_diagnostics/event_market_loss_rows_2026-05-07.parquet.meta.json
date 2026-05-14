@@ -1,0 +1,24 @@
+{
+  "as_of_date": "2026-05-07",
+  "schema_version": "m8_6q_v2",
+  "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+  "forbidden_columns_check": "no_market_full_pmf_columns",
+  "rows": 1502,
+  "matched_rows": 864,
+  "scored_rows_all_fields_nonnull": 864,
+  "odds_rows": 1502,
+  "market_overlap_ratio": 0.575233,
+  "insufficient_market_overlap": false,
+  "scoring_blocker_counts": {
+    "none": 864,
+    "market_join_failed": 638
+  },
+  "odds_pairs_source": "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet",
+  "oof_single_rows": 344,
+  "oof_combo_rows": 215,
+  "model_source_mode": "oof_date_slice",
+  "box_score_rows_for_as_of_date": 44,
+  "box_score_actual_lookup_keys": 528,
+  "pmf_col_single": "pmf",
+  "pmf_col_combo": "pmf"
+}

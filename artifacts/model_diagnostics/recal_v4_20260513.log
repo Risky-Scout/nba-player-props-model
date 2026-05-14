@@ -1,0 +1,9 @@
+{
+  "model_dir": "_stat_grid_delivery_calibration_optimizer/artifacts/models",
+  "diag_dir": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/m8_6q_internal_pmf_quality_20260512T224151Z",
+  "rows": 153664,
+  "supported_cells": 48,
+  "selected_cells": 47,
+  "market_pmf_used": false,
+  "params_path": "_stat_grid_delivery_calibration_optimizer/artifacts/models/stat_grid_recalibration_params.json"
+}

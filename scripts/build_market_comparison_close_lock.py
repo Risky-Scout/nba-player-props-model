@@ -1,16 +1,15 @@
 """Build market_comparison_close_lock.parquet from closing_lines JSON."""
 from __future__ import annotations
-import argparse, json
+import argparse
+import json
+import sys
 from pathlib import Path
+
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-
-MARKET_KEY_TO_STAT = {
-    "player_points": "pts", "player_rebounds": "reb", "player_assists": "ast",
-    "player_threes": "fg3m", "player_turnovers": "tov", "player_steals": "stl",
-    "player_blocks": "blk",
-}
+sys.path.insert(0, str(REPO_ROOT / "src"))
+from nba_props_model.markets.oddsapi_markets import stat_for_market_key
 
 
 def american_to_decimal(o):
@@ -44,7 +43,7 @@ def parse_closing_lines(path):
         for book in game.get("bookmakers", []):
             book_key = book.get("key") or book.get("title")
             for market in book.get("markets", []):
-                stat = MARKET_KEY_TO_STAT.get(market.get("key"))
+                stat = stat_for_market_key(str(market.get("key") or ""))
                 if stat is None:
                     continue
                 for outcome in market.get("outcomes", []):

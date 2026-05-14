@@ -1,0 +1,8 @@
+{
+  "as_of_date": "2026-05-11",
+  "schema_version": "m8_6q_v2",
+  "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+  "forbidden_columns_check": "no_market_full_pmf_columns",
+  "rows": 0,
+  "join_status": "no_odds_pairs_file"
+}

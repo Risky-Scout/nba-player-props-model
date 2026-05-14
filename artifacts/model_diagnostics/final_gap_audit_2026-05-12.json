@@ -1,0 +1,116 @@
+{
+  "audit_date": "2026-05-12",
+  "generated_at_utc": "2026-05-13T05:40:00Z",
+  "items": {
+    "1_pmf_cal_role_ra_pkl": {
+      "status": "complete",
+      "evidence": "artifacts/models/pmf_cal_role_ra.pkl exists after fit_combo_pmf_calibrators.py",
+      "next_action": "None"
+    },
+    "2_pmf_cal_meta_includes_ra": {
+      "status": "complete",
+      "evidence": "artifacts/models/pmf_cal_meta.json stats.ra fitted via M6.2 merge",
+      "next_action": "None"
+    },
+    "3_oof_combo_ra_rows": {
+      "status": "complete",
+      "evidence": "data/oof_combo_pmfs.parquet stat value_counts includes ra (96,040 rows = 19,208 x 5 combos)",
+      "next_action": "None"
+    },
+    "4_stat_grid_ra_model_version_role_cal": {
+      "status": "partial",
+      "evidence": "predictions/stat_grid_2026-05-12.parquet: RA rows use joint path; re-run build_stat_grid_pmfs after calibrator refresh to stamp latest model_version",
+      "next_action": "run build_stat_grid_pmfs.py --date 2026-05-12 and confirm model_version / pmf_source fields reference role calibrator where wired"
+    },
+    "5_combo_oof_rows_all_combos": {
+      "status": "complete",
+      "evidence": "oof_combo_pmfs: stocks, pa, pr, ra, pra all present",
+      "next_action": "None"
+    },
+    "6_combo_role_calibrators": {
+      "status": "complete",
+      "evidence": "pmf_cal_role_{stocks,pa,pr,ra,pra}.pkl in artifacts/models/",
+      "next_action": "None"
+    },
+    "7_source_recalibration_includes_combos": {
+      "status": "partial",
+      "evidence": "stat_grid_delivery_recalibration / optimizer v4: verify_stat_grid_recalibration_before_after_oof.py not re-run this session; optimize_stat_grid_recalibration_params_v4.py was started (long runtime)",
+      "next_action": "Complete optimizer run; run verify_stat_grid_recalibration_before_after_oof.py with DIAG_DIR and MODEL_DIR"
+    },
+    "8_before_after_oof_verifier_combos": {
+      "status": "partial",
+      "evidence": "scripts/verify_stat_grid_recalibration_before_after_oof.py exists; not executed after this optimizer pass",
+      "next_action": "Run verifier after Phase G optimizer completes"
+    },
+    "9_event_market_loss_rows": {
+      "status": "complete",
+      "evidence": "scripts/build_event_market_loss_rows.py; artifacts/model_diagnostics/event_market_loss_rows_2026-05-12.parquet (matched=466 after join fix)",
+      "next_action": "Import player_game_stats for slate date to unlock scored_rows for G3 gate"
+    },
+    "10_stat_role_superiority_report": {
+      "status": "complete",
+      "evidence": "scripts/build_stat_role_market_superiority_report.py (untracked in repo until committed)",
+      "next_action": "Run after event rows; review summary.json"
+    },
+    "11_verify_market_superiority_by_stat_role": {
+      "status": "complete",
+      "evidence": "scripts/verify_market_superiority_by_stat_role_contract.py exists",
+      "next_action": "Expect FAIL until event-market scored sample + segment passes"
+    },
+    "12_feature_registry_py": {
+      "status": "partial",
+      "evidence": "src/nba_props_model/features/feature_registry.py added (v0.1 subset; full contract groups not all enumerated)",
+      "next_action": "Expand FEATURE_REGISTRY to full mission list in contract prompt"
+    },
+    "13_build_player_feature_store_py": {
+      "status": "partial",
+      "evidence": "scripts/build_player_feature_store.py emits data/features/player_game_features_2026-05-12_close_lock.parquet from stat_grid minus odds/line/pmf",
+      "next_action": "Enrich from dedicated rolling/EWMA tables when available"
+    },
+    "14_verify_feature_leakage_contract_py": {
+      "status": "partial",
+      "evidence": "scripts/verify_feature_leakage_contract.py — column-name heuristic checks; FEATURE_LEAKAGE_CONTRACT_PASS on 2026-05-12 close_lock build",
+      "next_action": "Strengthen with snapshot vs as_of timestamp cross-checks"
+    },
+    "15_train_minutes_model_py": {
+      "status": "missing",
+      "evidence": "glob scripts/train_minutes_model.py: 0 files",
+      "next_action": "Phase E minutes distribution model"
+    },
+    "16_verify_minutes_model_oof_py": {
+      "status": "missing",
+      "evidence": "glob scripts/verify_minutes_model_oof.py: 0 files",
+      "next_action": "Phase E"
+    },
+    "17_diagnose_role_and_minutes_bias_py": {
+      "status": "missing",
+      "evidence": "not found",
+      "next_action": "Create diagnostics script per contract"
+    },
+    "18_verify_role_bucket_contract_py": {
+      "status": "missing",
+      "evidence": "not found",
+      "next_action": "Add role bucket contract verifier"
+    },
+    "19_sparse_stat_hurdle_recalibration_py": {
+      "status": "missing",
+      "evidence": "src/nba_props_model/calibration/sparse_stat_hurdle_recalibration.py not found",
+      "next_action": "Phase F sparse hurdle pipeline"
+    },
+    "20_monotone_pmf_cdf_calibration_py": {
+      "status": "missing",
+      "evidence": "monotone_pmf_cdf_calibration.py not found",
+      "next_action": "Phase F monotone CDF calibration"
+    },
+    "21_github_workflows_full_production_order": {
+      "status": "partial",
+      "evidence": "scripts/run_daily_delivery_pipeline.py bundles M8.6 event-market steps for derek/close_lock; .github/workflows/daily_pmf_delivery.yml not expanded to full 17-step list in this session",
+      "next_action": "Mirror explicit step order in daily_pmf_delivery.yml if CI must not rely on orchestrator only"
+    },
+    "22_workflows_avoid_allow_historical_production": {
+      "status": "complete",
+      "evidence": "grep .github/workflows: no --allow-historical in active production jobs; legacy daily_predictions.yml references singles/sgps (separate legacy workflow)",
+      "next_action": "Keep daily_predictions.yml disabled or clearly non-production"
+    }
+  }
+}

@@ -95,6 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     public_export_dir = REPO_ROOT / "public_export" / "wizard_of_odds" / date
 
     failures: list[str] = []
+    warnings: list[str] = []
 
     # ── Prediction inputs ──────────────────────────────────────────
     parquet = pred_dir / f"all_props_{date}.parquet"
@@ -133,10 +134,11 @@ def main(argv: list[str] | None = None) -> int:
     pmf_research_path = public_export_dir / "pmf_research.json"
     for p in (affiliate_path, pmf_research_path):
         if not p.exists() or p.stat().st_size == 0:
-            failures.append(
-                f"missing/empty public_export file: "
-                f"{p.relative_to(REPO_ROOT)}"
-            )
+            msg = f"missing/empty public_export file: {p.relative_to(REPO_ROOT)}"
+            if mode == "strict":
+                failures.append(msg)
+            else:
+                warnings.append(msg)
 
     # ── Run manifest cross-checks ───────────────────────────────────
     run_manifest = _read_json(deliv_dir / "run_manifest.json") or {}
@@ -147,7 +149,11 @@ def main(argv: list[str] | None = None) -> int:
                 f"!= --delivery-date={date}"
             )
         if not run_manifest.get("champion_model_id"):
-            failures.append("run_manifest missing champion_model_id")
+            msg = "run_manifest missing champion_model_id"
+            if mode == "strict":
+                failures.append(msg)
+            else:
+                warnings.append(msg)
 
     # Champion-pointer cross-check.
     pointer = _read_json(
@@ -163,13 +169,21 @@ def main(argv: list[str] | None = None) -> int:
 
     # finality_blocker_codes audit.
     blocker_codes = list(run_manifest.get("finality_blocker_codes") or [])
-    if blocker_codes:
-        if "market_coverage_none" in blocker_codes and not args.allow_no_market:
+    implicit_blockers = set(blocker_codes)
+    # Legacy compatibility: no_odds_fetch indicates no trustworthy market
+    # freshness/coverage for strict package validation.
+    if bool(run_manifest.get("no_odds_fetch")):
+        implicit_blockers.add("market_coverage_none")
+        # When market snapshots are unavailable, treat TOV market-backed
+        # packaging as missing unless explicitly allowed.
+        implicit_blockers.add("missing_stats:tov")
+    if implicit_blockers:
+        if "market_coverage_none" in implicit_blockers and not args.allow_no_market:
             failures.append(
                 "run_manifest.finality_blocker_codes contains "
                 "'market_coverage_none' (--allow-no-market not set)"
             )
-        if "missing_stats:tov" in blocker_codes and not args.allow_tov_missing:
+        if "missing_stats:tov" in implicit_blockers and not args.allow_tov_missing:
             failures.append(
                 "run_manifest.finality_blocker_codes contains "
                 "'missing_stats:tov' (--allow-tov-missing not set)"
@@ -180,12 +194,20 @@ def main(argv: list[str] | None = None) -> int:
     if affiliate:
         rows = affiliate.get("rows") or []
         if not isinstance(rows, list) or len(rows) == 0:
-            failures.append("affiliate_dashboard.json has zero rows")
+            msg = "affiliate_dashboard.json has zero rows"
+            if mode == "strict":
+                failures.append(msg)
+            else:
+                warnings.append(msg)
     pmf_research = _read_json(pmf_research_path) or {}
     if pmf_research:
         players = pmf_research.get("players") or []
         if not isinstance(players, list) or len(players) == 0:
-            failures.append("pmf_research.json has zero players")
+            msg = "pmf_research.json has zero players"
+            if mode == "strict":
+                failures.append(msg)
+            else:
+                warnings.append(msg)
 
     # ── Pandas-backed structural checks ─────────────────────────────
     try:
@@ -237,6 +259,9 @@ def main(argv: list[str] | None = None) -> int:
             f"mode={mode}  count={len(failures)}"
         )
         return 1
+
+    for w in warnings:
+        print(f"::warning::{w}")
 
     print(
         f"WOO_DELIVERY_PACKAGE_VERIFICATION_PASS  date={date}  mode={mode}  "

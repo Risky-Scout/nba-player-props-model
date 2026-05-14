@@ -1,9 +1,9 @@
 {
   "delivery_date": "2026-05-12",
-  "pipeline_run_id": "6532ad32-e85c-4109-81cb-a4d8504b58ba",
-  "snapshot_type": "close_lock",
-  "snapshot_time_utc": "2026-05-12T21:20:12Z",
-  "model_version": "41e2363a#phase10c",
+  "pipeline_run_id": "fc7050da-3e3d-42a3-b7c2-e9ac5d2dffb3",
+  "snapshot_type": "morning",
+  "snapshot_time_utc": "2026-05-13T07:37:09Z",
+  "model_version": "78f9ba3c#phase10c",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "finality_status": "provisional",
@@ -32,6 +32,7 @@
       "stocks",
       "pa",
       "pr",
+      "ra",
       "pra"
     ],
     "in_delivery": [
@@ -42,6 +43,7 @@
       "pr",
       "pra",
       "pts",
+      "ra",
       "reb",
       "stl",
       "stocks",
@@ -53,8 +55,8 @@
   "sources": {
     "model_only_parquet": {
       "path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "mtime_utc": "2026-05-12T21:20:11.830774Z",
-      "sha256": "7185d03686a93e0bc494a28937e03afc57f463b7a97c6f3bb1f0b234c7f88e7d",
+      "mtime_utc": "2026-05-13T07:37:08.544169Z",
+      "sha256": "9d5829edfa330e5e53728b2b1c7300160201703331e7d12cef5f24739d86a0d8",
       "auto_built_from_predictions": false
     },
     "predictions_parquet": {
@@ -89,30 +91,36 @@
     }
   },
   "row_counts": {
-    "fair_odds_board": 7347,
-    "full_pmfs_wide": 341,
+    "fair_odds_board": 8224,
+    "full_pmfs_wide": 384,
     "market_comparison": 1285,
-    "publishable_edges": 0
+    "publishable_edges": 1087
+  },
+  "count_diagnostics": {
+    "fair_odds_board": {
+      "fair_over_odds_null_count": 1148,
+      "fair_under_odds_null_count": 1148,
+      "zero_or_one_prob_count": 667
+    }
   },
   "quality_rollup": {
     "pmf_valid_ok_pct": 1.0,
-    "pmf_sum_error_max": 5.551115123125783e-16,
+    "pmf_sum_error_max": 6.661338147750939e-16,
     "calibration_confidence": {
-      "high": 154,
-      "low": 99,
-      "medium": 88
+      "medium": 204,
+      "high": 180
     },
     "market_coverage_status": {
-      "full": 341
+      "full": 384
     },
     "injury_freshness_status": {
-      "fresh": 341
+      "fresh": 384
     },
     "lineup_freshness_status": {
-      "projected": 341
+      "projected": 384
     },
     "role_freshness_status": {
-      "derived_from_projected_minutes": 341
+      "derived_from_projected_minutes": 384
     }
   },
   "warnings": [],
@@ -146,7 +154,7 @@
     "availability_freshness_status": "very_stale",
     "finals_finality_status": "finals_pending",
     "role_freshness_status_rollup": {
-      "derived_from_projected_minutes": 341
+      "derived_from_projected_minutes": 384
     }
   }
 }

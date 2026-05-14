@@ -1,0 +1,9 @@
+{
+  "oof_path": "data/oof_minutes_predictions.parquet",
+  "rows": 81032,
+  "minutes_mae_model": 5.263803965346055,
+  "minutes_mae_baseline": 5.191159347003026,
+  "dnp_brier": 0.009124912380294203,
+  "role_bucket_confusion_csv": "artifacts/model_diagnostics/role_minutes/role_bucket_confusion.csv",
+  "minutes_bias_by_role_csv": "artifacts/model_diagnostics/role_minutes/minutes_bias_by_role.csv"
+}

@@ -1,0 +1,19 @@
+{
+  "date": "2026-05-12",
+  "global_market_superiority_claim_allowed": false,
+  "n_segments_total": 24,
+  "n_segments_passed": 0,
+  "n_segments_failed": 24,
+  "required_stats_missing_in_event_rows": [
+    "blk",
+    "pa",
+    "pr",
+    "pra",
+    "ra",
+    "stl",
+    "stocks",
+    "tov"
+  ],
+  "min_scored_rows": 100,
+  "min_market_joined_rows": 100
+}

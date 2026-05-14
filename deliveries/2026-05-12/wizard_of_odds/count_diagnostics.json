@@ -1,25 +1,7 @@
 {
-  "accuracy_supported_rows": 1285,
-  "affiliate_dashboard_rows": 2570,
-  "calibration_supported_rows": 1285,
-  "date": "2026-05-12",
-  "edge_publishable_rows": 2570,
-  "fair_odds_board_rows": 7347,
-  "full_pmfs_outcome_level_rows": 18476,
-  "full_pmfs_wide_rows": 341,
-  "generated_at_utc": "2026-05-12T21:25:35.143916+00:00",
-  "joinable_rows": 1285,
-  "market_comparison_rows": 1285,
-  "market_prob_resolved_rows": 1285,
-  "model_prob_resolved_rows": 1285,
-  "offered_market_rows_available": 1285,
-  "pmf_research_policy": "atom_source_only_no_ladder_fallback",
-  "pmf_rows_available": 18476,
-  "publishable_edges_rows": 0,
-  "schema_version": "m8_6o_count_diagnostics_v1",
-  "side_odds_resolved_rows": 1285,
-  "sources": {
-    "affiliate_dashboard_rows": "deliveries/2026-05-12/wizard_of_odds/market_comparison.parquet"
-  },
-  "status": "generated_from_actual_wizard_of_odds_outputs"
+  "fair_odds_board": {
+    "fair_over_odds_null_count": 1148,
+    "fair_under_odds_null_count": 1148,
+    "zero_or_one_prob_count": 667
+  }
 }

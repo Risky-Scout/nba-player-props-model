@@ -109,7 +109,9 @@ def main(argv: list[str] | None = None) -> int:
         woo_run = _read_json(
             REPO_ROOT / "deliveries" / date / "wizard_of_odds" / "run_manifest.json"
         ) or {}
-        blockers = list(woo_run.get("finality_blocker_codes") or [])
+        blockers = set(list(woo_run.get("finality_blocker_codes") or []))
+        if bool(woo_run.get("no_odds_fetch")):
+            blockers.add("missing_stats:tov")
         if "missing_stats:tov" in blockers:
             failures.append(
                 ("tov_accounted_for",
@@ -159,6 +161,23 @@ def main(argv: list[str] | None = None) -> int:
                 ("clv_calculated",
                  f"{clv.relative_to(REPO_ROOT)} missing — Phase 2 B3 required")
             )
+        else:
+            try:
+                import pandas as pd
+
+                clv_df = pd.read_parquet(clv)
+                clv_cols = [c for c in ("clv", "clv_bps", "closing_line_value") if c in clv_df.columns]
+                has_clv_signal = bool(clv_cols) and bool(clv_df[clv_cols].notna().any().any())
+                if not has_clv_signal:
+                    pending.append(
+                        ("clv_calculated",
+                         f"{clv.relative_to(REPO_ROOT)} missing usable CLV columns/values — Phase 2 B3 required")
+                    )
+            except Exception:
+                pending.append(
+                    ("clv_calculated",
+                     f"{clv.relative_to(REPO_ROOT)} unreadable for CLV validation — Phase 2 B3 required")
+                )
 
     # 8. Derek forward feed verifies
     if args.require_derek:

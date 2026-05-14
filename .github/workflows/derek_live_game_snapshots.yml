@@ -44,6 +44,9 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
+  PYTHONPATH: src
+  STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+  SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
 
 jobs:
   derek_live_snapshots:

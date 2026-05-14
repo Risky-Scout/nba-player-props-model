@@ -43,10 +43,23 @@ def main() -> None:
         help="ISO end date (inclusive). Default: latest game in stats.",
     )
     parser.add_argument(
+        "--slate-date",
+        default=None,
+        help=(
+            "When set: rebuild availability only for this calendar date "
+            "(YYYY-MM-DD), merge into existing --out, preserving all other "
+            "dates. Mutually exclusive with --start-date/--end-date. "
+            "Intended for daily PMF delivery preflight."
+        ),
+    )
+    parser.add_argument(
         "--out", default=str(DATA_DIR / "player_availability_asof.parquet"),
         help="Output parquet path.",
     )
     args = parser.parse_args()
+
+    if args.slate_date and (args.start_date or args.end_date):
+        parser.error("--slate-date may not be combined with --start-date/--end-date")
 
     t0 = time.time()
     logger.info("Loading source parquet files...")
@@ -57,21 +70,53 @@ def main() -> None:
     )
 
     pairs = builder.game_stats[["player_id", "team_id", "game_date"]].drop_duplicates()
-    if args.start_date:
-        pairs = pairs[pairs["game_date"] >= args.start_date]
-    if args.end_date:
-        pairs = pairs[pairs["game_date"] <= args.end_date]
-    logger.info(f"Building features for {len(pairs):,} (player, team, date) rows...")
+    pairs = pairs.copy()
+    pairs["_game_date_norm"] = (
+        pd.to_datetime(pairs["game_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    )
+    if args.slate_date:
+        pairs = pairs[pairs["_game_date_norm"] == args.slate_date]
+        if pairs.empty:
+            logger.warning(
+                "No game_stats rows for slate_date=%s — leaving %s unchanged.",
+                args.slate_date,
+                args.out,
+            )
+            return
+    else:
+        if args.start_date:
+            pairs = pairs[pairs["_game_date_norm"] >= args.start_date]
+        if args.end_date:
+            pairs = pairs[pairs["_game_date_norm"] <= args.end_date]
+    pairs_use = pairs[["player_id", "team_id", "game_date"]].drop_duplicates()
+    logger.info(f"Building features for {len(pairs_use):,} (player, team, date) rows...")
 
-    feats = builder.features_for(pairs)
+    feats = builder.features_for(pairs_use)
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    feats.to_parquet(out_path, index=False)
-    dt = time.time() - t0
-    logger.info(f"Wrote {len(feats):,} rows -> {out_path}  ({dt:.1f}s)")
 
-    _log_coverage(feats)
+    if args.slate_date and out_path.exists():
+        old = pd.read_parquet(out_path)
+        old_norm = pd.to_datetime(old["game_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+        old_kept = old.loc[old_norm != args.slate_date].copy()
+        merged = pd.concat([old_kept, feats], ignore_index=True)
+        merged.to_parquet(out_path, index=False)
+        slice_mask = (
+            pd.to_datetime(merged["game_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+            == args.slate_date
+        )
+        _log_coverage(merged.loc[slice_mask])
+        dt = time.time() - t0
+        logger.info(
+            f"Merged slate {args.slate_date!r}: {len(feats):,} new rows, "
+            f"{len(merged):,} total -> {out_path}  ({dt:.1f}s)"
+        )
+    else:
+        feats.to_parquet(out_path, index=False)
+        dt = time.time() - t0
+        logger.info(f"Wrote {len(feats):,} rows -> {out_path}  ({dt:.1f}s)")
+        _log_coverage(feats)
 
 
 def _log_coverage(feats: pd.DataFrame) -> None:

@@ -47,7 +47,7 @@ import pandas as pd  # noqa: E402
 from nba_props_model.calibration.pmf_calibration import load_calibrator  # noqa: E402
 from nba_props_model.evaluation.diagnostics import (  # noqa: E402
     FoldMetrics, bootstrap_ci,
-    brier, calibration_slope_intercept, devig_pair,
+    brier, calibration_line_fit, devig_pair,
     discrete_crps, ece, edge_decile_monotonicity, log_score,
     pit_ks_distance, randomized_pit, write_report,
 )
@@ -72,7 +72,10 @@ DOCS_DIR = REPO_ROOT / "artifacts" / "docs"
 # market-relative lift. We emit NaN for the lift column, set
 # market_eval_available=False in the JSON sidecar, and append an
 # explicit warning section to the markdown.
-MARKET_EVAL_AVAILABLE = False
+# OOF parquet path: real opening-line de-vig is not joined here; event-market
+# evaluation is wired separately via scripts/event_market_diagnostics_wiring.py
+# when --require-market-eval is set.
+MARKET_EVAL_OOF_OPENING_LINES_AVAILABLE = False
 
 
 # ── legacy PMF construction from quantile ladder ───────────────────────────
@@ -159,13 +162,74 @@ def main() -> None:
             "Skips STL, BLK, STOCKS. CI runtime optimization."
         ),
     )
+    parser.add_argument(
+        "--require-market-eval",
+        action="store_true",
+        help="Run M8.6 event-market stack; fail if not scored (PHASE8_MARKET_EVAL_NOT_WIRED_FAIL).",
+    )
+    parser.add_argument(
+        "--allow-baseline-only",
+        action="store_true",
+        help="Explicitly allow OOF diagnostics without event-market scoring (market_eval_status=baseline_only).",
+    )
+    parser.add_argument("--date", default=None, help="Single-date alias (not yet used for OOF slice).")
+    parser.add_argument("--start-date", default=None)
+    parser.add_argument("--end-date", default=None)
+    parser.add_argument("--dates-file", default=None, help="Inventory CSV for event-market stack.")
+    parser.add_argument(
+        "--snapshot-substr", default="close_or_lock",
+        help="Odds pairs filename filter for event-market scripts.",
+    )
+    parser.add_argument(
+        "--allow-provisional-block",
+        action="store_true",
+        help="Pass through to market superiority verifier after strict check.",
+    )
+    parser.add_argument(
+        "--training-table",
+        default=str(DATA_DIR / "training_table.parquet"),
+        help="Path to training_table.parquet (legacy ladder join). Default: data/training_table.parquet",
+    )
     args = parser.parse_args()
+    if args.require_market_eval and args.allow_baseline_only:
+        parser.error("--require-market-eval and --allow-baseline-only are mutually exclusive")
+    modes = sum(bool(x) for x in (args.date, (args.start_date and args.end_date), args.dates_file))
+    if modes > 1:
+        parser.error("use only one of --date, --start-date/--end-date, --dates-file for event-market")
+    if args.require_market_eval and modes == 0 and not (args.start_date and args.end_date):
+        parser.error("--require-market-eval needs --dates-file or --start-date and --end-date")
     core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
 
     start = time.time()
     logger.info("=" * 60)
     logger.info("Diagnostics — legacy direct-total vs new PMF path")
     logger.info("=" * 60)
+
+    training_table_path = Path(args.training_table)
+    if not training_table_path.exists():
+        DOCS_DIR.mkdir(parents=True, exist_ok=True)
+        sidecar = DOCS_DIR / f"diagnostics_{args.run_date}.meta.json"
+        miss = {
+            "diagnostics_status": "failed_preflight",
+            "failure_code": "MISSING_TRAINING_TABLE",
+            "missing_path": str(training_table_path.resolve()),
+            "market_eval_status": "not_run_missing_training_table",
+            "market_superiority_claim_allowed": False,
+            "global_market_superiority_claim_allowed": False,
+            "eligible_market_subset_superiority_claim_allowed": False,
+            "model_only_calibration_claim_allowed": False,
+            "require_market_eval": bool(args.require_market_eval),
+            "allow_baseline_only": bool(args.allow_baseline_only),
+            "strict_contract_result": "not_run",
+            "promotion_status": "no_market_superiority_claim",
+        }
+        sidecar.write_text(json.dumps(miss, indent=2) + "\n", encoding="utf-8")
+        logger.error(
+            "MISSING_TRAINING_TABLE at %s — wrote %s (exit 3)",
+            training_table_path,
+            sidecar,
+        )
+        sys.exit(3)
 
     oof_path = Path(args.oof_path)
     if not oof_path.exists():
@@ -176,7 +240,7 @@ def main() -> None:
         sys.exit(1)
 
     stats_df = pd.read_parquet(DATA_DIR / "player_game_stats.parquet")
-    training_df = pd.read_parquet(DATA_DIR / "training_table.parquet")
+    training_df = pd.read_parquet(training_table_path)
     training_df["game_date"] = training_df["game_date"].astype(str).str[:10]
 
     oof = pd.read_parquet(oof_path)
@@ -351,14 +415,174 @@ def main() -> None:
     # Append role-stratified PMF diagnostics if the OOF carried role buckets.
     _append_role_stratified_section(report_path, role_diag_rows)
     # Append market evaluation status — explicit, never silent.
-    _append_market_eval_status(report_path, available=MARKET_EVAL_AVAILABLE)
+    _append_market_eval_status(report_path, available=MARKET_EVAL_OOF_OPENING_LINES_AVAILABLE)
+
+    from collections import Counter
+
+    cal_const_folds = [m for m in fold_metrics if m.cal_slope_status == "constant_probs"]
+    n_constant_prob_groups = len(cal_const_folds)
+    cstat = Counter()
+    crole = Counter()
+    largest_constant_prob_group_n = 0
+    for m in cal_const_folds:
+        base = str(m.stat).split("__")[0]
+        cstat[base] += 1
+        if m.constant_prob_n:
+            largest_constant_prob_group_n = max(largest_constant_prob_group_n, m.constant_prob_n)
+        mask = (oof["stat"].astype(str) == base) & (oof["fold_start"].astype(str) == str(m.fold_start))
+        if "role_bucket" in oof.columns and bool(mask.any()):
+            mode_rb = str(oof.loc[mask, "role_bucket"].astype(str).value_counts().idxmax())
+            crole[mode_rb] += 1
+        else:
+            crole["unknown"] += 1
+    constant_prob_groups_by_stat = dict(cstat)
+    constant_prob_groups_by_role = dict(crole)
+
+    em_payload: dict = {
+        "market_eval_status": "baseline_only",
+        "event_market_eval_ran": False,
+        "strict_contract_result": "not_run",
+        "market_superiority_claim_allowed": False,
+        "promotion_status": "no_market_superiority_claim",
+        "n_event_market_rows": None,
+        "n_matched_rows": None,
+        "n_scored_rows": None,
+        "dates_used": None,
+        "required_stats_missing_in_event_rows": None,
+        "global_market_superiority_claim_allowed": None,
+        "eligible_market_subset_superiority_claim_allowed": None,
+        "model_only_calibration_claim_allowed": None,
+        "calibration_constant_prob_summary": {
+            "n_constant_prob_groups": n_constant_prob_groups,
+            "constant_prob_groups_by_stat": constant_prob_groups_by_stat,
+            "constant_prob_groups_by_role": constant_prob_groups_by_role,
+            "largest_constant_prob_group_n": largest_constant_prob_group_n,
+            "constant_prob_fold_keys": [
+                f"{m.stat}|{m.fold_start}|{m.fold_end}" for m in cal_const_folds
+            ],
+        },
+    }
+
+    if args.require_market_eval:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        import event_market_diagnostics_wiring as emw  # noqa: WPS433
+
+        inv_p: Path | None = Path(args.dates_file) if args.dates_file else None
+        if inv_p is None:
+            if not (args.start_date and args.end_date):
+                logger.error("PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: need --dates-file or --start-date/--end-date")
+                sys.exit(2)
+            inv_p = emw.ensure_inventory(
+                REPO_ROOT,
+                sys.executable,
+                start_date=args.start_date,
+                end_date=args.end_date,
+                snapshot_substr=args.snapshot_substr,
+            )
+        inv_df = pd.read_csv(inv_p)
+        if "eligible_for_event_market_backtest" in inv_df.columns:
+            ev = inv_df["eligible_for_event_market_backtest"]
+            if ev.dtype == object:
+                ev = ev.astype(str).str.lower().isin(("1", "true", "t", "yes"))
+            n_elig = int((ev == True).sum())  # noqa: E712
+        else:
+            n_elig = len(inv_df)
+        if n_elig == 0:
+            logger.error("PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: no eligible_for_event_market_backtest dates")
+            em_payload["market_eval_status"] = "blocked_no_eligible_dates"
+            em_payload["event_market_eval_ran"] = True
+            sys.exit(2)
+        stack = emw.run_event_market_stack(
+            REPO_ROOT,
+            sys.executable,
+            dates_file=inv_p,
+            snapshot_substr=args.snapshot_substr,
+            allow_provisional_block=args.allow_provisional_block,
+        )
+        em_payload["event_market_eval_ran"] = True
+        if not stack.get("ok"):
+            logger.error(
+                "PHASE8_MARKET_EVAL_NOT_WIRED_FAIL event_market_stack_failed script=%s",
+                stack.get("failed_script"),
+            )
+            sys.exit(2)
+        em_payload["n_event_market_rows"] = stack.get("n_event_market_rows")
+        em_payload["n_matched_rows"] = stack.get("n_matched_rows")
+        em_payload["n_scored_rows"] = stack.get("n_scored_rows")
+        em_payload["dates_used"] = stack.get("dates_used")
+        summ = stack.get("superiority_summary") or {}
+        em_payload["required_stats_missing_in_event_rows"] = summ.get("required_stats_missing_in_event_rows")
+        em_payload["eligible_market_subset_superiority_claim_allowed"] = summ.get(
+            "eligible_market_subset_superiority_claim_allowed", False
+        )
+        em_payload["model_only_calibration_claim_allowed"] = summ.get(
+            "model_only_calibration_claim_allowed", False
+        )
+        n_scored = int(stack.get("n_scored_rows") or 0)
+        if n_scored <= 0:
+            em_payload["market_eval_status"] = "blocked_insufficient_scored_rows"
+            logger.error("PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: n_scored_rows==0")
+            sys.exit(2)
+        em_payload["market_eval_status"] = "event_market_scored"
+        strict_rc = int(stack.get("strict_verifier_exit_code") or 1)
+        prov_rc = stack.get("provisional_verifier_exit_code")
+        if strict_rc == 0:
+            em_payload["strict_contract_result"] = "pass"
+        elif prov_rc is not None and int(prov_rc) == 0:
+            em_payload["strict_contract_result"] = "blocked_provisional"
+        else:
+            em_payload["strict_contract_result"] = "fail"
+
+        summ_global_raw = bool(summ.get("global_market_superiority_claim_allowed", False))
+        eligible_raw = bool(summ.get("eligible_market_subset_superiority_claim_allowed", False))
+        strict_pass = em_payload["strict_contract_result"] == "pass"
+        em_payload["global_market_superiority_claim_allowed"] = summ_global_raw and strict_pass
+        em_payload["eligible_market_subset_superiority_claim_allowed"] = eligible_raw
+        em_payload["market_superiority_claim_allowed"] = bool(
+            em_payload["global_market_superiority_claim_allowed"]
+        )
+        scr = em_payload["strict_contract_result"]
+        if scr == "pass":
+            em_payload["promotion_status"] = (
+                "market_superiority_verified"
+                if em_payload["global_market_superiority_claim_allowed"]
+                else "no_market_superiority_claim"
+            )
+        elif scr == "blocked_provisional":
+            em_payload["promotion_status"] = "MARKET_SUPERIORITY_CONTRACT_BLOCKED"
+        else:
+            em_payload["promotion_status"] = "no_market_superiority_claim"
+
+    elif args.allow_baseline_only:
+        em_payload["market_eval_status"] = "baseline_only"
+
+    if args.require_market_eval and em_payload.get("market_eval_status") == "event_market_scored":
+        _append_event_market_diag_section(report_path, em_payload)
+
     # Sidecar JSON for downstream consumers (WoO / EV Analytics).
     sidecar = DOCS_DIR / f"diagnostics_{args.run_date}.meta.json"
-    sidecar.write_text(json.dumps({
-        "market_eval_available": bool(MARKET_EVAL_AVAILABLE),
-        "lift_baseline": "neutral_0p5" if not MARKET_EVAL_AVAILABLE else "devigged_opening_line",
-        "run_date": args.run_date,
-    }, indent=2))
+    sidecar.write_text(
+        json.dumps(
+            {
+                "market_eval_oof_opening_lines_available": bool(
+                    MARKET_EVAL_OOF_OPENING_LINES_AVAILABLE
+                ),
+                "lift_baseline": (
+                    "neutral_0p5"
+                    if not MARKET_EVAL_OOF_OPENING_LINES_AVAILABLE
+                    else "devigged_opening_line"
+                ),
+                "run_date": args.run_date,
+                "training_table": str(Path(args.training_table).resolve()),
+                "require_market_eval": bool(args.require_market_eval),
+                "allow_baseline_only": bool(args.allow_baseline_only),
+                **em_payload,
+            },
+            indent=2,
+            allow_nan=False,
+        )
+        + "\n",
+    )
 
     logger.info(f"Wrote {report_path}")
     logger.info(f"Done in {(time.time() - start):.1f}s")
@@ -409,7 +633,9 @@ def _fold_metrics_from(
     ks = pit_ks_distance(pit)
     bs = brier(over_probs_model, over_realised)
     ece_v = ece(over_probs_model, over_realised)
-    slope, intercept = calibration_slope_intercept(over_probs_model, over_realised)
+    fit = calibration_line_fit(over_probs_model, over_realised)
+    slope = float(fit["slope"]) if fit["slope"] is not None else float("nan")
+    intercept = float(fit["intercept"]) if fit["intercept"] is not None else float("nan")
     ls = log_score(pmfs, outcomes)
     crps = discrete_crps(pmfs, outcomes)
     # If market probabilities are NaN (the unavailable path), emit
@@ -424,6 +650,10 @@ def _fold_metrics_from(
             cal_slope=slope, cal_intercept=intercept,
             market_logscore_lift=float("nan"),
             edge_monotonicity_rho=float("nan"),
+            cal_slope_status=str(fit["calibration_slope_status"]),
+            cal_slope_valid=bool(fit["calibration_slope_valid"]),
+            constant_prob_n=fit["constant_prob_n"],
+            constant_prob_value=fit["constant_prob_value"],
         )
     market_logscore = -np.mean(
         over_realised * np.log(np.clip(over_probs_market, 1e-9, 1 - 1e-9))
@@ -442,6 +672,10 @@ def _fold_metrics_from(
         cal_slope=slope, cal_intercept=intercept,
         market_logscore_lift=lift,
         edge_monotonicity_rho=float("nan"),
+        cal_slope_status=str(fit["calibration_slope_status"]),
+        cal_slope_valid=bool(fit["calibration_slope_valid"]),
+        constant_prob_n=fit["constant_prob_n"],
+        constant_prob_value=fit["constant_prob_value"],
     )
 
 
@@ -570,6 +804,29 @@ def _append_role_stratified_section(
             f"{r['pit_mean']:.4f} | {r['pit_std']:.4f} | {r['pit_ks']:.4f} | "
             f"{r['ece']:.4f} |"
         )
+    existing = path.read_text() if path.exists() else ""
+    path.write_text(existing + "\n".join(lines) + "\n")
+
+
+def _append_event_market_diag_section(path: Path, em: dict) -> None:
+    lines = [
+        "",
+        "---",
+        "",
+        "## M8.6 event-market validation (Odds API → processed odds → loss rows)",
+        "",
+        f"- `market_eval_status`: **{em.get('market_eval_status')}**",
+        f"- `strict_contract_result`: **{em.get('strict_contract_result')}**",
+        f"- `n_event_market_rows`: {em.get('n_event_market_rows')}",
+        f"- `n_matched_rows`: {em.get('n_matched_rows')}",
+        f"- `n_scored_rows`: {em.get('n_scored_rows')}",
+        f"- `dates_used`: {em.get('dates_used')}",
+        f"- `global_market_superiority_claim_allowed`: {em.get('global_market_superiority_claim_allowed')}",
+        f"- `eligible_market_subset_superiority_claim_allowed`: "
+        f"{em.get('eligible_market_subset_superiority_claim_allowed')}",
+        f"- `model_only_calibration_claim_allowed`: {em.get('model_only_calibration_claim_allowed')}",
+        "",
+    ]
     existing = path.read_text() if path.exists() else ""
     path.write_text(existing + "\n".join(lines) + "\n")
 

@@ -1,0 +1,12 @@
+{
+  "created_at_utc": "2026-05-12T22:41:58.393887+00:00",
+  "market_pmf_used": false,
+  "market_superiority_claim_allowed": false,
+  "outcome_col": "outcome",
+  "pmf_col": "pmf_active",
+  "role_col": "role_bucket",
+  "rows": 153664,
+  "schema_version": "m8_6q_internal_pmf_quality_v1",
+  "source": "data/oof_pmfs.parquet",
+  "stat_col": "stat"
+}

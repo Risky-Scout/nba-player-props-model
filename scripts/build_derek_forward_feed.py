@@ -24,7 +24,9 @@ import argparse
 import csv
 import json
 import math
+import subprocess
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -513,6 +515,222 @@ def write_feed_readme(out_dir: Path, *, delivery_date: str, manifests: dict) -> 
     return p
 
 
+def _git_sha_short() -> str:
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(REPO_ROOT),
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return "unknown"
+
+
+def _discrete_pmf_stats(pmf_json: Any) -> tuple[float | None, float | None, float | None, float | None, float | None]:
+    """Return (mean, variance, p10, p50, p90) from a sparse PMF dict."""
+
+    if pmf_json is None or (isinstance(pmf_json, float) and math.isnan(pmf_json)):
+        return None, None, None, None, None
+    try:
+        d = json.loads(pmf_json) if isinstance(pmf_json, str) else dict(pmf_json)
+    except Exception:
+        return None, None, None, None, None
+    if not d:
+        return None, None, None, None, None
+    ks: list[int] = []
+    ps: list[float] = []
+    for k, v in d.items():
+        try:
+            kk = int(k)
+            vv = float(v)
+        except Exception:
+            continue
+        if math.isfinite(vv) and vv > 0:
+            ks.append(kk)
+            ps.append(vv)
+    if not ks:
+        return None, None, None, None, None
+    s = sum(ps)
+    if s <= 0:
+        return None, None, None, None, None
+    ps = [p / s for p in ps]
+    mean = float(sum(k * p for k, p in zip(ks, ps)))
+    ex2 = float(sum((k * k) * p for k, p in zip(ks, ps)))
+    var = max(ex2 - mean * mean, 0.0)
+    pairs = sorted(zip(ks, ps), key=lambda x: x[0])
+    cdf = 0.0
+    qvals = {0.1: None, 0.5: None, 0.9: None}
+    for k, p in pairs:
+        cdf += p
+        for thr in (0.1, 0.5, 0.9):
+            if qvals[thr] is None and cdf >= thr - 1e-12:
+                qvals[thr] = float(k)
+    return mean, var, qvals[0.1], qvals[0.5], qvals[0.9]
+
+
+def write_m88_unified_feed(
+    *,
+    date: str,
+    out_dir: Path,
+    df: pd.DataFrame | None,
+    run_mode: str,
+    lineup_status: dict | None,
+) -> dict | None:
+    """Emit ``derek_forward_feed.{parquet,csv,jsonl}`` + ``manifest.json`` (M8.8)."""
+
+    if df is None or df.empty:
+        skip = {
+            "delivery_date": date,
+            "unified_feed_status": "skipped_no_rows",
+            "reason": "No latest snapshot dataframe on disk for this run.",
+            "checked_at_utc": _now_utc_iso(),
+        }
+        (out_dir / "derek_forward_feed_unified_skip.json").write_text(
+            json.dumps(skip, indent=2) + "\n", encoding="utf-8"
+        )
+        return None
+
+    stamp_path = out_dir / "feed_manifest.champion_stamp.json"
+    stamp = _read_json(stamp_path) or {}
+    model_hash = str(stamp.get("champion_model_id") or stamp.get("calibration_run_id") or "")
+
+    official = "not_available_yet"
+    unavail_parts: list[str] = []
+    if isinstance(lineup_status, dict):
+        st = str(lineup_status.get("status") or "")
+        if st == "confirmed_lineup_snapshot":
+            official = "confirmed_bdl_or_equivalent"
+        elif st == "near_tip_projected_lineup_snapshot":
+            official = "projected_near_tip_not_bdl_confirmed"
+            unavail_parts.append(lineup_status.get("reason") or st)
+        elif st == "pending_lineup_snapshot":
+            official = "not_available_yet"
+            unavail_parts.append(lineup_status.get("reason") or st)
+
+    run_id = str(uuid.uuid4())
+    gen_at = _now_utc_iso()
+    run_date = gen_at[:10]
+    pipe_ver = _git_sha_short()
+    has_min_mean = "minutes_mean" in df.columns
+    has_min_q50 = "minutes_q50" in df.columns
+
+    rows_out: list[dict[str, Any]] = []
+    for _, r in df.iterrows():
+        pmf_json = r.get("pmf_json")
+        pmean, pvar, p10, p50, p90 = _discrete_pmf_stats(pmf_json)
+        m_over = r.get("model_p_over")
+        m_over_f = float(m_over) if m_over is not None and not (isinstance(m_over, float) and math.isnan(m_over)) else None
+        role = str(r.get("role_bucket") or "")
+        inactive = 1.0 if role == "inactive_risk" else 0.0
+        mkt = str(r.get("market_coverage_status") or "unknown")
+        if mkt in {"", "none", "nan"}:
+            mkt_status = "no_offered_market" if r.get("line") is None or (isinstance(r.get("line"), float) and math.isnan(r.get("line"))) else "missing_raw_snapshot"
+        else:
+            mkt_status = mkt
+        fair_o = r.get("fair_over_odds_american")
+        fair_u = r.get("fair_under_odds_american")
+        inj = str(r.get("injury_freshness_status") or "unknown")
+        lin_f = str(r.get("lineup_freshness_status") or "unknown")
+        stale_inj = "stale" in inj.lower()
+        stale_lin = "stale" in lin_f.lower()
+        u_reason = None
+        if unavail_parts:
+            u_reason = "; ".join(unavail_parts)[:2000]
+        if p10 is None or p50 is None:
+            u_reason = (u_reason + " | " if u_reason else "") + "pmf_quantiles_derived_from_sparse_pmf_json"
+
+        mu = r.get("model_p_under")
+        mu_f = (
+            float(mu)
+            if mu is not None and not (isinstance(mu, float) and math.isnan(mu))
+            else None
+        )
+        row = {
+            "game_date": str(r.get("delivery_date") or date),
+            "run_date": run_date,
+            "run_id": run_id,
+            "run_mode": run_mode,
+            "generated_at_utc": gen_at,
+            "pipeline_version": pipe_ver,
+            "model_version": str(r.get("model_version") or ""),
+            "model_artifact_hash": model_hash,
+            "source_data_asof_utc": str(r.get("snapshot_time_utc") or gen_at),
+            "player_id": r.get("player_id"),
+            "player_name": r.get("player_name"),
+            "team": r.get("team"),
+            "opponent": r.get("opponent"),
+            "game_id": r.get("game_id"),
+            "event_id": None,
+            "stat": r.get("stat"),
+            "line": r.get("line"),
+            "role_bucket": r.get("role_bucket"),
+            "hard_role_bucket": r.get("role_bucket"),
+            "role_mixture_enabled": bool(r.get("role_mixture_enabled", True)),
+            "role_mixture_weights_json": r.get("role_mixture_weights_json"),
+            "role_entropy": r.get("role_entropy"),
+            "role_bucket_confidence": r.get("role_bucket_confidence"),
+            "projected_minutes": r.get("minutes_mean") if has_min_mean else None,
+            "minutes_q10": None,
+            "minutes_q50": r.get("minutes_q50") if has_min_q50 else None,
+            "minutes_q90": None,
+            "inactive_risk": inactive,
+            "expected_lineup_status": lin_f,
+            "official_lineup_status": official,
+            "injury_status": inj,
+            "injury_source": "bdl_availability_freshness_manifest",
+            "injury_last_updated_utc": None,
+            "lineup_source": "bdl_lineup_freshness_manifest",
+            "lineup_last_updated_utc": None,
+            "stale_injury_flag": stale_inj,
+            "stale_lineup_flag": stale_lin,
+            "model_prob_over_raw": m_over_f,
+            "model_prob_over_active": m_over_f,
+            "model_prob_under_active": mu_f,
+            "fair_over_odds": fair_o,
+            "fair_under_odds": fair_u,
+            "pmf_mean": pmean if pmean is not None else r.get("mean"),
+            "pmf_variance": pvar,
+            "pmf_p10": p10,
+            "pmf_p50": p50 if p50 is not None else r.get("median"),
+            "pmf_p90": p90,
+            "market_prob_over": r.get("market_no_vig_over_prob"),
+            "no_vig_market_prob_over": r.get("market_no_vig_over_prob"),
+            "edge": r.get("edge"),
+            "market_status": mkt_status,
+            "delivery_status": "ready",
+            "unavailable_reason": u_reason,
+            "calculation_source": "build_derek_forward_feed:v1_model_only_plus_market_reference",
+            "calculation_status": "ok",
+        }
+        rows_out.append(row)
+
+    out_df = pd.DataFrame(rows_out)
+    pq_out = out_dir / "derek_forward_feed.parquet"
+    csv_out = out_dir / "derek_forward_feed.csv"
+    jl_out = out_dir / "derek_forward_feed.jsonl"
+    out_df.to_parquet(pq_out, index=False)
+    out_df.to_csv(csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
+    with jl_out.open("w", encoding="utf-8") as f:
+        for rec in rows_out:
+            f.write(json.dumps(rec, default=str) + "\n")
+    man = {
+        "delivery_date": date,
+        "run_mode": run_mode,
+        "generated_at_utc": gen_at,
+        "row_count": int(len(out_df)),
+        "schema": "m88_derek_unified_v1",
+        "lineup_status": lineup_status,
+        "files": {
+            "parquet": str(pq_out.relative_to(REPO_ROOT)),
+            "csv": str(csv_out.relative_to(REPO_ROOT)),
+            "jsonl": str(jl_out.relative_to(REPO_ROOT)),
+        },
+    }
+    (out_dir / "manifest.json").write_text(json.dumps(man, indent=2, default=str) + "\n", encoding="utf-8")
+    return man
+
+
 def build_snapshot(
     *,
     date: str,
@@ -658,6 +876,11 @@ def _resolve_lineup_snapshot_type(date: str) -> tuple[str, str | None]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--date", required=True, help="delivery date YYYY-MM-DD")
+    ap.add_argument(
+        "--run-mode",
+        default="unspecified",
+        help="M8.8 stamp for unified Derek feed (morning_expected|t25|t5|final_after_game|backtest|unspecified).",
+    )
     ap.add_argument(
         "--snapshot",
         choices=["morning", "lineup", "both"],
@@ -814,6 +1037,14 @@ def main() -> int:
             "lineup": lineup_entry,
             "lineup_status": lineup_status_payload,
         },
+    )
+
+    write_m88_unified_feed(
+        date=args.date,
+        out_dir=out_dir,
+        df=latest_rows_df,
+        run_mode=str(args.run_mode),
+        lineup_status=lineup_status_payload,
     )
 
     print("\nfeed manifest summary:")

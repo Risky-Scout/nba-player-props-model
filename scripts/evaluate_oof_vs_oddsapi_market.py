@@ -37,15 +37,6 @@ ODDS_PROCESSED_DEFAULT = REPO_ROOT / "data" / "odds_api" / "processed"
 MANIFEST_DEFAULT = REPO_ROOT / "artifacts" / "market_manifest" / "oof_market_match_manifest.parquet"
 OUT_ROOT = REPO_ROOT / "artifacts" / "phase9_market_eval"
 
-STAT_TO_MARKET = {
-    "pts": ("player_points", "player_points_alternate"),
-    "reb": ("player_rebounds", "player_rebounds_alternate"),
-    "ast": ("player_assists", "player_assists_alternate"),
-    "tov": ("player_turnovers", "player_turnovers_alternate"),
-    "fg3m": ("player_threes", "player_threes_alternate"),
-}
-MARKET_TO_STAT = {m: s for s, ms in STAT_TO_MARKET.items() for m in ms}
-
 
 def _norm_name(s: str) -> str:
     if s is None or (isinstance(s, float) and np.isnan(s)):

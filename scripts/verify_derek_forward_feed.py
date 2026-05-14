@@ -188,11 +188,22 @@ def main(argv: list[str] | None = None) -> int:
                             f"missing on disk: {rel}"
                         )
 
-    if args.require_morning_snapshot and "morning" not in declared_snapshots:
-        failures.append(
-            "feed_manifest does not declare a morning snapshot "
-            "(--require-morning-snapshot was set)"
-        )
+    if args.require_morning_snapshot:
+        morning_declared = "morning" in declared_snapshots
+        morning_meta = manifest.get("morning") if isinstance(manifest, dict) else {}
+        lineup_meta = manifest.get("lineup") if isinstance(manifest, dict) else {}
+        morning_ts = str((morning_meta or {}).get("snapshot_time_utc") or "")
+        lineup_ts = str((lineup_meta or {}).get("snapshot_time_utc") or "")
+        # Guard against lineup-only runs that backfill a "morning" snapshot
+        # with the same or later timestamp than lineup.
+        genuine_morning = bool(morning_declared)
+        if morning_declared and morning_ts and lineup_ts and morning_ts >= lineup_ts:
+            genuine_morning = False
+        if not genuine_morning:
+            failures.append(
+                "feed_manifest does not declare a morning snapshot "
+                "(--require-morning-snapshot was set)"
+            )
 
     # ── Row count + duplicate checks via pandas (if available) ──────
     try:

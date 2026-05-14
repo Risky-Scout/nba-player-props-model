@@ -1,0 +1,16 @@
+{
+  "start_date": "2026-05-14",
+  "end_date": "2026-05-14",
+  "n_inventory_rows": 46,
+  "pass_all": true,
+  "n_missing_files": 0,
+  "n_missing_column_rows": 0,
+  "n_placeholder_hits": 0,
+  "explicit_status_tokens": [
+    "no_offered_market",
+    "not_applicable_for_run_mode",
+    "not_available_yet",
+    "pending_actuals",
+    "source_unavailable"
+  ]
+}

@@ -17,7 +17,7 @@ Usage
         --date 2026-04-27 \
         --snapshot morning \
         [--predictions predictions/all_props_2026-04-27.parquet] \
-        [--model-only deliveries/2026-04-27/live_after_2029_et/player_prop_pmfs_tonight_MODEL_ONLY.parquet] \
+        [--model-only deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet] \
         [--odds-snapshot data/odds_api/processed/2026-04-27/odds_pairs_*.parquet] \
         [--no-odds-fetch]
 
@@ -66,6 +66,7 @@ except Exception:
 import argparse
 import hashlib
 import json
+import math
 import os
 import subprocess
 import sys
@@ -79,6 +80,10 @@ import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+from delivery_model_only_paths import find_model_only_parquet_for_date  # noqa: E402
 warnings.filterwarnings("ignore")
 
 # ── Constants pinned to the delivery spec ────────────────────────────────
@@ -88,7 +93,7 @@ from nba_props_model.targets import (  # noqa: E402
     MISSION_REQUIRED_TARGETS_CANONICAL,
 )
 
-SUPPORTED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 11-stat mission canonical (was 7-stat BASE_STATS_FULL pre-M8.1, 5-stat literal pre-M4A2)
+SUPPORTED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 12-stat mission canonical (incl. ra)
 ROLE_ORDER = ("inactive_risk", "fringe", "bench", "rotation", "core", "starter")
 HIGH_CONF_ROLES = ("starter", "core", "rotation")
 MED_CONF_ROLES = ("bench", "fringe")
@@ -264,12 +269,95 @@ def _model_p_over_line(pmf_arr: np.ndarray, line: float | None) -> float | None:
     return float(min(1.0, max(0.0, p_over / denom)))
 
 
+# Fair American odds are written to Parquet; reject magnitudes that overflow
+# int64 or pyarrow's pandas bridge (extreme tail lines where p is interior
+# but implied price is astronomically large — treat as non-publishable).
+_FAIR_AMERICAN_ODDS_MAX_ABS = 9_000_000_000_000_000  # < 2**63-1, with margin
+
+
 def _prob_to_american(p: float | None) -> int | None:
-    if p is None or not np.isfinite(p) or p <= 0.0 or p >= 1.0:
+    """Convert a naked win probability to fair American odds.
+
+    Defined only on the open interval (0, 1). For ``p <= 0``, ``p >= 1``,
+    non-finite ``p``, or when the implied price overflows IEEE floats,
+    returns ``None`` (fair odds are infinite or undefined — never clip
+    ``p`` to fake finite prices).
+
+    Convention: ``p >= 0.5`` → negative American; ``p < 0.5`` → positive.
+    """
+    if p is None:
         return None
-    if p >= 0.5:
-        return int(round(-100.0 * p / (1.0 - p)))
-    return int(round(100.0 * (1.0 - p) / p))
+    try:
+        if pd.isna(p):
+            return None
+    except TypeError:
+        pass
+    try:
+        pf = float(p)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(pf) or pf <= 0.0 or pf >= 1.0:
+        return None
+    if pf >= 0.5:
+        raw = -100.0 * pf / (1.0 - pf)
+    else:
+        raw = 100.0 * (1.0 - pf) / pf
+    if not math.isfinite(raw):
+        return None
+    try:
+        out = int(round(raw))
+    except (OverflowError, ValueError):
+        return None
+    if abs(out) > _FAIR_AMERICAN_ODDS_MAX_ABS:
+        return None
+    return out
+
+
+def _prob_is_degenerate_boundary(p: float | None) -> bool:
+    """True when ``p`` is a finite probability on the closed boundary {0, 1}."""
+    if p is None:
+        return False
+    try:
+        if pd.isna(p):
+            return False
+    except TypeError:
+        pass
+    try:
+        x = float(p)
+    except (TypeError, ValueError):
+        return False
+    return bool(math.isfinite(x) and (x <= 0.0 or x >= 1.0))
+
+
+def _validate_fair_american_odds_columns(df: pd.DataFrame, *, label: str) -> None:
+    """Assert fair American columns are null or finite integers (no inf)."""
+    if df is None or df.empty:
+        return
+    for col in ("fair_over_odds_american", "fair_under_odds_american"):
+        if col not in df.columns:
+            continue
+        for i, v in enumerate(df[col].tolist()):
+            if v is None:
+                continue
+            try:
+                if pd.isna(v):
+                    continue
+            except TypeError:
+                pass
+            try:
+                fv = float(v)
+            except (TypeError, ValueError) as e:
+                raise AssertionError(
+                    f"{label}: {col} row {i} non-numeric value {v!r}"
+                ) from e
+            if not math.isfinite(fv):
+                raise AssertionError(
+                    f"{label}: {col} row {i} non-finite value {v!r}"
+                )
+            if abs(fv - round(fv)) > 1e-6:
+                raise AssertionError(
+                    f"{label}: {col} row {i} expected integer American odds, got {v!r}"
+                )
 
 
 def _clean_optional_meta(v):
@@ -463,6 +551,26 @@ def _stat_grid_rows(date: str) -> list[dict]:
             "stat": r.get("stat"),
             "role_bucket": (r.get("role_bucket")
                             if pd.notna(r.get("role_bucket")) else None),
+            "hard_role_bucket": (r.get("hard_role_bucket")
+                                  if pd.notna(r.get("hard_role_bucket"))
+                                  else (r.get("role_bucket") if pd.notna(r.get("role_bucket")) else None)),
+            "role_mixture_enabled": (
+                bool(r.get("role_mixture_enabled"))
+                if pd.notna(r.get("role_mixture_enabled"))
+                else None
+            ),
+            "role_mixture_weights_json": (
+                r.get("role_mixture_weights_json")
+                if pd.notna(r.get("role_mixture_weights_json"))
+                else None
+            ),
+            "role_entropy": (r.get("role_entropy")
+                              if pd.notna(r.get("role_entropy")) else None),
+            "role_bucket_confidence": (
+                r.get("role_bucket_confidence")
+                if pd.notna(r.get("role_bucket_confidence"))
+                else None
+            ),
             "role_source": (r.get("role_source")
                             if pd.notna(r.get("role_source"))
                             else "phase12_stat_grid"),
@@ -488,6 +596,23 @@ def _stat_grid_rows(date: str) -> list[dict]:
                 r.get("injury_report_fetched_at_utc")
                 if pd.notna(r.get("injury_report_fetched_at_utc")) else None
             ),
+            "expected_lineup_status": (
+                r.get("expected_lineup_status")
+                if pd.notna(r.get("expected_lineup_status"))
+                else None
+            ),
+            "official_lineup_status": (
+                r.get("official_lineup_status")
+                if pd.notna(r.get("official_lineup_status"))
+                else None
+            ),
+            "projected_minutes": (
+                r.get("projected_minutes")
+                if pd.notna(r.get("projected_minutes"))
+                else None
+            ),
+            "minutes_q10": (r.get("minutes_q10") if pd.notna(r.get("minutes_q10")) else None),
+            "minutes_q90": (r.get("minutes_q90") if pd.notna(r.get("minutes_q90")) else None),
             "support_min": 0,
             "support_max": (int(r["support_max"])
                               if pd.notna(r.get("support_max")) else None),
@@ -564,6 +689,11 @@ def build_canonical_from_predictions(predictions_path: Path, *,
             "game_start_et": commence_map.get(gid) if gid is not None else None,
             "stat": r.get("stat"),
             "role_bucket": role_bucket,
+            "hard_role_bucket": role_bucket,
+            "role_mixture_enabled": None,
+            "role_mixture_weights_json": None,
+            "role_entropy": None,
+            "role_bucket_confidence": None,
             "role_source": role_source,
             "mp_bucket": (int(mp_b) if pd.notna(mp_b) else None),
             "usage_bucket": (int(r.get("usage_bucket"))
@@ -571,6 +701,11 @@ def build_canonical_from_predictions(predictions_path: Path, *,
             "minutes_mean": None,
             "minutes_q50": r.get("q50"),
             "p_inactive_used": None,
+            "expected_lineup_status": None,
+            "official_lineup_status": None,
+            "projected_minutes": None,
+            "minutes_q10": None,
+            "minutes_q90": None,
             "support_min": 0,
             "support_max": None,
             "line": r.get("line"),
@@ -604,6 +739,11 @@ def build_canonical_from_predictions(predictions_path: Path, *,
               f"(stats: {sorted(appended_stats)})")
 
     df = pd.DataFrame(rows)
+    # M8.6 — drop incomplete (player, game) pairs so production MODEL_ONLY
+    # always has equal counts per mission stat (same gate as stat_grid path).
+    from build_model_only_canonical_from_stat_grid import _enforce_complete_stat_grid
+
+    df = _enforce_complete_stat_grid(df)
     canonical_dir.mkdir(parents=True, exist_ok=True)
     pq_path = canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
     df.to_parquet(pq_path, index=False)
@@ -611,6 +751,23 @@ def build_canonical_from_predictions(predictions_path: Path, *,
                 orient="records", lines=True)
     df.to_csv(canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.csv",
                 index=False)
+    # Compatibility aliases expected by the delivery completeness contract.
+    df.to_parquet(canonical_dir / "all_props_model_only.parquet", index=False)
+    df.to_json(canonical_dir / "all_props_model_only.jsonl",
+               orient="records", lines=True)
+    df.to_csv(canonical_dir / "all_props_model_only.csv", index=False)
+    (canonical_dir / "manifest.json").write_text(
+        json.dumps(
+            {
+                "delivery_date": date,
+                "source_predictions": _repo_rel(predictions_path),
+                "model_only_rows": int(len(df)),
+                "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            },
+            indent=2,
+        ) + "\n",
+        encoding="utf-8",
+    )
     return pq_path
 
 
@@ -618,15 +775,16 @@ def build_canonical_from_predictions(predictions_path: Path, *,
 
 
 def _find_model_only_parquet(date: str) -> Path | None:
-    """Locate the canonical MODEL_ONLY parquet emitted by the prediction
-    export. The legacy daily export uses
-    `deliveries/{date}/live_after_2029_et/...` and recent ones may use
-    additional named subfolders. We scan the per-date delivery folder."""
-    base = REPO_ROOT / "deliveries" / date
-    if not base.exists():
-        return None
-    candidates = sorted(base.rglob("player_prop_pmfs_tonight_MODEL_ONLY.parquet"))
-    return candidates[-1] if candidates else None
+    """Locate MODEL_ONLY parquet under ``deliveries/{date}/``.
+
+    Prefer ``canonical_source/`` (stat_grid-backed rectangular canonical).
+    If absent, fall back to legacy rglob discovery (lexicographic last),
+    emitting a warning when multiple candidates exist.
+    """
+    chosen, _cands, warn = find_model_only_parquet_for_date(REPO_ROOT, date)
+    if warn:
+        print(warn)
+    return chosen
 
 
 def _find_odds_snapshot(date: str) -> Path | None:
@@ -734,6 +892,11 @@ def _validate_production_model_only(df: pd.DataFrame, path: Path) -> None:
 
     if "stat" not in df.columns:
         raise SystemExit(f"MODEL_ONLY parquet missing stat column: {path}")
+
+    # No-game slates are valid: allow an empty canonical MODEL_ONLY table.
+    # Downstream writers still emit full package files with explicit empty rows.
+    if df.empty:
+        return
 
     stats = set(df["stat"].astype(str).str.lower())
     extra = sorted(stats - PRODUCTION_TARGET_STAT_SET)
@@ -895,6 +1058,9 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "role_freshness_status": _role_freshness_for_row(r),
             "_pmf_arr": pmf,
         })
+    if not rows:
+        empty_cols = list(dict.fromkeys(CANONICAL_COLUMNS_BASE + ["pmf_json", "_pmf_arr"]))
+        return pd.DataFrame(columns=empty_cols)
     df = pd.DataFrame(rows)
     return df
 
@@ -917,14 +1083,39 @@ def _line_grid_for_stat(stat: str) -> Iterable[float]:
     return [v + 0.5 for v in range(0, 20)]
 
 
-def build_fair_odds_board(canonical: pd.DataFrame) -> pd.DataFrame:
+def build_fair_odds_board(canonical: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
     """One row per (player, stat, line) over a default line grid.
     Independent of any book — `book=null` everywhere."""
     rows = []
+    fair_over_odds_null_count = 0
+    fair_under_odds_null_count = 0
+    zero_or_one_prob_count = 0
     for _, r in canonical.iterrows():
         pmf = r["_pmf_arr"]
         for line in _line_grid_for_stat(r["stat"]):
             p_over = _model_p_over_line(pmf, line)
+            if _prob_is_degenerate_boundary(p_over):
+                zero_or_one_prob_count += 1
+
+            p_under: float | None = None
+            if p_over is not None:
+                try:
+                    if pd.isna(p_over):
+                        p_under = None
+                    else:
+                        po = float(p_over)
+                        if math.isfinite(po):
+                            p_under = 1.0 - po
+                except (TypeError, ValueError):
+                    p_under = None
+
+            fo = _prob_to_american(p_over)
+            fu = _prob_to_american(p_under) if p_under is not None else None
+            if fo is None:
+                fair_over_odds_null_count += 1
+            if fu is None:
+                fair_under_odds_null_count += 1
+
             row = {c: r[c] for c in CANONICAL_COLUMNS_BASE if c in r.index}
             row["line"] = float(line)
             row["book"] = None
@@ -932,14 +1123,19 @@ def build_fair_odds_board(canonical: pd.DataFrame) -> pd.DataFrame:
             row["market_under_odds"] = None
             row["market_no_vig_over_prob"] = None
             row["model_p_over"] = p_over
-            row["fair_over_odds_american"] = _prob_to_american(p_over)
-            row["fair_under_odds_american"] = _prob_to_american(
-                1.0 - p_over) if p_over is not None else None
+            row["fair_over_odds_american"] = fo
+            row["fair_under_odds_american"] = fu
             row["edge"] = None
             rows.append(row)
+    diag = {
+        "fair_over_odds_null_count": int(fair_over_odds_null_count),
+        "fair_under_odds_null_count": int(fair_under_odds_null_count),
+        "zero_or_one_prob_count": int(zero_or_one_prob_count),
+    }
     if not rows:
-        return pd.DataFrame(columns=CANONICAL_COLUMNS_BASE)
-    return pd.DataFrame(rows)[CANONICAL_COLUMNS_BASE]
+        return pd.DataFrame(columns=CANONICAL_COLUMNS_BASE), diag
+    df = pd.DataFrame(rows)[CANONICAL_COLUMNS_BASE]
+    return df, diag
 
 
 # ── Market comparison (model joined to book offered lines) ──────────────
@@ -990,8 +1186,18 @@ def build_market_comparison(canonical: pd.DataFrame, odds: pd.DataFrame
             row["market_no_vig_over_prob"] = no_vig
             row["model_p_over"] = p_over
             row["fair_over_odds_american"] = _prob_to_american(p_over)
-            row["fair_under_odds_american"] = _prob_to_american(
-                1.0 - p_over) if p_over is not None else None
+            pu = None
+            if p_over is not None:
+                try:
+                    if pd.isna(p_over):
+                        pu = None
+                    else:
+                        po = float(p_over)
+                        if math.isfinite(po):
+                            pu = 1.0 - po
+                except (TypeError, ValueError):
+                    pu = None
+            row["fair_under_odds_american"] = _prob_to_american(pu)
             row["edge"] = ((p_over - no_vig)
                            if (p_over is not None and no_vig is not None)
                            else None)
@@ -1036,6 +1242,9 @@ def build_outcome_level(canonical: pd.DataFrame) -> pd.DataFrame:
             row["k"] = int(k)
             row["p_k"] = float(p)
             rows.append(row)
+    if not rows:
+        base_cols = [c for c in canonical.columns if c != "_pmf_arr"]
+        return pd.DataFrame(columns=base_cols + ["k", "p_k"])
     return pd.DataFrame(rows)
 
 
@@ -1501,6 +1710,11 @@ def write_woo_package(canonical: pd.DataFrame, fair_board: pd.DataFrame,
     (pkg_dir / "run_manifest.json").write_text(
         json.dumps(manifest, indent=2, default=str))
 
+    cd = manifest.get("count_diagnostics")
+    if cd is not None:
+        (pkg_dir / "count_diagnostics.json").write_text(
+            json.dumps(cd, indent=2, default=str))
+
     (pkg_dir / "README.md").write_text(
         _woo_readme_text(manifest=manifest, run_status_md=run_status_md))
 
@@ -1527,6 +1741,7 @@ def _woo_readme_text(*, manifest: dict, run_status_md: str = "") -> str:
           "| `market_comparison.{csv,parquet}` | one row per (player, stat, line, book) joining the model fair odds to the book's offered odds and no-vig probability. |\n"
           "| `publishable_edges.{csv,parquet}` | subset of `market_comparison` filtered by `\\|edge\\| ≥ threshold` and quality flags. |\n"
           "| `run_manifest.json` | sources, snapshot lifecycle, quality rollup, model version, finality status, and the freshness manifest passthrough. |\n"
+          "| `count_diagnostics.json` | fair-odds board null-odds / degenerate-probability counters (see `count_diagnostics` in the manifest). |\n"
           "| `after_game_clv_and_scoring.{csv,parquet,md}` | post-tip CLV + scoring artifacts (added by `scripts/score_daily_pmf_delivery_after_game.py`). |\n\n"
           "## Run summary\n\n"
         + f"- **finality_status**: `{manifest.get('finality_status')}`\n"
@@ -1539,6 +1754,7 @@ def _woo_readme_text(*, manifest: dict, run_status_md: str = "") -> str:
           f"- **role_freshness_status (rollup)**: `{fm.get('role_freshness_status_rollup') or {}}`\n"
           f"- **tov_status**: `{manifest.get('tov_status')}`\n"
           f"- **row counts**: fair_odds_board={rc.get('fair_odds_board')}, full_pmfs_wide={rc.get('full_pmfs_wide')}, market_comparison={rc.get('market_comparison')}, publishable_edges={rc.get('publishable_edges')}\n"
+          f"- **fair_odds_board diagnostics**: `{manifest.get('count_diagnostics', {}).get('fair_odds_board', {})}`\n"
           f"- **after-game scoring**: `{ag.get('status')}`"
         + (f" — {ag.get('reason')}" if ag.get('reason') else "")
         + "\n\n## Hard rules echoed in this package\n\n"
@@ -1705,11 +1921,16 @@ def main() -> int:
     print(f"  canonical rows: {len(canonical)}")
 
     # 4. Build derived views.
-    fair_board = build_fair_odds_board(canonical)
+    fair_board, fair_board_diag = build_fair_odds_board(canonical)
+    print(f"  fair_odds_board rows: {len(fair_board):,}  diagnostics: {fair_board_diag}")
+    _validate_fair_american_odds_columns(fair_board, label="fair_odds_board")
     market_comp, books_seen = build_market_comparison(canonical, odds)
+    _validate_fair_american_odds_columns(market_comp, label="market_comparison")
     edges = build_publishable_edges(market_comp,
                                       edge_threshold=args.edge_threshold)
     outcome_long = build_outcome_level(canonical)
+
+    _validate_fair_american_odds_columns(edges, label="publishable_edges")
 
     # Apply market_coverage_status to every row.
     coverage = _market_coverage_status(books_seen)
@@ -1815,8 +2036,8 @@ def main() -> int:
                 f"extra_relative_to_supported={extra_stats}"
             ),
             "required_to_resolve": (
-                "Regenerate production PMFs so delivery stats are exactly the "
-                "mission canonical 11 (pts/reb/ast/fg3m/tov/stl/blk/stocks/pa/pr/pra)."
+                "Regenerate production PMFs so delivery stats match "
+                "MISSION_REQUIRED_TARGETS_CANONICAL (12 stats incl. ra)."
             ),
         })
 
@@ -1914,6 +2135,9 @@ def main() -> int:
             "full_pmfs_wide": int(len(canonical)),
             "market_comparison": int(len(market_comp)),
             "publishable_edges": int(len(edges)),
+        },
+        "count_diagnostics": {
+            "fair_odds_board": fair_board_diag,
         },
         "quality_rollup": quality_rollup,
         "warnings": [*msgs_canon, *msgs_edges],

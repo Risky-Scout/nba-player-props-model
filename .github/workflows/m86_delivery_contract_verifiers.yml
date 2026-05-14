@@ -1,0 +1,37 @@
+# M8.6 — static contract checks (no API keys, no dated delivery artifacts).
+# Date-scoped verifiers run in daily_pmf_delivery.yml after a successful pipeline.
+
+name: M8.6 delivery contract verifiers
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: m86-contract-verifiers-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  PYTHONPATH: src
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  static_contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - name: Install python deps
+        run: pip install -r requirements.txt
+      - name: Odds API registry + legacy workflow references
+        run: |
+          python3 scripts/verify_oddsapi_market_registry_contract.py
+          python3 scripts/verify_no_legacy_prediction_artifacts.py
