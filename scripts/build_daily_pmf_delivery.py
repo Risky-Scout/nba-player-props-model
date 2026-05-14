@@ -677,6 +677,14 @@ def build_canonical_from_predictions(predictions_path: Path, *,
                 role_bucket, role_source = None, ROLE_SOURCE_UNKNOWN
         else:
             role_bucket, role_source = None, ROLE_SOURCE_UNKNOWN
+        minutes_q50 = _clean_optional_float(r.get("q50"))
+        if minutes_q50 is None:
+            minutes_q50 = _clean_optional_float(r.get("projected_minutes"))
+        if minutes_q50 is None:
+            minutes_q50 = 0.0
+        minutes_mean = _clean_optional_float(r.get("minutes_mean"))
+        if minutes_mean is None:
+            minutes_mean = minutes_q50
         rows.append({
             "player_id": int(r["player_id"]) if pd.notna(r.get("player_id")) else None,
             "player_name": r.get("player_name"),
@@ -698,9 +706,9 @@ def build_canonical_from_predictions(predictions_path: Path, *,
             "mp_bucket": (int(mp_b) if pd.notna(mp_b) else None),
             "usage_bucket": (int(r.get("usage_bucket"))
                               if pd.notna(r.get("usage_bucket")) else None),
-            "minutes_mean": None,
-            "minutes_q50": r.get("q50"),
-            "p_inactive_used": None,
+            "minutes_mean": minutes_mean,
+            "minutes_q50": minutes_q50,
+            "p_inactive_used": 0.0,
             "expected_lineup_status": None,
             "official_lineup_status": None,
             "projected_minutes": None,
@@ -998,6 +1006,10 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
     inj_fresh = _injury_freshness(injury_path)
     for _, r in model_only.iterrows():
         minutes_q50 = _clean_optional_float(r.get("minutes_q50"))
+        if minutes_q50 is None:
+            minutes_q50 = _clean_optional_float(r.get("projected_minutes"))
+        if minutes_q50 is None:
+            minutes_q50 = 0.0
         minutes_mean = _clean_optional_float(r.get("minutes_mean"))
         if minutes_mean is None:
             minutes_mean = minutes_q50
