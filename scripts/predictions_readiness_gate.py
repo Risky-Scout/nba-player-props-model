@@ -124,9 +124,14 @@ def _hard_fail(token: str, date: str, mode: str, detail: str = "") -> int:
     return 1
 
 
-def _run_predict_py() -> tuple[int, str]:
+def _run_predict_py(date: str) -> tuple[int, str]:
     """Invoke scripts/predict.py and stream its output. Return (rc, tail)."""
-    cmd = [sys.executable, str(REPO_ROOT / "scripts" / "predict.py")]
+    cmd = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "predict.py"),
+        "--date",
+        date,
+    ]
     _emit(f"[gate] invoking {' '.join(cmd)}")
     try:
         proc = subprocess.run(
@@ -295,7 +300,7 @@ def main() -> int:
         "::warning::predictions missing and predict cron should have fired; "
         f"invoking predict.py for slate={date} mode={mode}"
     )
-    rc, tail = _run_predict_py()
+    rc, tail = _run_predict_py(date)
     if rc != 0:
         return _hard_fail(
             "PREDICT_PY_FAILED",

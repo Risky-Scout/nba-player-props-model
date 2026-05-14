@@ -7,12 +7,18 @@ name: NBA Props Model — Daily Pipeline
 #   23:00 UTC = 7:00 PM ET (EDT) / 6:00 PM ET (EST)  — closing lines snapshot
 
 on:
+  schedule:
+    # Daily production windows (UTC):
+    # 13:00 predict + grading, 14:00 opening snapshot, 23:00 closing snapshot.
+    - cron: '0 13 * * *'
+    - cron: '0 14 * * *'
+    - cron: '0 23 * * *'
   workflow_dispatch:
     inputs:
-      disabled_notice:
-        description: 'Legacy workflow disabled for M8.6 PMF production; use daily_pmf_delivery.yml and derek_live_game_snapshots.yml'
+      run_note:
+        description: 'Optional note for manual execution'
         required: false
-        default: 'disabled'
+        default: ''
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false

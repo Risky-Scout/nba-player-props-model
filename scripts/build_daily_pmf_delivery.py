@@ -751,6 +751,23 @@ def build_canonical_from_predictions(predictions_path: Path, *,
                 orient="records", lines=True)
     df.to_csv(canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.csv",
                 index=False)
+    # Compatibility aliases expected by the delivery completeness contract.
+    df.to_parquet(canonical_dir / "all_props_model_only.parquet", index=False)
+    df.to_json(canonical_dir / "all_props_model_only.jsonl",
+               orient="records", lines=True)
+    df.to_csv(canonical_dir / "all_props_model_only.csv", index=False)
+    (canonical_dir / "manifest.json").write_text(
+        json.dumps(
+            {
+                "delivery_date": date,
+                "source_predictions": _repo_rel(predictions_path),
+                "model_only_rows": int(len(df)),
+                "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            },
+            indent=2,
+        ) + "\n",
+        encoding="utf-8",
+    )
     return pq_path
 
 
@@ -875,6 +892,11 @@ def _validate_production_model_only(df: pd.DataFrame, path: Path) -> None:
 
     if "stat" not in df.columns:
         raise SystemExit(f"MODEL_ONLY parquet missing stat column: {path}")
+
+    # No-game slates are valid: allow an empty canonical MODEL_ONLY table.
+    # Downstream writers still emit full package files with explicit empty rows.
+    if df.empty:
+        return
 
     stats = set(df["stat"].astype(str).str.lower())
     extra = sorted(stats - PRODUCTION_TARGET_STAT_SET)
@@ -1036,6 +1058,9 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "role_freshness_status": _role_freshness_for_row(r),
             "_pmf_arr": pmf,
         })
+    if not rows:
+        empty_cols = list(dict.fromkeys(CANONICAL_COLUMNS_BASE + ["pmf_json", "_pmf_arr"]))
+        return pd.DataFrame(columns=empty_cols)
     df = pd.DataFrame(rows)
     return df
 
@@ -1217,6 +1242,9 @@ def build_outcome_level(canonical: pd.DataFrame) -> pd.DataFrame:
             row["k"] = int(k)
             row["p_k"] = float(p)
             rows.append(row)
+    if not rows:
+        base_cols = [c for c in canonical.columns if c != "_pmf_arr"]
+        return pd.DataFrame(columns=base_cols + ["k", "p_k"])
     return pd.DataFrame(rows)
 
 

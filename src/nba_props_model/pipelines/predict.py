@@ -582,6 +582,9 @@ def _derek_live_args(argv):
     )
     p.add_argument("--derek-live-snapshot", action="store_true",
                    help="Phase 13M-bis Derek per-game live snapshot mode.")
+    p.add_argument("--date", default=None,
+                   help=("YYYY-MM-DD; overrides date.today() for standard "
+                         "daily prediction runs (non-Derek mode)."))
     p.add_argument("--target-date", default=None,
                    help="YYYY-MM-DD; overrides date.today() in Derek mode.")
     p.add_argument("--delivery-date", default=None,
@@ -805,9 +808,10 @@ def main(argv=None):
     if not _get_api_key():
         sys.exit("BDL_API_KEY not set.")
 
-    # Phase 13M-bis: target_date can be overridden in Derek live-snapshot
-    # mode; default callers (no --derek-live-snapshot) keep the legacy
-    # date.today() path verbatim.
+    # Phase 13M-bis + M8.8 delivery backfill support:
+    # - Derek live-snapshot mode uses --target-date/--delivery-date
+    # - standard runs may optionally override with --date
+    # - otherwise default to today's date
     if derek:
         target_date = (args.target_date or args.delivery_date)
         derek_game_id_filter = str(args.game_id) if args.game_id else None
@@ -820,7 +824,7 @@ def main(argv=None):
               f"snapshot_type={args.snapshot_type} "
               f"snapshot_run_id={args.snapshot_run_id}")
     else:
-        target_date = date.today().strftime("%Y-%m-%d")
+        target_date = args.date or date.today().strftime("%Y-%m-%d")
         derek_game_id_filter = None
         derek_lineup_path = None
         derek_snapshot_output_dir = None

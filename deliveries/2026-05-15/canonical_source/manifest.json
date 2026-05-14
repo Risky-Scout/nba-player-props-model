@@ -1,0 +1,6 @@
+{
+  "delivery_date": "2026-05-15",
+  "source_predictions": "predictions/all_props_2026-05-15.parquet",
+  "model_only_rows": 792,
+  "generated_at_utc": "2026-05-14T14:37:02Z"
+}

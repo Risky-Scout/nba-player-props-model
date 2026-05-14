@@ -1,0 +1,145 @@
+{
+  "delivery_date": "2026-05-14",
+  "pipeline_run_id": "78d19b21-ceb3-4b08-8bf8-4b1c75eb36fa",
+  "snapshot_type": "morning",
+  "snapshot_time_utc": "2026-05-14T14:09:52Z",
+  "model_version": "8611c657#phase10c",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+  "phase8_blend_policy": "monotone_inactive_global_v1",
+  "finality_status": "provisional",
+  "finality_blocker_codes": [
+    "injury_very_stale",
+    "target_stats_mismatch",
+    "lineup_unconfirmed"
+  ],
+  "finality_blockers": [
+    {
+      "code": "injury_very_stale",
+      "detail": "No row-level fresh injury context was present in the PMF delivery quality rollup.",
+      "required_to_resolve": "Regenerate stat-grid PMFs in the Python 3.11 environment with nbainjuries available, or provide a fresh injury context."
+    },
+    {
+      "code": "target_stats_mismatch",
+      "detail": "missing=['ast', 'blk', 'fg3m', 'pa', 'pr', 'pra', 'pts', 'ra', 'reb', 'stl', 'stocks', 'tov']; extra_relative_to_supported=[]",
+      "required_to_resolve": "Regenerate production PMFs so delivery stats match MISSION_REQUIRED_TARGETS_CANONICAL (12 stats incl. ra)."
+    },
+    {
+      "code": "lineup_unconfirmed",
+      "detail": "No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.",
+      "required_to_resolve": "Regenerate near lock after official lineups are available."
+    }
+  ],
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "missing_from_prediction_source",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "tov",
+      "stl",
+      "blk",
+      "stocks",
+      "pa",
+      "pr",
+      "ra",
+      "pra"
+    ],
+    "in_delivery": [],
+    "missing": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "ra",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
+    ],
+    "extra_relative_to_supported": []
+  },
+  "sources": {
+    "model_only_parquet": {
+      "path": "deliveries/2026-05-14/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "2026-05-14T13:51:01.606596Z",
+      "sha256": "008dbd3050cb6d065a4f309628c683c1186a5fa0b232435e92d09f0ac70431d6",
+      "auto_built_from_predictions": false
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-05-14.parquet",
+      "mtime_utc": null
+    },
+    "availability_table": {
+      "path": "data/player_availability_asof.parquet",
+      "mtime_utc": "2026-05-07T03:42:11.511500Z",
+      "freshness_status": "very_stale"
+    },
+    "odds_snapshot": {
+      "path": "data/odds_api/processed/2026-05-14/odds_pairs_live_slate_morning_7am_2026-05-14T134356Z.parquet",
+      "mtime_utc": "2026-05-14T13:43:59.185030Z",
+      "books_seen": [],
+      "coverage_status": "none",
+      "fetch_status": "skipped:no_odds_fetch_flag"
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 0,
+    "full_pmfs_wide": 0,
+    "market_comparison": 0,
+    "publishable_edges": 0
+  },
+  "count_diagnostics": {
+    "fair_odds_board": {
+      "fair_over_odds_null_count": 0,
+      "fair_under_odds_null_count": 0,
+      "zero_or_one_prob_count": 0
+    }
+  },
+  "quality_rollup": {
+    "pmf_valid_ok_pct": 1.0,
+    "pmf_sum_error_max": 0.0,
+    "calibration_confidence": {},
+    "market_coverage_status": {},
+    "injury_freshness_status": {},
+    "lineup_freshness_status": {},
+    "role_freshness_status": {}
+  },
+  "warnings": [],
+  "no_odds_fetch": true,
+  "freshness_manifest": {
+    "path": "data/freshness_manifest/2026-05-14.json",
+    "built_at_utc": "2026-05-14T13:43:59Z",
+    "overall_status": "not_ready",
+    "odds_status": "ok",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betparx",
+      "bovada",
+      "draftkings",
+      "espnbet",
+      "fanatics",
+      "fanduel",
+      "fliff",
+      "hardrockbet",
+      "hardrockbet_az",
+      "hardrockbet_fl",
+      "williamhill_us"
+    ],
+    "tov_status": "missing_from_prediction_source",
+    "predictions_mtime_utc": null,
+    "availability_freshness_status": "very_stale",
+    "finals_finality_status": "finals_pending",
+    "role_freshness_status_rollup": {}
+  }
+}
