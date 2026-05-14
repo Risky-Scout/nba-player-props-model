@@ -1,0 +1,6 @@
+{
+  "delivery_date": "2026-05-14",
+  "outcome": "warn",
+  "reason": "no derek_edge_root_cause_2026-05-14.json yet. Run scripts/audit_derek_edge_root_cause.py first.",
+  "schema_version": "1.0"
+}
