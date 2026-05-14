@@ -1,0 +1,17 @@
+{
+  "delivery_date": "2026-05-15",
+  "run_mode": "morning_expected",
+  "generated_at_utc": "2026-05-14T14:58:06Z",
+  "row_count": 4781,
+  "schema": "m88_derek_unified_v1",
+  "lineup_status": {
+    "status": "pending_lineup_snapshot",
+    "reason": "No pre_close/close_lock/lineup snapshot is on disk for deliveries/2026-05-15/wizard_of_odds/. The current wizard_of_odds/run_manifest.json snapshot_type is 'morning'. Run scripts/run_daily_delivery_pipeline.py --date 2026-05-15 --mode pre_close (or close_lock) to produce a lineup-aware delivery.",
+    "checked_at_utc": "2026-05-14T14:58:06Z"
+  },
+  "files": {
+    "parquet": "deliveries/2026-05-15/derek_forward_feed/derek_forward_feed.parquet",
+    "csv": "deliveries/2026-05-15/derek_forward_feed/derek_forward_feed.csv",
+    "jsonl": "deliveries/2026-05-15/derek_forward_feed/derek_forward_feed.jsonl"
+  }
+}

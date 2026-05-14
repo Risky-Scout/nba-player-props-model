@@ -1,12 +1,18 @@
 {
+  "calibrated_through_date": "2026-04-30",
+  "calibration_run_id": "nightly-20260501T124701",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "count_diagnostics": {
+    "fair_odds_board": {
+      "fair_over_odds_null_count": 0,
+      "fair_under_odds_null_count": 0,
+      "zero_or_one_prob_count": 0
+    }
+  },
   "delivery_date": "2026-05-14",
-  "pipeline_run_id": "78d19b21-ceb3-4b08-8bf8-4b1c75eb36fa",
-  "snapshot_type": "morning",
-  "snapshot_time_utc": "2026-05-14T14:09:52Z",
-  "model_version": "8611c657#phase10c",
-  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "phase8_blend_policy": "monotone_inactive_global_v1",
-  "finality_status": "provisional",
   "finality_blocker_codes": [
     "injury_very_stale",
     "target_stats_mismatch",
@@ -29,98 +35,9 @@
       "required_to_resolve": "Regenerate near lock after official lineups are available."
     }
   ],
-  "tov_overlay": "off",
-  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
-  "tov_status": "missing_from_prediction_source",
-  "target_stats": {
-    "expected": [
-      "pts",
-      "reb",
-      "ast",
-      "fg3m",
-      "tov",
-      "stl",
-      "blk",
-      "stocks",
-      "pa",
-      "pr",
-      "ra",
-      "pra"
-    ],
-    "in_delivery": [],
-    "missing": [
-      "ast",
-      "blk",
-      "fg3m",
-      "pa",
-      "pr",
-      "pra",
-      "pts",
-      "ra",
-      "reb",
-      "stl",
-      "stocks",
-      "tov"
-    ],
-    "extra_relative_to_supported": []
-  },
-  "sources": {
-    "model_only_parquet": {
-      "path": "deliveries/2026-05-14/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "mtime_utc": "2026-05-14T13:51:01.606596Z",
-      "sha256": "008dbd3050cb6d065a4f309628c683c1186a5fa0b232435e92d09f0ac70431d6",
-      "auto_built_from_predictions": false
-    },
-    "predictions_parquet": {
-      "path": "predictions/all_props_2026-05-14.parquet",
-      "mtime_utc": null
-    },
-    "availability_table": {
-      "path": "data/player_availability_asof.parquet",
-      "mtime_utc": "2026-05-07T03:42:11.511500Z",
-      "freshness_status": "very_stale"
-    },
-    "odds_snapshot": {
-      "path": "data/odds_api/processed/2026-05-14/odds_pairs_live_slate_morning_7am_2026-05-14T134356Z.parquet",
-      "mtime_utc": "2026-05-14T13:43:59.185030Z",
-      "books_seen": [],
-      "coverage_status": "none",
-      "fetch_status": "skipped:no_odds_fetch_flag"
-    }
-  },
-  "row_counts": {
-    "fair_odds_board": 0,
-    "full_pmfs_wide": 0,
-    "market_comparison": 0,
-    "publishable_edges": 0
-  },
-  "count_diagnostics": {
-    "fair_odds_board": {
-      "fair_over_odds_null_count": 0,
-      "fair_under_odds_null_count": 0,
-      "zero_or_one_prob_count": 0
-    }
-  },
-  "quality_rollup": {
-    "pmf_valid_ok_pct": 1.0,
-    "pmf_sum_error_max": 0.0,
-    "calibration_confidence": {},
-    "market_coverage_status": {},
-    "injury_freshness_status": {},
-    "lineup_freshness_status": {},
-    "role_freshness_status": {}
-  },
-  "warnings": [],
-  "no_odds_fetch": true,
+  "finality_status": "provisional",
   "freshness_manifest": {
-    "path": "data/freshness_manifest/2026-05-14.json",
-    "built_at_utc": "2026-05-14T13:43:59Z",
-    "overall_status": "not_ready",
-    "odds_status": "ok",
-    "regions_requested": [
-      "us",
-      "us2"
-    ],
+    "availability_freshness_status": "very_stale",
     "books_seen": [
       "betmgm",
       "betonlineag",
@@ -136,10 +53,108 @@
       "hardrockbet_fl",
       "williamhill_us"
     ],
-    "tov_status": "missing_from_prediction_source",
-    "predictions_mtime_utc": null,
-    "availability_freshness_status": "very_stale",
+    "built_at_utc": "2026-05-14T13:43:59Z",
     "finals_finality_status": "finals_pending",
-    "role_freshness_status_rollup": {}
-  }
+    "odds_status": "ok",
+    "overall_status": "not_ready",
+    "path": "data/freshness_manifest/2026-05-14.json",
+    "predictions_mtime_utc": null,
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "role_freshness_status_rollup": {},
+    "tov_status": "missing_from_prediction_source"
+  },
+  "metadata_stamped_at_utc": "2026-05-14T18:02:07+00:00",
+  "model_source": "champion_pointer",
+  "model_version": "8611c657#phase10c",
+  "no_challenger_artifacts_used": true,
+  "no_odds_fetch": true,
+  "output_generated_at_utc": "2026-05-14T18:02:07+00:00",
+  "phase8_blend_policy": "monotone_inactive_global_v1",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+  "pipeline_run_id": "78d19b21-ceb3-4b08-8bf8-4b1c75eb36fa",
+  "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
+  "quality_rollup": {
+    "calibration_confidence": {},
+    "injury_freshness_status": {},
+    "lineup_freshness_status": {},
+    "market_coverage_status": {},
+    "pmf_sum_error_max": 0.0,
+    "pmf_valid_ok_pct": 1.0,
+    "role_freshness_status": {}
+  },
+  "row_counts": {
+    "fair_odds_board": 0,
+    "full_pmfs_wide": 0,
+    "market_comparison": 0,
+    "publishable_edges": 0
+  },
+  "snapshot_time_utc": "2026-05-14T14:09:52Z",
+  "snapshot_type": "morning",
+  "sources": {
+    "availability_table": {
+      "freshness_status": "very_stale",
+      "mtime_utc": "2026-05-07T03:42:11.511500Z",
+      "path": "data/player_availability_asof.parquet"
+    },
+    "model_only_parquet": {
+      "auto_built_from_predictions": false,
+      "mtime_utc": "2026-05-14T13:51:01.606596Z",
+      "path": "deliveries/2026-05-14/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "sha256": "008dbd3050cb6d065a4f309628c683c1186a5fa0b232435e92d09f0ac70431d6"
+    },
+    "odds_snapshot": {
+      "books_seen": [],
+      "coverage_status": "none",
+      "fetch_status": "skipped:no_odds_fetch_flag",
+      "mtime_utc": "2026-05-14T13:43:59.185030Z",
+      "path": "data/odds_api/processed/2026-05-14/odds_pairs_live_slate_morning_7am_2026-05-14T134356Z.parquet"
+    },
+    "predictions_parquet": {
+      "mtime_utc": null,
+      "path": "predictions/all_props_2026-05-14.parquet"
+    }
+  },
+  "stamp_code_commit": "e11f4ed673b1c2727ca2d3c075ce820a0580c3b6",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "tov",
+      "stl",
+      "blk",
+      "stocks",
+      "pa",
+      "pr",
+      "ra",
+      "pra"
+    ],
+    "extra_relative_to_supported": [],
+    "in_delivery": [],
+    "missing": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "ra",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
+    ]
+  },
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "missing_from_prediction_source",
+  "trained_through_date": "2026-04-30",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_run_id": "nightly-20260501T124701",
+  "warnings": []
 }
