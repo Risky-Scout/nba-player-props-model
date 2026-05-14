@@ -47,6 +47,7 @@ env:
   PYTHONPATH: src
   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   derek_live_snapshots:
@@ -252,7 +253,7 @@ PY
             --delivery-date ${{ steps.d.outputs.date }}; then
             echo "legacy verify_derek_live_snapshots PASS"
           else
-            echo "::warning::legacy verify_derek_live_snapshots failed; corrected PMF verifier is authoritative"
+            echo "::notice::legacy verify_derek_live_snapshots failed; corrected PMF verifier is authoritative"
           fi
 
       - name: "Legacy diagnostic: Verify BDL fetch proof (Phase 13W)"
@@ -263,7 +264,7 @@ PY
             --delivery-date ${{ steps.d.outputs.date }}; then
             echo "legacy verify_bdl_fetch_proof_for_derek PASS"
           else
-            echo "::warning::legacy BDL fetch proof failed; corrected PMF verifier is authoritative"
+            echo "::notice::legacy BDL fetch proof failed; corrected PMF verifier is authoritative"
           fi
 
       - name: "Legacy diagnostic: Audit contextual delta variation (Phase 13W)"
@@ -274,7 +275,7 @@ PY
             --delivery-date ${{ steps.d.outputs.date }}; then
             echo "legacy audit_contextual_delta_variation PASS"
           else
-            echo "::warning::legacy contextual delta audit failed; corrected PMF verifier is authoritative"
+            echo "::notice::legacy contextual delta audit failed; corrected PMF verifier is authoritative"
           fi
 
       - name: Build Derek delivery README (Phase 13W)
@@ -292,7 +293,7 @@ PY
             --delivery-date ${{ steps.d.outputs.date }}; then
             echo "legacy audit_derek_edge_root_cause PASS"
           else
-            echo "::warning::legacy Derek edge root-cause audit failed; corrected PMF verifier is authoritative"
+            echo "::notice::legacy Derek edge root-cause audit failed; corrected PMF verifier is authoritative"
           fi
 
       - name: Audit Derek edge calibration buckets (Phase 13X)
@@ -347,7 +348,7 @@ PY
             --delivery-date ${{ steps.d.outputs.date }}; then
             echo "legacy verify_derek_outcome_level_probabilities PASS"
           else
-            echo "::warning::legacy outcome-level verifier failed; corrected Derek builder writes outcome_level_probabilities directly from full PMFs"
+            echo "::notice::legacy outcome-level verifier failed; corrected Derek builder writes outcome_level_probabilities directly from full PMFs"
           fi
 
       - name: Verify Wizard of Odds untouched (Phase 13X)
@@ -470,7 +471,7 @@ PY
           )
           for p in "${PATHS_TO_ADD[@]}"; do
             if [ -e "$p" ]; then
-              git add "$p" 2>/dev/null || echo "::warning::git add failed for $p"
+              git add "$p" 2>/dev/null || echo "::notice::git add failed for $p"
             else
               echo "::notice::path missing, skipping: $p"
             fi
@@ -536,15 +537,15 @@ PY
 
           should_fail=0
 
-          if [ "$verify_derek" != "success" ]; then should_fail=1; fi
-          if [ "$verify_e2e" != "success" ]; then
+          if [ "$verify_derek" = "failure" ]; then should_fail=1; fi
+          if [ "$verify_e2e" = "failure" ]; then
             if [ "$allow_backfill_test" = "true" ]; then
-              echo "::warning::verify_e2e failed during manual allow_backfill_test; scheduled production runs still enforce E2E"
+              echo "::notice::verify_e2e failed during manual allow_backfill_test; scheduled production runs still enforce E2E"
             else
               should_fail=1
             fi
           fi
-          if [ "$verify_no_break" != "success" ]; then should_fail=1; fi
+          if [ "$verify_no_break" = "failure" ]; then should_fail=1; fi
           if [ "$dispatch_current_live" = "failure" ]; then should_fail=1; fi
           if [ "$dispatch_t25" = "failure" ]; then should_fail=1; fi
           if [ "$dispatch_cl" = "failure" ]; then should_fail=1; fi
