@@ -582,7 +582,14 @@ def _verify_m88_delivery_bundle(
         ),
         (
             "verify_derek_forward_feed_contract",
-            [PYTHON, str(VERIFY_DEREK_CONTRACT), "--date", date],
+            [
+                PYTHON,
+                str(VERIFY_DEREK_CONTRACT),
+                "--date",
+                date,
+                "--run-mode",
+                run_stamp,
+            ],
         ),
         (
             "audit_injury_lineup_run_modes",
@@ -767,16 +774,146 @@ def run_close_lock(date: str, *, regions: list[str],
     return 0
 
 
-def run_after_game(date: str) -> int:
+def _now_utc_iso() -> str:
+    return (
+        datetime.now(timezone.utc)
+        .isoformat(timespec="seconds")
+        .replace("+00:00", "Z")
+    )
+
+
+def _parquet_row_count(path: Path) -> int | None:
+    """Return the row count of a parquet file, or None if unreadable.
+
+    Uses pyarrow.parquet.read_metadata so we never materialise the whole
+    table; this is cheap even on multi-GB feeds.
+    """
+    if not path.is_file():
+        return None
+    try:
+        import pyarrow.parquet as pq
+    except Exception:
+        return None
+    try:
+        return int(pq.read_metadata(str(path)).num_rows)
+    except Exception:
+        return None
+
+
+def _detect_no_games_day(date: str) -> tuple[bool, dict]:
+    """Return (is_no_games, evidence) for ``date``.
+
+    True only when *all* of the available upstream evidence points to a
+    true no-game slate (i.e. predict.py was honest about producing zero
+    rows, and the canonical core-PMF parquet matches). We never short-
+    circuit when files are simply missing — that would mask real outages.
+
+    Specifically the function returns True only when:
+
+    * ``predictions/all_props_<date>.parquet`` exists AND has zero rows.
+    * ``deliveries/<date>/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet``
+      exists AND has zero rows.
+
+    Either parquet being missing, unreadable, or non-empty causes this
+    function to return False so the normal after-game flow continues
+    (the operator will see the real failure mode if data is missing).
+    """
+    pred = REPO_ROOT / "predictions" / f"all_props_{date}.parquet"
+    canon = (
+        REPO_ROOT
+        / "deliveries"
+        / date
+        / "canonical_source"
+        / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+    pred_rows = _parquet_row_count(pred)
+    canon_rows = _parquet_row_count(canon)
+    evidence = {
+        "delivery_date": date,
+        "checked_at_utc": _now_utc_iso(),
+        "predictions_parquet": {
+            "path": str(pred.relative_to(REPO_ROOT)),
+            "exists": pred.is_file(),
+            "rows": pred_rows,
+        },
+        "canonical_model_only_parquet": {
+            "path": str(canon.relative_to(REPO_ROOT)),
+            "exists": canon.is_file(),
+            "rows": canon_rows,
+        },
+    }
+    is_no_games = (
+        pred.is_file() and pred_rows == 0
+        and canon.is_file() and canon_rows == 0
+    )
+    return is_no_games, evidence
+
+
+def _emit_after_game_no_games_skip(date: str, evidence: dict) -> None:
+    """Write Derek-folder status JSON and the slate-level sentinel that
+    downstream verifiers consult to short-circuit cleanly on a true
+    no-game day. Idempotent — safe to invoke multiple times."""
+    base = REPO_ROOT / "deliveries" / date
+    derek_dir = base / "derek_forward_feed"
+    derek_dir.mkdir(parents=True, exist_ok=True)
+    after_game_dir = base / "after_game_scoring"
+    after_game_dir.mkdir(parents=True, exist_ok=True)
+
+    payload = {
+        "delivery_date": date,
+        "status": "after_game_skipped_no_games_prev_day",
+        "reason": (
+            "Predictions parquet and canonical MODEL_ONLY parquet for this "
+            "slate both report 0 rows; the after-game scorer has nothing to "
+            "do. This is the honest no-game-day path, not a data outage."
+        ),
+        "evidence": evidence,
+        "emitted_by": "scripts/run_daily_delivery_pipeline.py:run_after_game",
+    }
+    (derek_dir / "after_game_no_games_status.json").write_text(
+        json.dumps(payload, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
+    (after_game_dir / "no_games_status.json").write_text(
+        json.dumps(payload, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
+    (base / "no_games_today.json").write_text(
+        json.dumps(payload, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
+    print(
+        f"::notice::DEREK_AFTER_GAME_VALID_SKIP date={date} "
+        "reason=no_games_prev_day"
+    )
+    print(f"DEREK_AFTER_GAME_VALID_SKIP date={date} reason=no_games_prev_day")
+
+
+def run_after_game(date: str) -> tuple[int, bool]:
+    """Run the after-game flow for ``date``.
+
+    Returns ``(exit_code, skip_verify)``. ``skip_verify=True`` tells
+    ``main()`` to bypass the M8.8 verify bundle because this run is a
+    valid no-game-day short-circuit (the verifier would otherwise red-
+    flag the missing derek_forward_feed.parquet on a slate that had no
+    games to score in the first place).
+    """
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=True,
               regions=["us"])
+
+    is_no_games, evidence = _detect_no_games_day(date)
+    if is_no_games:
+        _emit_after_game_no_games_skip(date, evidence)
+        _refresh_index()
+        return 0, True
+
     _score(date)
     # Preserve any existing forward-feed files; rebuild the snapshot
     # pointer so latest_available_snapshot reflects the freshest snapshot
     # on disk. If neither morning nor lineup sources exist this no-ops.
     _derek_feed(date, snapshot="both", run_mode_stamp="final_after_game")
     _refresh_index()
-    return 0
+    return 0, False
 
 
 def run_full_day(date: str, *, regions: list[str],
@@ -792,7 +929,7 @@ def run_full_day(date: str, *, regions: list[str],
         date, regions=regions, rebuild_canonical=False,
     )
     run_close_lock(date, regions=regions, rebuild_canonical=False)
-    run_after_game(date)
+    run_after_game(date)  # tuple return — full_day ignores skip_verify
     return 0
 
 
@@ -916,7 +1053,10 @@ def main() -> int:
             rebuild_canonical=args.rebuild_canonical,
         )
     elif internal == "after_game":
-        rc = run_after_game(args.date)
+        rc, skip_verify = run_after_game(args.date)
+        if skip_verify:
+            args.verify = False
+            args.fail_on_missing_delivery = False
     elif internal == "full_day":
         rc = run_full_day(
             args.date,
