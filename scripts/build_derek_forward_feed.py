@@ -925,6 +925,42 @@ def main() -> int:
             (DEL_DIR / "DEREK_FORWARD_FEED_BLOCKERS.md").write_text(blocker)
             return 2
 
+    # M8.8 lineup-status freshness guard.
+    # When --snapshot morning runs (no lineup phase today yet) the lineup
+    # snapshot is intentionally not built — BDL hasn't published confirmed
+    # lineups in the morning window. Without this block, the prior day's
+    # lineup_snapshot_status.json would remain on disk and downstream
+    # readers would see a checked_at_utc from yesterday plus a manifest
+    # with lineup_status:null and no way to distinguish "scheduled later"
+    # from "build failed".
+    # The block always rewrites lineup_snapshot_status.json with today's
+    # timestamp and a meaningful "pending_pre_tipoff_run" sentinel, and
+    # populates lineup_status_payload so the feed_manifest.lineup_status
+    # field carries the same sentinel instead of a bare null.
+    if args.snapshot == "morning":
+        lineup_status_payload = {
+            "status": "pending_pre_tipoff_run",
+            "reason": (
+                f"Morning-only forward-feed run for {args.date}. "
+                "BDL confirmed lineups are not yet available; the lineup "
+                "snapshot will be produced by the later "
+                "derek_pre_tipoff_refresh / close_lock runs. "
+                "Re-check after the pre-tipoff window."
+            ),
+            "snapshot_mode_running": "morning",
+            "lineup_phase_executed_today": False,
+            "checked_at_utc": _now_utc_iso(),
+            "schema_version": "lineup_snapshot_status.v2",
+        }
+        (out_dir / "lineup_snapshot_status.json").write_text(
+            json.dumps(lineup_status_payload, indent=2)
+        )
+        print(
+            "  lineup: morning-only run — wrote fresh "
+            "lineup_snapshot_status.json (pending_pre_tipoff_run, "
+            "no fabrication)"
+        )
+
     if args.snapshot in {"lineup", "both"}:
         if _lineup_snapshot_present(args.date):
             snapshot_type_value, lineup_rollup = _resolve_lineup_snapshot_type(
