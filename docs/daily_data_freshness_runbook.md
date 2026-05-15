@@ -217,7 +217,7 @@ shared imports — either can be rerun independently for forensics.
 `scripts/run_daily_delivery_pipeline.py` reads
 `data/odds_api/processed/{date}/*.parquet` (or
 `data/historical_game_odds.parquet` as fallback) to determine the
-slate's tipoff times and skips `derek_near_lineup` / `close_lock`
+slate's tipoff times and skips `derek_pre_tipoff_refresh` / `close_lock`
 runs where no game tipoff falls within `[now − 15 min, now + 45 min]`.
 Pass `--force-run` to bypass the gate for manual backfills outside the
 lineup window. When schedule data isn't yet on disk (fresh CI checkout

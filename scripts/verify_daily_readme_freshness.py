@@ -13,7 +13,7 @@ Required content:
   - production status grid with all 12 rows:
       scheduled_training_cron, training_run,
       scheduled_recalibration_cron, recalibration_run,
-      daily_predictions, derek_near_lineup, derek_current_live,
+      daily_predictions, derek_pre_tipoff_refresh, derek_current_live,
       derek_t_minus_25, derek_close_lock, derek_after_game_scoring,
       woo_public_export, woo_after_game_scoring
   - Derek outputs section (per-game folders, current_live / t_minus_25 /
@@ -50,7 +50,7 @@ REQUIRED_GRID_ROWS = (
     "scheduled_recalibration_cron",
     "recalibration_run",
     "daily_predictions",
-    "derek_near_lineup",
+    ("derek_pre_tipoff_refresh", "derek_near_lineup"),  # legacy alias accepted
     "derek_current_live",
     "derek_t_minus_25",
     "derek_close_lock",
@@ -112,8 +112,15 @@ def main(argv: list[str] | None = None) -> int:
 
     # Required grid rows. Look for the row label appearing in the file.
     for row in REQUIRED_GRID_ROWS:
-        if row not in text:
-            failures.append(f"missing production status grid row: {row!r}")
+        if isinstance(row, tuple):
+            if not any(alt in text for alt in row):
+                failures.append(
+                    "missing production status grid row (any of): "
+                    f"{row!r}"
+                )
+        else:
+            if row not in text:
+                failures.append(f"missing production status grid row: {row!r}")
 
     # Banned stale phrases.
     for phrase in BANNED_PHRASES:

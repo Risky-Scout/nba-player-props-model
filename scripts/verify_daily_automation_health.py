@@ -207,7 +207,7 @@ def check_daily_workflow_references(report: HealthReport) -> None:
     text = _read_workflow_text("daily_pmf_delivery.yml") or ""
     report.add(
         "daily_workflow_references_derek",
-        "derek_near_lineup" in text or "build_derek_forward_feed" in text,
+        "derek_pre_tipoff_refresh" in text or "derek_near_lineup" in text or "build_derek_forward_feed" in text,
         "daily_pmf_delivery.yml references Derek",
     )
     report.add(

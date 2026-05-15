@@ -164,8 +164,14 @@ def main(argv: list[str] | None = None) -> int:
         "warnings": warnings,
         "outcome": "fail" if failures else ("pending" if pending else "pass"),
     }
+    payload_blob = json.dumps(payload, indent=2)
+    # Write the new canonical name…
+    (out_dir / f"derek_pre_tipoff_refresh_contract_{date}.json").write_text(
+        payload_blob, encoding="utf-8"
+    )
+    # …and the legacy filename so downstream readers don't break.
     (out_dir / f"derek_near_lineup_contract_{date}.json").write_text(
-        json.dumps(payload, indent=2), encoding="utf-8"
+        payload_blob, encoding="utf-8"
     )
 
     if failures:

@@ -417,7 +417,7 @@ def delivery_file_specs() -> tuple[DeliveryFileSpec, ...]:
 
 PIPELINE_MODE_BY_RUN_MODE: dict[RunMode, str] = {
     RunMode.MORNING_EXPECTED: "woo_morning_monetization",
-    RunMode.T25: "derek_near_lineup",
+    RunMode.T25: "derek_pre_tipoff_refresh",
     RunMode.T5: "close_lock",
     RunMode.FINAL_AFTER_GAME: "after_game",
     RunMode.BACKTEST: "woo_morning_monetization",

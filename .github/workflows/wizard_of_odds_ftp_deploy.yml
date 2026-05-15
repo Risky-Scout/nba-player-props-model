@@ -26,7 +26,8 @@ name: Wizard of Odds — FTP Deploy
 # Effective post-Phase-12D-amend deploy schedule:
 #   - woo_morning_monetization        (15:00 UTC)
 #   - woo_afternoon_refresh           (18:00 / 20:00 UTC)
-#   - derek_near_lineup every 15 min  (22:25 UTC → 03:10 UTC)
+#   - derek_pre_tipoff_refresh every 15 min  (22:25 UTC → 03:10 UTC)
+#       (legacy alias: derek_near_lineup)
 #   - close_lock                      (03:25 UTC)
 #   - after_game                      (06:30 UTC, harmless re-upload)
 #

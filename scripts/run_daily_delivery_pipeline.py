@@ -19,10 +19,14 @@ Modes
     woo_afternoon_refresh      mid-afternoon WoO public refresh. Same as above
                                but with snapshot=pre_close and snapshot_type_label=
                                woo_afternoon_refresh. Never builds Derek forward feed.
-    derek_near_lineup          Derek's first evaluation-grade snapshot. Refresh
-                               inputs, build delivery (snapshot=pre_close), build
-                               Derek forward feed (--snapshot lineup), refresh
-                               public WoO export with the lineup-aware snapshot.
+    derek_pre_tipoff_refresh   Derek's first evaluation-grade snapshot, fired
+                               in the pre-tipoff window (T-35 down to T-5) so
+                               BDL confirmed lineups can flow in as soon as
+                               they drop. Refresh inputs, build delivery
+                               (snapshot=pre_close), build Derek forward feed
+                               (--snapshot lineup), refresh public WoO export
+                               with the lineup-aware snapshot.
+                               (legacy alias accepted: derek_near_lineup)
     close_lock                 final lineup/market lock. Build delivery
                                (snapshot=close_lock), refresh Derek feed and WoO
                                public export.
@@ -30,9 +34,10 @@ Modes
                                Derek latest_available_snapshot pointer.
     morning                    legacy/backfill morning run; manual-only since
                                Phase 12D.
-    pre_close                  alias for derek_near_lineup retained for
+    pre_close                  alias for derek_pre_tipoff_refresh retained for
                                backwards compatibility.
-    full_day                   morning → derek_near_lineup → close_lock →
+    derek_near_lineup          legacy alias for derek_pre_tipoff_refresh.
+    full_day                   morning → derek_pre_tipoff_refresh → close_lock →
                                after_game in sequence (manual full backfill).
 
 Hard rules echoed from the spec:
@@ -507,8 +512,9 @@ def _check_tipoff_window(
 LEGACY_MODE_TO_RUN_STAMP: dict[str, str] = {
     "woo_morning_monetization": "morning_expected",
     "woo_afternoon_refresh": "morning_expected",
-    "derek_near_lineup": "t25",
-    "pre_close": "t25",
+    "derek_pre_tipoff_refresh": "t25",
+    "derek_near_lineup": "t25",  # legacy alias
+    "pre_close": "t25",  # legacy alias
     "close_lock": "t5",
     "after_game": "final_after_game",
     "morning": "morning_expected",
@@ -720,16 +726,21 @@ def run_woo_afternoon_refresh(
     return 0
 
 
-def run_derek_near_lineup(
+def run_derek_pre_tipoff_refresh(
     date: str, *, regions: list[str], rebuild_canonical: bool,
 ) -> int:
     """Phase 12D-amend mode 3 — Derek's first evaluation-grade snapshot.
 
-    Refreshes odds, rebuilds the canonical pre_close package, builds
-    Derek's forward feed (`--snapshot lineup`), and re-publishes the
-    WoO public export so the monetization feed picks up the
-    lineup-aware data. The WoO export inherits the canonical run
-    manifest's snapshot_type / finality_status (no override)."""
+    Fires during the pre-tipoff window (T-35 down to T-5) so BDL confirmed
+    lineups can flow in as soon as they drop. Refreshes odds, rebuilds the
+    canonical pre_close package, builds Derek's forward feed
+    (`--snapshot lineup`), and re-publishes the WoO public export so the
+    monetization feed picks up the lineup-aware data. The WoO export
+    inherits the canonical run manifest's snapshot_type / finality_status
+    (no override).
+
+    Legacy callers can still use ``run_derek_near_lineup`` (a thin
+    backward-compat shim defined immediately below)."""
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
@@ -749,6 +760,13 @@ def run_derek_near_lineup(
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
     return 0
+
+
+def run_derek_near_lineup(*args, **kwargs):
+    """Backward-compat shim. Calls ``run_derek_pre_tipoff_refresh`` so
+    legacy importers and CI scripts keep working unchanged. New code
+    should call ``run_derek_pre_tipoff_refresh`` directly."""
+    return run_derek_pre_tipoff_refresh(*args, **kwargs)
 
 
 def run_close_lock(date: str, *, regions: list[str],
@@ -949,6 +967,7 @@ def main() -> int:
         choices=[
             "woo_morning_monetization",
             "woo_afternoon_refresh",
+            "derek_pre_tipoff_refresh",
             "derek_near_lineup",
             "close_lock",
             "after_game",
@@ -956,7 +975,10 @@ def main() -> int:
             "morning",
             "pre_close",
         ],
-        help="legacy pipeline mode (Phase 12D)",
+        help=(
+            "legacy pipeline mode (Phase 12D). derek_near_lineup is a "
+            "legacy alias for derek_pre_tipoff_refresh."
+        ),
     )
     mx.add_argument(
         "--run-mode",
@@ -1040,8 +1062,8 @@ def main() -> int:
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
         )
-    elif internal in {"derek_near_lineup", "pre_close"}:
-        rc = run_derek_near_lineup(
+    elif internal in {"derek_pre_tipoff_refresh", "derek_near_lineup", "pre_close"}:
+        rc = run_derek_pre_tipoff_refresh(
             args.date,
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,

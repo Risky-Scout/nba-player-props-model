@@ -327,12 +327,12 @@ def _build_readme(rows: list[dict]) -> str:
                "(`finality_status_public=PROVISIONAL_EARLY_MARKET`)\n")
     out.append("- 18:00 UTC / 2:00 PM ET — `woo_afternoon_refresh`\n")
     out.append("- 20:00 UTC / 4:00 PM ET — `woo_afternoon_refresh`\n")
-    out.append("- Refreshed automatically alongside every `derek_near_lineup` "
+    out.append("- Refreshed automatically alongside every `derek_pre_tipoff_refresh` "
                "and `close_lock` run.\n\n")
     out.append("**Derek evaluation feed:**\n\n")
-    out.append("- 22:25 UTC / 6:25 PM ET — `derek_near_lineup` first publishable "
+    out.append("- 22:25 UTC / 6:25 PM ET — `derek_pre_tipoff_refresh` first publishable "
                "evaluation snapshot (earliest tipoff − 35 min default during NBA playoffs).\n")
-    out.append("- Every 15 min from 22:40 UTC through 03:10 UTC — `derek_near_lineup` "
+    out.append("- Every 15 min from 22:40 UTC through 03:10 UTC — `derek_pre_tipoff_refresh` "
                "refresh as lineups confirm.\n")
     out.append("- 03:25 UTC — `close_lock` final lineup/market lock.\n")
     out.append("- 06:30 UTC — `after_game` scoring (yesterday's slate).\n\n")
@@ -415,7 +415,7 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
                 '15:00&nbsp;UTC (11&nbsp;AM&nbsp;ET) plus '
                 '<code>woo_afternoon_refresh</code> at 18:00 and 20:00&nbsp;UTC '
                 '(<code>finality_status_public=PROVISIONAL_EARLY_MARKET</code>). '
-                '<b>Derek evaluation</b>: <code>derek_near_lineup</code> first '
+                '<b>Derek evaluation</b>: <code>derek_pre_tipoff_refresh</code> first '
                 'snapshot at 22:25&nbsp;UTC (6:25&nbsp;PM ET, earliest tipoff &minus;&nbsp;35&nbsp;min '
                 'default), refreshing every 15&nbsp;min through 03:10&nbsp;UTC, '
                 'with a late <code>close_lock</code> at 03:25&nbsp;UTC and '

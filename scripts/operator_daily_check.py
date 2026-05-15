@@ -33,7 +33,7 @@ SECTION_LABEL_MAP = (
     ("recalibration_run",        "RECAL RUN      "),
     ("recalibration_automation", "RECAL ARTIFACT "),
     ("daily_predictions",        "PREDICTIONS    "),
-    ("derek_near_lineup",        "DEREK NEAR-LINE"),
+    ("derek_pre_tipoff_refresh", "DEREK PRE-TIPOFF"),
     ("woo_snapshot_state_machine", "WOO STATE M/C  "),
     ("woo_morning_snapshot",     "WOO MORNING    "),
     ("woo_t_minus_25",           "WOO T-25       "),

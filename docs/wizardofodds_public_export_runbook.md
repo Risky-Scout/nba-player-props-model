@@ -27,8 +27,8 @@ split them.
 | 15:00    | 11:00 AM      | `woo_morning_monetization`    | `PROVISIONAL_EARLY_MARKET`  |
 | 18:00    | 2:00 PM       | `woo_afternoon_refresh`       | `PROVISIONAL_EARLY_MARKET`  |
 | 20:00    | 4:00 PM       | `woo_afternoon_refresh`       | `PROVISIONAL_EARLY_MARKET`  |
-| 22:25    | 6:25 PM       | `derek_near_lineup` (also refreshes WoO export) | inherited from run_manifest |
-| 22:40 → 03:10, every 15 min | through 11:10 PM | `derek_near_lineup`            | inherited from run_manifest |
+| 22:25    | 6:25 PM       | `derek_pre_tipoff_refresh` (also refreshes WoO export) | inherited from run_manifest |
+| 22:40 → 03:10, every 15 min | through 11:10 PM | `derek_pre_tipoff_refresh`            | inherited from run_manifest |
 | 03:25    | 11:25 PM      | `close_lock` (also refreshes WoO export) | inherited from run_manifest |
 
 The early monetization runs intentionally publish before lineups

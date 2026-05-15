@@ -223,7 +223,10 @@ def main() -> int:
     parser.add_argument(
         "--mode",
         required=True,
-        help="Delivery mode (morning, derek_near_lineup, after_game, ...).",
+        help=(
+            "Delivery mode (morning, derek_pre_tipoff_refresh, after_game, "
+            "...). derek_near_lineup is accepted as a legacy alias."
+        ),
     )
     parser.add_argument(
         "--no-run-predict",

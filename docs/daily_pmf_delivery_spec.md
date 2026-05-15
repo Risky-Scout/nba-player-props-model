@@ -367,23 +367,24 @@ publishable evaluation snapshot remains at earliest tipoff − 35 min.
 |------------------------------|------------------------------------------|-------------------------------|--------------------------------|
 | `woo_morning_monetization`   | `0 15 * * *`                              | `woo_morning_monetization`    | `PROVISIONAL_EARLY_MARKET`     |
 | `woo_afternoon_refresh`      | `0 18 * * *` and `0 20 * * *`             | `woo_afternoon_refresh`       | `PROVISIONAL_EARLY_MARKET`     |
-| `derek_near_lineup` (first)  | `25 22 * * *`                             | `derek_near_lineup`           | inherited from run_manifest    |
-| `derek_near_lineup` (refresh)| `40,55 22 * * *`                          | `derek_near_lineup`           | inherited from run_manifest    |
-| `derek_near_lineup` (refresh)| `10,25,40,55 23,0,1,2 * * *`              | `derek_near_lineup`           | inherited from run_manifest    |
-| `derek_near_lineup` (refresh)| `10 3 * * *`                              | `derek_near_lineup`           | inherited from run_manifest    |
+| `derek_pre_tipoff_refresh` (first)  | `25 22 * * *`                             | `derek_pre_tipoff_refresh`           | inherited from run_manifest    |
+| `derek_pre_tipoff_refresh` (refresh)| `40,55 22 * * *`                          | `derek_pre_tipoff_refresh`           | inherited from run_manifest    |
+| `derek_pre_tipoff_refresh` (refresh)| `10,25,40,55 23,0,1,2 * * *`              | `derek_pre_tipoff_refresh`           | inherited from run_manifest    |
+| `derek_pre_tipoff_refresh` (refresh)| `10 3 * * *`                              | `derek_pre_tipoff_refresh`           | inherited from run_manifest    |
 | `close_lock`                 | `25 3 * * *`                              | `close_lock`                  | inherited from run_manifest    |
 | `after_game`                 | `30 6 * * *`                              | `after_game`                  | inherited from run_manifest    |
 | `morning` (legacy)           | (retired — manual-only)                   | `morning`                     | inherited from run_manifest    |
 
-`scripts/run_daily_delivery_pipeline.py` gates `derek_near_lineup` /
+`scripts/run_daily_delivery_pipeline.py` gates `derek_pre_tipoff_refresh` /
 `close_lock` runs to a `[now − 15, now + 45]` minute window around any
 tipoff for the date, when schedule data is on disk. WoO morning /
 afternoon runs deliberately bypass the gate so the public monetization
 feed publishes on its own clock. Pass `--force-run` to bypass the gate
 during manual backfills.
 
-The `morning` and `pre_close` modes are kept as backwards-compatible
-aliases (`pre_close` → `derek_near_lineup`).
+The `morning`, `pre_close`, and `derek_near_lineup` modes are kept as
+backwards-compatible aliases (`pre_close` → `derek_pre_tipoff_refresh`,
+`derek_near_lineup` → `derek_pre_tipoff_refresh`).
 
 Only `deliveries/{date}/{canonical_source,pmf_model_review_package,wizard_of_odds}/`
 are staged in CI commits. `data/odds_api/`, `data/freshness_manifest/`,

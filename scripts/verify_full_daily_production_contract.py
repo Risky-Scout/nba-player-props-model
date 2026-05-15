@@ -210,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # 4a. Derek near-lineup contract.
     checks.append(_check(
-        "derek_near_lineup",
+        "derek_pre_tipoff_refresh",
         [py, "scripts/verify_derek_near_lineup_contract.py", "--date", args.date],
         pass_prefixes=("DEREK_NEAR_LINEUP_CONTRACT_PASS",),
         warn_prefixes=("DEREK_NEAR_LINEUP_CONTRACT_PENDING",),

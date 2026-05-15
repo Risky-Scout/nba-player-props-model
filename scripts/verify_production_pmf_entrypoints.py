@@ -161,8 +161,11 @@ def main() -> int:
             f"{pmf_delivery_wf} Derek bridge must be gated to Derek near-lineup schedules")
     require("github.event.schedule == '25 3 * * *'" in pmf_delivery_s,
             f"{pmf_delivery_wf} Derek bridge must be gated to close-lock schedule")
-    require("github.event.inputs.mode == 'derek_near_lineup'" in pmf_delivery_s,
-            f"{pmf_delivery_wf} manual bridge must be gated to Derek mode")
+    require(
+        "github.event.inputs.mode == 'derek_pre_tipoff_refresh'" in pmf_delivery_s
+        or "github.event.inputs.mode == 'derek_near_lineup'" in pmf_delivery_s,
+        f"{pmf_delivery_wf} manual bridge must be gated to Derek mode",
+    )
     require("github.event.inputs.mode == 'close_lock'" in pmf_delivery_s,
             f"{pmf_delivery_wf} manual bridge must be gated to close-lock mode")
 

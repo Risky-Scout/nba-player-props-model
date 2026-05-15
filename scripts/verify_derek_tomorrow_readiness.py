@@ -10,7 +10,8 @@ Inputs:
 
 Checks:
   1. Daily PMF delivery workflow (`daily_pmf_delivery.yml`) has a
-     scheduled `derek_near_lineup` cron firing well before tip.
+     scheduled `derek_pre_tipoff_refresh` cron firing well before tip
+     (legacy alias accepted: `derek_near_lineup`).
   2. Derek live snapshot workflow (`derek_game_snapshots.yml`) has
      scheduled crons for current_live, t_minus_25, and close_lock that
      cover the slate window.
@@ -64,8 +65,14 @@ def main(argv: list[str] | None = None) -> int:
     if not daily_pmf_text:
         failures.append(f"missing {daily_pmf.relative_to(REPO_ROOT)}")
     else:
-        if "derek_near_lineup" not in daily_pmf_text:
-            failures.append("daily_pmf_delivery.yml has no derek_near_lineup job")
+        if (
+            "derek_pre_tipoff_refresh" not in daily_pmf_text
+            and "derek_near_lineup" not in daily_pmf_text
+        ):
+            failures.append(
+                "daily_pmf_delivery.yml has no derek_pre_tipoff_refresh "
+                "(or legacy derek_near_lineup) job"
+            )
         if "TZ=America/New_York" not in daily_pmf_text:
             failures.append(
                 "daily_pmf_delivery.yml does not resolve slate via "

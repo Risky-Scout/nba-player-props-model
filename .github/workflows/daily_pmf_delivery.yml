@@ -9,10 +9,11 @@ name: NBA PMF Delivery — Daily Pipeline
 #                                  not yet confirmed.
 #   18:00 UTC = 2:00 PM ET         woo_afternoon_refresh
 #   20:00 UTC = 4:00 PM ET         woo_afternoon_refresh
-#   22:25 UTC = 6:25 PM ET         derek_near_lineup (earliest tipoff − 35 min
-#                                  default during NBA playoffs); also refreshes
-#                                  the WoO public export.
-#   22:40 UTC ... 03:10 UTC every 15 min  derek_near_lineup
+#   22:25 UTC = 6:25 PM ET         derek_pre_tipoff_refresh (earliest tipoff
+#                                  − 35 min default during NBA playoffs); also
+#                                  refreshes the WoO public export.
+#                                  (legacy alias: derek_near_lineup)
+#   22:40 UTC ... 03:10 UTC every 15 min  derek_pre_tipoff_refresh
 #   03:25 UTC = 11:25 PM ET        close_lock (final lineup/market lock)
 #   06:30 UTC = 2:30 AM ET         after_game (post-final scoring)
 #
@@ -25,10 +26,10 @@ name: NBA PMF Delivery — Daily Pipeline
 #   6. scripts/predict.py                   (woo_morning_monetization /
 #                                            morning / full_day, --predict only)
 #   7. scripts/build_daily_pmf_delivery.py  (snapshot=mode-specific)
-#   8. scripts/build_derek_forward_feed.py  (derek_near_lineup, close_lock,
-#                                            after_game)
+#   8. scripts/build_derek_forward_feed.py  (derek_pre_tipoff_refresh,
+#                                            close_lock, after_game)
 #   9. scripts/build_wizard_of_odds_public_export.py
-#                                           (woo_*, derek_near_lineup,
+#                                           (woo_*, derek_pre_tipoff_refresh,
 #                                            close_lock; with monetization
 #                                            labels for woo_* runs)
 #  10. scripts/score_daily_pmf_delivery_after_game.py  (after_game)
@@ -76,13 +77,14 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Wrapper mode"
+        description: "Wrapper mode (derek_near_lineup is a legacy alias for derek_pre_tipoff_refresh)"
         required: true
-        default: derek_near_lineup
+        default: derek_pre_tipoff_refresh
         type: choice
         options:
           - woo_morning_monetization
           - woo_afternoon_refresh
+          - derek_pre_tipoff_refresh
           - derek_near_lineup
           - close_lock
           - after_game
@@ -233,9 +235,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
-          # derek_near_lineup job, or a future verifier we forgot to
-          # enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
+          # the derek_pre_tipoff_refresh job, or a future verifier we
+          # forgot to enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -517,9 +519,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
-          # derek_near_lineup job, or a future verifier we forgot to
-          # enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
+          # the derek_pre_tipoff_refresh job, or a future verifier we
+          # forgot to enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -668,9 +670,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
-          # derek_near_lineup job, or a future verifier we forgot to
-          # enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
+          # the derek_pre_tipoff_refresh job, or a future verifier we
+          # forgot to enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -690,12 +692,14 @@ jobs:
             exit 1
           fi
 
-  # ── Derek near-lineup (first publishable Derek snapshot + every-15 refresh) ──
-  derek_near_lineup:
+  # ── Derek pre-tipoff refresh (first publishable Derek snapshot + every-15 refresh) ──
+  # Renamed from derek_near_lineup. The job ID below is the new canonical
+  # name; mode='derek_near_lineup' is still accepted as a legacy alias.
+  derek_pre_tipoff_refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     if: |
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'derek_near_lineup') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_pre_tipoff_refresh' || github.event.inputs.mode == 'derek_near_lineup')) ||
       github.event.schedule == '25 22 * * *' ||
       github.event.schedule == '40,55 22 * * *' ||
       github.event.schedule == '10,25,40,55 23,0,1,2 * * *' ||
@@ -754,10 +758,10 @@ jobs:
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "derek_near_lineup" \
+            --mode "derek_pre_tipoff_refresh" \
             $FORCE_PREDICT_ARG
 
-      - name: Run delivery pipeline (derek_near_lineup)
+      - name: Run delivery pipeline (derek_pre_tipoff_refresh)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -770,7 +774,7 @@ jobs:
           fi
           python scripts/run_daily_delivery_pipeline.py \
             --date $DATE \
-            --mode derek_near_lineup \
+            --mode derek_pre_tipoff_refresh \
             --regions us us2 \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
@@ -849,7 +853,7 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (derek_near_lineup)"
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (derek_pre_tipoff_refresh)"
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
@@ -865,9 +869,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
-          # derek_near_lineup job, or a future verifier we forgot to
-          # enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
+          # the derek_pre_tipoff_refresh job, or a future verifier we
+          # forgot to enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -1032,9 +1036,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
-          # derek_near_lineup job, or a future verifier we forgot to
-          # enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
+          # the derek_pre_tipoff_refresh job, or a future verifier we
+          # forgot to enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -1220,9 +1224,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
-          # derek_near_lineup job, or a future verifier we forgot to
-          # enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
+          # the derek_pre_tipoff_refresh job, or a future verifier we
+          # forgot to enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -1256,7 +1260,7 @@ jobs:
 
   derek_schedule_bridge:
     name: Derek schedule bridge from PMF delivery cron
-    if: ${{ (github.event_name == 'schedule' && (github.event.schedule == '25 22 * * *' || github.event.schedule == '40,55 22 * * *' || github.event.schedule == '10,25,40,55 23,0,1,2 * * *' || github.event.schedule == '10 3 * * *' || github.event.schedule == '25 3 * * *')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_near_lineup' || github.event.inputs.mode == 'close_lock')) }}
+    if: ${{ (github.event_name == 'schedule' && (github.event.schedule == '25 22 * * *' || github.event.schedule == '40,55 22 * * *' || github.event.schedule == '10,25,40,55 23,0,1,2 * * *' || github.event.schedule == '10 3 * * *' || github.event.schedule == '25 3 * * *')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_pre_tipoff_refresh' || github.event.inputs.mode == 'derek_near_lineup' || github.event.inputs.mode == 'close_lock')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
