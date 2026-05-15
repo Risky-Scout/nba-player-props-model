@@ -1029,10 +1029,10 @@ def enrich_game_context_with_snapshots(
 
 def get_nba_injury_report(
     *,
-    slate_date: str | None = None,
-    slate_team_full_names: AbstractSet[str] | None = None,
-    repo_root: Path | None = None,
-    now_utc: datetime | None = None,
+    slate_date: Optional[str] = None,
+    slate_team_full_names: Optional[AbstractSet[str]] = None,
+    repo_root: Optional[Path] = None,
+    now_utc: Optional[datetime] = None,
 ) -> dict:
     """
     Fetch the latest NBA official injury report (PDF) with structured logging.

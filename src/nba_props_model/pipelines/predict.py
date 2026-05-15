@@ -519,7 +519,35 @@ def save_all_props_snapshot(rows: list, target_date: str):
 
     out_path = PRED_DIR / f"all_props_{target_date}.parquet"
     df = pd.DataFrame(rows).copy()
+    if "slate_date" not in df.columns:
+        df["slate_date"] = str(target_date)
 
+    if "market_over_odds" not in df.columns and "over_odds" in df.columns:
+        df["market_over_odds"] = df["over_odds"]
+    if "market_under_odds" not in df.columns and "under_odds" in df.columns:
+        df["market_under_odds"] = df["under_odds"]
+    if "book" not in df.columns:
+        if "bet_vendor" in df.columns:
+            df["book"] = df["bet_vendor"]
+        elif "source_book" in df.columns:
+            df["book"] = df["source_book"]
+
+    if "market_no_vig_over_prob" not in df.columns and "market_prob" in df.columns:
+        df["market_no_vig_over_prob"] = df["market_prob"]
+
+    for col in ("game_id", "player_id"):
+        if col not in df.columns:
+            sample = df.head(8).to_dict("records") if len(df) else []
+            raise SystemExit(
+                "CURRENT_MARKET_SIGNAL_UNMAPPABLE_KEYS "
+                f"missing identity column {col!r} in all_props snapshot sample_rows={sample!r}"
+            )
+        if df[col].isna().any():
+            sample = df[df[col].isna()].head(8).to_dict("records") if len(df) else []
+            raise SystemExit(
+                "CURRENT_MARKET_SIGNAL_UNMAPPABLE_KEYS "
+                f"missing/null {col} in all_props snapshot rows sample_rows={sample!r}"
+            )
     def _jsonify(x):
         if isinstance(x, (dict, list, tuple, set)):
             return json.dumps(x, default=str)
@@ -544,7 +572,15 @@ def write_no_game_outputs(target_date: str) -> None:
 
     # Keep parquet schema minimally compatible with downstream verifiers.
     all_props_path = PRED_DIR / f"all_props_{target_date}.parquet"
-    empty_cols = ["player_id", "stat", "line", "model_prob", "pmf", "game_id"]
+    empty_cols = [
+        "slate_date",
+        "player_id",
+        "game_id",
+        "stat",
+        "line",
+        "model_prob",
+        "pmf",
+    ]
     pd.DataFrame(columns=empty_cols).to_parquet(all_props_path, index=False)
 
     generated_at = datetime.utcnow().isoformat()
@@ -1101,12 +1137,16 @@ def main(argv=None):
     all_singles = []
 
     for game in games:
-        gid     = game.get("id")
+        gid = game.get("id")
+        if not gid:
+            continue
         home_id = (game.get("home_team") or {}).get("id") or game.get("home_team_id")
-        vis_id  = (game.get("visitor_team") or {}).get("id") or game.get("visitor_team_id")
+        vis_id = (game.get("visitor_team") or {}).get("id") or game.get("visitor_team_id")
         home_nm = (game.get("home_team") or {}).get("full_name", "")
-        vis_nm  = (game.get("visitor_team") or {}).get("full_name", "")
-        glabel  = f"{vis_nm} @ {home_nm}"
+        vis_nm = (game.get("visitor_team") or {}).get("full_name", "")
+        home_abbr = (game.get("home_team") or {}).get("abbreviation", "") or ""
+        vis_abbr = (game.get("visitor_team") or {}).get("abbreviation", "") or ""
+        glabel = f"{vis_nm} @ {home_nm}"
         ctx     = ctx_map.get(gid, {})
 
         player_ids = list(set(pid for (pid, pg, _) in prop_map if pg == gid))
@@ -1154,6 +1194,9 @@ def main(argv=None):
             except Exception as e:
                 logger.warning(f"Feature error player={player_id}: {e}")
                 continue
+
+            team_abbr = home_abbr if is_home else vis_abbr
+            opp_abbr = vis_abbr if is_home else home_abbr
 
             player_name = str(pdata.iloc[-1].get("player_name", f"Player {player_id}"))
             ub = usage_bucket(float(base.get("adv_usage_percentage_mean_last10") or 0))
@@ -1372,11 +1415,14 @@ def main(argv=None):
                     raw_edge_val= (prob - novig_over) if side=="OVER" else (prob - novig_under)
 
                     all_singles.append({
+                        "slate_date":   target_date,
                         "player_id":    player_id,
                         "player_name":  player_name,
                         "game_id":      gid,
                         "game":         glabel,
                         "team_id":      team_id,
+                        "team":         team_abbr,
+                        "opponent":     opp_abbr,
                         "stat":         target,
                         "side":         side,
                         "line":         line,

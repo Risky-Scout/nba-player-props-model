@@ -5,7 +5,7 @@ so the change diff for the M8.9 root-cause rewire is small and obvious.
 
 Inputs are read from disk:
     artifacts/minutes_predictions/{date}/minutes_predictions.parquet
-    data/odds_api/processed/{date}/odds_pairs_*.parquet (optional)
+    predictions/all_props_{date}.parquet plus optional keyed market frames
 
 Returns a ``{(player_id, game_id): eligibility_row_dict}`` map for every
 candidate player-game that passes the eligibility rule. Player-games not
@@ -13,6 +13,7 @@ in the map MUST NOT have PMFs generated.
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Iterable
 
@@ -21,6 +22,8 @@ import pandas as pd
 from nba_props_model.pipelines.player_game_eligibility import (
     build_current_market_player_signal,
     build_player_game_eligibility,
+    load_keyed_current_market_signal,
+    write_current_market_meta,
 )
 
 
@@ -38,26 +41,25 @@ def load_minutes_predictions(repo_root: Path, target_date: str) -> pd.DataFrame:
 
 
 def load_current_market_signal(repo_root: Path, target_date: str) -> pd.DataFrame:
-    """Concatenate all odds_pairs parquets for this date, normalize keys,
-    and return the per-(slate_date, game_id, player_id) market signal."""
-    odds_dir = repo_root / "data" / "odds_api" / "processed" / target_date
-    frames = []
-    if odds_dir.exists():
-        for op in sorted(odds_dir.glob("odds_pairs_*.parquet")):
-            try:
-                frames.append(pd.read_parquet(op))
-            except Exception as exc:
-                print("  warn: could not read " + op.name + ": " + str(exc))
-    if frames:
-        market_df = pd.concat(frames, ignore_index=True)
-        if "market_stat" in market_df.columns and "stat" not in market_df.columns:
-            market_df = market_df.rename(columns={"market_stat": "stat"})
-        for col, alt in (("player_id", "bdl_player_id"), ("game_id", "event_id")):
-            if col not in market_df.columns and alt in market_df.columns:
-                market_df[col] = market_df[alt]
-    else:
-        market_df = pd.DataFrame()
-    return build_current_market_player_signal(market_df, slate_date=target_date)
+    """Keyed market table → per-(slate, game, player) signal for eligibility."""
+    crm_raw = (os.environ.get("CURRENT_RUN_MARKET_COMPARISON_PATH") or "").strip()
+    crm_path = None
+    if crm_raw:
+        p = Path(crm_raw).expanduser().resolve()
+        if p.is_file():
+            crm_path = p
+
+    raw, meta = load_keyed_current_market_signal(
+        repo_root,
+        target_date,
+        current_run_market_comparison_path=crm_path,
+    )
+    write_current_market_meta(repo_root, target_date, meta)
+    return build_current_market_player_signal(
+        raw,
+        slate_date=target_date,
+        source_label="stat_grid_eligibility_gate",
+    )
 
 
 def build_eligibility_map(

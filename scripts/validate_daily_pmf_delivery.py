@@ -32,6 +32,7 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
     REQUIRED_MINUTES_COLUMNS,
+    merge_delivery_manifest_market_signal_fields,
 )
 from nba_props_model.data.nba_official_injury_report_fetch import (  # noqa: E402
     merge_manifest_injury_fields,
@@ -448,6 +449,7 @@ def main(argv: list[str] | None = None) -> int:
 
     manifest = validate(args.date, args.train_through_date)
     merge_manifest_injury_fields(manifest, args.date, REPO_ROOT)
+    merge_delivery_manifest_market_signal_fields(manifest, REPO_ROOT, args.date)
     out_path = REPO_ROOT / "deliveries" / args.date / "manifest.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(manifest, indent=2) + "\n")

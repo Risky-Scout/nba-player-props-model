@@ -66,6 +66,9 @@ from nba_props_model.delivery.delivery_contract import (  # noqa: E402
     RunMode,
 )
 from nba_props_model.data.bdl_client import get_games  # noqa: E402
+from nba_props_model.pipelines.minutes_artifact_gates import (  # noqa: E402
+    require_minutes_predictions_eligible_present,
+)
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 
 MISSION_STAT_GRID_STATS = list(MISSION_REQUIRED_TARGETS_CANONICAL)
@@ -205,13 +208,10 @@ def _minutes_predictions(date: str, *, run_mode_stamp: str) -> int:
         artifacts/minutes_predictions/{date}/manifest.json
 
     Consumed by ``nba_props_model.pipelines._stat_grid_eligibility_gate``
-    via ``build_stat_grid_pmfs.py``. Without this artifact the gate
-    hard-fails with ``FATAL: missing artifacts/minutes_predictions/<date>/
-    minutes_predictions.parquet``. This step must therefore run AFTER
-    ``_feature_snapshot`` (which writes the input feature parquet) and
-    BEFORE ``_run_mission_stat_grid_and_canonical``. Allowed to fail at the subprocess level so the
-    eligibility gate emits the canonical missing-artifact error if the
-    build cannot complete.
+    via ``build_stat_grid_pmfs.py``. This step must therefore run AFTER
+    ``_feature_snapshot`` and BEFORE ``_run_mission_stat_grid_and_canonical``.
+    Failures stop the pipeline — a half-built minutes artifact without
+    eligible rows must not silently continue to stat-grid.
     """
     if not MINUTES_PREDICTIONS.exists():
         return 0
@@ -225,11 +225,11 @@ def _minutes_predictions(date: str, *, run_mode_stamp: str) -> int:
         "--run-mode",
         run_mode_stamp,
     ]
-    return _run(
-        cmd,
-        allow_fail=True,
-        label=f"minutes_predictions {date} {run_mode_stamp}",
-    )
+    rc = _run(cmd, allow_fail=False, label=f"minutes_predictions {date} {run_mode_stamp}")
+    if rc != 0:
+        return rc
+    require_minutes_predictions_eligible_present(REPO_ROOT, date)
+    return 0
 
 
 def _run_mission_stat_grid_and_canonical(

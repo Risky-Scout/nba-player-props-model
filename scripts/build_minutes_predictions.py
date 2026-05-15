@@ -90,6 +90,8 @@ from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
     ROTATION_PROB_FLOOR,
     STARTER_PROB_FLOOR,
     build_current_market_player_signal,
+    load_keyed_current_market_signal,
+    write_current_market_meta,
 )
 
 
@@ -438,6 +440,15 @@ def build_minutes_predictions(
     return out
 
 
+def _optional_current_run_market_comparison_path() -> Optional[Path]:
+    """Optional parquet from the same CI run (WoO) — bypasses stale-file gate for keys."""
+    raw = (os.environ.get("CURRENT_RUN_MARKET_COMPARISON_PATH") or "").strip()
+    if not raw:
+        return None
+    p = Path(raw).expanduser().resolve()
+    return p if p.is_file() else None
+
+
 def validate_minutes_artifact(df: pd.DataFrame, *, slate_date: str) -> None:
     missing = [c for c in REQUIRED_OUTPUT_COLUMNS if c not in df.columns]
     if missing:
@@ -511,42 +522,12 @@ _VALID_ELIGIBILITY_REASONS = (
 )
 
 
-def _load_current_market_df(slate_date: str) -> tuple[pd.DataFrame, Optional[Path]]:
-    """Locate today's odds snapshot (or fall back to market_comparison) so the
-    eligible-view builder can compute ``has_current_market_line``.
-
-    Returns ``(market_df, source_path)``. ``market_df`` is empty if no
-    source is available — the eligibility builder then relies on the
-    three model-derived floors (starter / rotation / minutes).
-    """
-    odds_dir = REPO_ROOT / "data" / "odds_api" / "processed" / slate_date
-    if odds_dir.exists():
-        cands = sorted(odds_dir.glob("odds_pairs_*.parquet"))
-        if cands:
-            try:
-                return pd.read_parquet(cands[-1]), cands[-1]
-            except Exception:
-                pass
-    market_cmp = (
-        REPO_ROOT
-        / "deliveries"
-        / slate_date
-        / "wizard_of_odds"
-        / "market_comparison.parquet"
-    )
-    if market_cmp.exists():
-        try:
-            return pd.read_parquet(market_cmp), market_cmp
-        except Exception:
-            pass
-    return pd.DataFrame(columns=["slate_date", "game_id", "player_id", "line"]), None
-
-
 def build_eligible_view(
     universe_df: pd.DataFrame,
     *,
     slate_date: str,
-    market_df: pd.DataFrame,
+    market_raw_df: pd.DataFrame | None = None,
+    source_label: str = "minutes_predictions_eligible",
 ) -> pd.DataFrame:
     """Filter the universe down to eligibility-positive rows and append
     ``has_current_market_line`` + ``eligibility_reason``.
@@ -561,7 +542,11 @@ def build_eligible_view(
     base = universe_df.copy()
     base["slate_date"] = base["slate_date"].astype(str).str[:10]
 
-    sig = build_current_market_player_signal(market_df, slate_date=slate_date)
+    if market_raw_df is None:
+        market_raw_df = pd.DataFrame()
+    sig = build_current_market_player_signal(
+        market_raw_df, slate_date=slate_date, source_label=source_label,
+    )
     if sig is None or sig.empty:
         sig = pd.DataFrame(
             columns=[
@@ -569,6 +554,7 @@ def build_eligible_view(
                 "game_id",
                 "player_id",
                 "has_current_market_line",
+                "current_market_line_count",
                 "quoted_stats",
             ]
         )
@@ -664,9 +650,18 @@ def main(argv: Optional[list[str]] = None) -> int:
     df.to_parquet(out_pq, index=False)
     print(f"  wrote {out_pq.relative_to(REPO_ROOT)} rows={len(df)}")
 
-    market_df, market_source = _load_current_market_df(slate_date)
+    _crm = _optional_current_run_market_comparison_path()
+    raw_market, market_meta = load_keyed_current_market_signal(
+        REPO_ROOT,
+        slate_date,
+        current_run_market_comparison_path=_crm,
+    )
+    write_current_market_meta(REPO_ROOT, slate_date, market_meta)
     eligible_df = build_eligible_view(
-        df, slate_date=slate_date, market_df=market_df
+        df,
+        slate_date=slate_date,
+        market_raw_df=raw_market,
+        source_label="minutes_predictions_eligible",
     )
     out_eligible_pq = out_dir / "minutes_predictions_eligible.parquet"
     eligible_df.to_parquet(out_eligible_pq, index=False)
@@ -687,9 +682,15 @@ def main(argv: Optional[list[str]] = None) -> int:
         "eligible_artifact_path": str(out_eligible_pq.relative_to(REPO_ROOT)),
         "source_features_path": str(feature_source.relative_to(REPO_ROOT)),
         "feature_snapshot_id": _hash_path(feature_source),
-        "current_market_source_path": (
-            str(market_source.relative_to(REPO_ROOT)) if market_source is not None else None
+        "current_market_signal_path": market_meta.get("current_market_signal_selected_path"),
+        "current_market_signal_tier": market_meta.get("current_market_signal_tier"),
+        "market_eval_available": bool(market_meta.get("market_eval_available", False)),
+        "market_rows_keyed": bool(market_meta.get("market_rows_keyed", False)),
+        "market_rows_fresh": bool(market_meta.get("market_rows_fresh", False)),
+        "market_superiority_claim_allowed": bool(
+            market_meta.get("market_superiority_claim_allowed", False)
         ),
+        "market_eval_blocker": market_meta.get("market_eval_blocker"),
         "minutes_model_version": "state_aware_v1",
         "required_columns_present": [c for c in REQUIRED_OUTPUT_COLUMNS if c in df.columns],
         "eligibility_floors": {
