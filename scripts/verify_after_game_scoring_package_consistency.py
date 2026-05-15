@@ -113,6 +113,47 @@ def main(argv: list[str] | None = None) -> int:
     pmf_pkg = base / "pmf_model_review_package"
     after = base / "after_game_scoring"
 
+    # No-game-day short-circuit. The orchestrator's after-game flow writes
+    # ``no_games_today.json`` (slate-level) plus matching status JSONs
+    # under the Derek and after_game folders when the previous day had
+    # zero rows in both the predictions parquet and the canonical PMF
+    # parquet. Treat that as a valid skip — there is nothing to verify.
+    no_games_marker = base / "no_games_today.json"
+    after_no_games_marker = after / "no_games_status.json"
+    if no_games_marker.is_file() or after_no_games_marker.is_file():
+        marker = (
+            no_games_marker
+            if no_games_marker.is_file()
+            else after_no_games_marker
+        )
+        payload = {
+            "delivery_date": delivery_date,
+            "status": "after_game_consistency_valid_skip_no_games_prev_day",
+            "marker": str(marker.relative_to(REPO_ROOT)),
+            "generated_at_utc": utcnow_iso(),
+        }
+        write_json_atomic(
+            HEALTH_DIR
+            / f"after_game_scoring_package_consistency_{delivery_date}.json",
+            payload,
+        )
+        (
+            HEALTH_DIR
+            / f"after_game_scoring_package_consistency_{delivery_date}.md"
+        ).write_text(
+            "# After-Game Scoring Package Consistency — "
+            f"{delivery_date}\n\n"
+            "- status: **valid_skip_no_games_prev_day**\n"
+            f"- marker: `{marker.relative_to(REPO_ROOT)}`\n"
+            f"- generated_at_utc: {payload['generated_at_utc']}\n",
+            encoding="utf-8",
+        )
+        print(
+            "AFTER_GAME_SCORING_PACKAGE_CONSISTENCY_VALID_SKIP "
+            f"date={delivery_date} reason=no_games_prev_day"
+        )
+        return 0
+
     report = Report(
         delivery_date=delivery_date,
         generated_at_utc=utcnow_iso(),
