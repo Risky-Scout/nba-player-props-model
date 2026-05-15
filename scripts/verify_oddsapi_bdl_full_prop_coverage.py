@@ -120,6 +120,20 @@ def main() -> int:
             eligible_only=eligible_only,
         )
         if not dates_used:
+            # Slate-date callers (e.g. daily_pmf_delivery.yml) invoke this with
+            # --date <today>. The inventory only marks a date eligible AFTER
+            # games are played and actuals are joined; today's slate is therefore
+            # structurally absent until next-day scoring catches up. Treat
+            # single-date queries with no eligible inventory row as an audit
+            # SKIP rather than a delivery-blocking failure. Range queries still
+            # hard-fail when their entire window is empty.
+            if args.date and not args.start_date:
+                print(
+                    f"ODDSAPI_BDL_FULL_PROP_COVERAGE_AUDIT_SKIP "
+                    f"date={args.date} reason=not_yet_eligible_in_inventory "
+                    f"inventory={inv_path}",
+                )
+                return 0
             print(
                 "ODDSAPI_BDL_FULL_PROP_COVERAGE_AUDIT_FAIL no eligible dates for the requested filter",
                 file=sys.stderr,
