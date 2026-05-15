@@ -810,6 +810,138 @@ def last_distribution() -> Optional[MinutesDistribution]:
     return _LAST_DISTRIBUTION
 
 
+# ── Stable public helpers for the daily minutes artifact ─────────────────────
+# These derive a deterministic per-player-game summary from a
+# MinutesDistribution. They live here (next to the model) so any caller —
+# the daily minutes-predictions builder, tests, ad-hoc diagnostics — uses
+# the SAME role/probability formulas. Do not fork them into build scripts.
+
+
+def summarize_minutes_distribution(dist: MinutesDistribution) -> dict:
+    """Return the canonical per-player-game minutes summary used by the
+    daily ``artifacts/minutes_predictions/`` artifact.
+
+    Keys returned:
+        minutes_mean, minutes_p10, minutes_p50, minutes_p90, minutes_std,
+        p_inactive_used
+
+    ``p_inactive_used`` is taken directly from ``dist.state_probs[0]`` so
+    it always matches the discrete-state classifier output that seeded
+    this distribution. Production callers want a hard failure rather than
+    silent nulls, so we raise ``RuntimeError`` if any derived quantity is
+    non-finite or outside the allowed minutes range.
+    """
+    if dist is None:
+        raise RuntimeError(
+            "summarize_minutes_distribution called with dist=None; "
+            "minutes distribution must be present for production "
+            "minutes-predictions artifact rows"
+        )
+
+    try:
+        p_inactive = float(dist.state_probs[0])
+    except Exception as exc:
+        raise RuntimeError(
+            f"summarize_minutes_distribution: cannot read state_probs[0] "
+            f"({type(exc).__name__}: {exc})"
+        ) from exc
+    p_inactive = float(np.clip(p_inactive, 0.0, 1.0))
+
+    mean_min = float(dist.mean())
+    q10 = float(dist.quantile(0.10))
+    q50 = float(dist.quantile(0.50))
+    q90 = float(dist.quantile(0.90))
+
+    try:
+        std_min = float(dist.std())
+    except Exception:
+        std_min = float("nan")
+    if not np.isfinite(std_min):
+        rng = np.random.default_rng(0)
+        std_min = float(np.std(dist.sample(20000, rng=rng)))
+
+    for name, val in (
+        ("minutes_mean", mean_min),
+        ("minutes_p10", q10),
+        ("minutes_p50", q50),
+        ("minutes_p90", q90),
+        ("minutes_std", std_min),
+        ("p_inactive_used", p_inactive),
+    ):
+        if not np.isfinite(val):
+            raise RuntimeError(
+                f"summarize_minutes_distribution produced non-finite {name}={val}"
+            )
+
+    if not (0.0 <= mean_min <= MINUTES_CEILING + 1e-6):
+        raise RuntimeError(
+            f"summarize_minutes_distribution: minutes_mean={mean_min} "
+            f"outside [0, {MINUTES_CEILING}]"
+        )
+
+    return {
+        "minutes_mean": mean_min,
+        "minutes_p10": q10,
+        "minutes_p50": q50,
+        "minutes_p90": q90,
+        "minutes_std": std_min,
+        "p_inactive_used": p_inactive,
+    }
+
+
+def projected_role_from_minutes_summary(summary: dict) -> str:
+    """Map a minutes summary to a projected role bucket label.
+
+    Buckets:
+        inactive_risk : p_inactive_used >= 0.50 or minutes_mean < 6
+        fringe        : minutes_mean < 12
+        rotation      : minutes_mean < 24
+        core          : minutes_mean < 30
+        starter       : minutes_mean >= 30
+    """
+    p_inactive = float(summary.get("p_inactive_used") or 0.0)
+    mean_min = float(summary.get("minutes_mean") or 0.0)
+
+    if p_inactive >= 0.50 or mean_min < 6.0:
+        return "inactive_risk"
+    if mean_min < 12.0:
+        return "fringe"
+    if mean_min < 24.0:
+        return "rotation"
+    if mean_min < 30.0:
+        return "core"
+    return "starter"
+
+
+def role_probabilities_from_minutes_summary(summary: dict) -> dict:
+    """Return ``{starter_probability, rotation_probability}`` from a
+    minutes summary.
+
+    Uses a logistic on ``minutes_mean`` so the probabilities respond
+    smoothly. Both are clipped to [0, 1] and scaled by
+    ``(1 - p_inactive_used)`` so an inactive-risk player cannot earn a
+    high starter/rotation probability purely from a stale-history minutes
+    draw.
+
+        starter_probability  = (1 - p_inactive) * sigmoid((mean - 28) / 4)
+        rotation_probability = (1 - p_inactive) * sigmoid((mean - 12) / 4)
+    """
+    mean_min = float(summary.get("minutes_mean") or 0.0)
+    p_inactive = float(np.clip(float(summary.get("p_inactive_used") or 0.0), 0.0, 1.0))
+
+    def _sigmoid(x: float) -> float:
+        return 1.0 / (1.0 + float(np.exp(-x)))
+
+    starter = _sigmoid((mean_min - 28.0) / 4.0)
+    rotation = _sigmoid((mean_min - 12.0) / 4.0)
+    starter = float(np.clip(starter * (1.0 - p_inactive), 0.0, 1.0))
+    rotation = float(np.clip(rotation * (1.0 - p_inactive), 0.0, 1.0))
+    return {
+        "starter_probability": starter,
+        "rotation_probability": rotation,
+    }
+
+
 # ── Training ─────────────────────────────────────────────────────────────────
 
 
