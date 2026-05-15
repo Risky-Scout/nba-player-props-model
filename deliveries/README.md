@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-14T14:37:07Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-15T02:52:01Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -7,28 +7,30 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 
 | date | classification | props | fair_odds | market_comparison | publishable_edges | market_coverage | injury_fresh | tov_status | forward_feed | morning_rows | lineup_status | latest_rows | after_game | model_version |
 |---|---|---:|---:|---:|---:|---|---|---|---|---:|---|---:|---|---|
-| **2026-04-27** | `FINAL_DELIVERABLE_READY` | 1176 | 25186 | 6594 | 0 | `full` | `very_stale` | `present` | `morning_present` | 464 | `pending_lineup_snapshot` | 464 | `pending_outcomes` | `5c9c8e3a#phase10c` |
+| **2026-04-27** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 158 | 3229 | 346 | 312 | `full` | `very_stale` | `present` | `morning_present` | 464 | `pending_lineup_snapshot` | 464 | `pending_outcomes` | `113c7b5#phase10c` |
 | **2026-04-28** | `FINAL_DELIVERABLE_READY` | 1260 | 26985 | 7080 | 0 | `full` | `very_stale` | `present` | `absent` | — | `—` | — | `n/a` | `5c9c8e3a#phase10c` |
-| **2026-04-29** | `FINAL_DELIVERABLE_READY` | 1212 | 25957 | 5895 | 0 | `full` | `very_stale` | `present` | `morning_present` | 1528 | `pending_lineup_snapshot` | 1528 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-04-30** | `FINAL_DELIVERABLE_READY` | 1212 | 25957 | 6533 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 1372 | `present` | 1372 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-01** | `FINAL_DELIVERABLE_READY` | 1212 | 25957 | 6193 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 1199 | `present` | 1199 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-02** | `FINAL_DELIVERABLE_READY` | 420 | 8995 | 2057 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 414 | `present` | 414 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-03** | `FINAL_DELIVERABLE_READY` | 828 | 17733 | 4136 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 524 | `present` | 524 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-04** | `FINAL_DELIVERABLE_READY` | 816 | 17476 | 3892 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 65 | `present` | 65 | `scored` | `5c9c8e3a#phase10c` |
+| **2026-04-29** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 143 | 3001 | 1508 | 1442 | `full` | `very_stale` | `present` | `morning_present` | 1528 | `pending_lineup_snapshot` | 1528 | `scored` | `113c7b5#phase10c` |
+| **2026-04-30** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 97 | 2458 | 1382 | 1205 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1372 | `present` | 1372 | `scored` | `6aea017#phase10c` |
+| **2026-05-01** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 95 | 2519 | 1202 | 1142 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 1199 | `present` | 1199 | `scored` | `f496f12#phase10c` |
+| **2026-05-02** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 29 | 660 | 421 | 315 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 414 | `present` | 414 | `scored` | `04ee0aa#phase10c` |
+| **2026-05-03** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 69 | 1780 | 489 | 462 | `full` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 524 | `present` | 524 | `scored` | `a9bdb1c#phase10c` |
+| **2026-05-04** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 65 | 1724 | 0 | 0 | `none` | `fresh` | `missing_from_prediction_source` | `lineup_present` | 65 | `present` | 65 | `scored` | `c74808d#phase10c` |
 | **2026-05-05** | `FINAL_DELIVERABLE_READY` | 840 | 17990 | 4148 | 0 | `full` | `very_stale` | `present` | `absent` | — | `—` | — | `n/a` | `5c9c8e3a#phase10c` |
-| **2026-05-06** | `FINAL_DELIVERABLE_READY` | 816 | 17476 | 3132 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 111 | `present` | 111 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-07** | `FINAL_DELIVERABLE_READY` | 840 | 17990 | 4271 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 645 | `present` | 645 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-08** | `FINAL_DELIVERABLE_READY` | 816 | 17476 | 4461 | 0 | `full` | `very_stale` | `present` | `lineup_present` | 866 | `present` | 866 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-09** | `FINAL_DELIVERABLE_READY` | 828 | 17733 | 4683 | 0 | `full` | `very_stale` | `present` | `incomplete` | — | `present` | 1653 | `n/a` | `5c9c8e3a#phase10c` |
+| **2026-05-06** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 111 | 2364 | 0 | 0 | `none` | `fresh` | `present` | `lineup_present` | 111 | `present` | 111 | `scored` | `18b0a11#phase10c` |
+| **2026-05-07** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 330 | 7722 | 400 | 300 | `full` | `fresh` | `present` | `lineup_present` | 645 | `present` | 645 | `scored` | `d3dfb9a#phase10c` |
+| **2026-05-08** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 335 | 7839 | 624 | 537 | `full` | `fresh` | `present` | `lineup_present` | 866 | `present` | 866 | `scored` | `4b4ce59b#phase10c` |
+| **2026-05-09** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 330 | 7722 | 1455 | 1081 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 1653 | `n/a` | `2f9d9b56#phase10c` |
 | **2026-05-10** | `FINAL_DELIVERABLE_READY` | 816 | 17476 | 4620 | 0 | `full` | `very_stale` | `present` | `absent` | — | `—` | — | `n/a` | `5c9c8e3a#phase10c` |
 | **2026-05-11** | `FINAL_DELIVERABLE_READY` | 828 | 17733 | 4759 | 0 | `full` | `very_stale` | `present` | `absent` | — | `—` | — | `n/a` | `5c9c8e3a#phase10c` |
-| **2026-05-12** | `FINAL_DELIVERABLE_READY` | 384 | 8224 | 1285 | 0 | `full` | `very_stale` | `present` | `morning_present` | 1559 | `pending_lineup_snapshot` | 1559 | `scored` | `5c9c8e3a#phase10c` |
-| **2026-05-14** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 0 | 0 | 0 | 0 | `none` | `very_stale` | `missing_from_prediction_source` | `absent` | — | `—` | — | `pending_outcomes` | `8611c657#phase10c` |
-| **2026-05-15** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 792 | 16962 | 4428 | 3545 | `full` | `fresh` | `present` | `absent` | — | `—` | — | `pending_outcomes` | `8611c657#phase10c` |
+| **2026-05-12** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 384 | 8224 | 1285 | 1087 | `full` | `very_stale` | `present` | `incomplete` | — | `present` | 1516 | `scored` | `78f9ba3c#phase10c` |
+| **2026-05-14** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 0 | 0 | 0 | 0 | `none` | `very_stale` | `missing_from_prediction_source` | `morning_present` | 0 | `pending_lineup_snapshot` | 0 | `pending_outcomes` | `8611c657#phase10c` |
+| **2026-05-15** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 792 | 16962 | 4838 | 3642 | `full` | `fresh` | `present` | `morning_present` | 5203 | `—` | 5203 | `pending_outcomes` | `3104f157#phase10c` |
 
 ## Per-date links
 
-### 2026-04-27 — `FINAL_DELIVERABLE_READY`
+### 2026-04-27 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_injury_very_stale, role_bucket_missing_
 
 **Derek (PMF model review)**
 
@@ -93,7 +95,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [publishable_edges.csv](2026-04-28/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-04-28/wizard_of_odds/run_manifest.json)
 
-### 2026-04-29 — `FINAL_DELIVERABLE_READY`
+### 2026-04-29 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_injury_very_stale, role_bucket_missing_
 
 **Derek (PMF model review)**
 
@@ -136,7 +140,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [clv_by_book.csv](2026-04-29/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-04-29/after_game_scoring/after_game_status.json)
 
-### 2026-04-30 — `FINAL_DELIVERABLE_READY`
+### 2026-04-30 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed, missing_stats:tov_
 
 **Derek (PMF model review)**
 
@@ -182,7 +188,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [clv_by_book.csv](2026-04-30/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-04-30/after_game_scoring/after_game_status.json)
 
-### 2026-05-01 — `FINAL_DELIVERABLE_READY`
+### 2026-05-01 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed, missing_stats:tov_
 
 **Derek (PMF model review)**
 
@@ -228,7 +236,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [clv_by_book.csv](2026-05-01/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-01/after_game_scoring/after_game_status.json)
 
-### 2026-05-02 — `FINAL_DELIVERABLE_READY`
+### 2026-05-02 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed, missing_stats:tov_
 
 **Derek (PMF model review)**
 
@@ -274,7 +284,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [clv_by_book.csv](2026-05-02/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-02/after_game_scoring/after_game_status.json)
 
-### 2026-05-03 — `FINAL_DELIVERABLE_READY`
+### 2026-05-03 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed, missing_stats:tov_
 
 **Derek (PMF model review)**
 
@@ -320,7 +332,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [clv_by_book.csv](2026-05-03/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-03/after_game_scoring/after_game_status.json)
 
-### 2026-05-04 — `FINAL_DELIVERABLE_READY`
+### 2026-05-04 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_market_coverage_none, lineup_unconfirmed, missing_stats:tov_
 
 **Derek (PMF model review)**
 
@@ -388,7 +402,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [publishable_edges.csv](2026-05-05/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-05-05/wizard_of_odds/run_manifest.json)
 
-### 2026-05-06 — `FINAL_DELIVERABLE_READY`
+### 2026-05-06 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_market_coverage_none, role_bucket_missing_
 
 **Derek (PMF model review)**
 
@@ -434,7 +450,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - ~~clv_by_book.csv~~
 - [after_game_status.json](2026-05-06/after_game_scoring/after_game_status.json)
 
-### 2026-05-07 — `FINAL_DELIVERABLE_READY`
+### 2026-05-07 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed_
 
 **Derek (PMF model review)**
 
@@ -480,7 +498,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [clv_by_book.csv](2026-05-07/after_game_scoring/clv_by_book.csv)
 - [after_game_status.json](2026-05-07/after_game_scoring/after_game_status.json)
 
-### 2026-05-08 — `FINAL_DELIVERABLE_READY`
+### 2026-05-08 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed_
 
 **Derek (PMF model review)**
 
@@ -526,7 +546,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - ~~clv_by_book.csv~~
 - [after_game_status.json](2026-05-08/after_game_scoring/after_game_status.json)
 
-### 2026-05-09 — `FINAL_DELIVERABLE_READY`
+### 2026-05-09 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed_
 
 **Derek (PMF model review)**
 
@@ -603,7 +625,9 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [publishable_edges.csv](2026-05-11/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-05-11/wizard_of_odds/run_manifest.json)
 
-### 2026-05-12 — `FINAL_DELIVERABLE_READY`
+### 2026-05-12 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
+
+_lineup_unconfirmed_
 
 **Derek (PMF model review)**
 
@@ -615,7 +639,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 - [machine_readable/model_only.parquet](2026-05-12/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-12/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — morning rows=1559 · lineup=pending_lineup_snapshot · latest→morning
+**Derek forward feed (PMF snapshots)** — lineup=present · latest→lineup
 
 - [FEED_README.md](2026-05-12/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-12/derek_forward_feed/feed_manifest.json)
@@ -663,6 +687,17 @@ _injury_very_stale, target_stats_mismatch, lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-14/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-14/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
+**Derek forward feed (PMF snapshots)** — morning rows=0 · lineup=pending_lineup_snapshot · latest→morning
+
+- [FEED_README.md](2026-05-14/derek_forward_feed/FEED_README.md)
+- [feed_manifest.json](2026-05-14/derek_forward_feed/feed_manifest.json)
+- [morning_snapshot.csv](2026-05-14/derek_forward_feed/morning_snapshot.csv)
+- [morning_snapshot.parquet](2026-05-14/derek_forward_feed/morning_snapshot.parquet)
+- [morning_snapshot.jsonl](2026-05-14/derek_forward_feed/morning_snapshot.jsonl)
+- [latest_available_snapshot.csv](2026-05-14/derek_forward_feed/latest_available_snapshot.csv)
+- [latest_available_snapshot.parquet](2026-05-14/derek_forward_feed/latest_available_snapshot.parquet)
+- [lineup_snapshot_status.json](2026-05-14/derek_forward_feed/lineup_snapshot_status.json)
+
 **Wizard of Odds**
 
 - [README.md](2026-05-14/wizard_of_odds/README.md)
@@ -696,6 +731,17 @@ _lineup_unconfirmed_
 - [06_OUTCOME_LEVEL_PROBABILITIES.csv](2026-05-15/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv)
 - [machine_readable/model_only.parquet](2026-05-15/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-15/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
+
+**Derek forward feed (PMF snapshots)** — morning rows=5203 · latest→morning
+
+- [FEED_README.md](2026-05-15/derek_forward_feed/FEED_README.md)
+- [feed_manifest.json](2026-05-15/derek_forward_feed/feed_manifest.json)
+- [morning_snapshot.csv](2026-05-15/derek_forward_feed/morning_snapshot.csv)
+- [morning_snapshot.parquet](2026-05-15/derek_forward_feed/morning_snapshot.parquet)
+- [morning_snapshot.jsonl](2026-05-15/derek_forward_feed/morning_snapshot.jsonl)
+- [latest_available_snapshot.csv](2026-05-15/derek_forward_feed/latest_available_snapshot.csv)
+- [latest_available_snapshot.parquet](2026-05-15/derek_forward_feed/latest_available_snapshot.parquet)
+- [lineup_snapshot_status.json](2026-05-15/derek_forward_feed/lineup_snapshot_status.json)
 
 **Wizard of Odds**
 
