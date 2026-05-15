@@ -50,7 +50,11 @@ def _apply_context_defaults(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
+def verify_date(
+    date: str,
+    skip_derek_snapshots: bool = False,
+    skip_public_export: bool = False,
+) -> None:
     delivery = REPO_ROOT / "deliveries" / date
     wide_path = delivery / "wizard_of_odds" / "full_pmfs_wide.parquet"
     if not wide_path.exists():
@@ -86,28 +90,31 @@ def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
         if wide[c].isna().any():
             fail(f"{date} full_pmfs_wide has null {c}: {int(wide[c].isna().sum())}/{len(wide)}")
 
-    public_pmf = REPO_ROOT / "public_export" / "wizard_of_odds" / date / "pmf_research.json"
-    public_aff = REPO_ROOT / "public_export" / "wizard_of_odds" / date / "affiliate_dashboard.json"
-    if not public_pmf.exists():
-        fail(f"{date} missing public PMF export: {public_pmf}")
-    if not public_aff.exists():
-        fail(f"{date} missing affiliate dashboard: {public_aff}")
-
-    pmf = json.loads(public_pmf.read_text())
-    aff = json.loads(public_aff.read_text())
-
     expected_source = f"deliveries/{date}/wizard_of_odds/full_pmfs_wide.parquet"
-    if pmf.get("source") != expected_source:
-        fail(f"{date} public PMF source mismatch: {pmf.get('source')} != {expected_source}")
+    aff_count: int | str = "skipped"
+    if not skip_public_export:
+        public_pmf = REPO_ROOT / "public_export" / "wizard_of_odds" / date / "pmf_research.json"
+        public_aff = REPO_ROOT / "public_export" / "wizard_of_odds" / date / "affiliate_dashboard.json"
+        if not public_pmf.exists():
+            fail(f"{date} missing public PMF export: {public_pmf}")
+        if not public_aff.exists():
+            fail(f"{date} missing affiliate dashboard: {public_aff}")
 
-    public_stats = set()
-    for player in pmf.get("players", []):
-        public_stats.update(str(s).lower() for s in player.get("stats", {}).keys())
-    if public_stats != CORE_STATS:
-        fail(f"{date} bad public PMF stats: {sorted(public_stats)}")
+        pmf = json.loads(public_pmf.read_text())
+        aff = json.loads(public_aff.read_text())
 
-    if int(aff.get("count") or 0) <= 0:
-        fail(f"{date} affiliate_dashboard count must be > 0")
+        if pmf.get("source") != expected_source:
+            fail(f"{date} public PMF source mismatch: {pmf.get('source')} != {expected_source}")
+
+        public_stats = set()
+        for player in pmf.get("players", []):
+            public_stats.update(str(s).lower() for s in player.get("stats", {}).keys())
+        if public_stats != CORE_STATS:
+            fail(f"{date} bad public PMF stats: {sorted(public_stats)}")
+
+        aff_count = int(aff.get("count") or 0)
+        if aff_count <= 0:
+            fail(f"{date} affiliate_dashboard count must be > 0")
 
     derek_root = delivery / "derek_game_snapshots"
     if (derek_root / "no_games_today.json").exists():
@@ -137,7 +144,10 @@ def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
             if snap[c].isna().any():
                 fail(f"{date} Derek snapshot has null {c} in {mpath.parent}: {int(snap[c].isna().sum())}/{len(snap)}")
 
-    print(f"CORRECTED_PMF_DELIVERY_VERIFY_PASS date={date} rows={len(wide)} affiliate_count={aff.get('count')} derek_snapshots={len(manifests)}")
+    print(
+        f"CORRECTED_PMF_DELIVERY_VERIFY_PASS date={date} rows={len(wide)} "
+        f"affiliate_count={aff_count} derek_snapshots={len(manifests)}"
+    )
 
 
 def main() -> int:
@@ -148,8 +158,17 @@ def main() -> int:
         action="store_true",
         help="WoO/FTP-only verification: do not require Derek per-game snapshot manifests",
     )
+    ap.add_argument(
+        "--skip-public-export",
+        action="store_true",
+        help="Skip public_export PMF/affiliate checks for Derek-only dispatch runs.",
+    )
     args = ap.parse_args()
-    verify_date(args.date, skip_derek_snapshots=args.skip_derek_snapshots)
+    verify_date(
+        args.date,
+        skip_derek_snapshots=args.skip_derek_snapshots,
+        skip_public_export=args.skip_public_export,
+    )
     return 0
 
 
