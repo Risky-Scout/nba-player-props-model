@@ -1,7 +1,7 @@
 {
-  "calibrated_through_date": "2026-04-30",
-  "champion_model_id": "challenger-2026-04-30",
-  "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+  "calibrated_through_date": "2026-05-13",
+  "champion_model_id": "challenger-2026-05-13",
+  "champion_pointer_hash": "228ac31ddb965e44942ae56c260ba18e",
   "delivery_date": "2026-05-15",
   "fields_written": [
     "model_source",
@@ -40,22 +40,22 @@
   ],
   "schema_version": "1.0",
   "stamp": {
-    "calibrated_through_date": "2026-04-30",
-    "calibration_run_id": "nightly-20260501T124701",
+    "calibrated_through_date": "2026-05-13",
+    "calibration_run_id": "nightly-20260515T020255",
     "champion_artifact_dir": "artifacts/models",
-    "champion_model_id": "challenger-2026-04-30",
-    "champion_pointer_hash": "125eb260dc642bd3b26878f8e407bffd",
+    "champion_model_id": "challenger-2026-05-13",
+    "champion_pointer_hash": "228ac31ddb965e44942ae56c260ba18e",
     "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-    "metadata_stamped_at_utc": "2026-05-15T03:33:24+00:00",
+    "metadata_stamped_at_utc": "2026-05-15T08:21:24+00:00",
     "model_source": "champion_pointer",
     "no_challenger_artifacts_used": true,
-    "output_generated_at_utc": "2026-05-15T03:33:24+00:00",
-    "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826",
-    "stamp_code_commit": "fa242168af7d00e0441b90c3ed93e970fc2816f5",
-    "trained_through_date": "2026-04-30",
-    "training_run_id": "nightly-20260501T124701",
-    "validation_run_id": "nightly-20260501T124701"
+    "output_generated_at_utc": "2026-05-15T08:21:24+00:00",
+    "promotion_decision_id": "promotion-2026-05-13-20260515T021101",
+    "stamp_code_commit": "5090241216490c6e3f6da6bc3106041d44928666",
+    "trained_through_date": "2026-05-13",
+    "training_run_id": "nightly-20260515T020255",
+    "validation_run_id": "nightly-20260515T020255"
   },
   "status": "ok",
-  "trained_through_date": "2026-04-30"
+  "trained_through_date": "2026-05-13"
 }
