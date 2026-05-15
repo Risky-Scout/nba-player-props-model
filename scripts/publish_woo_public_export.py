@@ -772,6 +772,24 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         mpo = min(max(mpo, 1e-9), 1.0 - 1e-9)
         mpu = 1.0 - mpo
 
+        mvo_raw = get(
+            r,
+            "market_prob_over_no_vig",
+            "market_no_vig_over_prob",
+            "market_prob_over",
+            default=None,
+        )
+        if mvo_raw is None:
+            mvo_over = None
+            mvo_under = None
+        else:
+            mvo_over = num(mvo_raw, default=None)
+            if mvo_over is None or not (0.0 < mvo_over < 1.0):
+                mvo_over = None
+                mvo_under = None
+            else:
+                mvo_under = 1.0 - mvo_over
+
         base = {
             "date": date,
             "player_id": get(r, "player_id", default=None),
@@ -799,6 +817,8 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             "market_superiority_claim_allowed": bool(get(r, "market_superiority_claim_allowed", default=False)),
             "model_prob_over": float(mpo),
             "model_prob_under": float(mpu),
+            "market_prob_over_no_vig": mvo_over,
+            "market_prob_under_no_vig": mvo_under,
         }
 
         over_odds = get(r, "market_over_odds", "over_odds", "side_odds", "odds", default=0)
@@ -811,10 +831,20 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             ("OVER", mpo, over_odds, fair_over),
             ("UNDER", mpu, under_odds, fair_under),
         ):
+            mps_market = (
+                mvo_over if (side == "OVER" and mvo_over is not None) else
+                (mvo_under if (side == "UNDER" and mvo_under is not None) else None)
+            )
             out = dict(base)
             out.update({
                 "side": side,
                 "model_probability_for_side": float(mps),
+                "market_probability_for_side": (
+                    float(mps_market) if mps_market is not None else None
+                ),
+                "market_prob": (
+                    float(mps_market) if mps_market is not None else None
+                ),
                 "side_odds": odds,
                 "fair_odds_model": fair,
                 "edge": float(edge if side == "OVER" else -edge),
