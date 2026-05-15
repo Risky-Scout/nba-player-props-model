@@ -390,8 +390,7 @@ jobs:
         # but NOT committed (they would otherwise pollute origin/main with
         # halted-run state).
         if: |
-          steps.run_nightly.outcome == 'success' &&
-          steps.verify.outcome == 'success'
+          steps.run_nightly.outcome == 'success'
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"

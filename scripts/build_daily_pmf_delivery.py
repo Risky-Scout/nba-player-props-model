@@ -832,6 +832,59 @@ def _load_freshness_manifest(path: Path | None) -> dict | None:
         return None
 
 
+def _load_bdl_lineup_context(
+    delivery_date: str,
+) -> tuple[dict[tuple[str, int], dict[str, Any]], dict[str, dict[str, Any]]]:
+    """Load per-player and per-game BDL lineup context from artifacts/live_lineups."""
+    root = REPO_ROOT / "artifacts" / "live_lineups" / delivery_date
+    if not root.is_dir():
+        return {}, {}
+
+    player_lookup: dict[tuple[str, int], dict[str, Any]] = {}
+    game_lookup: dict[str, dict[str, Any]] = {}
+
+    for game_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+        gid = str(game_dir.name)
+        status_path = game_dir / "lineup_status.json"
+        status: dict[str, Any] = {}
+        if status_path.is_file():
+            try:
+                status = json.loads(status_path.read_text(encoding="utf-8"))
+            except Exception:
+                status = {}
+        confirmed = bool(status.get("lineup_confirmed"))
+        total_rows = int(status.get("total_rows") or 0)
+        game_lookup[gid] = {
+            "confirmed": confirmed,
+            "has_rows": total_rows > 0,
+            "source": str(status.get("source") or "balldontlie_v1_lineups"),
+        }
+
+        norm_parquet = game_dir / "bdl_lineups_normalized.parquet"
+        norm_csv = game_dir / "bdl_lineups_normalized.csv"
+        lineup_df: pd.DataFrame | None = None
+        try:
+            if norm_parquet.is_file():
+                lineup_df = pd.read_parquet(norm_parquet)
+            elif norm_csv.is_file():
+                lineup_df = pd.read_csv(norm_csv)
+        except Exception:
+            lineup_df = None
+        if lineup_df is None or lineup_df.empty:
+            continue
+        for _, row in lineup_df.iterrows():
+            try:
+                pid = int(row.get("player_id"))
+            except Exception:
+                continue
+            player_lookup[(gid, pid)] = {
+                "starter": bool(row.get("starter")),
+                "lineup_position": row.get("lineup_position"),
+                "source": str(row.get("source") or "balldontlie_v1_lineups"),
+            }
+    return player_lookup, game_lookup
+
+
 def _injury_freshness(path: Path | None) -> str:
     if path is None or not path.exists():
         return "unknown"
@@ -844,6 +897,14 @@ def _injury_freshness(path: Path | None) -> str:
 
 
 def _lineup_freshness_for_row(row: pd.Series) -> str:
+    official = str(row.get("official_lineup_status") or "").lower().strip()
+    expected = str(row.get("expected_lineup_status") or "").lower().strip()
+    if official in {"confirmed", "official_confirmed", "available"}:
+        return "confirmed"
+    if official in {"projected", "partial"}:
+        return "projected"
+    if expected in {"projected", "expected_probable"}:
+        return "projected"
     src = str(row.get("role_source") or "").lower()
     if "confirmed" in src:
         return "confirmed"
@@ -999,7 +1060,9 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                           delivery_date: str, snapshot_type: str,
                           snapshot_time_utc: str, model_version: str,
                           pipeline_run_id: str,
-                          injury_path: Path | None) -> pd.DataFrame:
+                          injury_path: Path | None,
+                          bdl_lineup_players: dict[tuple[str, int], dict[str, Any]] | None = None,
+                          bdl_lineup_games: dict[str, dict[str, Any]] | None = None) -> pd.DataFrame:
     """Per (player, stat) one row with full PMF summary + provenance. The
     line/book/market fields are null at this stage; market join lands them."""
     rows = []
@@ -1017,6 +1080,32 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
         if p_inactive_used is None:
             p_inactive_used = 0.0
         role_source = _clean_optional_meta(r.get("role_source")) or ROLE_SOURCE_UNKNOWN
+        gid = int(r.get("game_id")) if pd.notna(r.get("game_id")) else None
+        pid = int(r.get("player_id")) if pd.notna(r.get("player_id")) else None
+        expected_lineup_status = (
+            _clean_optional_meta(r.get("expected_lineup_status")) or "projected"
+        )
+        official_lineup_status = (
+            _clean_optional_meta(r.get("official_lineup_status")) or "not_available_yet"
+        )
+        if gid is not None and bdl_lineup_games:
+            game_key = str(gid)
+            game_ctx = bdl_lineup_games.get(game_key)
+            player_ctx = (
+                bdl_lineup_players.get((game_key, pid))
+                if (bdl_lineup_players and pid is not None)
+                else None
+            )
+            if game_ctx:
+                expected_lineup_status = "projected"
+                if game_ctx.get("confirmed"):
+                    official_lineup_status = "confirmed"
+                    if player_ctx and bool(player_ctx.get("starter")):
+                        role_source = "confirmed_bdl_lineup"
+                elif game_ctx.get("has_rows"):
+                    official_lineup_status = "projected"
+                    if role_source == ROLE_SOURCE_UNKNOWN:
+                        role_source = "projected_bdl_lineup"
         cal_source = _derive_cal_source(r) or "phase8_pmf_cal"
         pmf = _pmf_to_array(r.get("pmf_json"))
         smry = _pmf_summary(pmf)
@@ -1036,8 +1125,7 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "opponent": r.get("opponent"),
             "is_home": (bool(r.get("is_home"))
                         if pd.notna(r.get("is_home")) else None),
-            "game_id": (int(r.get("game_id"))
-                        if pd.notna(r.get("game_id")) else None),
+            "game_id": gid,
             "game_start_time": r.get("game_start_et") or r.get("game_start_time"),
             "stat": r.get("stat"),
             "line": None, "book": None,
@@ -1075,8 +1163,17 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                 r.get("injury_freshness_status")
                 if pd.notna(r.get("injury_freshness_status")) else inj_fresh
             ),
-            "lineup_freshness_status": _lineup_freshness_for_row(r),
-            "role_freshness_status": _role_freshness_for_row(r),
+            "expected_lineup_status": expected_lineup_status,
+            "official_lineup_status": official_lineup_status,
+            "lineup_freshness_status": _lineup_freshness_for_row(pd.Series({
+                "official_lineup_status": official_lineup_status,
+                "expected_lineup_status": expected_lineup_status,
+                "role_source": role_source,
+            })),
+            "role_freshness_status": _role_freshness_for_row(pd.Series({
+                "role_bucket": role,
+                "role_source": role_source,
+            })),
             "_pmf_arr": pmf,
         })
     if not rows:
@@ -1934,11 +2031,15 @@ def main() -> int:
 
     # 3. Build canonical row frame.
     injury_path = REPO_ROOT / "data" / "player_availability_asof.parquet"
+    bdl_lineup_players, bdl_lineup_games = _load_bdl_lineup_context(delivery_date)
     canonical = build_canonical_rows(
         model_only, delivery_date=delivery_date,
         snapshot_type=snapshot_type, snapshot_time_utc=snapshot_time_utc,
         model_version=model_version, pipeline_run_id=pipeline_run_id,
-        injury_path=injury_path)
+        injury_path=injury_path,
+        bdl_lineup_players=bdl_lineup_players,
+        bdl_lineup_games=bdl_lineup_games,
+    )
     print(f"  canonical rows: {len(canonical)}")
 
     # 4. Build derived views.

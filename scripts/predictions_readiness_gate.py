@@ -58,6 +58,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import json
 import os
 import subprocess
 import sys
@@ -137,6 +138,39 @@ def _hard_fail(token: str, date: str, mode: str, detail: str = "") -> int:
     _emit(f"{token} date={date} mode={mode}{suffix}")
     _emit_github_output("should_proceed", "false")
     return 1
+
+
+def _check_champion_freshness(date: str) -> tuple[bool, str]:
+    """Ensure champion pointer is trained/calibrated through previous day."""
+    p = REPO_ROOT / "artifacts" / "models" / "registry" / "champion_pointer.json"
+    if not p.exists():
+        return False, "champion_pointer_missing"
+    try:
+        j = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return False, f"champion_pointer_unreadable:{exc}"
+    trained = str(j.get("trained_through_date") or "")
+    calibrated = str(j.get("calibrated_through_date") or "")
+    try:
+        target_prev = (
+            _dt.date.fromisoformat(date) - _dt.timedelta(days=1)
+        ).isoformat()
+    except Exception:
+        return False, f"invalid_slate_date:{date}"
+    if not trained or not calibrated:
+        return False, (
+            f"champion_pointer_missing_dates trained={trained!r} "
+            f"calibrated={calibrated!r}"
+        )
+    if trained < target_prev or calibrated < target_prev:
+        return False, (
+            f"champion_pointer_stale required_prev_day={target_prev} "
+            f"trained_through={trained} calibrated_through={calibrated}"
+        )
+    return True, (
+        f"champion_pointer_fresh required_prev_day={target_prev} "
+        f"trained_through={trained} calibrated_through={calibrated}"
+    )
 
 
 def _run_predict_py(date: str) -> tuple[int, str, bool]:
@@ -244,6 +278,16 @@ def main() -> int:
 
     date = args.date
     mode = args.mode
+
+    fresh_ok, fresh_detail = _check_champion_freshness(date)
+    if not fresh_ok:
+        return _hard_fail(
+            "CHAMPION_POINTER_STALE",
+            date,
+            mode,
+            detail=fresh_detail,
+        )
+    _emit(f"[gate] {fresh_detail}")
 
     if _is_no_game_slate(date):
         return _valid_skip(date, mode, reason="no_games_slate")

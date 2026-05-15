@@ -102,6 +102,7 @@ VERIFY_DEREK_CONTRACT = REPO_ROOT / "scripts" / "verify_derek_forward_feed_contr
 AUDIT_INJURY_LINEUP = REPO_ROOT / "scripts" / "audit_injury_lineup_run_modes.py"
 AUDIT_GITHUB_AUTOMATION = REPO_ROOT / "scripts" / "audit_github_delivery_automation.py"
 BUILD_FEATURE_SNAPSHOT = REPO_ROOT / "scripts" / "build_player_prop_feature_snapshot.py"
+FETCH_BDL_LINEUPS = REPO_ROOT / "scripts" / "fetch_bdl_game_lineups.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -143,6 +144,11 @@ def _predict(date: str) -> int:
 def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
     """M8.6: rebuild today's availability slice, verify Odds API registry,
     then enforce availability freshness before PMF stat grid."""
+    if FETCH_BDL_LINEUPS.exists():
+        _run(
+            [PYTHON, str(FETCH_BDL_LINEUPS), "--delivery-date", date],
+            label=f"fetch_bdl_game_lineups --delivery-date {date}",
+        )
     if BUILD_AVAILABILITY.exists():
         _run(
             [PYTHON, str(BUILD_AVAILABILITY), "--slate-date", date],

@@ -1,0 +1,110 @@
+{
+  "as_of_date": "2026-05-13",
+  "challenger_artifacts": {
+    "calibrate_pmf_cmd": [
+      "python3",
+      "scripts/calibrate_pmf.py",
+      "--core-props-only",
+      "--aggregate-mode",
+      "--aggregate-oofs",
+      "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-13/aggregate_input",
+      "--output-dir",
+      "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-13"
+    ],
+    "calibrate_pmf_elapsed_seconds": 30.6,
+    "calibrate_pmf_log": "artifacts/models/challengers/2026-05-13/calibrate_pmf.log",
+    "challenger_kind": "real-aggregate-mode-from-rolling-oof",
+    "files": [
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_ast.pkl",
+        "sha256": "20c612a6c9561e93f1dc3f73c010df4f5e5e79d07a4824e3d51844f77c3216a2"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_blk.pkl",
+        "sha256": "cb40013d55b4edbf45ae7f5df676227695bb746767b98f2c55c6b5d5ee1cb5ba"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_fg3m.pkl",
+        "sha256": "b414a885252448e6e5f3ee052b85c3bdd709db354087ff02e8e153b0222a3ce8"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_pts.pkl",
+        "sha256": "88593ba809dab717e3973aaa6f5661bcffeeecf25cab3ac098a3ddfc3d7f9caa"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_reb.pkl",
+        "sha256": "27f611d132db4b5143654e047a5de5d5fd7a01f451b8da649de1583b44c78c89"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_stl.pkl",
+        "sha256": "69a0f01a30bf81f54d817f8e1b71aa95cb190426a0eb09eff8eb3f5b51329ff7"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_stocks.pkl",
+        "sha256": "f09b0a4a9277e2cf34a9404e23e55cf889a3ec4cb728700b9009ce5824e67f3d"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-13/pmf_cal_role_tov.pkl",
+        "sha256": "deedd3f0ed6faedd5b5b40f9e539a7af6f0ed0753473352b45e88ffd8404ad0d"
+      }
+    ],
+    "fold_aggregate_input": "artifacts/models/challengers/2026-05-13/aggregate_input/fold_aggregate.parquet",
+    "fold_aggregate_sha256": "fc2885aac9dfc60b53fde47aad8d64ee13c3cfea0110dc0d59e0a72b98659fd3",
+    "model_dir_reference": "artifacts/models/challengers/2026-05-13",
+    "oof_pmfs_parquet": "artifacts/models/challengers/2026-05-13/oof_pmfs.parquet",
+    "pmf_cal_meta_json": null,
+    "training_table_sha256": "674ef256b79312221262b122da8bf810be7800aaca7b7ab3016d863bfedebbf3",
+    "training_table_snapshot": "artifacts/models/challengers/2026-05-13/training/training_table.parquet"
+  },
+  "code_commit": "cd9584048b255c877f479b757aefddc1593794fe",
+  "dry_run": false,
+  "finished_at_utc": "2026-05-15T01:34:10+00:00",
+  "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-13",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-13",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260515T020255"
+  },
+  "pointer_seen": {
+    "calibrator_version": "phase8-role-bucket",
+    "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+    "model_version": "challenger-2026-04-30"
+  },
+  "schema_version": "1.0",
+  "started_at_utc": "2026-05-15T01:33:40+00:00",
+  "stats_trained": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ],
+  "status": "ok",
+  "training_summary": {
+    "aggregate_oof_future_rows_excluded": null,
+    "aggregate_oof_rows_after_cutoff": 153664,
+    "aggregate_oof_rows_pre_cutoff": 153664,
+    "calibrate_pmf_elapsed_seconds": 30.6,
+    "future_rows_excluded": 0,
+    "max_date": "2026-05-12",
+    "min_date": "2023-10-24",
+    "model_version": "challenger-2026-05-13",
+    "stats_with_columns": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "stl",
+      "blk"
+    ],
+    "training_row_count": 84123
+  },
+  "warnings": []
+}

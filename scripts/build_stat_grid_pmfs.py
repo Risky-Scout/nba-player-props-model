@@ -63,7 +63,6 @@ from nba_props_model.data.bdl_client import (  # noqa: E402
     get_games, get_game_odds,
     get_injuries, get_advanced_stats_v2,
     build_game_context_map, build_injury_map,
-    get_nba_injury_report, merge_injury_sources,
     enrich_game_context_with_snapshots,
 )
 from nba_props_model.features.engineering import (  # noqa: E402
@@ -313,17 +312,12 @@ def _build_pipeline_state(target_date: str) -> dict:
     ctx_map = build_game_context_map(today_odds_raw) if today_odds_raw else {}
     ctx_map = enrich_game_context_with_snapshots(ctx_map, games, target_date)
 
-    print("  fetching injuries (BDL + NBA official)…")
+    print("  fetching injuries (BDL only)…")
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
-    nba_report = get_nba_injury_report()
     injury_report_fetched_at_utc = _now_utc_iso()
-    injury_freshness_status = "fresh" if nba_report else ("fresh" if injury_raw else "unknown")
-    injury_context_source = (
-        "bdl_plus_nba_official" if nba_report
-        else ("bdl_injuries_only" if injury_raw else "none")
-    )
-    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
+    injury_freshness_status = "fresh" if injury_raw else "unknown"
+    injury_context_source = "bdl_injuries_only" if injury_raw else "none"
     inactive_ids = {
         int(pid) for pid, info in injury_map.items()
         if str(info.get("status", "")).lower().strip() in _INACTIVE_STATUSES

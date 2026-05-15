@@ -37,7 +37,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from nba_props_model.data.bdl_client import get_lineups  # noqa: E402
+from nba_props_model.data.bdl_client import get_games, get_lineups  # noqa: E402
 
 
 LIVE_LINEUPS_DIR = REPO_ROOT / "artifacts" / "live_lineups"
@@ -303,7 +303,7 @@ def fetch_one(delivery_date: str, game_id: str) -> dict:
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Fetch BDL confirmed lineups.")
     p.add_argument("--delivery-date", required=True, help="YYYY-MM-DD")
-    g = p.add_mutually_exclusive_group(required=True)
+    g = p.add_mutually_exclusive_group(required=False)
     g.add_argument("--game-id", help="Single BDL game_id")
     g.add_argument("--game-ids", help="Comma-separated BDL game_ids")
     args = p.parse_args(argv)
@@ -315,8 +315,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.game_id:
         ids = [args.game_id.strip()]
-    else:
+    elif args.game_ids:
         ids = [s.strip() for s in args.game_ids.split(",") if s.strip()]
+    else:
+        games = get_games(start_date=args.delivery_date, end_date=args.delivery_date)
+        ids = [str(g.get("id")) for g in games if g.get("id")]
 
     statuses: list[dict] = []
     for gid in ids:

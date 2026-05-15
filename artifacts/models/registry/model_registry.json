@@ -23,7 +23,7 @@
       "calibrator_version": "phase8-role-bucket",
       "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
       "id": "champion-2026-04-30",
-      "is_champion": true,
+      "is_champion": false,
       "model_dir": "artifacts/models",
       "model_version": "challenger-2026-04-30",
       "previous_model_version": "2026-03-09-v12",
@@ -37,6 +37,32 @@
         "tov",
         "stl",
         "blk"
+      ]
+    },
+    {
+      "calibration_blend_policy": "stat_role_guarded_expanded_v1",
+      "calibrator_version": "phase8-role-bucket",
+      "code_commit": "cd9584048b255c877f479b757aefddc1593794fe",
+      "id": "champion-2026-05-13",
+      "is_champion": true,
+      "model_dir": "artifacts/models",
+      "model_version": "challenger-2026-05-13",
+      "previous_model_version": "challenger-2026-04-30",
+      "promoted_from_challenger_dir": "artifacts/models/challengers/2026-05-13",
+      "registered_at_utc": "2026-05-15T02:11:01+00:00",
+      "supported_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "ra",
+        "pra"
       ]
     }
   ],
