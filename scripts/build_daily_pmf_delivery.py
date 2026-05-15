@@ -701,6 +701,19 @@ def build_canonical_from_predictions(predictions_path: Path, *,
             "minutes_mean": None,
             "minutes_q50": r.get("q50"),
             "p_inactive_used": None,
+            "slate_date": str(date),
+            "minutes_p10": None,
+            "minutes_p50": r.get("q50"),
+            "minutes_p90": None,
+            "minutes_std": None,
+            "rotation_probability": None,
+            "starter_probability": None,
+            "projected_role": None,
+            "player_game_eligible": None,
+            "eligibility_reason": None,
+            "has_current_market_line": False,
+            "minutes_source": None,
+            "minutes_model_version": None,
             "expected_lineup_status": None,
             "official_lineup_status": None,
             "projected_minutes": None,
@@ -882,6 +895,75 @@ PRODUCTION_TARGET_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 11-stat mi
 PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
 
 
+def _validate_eligibility_contract_for_model_only(df: pd.DataFrame, path: Path) -> None:
+    """M8.9 root-cause rewire: model_only must carry eligibility + minutes
+    columns AND must not contain ineligible / deep-bench rows.
+
+    Set NBA_ALLOW_LEGACY_NO_ELIGIBILITY=1 to skip while migrating; the
+    flag exists only so partial-environment backfills can produce a
+    canonical even before the upstream pipeline is re-run.
+    """
+    if os.environ.get("NBA_ALLOW_LEGACY_NO_ELIGIBILITY", "").strip() == "1":
+        return
+
+    required_cols = [
+        "minutes_mean",
+        "minutes_p10",
+        "minutes_p50",
+        "minutes_p90",
+        "minutes_std",
+        "p_inactive_used",
+        "rotation_probability",
+        "starter_probability",
+        "projected_role",
+        "player_game_eligible",
+        "eligibility_reason",
+        "has_current_market_line",
+    ]
+    missing = [c for c in required_cols if c not in df.columns]
+    if missing:
+        raise SystemExit(
+            "FATAL: production MODEL_ONLY missing eligibility/minutes "
+            f"columns {missing}; regenerate via "
+            "scripts/build_minutes_predictions.py + "
+            "scripts/build_stat_grid_pmfs.py (path=" + str(path) + ")."
+        )
+
+    bad_eligible = df["player_game_eligible"].astype(bool).eq(False)
+    if bool(bad_eligible.any()):
+        raise SystemExit(
+            "FATAL: production MODEL_ONLY contains "
+            + str(int(bad_eligible.sum()))
+            + " rows with player_game_eligible=False (path=" + str(path) + ")."
+        )
+
+    for col in ("minutes_mean", "rotation_probability", "starter_probability"):
+        if df[col].isna().any():
+            raise SystemExit(
+                "FATAL: production MODEL_ONLY has null " + col
+                + "; every eligible row must carry the upstream minutes summary."
+            )
+
+    deep_bench = (
+        ~df["has_current_market_line"].fillna(False).astype(bool)
+        & (df["minutes_mean"] < 12.0)
+        & (df["rotation_probability"] < 0.50)
+        & (df["starter_probability"] < 0.50)
+    )
+    if bool(deep_bench.any()):
+        sample = df.loc[
+            deep_bench,
+            [c for c in ("player_name", "stat", "minutes_mean",
+                          "rotation_probability", "starter_probability")
+             if c in df.columns],
+        ].head(10).to_dict("records")
+        raise SystemExit(
+            "FATAL: production MODEL_ONLY still contains deep-bench no-line "
+            "PMFs (upstream eligibility gate should have removed them). "
+            "Sample: " + str(sample)
+        )
+
+
 def _validate_production_model_only(df: pd.DataFrame, path: Path) -> None:
     """Block stale all_props/broader sparse-stat canonical PMFs in production.
 
@@ -930,6 +1012,8 @@ def _validate_production_model_only(df: pd.DataFrame, path: Path) -> None:
             f"{int(missing_roles.sum())}/{len(df)} in {path}. "
             "Role-aware calibration cannot be trusted until stat_grid emits role metadata."
         )
+
+    _validate_eligibility_contract_for_model_only(df, path)
 
 
 # ── Loaders ───────────────────────────────────────────────────────────────
@@ -1034,6 +1118,20 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "minutes_mean": _clean_optional_float(r.get("minutes_mean")),
             "minutes_q50": _clean_optional_float(r.get("minutes_q50")),
             "p_inactive_used": _clean_optional_float(r.get("p_inactive_used")),
+            # M8.9: canonical eligibility/minutes-summary columns.
+            "slate_date": (r.get("slate_date") if pd.notna(r.get("slate_date")) else str(delivery_date)),
+            "minutes_p10": _clean_optional_float(r.get("minutes_p10")),
+            "minutes_p50": _clean_optional_float(r.get("minutes_p50") if r.get("minutes_p50") is not None else r.get("minutes_q50")),
+            "minutes_p90": _clean_optional_float(r.get("minutes_p90")),
+            "minutes_std": _clean_optional_float(r.get("minutes_std")),
+            "rotation_probability": _clean_optional_float(r.get("rotation_probability")),
+            "starter_probability": _clean_optional_float(r.get("starter_probability")),
+            "projected_role": _clean_optional_meta(r.get("projected_role")),
+            "player_game_eligible": (bool(r.get("player_game_eligible")) if pd.notna(r.get("player_game_eligible")) else None),
+            "eligibility_reason": _clean_optional_meta(r.get("eligibility_reason")),
+            "has_current_market_line": (bool(r.get("has_current_market_line")) if pd.notna(r.get("has_current_market_line")) else False),
+            "minutes_source": _clean_optional_meta(r.get("minutes_source")),
+            "minutes_model_version": _clean_optional_meta(r.get("minutes_model_version")),
             "cal_source": _derive_cal_source(r),
             "mean": smry["mean"], "median": smry["median"],
             "mode": smry["mode"], "p0": smry["p0"],
