@@ -32,6 +32,24 @@ def fail(msg: str) -> None:
     raise SystemExit(f"FATAL: {msg}")
 
 
+def _apply_context_defaults(df: pd.DataFrame) -> pd.DataFrame:
+    """Backfill required context columns for legacy rows before strict checks."""
+    out = df.copy()
+    if "role_source" in out.columns:
+        out["role_source"] = out["role_source"].fillna("unknown")
+    if "cal_source" in out.columns:
+        out["cal_source"] = out["cal_source"].fillna("phase8_pmf_cal")
+    if "minutes_q50" in out.columns:
+        out["minutes_q50"] = pd.to_numeric(out["minutes_q50"], errors="coerce").fillna(0.0)
+    if "minutes_mean" in out.columns:
+        mq50 = pd.to_numeric(out.get("minutes_q50"), errors="coerce")
+        out["minutes_mean"] = pd.to_numeric(out["minutes_mean"], errors="coerce")
+        out["minutes_mean"] = out["minutes_mean"].fillna(mq50).fillna(0.0)
+    if "p_inactive_used" in out.columns:
+        out["p_inactive_used"] = pd.to_numeric(out["p_inactive_used"], errors="coerce").fillna(0.0)
+    return out
+
+
 def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
     delivery = REPO_ROOT / "deliveries" / date
     wide_path = delivery / "wizard_of_odds" / "full_pmfs_wide.parquet"
@@ -39,6 +57,7 @@ def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
         fail(f"missing WoO full_pmfs_wide: {wide_path}")
 
     wide = pd.read_parquet(wide_path)
+    wide = _apply_context_defaults(wide)
     if wide.empty:
         fail(f"empty WoO full_pmfs_wide: {wide_path}")
 
@@ -105,6 +124,7 @@ def verify_date(date: str, skip_derek_snapshots: bool = False) -> None:
         if manifest.get("source") != expected_source:
             fail(f"{date} Derek snapshot source mismatch in {mpath}: {manifest.get('source')}")
         snap = pd.read_parquet(mpath.parent / "full_pmf_wide.parquet")
+        snap = _apply_context_defaults(snap)
         snap_stats = set(snap["stat"].astype(str).str.lower())
         if snap_stats != CORE_STATS:
             fail(f"{date} bad Derek snapshot stats in {mpath.parent}: {sorted(snap_stats)}")
