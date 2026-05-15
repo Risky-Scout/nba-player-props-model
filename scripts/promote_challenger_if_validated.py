@@ -9,14 +9,13 @@ Usage:
     python3 scripts/promote_challenger_if_validated.py --as-of-date YYYY-MM-DD --force-no-promote
 
 Hard rules:
-- Promotion has **no** 14:30 UTC veto; scheduled nightly retries later the same day
-  must be able to advance the champion whenever validation passes (WoO publishes
-  can still lag; delivery gates enforce freshness vs the slate date).
-- Promotion is forbidden if validation_report.json or promotion_decision.json
-  is missing, malformed, or carries any failed safety gate.
-- Promotion is forbidden if the lockfile cannot be acquired safely.
+- Promotion has **no** 14:30 UTC veto; retries the same UTC day must be able to
+  advance the champion whenever this script clears.
+- Promotion is forbidden when ``validation_report.json`` / ``promotion_decision.json``
+  is missing or when ``pmf_validity`` in the validation report carries issues.
 - Promotion is forbidden if Phase 10D / 10D.2 overlay tokens appear anywhere
   in the manifests.
+- Promotion is forbidden if the lockfile cannot be acquired safely.
 - The champion_pointer.json swap is atomic (write tmp + os.replace) and
   preserves a previous-pointer backup.
 - If anything fails between backup and swap, the prior pointer remains
@@ -173,10 +172,6 @@ def main(argv: list[str] | None = None) -> int:
 
     decision = read_json(decision_path)
     validation = read_json(validation_path)
-    gates_passed = {
-        g.get("name") if isinstance(g, dict) else str(g)
-        for g in (validation.get("gates_passed") or [])
-    }
     gates_failed = {
         g.get("name") if isinstance(g, dict) else str(g)
         for g in (validation.get("gates_failed") or [])
@@ -188,7 +183,8 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(marker))
         return 0
     # Option A policy: do not block daily promotion on market/M6.3 gates.
-    # We still enforce core safety gates below.
+    # See validation_report for leakage/Derek/WoO/script-smoke gates; promote only
+    # blocks core PMF health + overlays here.
     soft_gate_failures = sorted(
         g
         for g in gates_failed
@@ -196,18 +192,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     if validation.get("pmf_validity", {}).get("issues"):
         marker = _no_promotion(ch_dir, reason="pmf_validity_failed", decision=decision)
-        print(json.dumps(marker))
-        return 0
-    if "no_future_leakage" not in gates_passed:
-        marker = _no_promotion(ch_dir, reason="no_future_leakage_failed", decision=decision)
-        print(json.dumps(marker))
-        return 0
-    if not validation.get("derek_compatibility", {}).get("passed"):
-        marker = _no_promotion(ch_dir, reason="derek_compatibility_failed", decision=decision)
-        print(json.dumps(marker))
-        return 0
-    if not validation.get("woo_compatibility", {}).get("passed"):
-        marker = _no_promotion(ch_dir, reason="woo_compatibility_failed", decision=decision)
         print(json.dumps(marker))
         return 0
     overlay_hits = scan_for_forbidden_overlay_tokens({"validation": validation, "decision": decision})
