@@ -15,6 +15,10 @@ from nba_props_model.features.player_prop_feature_contract import (
     RunMode,
     feature_families,
 )
+from nba_props_model.features.projected_starters import (
+    ProjectedStarterConfig,
+    build_projected_starter_frame,
+)
 
 
 class MissingSourceInputsError(RuntimeError):
@@ -145,25 +149,110 @@ def _populate_availability(snapshot: pd.DataFrame, avail: pd.DataFrame) -> pd.Da
     return out
 
 
-def _populate_lineup(snapshot: pd.DataFrame, run_mode: RunMode, status_blob: dict[str, Any]) -> pd.DataFrame:
+def _populate_lineup(
+    snapshot: pd.DataFrame,
+    run_mode: RunMode,
+    status_blob: dict[str, Any],
+    repo_root: Path | None = None,
+    date: str | None = None,
+) -> pd.DataFrame:
     out = snapshot.copy()
     has_official = bool(status_blob.get("official_snapshot_available", False))
     expected_status = str(status_blob.get("expected_lineup_status") or "expected_probable")
     official_status = str(status_blob.get("official_lineup_status") or "not_available_yet")
     out["expected_lineup_available"] = True
-    out["expected_lineup_source"] = str(status_blob.get("expected_lineup_source") or "projected_lineup")
     out["expected_lineup_asof_utc"] = out["source_data_asof_utc"]
     out["expected_lineup_last_updated_utc"] = out["source_data_asof_utc"]
     out["expected_lineup_freshness_minutes"] = 0
     out["expected_lineup_freshness_status"] = "fresh"
-    out["expected_starter"] = False
-    out["expected_bench_role"] = True
-    out["expected_rotation_rank"] = 8
-    out["expected_lineup_confidence"] = 0.5
-    out["expected_starter_prob"] = 0.5
-    out["projected_rotation_slot"] = "rotation"
-    out["projected_closing_lineup_flag"] = False
-    out["projected_blowout_rotation_risk"] = 0.1
+
+    projected_prior_used = False
+    if repo_root is not None and date is not None and "player_id" in out.columns and "team_id" in out.columns:
+        eligible_cols = ["player_id", "team_id"]
+        if "prob_active_current" in out.columns:
+            eligible_cols.append("prob_active_current")
+        elif "prob_active" in out.columns:
+            eligible_cols.append("prob_active")
+        eligible = out[eligible_cols].drop_duplicates(subset=["player_id", "team_id"]).reset_index(drop=True).copy()
+        if "prob_active_current" in eligible.columns:
+            eligible["prob_active"] = pd.to_numeric(eligible.pop("prob_active_current"), errors="coerce")
+        elif "prob_active" in eligible.columns:
+            eligible["prob_active"] = pd.to_numeric(eligible["prob_active"], errors="coerce")
+        try:
+            prior = build_projected_starter_frame(
+                repo_root=repo_root,
+                slate_date=date,
+                eligible_players=eligible,
+                config=ProjectedStarterConfig(),
+            )
+            out = out.merge(
+                prior,
+                on=["player_id", "team_id"],
+                how="left",
+                suffixes=("", "_prior"),
+            )
+            for col in (
+                "expected_starter",
+                "expected_starter_prob",
+                "expected_lineup_confidence",
+                "expected_rotation_rank",
+                "expected_bench_role",
+                "projected_rotation_slot",
+                "projected_closing_lineup_flag",
+                "projected_blowout_rotation_risk",
+            ):
+                prior_col = f"{col}_prior"
+                if prior_col in out.columns:
+                    out[col] = out[prior_col]
+                    out = out.drop(columns=[prior_col])
+            projected_prior_used = True
+        except Exception:
+            projected_prior_used = False
+
+    if not projected_prior_used:
+        out["expected_starter"] = False
+        out["expected_bench_role"] = True
+        out["expected_rotation_rank"] = 8
+        out["expected_lineup_confidence"] = 0.5
+        out["expected_starter_prob"] = 0.5
+        out["projected_rotation_slot"] = "rotation"
+        out["projected_closing_lineup_flag"] = False
+        out["projected_blowout_rotation_risk"] = 0.1
+        out["feature_freshness"] = "projected_lineup"
+        out["expected_lineup_source"] = str(
+            status_blob.get("expected_lineup_source") or "projected_lineup"
+        )
+    else:
+        out["expected_starter"] = out["expected_starter"].fillna(False).astype(bool)
+        out["expected_bench_role"] = out["expected_bench_role"].fillna(True).astype(bool)
+        out["expected_rotation_rank"] = (
+            pd.to_numeric(out["expected_rotation_rank"], errors="coerce").fillna(15).astype(int)
+        )
+        out["expected_lineup_confidence"] = (
+            pd.to_numeric(out["expected_lineup_confidence"], errors="coerce").fillna(0.5).astype(float)
+        )
+        out["expected_starter_prob"] = (
+            pd.to_numeric(out["expected_starter_prob"], errors="coerce").fillna(0.5).astype(float)
+        )
+        out["projected_rotation_slot"] = out["projected_rotation_slot"].fillna("deep_bench").astype(str)
+        out["projected_closing_lineup_flag"] = out["projected_closing_lineup_flag"].fillna(False).astype(bool)
+        out["projected_blowout_rotation_risk"] = (
+            pd.to_numeric(out["projected_blowout_rotation_risk"], errors="coerce").fillna(0.1).astype(float)
+        )
+        if "feature_freshness" not in out.columns:
+            out["feature_freshness"] = f"projected_starter_rolling_N{ProjectedStarterConfig().window_n}"
+        else:
+            out["feature_freshness"] = out["feature_freshness"].fillna(
+                f"projected_starter_rolling_N{ProjectedStarterConfig().window_n}"
+            )
+        if "expected_lineup_source_internal" in out.columns:
+            out = out.drop(columns=["expected_lineup_source_internal"])
+        legacy_source = str(status_blob.get("expected_lineup_source") or "projected_starter_rolling")
+        out["expected_lineup_source"] = (
+            f"projected_starter_rolling_N{ProjectedStarterConfig().window_n}"
+            if legacy_source in {"projected_lineup", "projected_starter_rolling"}
+            else legacy_source
+        )
     out["official_lineup_available"] = has_official
     out["official_lineup_source"] = str(status_blob.get("official_lineup_source") or "source_unavailable")
     out["official_lineup_asof_utc"] = out["source_data_asof_utc"]
@@ -195,7 +284,13 @@ def build_feature_snapshot(repo_root: Path, date: str, run_mode: RunMode) -> Sna
     snapshot = _add_family_placeholders(base)
     snapshot = _populate_identity(snapshot, date, run_mode, run_id, generated_at)
     snapshot = _populate_availability(snapshot, _load_availability(repo_root, date))
-    snapshot = _populate_lineup(snapshot, run_mode, _load_lineup_status(repo_root, date))
+    snapshot = _populate_lineup(
+        snapshot,
+        run_mode,
+        _load_lineup_status(repo_root, date),
+        repo_root=repo_root,
+        date=date,
+    )
     if "unavailable_reason" in snapshot.columns:
         snapshot["unavailable_reason"] = snapshot["unavailable_reason"].fillna("source_unavailable")
     metadata = {

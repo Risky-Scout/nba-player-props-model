@@ -9,6 +9,10 @@ from typing import Any
 import pandas as pd
 
 from nba_props_model.features.player_prop_feature_contract import RunMode
+from nba_props_model.features.projected_starters import (
+    ProjectedStarterConfig,
+    build_projected_starter_frame,
+)
 
 
 FAIL_EXPECTED_MISLABELED = "EXPECTED_LINEUP_MISLABELED_AS_OFFICIAL"
@@ -39,7 +43,20 @@ def _base_players(repo_root: Path, date: str) -> pd.DataFrame:
     canonical = repo_root / "deliveries" / date / "canonical_source" / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
     if canonical.is_file():
         df = pd.read_parquet(canonical)
-        keep = [c for c in ("player_id", "player_name", "team", "opponent", "game_id", "event_id") if c in df.columns]
+        keep = [
+            c
+            for c in (
+                "player_id",
+                "player_name",
+                "team",
+                "team_id",
+                "team_abbr",
+                "opponent",
+                "game_id",
+                "event_id",
+            )
+            if c in df.columns
+        ]
         return df[keep].drop_duplicates()
     return pd.DataFrame(columns=["player_id"])
 
@@ -110,9 +127,79 @@ def build_injury_lineup_features(repo_root: Path, date: str, run_mode: RunMode) 
     if run_mode == RunMode.MORNING_EXPECTED:
         official_available = False
 
-    base["expected_starter"] = False
-    base["expected_starter_prob"] = 0.5
-    base["expected_lineup_confidence"] = 0.5
+    projected_prior_used = False
+    if "player_id" in base.columns and "team_id" in base.columns and not base.empty:
+        eligible = base[["player_id", "team_id"]].copy()
+        if "prob_active" in base.columns:
+            eligible["prob_active"] = pd.to_numeric(base["prob_active"], errors="coerce")
+        try:
+            prior = build_projected_starter_frame(
+                repo_root=repo_root,
+                slate_date=date,
+                eligible_players=eligible,
+                config=ProjectedStarterConfig(),
+            )
+            keep_cols = [
+                "player_id",
+                "team_id",
+                "expected_starter",
+                "expected_starter_prob",
+                "expected_lineup_confidence",
+                "expected_rotation_rank",
+                "expected_bench_role",
+                "projected_rotation_slot",
+                "projected_closing_lineup_flag",
+                "projected_blowout_rotation_risk",
+                "feature_freshness",
+            ]
+            keep_cols = [c for c in keep_cols if c in prior.columns]
+            base = base.merge(prior[keep_cols], on=["player_id", "team_id"], how="left")
+            base["expected_starter"] = base["expected_starter"].fillna(False).astype(bool)
+            base["expected_starter_prob"] = (
+                pd.to_numeric(base["expected_starter_prob"], errors="coerce").fillna(0.5).astype(float)
+            )
+            base["expected_lineup_confidence"] = (
+                pd.to_numeric(base["expected_lineup_confidence"], errors="coerce").fillna(0.5).astype(float)
+            )
+            base["expected_rotation_rank"] = (
+                pd.to_numeric(base.get("expected_rotation_rank"), errors="coerce").fillna(15).astype(int)
+            )
+            base["expected_bench_role"] = base.get("expected_bench_role", ~base["expected_starter"])
+            base["expected_bench_role"] = base["expected_bench_role"].fillna(True).astype(bool)
+            if "projected_rotation_slot" in base.columns:
+                base["projected_rotation_slot"] = base["projected_rotation_slot"].fillna("deep_bench").astype(str)
+            if "projected_closing_lineup_flag" in base.columns:
+                base["projected_closing_lineup_flag"] = (
+                    base["projected_closing_lineup_flag"].fillna(False).astype(bool)
+                )
+            if "projected_blowout_rotation_risk" in base.columns:
+                base["projected_blowout_rotation_risk"] = (
+                    pd.to_numeric(base["projected_blowout_rotation_risk"], errors="coerce")
+                    .fillna(0.1)
+                    .astype(float)
+                )
+            if "feature_freshness" in base.columns:
+                base["feature_freshness"] = base["feature_freshness"].fillna(
+                    f"projected_starter_rolling_N{ProjectedStarterConfig().window_n}"
+                )
+            else:
+                base["feature_freshness"] = (
+                    f"projected_starter_rolling_N{ProjectedStarterConfig().window_n}"
+                )
+            projected_prior_used = True
+        except Exception:
+            projected_prior_used = False
+
+    if not projected_prior_used:
+        base["expected_starter"] = False
+        base["expected_starter_prob"] = 0.5
+        base["expected_lineup_confidence"] = 0.5
+        base["expected_rotation_rank"] = 8
+        base["expected_bench_role"] = True
+        base["projected_rotation_slot"] = "rotation"
+        base["projected_closing_lineup_flag"] = False
+        base["projected_blowout_rotation_risk"] = 0.1
+        base["feature_freshness"] = "projected_lineup"
     base["official_starter"] = False
     base["confirmed_starter"] = False
     base["official_lineup_available"] = official_available
@@ -140,7 +227,11 @@ def build_injury_lineup_features(repo_root: Path, date: str, run_mode: RunMode) 
     base["official_lineup_source"] = str(lineup_blob.get("official_lineup_source") or ("source_unavailable" if not official_available else "official_lineup_feed"))
     base["injury_source"] = base["availability_source"].fillna("source_unavailable")
     base["injury_last_updated_utc"] = str(lineup_blob.get("availability_last_updated_utc") or lineup_blob.get("snapshot_time_utc") or "1970-01-01T00:00:00Z")
-    base["lineup_source"] = str(lineup_blob.get("expected_lineup_source") or "projected_lineup")
+    legacy_lineup_source = str(lineup_blob.get("expected_lineup_source") or "projected_lineup")
+    if projected_prior_used and legacy_lineup_source in {"projected_lineup", "projected_starter_rolling"}:
+        base["lineup_source"] = f"projected_starter_rolling_N{ProjectedStarterConfig().window_n}"
+    else:
+        base["lineup_source"] = legacy_lineup_source
     base["lineup_last_updated_utc"] = str(lineup_blob.get("snapshot_time_utc") or "1970-01-01T00:00:00Z")
 
     _validate_or_raise(base)
