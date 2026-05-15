@@ -7,8 +7,6 @@
     "feature_set_id": null,
     "issues": [
       "champion_pointer.feature_set_id=None expected 'phase13s_direct_lineup_injury_pmf_driver_v1'",
-      "daily_model_training_report.md missing at /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/model_daily_reports/2026-05-13/daily_model_training_report.md",
-      "daily_model_training_report.json missing at /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/model_daily_reports/2026-05-13/daily_model_training_report.json",
       "champion_pointer.contextual_challenger_dir empty"
     ],
     "trained_through_date": "2026-05-13",
