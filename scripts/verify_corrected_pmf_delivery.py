@@ -108,7 +108,16 @@ def verify_date(
 
         public_stats = set()
         for player in pmf.get("players", []):
-            public_stats.update(str(s).lower() for s in player.get("stats", {}).keys())
+            stats_obj = player.get("stats", {})
+            if isinstance(stats_obj, dict):
+                public_stats.update(str(s).lower() for s in stats_obj.keys())
+            elif isinstance(stats_obj, list):
+                for item in stats_obj:
+                    if not isinstance(item, dict):
+                        continue
+                    stat_name = item.get("stat") or item.get("name")
+                    if stat_name:
+                        public_stats.add(str(stat_name).lower())
         if public_stats != CORE_STATS:
             fail(f"{date} bad public PMF stats: {sorted(public_stats)}")
 
