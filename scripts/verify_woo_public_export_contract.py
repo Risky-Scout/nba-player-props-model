@@ -68,12 +68,30 @@ def _check_affiliate(payload: dict, label: str) -> list[str]:
         failures.append(f"{label}: rows is empty (count={len(rows)})")
         return failures
     sample = rows[0]
-    required = ("player", "stat", "side", "line", "model_prob",
-                "market_prob")
-    missing = [k for k in required if k not in sample]
+    required_base = ("player", "stat", "side", "line", "market_prob")
+    missing = [k for k in required_base if k not in sample]
     if missing:
         failures.append(f"{label}: sample row missing keys: {missing}")
+    model_prob_keys = ("model_prob", "model_probability_for_side",
+                       "model_prob_over", "model_p_over")
+    if not any(k in sample for k in model_prob_keys):
+        failures.append(
+            f"{label}: sample row has none of model_prob/"
+            "model_probability_for_side/model_prob_over"
+        )
     return failures
+
+
+def _iter_stat_blocks(player_obj: dict):
+    """Yield (stat_name, block) supporting both dict- and list-shaped ``stats``."""
+    stats_field = player_obj.get("stats")
+    if isinstance(stats_field, dict):
+        for stat_name, block in stats_field.items():
+            yield stat_name, block
+    elif isinstance(stats_field, list):
+        for block in stats_field:
+            if isinstance(block, dict):
+                yield str(block.get("stat") or block.get("stat_key") or ""), block
 
 
 def _check_pmf_research(payload: dict, label: str) -> list[str]:
@@ -86,17 +104,22 @@ def _check_pmf_research(payload: dict, label: str) -> list[str]:
     if "stats" not in sample or not sample["stats"]:
         failures.append(f"{label}: sample player has no stats")
         return failures
-    # Tail-bucket check: any stat whose support has gap > 1 between the
-    # last two ``k`` values must mark the last entry with is_tail=True
-    # and a "<k>+" label.
+    # Tail-bucket check applies only to the legacy ``support_points`` schema.
+    # The current atom-PMF schema emits ``support``/``probs`` arrays without
+    # an explicit tail bucket; skip the tail check for that shape rather than
+    # false-failing.
     bug_seen = []
     for player in players[:25]:  # sample, not exhaustive
-        for stat_name, stat_block in (player.get("stats") or {}).items():
+        for stat_name, stat_block in _iter_stat_blocks(player):
+            if not isinstance(stat_block, dict):
+                continue
             pts = stat_block.get("support_points") or []
             if len(pts) < 2:
                 continue
             last = pts[-1]
             second_last = pts[-2]
+            if not isinstance(last, dict) or not isinstance(second_last, dict):
+                continue
             if "k_min" in last:
                 continue  # already a labeled tail
             if "k" in last and "k" in second_last:

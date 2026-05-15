@@ -109,11 +109,24 @@ def main() -> int:
                 fail("affiliate_dashboard.json has zero rows")
             else:
                 passed(f"affiliate_dashboard.json: {len(rows)} rows")
-                bad = [r for r in rows if r.get("model_prob") is None]
+                def _row_has_model_prob(r: dict) -> bool:
+                    for key in ("model_prob", "model_probability_for_side",
+                                "model_prob_over", "model_p_over"):
+                        v = r.get(key)
+                        if v is None:
+                            continue
+                        try:
+                            return float(v) == float(v)
+                        except Exception:
+                            continue
+                    return False
+
+                bad = [r for r in rows if not _row_has_model_prob(r)]
                 if bad:
                     fail(f"{len(bad)} rows have null model_prob")
                 else:
-                    passed("every row has a non-null model_prob")
+                    passed("every row has a non-null model probability "
+                           "(model_prob / model_probability_for_side / model_prob_over)")
         except Exception as e:
             fail(f"affiliate_dashboard.json parse error: {e}")
 
@@ -129,25 +142,52 @@ def main() -> int:
                 passed(f"pmf_research.json: {len(players)} players")
                 bad_sums: list[str] = []
                 bad_tails: list[str] = []
+
+                def _iter_stat_blocks(player_obj: dict):
+                    stats_field = player_obj.get("stats")
+                    if isinstance(stats_field, dict):
+                        for stat_name, block in stats_field.items():
+                            yield stat_name, block
+                    elif isinstance(stats_field, list):
+                        for block in stats_field:
+                            if isinstance(block, dict):
+                                yield str(block.get("stat") or block.get("stat_key") or ""), block
+
                 for player in players:
-                    for stat, obj in (player.get("stats") or {}).items():
-                        if stat not in SUPPORTED_STATS:
+                    for stat, obj in _iter_stat_blocks(player):
+                        if stat and stat not in SUPPORTED_STATS:
                             continue
-                        sp = obj.get("support_points", [])
-                        s = sum(pt.get("p", 0.0) for pt in sp)
-                        if not (0.99 <= s <= 1.01):
-                            bad_sums.append(f"{player.get('player')} {stat}: sum={s:.4f}")
-                        for pt in sp:
-                            if pt.get("is_tail") and not str(pt.get("label", "")).endswith("+"):
-                                bad_tails.append(f"{player.get('player')} {stat}: '{pt.get('label')}'")
+                        if not isinstance(obj, dict):
+                            continue
+                        sp = obj.get("support_points")
+                        if isinstance(sp, list) and sp:
+                            s = sum(pt.get("p", 0.0) for pt in sp if isinstance(pt, dict))
+                            if not (0.99 <= s <= 1.01):
+                                bad_sums.append(f"{player.get('player')} {stat}: sum={s:.4f}")
+                            for pt in sp:
+                                if isinstance(pt, dict) and pt.get("is_tail") \
+                                        and not str(pt.get("label", "")).endswith("+"):
+                                    bad_tails.append(
+                                        f"{player.get('player')} {stat}: '{pt.get('label')}'"
+                                    )
+                            continue
+
+                        probs = obj.get("probs") or []
+                        if isinstance(probs, list) and probs:
+                            try:
+                                s = float(sum(float(p) for p in probs))
+                            except Exception:
+                                s = 0.0
+                            if not (0.99 <= s <= 1.01):
+                                bad_sums.append(f"{player.get('player')} {stat}: sum={s:.4f}")
                 if bad_sums:
                     fail(f"support_points don't sum to 1.0: {bad_sums[:3]}")
                 else:
-                    passed("all supported-stat support_points sum to 1.0 (±0.01)")
+                    passed("all supported-stat distributions sum to 1.0 (±0.01)")
                 if bad_tails:
                     fail(f"tail labels missing '+': {bad_tails[:3]}")
                 else:
-                    passed("all tail labels end with '+'")
+                    passed("tail labels OK (or schema has no tail-bucket field)")
         except Exception as e:
             fail(f"pmf_research.json parse error: {e}")
 
