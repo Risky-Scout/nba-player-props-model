@@ -79,7 +79,9 @@ TIPOFF_WINDOW_POST_MIN = 15
 REFRESH = REPO_ROOT / "scripts" / "refresh_daily_inputs.py"
 BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
 SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
-PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
+# Must use scripts/predict.py: pipelines/predict.py's __main__ calls main()
+# without argv, so `--date` would be ignored when invoked as a file.
+PREDICT = REPO_ROOT / "scripts" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
 BUILD_AVAILABILITY = REPO_ROOT / "scripts" / "build_availability_table.py"

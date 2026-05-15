@@ -1653,4 +1653,6 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    main()
+    import sys as _sys
+
+    raise SystemExit(main(_sys.argv[1:]))
