@@ -258,6 +258,9 @@ PY
       - name: "Legacy diagnostic: Verify BDL fetch proof (Phase 13W)"
         id: verify_bdl_fetch
         continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           if python scripts/verify_bdl_fetch_proof_for_derek.py \
             --delivery-date ${{ steps.d.outputs.date }}; then

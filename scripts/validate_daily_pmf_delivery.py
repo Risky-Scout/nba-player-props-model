@@ -233,7 +233,9 @@ def validate(date: str, train_through_date: str) -> dict:
                 )
 
     # 11. wizard tiny/empty with scheduled games
-    market_df = _safe_read(market_pq_path) or _safe_read(market_csv_path)
+    market_df = _safe_read(market_pq_path)
+    if market_df is None:
+        market_df = _safe_read(market_csv_path)
     if canonical_df is not None and not canonical_df.empty:
         if market_df is None or market_df.empty:
             _add_failure(
