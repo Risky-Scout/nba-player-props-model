@@ -1,8 +1,8 @@
 {
   "delivery_date": "2026-05-15",
   "run_mode": "morning_expected",
-  "generated_at_utc": "2026-05-15T16:12:26Z",
-  "row_count": 5256,
+  "generated_at_utc": "2026-05-15T16:54:21Z",
+  "row_count": 5287,
   "schema": "m88_derek_unified_v1",
   "lineup_status": null,
   "files": {
