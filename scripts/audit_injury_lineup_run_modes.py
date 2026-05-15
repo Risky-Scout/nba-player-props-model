@@ -40,6 +40,7 @@ def _audit_mode(
     *,
     run_mode: RunMode,
     date: str,
+    active_run_mode: RunMode | None,
 ) -> tuple[pd.DataFrame | None, dict | None, list[dict]]:
     failures: list[dict] = []
     try:
@@ -60,14 +61,22 @@ def _audit_mode(
     summary = dict(result.summary)
     n_rows = int(len(frame))
 
-    # same-day source missing must be explicit and fatal
+    # same-day source missing is only fatal for the active run mode being
+    # validated in this pipeline invocation. For non-active modes, this is
+    # expected when those snapshots have not been generated yet.
     if n_rows == 0:
+        severity = "fail" if (active_run_mode is None or run_mode == active_run_mode) else "warn"
+        blocker_code = (
+            "SAME_DAY_SOURCE_INPUTS_MISSING"
+            if severity == "fail"
+            else "RUN_MODE_NOT_AVAILABLE_YET"
+        )
         failures.append(
             _make_row(
                 run_mode=run_mode.value,
                 audit_date=date,
-                severity="fail",
-                blocker_code="SAME_DAY_SOURCE_INPUTS_MISSING",
+                severity=severity,
+                blocker_code=blocker_code,
                 detail=(
                     "No injury/lineup feature rows were produced; canonical or source "
                     "inputs are missing for this run mode/date."
@@ -148,7 +157,14 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
     ap.add_argument("--latest-completed-date", required=True)
+    ap.add_argument(
+        "--active-run-mode",
+        choices=[m.value for m in RunMode],
+        default=None,
+        help="Only this run mode is treated as hard-fail when rows are missing.",
+    )
     args = ap.parse_args()
+    active_mode = RunMode(args.active_run_mode) if args.active_run_mode else None
 
     out = REPO_ROOT / "artifacts" / "model_diagnostics" / "injury_lineup_run_modes"
     out.mkdir(parents=True, exist_ok=True)
@@ -165,7 +181,11 @@ def main() -> int:
     ]
 
     for mode, mode_date in run_plan:
-        _, summary, mode_failures = _audit_mode(run_mode=mode, date=mode_date)
+        _, summary, mode_failures = _audit_mode(
+            run_mode=mode,
+            date=mode_date,
+            active_run_mode=active_mode,
+        )
         failures.extend(mode_failures)
         summaries.append(
             {

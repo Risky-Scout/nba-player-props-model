@@ -663,7 +663,10 @@ def main(argv: list[str] | None = None) -> int:
             indent=2,
         )
     )
-    return 0 if final_status in ("ok", "halted_no_promotion") else 1
+    # Do not silently green-light halted core runs. Any halted_no_promotion
+    # state means the core train/calibrate/promotion pipeline did not complete
+    # successfully and must surface as a failing step in CI.
+    return 0 if final_status == "ok" else 1
 
 
 if __name__ == "__main__":

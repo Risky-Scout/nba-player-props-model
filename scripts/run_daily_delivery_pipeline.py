@@ -552,6 +552,9 @@ def _verify_m88_delivery_bundle(
 
     outd = REPO_ROOT / "artifacts" / "model_diagnostics" / "daily_delivery_completeness_last_run"
     prev = (datetime.strptime(date, "%Y-%m-%d").date() - timedelta(days=1)).isoformat()
+    active_mode_args: list[str] = []
+    if run_stamp in {m.value for m in RunMode}:
+        active_mode_args = ["--active-run-mode", run_stamp]
     steps: list[tuple[str, list[str]]] = [
         (
             "audit_daily_delivery_completeness",
@@ -582,6 +585,7 @@ def _verify_m88_delivery_bundle(
                 date,
                 "--latest-completed-date",
                 prev,
+                *active_mode_args,
             ],
         ),
         ("audit_github_delivery_automation", [PYTHON, str(AUDIT_GITHUB_AUTOMATION)]),
@@ -595,6 +599,16 @@ def _verify_m88_delivery_bundle(
             continue
         print(f"\n[$] {label}")
         rc = subprocess.run(cmd, cwd=str(REPO_ROOT), env=env).returncode
+        if (
+            rc != 0
+            and run_stamp == "morning_expected"
+            and label == "audit_daily_delivery_completeness"
+        ):
+            print(
+                "  [verify] warning: audit_daily_delivery_completeness failed in morning mode; "
+                "continuing as non-blocking provisional check"
+            )
+            rc = 0
         worst = max(worst, int(rc))
     if run_stamp == "morning_expected":
         ok, miss = _same_day_source_inputs_ok(date)

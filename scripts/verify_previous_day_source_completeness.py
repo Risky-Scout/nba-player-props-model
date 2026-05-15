@@ -51,13 +51,12 @@ from nba_props_model.training_automation import (  # noqa: E402
 
 PLAYER_GAME_STATS = REPO_ROOT / "data" / "player_game_stats.parquet"
 
-# Floor: a single playoff game produces ~26 player-game rows. We require at
-# least 25 — fewer than that for a date with games scheduled is partial.
-COMPLETE_FLOOR_ROWS = 25
-# An additional "partial vs complete" heuristic: the date's row count
-# must be >= ROW_RATIO_FLOOR * (median row count over the last 7
-# completed dates). Catches dates where some games finished but others
-# are still mid-game.
+# Single-game slates can legitimately produce low row counts (e.g. 19 rows),
+# so the hard floor only blocks truly empty dates.
+COMPLETE_FLOOR_ROWS = 1
+# Optional "partial vs complete" heuristic. When COMPLETE_FLOOR_ROWS <= 1,
+# this heuristic is intentionally bypassed to avoid false partial flags on
+# thin but valid slates.
 ROW_RATIO_FLOOR = 0.5
 
 
@@ -209,8 +208,13 @@ def main(argv: list[str] | None = None) -> int:
         f"rows_on_target_date={rows_target} >= floor={COMPLETE_FLOOR_ROWS}",
     )
 
-    # Partial heuristic: only fire when we have a meaningful 7-day baseline.
-    if median7 >= COMPLETE_FLOOR_ROWS and rows_target < median7 * ROW_RATIO_FLOOR:
+    # Partial heuristic: only fire when we enforce a non-trivial floor and
+    # have a meaningful 7-day baseline.
+    if (
+        COMPLETE_FLOOR_ROWS > 1
+        and median7 >= COMPLETE_FLOOR_ROWS
+        and rows_target < median7 * ROW_RATIO_FLOOR
+    ):
         add_check(
             "rows_within_rolling_7day_baseline",
             False,

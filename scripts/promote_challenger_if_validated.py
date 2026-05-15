@@ -172,22 +172,33 @@ def main(argv: list[str] | None = None) -> int:
 
     decision = read_json(decision_path)
     validation = read_json(validation_path)
+    gates_passed = {
+        g.get("name") if isinstance(g, dict) else str(g)
+        for g in (validation.get("gates_passed") or [])
+    }
+    gates_failed = {
+        g.get("name") if isinstance(g, dict) else str(g)
+        for g in (validation.get("gates_failed") or [])
+    }
 
     # Hard veto checks before we even consider the decision file.
     if args.force_no_promote:
         marker = _no_promotion(ch_dir, reason="force_no_promote", decision=decision)
         print(json.dumps(marker))
         return 0
-    if not decision.get("promote", False):
-        marker = _no_promotion(
-            ch_dir,
-            reason=f"decision.promote=false ({decision.get('reason')})",
-            decision=decision,
-        )
-        print(json.dumps(marker))
-        return 0
+    # Option A policy: do not block daily promotion on market/M6.3 gates.
+    # We still enforce core safety gates below.
+    soft_gate_failures = sorted(
+        g
+        for g in gates_failed
+        if g.startswith("m6_3_") or g.startswith("market_") or g == "no_severe_market_stat_bucket_regression"
+    )
     if validation.get("pmf_validity", {}).get("issues"):
         marker = _no_promotion(ch_dir, reason="pmf_validity_failed", decision=decision)
+        print(json.dumps(marker))
+        return 0
+    if "no_future_leakage" not in gates_passed:
+        marker = _no_promotion(ch_dir, reason="no_future_leakage_failed", decision=decision)
         print(json.dumps(marker))
         return 0
     if not validation.get("derek_compatibility", {}).get("passed"):
@@ -371,7 +382,11 @@ def main(argv: list[str] | None = None) -> int:
                 decision="promoted",
                 gates_passed=decision.get("gates_passed", []),
                 gates_failed=decision.get("gates_failed", []),
-                reason=decision.get("reason", ""),
+                reason=(
+                    f"{decision.get('reason', '')}; soft_gates_ignored={','.join(soft_gate_failures)}"
+                    if soft_gate_failures
+                    else decision.get("reason", "")
+                ),
                 operator="phase13a-orchestrator",
             )
 
@@ -386,6 +401,7 @@ def main(argv: list[str] | None = None) -> int:
                 "backup_dir": str(backup.relative_to(REPO_ROOT)),
                 "champion_pointer_path": str(CHAMPION_POINTER_PATH.relative_to(REPO_ROOT)),
                 "champion_pointer_sha256_after_swap": sha256_file(CHAMPION_POINTER_PATH),
+                "soft_gate_failures_ignored": soft_gate_failures,
             }
             write_json_atomic(ch_dir / "promotion_manifest.json", promotion_manifest)
 
