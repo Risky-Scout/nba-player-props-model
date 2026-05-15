@@ -1,0 +1,5 @@
+run_mode,official_lineup_required,named_blocker_required_if_missing
+morning_expected,False,False
+t25,True,True
+t5,True,True
+final_after_game,False,False

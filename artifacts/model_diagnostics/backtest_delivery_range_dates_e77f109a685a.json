@@ -1,0 +1,42 @@
+{
+  "dates_attempted": [
+    "2026-05-07",
+    "2026-05-12"
+  ],
+  "dates_built": [],
+  "dates_skipped": [
+    {
+      "date": "2026-05-07",
+      "reason": "stat_grid_and_canonical_exist"
+    },
+    {
+      "date": "2026-05-12",
+      "reason": "stat_grid_and_canonical_exist"
+    }
+  ],
+  "failures": [],
+  "stat_counts_per_date": {
+    "2026-05-07": {
+      "pts": 66,
+      "reb": 66,
+      "ast": 66,
+      "fg3m": 66,
+      "tov": 66
+    },
+    "2026-05-12": {
+      "pts": 34,
+      "reb": 34,
+      "ast": 34,
+      "tov": 34,
+      "stl": 34,
+      "blk": 34,
+      "stocks": 34,
+      "pa": 34,
+      "pr": 34,
+      "ra": 34,
+      "pra": 34,
+      "fg3m": 32
+    }
+  },
+  "all_twelve_mission_stats_per_date": {}
+}

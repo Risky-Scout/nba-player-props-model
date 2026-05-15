@@ -1,0 +1,30 @@
+{
+  "dates_attempted": [
+    "2026-04-30"
+  ],
+  "dates_built": [],
+  "dates_skipped": [
+    {
+      "date": "2026-04-30",
+      "reason": "stat_grid_and_canonical_exist_contract_ok"
+    }
+  ],
+  "failures": [],
+  "stat_counts_per_date": {
+    "2026-04-30": {
+      "pts": 105,
+      "reb": 105,
+      "ast": 105,
+      "tov": 105,
+      "stl": 105,
+      "blk": 105,
+      "stocks": 105,
+      "pa": 105,
+      "pr": 105,
+      "ra": 105,
+      "pra": 105,
+      "fg3m": 101
+    }
+  },
+  "all_twelve_mission_stats_per_date": {}
+}

@@ -1,0 +1,7 @@
+{
+  "as_of_date": "2026-05-13",
+  "delivery_completeness_pass": null,
+  "injury_lineup_audit_pass": false,
+  "github_automation_pass": true,
+  "notes": "This file is generated locally from audit artifacts; it is not committed unless explicitly requested."
+}

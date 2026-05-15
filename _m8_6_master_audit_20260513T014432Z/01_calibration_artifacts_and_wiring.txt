@@ -1,0 +1,68 @@
+=== FIND ALL CALIBRATION ARTIFACTS ===
+./_stat_grid_delivery_calibration_optimizer/artifacts/models/stat_grid_recalibration_params.json
+./_stat_grid_delivery_calibration_optimizer/artifacts/models/v4_guarded_oof_selection_by_stat_role.csv
+./_stat_grid_delivery_calibration_optimizer/artifacts/models/v4_guarded_oof_selection_by_stat_role.parquet
+./_stat_grid_delivery_calibration_optimizer/artifacts/models/v4_guarded_optimizer_report.json
+./artifacts/models/minutes_cdf_calibrator.pkl
+./artifacts/models/pmf_cal_meta.json
+./artifacts/models/pmf_cal_role_ast.pkl
+./artifacts/models/pmf_cal_role_blk.pkl
+./artifacts/models/pmf_cal_role_fg3m.pkl
+./artifacts/models/pmf_cal_role_pa.pkl
+./artifacts/models/pmf_cal_role_pr.pkl
+./artifacts/models/pmf_cal_role_pra.pkl
+./artifacts/models/pmf_cal_role_pts.pkl
+./artifacts/models/pmf_cal_role_reb.pkl
+./artifacts/models/pmf_cal_role_stl.pkl
+./artifacts/models/pmf_cal_role_stocks.pkl
+./artifacts/models/pmf_cal_role_tov.pkl
+./deliveries/2026-04-27/live_after_2029_et/pmf_calibrators/pmf_cal_meta.json
+./deliveries/2026-04-27/live_after_2029_et/pmf_calibrators/pmf_cal_role_ast.pkl
+./deliveries/2026-04-27/live_after_2029_et/pmf_calibrators/pmf_cal_role_fg3m.pkl
+./deliveries/2026-04-27/live_after_2029_et/pmf_calibrators/pmf_cal_role_pts.pkl
+./deliveries/2026-04-27/live_after_2029_et/pmf_calibrators/pmf_cal_role_reb.pkl
+./deliveries/2026-04-27/live_after_2029_et/pmf_calibrators/pmf_cal_role_tov.pkl
+./deliveries/2026-04-27/pmf_model_review_package/machine_readable/pmf_cal_meta.json
+
+=== CALIBRATION MODULE FILES ===
+scripts/_calibration_ab.py
+scripts/audit_derek_calibration_for_edge_buckets.py
+scripts/build_m6_3_stat_role_calibration_report.py
+scripts/calibrate_daily_challenger_pmfs.py
+scripts/calibrate_pmf.py
+scripts/calibrate.py
+scripts/optimize_stat_grid_recalibration_params_v4.py
+scripts/run_nightly_training_and_calibration.py
+scripts/verify_daily_retrain_recalibration.py
+scripts/verify_stat_grid_recalibration_before_after_oof.py
+src/nba_props_model/calibration/pmf_calibration.py
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py
+
+=== RECALIBRATOR WIRING GREP ===
+scripts/optimize_stat_grid_recalibration_params_v4.py:14:from nba_props_model.calibration.stat_grid_delivery_recalibration import (
+scripts/optimize_stat_grid_recalibration_params_v4.py:16:    StatGridDeliveryRecalibrator,
+scripts/optimize_stat_grid_recalibration_params_v4.py:209:    recal = StatGridDeliveryRecalibrator({"enabled": True, "version": "v4_eval", "cells": {f"{stat}|{role}": params}})
+scripts/optimize_stat_grid_recalibration_params_v4.py:226:    model_dir = Path(args.model_dir or os.environ.get("STAT_GRID_RECALIBRATION_MODEL_DIR", "_stat_grid_delivery_calibration_optimizer/artifacts/models"))
+scripts/verify_stat_grid_recalibration_before_after_oof.py:14:from nba_props_model.calibration.stat_grid_delivery_recalibration import (
+scripts/verify_stat_grid_recalibration_before_after_oof.py:15:    load_stat_grid_delivery_recalibrator,
+scripts/verify_stat_grid_recalibration_before_after_oof.py:140:    model_dir = Path(args.model_dir or os.environ.get("STAT_GRID_RECALIBRATION_MODEL_DIR", "_stat_grid_delivery_calibration_optimizer/artifacts/models"))
+scripts/verify_stat_grid_recalibration_before_after_oof.py:141:    recal = load_stat_grid_delivery_recalibrator(model_dir)
+scripts/build_stat_grid_pmfs.py:79:from nba_props_model.calibration.stat_grid_delivery_recalibration import load_stat_grid_delivery_recalibrator  # noqa: E402
+scripts/build_stat_grid_pmfs.py:524:        recal_applied = bool(recal_meta.get("source_recalibration_applied", False))
+scripts/build_stat_grid_pmfs.py:549:            "source_recalibration_applied": recal_applied,
+scripts/build_stat_grid_pmfs.py:550:            "source_recalibration_version": recal_meta.get("source_recalibration_version"),
+scripts/build_stat_grid_pmfs.py:551:            "source_recalibration_stage": recal_meta.get("source_recalibration_stage"),
+scripts/build_stat_grid_pmfs.py:552:            "source_recalibration_role_bucket": role_bucket,
+scripts/build_stat_grid_pmfs.py:641:    recalibrator = load_stat_grid_delivery_recalibrator()
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:18:    env = os.environ.get("STAT_GRID_RECALIBRATION_MODEL_DIR") or os.environ.get("SOURCE_RECALIBRATION_MODEL_DIR")
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:184:class StatGridDeliveryRecalibrator:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:208:            "source_recalibration_applied": False,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:209:            "source_recalibration_version": self.version,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:210:            "source_recalibration_stage": "identity",
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:225:                "source_recalibration_stage": "identity_rollback",
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:259:            "source_recalibration_applied": True,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:260:            "source_recalibration_stage": str(p.get("stage", "v4_mean_p0_variance_guarded")),
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:359:def load_stat_grid_delivery_recalibrator(model_dir: str | os.PathLike[str] | None = None) -> StatGridDeliveryRecalibrator:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:360:    return StatGridDeliveryRecalibrator(_load_params(model_dir))
+Binary file src/nba_props_model/calibration/__pycache__/source_pmf_recalibration.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/stat_grid_delivery_recalibration.cpython-311.pyc matches

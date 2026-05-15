@@ -1,0 +1,8 @@
+stat,role_bucket,reason
+pts,core,mean_delta_not_negative
+pts,core,bootstrap_ci_not_better
+pts,starter,mean_delta_not_negative
+pts,starter,bootstrap_ci_not_better
+reb,core,mean_delta_not_negative
+reb,core,bootstrap_ci_not_better
+reb,starter,bootstrap_ci_not_better

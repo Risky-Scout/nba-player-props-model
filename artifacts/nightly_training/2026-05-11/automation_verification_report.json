@@ -1,0 +1,177 @@
+{
+  "as_of_date": "2026-05-11",
+  "checks": [
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/training_readiness/2026-05-11/readiness_report.json",
+      "name": "readiness_report_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-11",
+      "name": "challenger_dir_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-11/train_manifest.json",
+      "name": "train_manifest_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-11/calibration_manifest.json",
+      "name": "calibration_manifest_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-11/validation_report.json",
+      "name": "validation_report_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/challengers/2026-05-11/promotion_decision.json",
+      "name": "promotion_decision_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/registry/champion_pointer.json",
+      "name": "champion_pointer_exists",
+      "passed": true
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/registry/model_registry.json",
+      "name": "model_registry_exists",
+      "passed": true
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/models/registry/promotion_log.csv",
+      "name": "promotion_log_exists",
+      "passed": true
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/nightly_training/2026-05-11/run_manifest.json",
+      "name": "nightly_run_manifest_exists",
+      "passed": false
+    },
+    {
+      "detail": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/nightly_training/2026-05-11/smoke_test_report.json",
+      "name": "smoke_test_report_exists",
+      "passed": false
+    },
+    {
+      "detail": "pointer model_version present and unchanged (promote was false)",
+      "name": "champion_pointer_unchanged_when_promote_false",
+      "passed": true
+    },
+    {
+      "detail": "validation_report.json missing",
+      "name": "pmf_validity_passed",
+      "passed": false
+    },
+    {
+      "detail": "smoke_test_report.json missing",
+      "name": "derek_compat_smoke_passed",
+      "passed": false
+    },
+    {
+      "detail": "smoke_test_report.json missing",
+      "name": "woo_compat_smoke_passed",
+      "passed": false
+    },
+    {
+      "detail": "hits=[]",
+      "name": "no_secrets_in_manifests",
+      "passed": true
+    },
+    {
+      "detail": "hits=[]",
+      "name": "no_phase10d_overlays_in_manifests",
+      "passed": true
+    },
+    {
+      "detail": "manifests do not name artifacts/raw/",
+      "name": "no_raw_dir_referenced_in_manifests",
+      "passed": true
+    },
+    {
+      "detail": "manifests missing",
+      "name": "training_run_reproducible",
+      "passed": false
+    },
+    {
+      "detail": ".github/workflows/nightly_training_calibration.yml",
+      "name": "workflow_file_exists",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_calls_orchestrator",
+      "passed": true
+    },
+    {
+      "detail": "expected cron '30 9 * * *' present",
+      "name": "workflow_has_safe_cron",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_has_timeout_protection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_uses_required_secrets",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_uses_correct_authorship",
+      "passed": true
+    },
+    {
+      "detail": "hits=[]",
+      "name": "workflow_no_phase10d_overlays",
+      "passed": true
+    },
+    {
+      "detail": "violations=[]",
+      "name": "no_delivery_references_challenger_dir",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "promotion_uses_atomic_pointer_update",
+      "passed": true
+    },
+    {
+      "detail": "pre=125eb260dc64 post=125eb260dc64",
+      "name": "failure_mode_keeps_champion_unchanged",
+      "passed": true
+    },
+    {
+      "detail": "staged_violations=[]",
+      "name": "no_forbidden_files_staged",
+      "passed": true
+    }
+  ],
+  "code_commit": "5c9c8e3a0f49176424eebd27a398f73e4a122830",
+  "failure_simulation": {
+    "pointer_unchanged": true,
+    "post_pointer_sha256": "125eb260dc642bd3b26878f8e407bffd716a210a2727e6cbdc815dea9191fff3",
+    "pre_pointer_sha256": "125eb260dc642bd3b26878f8e407bffd716a210a2727e6cbdc815dea9191fff3",
+    "promote_script_exit_code": 0,
+    "promotion_marker_promoted_field": false
+  },
+  "generated_at_utc": "2026-05-14T05:17:45+00:00",
+  "mode": "unknown",
+  "mode_details": {
+    "calibration_manifest_dry_run": null,
+    "challenger_pickle_count": 0,
+    "manifest_recorded_pickle_count": 0,
+    "pickles_source": "on_disk",
+    "run_manifest_final_status": null,
+    "run_manifest_halted_reason": null,
+    "train_manifest_dry_run": null,
+    "train_manifest_status": null
+  },
+  "overall_pass": false,
+  "schema_version": "1.0"
+}

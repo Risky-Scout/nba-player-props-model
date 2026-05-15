@@ -1,0 +1,106 @@
+{
+  "date": "dates_e77f109a685a",
+  "dates_used": [
+    "2026-05-07",
+    "2026-05-12"
+  ],
+  "date_range": null,
+  "dates_file_mode": true,
+  "dates_fingerprint": "e77f109a685a",
+  "global_market_superiority_claim_allowed": false,
+  "eligible_market_subset_superiority_claim_allowed": false,
+  "model_only_calibration_claim_allowed": false,
+  "required_stats_total": 12,
+  "required_stats_with_event_market_coverage": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov"
+  ],
+  "required_stats_without_event_market_coverage": [
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "no_offered_market_stats": [
+    "blk",
+    "pa",
+    "pr",
+    "pra",
+    "ra",
+    "stl",
+    "stocks"
+  ],
+  "not_requested_market_stats": [],
+  "parser_dropped_market_stats": [],
+  "join_failed_market_stats": [],
+  "insufficient_sample_stats": [
+    "tov"
+  ],
+  "eligible_segments_total": 4,
+  "eligible_segments_passed": 1,
+  "eligible_segments_failed": 3,
+  "blocked_segments_total": 95,
+  "blocked_segment_reasons": {
+    "insufficient_scored_rows": 92,
+    "model_logloss_not_better": 3
+  },
+  "claim_blockers": [
+    {
+      "kind": "stats_absent_from_event_market_loss_rows",
+      "stats": [
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "ra",
+        "pra"
+      ]
+    },
+    {
+      "kind": "stats_without_matched_market_join",
+      "stats": [
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "ra",
+        "pra"
+      ]
+    },
+    {
+      "kind": "eligible_segments_failed_market_superiority",
+      "count": 3,
+      "failure_reasons": {
+        "model_logloss_not_better": 3
+      }
+    }
+  ],
+  "n_segments_total": 96,
+  "n_segments_passed": 1,
+  "n_segments_failed": 95,
+  "required_stats_missing_in_event_rows": [
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "min_scored_rows": 100,
+  "min_market_joined_rows": 100,
+  "event_calibration_applied": true,
+  "event_calibration_version": "guarded_platt_v1",
+  "event_calibration_stage": "oof_date_holdout_one_fold_per_date",
+  "event_calibration_source": "guarded_oof_actuals_only",
+  "market_pmf_used": false,
+  "market_prob_used_as_training_label": false
+}

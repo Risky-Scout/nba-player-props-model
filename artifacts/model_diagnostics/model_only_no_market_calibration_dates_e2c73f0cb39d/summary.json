@@ -1,0 +1,20 @@
+{
+  "label": "dates_e2c73f0cb39d",
+  "no_market_stats": [
+    "blk",
+    "pa",
+    "pr",
+    "pra",
+    "ra",
+    "stl",
+    "stocks"
+  ],
+  "min_n": 50,
+  "pit_p_min": 0.01,
+  "max_mean_abs_err": 0.45,
+  "n_segments": 42,
+  "n_segments_meeting_min_n": 42,
+  "model_only_calibration_claim_allowed": false,
+  "market_superiority_claim_allowed": false,
+  "note": "OOF-only internal gates; not comparable to market superiority. Combines data/oof_pmfs.parquet + data/oof_combo_pmfs.parquet (when present) for combo stats."
+}

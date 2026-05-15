@@ -1,0 +1,3 @@
+error_code,severity,detail
+key_overlap,info,canonical_keys=384 alternative_keys=384 overlap=384
+,info,ok_rows=61

@@ -1,0 +1,90 @@
+{
+  "schema_version": "m8_6q_v2",
+  "date_range": {
+    "start": "2026-05-06",
+    "end": "2026-05-08"
+  },
+  "rows": 6386,
+  "matched_rows": 3991,
+  "scored_rows_all_fields_nonnull": 3991,
+  "daily_meta": [
+    {
+      "as_of_date": "2026-05-06",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "odds_snapshot_family": "hist_lockday",
+      "odds_snapshot_path": "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+      "odds_snapshot_type": "hist_lockday",
+      "odds_snapshot_substr_used": "auto",
+      "odds_snapshot_rank": 1,
+      "odds_snapshot_is_historical": true,
+      "odds_snapshot_lock_offset_minutes": 5,
+      "rows": 4884,
+      "matched_rows": 3127,
+      "scored_rows_all_fields_nonnull": 3127,
+      "odds_rows": 4884,
+      "market_overlap_ratio": 0.640254,
+      "insufficient_market_overlap": false,
+      "scoring_blocker_counts": {
+        "none": 3127,
+        "market_join_failed": 1757
+      },
+      "odds_pairs_source": "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+      "oof_single_rows": 384,
+      "oof_combo_rows": 240,
+      "model_source_mode": "oof_date_slice",
+      "box_score_rows_for_as_of_date": 48,
+      "box_score_actual_lookup_keys": 576,
+      "pmf_col_single": "pmf",
+      "pmf_col_combo": "pmf"
+    },
+    {
+      "as_of_date": "2026-05-07",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "odds_snapshot_family": "close_or_lock",
+      "odds_snapshot_path": "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet",
+      "odds_snapshot_type": "close_or_lock",
+      "odds_snapshot_substr_used": "auto",
+      "odds_snapshot_rank": 0,
+      "odds_snapshot_is_historical": false,
+      "odds_snapshot_lock_offset_minutes": null,
+      "rows": 1502,
+      "matched_rows": 864,
+      "scored_rows_all_fields_nonnull": 864,
+      "odds_rows": 1502,
+      "market_overlap_ratio": 0.575233,
+      "insufficient_market_overlap": false,
+      "scoring_blocker_counts": {
+        "none": 864,
+        "market_join_failed": 638
+      },
+      "odds_pairs_source": "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet",
+      "oof_single_rows": 344,
+      "oof_combo_rows": 215,
+      "model_source_mode": "oof_date_slice",
+      "box_score_rows_for_as_of_date": 44,
+      "box_score_actual_lookup_keys": 528,
+      "pmf_col_single": "pmf",
+      "pmf_col_combo": "pmf"
+    },
+    {
+      "as_of_date": "2026-05-08",
+      "schema_version": "m8_6q_v2",
+      "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+      "forbidden_columns_check": "no_market_full_pmf_columns",
+      "odds_snapshot_family": null,
+      "odds_snapshot_path": null,
+      "odds_snapshot_type": null,
+      "odds_snapshot_substr_used": "auto",
+      "odds_snapshot_rank": null,
+      "odds_snapshot_is_historical": false,
+      "odds_snapshot_lock_offset_minutes": null,
+      "rows": 0,
+      "join_status": "no_odds_pairs_file"
+    }
+  ],
+  "combined_output": "artifacts/model_diagnostics/event_market_loss_rows_2026-05-06_2026-05-08.parquet"
+}

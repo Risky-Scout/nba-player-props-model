@@ -1,0 +1,150 @@
+{
+  "delivery_date": "2026-04-28",
+  "pipeline_run_id": "bdae5d17-32bf-4c62-a036-700e69d07035",
+  "snapshot_type": "after_game",
+  "snapshot_time_utc": "2026-05-14T04:13:16Z",
+  "model_version": "5c9c8e3a#phase10c",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+  "phase8_blend_policy": "monotone_inactive_global_v1",
+  "finality_status": "final",
+  "finality_blocker_codes": [],
+  "finality_blockers": [],
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "present",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "tov",
+      "stl",
+      "blk",
+      "stocks",
+      "pa",
+      "pr",
+      "ra",
+      "pra"
+    ],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "ra",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
+    ],
+    "missing": [],
+    "extra_relative_to_supported": []
+  },
+  "sources": {
+    "model_only_parquet": {
+      "path": "deliveries/2026-04-28/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "mtime_utc": "2026-05-13T21:10:39.585438Z",
+      "sha256": "8e98092fb572d896d11a1abeb964d16dcb64fcf4d70d6e40bfacb1345efc120e",
+      "auto_built_from_predictions": false
+    },
+    "predictions_parquet": {
+      "path": "predictions/all_props_2026-04-28.parquet",
+      "mtime_utc": null
+    },
+    "availability_table": {
+      "path": "data/player_availability_asof.parquet",
+      "mtime_utc": "2026-05-07T03:42:11.511500Z",
+      "freshness_status": "very_stale"
+    },
+    "odds_snapshot": {
+      "path": "data/odds_api/processed/2026-04-28/odds_pairs_hist_lockday_2026-04-28.parquet",
+      "mtime_utc": "2026-05-13T21:08:22.781063Z",
+      "books_seen": [
+        "betmgm",
+        "betonlineag",
+        "betparx",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl",
+        "williamhill_us"
+      ],
+      "coverage_status": "full",
+      "fetch_status": "skipped:no_odds_fetch_flag"
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 26985,
+    "full_pmfs_wide": 1260,
+    "market_comparison": 7080,
+    "publishable_edges": 0
+  },
+  "count_diagnostics": {
+    "fair_odds_board": {
+      "fair_over_odds_null_count": 4069,
+      "fair_under_odds_null_count": 4069,
+      "zero_or_one_prob_count": 2262
+    }
+  },
+  "quality_rollup": {
+    "pmf_valid_ok_pct": 1.0,
+    "pmf_sum_error_max": 6.661338147750939e-16,
+    "calibration_confidence": {
+      "medium": 732,
+      "high": 528
+    },
+    "market_coverage_status": {
+      "full": 1260
+    },
+    "injury_freshness_status": {
+      "fresh": 1260
+    },
+    "lineup_freshness_status": {
+      "projected": 1260
+    },
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 1260
+    }
+  },
+  "warnings": [],
+  "no_odds_fetch": true,
+  "freshness_manifest": {
+    "path": null,
+    "overall_status": "missing",
+    "odds_status": "skipped:no_odds_fetch_flag",
+    "regions_requested": null,
+    "books_seen": [
+      "betmgm",
+      "betonlineag",
+      "betparx",
+      "betrivers",
+      "bovada",
+      "draftkings",
+      "espnbet",
+      "fanatics",
+      "fanduel",
+      "fliff",
+      "hardrockbet",
+      "hardrockbet_az",
+      "hardrockbet_fl",
+      "williamhill_us"
+    ],
+    "tov_status": "present",
+    "predictions_mtime_utc": null,
+    "availability_freshness_status": "very_stale",
+    "finals_finality_status": "unknown",
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 1260
+    }
+  }
+}

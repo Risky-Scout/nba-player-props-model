@@ -1,0 +1,11 @@
+# PMF mean-shift targets (dates_24c1750e26ad)
+
+- Segments: **6**
+
+  stat role_bucket   segment_key     n  n_dates  model_mean_avg  actual_mean_avg  mean_bias  mean_abs_error  model_logloss  market_logloss  model_brier  market_brier  delta_logloss  delta_brier  calibration_pass  market_superiority_pass   bootstrap_failure_type recommended_mean_repair_direction  combo_stat_coherence_required
+0  pts    rotation  pts|rotation  2319       16        7.819095         8.774903  -0.955808        4.311146       0.674310        0.669836     0.240201      0.238837       0.004474     0.001364             False                    False  bootstrap_ci_not_better                 increase_pmf_mean                          False
+1  reb     starter   reb|starter  2828       16        5.209846         5.722419  -0.512572        2.217647       0.664459        0.656421     0.236696      0.232597       0.008038     0.004100             False                    False  bootstrap_ci_not_better                 increase_pmf_mean                          False
+2  ast     starter   ast|starter  2616       16        4.460716         4.922018  -0.461303        2.015731       0.665001        0.656416     0.236353      0.232349       0.008585     0.004004             False                    False  bootstrap_ci_not_better                 increase_pmf_mean                          False
+3   pr       bench      pr|bench   604       13        8.102342         9.016556  -0.914214        4.281274       0.688294        0.668721     0.243988      0.238422       0.019572     0.005566             False                    False  bootstrap_ci_not_better                 increase_pmf_mean                           True
+4   pr     starter    pr|starter  3372       14       23.387435        26.357355  -2.969919        6.439257       0.628377        0.624005     0.218232      0.217908       0.004372     0.000324             False                    False  bootstrap_ci_not_better                 increase_pmf_mean                           True
+5   ra     starter    ra|starter  2175       14        9.582654        10.572414  -0.989760        3.142451       0.665579        0.656615     0.235943      0.232719       0.008965     0.003224             False                    False  bootstrap_ci_not_better                 increase_pmf_mean                           True

@@ -1,0 +1,432 @@
+{
+  "as_of_date": "2026-05-12",
+  "dates_used": [
+    "2026-05-12"
+  ],
+  "date_range": null,
+  "schema_version": "m8_6q_v2",
+  "input_path": "artifacts/model_diagnostics/event_market_loss_rows_2026-05-12.parquet",
+  "overall_promotion_status": "valid_pmf_not_event_market_superior",
+  "market_superiority_claim_allowed": false,
+  "global_market_superiority_claim_allowed": false,
+  "eligible_market_subset_superiority_claim_allowed": false,
+  "model_only_calibration_claim_allowed": false,
+  "claim_allowed_enum": "market_superior_event_accuracy_and_calibration",
+  "delta_sign_convention": "model_minus_market_negative_better",
+  "promotion_gate_formula": "mean(delta) + z*SE <= -tau",
+  "tau": 0.0,
+  "z": 1.96,
+  "min_n_threshold": 30,
+  "dropped_invalid_pmf_rows": 0,
+  "per_bucket": {
+    "ast|core": {
+      "summary": {
+        "n_settled": 31,
+        "model_logloss_mean": 0.6871379939561337,
+        "market_logloss_mean": 0.6990892740698547,
+        "logloss_delta_mean": -0.011951280113720536,
+        "logloss_delta_se": 0.03631965341475879,
+        "logloss_delta_upper95": 0.0592352405792067,
+        "model_brier_mean": 0.24593552688172043,
+        "market_brier_mean": 0.2527025867302764,
+        "brier_delta_mean": -0.0067670598485559015,
+        "brier_delta_se": 0.017289286839225048,
+        "brier_delta_upper95": 0.02711994235632519
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "ast|fringe": {
+      "summary": {
+        "n_settled": 4,
+        "model_logloss_mean": 2.3787464539596095,
+        "market_logloss_mean": 0.9095104801411209,
+        "logloss_delta_mean": 1.4692359738184888,
+        "logloss_delta_se": null,
+        "logloss_delta_upper95": null,
+        "model_brier_mean": 0.8232537777777778,
+        "market_brier_mean": 0.35673610377318316,
+        "brier_delta_mean": 0.4665176740045946,
+        "brier_delta_se": null,
+        "brier_delta_upper95": null
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "ast|inactive_risk": {
+      "summary": {
+        "n_settled": 20,
+        "model_logloss_mean": 0.9343858611430058,
+        "market_logloss_mean": 0.637534001001955,
+        "logloss_delta_mean": 0.2968518601410507,
+        "logloss_delta_se": 0.13995191658040965,
+        "logloss_delta_upper95": 0.5711576166386536,
+        "model_brier_mean": 0.3514792444444445,
+        "market_brier_mean": 0.2232134232497704,
+        "brier_delta_mean": 0.12826582119467408,
+        "brier_delta_se": 0.0607644703253464,
+        "brier_delta_upper95": 0.24736418303235302
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "ast|rotation": {
+      "summary": {
+        "n_settled": 15,
+        "model_logloss_mean": 0.7677910724823243,
+        "market_logloss_mean": 0.7575589552502634,
+        "logloss_delta_mean": 0.010232117232060793,
+        "logloss_delta_se": 0.032699669006629864,
+        "logloss_delta_upper95": 0.07432346848505533,
+        "model_brier_mean": 0.2862398074074074,
+        "market_brier_mean": 0.284640497706771,
+        "brier_delta_mean": 0.0015993097006363735,
+        "brier_delta_se": 0.014957584177178842,
+        "brier_delta_upper95": 0.030916174687906903
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "ast|starter": {
+      "summary": {
+        "n_settled": 39,
+        "model_logloss_mean": 0.6724556500553265,
+        "market_logloss_mean": 0.6978634042635437,
+        "logloss_delta_mean": -0.02540775420821717,
+        "logloss_delta_se": 0.02909512241667751,
+        "logloss_delta_upper95": 0.03161868572847075,
+        "model_brier_mean": 0.23968501709401716,
+        "market_brier_mean": 0.2507624602119028,
+        "brier_delta_mean": -0.011077443117885702,
+        "brier_delta_se": 0.013288184621531486,
+        "brier_delta_upper95": 0.014967398740316008
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "ast|nan": {
+      "summary": {
+        "n_settled": 0,
+        "model_logloss_mean": null,
+        "market_logloss_mean": null,
+        "logloss_delta_mean": null,
+        "logloss_delta_se": null,
+        "logloss_delta_lower95": null,
+        "model_brier_mean": null,
+        "market_brier_mean": null,
+        "brier_delta_mean": null,
+        "brier_delta_se": null,
+        "brier_delta_lower95": null
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "fg3m|core": {
+      "summary": {
+        "n_settled": 32,
+        "model_logloss_mean": 0.40564526585328375,
+        "market_logloss_mean": 0.5437242496946101,
+        "logloss_delta_mean": -0.13807898384132644,
+        "logloss_delta_se": 0.02582993191006536,
+        "logloss_delta_upper95": -0.08745231729759834,
+        "model_brier_mean": 0.11875023241395004,
+        "market_brier_mean": 0.17769552168527286,
+        "brier_delta_mean": -0.05894528927132282,
+        "brier_delta_se": 0.011469067417945804,
+        "brier_delta_upper95": -0.03646591713214905
+      },
+      "status": "market_superior_event_accuracy_and_calibration"
+    },
+    "fg3m|fringe": {
+      "summary": {
+        "n_settled": 4,
+        "model_logloss_mean": 0.8674529040787468,
+        "market_logloss_mean": 0.9494970153144182,
+        "logloss_delta_mean": -0.08204411123567151,
+        "logloss_delta_se": null,
+        "logloss_delta_upper95": null,
+        "model_brier_mean": 0.33637677812876826,
+        "market_brier_mean": 0.3758465830092709,
+        "brier_delta_mean": -0.039469804880502626,
+        "brier_delta_se": null,
+        "brier_delta_upper95": null
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "fg3m|inactive_risk": {
+      "summary": {
+        "n_settled": 17,
+        "model_logloss_mean": 0.6421024744739678,
+        "market_logloss_mean": 0.6675080146570799,
+        "logloss_delta_mean": -0.025405540183112134,
+        "logloss_delta_se": 0.08510498058729737,
+        "logloss_delta_upper95": 0.14140022176799072,
+        "model_brier_mean": 0.234544235307186,
+        "market_brier_mean": 0.23995945372261,
+        "brier_delta_mean": -0.005415218415424007,
+        "brier_delta_se": 0.04001151822296259,
+        "brier_delta_upper95": 0.07300735730158267
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "fg3m|rotation": {
+      "summary": {
+        "n_settled": 14,
+        "model_logloss_mean": 0.5998698365985821,
+        "market_logloss_mean": 0.5395174395249905,
+        "logloss_delta_mean": 0.060352397073591524,
+        "logloss_delta_se": 0.06113971108708152,
+        "logloss_delta_upper95": 0.18018623080427132,
+        "model_brier_mean": 0.21444478821293886,
+        "market_brier_mean": 0.18303732353098676,
+        "brier_delta_mean": 0.031407464681952074,
+        "brier_delta_se": 0.027185629693934392,
+        "brier_delta_upper95": 0.08469129888206348
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "fg3m|starter": {
+      "summary": {
+        "n_settled": 30,
+        "model_logloss_mean": 0.8375947791630929,
+        "market_logloss_mean": 0.6304014179415879,
+        "logloss_delta_mean": 0.20719336122150525,
+        "logloss_delta_se": 0.06119874259344055,
+        "logloss_delta_upper95": 0.3271428967046487,
+        "model_brier_mean": 0.3126260114394231,
+        "market_brier_mean": 0.21865337669822094,
+        "brier_delta_mean": 0.09397263474120214,
+        "brier_delta_se": 0.026324891626409056,
+        "brier_delta_upper95": 0.1455694223289639
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "fg3m|nan": {
+      "summary": {
+        "n_settled": 0,
+        "model_logloss_mean": null,
+        "market_logloss_mean": null,
+        "logloss_delta_mean": null,
+        "logloss_delta_se": null,
+        "logloss_delta_lower95": null,
+        "model_brier_mean": null,
+        "market_brier_mean": null,
+        "brier_delta_mean": null,
+        "brier_delta_se": null,
+        "brier_delta_lower95": null
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "pts|core": {
+      "summary": {
+        "n_settled": 45,
+        "model_logloss_mean": 0.78635391324561,
+        "market_logloss_mean": 0.653902351861756,
+        "logloss_delta_mean": 0.13245156138385375,
+        "logloss_delta_se": 0.08212812655850743,
+        "logloss_delta_upper95": 0.29342268943852834,
+        "model_brier_mean": 0.2849787950617284,
+        "market_brier_mean": 0.23070628068999077,
+        "brier_delta_mean": 0.054272514371737586,
+        "brier_delta_se": 0.03433374551582211,
+        "brier_delta_upper95": 0.12156665558274893
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "pts|fringe": {
+      "summary": {
+        "n_settled": 9,
+        "model_logloss_mean": 0.10590401004977387,
+        "market_logloss_mean": 0.6818878528526198,
+        "logloss_delta_mean": -0.5759838428028459,
+        "logloss_delta_se": 0.021288766418169642,
+        "logloss_delta_upper95": -0.5342578606232333,
+        "model_brier_mean": 0.010287086419753087,
+        "market_brier_mean": 0.24440384096517528,
+        "brier_delta_mean": -0.23411675454542222,
+        "brier_delta_se": 0.012288074829357148,
+        "brier_delta_upper95": -0.2100321278798822
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "pts|inactive_risk": {
+      "summary": {
+        "n_settled": 24,
+        "model_logloss_mean": 0.8828921246859216,
+        "market_logloss_mean": 0.6967862276200868,
+        "logloss_delta_mean": 0.1861058970658347,
+        "logloss_delta_se": 0.12583733792091778,
+        "logloss_delta_upper95": 0.43274707939083357,
+        "model_brier_mean": 0.3355663194444445,
+        "market_brier_mean": 0.25183445858035486,
+        "brier_delta_mean": 0.08373186086408962,
+        "brier_delta_se": 0.05519316859598501,
+        "brier_delta_upper95": 0.19191047131222025
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "pts|rotation": {
+      "summary": {
+        "n_settled": 18,
+        "model_logloss_mean": 0.47905766738938155,
+        "market_logloss_mean": 0.6970144643018799,
+        "logloss_delta_mean": -0.21795679691249825,
+        "logloss_delta_se": 0.037413855274369245,
+        "logloss_delta_upper95": -0.14462564057473454,
+        "model_brier_mean": 0.1480331728395062,
+        "market_brier_mean": 0.25191426097085107,
+        "brier_delta_mean": -0.10388108813134483,
+        "brier_delta_se": 0.017663712453778464,
+        "brier_delta_upper95": -0.06926021172193905
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "pts|starter": {
+      "summary": {
+        "n_settled": 46,
+        "model_logloss_mean": 0.867240549987561,
+        "market_logloss_mean": 0.6832109158356034,
+        "logloss_delta_mean": 0.18402963415195736,
+        "logloss_delta_se": 0.055096640867077024,
+        "logloss_delta_upper95": 0.2920190502514283,
+        "model_brier_mean": 0.3309413961352657,
+        "market_brier_mean": 0.2450607654382772,
+        "brier_delta_mean": 0.08588063069698851,
+        "brier_delta_se": 0.02571214073727637,
+        "brier_delta_upper95": 0.1362764265420502
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "pts|nan": {
+      "summary": {
+        "n_settled": 0,
+        "model_logloss_mean": null,
+        "market_logloss_mean": null,
+        "logloss_delta_mean": null,
+        "logloss_delta_se": null,
+        "logloss_delta_lower95": null,
+        "model_brier_mean": null,
+        "market_brier_mean": null,
+        "brier_delta_mean": null,
+        "brier_delta_se": null,
+        "brier_delta_lower95": null
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "reb|core": {
+      "summary": {
+        "n_settled": 38,
+        "model_logloss_mean": 0.9168690736371006,
+        "market_logloss_mean": 0.6893221562140951,
+        "logloss_delta_mean": 0.22754691742300556,
+        "logloss_delta_se": 0.0835555760596189,
+        "logloss_delta_upper95": 0.3913158464998586,
+        "model_brier_mean": 0.3332278976608188,
+        "market_brier_mean": 0.2497096476970328,
+        "brier_delta_mean": 0.083518249963786,
+        "brier_delta_se": 0.03466354526509869,
+        "brier_delta_upper95": 0.15145879868337941
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "reb|fringe": {
+      "summary": {
+        "n_settled": 8,
+        "model_logloss_mean": 0.17201605088457875,
+        "market_logloss_mean": 0.592908929626341,
+        "logloss_delta_mean": -0.4208928787417623,
+        "logloss_delta_se": 0.05395087806467486,
+        "logloss_delta_upper95": -0.3151491577349996,
+        "model_brier_mean": 0.026679097222222226,
+        "market_brier_mean": 0.20076842613754364,
+        "brier_delta_mean": -0.1740893289153214,
+        "brier_delta_se": 0.029572909661235172,
+        "brier_delta_upper95": -0.11612642597930045
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "reb|inactive_risk": {
+      "summary": {
+        "n_settled": 16,
+        "model_logloss_mean": 0.9715154705966714,
+        "market_logloss_mean": 0.7196514904521778,
+        "logloss_delta_mean": 0.2518639801444936,
+        "logloss_delta_se": 0.19934553498576973,
+        "logloss_delta_upper95": 0.6425812287166023,
+        "model_brier_mean": 0.35516693750000006,
+        "market_brier_mean": 0.2634995208180879,
+        "brier_delta_mean": 0.09166741668191208,
+        "brier_delta_se": 0.08456551607778762,
+        "brier_delta_upper95": 0.2574158281943758
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "reb|rotation": {
+      "summary": {
+        "n_settled": 16,
+        "model_logloss_mean": 1.2478747599471363,
+        "market_logloss_mean": 0.7060863370263549,
+        "logloss_delta_mean": 0.5417884229207813,
+        "logloss_delta_se": 0.010419719192774731,
+        "logloss_delta_upper95": 0.5622110725386198,
+        "model_brier_mean": 0.503598340277778,
+        "market_brier_mean": 0.25606251190838214,
+        "brier_delta_mean": 0.24753582836939575,
+        "brier_delta_se": 0.005316325398253382,
+        "brier_delta_upper95": 0.25795582614997237
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "reb|starter": {
+      "summary": {
+        "n_settled": 40,
+        "model_logloss_mean": 0.6847539370593786,
+        "market_logloss_mean": 0.7049451437657481,
+        "logloss_delta_mean": -0.02019120670636947,
+        "logloss_delta_se": 0.020177283520335636,
+        "logloss_delta_upper95": 0.019356268993488374,
+        "model_brier_mean": 0.24637720833333326,
+        "market_brier_mean": 0.25635629741624244,
+        "brier_delta_mean": -0.009979089082909166,
+        "brier_delta_se": 0.00994195313093838,
+        "brier_delta_upper95": 0.00950713905373006
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    },
+    "reb|nan": {
+      "summary": {
+        "n_settled": 0,
+        "model_logloss_mean": null,
+        "market_logloss_mean": null,
+        "logloss_delta_mean": null,
+        "logloss_delta_se": null,
+        "logloss_delta_lower95": null,
+        "model_brier_mean": null,
+        "market_brier_mean": null,
+        "brier_delta_mean": null,
+        "brier_delta_se": null,
+        "brier_delta_lower95": null
+      },
+      "status": "valid_pmf_not_event_market_superior"
+    }
+  },
+  "promotion_enum": [
+    "fail_same_sample_or_leakage_risk",
+    "fail_invalid_pmf",
+    "valid_pmf_not_event_market_superior",
+    "calibrated_but_not_more_accurate_than_market",
+    "accurate_but_not_well_calibrated",
+    "market_superior_event_accuracy_and_calibration"
+  ],
+  "forbidden_public_copy_tokens": [
+    "accurate",
+    "well calibrated",
+    "well-calibrated",
+    "better than market",
+    "profitable",
+    "lock",
+    "guaranteed",
+    "sharp",
+    "proven edge"
+  ],
+  "event_calibration_applied": false,
+  "event_calibration_version": null,
+  "event_calibration_stage": null,
+  "event_calibration_source": null,
+  "market_pmf_used": false,
+  "market_prob_used_as_training_label": false
+}

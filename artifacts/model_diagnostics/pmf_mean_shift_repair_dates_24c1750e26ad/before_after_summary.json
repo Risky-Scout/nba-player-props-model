@@ -1,0 +1,8 @@
+{
+  "segments": 68,
+  "mean_bias_improved": 3,
+  "nll_preserved_or_improved": 68,
+  "logloss_vs_market_improved": 14,
+  "brier_vs_market_improved": 17,
+  "strict_pass_segments_repaired": 7
+}

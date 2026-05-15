@@ -1,0 +1,328 @@
+snapshot_closing	UNKNOWN STEP	﻿2026-05-10T23:41:56.5909847Z Current runner version: '2.334.0'
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5933423Z ##[group]Runner Image Provisioner
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5934351Z Hosted Compute Agent
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5934859Z Version: 20260213.493
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5935501Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5936180Z Build Date: 2026-02-13T00:28:41Z
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5937061Z Worker ID: {2d7fd29d-84be-4159-8151-4724df3f9d77}
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5937780Z Azure Region: westus3
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5938336Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5939750Z ##[group]Operating System
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5940391Z Ubuntu
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5940828Z 24.04.4
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5941280Z LTS
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5941674Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5942271Z ##[group]Runner Image
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5942803Z Image: ubuntu-24.04
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5943252Z Version: 20260413.86.1
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5944476Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5945910Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5947048Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5949877Z ##[group]GITHUB_TOKEN Permissions
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5952128Z Actions: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5952690Z ArtifactMetadata: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5953193Z Attestations: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5953836Z Checks: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5954299Z Contents: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5954786Z Deployments: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5955366Z Discussions: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5955837Z Issues: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5956310Z Metadata: read
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5957086Z Models: read
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5957578Z Packages: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5958061Z Pages: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5958677Z PullRequests: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5959279Z RepositoryProjects: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5959889Z SecurityEvents: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5960451Z Statuses: write
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5960989Z VulnerabilityAlerts: read
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5961518Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5963542Z Secret source: Actions
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.5964237Z Prepare workflow directory
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.6356220Z Prepare all required actions
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:56.6393536Z Getting action download info
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.0406201Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.1820093Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.3497422Z Complete job name: snapshot_closing
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4187473Z ##[group]Run actions/checkout@v5
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4188332Z with:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4188788Z   repository: Risky-Scout/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4189544Z   token: ***
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4189914Z   ssh-strict: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4190299Z   ssh-user: git
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4190688Z   persist-credentials: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4191120Z   clean: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4191504Z   sparse-checkout-cone-mode: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4191988Z   fetch-depth: 1
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4192373Z   fetch-tags: false
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4192757Z   show-progress: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4193147Z   lfs: false
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4193498Z   submodules: false
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4193893Z   set-safe-directory: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4194526Z env:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4194922Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.4195423Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5139923Z Syncing repository: Risky-Scout/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5141741Z ##[group]Getting Git version info
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5142574Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5143670Z [command]/usr/bin/git version
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5168517Z git version 2.53.0
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5221995Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5235125Z Temporarily overriding HOME='/home/runner/work/_temp/eabe0ad9-03c8-4d59-894d-2e44cd992e40' before making global git config changes
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5237524Z Adding repository directory to the temporary git global config as a safe directory
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5240208Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5273242Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5277288Z ##[group]Initializing the repository
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5281874Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5364440Z hint: Using 'master' as the name for the initial branch. This default branch name
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5366019Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5367409Z hint: to use in all of your new repositories, which will suppress this warning,
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5368135Z hint: call:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5368501Z hint:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5368952Z hint: 	git config --global init.defaultBranch <name>
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5369528Z hint:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5370096Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5371625Z hint: 'development'. The just-created branch can be renamed via this command:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5372610Z hint:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5372978Z hint: 	git branch -m <name>
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5373398Z hint:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5373976Z hint: Disable this message with "git config set advice.defaultBranchName false"
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5375554Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5378069Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5406468Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5407515Z ##[group]Disabling automatic garbage collection
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5410368Z [command]/usr/bin/git config --local gc.auto 0
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5437603Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5438279Z ##[group]Setting up auth
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5443961Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5472557Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5750812Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5779951Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.5991510Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.6021739Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.6233759Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.6265566Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.6273800Z ##[group]Fetching the repository
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:41:57.6275131Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ada70641e82608ed881abd83c1a85e69cfd24771:refs/remotes/origin/main
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7678658Z From https://github.com/Risky-Scout/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7679423Z  * [new ref]         ada70641e82608ed881abd83c1a85e69cfd24771 -> origin/main
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7706258Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7707363Z ##[group]Determining the checkout info
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7709998Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7715297Z [command]/usr/bin/git sparse-checkout disable
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7753551Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7782337Z ##[group]Checking out the ref
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:26.7783555Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:27.8015536Z Updating files:  26% (743/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.0130019Z Updating files:  27% (746/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.2060375Z Updating files:  28% (773/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3188458Z Updating files:  29% (801/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3201639Z Updating files:  30% (828/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3213107Z Updating files:  31% (856/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3223241Z Updating files:  32% (884/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3233898Z Updating files:  33% (911/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3245679Z Updating files:  34% (939/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.3261859Z Updating files:  35% (966/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.6556351Z Updating files:  36% (994/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.6605204Z Updating files:  37% (1022/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.6953464Z Updating files:  38% (1049/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.7286066Z Updating files:  39% (1077/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.7591831Z Updating files:  40% (1104/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.7822756Z Updating files:  41% (1132/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.7829521Z Updating files:  42% (1160/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.7950931Z Updating files:  42% (1163/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8107842Z Updating files:  43% (1187/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8167885Z Updating files:  44% (1215/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8451682Z Updating files:  45% (1242/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8672702Z Updating files:  46% (1270/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8766374Z Updating files:  47% (1298/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8912106Z Updating files:  48% (1325/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8924965Z Updating files:  49% (1353/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8947851Z Updating files:  50% (1380/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.8964952Z Updating files:  51% (1408/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9057487Z Updating files:  52% (1436/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9142457Z Updating files:  53% (1463/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9209229Z Updating files:  54% (1491/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9268040Z Updating files:  55% (1518/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9341984Z Updating files:  56% (1546/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9452453Z Updating files:  57% (1574/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9476319Z Updating files:  58% (1601/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9500338Z Updating files:  59% (1629/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9541242Z Updating files:  60% (1656/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9630964Z Updating files:  61% (1684/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9669224Z Updating files:  62% (1712/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9699421Z Updating files:  63% (1739/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9867723Z Updating files:  64% (1767/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9916784Z Updating files:  65% (1794/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:28.9983907Z Updating files:  66% (1822/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.0063256Z Updating files:  67% (1850/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.0306430Z Updating files:  68% (1877/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.0478230Z Updating files:  69% (1905/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.0623687Z Updating files:  70% (1932/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.0889619Z Updating files:  71% (1960/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.1006287Z Updating files:  72% (1988/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.1246307Z Updating files:  73% (2015/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.1414792Z Updating files:  74% (2043/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.1661246Z Updating files:  75% (2070/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.1916309Z Updating files:  76% (2098/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2233762Z Updating files:  77% (2126/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2259829Z Updating files:  78% (2153/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2335702Z Updating files:  79% (2181/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2372502Z Updating files:  80% (2208/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2393601Z Updating files:  81% (2236/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2405064Z Updating files:  82% (2264/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2499152Z Updating files:  83% (2291/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2522063Z Updating files:  84% (2319/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.2745373Z Updating files:  85% (2346/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.3080649Z Updating files:  86% (2374/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.3282726Z Updating files:  87% (2402/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.3412385Z Updating files:  88% (2429/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.3609875Z Updating files:  89% (2457/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4053413Z Updating files:  90% (2484/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4343340Z Updating files:  91% (2512/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4369406Z Updating files:  92% (2540/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4400951Z Updating files:  93% (2567/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4428467Z Updating files:  94% (2595/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4454541Z Updating files:  95% (2622/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4477152Z Updating files:  96% (2650/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4499410Z Updating files:  97% (2678/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4528853Z Updating files:  98% (2705/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4542678Z Updating files:  99% (2733/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4543314Z Updating files: 100% (2760/2760)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4543729Z Updating files: 100% (2760/2760), done.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4580222Z Switched to a new branch 'main'
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4583354Z branch 'main' set up to track 'origin/main'.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4704405Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4743187Z [command]/usr/bin/git log -1 --format=%H
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.4765197Z ada70641e82608ed881abd83c1a85e69cfd24771
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5007692Z ##[group]Run actions/setup-python@v6
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5007971Z with:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5008156Z   python-version: 3.11
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5008351Z   cache: pip
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5008533Z   check-latest: false
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5008861Z   token: ***
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5009044Z   update-environment: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5009270Z   allow-prereleases: false
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5009485Z   freethreaded: false
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5009665Z env:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5009849Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.5010092Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.6362392Z ##[group]Installed versions
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.6602338Z Successfully set up CPython (3.11.15)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.6603129Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:29.9500671Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:30.2310720Z /home/runner/.cache/pip
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:30.4759903Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:31.7168526Z Received 25165824 of 147023073 (17.1%), 24.0 MBs/sec
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.7178008Z Received 147023073 of 147023073 (100.0%), 70.1 MBs/sec
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.7183507Z Cache Size: ~140 MB (147023073 B)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.7233690Z [command]/usr/bin/tar -xf /home/runner/work/_temp/bfcea0b7-89a0-45f0-8794-fba68d372408/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9182666Z Cache restored successfully
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9250654Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9423744Z ##[group]Run pip install requests
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9424095Z ^[[36;1mpip install requests^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9455248Z shell: /usr/bin/bash -e {0}
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9455523Z env:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9455724Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9456069Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9456500Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9457384Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9519313Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9520094Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9520880Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:32.9521490Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.5383919Z Collecting requests
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.5400205Z   Using cached requests-2.33.1-py3-none-any.whl.metadata (4.8 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.6505100Z Collecting charset_normalizer<4,>=2 (from requests)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.6521795Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.6753227Z Collecting idna<4,>=2.5 (from requests)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.7570475Z   Downloading idna-3.14-py3-none-any.whl.metadata (8.0 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.7878366Z Collecting urllib3<3,>=1.26 (from requests)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.7980607Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.8240640Z Collecting certifi>=2023.5.7 (from requests)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.8341269Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.8395853Z Using cached requests-2.33.1-py3-none-any.whl (64 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.8410478Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.8513702Z Downloading idna-3.14-py3-none-any.whl (72 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.8782194Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.9024814Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:33.9381911Z Installing collected packages: urllib3, idna, charset_normalizer, certifi, requests
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.1652504Z 
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.1662467Z Successfully installed certifi-2026.4.22 charset_normalizer-3.4.7 idna-3.14 requests-2.33.1 urllib3-2.7.0
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.2817319Z 
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.2817768Z [notice] A new release of pip is available: 26.0.1 -> 26.1.1
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.2818457Z [notice] To update, run: pip install --upgrade pip
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3338179Z ##[group]Run python scripts/snapshot_closing_lines.py
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3338613Z ^[[36;1mpython scripts/snapshot_closing_lines.py^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3361096Z shell: /usr/bin/bash -e {0}
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3361333Z env:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3361535Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3361878Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3362315Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3362725Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3363119Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3363487Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3363862Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3364286Z   ODDS_API_KEY: ***
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:34.3364472Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.7404515Z Found 3 NBA events
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.7405051Z   San Antonio Spurs @ Minnesota Timberwolves: 14 books
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.7405539Z   Detroit Pistons @ Cleveland Cavaliers: 14 books
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.7405983Z   Oklahoma City Thunder @ Los Angeles Lakers: 14 books
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.7407181Z Saved /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/graded/closing_lines_2026-05-10.json (3 games)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8054993Z ##[group]Run # Hard rule #6: every commit must show Joseph Shackelford as author.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8055893Z ^[[36;1m# Hard rule #6: every commit must show Joseph Shackelford as author.^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8056789Z ^[[36;1mgit config user.name  "Joseph Shackelford"^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8057378Z ^[[36;1mgit config user.email "josephshack@gmail.com"^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8057939Z ^[[36;1mgit add artifacts/graded/closing_lines_*.json^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8058479Z ^[[36;1mgit diff --staged --quiet && echo "Nothing to commit" || \^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8058962Z ^[[36;1m  git commit \^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8059351Z ^[[36;1m    --author="Joseph Shackelford <josephshack@gmail.com>" \^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8060043Z ^[[36;1m    -m "Closing lines $(TZ=America/New_York date +%Y-%m-%d)"^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8060592Z ^[[36;1mPUSH_SUCCESS=0^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8060945Z ^[[36;1mfor i in 1 2 3; do^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8061498Z ^[[36;1m  if git pull --rebase origin main && git push origin main; then^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8062060Z ^[[36;1m    PUSH_SUCCESS=1^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8062289Z ^[[36;1m    break^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8062473Z ^[[36;1m  fi^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8062817Z ^[[36;1m  sleep 5^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8062992Z ^[[36;1mdone^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8063188Z ^[[36;1mif [ "$PUSH_SUCCESS" != "1" ]; then^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8063506Z ^[[36;1m  echo "::error::git push failed after 3 attempts"^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8063807Z ^[[36;1m  exit 1^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8063980Z ^[[36;1mfi^[[0m
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8087556Z shell: /usr/bin/bash -e {0}
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8087789Z env:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8087995Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8088343Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8088772Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8089192Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8089567Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8089934Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8090303Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:35.8090616Z ##[endgroup]
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:36.7262462Z [main ec334e7] Closing lines 2026-05-10
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:36.7262992Z  1 file changed, 1 insertion(+)
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:36.7263545Z  create mode 100644 artifacts/graded/closing_lines_2026-05-10.json
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:37.1332536Z From https://github.com/Risky-Scout/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:37.1333186Z  * branch            main       -> FETCH_HEAD
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:37.1426418Z Current branch main is up to date.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.2754162Z To https://github.com/Risky-Scout/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.2754713Z    ada7064..ec334e7  main -> main
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.2867569Z Post job cleanup.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.3989258Z Cache hit occurred on the primary key setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df, not saving cache.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.4117997Z Post job cleanup.
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.4932894Z [command]/usr/bin/git version
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.4970530Z git version 2.53.0
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5007262Z Temporarily overriding HOME='/home/runner/work/_temp/d4cdfeed-79a6-4fbf-a458-454fe19afdc2' before making global git config changes
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5008698Z Adding repository directory to the temporary git global config as a safe directory
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5013218Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5048478Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5080903Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5334803Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5355683Z http.https://github.com/.extraheader
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5366258Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5397084Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5616503Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.5647654Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+snapshot_closing	UNKNOWN STEP	2026-05-10T23:42:38.6008047Z Cleaning up orphan processes

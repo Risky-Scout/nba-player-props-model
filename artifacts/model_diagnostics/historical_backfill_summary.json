@@ -1,0 +1,10 @@
+{
+  "mode": "date_range",
+  "dry_run": true,
+  "apply": false,
+  "fetch_historical_odds": true,
+  "snapshot_family": "hist_lockday",
+  "snapshot_substr_resolved": "hist_lockday",
+  "n_plan_rows": 16,
+  "estimate_only": false
+}

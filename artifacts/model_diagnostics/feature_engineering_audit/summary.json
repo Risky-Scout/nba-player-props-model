@@ -1,0 +1,15 @@
+{
+  "n_training_rows": 511693,
+  "n_event_market_rows": 147142,
+  "n_training_columns": 613,
+  "n_event_market_columns": 78,
+  "n_feature_families": 15,
+  "n_families_missing_in_training": 9,
+  "n_families_missing_in_event_rows": 14,
+  "expected_findings": {
+    "lineup_features_insufficient_in_training_table": true,
+    "event_market_rows_missing_lineup_usage_rest_context": true,
+    "injury_availability_features_too_sparse": true
+  },
+  "pass": true
+}

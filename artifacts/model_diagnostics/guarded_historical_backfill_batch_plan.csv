@@ -1,0 +1,17 @@
+date,has_actuals,has_stat_grid,has_canonical,has_processed_odds,needs_historical_fetch,processed_quotes_max,processed_pairs_max,inventory_eligible,risk_level,can_be_made_eligible
+2026-04-27,True,True,True,True,False,79339,18977,False,medium,True
+2026-04-28,True,True,True,True,False,64695,15319,False,medium,True
+2026-04-29,True,True,True,True,False,57778,13553,False,medium,True
+2026-04-30,True,True,True,True,False,59283,13916,False,medium,True
+2026-05-01,True,True,True,True,False,47512,11030,False,medium,True
+2026-05-02,True,True,True,True,False,41045,9244,False,medium,True
+2026-05-03,True,True,True,True,False,39766,9124,False,medium,True
+2026-05-04,True,True,True,True,False,28728,6736,False,medium,True
+2026-05-05,True,True,True,True,False,34530,8484,False,medium,True
+2026-05-06,True,True,True,True,False,19430,4884,True,medium,True
+2026-05-07,True,True,True,True,False,18821,4684,True,medium,True
+2026-05-08,True,False,True,False,True,0,0,False,low,True
+2026-05-09,True,False,True,False,True,0,0,False,low,True
+2026-05-10,True,False,False,False,True,0,0,False,low,True
+2026-05-11,True,False,False,False,True,0,0,False,low,True
+2026-05-12,True,True,True,True,False,7561,1461,True,medium,True

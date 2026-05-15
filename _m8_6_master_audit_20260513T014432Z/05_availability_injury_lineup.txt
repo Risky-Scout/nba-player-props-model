@@ -1,0 +1,195 @@
+=== AVAILABILITY / INJURY / LINEUP DATA FILES ===
+total 48
+-rw-r--r--@ 1 josephshackelford  staff    10K May 12 15:37 2026-05-07.json
+-rw-r--r--  1 josephshackelford  staff    11K May 12 17:20 2026-05-12.json
+-rw-r--r--  1 josephshackelford  staff   5.6K May 10 11:56 data/injury_snapshots.parquet
+-rw-r--r--  1 josephshackelford  staff   152K May  6 23:42 data/injury_training_features.parquet
+-rw-r--r--  1 josephshackelford  staff   190K May  6 23:42 data/nba_injury_reports.parquet
+-rw-r--r--  1 josephshackelford  staff   743K May  6 23:42 data/player_availability_asof.parquet
+
+=== AVAILABILITY PARQUET AUDIT ===
+
+PATH data/player_availability_asof.parquet
+EXISTS True
+MTIME 1778125331.5115004
+ROWS 82627 COLS 22
+COLUMNS ['player_id', 'game_date', 'team_id', 'availability_status', 'prob_active', 'availability_confidence', 'availability_source', 'games_since_last_played', 'days_since_last_played', 'is_returning_from_absence', 'minutes_restriction_flag', 'num_teammates_out_total', 'vacated_fga_total', 'teammate_out_count_guard', 'teammate_questionable_count_guard', 'vacated_minutes_guard', 'teammate_out_count_wing', 'teammate_questionable_count_wing', 'vacated_minutes_wing', 'teammate_out_count_big', 'teammate_questionable_count_big', 'vacated_minutes_big']
+   player_id   game_date  team_id availability_status  prob_active availability_confidence availability_source  games_since_last_played  days_since_last_played  is_returning_from_absence  minutes_restriction_flag  num_teammates_out_total  vacated_fga_total  teammate_out_count_guard  teammate_questionable_count_guard  vacated_minutes_guard  teammate_out_count_wing  teammate_questionable_count_wing  vacated_minutes_wing  teammate_out_count_big  teammate_questionable_count_big  vacated_minutes_big
+0          8  2023-10-24       24             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+1         57  2023-10-24       24             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+2         81  2023-10-24        8             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+3        115  2023-10-24       10             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+4        117  2023-10-24       14             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+5        140  2023-10-24       24             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+6        147  2023-10-24       24             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+7        177  2023-10-24        8             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+8        178  2023-10-24       24             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+9        236  2023-10-24        8             UNKNOWN          0.5                     LOW          no_history                      NaN                     NaN                      False                     False                        0                0.0                         0                                  0                    0.0                        0                                 0                   0.0                       0                                0                  0.0
+
+player_id_COUNTS
+player_id
+666400      273
+3547276     271
+667378      268
+61          264
+452         261
+56677833    261
+416         260
+473         256
+3547259     256
+202         256
+191         255
+3547272     255
+17896060    255
+666541      253
+176         253
+175         253
+17896078    252
+131         251
+73          248
+3547238     248
+283         246
+304         246
+447         244
+30          243
+246         239
+
+game_date_COUNTS
+game_date
+2024-04-14    344
+2024-01-05    319
+2024-12-23    316
+2025-12-23    316
+2024-04-09    315
+2024-11-04    312
+2026-04-12    311
+2025-04-11    309
+2024-04-12    308
+2024-11-27    306
+2025-01-25    306
+2025-02-12    304
+2026-02-11    300
+2023-11-08    300
+2025-04-13    298
+2024-11-08    296
+2023-11-22    292
+2024-02-14    283
+2025-11-12    282
+2023-11-01    278
+2024-12-19    277
+2023-12-11    276
+2024-02-22    276
+2023-12-23    273
+2024-04-07    272
+
+availability_status_COUNTS
+availability_status
+ACTIVE          77279
+QUESTIONABLE     2802
+PROBABLE         1551
+UNKNOWN           802
+OUT               156
+DOUBTFUL           37
+
+prob_active_COUNTS
+prob_active
+1.0     76620
+0.55     2802
+0.94     1551
+0.5       802
+0.99      659
+0.01      156
+0.15       37
+
+minutes_restriction_flag_COUNTS
+minutes_restriction_flag
+False    75539
+True      7088
+
+vacated_minutes_guard_COUNTS
+vacated_minutes_guard
+0.0     48616
+3.0       614
+2.0       541
+5.0       509
+4.0       504
+16.0      378
+24.0      360
+9.0       310
+6.0       299
+1.0       266
+8.0       250
+13.0      238
+4.5       237
+3.5       230
+3.8       207
+36.0      206
+31.7      198
+7.0       193
+33.0      192
+22.6      191
+2.5       184
+28.6      184
+1.5       182
+14.0      175
+28.5      175
+
+vacated_minutes_wing_COUNTS
+vacated_minutes_wing
+0.0                   46744
+3.0                    1244
+2.0                     590
+4.0                     584
+5.0                     490
+7.0                     325
+33.5                    306
+10.5                    297
+6.0                     296
+30.7                    290
+29.0                    277
+2.5                     273
+4.5                     247
+25.0                    235
+8.0                     234
+3.6666666666666665      231
+14.0                    216
+30.0                    214
+3.5                     200
+18.0                    195
+23.0                    181
+9.0                     175
+29.8                    175
+12.5                    174
+24.5                    167
+
+vacated_minutes_big_COUNTS
+vacated_minutes_big
+0.0      66291
+19.0       349
+5.0        336
+4.0        240
+15.0       234
+2.0        221
+11.0       203
+2.5        192
+20.8       192
+32.0       177
+28.1       167
+16.0       162
+6.0        152
+32.4       151
+6.5        150
+31.8       150
+26.5       147
+18.2       147
+25.9       146
+31.0       141
+25.7       140
+7.0        140
+25.1       139
+3.0        139
+14.75      133
+
+PATH data/freshness_manifest/2026-05-12.json
+EXISTS True
+MTIME 1778620809.9760387

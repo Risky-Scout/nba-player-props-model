@@ -1,0 +1,24 @@
+{
+  "label": "dates_e2c73f0cb39d",
+  "n_failing_segments_diagnosed": 12,
+  "dominant_root_causes": {
+    "pts|core": "distribution_mismatch_unclassified",
+    "pts|starter": "model_prob_too_low_vs_outcome",
+    "reb|core": "distribution_mismatch_unclassified",
+    "reb|rotation": "model_prob_too_low",
+    "ast|core": "distribution_mismatch_unclassified",
+    "ast|starter": "distribution_mismatch_unclassified",
+    "fg3m|core": "distribution_mismatch_unclassified",
+    "fg3m|starter": "distribution_mismatch_unclassified",
+    "pa|starter": "mean_bias_pmf_vs_actual",
+    "pr|starter": "mean_bias_pmf_vs_actual",
+    "ra|core": "distribution_mismatch_unclassified",
+    "pra|starter": "mean_bias_pmf_vs_actual"
+  },
+  "artifacts": {
+    "segment_summary_csv": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/market_losing_segments_dates_e2c73f0cb39d/segment_summary.csv",
+    "bin_calibration_csv": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/market_losing_segments_dates_e2c73f0cb39d/bin_calibration.csv",
+    "worst_rows_csv": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/market_losing_segments_dates_e2c73f0cb39d/worst_rows.csv",
+    "recommendations_md": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/market_losing_segments_dates_e2c73f0cb39d/root_cause_recommendations.md"
+  }
+}

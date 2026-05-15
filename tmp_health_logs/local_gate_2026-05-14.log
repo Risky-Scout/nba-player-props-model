@@ -1,0 +1,2 @@
+WAITING_FOR_PREDICTIONS_VALID_SKIP date=2026-05-14 mode=woo_morning_monetization reason=no_games_slate
+[gate] would set should_proceed=false

@@ -1,0 +1,21 @@
+{
+  "out_dir": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/_stat_grid_delivery_calibration_optimizer/verification/before_after_oof_20260513T071816Z",
+  "n_rows_before": 153664,
+  "n_rows_after": 153664,
+  "supported_cells_before": 48,
+  "failed_supported_stat_role_cells_before": 48,
+  "failed_supported_stat_role_cells_after": 47,
+  "failed_cell_reduction": 1,
+  "mean_ae_abs_error_avg_before": 0.09811562444744949,
+  "mean_ae_abs_error_avg_after": 0.0636890068857464,
+  "variance_ae_abs_error_avg_before": 0.5003188833057509,
+  "variance_ae_abs_error_avg_after": 0.2037257978652831,
+  "p0_abs_error_avg_before": 0.055624842790629965,
+  "p0_abs_error_avg_after": 0.036746882110852856,
+  "pit_ks_avg_before": 0.1576176167857867,
+  "pit_ks_avg_after": 0.14578551337024753,
+  "n_cells_nll_improved": 46,
+  "n_cells_rps_improved": 42,
+  "market_pmf_used": false,
+  "market_superiority_claim_allowed": false
+}

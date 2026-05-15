@@ -1,0 +1,4 @@
+segment,spec_json
+pts|core,"{""type"": ""market_residual"", ""a"": -0.3217620131734801, ""b"": -0.7915173689720557, ""shrink_to_market"": 0.5773502691896257}"
+pts|starter,"{""type"": ""market_residual"", ""a"": 0.30659837970995507, ""b"": -0.5622870024365104, ""shrink_to_market"": 0.5555555555555556}"
+reb|core,"{""type"": ""market_residual"", ""a"": -1.3329537523726187, ""b"": -1.25, ""shrink_to_market"": 0.5428722938739087}"

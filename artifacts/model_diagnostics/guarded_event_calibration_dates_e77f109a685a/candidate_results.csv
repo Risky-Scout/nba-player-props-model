@@ -1,0 +1,4 @@
+stat,role_bucket,n,method,selected
+pts,core,140,market_residual,True
+pts,starter,125,market_residual,True
+reb,core,117,market_residual,True

@@ -1,0 +1,57 @@
+{
+  "label": "dates_24c1750e26ad",
+  "n_failing_eligible_segments": 37,
+  "dominant_failure_mode_counts": {
+    "model_prob_too_high_or_overconfident_side": 29,
+    "mean_too_low": 6,
+    "model_logloss_not_better": 1,
+    "variance_too_narrow": 1
+  },
+  "failing_segments_by_mode": {
+    "mean_too_low": [
+      "pts|rotation",
+      "reb|starter",
+      "ast|starter",
+      "pr|bench",
+      "pr|starter",
+      "ra|starter"
+    ],
+    "model_logloss_not_better": [
+      "pts|bench"
+    ],
+    "model_prob_too_high_or_overconfident_side": [
+      "pts|core",
+      "pts|inactive_risk",
+      "reb|bench",
+      "reb|core",
+      "reb|rotation",
+      "ast|bench",
+      "ast|core",
+      "ast|rotation",
+      "fg3m|bench",
+      "fg3m|core",
+      "fg3m|starter",
+      "stl|core",
+      "stl|rotation",
+      "stl|starter",
+      "blk|core",
+      "blk|rotation",
+      "blk|starter",
+      "stocks|core",
+      "stocks|starter",
+      "pa|core",
+      "pa|rotation",
+      "pr|core",
+      "pr|rotation",
+      "ra|bench",
+      "ra|core",
+      "ra|rotation",
+      "pra|bench",
+      "pra|core",
+      "pra|rotation"
+    ],
+    "variance_too_narrow": [
+      "fg3m|rotation"
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "date": "2026-04-27",
+  "run_mode": "backtest",
+  "n_rows": 98,
+  "official_lineup_available_any": false,
+  "stale_injury_rows": 98,
+  "stale_lineup_rows": 0,
+  "pass": true
+}

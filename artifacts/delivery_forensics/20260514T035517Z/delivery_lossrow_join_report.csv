@@ -1,0 +1,3 @@
+join_status,error_code,severity,detail
+ok,,info,ok_rows=0
+missing_loss_rows,join_status_not_ok,hard,rows_without_loss_join=384

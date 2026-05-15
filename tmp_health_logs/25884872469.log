@@ -1,0 +1,751 @@
+derek_live_snapshots	Set up job	﻿2026-05-14T20:48:52.8732808Z Current runner version: '2.334.0'
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8755239Z ##[group]Runner Image Provisioner
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8756154Z Hosted Compute Agent
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8756714Z Version: 20260213.493
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8757310Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8758303Z Build Date: 2026-02-13T00:28:41Z
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8758960Z Worker ID: {2366daa4-a6bf-40f5-95c8-0c09d33e79ce}
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8759574Z Azure Region: westus3
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8760157Z ##[endgroup]
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8761517Z ##[group]Operating System
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8762086Z Ubuntu
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8762653Z 24.04.4
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8763119Z LTS
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8763523Z ##[endgroup]
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8764076Z ##[group]Runner Image
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8764644Z Image: ubuntu-24.04
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8765103Z Version: 20260413.86.1
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8766136Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8768045Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8769016Z ##[endgroup]
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8771844Z ##[group]GITHUB_TOKEN Permissions
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8773889Z Actions: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8774434Z ArtifactMetadata: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8775117Z Attestations: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8775660Z Checks: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8776156Z CodeQuality: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8776697Z Contents: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8777215Z Deployments: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8778025Z Discussions: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8778610Z Issues: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8779139Z Metadata: read
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8779697Z Models: read
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8780206Z Packages: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8780841Z Pages: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8781335Z PullRequests: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8781864Z RepositoryProjects: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8782470Z SecurityEvents: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8782999Z Statuses: write
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8783564Z VulnerabilityAlerts: read
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8784186Z ##[endgroup]
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8786117Z Secret source: Actions
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.8786836Z Prepare workflow directory
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.9227120Z Prepare all required actions
+derek_live_snapshots	Set up job	2026-05-14T20:48:52.9263707Z Getting action download info
+derek_live_snapshots	Set up job	2026-05-14T20:48:53.4656987Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+derek_live_snapshots	Set up job	2026-05-14T20:48:53.6044742Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+derek_live_snapshots	Set up job	2026-05-14T20:48:53.6761362Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+derek_live_snapshots	Set up job	2026-05-14T20:48:53.8941585Z Complete job name: derek_live_snapshots
+derek_live_snapshots	Run actions/checkout@v5	﻿2026-05-14T20:48:53.9825782Z ##[group]Run actions/checkout@v5
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9826677Z with:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9827108Z   fetch-depth: 0
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9827897Z   repository: Risky-Scout/nba-player-props-model
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9828702Z   token: ***
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9829145Z   ssh-strict: true
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9829561Z   ssh-user: git
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9830002Z   persist-credentials: true
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9830479Z   clean: true
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9830906Z   sparse-checkout-cone-mode: true
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9831410Z   fetch-tags: false
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9831845Z   show-progress: true
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9832264Z   lfs: false
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9832661Z   submodules: false
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9833094Z   set-safe-directory: true
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9833824Z env:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9834355Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9834817Z   PYTHONPATH: src
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9835549Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9836705Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:53.9837571Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0822883Z Syncing repository: Risky-Scout/nba-player-props-model
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0825163Z ##[group]Getting Git version info
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0826100Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0827286Z [command]/usr/bin/git version
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0854200Z git version 2.53.0
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0874963Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0888514Z Temporarily overriding HOME='/home/runner/work/_temp/49bb9fc0-f751-4b3a-bfe7-fd2bceeb1675' before making global git config changes
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0891158Z Adding repository directory to the temporary git global config as a safe directory
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0893787Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0924642Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0928385Z ##[group]Initializing the repository
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.0933204Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1079089Z hint: Using 'master' as the name for the initial branch. This default branch name
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1080946Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1082029Z hint: to use in all of your new repositories, which will suppress this warning,
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1082836Z hint: call:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1083271Z hint:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1083822Z hint: 	git config --global init.defaultBranch <name>
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1084478Z hint:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1085103Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1086629Z hint: 'development'. The just-created branch can be renamed via this command:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1087824Z hint:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1088337Z hint: 	git branch -m <name>
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1088846Z hint:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1089806Z hint: Disable this message with "git config set advice.defaultBranchName false"
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1091751Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1093936Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1122098Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1123082Z ##[group]Disabling automatic garbage collection
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1125393Z [command]/usr/bin/git config --local gc.auto 0
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1153241Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1153998Z ##[group]Setting up auth
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1159165Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1189237Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1473806Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1502746Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1713460Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1744498Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1955640Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1988933Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1990406Z ##[group]Fetching the repository
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:48:54.1999055Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1323458Z From https://github.com/Risky-Scout/nba-player-props-model
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1324879Z  * [new branch]        m8-6-calibration-market-superiority-20260512 -> origin/m8-6-calibration-market-superiority-20260512
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1326471Z  * [new branch]        main       -> origin/main
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1328067Z  * [new branch]        main-backup-before-coauthor-cleanup-20260514-1816 -> origin/main-backup-before-coauthor-cleanup-20260514-1816
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1363769Z [command]/usr/bin/git branch --list --remote origin/m8-6-calibration-market-superiority-20260512
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1386831Z   origin/m8-6-calibration-market-superiority-20260512
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1397133Z [command]/usr/bin/git rev-parse refs/remotes/origin/m8-6-calibration-market-superiority-20260512
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1416722Z eaeaa4f9aeab184ed3f45d214a50a09c0e120d49
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1420971Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1421367Z ##[group]Determining the checkout info
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1422217Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1426521Z [command]/usr/bin/git sparse-checkout disable
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1460994Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1492937Z ##[group]Checking out the ref
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:56.1497983Z [command]/usr/bin/git checkout --progress --force -B m8-6-calibration-market-superiority-20260512 refs/remotes/origin/m8-6-calibration-market-superiority-20260512
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:57.1933793Z Updating files:  24% (800/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:57.4307513Z Updating files:  25% (806/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:57.6711366Z Updating files:  26% (838/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:57.8998777Z Updating files:  27% (870/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:57.9996121Z Updating files:  28% (903/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.0017565Z Updating files:  29% (935/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.0036860Z Updating files:  30% (967/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.0054940Z Updating files:  31% (999/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.0071463Z Updating files:  32% (1032/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.0089878Z Updating files:  33% (1064/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.2178912Z Updating files:  34% (1096/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.5339975Z Updating files:  34% (1122/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.5536062Z Updating files:  35% (1128/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.5901524Z Updating files:  36% (1160/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.6178073Z Updating files:  37% (1193/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.6557805Z Updating files:  38% (1225/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.6686839Z Updating files:  39% (1257/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.6864668Z Updating files:  40% (1289/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7110003Z Updating files:  41% (1322/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7262281Z Updating files:  42% (1354/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7384991Z Updating files:  43% (1386/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7507646Z Updating files:  44% (1418/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7523398Z Updating files:  45% (1450/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7539420Z Updating files:  46% (1483/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7552652Z Updating files:  47% (1515/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7672726Z Updating files:  48% (1547/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7732555Z Updating files:  49% (1579/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7809336Z Updating files:  50% (1611/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7882953Z Updating files:  51% (1644/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.7973114Z Updating files:  52% (1676/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8003807Z Updating files:  53% (1708/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8025079Z Updating files:  54% (1740/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8207807Z Updating files:  55% (1773/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8267749Z Updating files:  56% (1805/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8344952Z Updating files:  57% (1837/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8423726Z Updating files:  58% (1869/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8491396Z Updating files:  59% (1901/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8599695Z Updating files:  60% (1934/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8734905Z Updating files:  61% (1966/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.8958464Z Updating files:  62% (1998/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.9188767Z Updating files:  63% (2030/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.9480869Z Updating files:  64% (2063/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.9702153Z Updating files:  65% (2095/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:58.9789049Z Updating files:  66% (2127/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.0222219Z Updating files:  67% (2159/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.0546294Z Updating files:  68% (2191/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.1148533Z Updating files:  69% (2224/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.1565705Z Updating files:  70% (2256/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.1711813Z Updating files:  70% (2283/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.1977372Z Updating files:  71% (2288/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.2827107Z Updating files:  72% (2320/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.2887990Z Updating files:  73% (2353/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.3909675Z Updating files:  74% (2385/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.4668419Z Updating files:  75% (2417/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.4717068Z Updating files:  76% (2449/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.5271660Z Updating files:  77% (2481/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.5635772Z Updating files:  78% (2514/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.5649047Z Updating files:  79% (2546/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.5745612Z Updating files:  80% (2578/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.5804209Z Updating files:  81% (2610/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.6266144Z Updating files:  82% (2643/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.6601200Z Updating files:  83% (2675/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.6796937Z Updating files:  84% (2707/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.7034019Z Updating files:  85% (2739/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:50:59.8499803Z Updating files:  86% (2771/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0039843Z Updating files:  87% (2804/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0069067Z Updating files:  88% (2836/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0096354Z Updating files:  89% (2868/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0126122Z Updating files:  90% (2900/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0153744Z Updating files:  91% (2933/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0187815Z Updating files:  92% (2965/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0214391Z Updating files:  93% (2997/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0237670Z Updating files:  94% (3029/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0259144Z Updating files:  95% (3061/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0284888Z Updating files:  96% (3094/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0317302Z Updating files:  97% (3126/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0340975Z Updating files:  98% (3158/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0355341Z Updating files:  99% (3190/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0356013Z Updating files: 100% (3222/3222)
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0356652Z Updating files: 100% (3222/3222), done.
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0399700Z Switched to a new branch 'm8-6-calibration-market-superiority-20260512'
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0403410Z branch 'm8-6-calibration-market-superiority-20260512' set up to track 'origin/m8-6-calibration-market-superiority-20260512'.
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0539252Z ##[endgroup]
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0583532Z [command]/usr/bin/git log -1 --format=%H
+derek_live_snapshots	Run actions/checkout@v5	2026-05-14T20:51:00.0608042Z eaeaa4f9aeab184ed3f45d214a50a09c0e120d49
+derek_live_snapshots	Run actions/setup-python@v6	﻿2026-05-14T20:51:00.0834701Z ##[group]Run actions/setup-python@v6
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0834987Z with:
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0835177Z   python-version: 3.11
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0835386Z   cache: pip
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0835570Z   check-latest: false
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0835920Z   token: ***
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0836119Z   update-environment: true
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0836347Z   allow-prereleases: false
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0836568Z   freethreaded: false
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0836775Z env:
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0836940Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0837142Z   PYTHONPATH: src
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0837520Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0838406Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.0838816Z ##[endgroup]
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.2085926Z ##[group]Installed versions
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.2197238Z Successfully set up CPython (3.11.15)
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.2198161Z ##[endgroup]
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.5097020Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:00.8267936Z /home/runner/.cache/pip
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:01.0786144Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:02.3164840Z Received 12582912 of 147023073 (8.6%), 12.0 MBs/sec
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:03.3176950Z Received 134440161 of 147023073 (91.4%), 64.1 MBs/sec
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:03.4777266Z Received 147023073 of 147023073 (100.0%), 64.9 MBs/sec
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:03.4778548Z Cache Size: ~140 MB (147023073 B)
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:03.4877280Z [command]/usr/bin/tar -xf /home/runner/work/_temp/57f6ce02-2241-49ae-9920-65f928818d5a/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:03.6848356Z Cache restored successfully
+derek_live_snapshots	Run actions/setup-python@v6	2026-05-14T20:51:03.6916945Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+derek_live_snapshots	Install python deps	﻿2026-05-14T20:51:03.7071431Z ##[group]Run pip install -r requirements.txt
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7071852Z ^[[36;1mpip install -r requirements.txt^[[0m
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7100479Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7100753Z env:
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7100952Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7101187Z   PYTHONPATH: src
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7101608Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7102264Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7102799Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7103250Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7103676Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7104058Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7104439Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7104866Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Install python deps	2026-05-14T20:51:03.7105186Z ##[endgroup]
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.3677839Z Collecting lightgbm==4.3.0 (from -r requirements.txt (line 1))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.3693070Z   Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl.metadata (19 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.4614470Z Collecting scikit-learn==1.4.2 (from -r requirements.txt (line 2))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.4630326Z   Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.6111853Z Collecting pandas==2.2.3 (from -r requirements.txt (line 3))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.6126479Z   Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.8065880Z Collecting numpy==1.26.4 (from -r requirements.txt (line 4))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.8081269Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.8441577Z Collecting requests==2.32.3 (from -r requirements.txt (line 5))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.8454979Z   Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.9554320Z Collecting pyarrow==16.1.0 (from -r requirements.txt (line 6))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.9568560Z   Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.9787081Z Collecting joblib==1.4.2 (from -r requirements.txt (line 7))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:04.9800479Z   Using cached joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.0927727Z Collecting scipy==1.13.1 (from -r requirements.txt (line 8))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.0941663Z   Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.1791765Z Collecting nbainjuries==1.1.1 (from -r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.1804485Z   Using cached nbainjuries-1.1.1-py3-none-any.whl.metadata (9.8 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.2003921Z Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.4.2->-r requirements.txt (line 2))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.2017266Z   Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.2207780Z Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.2221474Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.2663491Z Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.3414310Z   Downloading pytz-2026.2-py2.py3-none-any.whl.metadata (22 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.3700100Z Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.3810083Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.4788744Z Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.4803194Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.5018159Z Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.5128400Z   Downloading idna-3.15-py3-none-any.whl.metadata (7.7 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.5445777Z Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.5556504Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.5819317Z Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.5933078Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.6196244Z Collecting PyPDF2<4.0,>=3.0.1 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:05.6210822Z   Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.0782053Z Collecting aiohttp<4.0,>=3.9.3 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.0797335Z   Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.1192538Z Collecting jpype1<1.6.0,>=1.5.2 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.1206179Z   Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.1435719Z Collecting tabula-py<3.0,>=2.9.0 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.1448880Z   Using cached tabula_py-2.10.0-py3-none-any.whl.metadata (7.6 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.2031554Z Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.2044394Z   Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.2203547Z Collecting aiosignal>=1.4.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.2216009Z   Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.2416790Z Collecting attrs>=17.3.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.2429605Z   Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.3068681Z Collecting frozenlist>=1.1.1 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.3086693Z   Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.5154557Z Collecting multidict<7.0,>=4.5 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.5169687Z   Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.5842145Z Collecting propcache>=0.2.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.5953986Z   Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.8676985Z Collecting yarl<2.0,>=1.17.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.8692886Z   Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.8970573Z Collecting packaging (from jpype1<1.6.0,>=1.5.2->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9083024Z   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9302114Z Collecting distro (from tabula-py<3.0,>=2.9.0->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9315332Z   Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9630256Z Collecting typing-extensions>=4.2 (from aiosignal>=1.4.0->aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9643618Z   Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9832640Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9845973Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9894430Z Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl (3.1 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9919865Z Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:06.9978599Z Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0040042Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0118673Z Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0132333Z Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0289120Z Using cached joblib-1.4.2-py3-none-any.whl (301 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0303191Z Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0453431Z Using cached nbainjuries-1.1.1-py3-none-any.whl (15 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0466445Z Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0486507Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0601605Z Downloading idna-3.15-py3-none-any.whl (72 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0730986Z Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (494 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0746134Z Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (246 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0760087Z Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0773878Z Using cached tabula_py-2.10.0-py3-none-any.whl (12.0 MB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.0929989Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1058725Z Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (102 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1072400Z Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1085623Z Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1098896Z Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1214811Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1267397Z Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (231 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1378118Z Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (58 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1423990Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1534925Z Downloading pytz-2026.2-py2.py3-none-any.whl (510 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1758738Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1771429Z Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1784178Z Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1894847Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.1954542Z Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.2079595Z Downloading packaging-26.2-py3-none-any.whl (100 kB)
+derek_live_snapshots	Install python deps	2026-05-14T20:51:07.4518594Z Installing collected packages: pytz, urllib3, tzdata, typing-extensions, threadpoolctl, six, PyPDF2, propcache, packaging, numpy, multidict, joblib, idna, frozenlist, distro, charset-normalizer, certifi, attrs, aiohappyeyeballs, yarl, scipy, requests, python-dateutil, pyarrow, jpype1, aiosignal, scikit-learn, pandas, lightgbm, aiohttp, tabula-py, nbainjuries
+derek_live_snapshots	Install python deps	2026-05-14T20:51:21.3626549Z 
+derek_live_snapshots	Install python deps	2026-05-14T20:51:21.3648501Z Successfully installed PyPDF2-3.0.1 aiohappyeyeballs-2.6.1 aiohttp-3.13.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026.4.22 charset-normalizer-3.4.7 distro-1.9.0 frozenlist-1.8.0 idna-3.15 joblib-1.4.2 jpype1-1.5.2 lightgbm-4.3.0 multidict-6.7.1 nbainjuries-1.1.1 numpy-1.26.4 packaging-26.2 pandas-2.2.3 propcache-0.5.2 pyarrow-16.1.0 python-dateutil-2.9.0.post0 pytz-2026.2 requests-2.32.3 scikit-learn-1.4.2 scipy-1.13.1 six-1.17.0 tabula-py-2.10.0 threadpoolctl-3.6.0 typing-extensions-4.15.0 tzdata-2026.2 urllib3-2.7.0 yarl-1.23.0
+derek_live_snapshots	Install python deps	2026-05-14T20:51:21.4816789Z 
+derek_live_snapshots	Install python deps	2026-05-14T20:51:21.4817128Z [notice] A new release of pip is available: 26.0.1 -> 26.1.1
+derek_live_snapshots	Install python deps	2026-05-14T20:51:21.4817967Z [notice] To update, run: pip install --upgrade pip
+derek_live_snapshots	Secrets preflight (Phase 13AL)	﻿2026-05-14T20:51:21.7735416Z ##[group]Run python3 scripts/verify_secrets_preflight.py --mode daily
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7736351Z ^[[36;1mpython3 scripts/verify_secrets_preflight.py --mode daily^[[0m
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7758941Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7759188Z env:
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7759366Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7759583Z   PYTHONPATH: src
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7759977Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7760584Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7761069Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7761491Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7761896Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7762255Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7762616Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7763037Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7763486Z   BDL_API_KEY: ***
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7763712Z   ODDS_API_KEY: ***
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.7763901Z ##[endgroup]
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8043691Z Secrets preflight (mode=daily; values are never printed):
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8044459Z   Required (present):
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8044995Z     - BDL_API_KEY: len=36  sha256_prefix=51cb7776
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8045696Z     - ODDS_API_KEY: len=32  sha256_prefix=ecc6164e
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8046627Z   Recommended (missing — soft warn):
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8047188Z     - SFTP_HOST
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8047804Z     - SFTP_USER
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8048229Z     - SFTP_PASS
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8048473Z     - SFTP_PATH
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8048748Z     - DUNKS_AND_THREES_API_KEY (or any alias)
+derek_live_snapshots	Secrets preflight (Phase 13AL)	2026-05-14T20:51:21.8049638Z SECRETS_PREFLIGHT_PASS  mode=daily  required_present=2  recommended_missing=['SFTP_HOST', 'SFTP_USER', 'SFTP_PASS', 'SFTP_PATH', 'DUNKS_AND_THREES_API_KEY (or any alias)']
+derek_live_snapshots	Resolve delivery date (America/New_York)	﻿2026-05-14T20:51:21.8122881Z ##[group]Run if [ -n "2026-05-14" ]; then
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8123207Z ^[[36;1mif [ -n "2026-05-14" ]; then^[[0m
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8123511Z ^[[36;1m  echo "date=2026-05-14" >> "$GITHUB_OUTPUT"^[[0m
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8123795Z ^[[36;1melse^[[0m
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8124096Z ^[[36;1m  echo "date=$(TZ=America/New_York date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"^[[0m
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8124458Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8144280Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8144527Z env:
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8144711Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8145081Z   PYTHONPATH: src
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8145479Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8146078Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8146573Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8146989Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8147434Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8148043Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8148421Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8148798Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Resolve delivery date (America/New_York)	2026-05-14T20:51:21.8149110Z ##[endgroup]
+derek_live_snapshots	Resolve snapshot type	﻿2026-05-14T20:51:21.8228898Z ##[group]Run # workflow_dispatch input wins; cron schedule fans out across all.
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8229478Z ^[[36;1m# workflow_dispatch input wins; cron schedule fans out across all.^[[0m
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8229873Z ^[[36;1mINPUT_TYPE="all"^[[0m
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8230127Z ^[[36;1mif [ -z "$INPUT_TYPE" ]; then^[[0m
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8230400Z ^[[36;1m  INPUT_TYPE="all"^[[0m
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8230618Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8230850Z ^[[36;1mecho "type=$INPUT_TYPE" >> "$GITHUB_OUTPUT"^[[0m
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8250327Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8250571Z env:
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8250754Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8250978Z   PYTHONPATH: src
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8251368Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8251986Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8252485Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8252958Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8253383Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8253764Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8254134Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8254572Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Resolve snapshot type	2026-05-14T20:51:21.8254907Z ##[endgroup]
+derek_live_snapshots	Resolve game start times (Phase 13U)	﻿2026-05-14T20:51:21.8317936Z ##[group]Run python scripts/resolve_game_start_times.py --delivery-date 2026-05-14
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8318551Z ^[[36;1mpython scripts/resolve_game_start_times.py --delivery-date 2026-05-14^[[0m
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8338207Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8338448Z env:
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8338634Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8338858Z   PYTHONPATH: src
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8339245Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8339858Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8340366Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8340795Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8341212Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8341588Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8341998Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8342384Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8342819Z   BDL_API_KEY: ***
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8343097Z   ODDS_API_KEY: ***
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:21.8343295Z ##[endgroup]
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:23.7301512Z GAME_START_TIME_RESOLUTION_PENDING
+derek_live_snapshots	Resolve game start times (Phase 13U)	2026-05-14T20:51:23.7302075Z   delivery_date=2026-05-14 reason=predictions/all_props_<date>.parquet missing or has no game_id
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	﻿2026-05-14T20:51:23.8490101Z ##[group]Run python scripts/enrich_predictions_game_start_times.py --delivery-date 2026-05-14
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8490983Z ^[[36;1mpython scripts/enrich_predictions_game_start_times.py --delivery-date 2026-05-14^[[0m
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8512272Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8512514Z env:
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8512697Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8512914Z   PYTHONPATH: src
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8513296Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8513923Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8514415Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8514835Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8515257Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8515639Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8516044Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8516423Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8517013Z   BDL_API_KEY: ***
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8517282Z   ODDS_API_KEY: ***
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:23.8517483Z ##[endgroup]
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:24.6528499Z PREDICTION_GAME_START_TIME_ENRICHMENT_PENDING
+derek_live_snapshots	Enrich predictions with real game_start_time (Phase 13U)	2026-05-14T20:51:24.6529312Z   reason=predictions parquet missing: predictions/all_props_2026-05-14.parquet
+derek_live_snapshots	Verify slate completeness (Phase 13U)	﻿2026-05-14T20:51:24.7633605Z ##[group]Run python scripts/verify_derek_slate_completeness.py --delivery-date 2026-05-14
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7634262Z ^[[36;1mpython scripts/verify_derek_slate_completeness.py --delivery-date 2026-05-14^[[0m
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7655340Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7655576Z env:
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7655764Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7655981Z   PYTHONPATH: src
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7656365Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7656975Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7657499Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7658195Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7658606Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7658981Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7659399Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7659770Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7660213Z   BDL_API_KEY: ***
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7660455Z   ODDS_API_KEY: ***
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:24.7660654Z ##[endgroup]
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:26.2445871Z DEREK_SLATE_COMPLETENESS_PENDING
+derek_live_snapshots	Verify slate completeness (Phase 13U)	2026-05-14T20:51:26.2446511Z   reason=no_predictions_parquet
+derek_live_snapshots	Dispatch Derek current_live snapshots	﻿2026-05-14T20:51:26.3621541Z ##[group]Run ARGS=()
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3621845Z ^[[36;1mARGS=()^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3622057Z ^[[36;1mif [ "true" = "true" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3622353Z ^[[36;1m  ARGS+=(--allow-backfill-test)^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3622612Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3622808Z ^[[36;1mif [ "false" = "true" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3623063Z ^[[36;1m  ARGS+=(--force)^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3623281Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3623463Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3623702Z ^[[36;1m  ARGS+=(--max-games "")^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3623931Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3624199Z ^[[36;1mpython scripts/dispatch_derek_live_game_snapshots.py \^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3624556Z ^[[36;1m  --delivery-date "2026-05-14" \^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3624840Z ^[[36;1m  --snapshot-type current_live \^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3625102Z ^[[36;1m  "${ARGS[@]}"^[[0m
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3645959Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3646208Z env:
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3646388Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3646656Z   PYTHONPATH: src
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3647043Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3648114Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3648635Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3649067Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3649497Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3649873Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3650246Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3650614Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3651042Z   BDL_API_KEY: ***
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3651288Z   ODDS_API_KEY: ***
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:26.3651486Z ##[endgroup]
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:27.1904037Z   delivery_date=2026-05-14  now_utc=2026-05-14T20:51:27Z  snapshot_type=current_live
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:27.1904993Z   predictions_parquet=predictions/all_props_2026-05-14.parquet exists=False unique_games=0
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:27.1905635Z DEREK_LIVE_SNAPSHOT_DISPATCH_PASS
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:27.1905933Z DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:27.1906382Z   delivery_date=2026-05-14 snapshot_type=current_live
+derek_live_snapshots	Dispatch Derek current_live snapshots	2026-05-14T20:51:27.1906980Z   schedule_rows=0 eligible_rows=0 slate_status=predictions_parquet_missing
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	﻿2026-05-14T20:51:27.3053484Z ##[group]Run ARGS=()
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3053769Z ^[[36;1mARGS=()^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3053979Z ^[[36;1mif [ "true" = "true" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3054257Z ^[[36;1m  ARGS+=(--allow-backfill-test)^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3054513Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3054703Z ^[[36;1mif [ "false" = "true" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3054954Z ^[[36;1m  ARGS+=(--force)^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3055167Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3055348Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3055580Z ^[[36;1m  ARGS+=(--max-games "")^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3055812Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3056083Z ^[[36;1mpython scripts/dispatch_derek_live_game_snapshots.py \^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3056453Z ^[[36;1m  --delivery-date "2026-05-14" \^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3056735Z ^[[36;1m  --snapshot-type t_minus_25 \^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3056999Z ^[[36;1m  "${ARGS[@]}"^[[0m
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3078136Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3078378Z env:
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3078562Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3078817Z   PYTHONPATH: src
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3079200Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3079806Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3080305Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3080723Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3081128Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3081497Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3081885Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3082260Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3082692Z   BDL_API_KEY: ***
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3082940Z   ODDS_API_KEY: ***
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:27.3083140Z ##[endgroup]
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:28.1250724Z   delivery_date=2026-05-14  now_utc=2026-05-14T20:51:28Z  snapshot_type=t_minus_25
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:28.1251648Z   predictions_parquet=predictions/all_props_2026-05-14.parquet exists=False unique_games=0
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:28.1252159Z DEREK_LIVE_SNAPSHOT_DISPATCH_PASS
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:28.1252462Z DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:28.1252807Z   delivery_date=2026-05-14 snapshot_type=t_minus_25
+derek_live_snapshots	Dispatch Derek t_minus_25 snapshots	2026-05-14T20:51:28.1253237Z   schedule_rows=0 eligible_rows=0 slate_status=predictions_parquet_missing
+derek_live_snapshots	Dispatch Derek close_lock snapshots	﻿2026-05-14T20:51:28.2459823Z ##[group]Run ARGS=()
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2460109Z ^[[36;1mARGS=()^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2460525Z ^[[36;1mif [ "true" = "true" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2460815Z ^[[36;1m  ARGS+=(--allow-backfill-test)^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2461073Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2461268Z ^[[36;1mif [ "false" = "true" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2461520Z ^[[36;1m  ARGS+=(--force)^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2461736Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2461913Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2462155Z ^[[36;1m  ARGS+=(--max-games "")^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2462398Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2462672Z ^[[36;1mpython scripts/dispatch_derek_live_game_snapshots.py \^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2463033Z ^[[36;1m  --delivery-date "2026-05-14" \^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2463310Z ^[[36;1m  --snapshot-type close_lock \^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2463567Z ^[[36;1m  "${ARGS[@]}"^[[0m
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2484841Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2485088Z env:
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2485269Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2485544Z   PYTHONPATH: src
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2485934Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2486555Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2487055Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2487484Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2488151Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2488531Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2488902Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2489269Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2489690Z   BDL_API_KEY: ***
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2489933Z   ODDS_API_KEY: ***
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:28.2490133Z ##[endgroup]
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:29.0588954Z   delivery_date=2026-05-14  now_utc=2026-05-14T20:51:29Z  snapshot_type=close_lock
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:29.0590057Z   predictions_parquet=predictions/all_props_2026-05-14.parquet exists=False unique_games=0
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:29.0590788Z DEREK_LIVE_SNAPSHOT_DISPATCH_PASS
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:29.0591224Z DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:29.0591738Z   delivery_date=2026-05-14 snapshot_type=close_lock
+derek_live_snapshots	Dispatch Derek close_lock snapshots	2026-05-14T20:51:29.0592383Z   schedule_rows=0 eligible_rows=0 slate_status=predictions_parquet_missing
+derek_live_snapshots	Verify corrected PMF delivery contract	﻿2026-05-14T20:51:29.1725784Z ##[group]Run if [ -s "deliveries/2026-05-14/wizard_of_odds/full_pmfs_wide.parquet" ]; then
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1726429Z ^[[36;1mif [ -s "deliveries/2026-05-14/wizard_of_odds/full_pmfs_wide.parquet" ]; then^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1726925Z ^[[36;1m  python scripts/verify_corrected_pmf_delivery.py \^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1727261Z ^[[36;1m    --date 2026-05-14 \^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1727525Z ^[[36;1m    --skip-derek-snapshots^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1728047Z ^[[36;1melse^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1728441Z ^[[36;1m  echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=2026-05-14 reason=missing_full_pmfs_wide"^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1728902Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1749695Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1749935Z env:
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1750121Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1750339Z   PYTHONPATH: src
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1750724Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1751342Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1751876Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1752318Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1752745Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1753116Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1753497Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1753875Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.1754350Z ##[endgroup]
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:29.9977282Z FATAL: empty WoO full_pmfs_wide: /home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-14/wizard_of_odds/full_pmfs_wide.parquet
+derek_live_snapshots	Verify corrected PMF delivery contract	2026-05-14T20:51:30.1120518Z ##[error]Process completed with exit code 1.
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	﻿2026-05-14T20:51:30.1265908Z ##[group]Run actions/upload-artifact@v4
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1266225Z with:
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1266446Z   name: derek-live-snapshots-2026-05-14
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1266724Z   retention-days: 14
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1266945Z   if-no-files-found: warn
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1268566Z   path: deliveries/2026-05-14/derek_game_snapshots/**
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	artifacts/derek_live_snapshots/2026-05-14/**
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	artifacts/live_lineups/2026-05-14/**
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	artifacts/automation_health/derek_live_snapshots_2026-05-14.*
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	artifacts/automation_health/derek_live_champion_ready_2026-05-14.*
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	artifacts/automation_health/derek_live_api_readiness.*
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	artifacts/automation_health/phase13l_no_breakage.*
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1269955Z   compression-level: 6
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1270178Z   overwrite: false
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1270388Z   include-hidden-files: false
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1270615Z env:
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1270792Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1270996Z   PYTHONPATH: src
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1271374Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1272018Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1272508Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1272927Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1273361Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1273734Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1274106Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1274487Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.1274797Z ##[endgroup]
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.3548697Z Multiple search paths detected. Calculating the least common ancestor of all paths
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.3553437Z The least common ancestor is /home/runner/work/nba-player-props-model/nba-player-props-model. This will be the root directory of the artifact
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.3554273Z With the provided path, there will be 5 files uploaded
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.3558467Z Artifact name is valid!
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.3560614Z Root directory input is valid!
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.6354384Z Beginning upload of artifact content to blob storage
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:30.9490698Z Uploaded bytes 5646
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:31.0284515Z Finished uploading artifact content to blob storage!
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:31.0287903Z SHA256 digest of uploaded artifact zip is 13336c42d185c633bff2028aa3f1a82bc7a52f22344259b7065e153eaaa932bc
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:31.0289466Z Finalizing artifact upload
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:31.2312401Z Artifact derek-live-snapshots-2026-05-14.zip successfully finalized. Artifact ID 7004532341
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:31.2313853Z Artifact derek-live-snapshots-2026-05-14 has been successfully uploaded! Final size is 5646 bytes. Artifact ID is 7004532341
+derek_live_snapshots	Upload Derek live snapshot artifacts (always)	2026-05-14T20:51:31.2315505Z Artifact download URL: https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25884872469/artifacts/7004532341
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	﻿2026-05-14T20:51:31.2412582Z ##[group]Run actions/upload-artifact@v4
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2412879Z with:
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2413106Z   name: derek-production-live-e2e-2026-05-14
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2413395Z   retention-days: 14
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2413625Z   if-no-files-found: warn
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2413973Z   path: artifacts/automation_health/derek_production_live_e2e_2026-05-14.*
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2414362Z   compression-level: 6
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2414579Z   overwrite: false
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2414792Z   include-hidden-files: false
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2415027Z env:
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2415209Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2415623Z   PYTHONPATH: src
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2416014Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2416628Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2417132Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2417565Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2418544Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2418941Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2419323Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2419712Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.2420031Z ##[endgroup]
+derek_live_snapshots	Upload Phase 13T E2E artifacts (always)	2026-05-14T20:51:31.4614853Z ##[warning]No files were found with the provided path: artifacts/automation_health/derek_production_live_e2e_2026-05-14.*. No artifacts will be uploaded.
+derek_live_snapshots	Fail workflow if any required step failed	﻿2026-05-14T20:51:31.4710454Z ##[group]Run dispatch_current_live="success"
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4710854Z ^[[36;1mdispatch_current_live="success"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4711141Z ^[[36;1mdispatch_t25="success"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4711393Z ^[[36;1mdispatch_cl="success"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4711649Z ^[[36;1mverify_derek="skipped"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4711895Z ^[[36;1mverify_e2e="skipped"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4712143Z ^[[36;1mverify_no_break="skipped"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4712406Z ^[[36;1mallow_backfill_test="true"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4712649Z ^[[36;1m^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4712898Z ^[[36;1mecho "dispatch_current_live=$dispatch_current_live"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4713249Z ^[[36;1mecho "dispatch_t25=$dispatch_t25"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4713543Z ^[[36;1mecho "dispatch_cl=$dispatch_cl"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4713830Z ^[[36;1mecho "verify_derek=$verify_derek"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4714109Z ^[[36;1mecho "verify_e2e=$verify_e2e"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4714409Z ^[[36;1mecho "verify_no_break=$verify_no_break"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4714723Z ^[[36;1m^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4714906Z ^[[36;1mshould_fail=0^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4715117Z ^[[36;1m^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4715374Z ^[[36;1mif [ "$verify_derek" != "success" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4715732Z ^[[36;1mif [ "$verify_e2e" != "success" ]; then^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4716050Z ^[[36;1m  if [ "$allow_backfill_test" = "true" ]; then^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4716614Z ^[[36;1m    echo "::notice::verify_e2e failed during manual allow_backfill_test; scheduled production runs still enforce E2E"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4717138Z ^[[36;1m  else^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4717330Z ^[[36;1m    should_fail=1^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4717553Z ^[[36;1m  fi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4717972Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4718245Z ^[[36;1mif [ "$verify_no_break" != "success" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4718685Z ^[[36;1mif [ "$dispatch_current_live" = "failure" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4719119Z ^[[36;1mif [ "$dispatch_t25" = "failure" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4719512Z ^[[36;1mif [ "$dispatch_cl" = "failure" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4719819Z ^[[36;1m^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4720025Z ^[[36;1mif [ "$should_fail" -eq 0 ]; then^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4720386Z ^[[36;1m  echo "DEREK_LIVE_SNAPSHOT_WORKFLOW_CONSOLIDATED_PASS"^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4720722Z ^[[36;1m  exit 0^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4720920Z ^[[36;1mfi^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4721099Z ^[[36;1m^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4721479Z ^[[36;1mecho "::error::A Derek live snapshot dispatcher or verifier failed. See uploaded artifacts."^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4721934Z ^[[36;1mexit 1^[[0m
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4742694Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4742943Z env:
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4743135Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4743357Z   PYTHONPATH: src
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4743762Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4744601Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4745116Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4745552Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4745990Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4746371Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4746759Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4747140Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4747460Z ##[endgroup]
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4789198Z dispatch_current_live=success
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4789670Z dispatch_t25=success
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4789960Z dispatch_cl=success
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4790179Z verify_derek=skipped
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4790444Z verify_e2e=skipped
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4790710Z verify_no_break=skipped
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4792993Z ##[notice]verify_e2e failed during manual allow_backfill_test; scheduled production runs still enforce E2E
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4796430Z ##[error]A Derek live snapshot dispatcher or verifier failed. See uploaded artifacts.
+derek_live_snapshots	Fail workflow if any required step failed	2026-05-14T20:51:31.4798806Z ##[error]Process completed with exit code 1.
+derek_live_snapshots	Post Run actions/checkout@v5	﻿2026-05-14T20:51:31.4857425Z Post job cleanup.
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5649831Z [command]/usr/bin/git version
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5684800Z git version 2.53.0
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5722245Z Temporarily overriding HOME='/home/runner/work/_temp/ac1dc006-b810-433a-a3df-1355a1ac1d0d' before making global git config changes
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5723546Z Adding repository directory to the temporary git global config as a safe directory
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5727223Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5761883Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.5792966Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.6045151Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.6066291Z http.https://github.com/.extraheader
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.6076307Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.6108345Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.6325496Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+derek_live_snapshots	Post Run actions/checkout@v5	2026-05-14T20:51:31.6354230Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+derek_live_snapshots	Complete job	﻿2026-05-14T20:51:31.6696827Z Cleaning up orphan processes
+derek_live_snapshots	Complete job	2026-05-14T20:51:31.6976476Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/upload-artifact@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

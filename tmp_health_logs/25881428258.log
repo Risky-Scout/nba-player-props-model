@@ -1,0 +1,484 @@
+morning	Set up job	﻿2026-05-14T19:39:58.6526152Z Current runner version: '2.334.0'
+morning	Set up job	2026-05-14T19:39:58.6552709Z ##[group]Runner Image Provisioner
+morning	Set up job	2026-05-14T19:39:58.6553851Z Hosted Compute Agent
+morning	Set up job	2026-05-14T19:39:58.6554680Z Version: 20260213.493
+morning	Set up job	2026-05-14T19:39:58.6555324Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+morning	Set up job	2026-05-14T19:39:58.6556129Z Build Date: 2026-02-13T00:28:41Z
+morning	Set up job	2026-05-14T19:39:58.6556825Z Worker ID: {26b3d461-4fc7-4ecb-8070-ce75cb37b7b6}
+morning	Set up job	2026-05-14T19:39:58.6557550Z Azure Region: eastus
+morning	Set up job	2026-05-14T19:39:58.6558152Z ##[endgroup]
+morning	Set up job	2026-05-14T19:39:58.6559522Z ##[group]Operating System
+morning	Set up job	2026-05-14T19:39:58.6560124Z Ubuntu
+morning	Set up job	2026-05-14T19:39:58.6560698Z 24.04.4
+morning	Set up job	2026-05-14T19:39:58.6561192Z LTS
+morning	Set up job	2026-05-14T19:39:58.6561682Z ##[endgroup]
+morning	Set up job	2026-05-14T19:39:58.6562250Z ##[group]Runner Image
+morning	Set up job	2026-05-14T19:39:58.6562782Z Image: ubuntu-24.04
+morning	Set up job	2026-05-14T19:39:58.6563329Z Version: 20260413.86.1
+morning	Set up job	2026-05-14T19:39:58.6564710Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+morning	Set up job	2026-05-14T19:39:58.6566389Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+morning	Set up job	2026-05-14T19:39:58.6567381Z ##[endgroup]
+morning	Set up job	2026-05-14T19:39:58.6570255Z ##[group]GITHUB_TOKEN Permissions
+morning	Set up job	2026-05-14T19:39:58.6572658Z Actions: write
+morning	Set up job	2026-05-14T19:39:58.6573276Z ArtifactMetadata: write
+morning	Set up job	2026-05-14T19:39:58.6573851Z Attestations: write
+morning	Set up job	2026-05-14T19:39:58.6574636Z Checks: write
+morning	Set up job	2026-05-14T19:39:58.6575169Z CodeQuality: write
+morning	Set up job	2026-05-14T19:39:58.6575701Z Contents: write
+morning	Set up job	2026-05-14T19:39:58.6576313Z Deployments: write
+morning	Set up job	2026-05-14T19:39:58.6576882Z Discussions: write
+morning	Set up job	2026-05-14T19:39:58.6577402Z Issues: write
+morning	Set up job	2026-05-14T19:39:58.6577941Z Metadata: read
+morning	Set up job	2026-05-14T19:39:58.6578495Z Models: read
+morning	Set up job	2026-05-14T19:39:58.6578999Z Packages: write
+morning	Set up job	2026-05-14T19:39:58.6579702Z Pages: write
+morning	Set up job	2026-05-14T19:39:58.6580183Z PullRequests: write
+morning	Set up job	2026-05-14T19:39:58.6580700Z RepositoryProjects: write
+morning	Set up job	2026-05-14T19:39:58.6581742Z SecurityEvents: write
+morning	Set up job	2026-05-14T19:39:58.6582269Z Statuses: write
+morning	Set up job	2026-05-14T19:39:58.6582850Z VulnerabilityAlerts: read
+morning	Set up job	2026-05-14T19:39:58.6583535Z ##[endgroup]
+morning	Set up job	2026-05-14T19:39:58.6586079Z Secret source: Actions
+morning	Set up job	2026-05-14T19:39:58.6586993Z Prepare workflow directory
+morning	Set up job	2026-05-14T19:39:58.6970661Z Prepare all required actions
+morning	Set up job	2026-05-14T19:39:58.7008021Z Getting action download info
+morning	Set up job	2026-05-14T19:39:59.0631454Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+morning	Set up job	2026-05-14T19:39:59.1542083Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+morning	Set up job	2026-05-14T19:39:59.3339793Z Complete job name: morning
+morning	Run actions/checkout@v5	﻿2026-05-14T19:39:59.4064902Z ##[group]Run actions/checkout@v5
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4065878Z with:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4066304Z   fetch-depth: 0
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4066845Z   repository: Risky-Scout/nba-player-props-model
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4067698Z   token: ***
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4068129Z   ssh-strict: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4068577Z   ssh-user: git
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4069038Z   persist-credentials: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4069556Z   clean: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4070018Z   sparse-checkout-cone-mode: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4070561Z   fetch-tags: false
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4071012Z   show-progress: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4071483Z   lfs: false
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4071894Z   submodules: false
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4072337Z   set-safe-directory: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4072998Z env:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4073399Z   PYTHON_VERSION: 3.11
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4073850Z   PYTHONPATH: src
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4074795Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4075995Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4076929Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.4077486Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5085268Z Syncing repository: Risky-Scout/nba-player-props-model
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5087287Z ##[group]Getting Git version info
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5088617Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5089897Z [command]/usr/bin/git version
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5102417Z git version 2.53.0
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5122232Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5135545Z Temporarily overriding HOME='/home/runner/work/_temp/53c5224f-207d-41e3-9160-4b96f2034312' before making global git config changes
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5137200Z Adding repository directory to the temporary git global config as a safe directory
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5140736Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5177257Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5180401Z ##[group]Initializing the repository
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5185367Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5247616Z hint: Using 'master' as the name for the initial branch. This default branch name
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5249625Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5251508Z hint: to use in all of your new repositories, which will suppress this warning,
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5252954Z hint: call:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5253660Z hint:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5254739Z hint: 	git config --global init.defaultBranch <name>
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5255804Z hint:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5256785Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5258444Z hint: 'development'. The just-created branch can be renamed via this command:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5259940Z hint:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5260652Z hint: 	git branch -m <name>
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5261453Z hint:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5262477Z hint: Disable this message with "git config set advice.defaultBranchName false"
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5264735Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5267695Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5293834Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5295352Z ##[group]Disabling automatic garbage collection
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5298150Z [command]/usr/bin/git config --local gc.auto 0
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5328988Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5330344Z ##[group]Setting up auth
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5335659Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5368034Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5651520Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5682004Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5912386Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.5944614Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.6171292Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.6205924Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.6206718Z ##[group]Fetching the repository
+morning	Run actions/checkout@v5	2026-05-14T19:39:59.6215191Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4397532Z From https://github.com/Risky-Scout/nba-player-props-model
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4398679Z  * [new branch]        m8-6-calibration-market-superiority-20260512 -> origin/m8-6-calibration-market-superiority-20260512
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4400038Z  * [new branch]        main       -> origin/main
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4401365Z  * [new branch]        main-backup-before-coauthor-cleanup-20260514-1816 -> origin/main-backup-before-coauthor-cleanup-20260514-1816
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4438081Z [command]/usr/bin/git branch --list --remote origin/main
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4461824Z   origin/main
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4471090Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4492609Z a96a38102eda12bc369b77526b857a695fa31406
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4496919Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4497355Z ##[group]Determining the checkout info
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4498215Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4502513Z [command]/usr/bin/git sparse-checkout disable
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4539545Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4574440Z ##[group]Checking out the ref
+morning	Run actions/checkout@v5	2026-05-14T19:42:12.4578569Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+morning	Run actions/checkout@v5	2026-05-14T19:42:13.6085103Z Updating files:  24% (788/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:13.8696376Z Updating files:  25% (806/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.1351800Z Updating files:  26% (838/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.3903189Z Updating files:  27% (870/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.4661606Z Updating files:  28% (902/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.4987344Z Updating files:  28% (912/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.4999041Z Updating files:  29% (935/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.5011525Z Updating files:  30% (967/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.5022610Z Updating files:  31% (999/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.5038739Z Updating files:  32% (1031/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:14.5056800Z Updating files:  33% (1063/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.0862465Z Updating files:  34% (1096/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.1074827Z Updating files:  35% (1128/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.1461503Z Updating files:  36% (1160/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.1729367Z Updating files:  37% (1192/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.2165227Z Updating files:  38% (1224/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.2300825Z Updating files:  39% (1257/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.2474955Z Updating files:  40% (1289/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.2751610Z Updating files:  41% (1321/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.2916486Z Updating files:  42% (1353/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3044960Z Updating files:  43% (1386/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3173920Z Updating files:  44% (1418/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3189615Z Updating files:  45% (1450/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3205710Z Updating files:  46% (1482/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3217652Z Updating files:  47% (1514/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3343456Z Updating files:  48% (1547/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3405746Z Updating files:  49% (1579/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3485651Z Updating files:  50% (1611/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3565716Z Updating files:  51% (1643/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3659070Z Updating files:  52% (1675/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3694677Z Updating files:  53% (1708/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3715658Z Updating files:  54% (1740/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3781701Z Updating files:  55% (1772/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.3973285Z Updating files:  56% (1804/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4054847Z Updating files:  57% (1836/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4155978Z Updating files:  58% (1869/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4228306Z Updating files:  59% (1901/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4342142Z Updating files:  60% (1933/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4489955Z Updating files:  61% (1965/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4639353Z Updating files:  62% (1998/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4722414Z Updating files:  62% (2011/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.4970552Z Updating files:  63% (2030/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.5267536Z Updating files:  64% (2062/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.5506227Z Updating files:  65% (2094/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.5602061Z Updating files:  66% (2126/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.6051419Z Updating files:  67% (2159/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.6399900Z Updating files:  68% (2191/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.7038747Z Updating files:  69% (2223/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.7654102Z Updating files:  70% (2255/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.7950953Z Updating files:  71% (2287/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.8849750Z Updating files:  72% (2320/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.8914764Z Updating files:  73% (2352/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:15.9974972Z Updating files:  74% (2384/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.0822385Z Updating files:  75% (2416/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.0875778Z Updating files:  76% (2448/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.1478882Z Updating files:  77% (2481/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.1884474Z Updating files:  78% (2513/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.1894852Z Updating files:  79% (2545/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.2001120Z Updating files:  80% (2577/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.2061855Z Updating files:  81% (2610/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.2567311Z Updating files:  82% (2642/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.2921876Z Updating files:  83% (2674/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.3130631Z Updating files:  84% (2706/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.3352203Z Updating files:  85% (2738/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.4841941Z Updating files:  86% (2771/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.4890022Z Updating files:  86% (2801/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6518740Z Updating files:  87% (2803/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6547953Z Updating files:  88% (2835/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6576927Z Updating files:  89% (2867/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6607711Z Updating files:  90% (2899/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6636726Z Updating files:  91% (2932/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6672754Z Updating files:  92% (2964/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6700703Z Updating files:  93% (2996/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6724864Z Updating files:  94% (3028/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6747044Z Updating files:  95% (3060/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6774391Z Updating files:  96% (3093/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6801497Z Updating files:  97% (3125/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6826103Z Updating files:  98% (3157/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6840253Z Updating files:  99% (3189/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6840682Z Updating files: 100% (3221/3221)
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6841092Z Updating files: 100% (3221/3221), done.
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6886750Z Switched to a new branch 'main'
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.6889884Z branch 'main' set up to track 'origin/main'.
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.7037354Z ##[endgroup]
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.7088157Z [command]/usr/bin/git log -1 --format=%H
+morning	Run actions/checkout@v5	2026-05-14T19:42:16.7112351Z a96a38102eda12bc369b77526b857a695fa31406
+morning	Run actions/setup-python@v6	﻿2026-05-14T19:42:16.7349152Z ##[group]Run actions/setup-python@v6
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7349424Z with:
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7349620Z   python-version: 3.11
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7349829Z   cache: pip
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7350015Z   check-latest: false
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7350355Z   token: ***
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7350562Z   update-environment: true
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7350799Z   allow-prereleases: false
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7351024Z   freethreaded: false
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7351228Z env:
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7351404Z   PYTHON_VERSION: 3.11
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7351616Z   PYTHONPATH: src
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7351992Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7352581Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7353039Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.7353304Z ##[endgroup]
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.8739444Z ##[group]Installed versions
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.8755228Z Successfully set up CPython (3.11.15)
+morning	Run actions/setup-python@v6	2026-05-14T19:42:16.8756101Z ##[endgroup]
+morning	Run actions/setup-python@v6	2026-05-14T19:42:17.1171639Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+morning	Run actions/setup-python@v6	2026-05-14T19:42:17.3809339Z /home/runner/.cache/pip
+morning	Run actions/setup-python@v6	2026-05-14T19:42:17.4539732Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+morning	Run actions/setup-python@v6	2026-05-14T19:42:18.3067922Z Received 147023073 of 147023073 (100.0%), 176.8 MBs/sec
+morning	Run actions/setup-python@v6	2026-05-14T19:42:18.3068816Z Cache Size: ~140 MB (147023073 B)
+morning	Run actions/setup-python@v6	2026-05-14T19:42:18.3105845Z [command]/usr/bin/tar -xf /home/runner/work/_temp/4d49919d-1666-46f2-9001-64f0a260d46e/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+morning	Run actions/setup-python@v6	2026-05-14T19:42:18.5087054Z Cache restored successfully
+morning	Run actions/setup-python@v6	2026-05-14T19:42:18.5183623Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+morning	Install python deps	﻿2026-05-14T19:42:18.6428603Z ##[group]Run pip install -r requirements.txt
+morning	Install python deps	2026-05-14T19:42:18.6429042Z ^[[36;1mpip install -r requirements.txt^[[0m
+morning	Install python deps	2026-05-14T19:42:18.6458696Z shell: /usr/bin/bash -e {0}
+morning	Install python deps	2026-05-14T19:42:18.6458974Z env:
+morning	Install python deps	2026-05-14T19:42:18.6459177Z   PYTHON_VERSION: 3.11
+morning	Install python deps	2026-05-14T19:42:18.6459409Z   PYTHONPATH: src
+morning	Install python deps	2026-05-14T19:42:18.6459814Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Install python deps	2026-05-14T19:42:18.6460424Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Install python deps	2026-05-14T19:42:18.6460863Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+morning	Install python deps	2026-05-14T19:42:18.6461207Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Install python deps	2026-05-14T19:42:18.6461638Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+morning	Install python deps	2026-05-14T19:42:18.6462070Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Install python deps	2026-05-14T19:42:18.6462443Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Install python deps	2026-05-14T19:42:18.6462821Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Install python deps	2026-05-14T19:42:18.6463240Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+morning	Install python deps	2026-05-14T19:42:18.6463557Z ##[endgroup]
+morning	Install python deps	2026-05-14T19:42:19.3973689Z Collecting lightgbm==4.3.0 (from -r requirements.txt (line 1))
+morning	Install python deps	2026-05-14T19:42:19.3989589Z   Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl.metadata (19 kB)
+morning	Install python deps	2026-05-14T19:42:19.4741277Z Collecting scikit-learn==1.4.2 (from -r requirements.txt (line 2))
+morning	Install python deps	2026-05-14T19:42:19.4757380Z   Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+morning	Install python deps	2026-05-14T19:42:19.6016560Z Collecting pandas==2.2.3 (from -r requirements.txt (line 3))
+morning	Install python deps	2026-05-14T19:42:19.6032059Z   Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+morning	Install python deps	2026-05-14T19:42:19.7717502Z Collecting numpy==1.26.4 (from -r requirements.txt (line 4))
+morning	Install python deps	2026-05-14T19:42:19.7734458Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+morning	Install python deps	2026-05-14T19:42:19.7990885Z Collecting requests==2.32.3 (from -r requirements.txt (line 5))
+morning	Install python deps	2026-05-14T19:42:19.8004658Z   Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+morning	Install python deps	2026-05-14T19:42:19.8831635Z Collecting pyarrow==16.1.0 (from -r requirements.txt (line 6))
+morning	Install python deps	2026-05-14T19:42:19.8846921Z   Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+morning	Install python deps	2026-05-14T19:42:19.8985378Z Collecting joblib==1.4.2 (from -r requirements.txt (line 7))
+morning	Install python deps	2026-05-14T19:42:19.8999003Z   Using cached joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+morning	Install python deps	2026-05-14T19:42:19.9919757Z Collecting scipy==1.13.1 (from -r requirements.txt (line 8))
+morning	Install python deps	2026-05-14T19:42:19.9935310Z   Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+morning	Install python deps	2026-05-14T19:42:20.0137148Z Collecting nbainjuries==1.1.1 (from -r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.0150314Z   Using cached nbainjuries-1.1.1-py3-none-any.whl.metadata (9.8 kB)
+morning	Install python deps	2026-05-14T19:42:20.0268069Z Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.4.2->-r requirements.txt (line 2))
+morning	Install python deps	2026-05-14T19:42:20.0281100Z   Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+morning	Install python deps	2026-05-14T19:42:20.0400667Z Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements.txt (line 3))
+morning	Install python deps	2026-05-14T19:42:20.0414594Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+morning	Install python deps	2026-05-14T19:42:20.0691198Z Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements.txt (line 3))
+morning	Install python deps	2026-05-14T19:42:20.1223026Z   Downloading pytz-2026.2-py2.py3-none-any.whl.metadata (22 kB)
+morning	Install python deps	2026-05-14T19:42:20.1477840Z Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements.txt (line 3))
+morning	Install python deps	2026-05-14T19:42:20.1511576Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+morning	Install python deps	2026-05-14T19:42:20.2276240Z Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 5))
+morning	Install python deps	2026-05-14T19:42:20.2291058Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+morning	Install python deps	2026-05-14T19:42:20.2472371Z Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 5))
+morning	Install python deps	2026-05-14T19:42:20.2511502Z   Downloading idna-3.15-py3-none-any.whl.metadata (7.7 kB)
+morning	Install python deps	2026-05-14T19:42:20.2705286Z Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 5))
+morning	Install python deps	2026-05-14T19:42:20.2742621Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+morning	Install python deps	2026-05-14T19:42:20.2950600Z Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 5))
+morning	Install python deps	2026-05-14T19:42:20.2984469Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+morning	Install python deps	2026-05-14T19:42:20.3154547Z Collecting PyPDF2<4.0,>=3.0.1 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.3167089Z   Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+morning	Install python deps	2026-05-14T19:42:20.7292208Z Collecting aiohttp<4.0,>=3.9.3 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.7308187Z   Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+morning	Install python deps	2026-05-14T19:42:20.7640340Z Collecting jpype1<1.6.0,>=1.5.2 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.7655072Z   Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+morning	Install python deps	2026-05-14T19:42:20.7809452Z Collecting tabula-py<3.0,>=2.9.0 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.7822636Z   Using cached tabula_py-2.10.0-py3-none-any.whl.metadata (7.6 kB)
+morning	Install python deps	2026-05-14T19:42:20.8351063Z Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.8363669Z   Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+morning	Install python deps	2026-05-14T19:42:20.8440424Z Collecting aiosignal>=1.4.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.8453007Z   Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+morning	Install python deps	2026-05-14T19:42:20.8551655Z Collecting attrs>=17.3.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.8564496Z   Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+morning	Install python deps	2026-05-14T19:42:20.9059340Z Collecting frozenlist>=1.1.1 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:20.9079968Z   Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+morning	Install python deps	2026-05-14T19:42:21.0841595Z Collecting multidict<7.0,>=4.5 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:21.0857379Z   Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+morning	Install python deps	2026-05-14T19:42:21.1315603Z Collecting propcache>=0.2.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:21.1352787Z   Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+morning	Install python deps	2026-05-14T19:42:21.3901539Z Collecting yarl<2.0,>=1.17.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:21.3917437Z   Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+morning	Install python deps	2026-05-14T19:42:21.4109540Z Collecting packaging (from jpype1<1.6.0,>=1.5.2->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:21.4142625Z   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+morning	Install python deps	2026-05-14T19:42:21.4288220Z Collecting distro (from tabula-py<3.0,>=2.9.0->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:21.4300704Z   Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+morning	Install python deps	2026-05-14T19:42:21.4493551Z Collecting typing-extensions>=4.2 (from aiosignal>=1.4.0->aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+morning	Install python deps	2026-05-14T19:42:21.4506491Z   Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+morning	Install python deps	2026-05-14T19:42:21.4611837Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 3))
+morning	Install python deps	2026-05-14T19:42:21.4624928Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+morning	Install python deps	2026-05-14T19:42:21.4671260Z Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl (3.1 MB)
+morning	Install python deps	2026-05-14T19:42:21.4694102Z Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
+morning	Install python deps	2026-05-14T19:42:21.4748827Z Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+morning	Install python deps	2026-05-14T19:42:21.4803455Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+morning	Install python deps	2026-05-14T19:42:21.4873927Z Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+morning	Install python deps	2026-05-14T19:42:21.4886908Z Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+morning	Install python deps	2026-05-14T19:42:21.5030916Z Using cached joblib-1.4.2-py3-none-any.whl (301 kB)
+morning	Install python deps	2026-05-14T19:42:21.5044002Z Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+morning	Install python deps	2026-05-14T19:42:21.5181148Z Using cached nbainjuries-1.1.1-py3-none-any.whl (15 kB)
+morning	Install python deps	2026-05-14T19:42:21.5193590Z Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+morning	Install python deps	2026-05-14T19:42:21.5212617Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+morning	Install python deps	2026-05-14T19:42:21.5248142Z Downloading idna-3.15-py3-none-any.whl (72 kB)
+morning	Install python deps	2026-05-14T19:42:21.5311028Z Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (494 kB)
+morning	Install python deps	2026-05-14T19:42:21.5325171Z Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (246 kB)
+morning	Install python deps	2026-05-14T19:42:21.5337905Z Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+morning	Install python deps	2026-05-14T19:42:21.5350682Z Using cached tabula_py-2.10.0-py3-none-any.whl (12.0 MB)
+morning	Install python deps	2026-05-14T19:42:21.5428607Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+morning	Install python deps	2026-05-14T19:42:21.5505208Z Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (102 kB)
+morning	Install python deps	2026-05-14T19:42:21.5517737Z Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+morning	Install python deps	2026-05-14T19:42:21.5530039Z Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+morning	Install python deps	2026-05-14T19:42:21.5542277Z Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+morning	Install python deps	2026-05-14T19:42:21.5577184Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+morning	Install python deps	2026-05-14T19:42:21.5611875Z Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (231 kB)
+morning	Install python deps	2026-05-14T19:42:21.5645502Z Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (58 kB)
+morning	Install python deps	2026-05-14T19:42:21.5676461Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+morning	Install python deps	2026-05-14T19:42:21.5718730Z Downloading pytz-2026.2-py2.py3-none-any.whl (510 kB)
+morning	Install python deps	2026-05-14T19:42:21.5779089Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+morning	Install python deps	2026-05-14T19:42:21.5791648Z Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+morning	Install python deps	2026-05-14T19:42:21.5803950Z Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+morning	Install python deps	2026-05-14T19:42:21.5837525Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+morning	Install python deps	2026-05-14T19:42:21.5875487Z Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+morning	Install python deps	2026-05-14T19:42:21.5911806Z Downloading packaging-26.2-py3-none-any.whl (100 kB)
+morning	Install python deps	2026-05-14T19:42:21.8485885Z Installing collected packages: pytz, urllib3, tzdata, typing-extensions, threadpoolctl, six, PyPDF2, propcache, packaging, numpy, multidict, joblib, idna, frozenlist, distro, charset-normalizer, certifi, attrs, aiohappyeyeballs, yarl, scipy, requests, python-dateutil, pyarrow, jpype1, aiosignal, scikit-learn, pandas, lightgbm, aiohttp, tabula-py, nbainjuries
+morning	Install python deps	2026-05-14T19:42:36.5734412Z 
+morning	Install python deps	2026-05-14T19:42:36.5753938Z Successfully installed PyPDF2-3.0.1 aiohappyeyeballs-2.6.1 aiohttp-3.13.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026.4.22 charset-normalizer-3.4.7 distro-1.9.0 frozenlist-1.8.0 idna-3.15 joblib-1.4.2 jpype1-1.5.2 lightgbm-4.3.0 multidict-6.7.1 nbainjuries-1.1.1 numpy-1.26.4 packaging-26.2 pandas-2.2.3 propcache-0.5.2 pyarrow-16.1.0 python-dateutil-2.9.0.post0 pytz-2026.2 requests-2.32.3 scikit-learn-1.4.2 scipy-1.13.1 six-1.17.0 tabula-py-2.10.0 threadpoolctl-3.6.0 typing-extensions-4.15.0 tzdata-2026.2 urllib3-2.7.0 yarl-1.23.0
+morning	Install python deps	2026-05-14T19:42:36.6670184Z 
+morning	Install python deps	2026-05-14T19:42:36.6670863Z [notice] A new release of pip is available: 26.0.1 -> 26.1.1
+morning	Install python deps	2026-05-14T19:42:36.6671336Z [notice] To update, run: pip install --upgrade pip
+morning	Secrets preflight (Phase 13AL)	﻿2026-05-14T19:42:36.9989381Z ##[group]Run python3 scripts/verify_secrets_preflight.py --mode daily
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:36.9989915Z ^[[36;1mpython3 scripts/verify_secrets_preflight.py --mode daily^[[0m
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0012890Z shell: /usr/bin/bash -e {0}
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0013144Z env:
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0013344Z   PYTHON_VERSION: 3.11
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0013575Z   PYTHONPATH: src
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0013968Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0014751Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0015208Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0015547Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0015962Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0016366Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0016732Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0017148Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0017508Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0017996Z   BDL_API_KEY: ***
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0018251Z   ODDS_API_KEY: ***
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0018463Z ##[endgroup]
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0319387Z Secrets preflight (mode=daily; values are never printed):
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0319979Z   Required (present):
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0320323Z     - BDL_API_KEY: len=36  sha256_prefix=51cb7776
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0320706Z     - ODDS_API_KEY: len=32  sha256_prefix=ecc6164e
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0321289Z   Recommended (missing — soft warn):
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0321571Z     - SFTP_HOST
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0321783Z     - SFTP_USER
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0321979Z     - SFTP_PASS
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0322183Z     - SFTP_PATH
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0322418Z     - DUNKS_AND_THREES_API_KEY (or any alias)
+morning	Secrets preflight (Phase 13AL)	2026-05-14T19:42:37.0323111Z SECRETS_PREFLIGHT_PASS  mode=daily  required_present=2  recommended_missing=['SFTP_HOST', 'SFTP_USER', 'SFTP_PASS', 'SFTP_PATH', 'DUNKS_AND_THREES_API_KEY (or any alias)']
+morning	Resolve delivery date (America/New_York)	﻿2026-05-14T19:42:37.0403544Z ##[group]Run if [ -n "2026-05-14" ]; then
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0403892Z ^[[36;1mif [ -n "2026-05-14" ]; then^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0404455Z ^[[36;1m  echo "date=2026-05-14" >> "$GITHUB_OUTPUT"^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0404753Z ^[[36;1melse^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0405019Z ^[[36;1m  ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0405417Z ^[[36;1m  echo "Resolved delivery_date=$ET_DATE via America/New_York"^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0405813Z ^[[36;1m  echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0406119Z ^[[36;1mfi^[[0m
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0427790Z shell: /usr/bin/bash -e {0}
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0428062Z env:
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0428279Z   PYTHON_VERSION: 3.11
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0428523Z   PYTHONPATH: src
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0428929Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0429733Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0430189Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0430578Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0431007Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0431430Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0431814Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0432186Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0432571Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+morning	Resolve delivery date (America/New_York)	2026-05-14T19:42:37.0432897Z ##[endgroup]
+morning	Predictions readiness gate (Phase 13AM)	﻿2026-05-14T19:42:37.0520290Z ##[group]Run python3 scripts/predictions_readiness_gate.py \
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0520725Z ^[[36;1mpython3 scripts/predictions_readiness_gate.py \^[[0m
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0521052Z ^[[36;1m  --date "2026-05-14" \^[[0m
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0521336Z ^[[36;1m  --predict-cron-hour-utc 13 \^[[0m
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0521616Z ^[[36;1m  --mode "morning"^[[0m
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0542277Z shell: /usr/bin/bash -e {0}
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0542524Z env:
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0542716Z   PYTHON_VERSION: 3.11
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0542941Z   PYTHONPATH: src
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0543327Z   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0543919Z   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0544527Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0544871Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0545282Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0545756Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0546170Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0546539Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0546916Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0547357Z   ODDS_API_KEY: ***
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0547610Z   BDL_API_KEY: ***
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0547817Z ##[endgroup]
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0910621Z [gate] predictions missing for 2026-05-14 mode=morning files=all_props_2026-05-14.parquet,pmf_display_2026-05-14.json,singles_2026-05-14.json
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0911969Z [gate] now_utc=2026-05-14T19:42:37.090893+00:00 today_utc=2026-05-14 slate_date=2026-05-14 predict_cron_hour_utc=13
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0929847Z ##[warning]predictions missing and predict cron should have fired; invoking predict.py for slate=2026-05-14 mode=morning
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:37.0937951Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/predict.py --date 2026-05-14
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2533093Z 2026-05-14 19:42:38,366 [INFO] ============================================================
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2534582Z 2026-05-14 19:42:38,367 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2535333Z 2026-05-14 19:42:38,367 [INFO] ============================================================
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2535952Z 2026-05-14 19:42:38,367 [INFO] Target date: 2026-05-14
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2536452Z 2026-05-14 19:42:38,367 [INFO] Loading models...
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2536967Z 2026-05-14 19:42:38,457 [INFO]   pts: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2537492Z 2026-05-14 19:42:38,534 [INFO]   reb: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2538000Z 2026-05-14 19:42:38,608 [INFO]   ast: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2538515Z 2026-05-14 19:42:38,677 [INFO]   fg3m: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2538976Z 2026-05-14 19:42:38,743 [INFO]   stl: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2539328Z 2026-05-14 19:42:38,807 [INFO]   blk: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2539935Z 2026-05-14 19:42:38,877 [INFO]   tov: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2540255Z 2026-05-14 19:42:39,013 [INFO]   pra: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2540588Z 2026-05-14 19:42:39,155 [INFO]   pr: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2540917Z 2026-05-14 19:42:39,291 [INFO]   pa: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2541266Z 2026-05-14 19:42:39,428 [INFO]   ra: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2541615Z 2026-05-14 19:42:39,559 [INFO]   stocks: 11 quantile models
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2542023Z 2026-05-14 19:42:39,560 [INFO]   Within-player correlation engine loaded
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2542440Z 2026-05-14 19:42:39,561 [INFO]   Global calibrator loaded: OVER
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2542842Z 2026-05-14 19:42:39,561 [INFO]   Global calibrator loaded: UNDER
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2543408Z 2026-05-14 19:42:39,562 [INFO]   Q50 bias corrections: {'ast': 1.139, 'blk': 1.04, 'fg3m': 1.092, 'pts': 5.39, 'reb': 0.911, 'stl': 0.29}
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2544700Z 2026-05-14 19:42:39,571 [INFO] ResidualCenterer: learned=['pts', 'ast', 'reb', 'fg3m']  fallback=[]
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2545217Z 2026-05-14 19:42:39,571 [INFO]   Residual centerer loaded
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2545571Z 2026-05-14 19:42:39,617 [INFO]   FG3M hurdle model loaded
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2545945Z 2026-05-14 19:42:39,618 [INFO]   Live calibration table loaded: 46 entries
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2546389Z 2026-05-14 19:42:39,618 [INFO]   Minutes bucket corrections loaded: 12 entries
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2547038Z 2026-05-14 19:42:39,618 [INFO]   Calibration manifest: 0 promoted stat×side calibrators
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2547692Z 2026-05-14 19:42:39,629 [INFO]   PMF pipeline ready for 8/8 stats: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2548364Z 2026-05-14 19:42:39,629 [INFO]   PMF calibrators loaded: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2549119Z 2026-05-14 19:42:42,011 [INFO]   Availability table has no rows for today; live builder ready for on-demand features_for calls per player-game.
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2549723Z 2026-05-14 19:42:42,011 [INFO] Loading historical data...
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2550100Z 2026-05-14 19:42:46,596 [INFO] Fetching today's games (2026-05-14)...
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2550460Z 2026-05-14 19:42:46,820 [WARNING] No games today.
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2554426Z ##[error]PREDICT_OUTPUTS_MISSING date=2026-05-14 mode=morning missing=all_props_2026-05-14.parquet,pmf_display_2026-05-14.json,singles_2026-05-14.json
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2557120Z PREDICT_OUTPUTS_MISSING date=2026-05-14 mode=morning missing=all_props_2026-05-14.parquet,pmf_display_2026-05-14.json,singles_2026-05-14.json
+morning	Predictions readiness gate (Phase 13AM)	2026-05-14T19:42:47.2610236Z ##[error]Process completed with exit code 1.
+morning	Post Run actions/checkout@v5	﻿2026-05-14T19:42:47.2740442Z Post job cleanup.
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3585716Z [command]/usr/bin/git version
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3621901Z git version 2.53.0
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3658287Z Temporarily overriding HOME='/home/runner/work/_temp/2014f988-8115-413d-8eb7-f3e1c92f9f6a' before making global git config changes
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3659568Z Adding repository directory to the temporary git global config as a safe directory
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3664652Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3700836Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3735010Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3973931Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.3997438Z http.https://github.com/.extraheader
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.4009694Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.4044475Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.4284112Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+morning	Post Run actions/checkout@v5	2026-05-14T19:42:47.4315942Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+morning	Complete job	﻿2026-05-14T19:42:47.4682693Z Cleaning up orphan processes

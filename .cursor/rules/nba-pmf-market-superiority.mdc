@@ -1,0 +1,65 @@
+---
+alwaysApply: true
+---
+
+# NBA PMF market-superiority rules
+
+Target branch:
+m8-6-calibration-market-superiority-20260512
+
+The model predicts a full discrete PMF q_i(k) for NBA player prop outcome X_i.
+
+For every eligible stat × role_bucket cell c, market superiority requires:
+
+UCB95(model_logloss - market_logloss) < -0.0025
+
+and
+
+UCB95(model_brier - market_brier) < -0.0010
+
+Lower loss is better. Therefore model-minus-market deltas must be negative.
+
+Calibration gate:
+
+ECE_c <= 0.025
+PIT_KS_c <= 0.075
+abs(mean_error_c) <= 0.15
+abs(variance_error_c) <= 0.20
+
+Never claim market superiority unless scripts/verify_stat_role_ucb_contract.py exits 0.
+
+Never improve metrics by:
+- dropping losing stat-role cells
+- filtering hard rows
+- using post-outcome features
+- using full-data OOF leakage
+- changing thresholds to pass
+- using closing odds for earlier snapshots unless that snapshot is close-lock
+
+When fixing failures, classify each failing stat-role cell as one of:
+
+1. mean bias
+2. variance / dispersion failure
+3. p0 / hurdle failure
+4. threshold-CDF calibration failure
+5. role/minutes failure
+6. sharpness failure versus market
+7. insufficient sample
+
+Preferred repair order:
+
+1. fix leakage
+2. fix PMF validity
+3. fix p0/hurdle for sparse roles
+4. fix CDF threshold calibration
+5. fix mean shift
+6. fix variance temperature
+7. fix role/minutes features
+8. only then test guarded market anchoring
+
+Required verification after any change:
+
+python -m compileall src scripts
+python scripts/build_event_market_loss_rows.py --date 2026-05-12
+python scripts/build_stat_role_market_superiority_report.py --date 2026-05-12 --include-ineligible --min-scored-rows 100 --min-market-joined-rows 100
+python scripts/verify_stat_role_ucb_contract.py --label 2026-05-12 --min-n 100

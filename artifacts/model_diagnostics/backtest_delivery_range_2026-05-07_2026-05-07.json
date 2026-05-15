@@ -1,0 +1,36 @@
+{
+  "dates_attempted": [
+    "2026-05-07"
+  ],
+  "dates_built": [
+    "2026-05-07"
+  ],
+  "dates_skipped": [],
+  "failures": [],
+  "stat_counts_per_date": {
+    "2026-05-07": {
+      "pts": 70,
+      "reb": 70,
+      "ast": 70,
+      "fg3m": 70,
+      "tov": 70,
+      "stl": 70,
+      "blk": 70,
+      "stocks": 70,
+      "pa": 70,
+      "pr": 70,
+      "ra": 70,
+      "pra": 70
+    }
+  },
+  "all_twelve_mission_stats_per_date": {
+    "2026-05-07": true
+  },
+  "stat_grid_diagnostics": [
+    {
+      "date": "2026-05-07",
+      "diagnose_rc": 0,
+      "tail": "STAT_GRID_INTEGRITY_DIAG wrote artifacts/model_diagnostics/stat_grid_integrity_2026-05-07.json\n"
+    }
+  ]
+}

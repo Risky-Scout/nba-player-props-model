@@ -1,0 +1,141 @@
+=== OOF FILES ===
+
+FILE data/oof_pmfs.parquet
+-rw-r--r--  1 josephshackelford  staff    28M May 10 19:32 data/oof_pmfs.parquet
+
+FILE data/oof_combo_pmfs.parquet
+-rw-r--r--  1 josephshackelford  staff    24M May 10 21:55 data/oof_combo_pmfs.parquet
+
+FILE data/oof_combo_pmfs.manifest.json
+-rw-r--r--  1 josephshackelford  staff   1.4K May 11 02:52 data/oof_combo_pmfs.manifest.json
+
+=== OOF COLUMN / ROLE / STAT AUDIT ===
+
+PATH data/oof_pmfs.parquet
+ROWS 153664
+COLUMNS ['stat', 'player_id', 'game_id', 'game_date', 'outcome', 'pmf', 'fold_start', 'fold_end', 'role_bucket', 'minutes_mean', 'minutes_std', 'minutes_q10', 'minutes_q25', 'minutes_q50', 'minutes_q75', 'minutes_q90', 'p_inactive', 'p_limited', 'p_normal', 'pmf_active']
+stat_nonnull 153664
+role_bucket_nonnull 153664
+outcome_nonnull 153664
+pmf_nonnull 153664
+pmf_active_nonnull 153664
+game_date_nonnull 153664
+fold_start_nonnull 153664
+fold_end_nonnull 153664
+STAT_COUNTS
+stat
+ast       19208
+blk       19208
+fg3m      19208
+pts       19208
+reb       19208
+stl       19208
+stocks    19208
+tov       19208
+ROLE_COUNTS
+role_bucket
+bench            26288
+core             41984
+fringe           10368
+inactive_risk     9896
+rotation         38176
+starter          26952
+STAT_ROLE_COUNTS_HEAD
+stat    role_bucket  
+fg3m    core             5248
+pts     core             5248
+tov     core             5248
+stl     core             5248
+reb     core             5248
+ast     core             5248
+blk     core             5248
+stocks  core             5248
+pts     rotation         4772
+reb     rotation         4772
+fg3m    rotation         4772
+blk     rotation         4772
+stocks  rotation         4772
+stl     rotation         4772
+ast     rotation         4772
+tov     rotation         4772
+pts     starter          3369
+tov     starter          3369
+fg3m    starter          3369
+stl     starter          3369
+blk     starter          3369
+stocks  starter          3369
+ast     starter          3369
+reb     starter          3369
+stocks  bench            3286
+stl     bench            3286
+tov     bench            3286
+ast     bench            3286
+reb     bench            3286
+fg3m    bench            3286
+blk     bench            3286
+pts     bench            3286
+ast     fringe           1296
+tov     fringe           1296
+blk     fringe           1296
+reb     fringe           1296
+stocks  fringe           1296
+fg3m    fringe           1296
+stl     fringe           1296
+pts     fringe           1296
+fg3m    inactive_risk    1237
+stocks  inactive_risk    1237
+blk     inactive_risk    1237
+stl     inactive_risk    1237
+ast     inactive_risk    1237
+tov     inactive_risk    1237
+pts     inactive_risk    1237
+reb     inactive_risk    1237
+
+PATH data/oof_combo_pmfs.parquet
+ROWS 76832
+COLUMNS ['game_date', 'game_id', 'player_id', 'role_bucket', 'stat', 'mission_stat', 'components', 'outcome', 'pmf', 'pmf_json', 'support_min', 'support_max', 'pmf_sum_error', 'pmf_valid', 'n_draws', 'combo_oof_method', 'combo_pmf_version', 'dataset_status', 'oof_window_start', 'oof_window_end', 'training_cutoff_date', 'days_since_oof_window_end', 'path_building_warning', 'production_promoted', 'final_calibration_ready', 'calibrated', 'calibration_status', 'source_oof_path']
+stat_nonnull 76832
+role_bucket_nonnull 76832
+outcome_nonnull 76832
+pmf_nonnull 76832
+game_date_nonnull 76832
+STAT_COUNTS
+stat
+pa        19208
+pr        19208
+pra       19208
+stocks    19208
+ROLE_COUNTS
+role_bucket
+bench            13144
+core             20992
+fringe            5184
+inactive_risk     4948
+rotation         19088
+starter          13476
+STAT_ROLE_COUNTS_HEAD
+stat    role_bucket  
+pra     core             5248
+stocks  core             5248
+pr      core             5248
+pa      core             5248
+stocks  rotation         4772
+pa      rotation         4772
+pra     rotation         4772
+pr      rotation         4772
+stocks  starter          3369
+pa      starter          3369
+pra     starter          3369
+pr      starter          3369
+stocks  bench            3286
+pa      bench            3286
+pr      bench            3286
+pra     bench            3286
+        fringe           1296
+pr      fringe           1296
+stocks  fringe           1296
+pa      fringe           1296
+pra     inactive_risk    1237
+pr      inactive_risk    1237
+pa      inactive_risk    1237
+stocks  inactive_risk    1237

@@ -1,0 +1,34 @@
+{
+  "label": "dates_e77f109a685a",
+  "market_pmf_used": false,
+  "eligible_segments": 4,
+  "failures_n": 7,
+  "required_stats_missing_in_event_rows": [
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "required_stats_without_event_market_coverage": [
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "calibration_gate": {
+    "status": "not_evaluated_fold_diagnostics_required"
+  },
+  "calibration_contract_pass": true,
+  "global_math_pass": false,
+  "event_calibration_applied": true,
+  "event_calibration_version": "guarded_platt_v1",
+  "event_calibration_stage": "oof_date_holdout_one_fold_per_date",
+  "event_calibration_source": "guarded_oof_actuals_only",
+  "market_prob_used_as_training_label": false
+}

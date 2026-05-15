@@ -1,0 +1,23 @@
+{
+  "by_game": {
+    "21707976": {
+      "close_lock": {
+        "blocker": "",
+        "matched_rows": 98,
+        "mean_nll": 2.043820669748598,
+        "median_p_realized": 0.14786072864772096,
+        "present": true,
+        "snapshot_dir": "deliveries/2026-05-12/derek_game_snapshots/21707976/close_lock"
+      }
+    }
+  },
+  "code_commit": "5c9c8e3a0f49176424eebd27a398f73e4a122830",
+  "delivery_date": "2026-05-12",
+  "generated_at_utc": "2026-05-14T05:17:58+00:00",
+  "schema_version": "1.0",
+  "status": "scored",
+  "summary": {
+    "mean_nll": 2.043820669748598,
+    "snapshots_scored": 1
+  }
+}

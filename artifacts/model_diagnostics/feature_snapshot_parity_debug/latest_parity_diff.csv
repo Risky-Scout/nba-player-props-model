@@ -1,0 +1,2 @@
+category,column,training_value,prediction_value,delta,severity,notes
+asof_timestamp_mismatch,"source_data_asof_utc,asof_utc,snapshot_time_utc",,,,info,not_comparable_no_shared_keys_or_missing_timestamp_columns

@@ -1,0 +1,21 @@
+{
+  "label": "dates_24c1750e26ad",
+  "source_git_head": "7a11dd8627f17543f116885d675901ba319f12a8",
+  "event_neutral_manifest_path": "artifacts/models/event_neutral_probability_scale_repair_dates_24c1750e26ad.json",
+  "event_neutral_manifest_exists": true,
+  "event_neutral_accepted_calibrators": 29,
+  "pmf_mean_shift_manifest_path": "artifacts/models/pmf_mean_shift_repair_dates_24c1750e26ad.json",
+  "pmf_mean_shift_manifest_exists": true,
+  "pmf_mean_shift_accepted_transforms": 3,
+  "pmf_mean_shift_rollback_count": 3,
+  "strict_summary_global_ok": false,
+  "strict_last_classifier": "FAIL_OR_BLOCKED",
+  "math_global_pass": false,
+  "math_failures_n": 76,
+  "claim_allowed": false,
+  "stat_role_passing_segments": 7,
+  "stat_role_failing_segments": 89,
+  "stat_role_eligible_segments": 42,
+  "loss_rows_parquet_exists": true,
+  "artifacts_stale_risk_loss_rows_older_than_build_script_commit": false
+}

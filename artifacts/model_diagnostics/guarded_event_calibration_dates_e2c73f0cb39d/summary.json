@@ -1,0 +1,5 @@
+{
+  "n_selected": 0,
+  "n_rollbacks": 22,
+  "out_model": "artifacts/models/guarded_event_calibration.json"
+}

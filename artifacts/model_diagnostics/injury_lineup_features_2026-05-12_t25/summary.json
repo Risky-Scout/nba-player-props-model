@@ -1,0 +1,9 @@
+{
+  "date": "2026-05-12",
+  "run_mode": "t25",
+  "n_rows": 32,
+  "official_lineup_available_any": false,
+  "stale_injury_rows": 32,
+  "stale_lineup_rows": 32,
+  "pass": true
+}

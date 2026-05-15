@@ -1,0 +1,74 @@
+{
+  "date": "dates_e2c73f0cb39d",
+  "dates_used": [
+    "2026-05-06",
+    "2026-05-07",
+    "2026-05-12"
+  ],
+  "date_range": null,
+  "dates_file_mode": true,
+  "dates_fingerprint": "e2c73f0cb39d",
+  "global_market_superiority_claim_allowed": false,
+  "eligible_market_subset_superiority_claim_allowed": false,
+  "model_only_calibration_claim_allowed": false,
+  "required_stats_total": 12,
+  "required_stats_with_event_market_coverage": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "required_stats_without_event_market_coverage": [],
+  "no_offered_market_stats": [
+    "blk",
+    "pa",
+    "pr",
+    "pra",
+    "ra",
+    "stl",
+    "stocks"
+  ],
+  "not_requested_market_stats": [],
+  "parser_dropped_market_stats": [],
+  "join_failed_market_stats": [],
+  "insufficient_sample_stats": [
+    "tov"
+  ],
+  "eligible_segments_total": 17,
+  "eligible_segments_passed": 5,
+  "eligible_segments_failed": 12,
+  "blocked_segments_total": 91,
+  "blocked_segment_reasons": {
+    "insufficient_scored_rows": 79,
+    "model_logloss_not_better": 12
+  },
+  "claim_blockers": [
+    {
+      "kind": "eligible_segments_failed_market_superiority",
+      "count": 12,
+      "failure_reasons": {
+        "model_logloss_not_better": 12
+      }
+    }
+  ],
+  "n_segments_total": 96,
+  "n_segments_passed": 5,
+  "n_segments_failed": 91,
+  "required_stats_missing_in_event_rows": [],
+  "min_scored_rows": 100,
+  "min_market_joined_rows": 100,
+  "event_calibration_applied": true,
+  "event_calibration_version": "guarded_line_iso_platt_v1",
+  "event_calibration_stage": "oof_date_holdout_one_fold_per_date",
+  "event_calibration_source": "guarded_oof_actuals_only",
+  "market_pmf_used": false,
+  "market_prob_used_as_training_label": false
+}

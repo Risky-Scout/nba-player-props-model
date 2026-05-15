@@ -1,0 +1,4 @@
+{
+  "pass_all": true,
+  "workflow": ".github/workflows/daily_pmf_delivery.yml"
+}

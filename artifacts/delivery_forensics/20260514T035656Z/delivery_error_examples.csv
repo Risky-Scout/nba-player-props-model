@@ -1,0 +1,4 @@
+error_code,severity,detail
+key_overlap,info,canonical_keys=816 alternative_keys=816 overlap=816
+,info,ok_rows=0
+join_status_not_ok,hard,rows_without_loss_join=816

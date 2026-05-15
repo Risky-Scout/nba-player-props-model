@@ -1,0 +1,38 @@
+{
+  "date": "2026-04-29",
+  "path": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/predictions/stat_grid_2026-04-29.parquet",
+  "file_exists": true,
+  "parquet_mtime_utc": "2026-05-07T03:42:11.755215+00:00",
+  "row_count": 39,
+  "stat_counts": {
+    "tov": 39
+  },
+  "mission_stats_present": [
+    "tov"
+  ],
+  "mission_stats_missing": [
+    "ast",
+    "blk",
+    "fg3m",
+    "pa",
+    "pr",
+    "pra",
+    "pts",
+    "ra",
+    "reb",
+    "stl",
+    "stocks"
+  ],
+  "player_count_by_stat": {
+    "tov": 39
+  },
+  "pairs_by_stat": {
+    "tov": 39
+  },
+  "tov_only_artifact": true,
+  "possible_origin": "legacy_tov_supplement",
+  "recommended_action": "rebuild_with_full_mission_stats",
+  "require_mission_stats": true,
+  "diagnosed_at_utc": "2026-05-13T21:05:01Z",
+  "contract_hint": "fail"
+}

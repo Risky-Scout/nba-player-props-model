@@ -1,0 +1,10 @@
+{
+  "label": "2026-05-12",
+  "min_n": 100,
+  "eligible_cells": 0,
+  "passed_cells": 0,
+  "failed_cells": 0,
+  "global_pass": false,
+  "tau_logloss": 0.0025,
+  "tau_brier": 0.001
+}

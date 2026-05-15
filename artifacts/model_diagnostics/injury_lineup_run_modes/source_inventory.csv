@@ -1,0 +1,5 @@
+run_mode,audit_date,n_rows,official_lineup_available_any,stale_injury_rows,stale_lineup_rows
+morning_expected,2026-05-13,0,False,0,0
+t25,2026-05-12,32,False,32,32
+t5,2026-05-12,32,False,32,32
+final_after_game,2026-05-12,32,False,32,0

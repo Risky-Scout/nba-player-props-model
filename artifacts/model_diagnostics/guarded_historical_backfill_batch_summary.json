@@ -1,0 +1,9 @@
+{
+  "start_date": "2026-04-27",
+  "end_date": "2026-05-12",
+  "regions": "us,us2",
+  "stopped_reason": null,
+  "n_result_steps": 63,
+  "plan_csv": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/guarded_historical_backfill_batch_plan.csv",
+  "results_csv": "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/artifacts/model_diagnostics/guarded_historical_backfill_batch_results.csv"
+}

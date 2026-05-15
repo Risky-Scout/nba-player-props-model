@@ -1,0 +1,698 @@
+derek_near_lineup	UNKNOWN STEP	﻿2026-05-10T23:31:52.2332488Z Current runner version: '2.334.0'
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2359333Z ##[group]Runner Image Provisioner
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2360151Z Hosted Compute Agent
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2360705Z Version: 20260213.493
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2361377Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2362099Z Build Date: 2026-02-13T00:28:41Z
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2362778Z Worker ID: {04a6b7d2-f680-4705-a4bd-9930d3d7abf5}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2363509Z Azure Region: northcentralus
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2364294Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2365798Z ##[group]Operating System
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2366462Z Ubuntu
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2366941Z 24.04.4
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2367401Z LTS
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2367918Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2368440Z ##[group]Runner Image
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2369043Z Image: ubuntu-24.04
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2369652Z Version: 20260413.86.1
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2370852Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2372347Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2373195Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2376191Z ##[group]GITHUB_TOKEN Permissions
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2378519Z Actions: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2379050Z ArtifactMetadata: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2379684Z Attestations: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2380203Z Checks: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2380663Z Contents: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2381256Z Deployments: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2381785Z Discussions: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2382307Z Issues: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2382884Z Metadata: read
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2383378Z Models: read
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2384159Z Packages: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2384833Z Pages: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2385677Z PullRequests: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2386251Z RepositoryProjects: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2387102Z SecurityEvents: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2387678Z Statuses: write
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2388218Z VulnerabilityAlerts: read
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2388872Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2390948Z Secret source: Actions
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2392009Z Prepare workflow directory
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2799447Z Prepare all required actions
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.2836641Z Getting action download info
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.5938538Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.7228895Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.8980503Z Complete job name: derek_near_lineup
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9725083Z ##[group]Run actions/checkout@v5
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9726417Z with:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9727017Z   fetch-depth: 0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9727672Z   repository: Risky-Scout/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9728408Z   token: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9728806Z   ssh-strict: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9729204Z   ssh-user: git
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9729595Z   persist-credentials: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9730064Z   clean: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9730484Z   sparse-checkout-cone-mode: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9730947Z   fetch-tags: false
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9731336Z   show-progress: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9731735Z   lfs: false
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9732092Z   submodules: false
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9732493Z   set-safe-directory: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9733265Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9733642Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9734467Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:52.9734976Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0677734Z Syncing repository: Risky-Scout/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0679653Z ##[group]Getting Git version info
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0680483Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0681682Z [command]/usr/bin/git version
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0716350Z git version 2.53.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0769715Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0786501Z Temporarily overriding HOME='/home/runner/work/_temp/5de5b93b-b271-4881-91cc-e1d3325b452c' before making global git config changes
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0792498Z Adding repository directory to the temporary git global config as a safe directory
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0794814Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0829900Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0833597Z ##[group]Initializing the repository
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0839134Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0927162Z hint: Using 'master' as the name for the initial branch. This default branch name
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0928734Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0929836Z hint: to use in all of your new repositories, which will suppress this warning,
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0930530Z hint: call:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0930907Z hint:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0931475Z hint: 	git config --global init.defaultBranch <name>
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0932025Z hint:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0932559Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0933419Z hint: 'development'. The just-created branch can be renamed via this command:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0934714Z hint:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0935308Z hint: 	git branch -m <name>
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0935741Z hint:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0936313Z hint: Disable this message with "git config set advice.defaultBranchName false"
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0937610Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0939659Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0968948Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0969640Z ##[group]Disabling automatic garbage collection
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.0972542Z [command]/usr/bin/git config --local gc.auto 0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1000260Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1000906Z ##[group]Setting up auth
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1007160Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1037689Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1333971Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1363639Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1584647Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1615700Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1831814Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1864736Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1865441Z ##[group]Fetching the repository
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:31:53.1874475Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4343869Z From https://github.com/Risky-Scout/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4344806Z  * [new branch]        main       -> origin/main
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4379091Z [command]/usr/bin/git branch --list --remote origin/main
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4401836Z   origin/main
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4410975Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4430708Z 0e73097d08a444f5ebe09ddf8839f51a0b7b6bb2
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4435354Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4436107Z ##[group]Determining the checkout info
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4437276Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4441256Z [command]/usr/bin/git sparse-checkout disable
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4475576Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4501885Z ##[group]Checking out the ref
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:48.4505762Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:49.5039565Z Updating files:  26% (739/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:49.7177735Z Updating files:  27% (746/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:49.9112470Z Updating files:  28% (773/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0345013Z Updating files:  29% (801/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0356774Z Updating files:  30% (828/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0372908Z Updating files:  31% (856/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0389171Z Updating files:  32% (884/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0407416Z Updating files:  33% (911/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0428845Z Updating files:  34% (939/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.0453958Z Updating files:  35% (966/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.3556850Z Updating files:  36% (994/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.3619508Z Updating files:  37% (1022/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.3990212Z Updating files:  38% (1049/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.4311977Z Updating files:  39% (1077/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.4571252Z Updating files:  40% (1104/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.4616015Z Updating files:  40% (1130/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.4878482Z Updating files:  41% (1132/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5002255Z Updating files:  42% (1160/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5160326Z Updating files:  43% (1187/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5242202Z Updating files:  44% (1215/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5554614Z Updating files:  45% (1242/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5680772Z Updating files:  46% (1270/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5776622Z Updating files:  47% (1298/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5857221Z Updating files:  48% (1325/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5870203Z Updating files:  49% (1353/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5885826Z Updating files:  50% (1380/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5898162Z Updating files:  51% (1408/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.5965350Z Updating files:  52% (1436/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6066544Z Updating files:  53% (1463/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6114245Z Updating files:  54% (1491/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6166714Z Updating files:  55% (1518/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6237197Z Updating files:  56% (1546/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6324339Z Updating files:  57% (1574/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6354264Z Updating files:  58% (1601/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6373443Z Updating files:  59% (1629/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6422388Z Updating files:  60% (1656/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6587433Z Updating files:  61% (1684/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6665417Z Updating files:  62% (1712/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6709643Z Updating files:  63% (1739/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6786240Z Updating files:  64% (1767/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6848880Z Updating files:  65% (1794/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.6912752Z Updating files:  66% (1822/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.7036096Z Updating files:  67% (1850/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.7238658Z Updating files:  68% (1877/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.7382286Z Updating files:  69% (1905/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.7566318Z Updating files:  70% (1932/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.7849091Z Updating files:  71% (1960/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.7974769Z Updating files:  72% (1988/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.8150143Z Updating files:  73% (2015/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.8333555Z Updating files:  74% (2043/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.8680030Z Updating files:  75% (2070/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9006116Z Updating files:  76% (2098/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9705295Z Updating files:  77% (2126/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9733913Z Updating files:  78% (2153/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9844942Z Updating files:  79% (2181/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9877849Z Updating files:  80% (2208/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9897859Z Updating files:  81% (2236/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:50.9909512Z Updating files:  82% (2264/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.0004260Z Updating files:  83% (2291/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.0027213Z Updating files:  84% (2319/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.0354549Z Updating files:  85% (2346/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.0648578Z Updating files:  86% (2374/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.0902762Z Updating files:  87% (2402/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.1079861Z Updating files:  88% (2429/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.1267841Z Updating files:  89% (2457/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.1818483Z Updating files:  90% (2484/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2084410Z Updating files:  91% (2512/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2111812Z Updating files:  92% (2540/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2144609Z Updating files:  93% (2567/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2175515Z Updating files:  94% (2595/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2203006Z Updating files:  95% (2622/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2227120Z Updating files:  96% (2650/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2251485Z Updating files:  97% (2678/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2282650Z Updating files:  98% (2705/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2296897Z Updating files:  99% (2733/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2297378Z Updating files: 100% (2760/2760)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2298070Z Updating files: 100% (2760/2760), done.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2337065Z Switched to a new branch 'main'
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2345415Z branch 'main' set up to track 'origin/main'.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2478394Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2516900Z [command]/usr/bin/git log -1 --format=%H
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2539294Z 0e73097d08a444f5ebe09ddf8839f51a0b7b6bb2
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2770795Z ##[group]Run actions/setup-python@v6
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2771079Z with:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2771263Z   python-version: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2771462Z   cache: pip
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2771651Z   check-latest: false
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2771976Z   token: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2772165Z   update-environment: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2772395Z   allow-prereleases: false
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2772613Z   freethreaded: false
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2772796Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2772998Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2773216Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.2773465Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.4061678Z ##[group]Installed versions
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.4258461Z Successfully set up CPython (3.11.15)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.4259341Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:51.7390328Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:53.2747265Z /home/runner/.cache/pip
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:53.3894407Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:54.5494779Z Received 113246208 of 147023073 (77.0%), 108.0 MBs/sec
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:54.8097163Z Received 147023073 of 147023073 (100.0%), 110.8 MBs/sec
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:54.8098510Z Cache Size: ~140 MB (147023073 B)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:54.8137074Z [command]/usr/bin/tar -xf /home/runner/work/_temp/fe2f6cb2-f5fa-4c89-a7ee-d82ea311d543/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0092750Z Cache restored successfully
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0160153Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0324287Z ##[group]Run pip install -r requirements.txt
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0324701Z ^[[36;1mpip install -r requirements.txt^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0352238Z shell: /usr/bin/bash -e {0}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0352495Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0352682Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0352918Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0353270Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0354025Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0354473Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0354849Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0355229Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0355599Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:55.0356121Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.0513501Z Collecting lightgbm==4.3.0 (from -r requirements.txt (line 1))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.0529167Z   Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl.metadata (19 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.1348052Z Collecting scikit-learn==1.4.2 (from -r requirements.txt (line 2))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.1364505Z   Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.2605125Z Collecting pandas==2.2.3 (from -r requirements.txt (line 3))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.2621879Z   Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.4539978Z Collecting numpy==1.26.4 (from -r requirements.txt (line 4))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.4557014Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.4831043Z Collecting requests==2.32.3 (from -r requirements.txt (line 5))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.4845238Z   Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.5737360Z Collecting pyarrow==16.1.0 (from -r requirements.txt (line 6))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.5752322Z   Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.5904019Z Collecting joblib==1.4.2 (from -r requirements.txt (line 7))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.5917866Z   Using cached joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7032090Z Collecting scipy==1.13.1 (from -r requirements.txt (line 8))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7047748Z   Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7454022Z Collecting nbainjuries==1.1.1 (from -r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7468199Z   Using cached nbainjuries-1.1.1-py3-none-any.whl.metadata (9.8 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7721707Z Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.4.2->-r requirements.txt (line 2))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7735264Z   Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7861103Z Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.7874522Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.8177074Z Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.8732031Z   Downloading pytz-2026.2-py2.py3-none-any.whl.metadata (22 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.8930539Z Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.8969036Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.9829976Z Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.9845021Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:56.9981270Z Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0019649Z   Downloading idna-3.14-py3-none-any.whl.metadata (8.0 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0242042Z Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0282531Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0465183Z Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0521246Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0709529Z Collecting PyPDF2<4.0,>=3.0.1 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.0722949Z   Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5337794Z Collecting aiohttp<4.0,>=3.9.3 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5353335Z   Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5666307Z Collecting jpype1<1.6.0,>=1.5.2 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5680739Z   Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5835924Z Collecting tabula-py<3.0,>=2.9.0 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5849321Z   Using cached tabula_py-2.10.0-py3-none-any.whl.metadata (7.6 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5977551Z Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.5990935Z   Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.6449011Z Collecting aiosignal>=1.4.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.6464179Z   Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.6606473Z Collecting attrs>=17.3.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.6619869Z   Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.7237666Z Collecting frozenlist>=1.1.1 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.7252270Z   Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.9286603Z Collecting multidict<7.0,>=4.5 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.9302118Z   Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.9851027Z Collecting propcache>=0.2.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:57.9901553Z   Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.2694964Z Collecting yarl<2.0,>=1.17.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.2709858Z   Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.2915601Z Collecting packaging (from jpype1<1.6.0,>=1.5.2->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.2954570Z   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3124805Z Collecting distro (from tabula-py<3.0,>=2.9.0->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3138442Z   Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3357307Z Collecting typing-extensions>=4.2 (from aiosignal>=1.4.0->aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3370754Z   Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3486688Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 3))
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3499948Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3548659Z Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl (3.1 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3572396Z Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3626069Z Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3682684Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3756503Z Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3770002Z Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3920807Z Using cached joblib-1.4.2-py3-none-any.whl (301 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.3934417Z Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4078218Z Using cached nbainjuries-1.1.1-py3-none-any.whl (15 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4091012Z Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4110127Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4152948Z Downloading idna-3.14-py3-none-any.whl (72 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4217852Z Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (494 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4232673Z Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (246 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4246222Z Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4259699Z Using cached tabula_py-2.10.0-py3-none-any.whl (12.0 MB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4342628Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4398194Z Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (102 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4411391Z Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4424567Z Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4437414Z Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4486899Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4526545Z Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (231 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4578713Z Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (58 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4615152Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4657045Z Downloading pytz-2026.2-py2.py3-none-any.whl (510 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4729631Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4743147Z Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4756583Z Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4802710Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4850517Z Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.4891135Z Downloading packaging-26.2-py3-none-any.whl (100 kB)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:33:58.7487097Z Installing collected packages: pytz, urllib3, tzdata, typing-extensions, threadpoolctl, six, PyPDF2, propcache, packaging, numpy, multidict, joblib, idna, frozenlist, distro, charset-normalizer, certifi, attrs, aiohappyeyeballs, yarl, scipy, requests, python-dateutil, pyarrow, jpype1, aiosignal, scikit-learn, pandas, lightgbm, aiohttp, tabula-py, nbainjuries
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:11.6406665Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:11.6428320Z Successfully installed PyPDF2-3.0.1 aiohappyeyeballs-2.6.1 aiohttp-3.13.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026.4.22 charset-normalizer-3.4.7 distro-1.9.0 frozenlist-1.8.0 idna-3.14 joblib-1.4.2 jpype1-1.5.2 lightgbm-4.3.0 multidict-6.7.1 nbainjuries-1.1.1 numpy-1.26.4 packaging-26.2 pandas-2.2.3 propcache-0.5.2 pyarrow-16.1.0 python-dateutil-2.9.0.post0 pytz-2026.2 requests-2.32.3 scikit-learn-1.4.2 scipy-1.13.1 six-1.17.0 tabula-py-2.10.0 threadpoolctl-3.6.0 typing-extensions-4.15.0 tzdata-2026.2 urllib3-2.7.0 yarl-1.23.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:11.7386372Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:11.7386918Z [notice] A new release of pip is available: 26.0.1 -> 26.1.1
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:11.7387496Z [notice] To update, run: pip install --upgrade pip
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0383378Z ##[group]Run python3 scripts/verify_secrets_preflight.py --mode daily
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0384342Z ^[[36;1mpython3 scripts/verify_secrets_preflight.py --mode daily^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0407658Z shell: /usr/bin/bash -e {0}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0407907Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0408087Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0408328Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0408860Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0409284Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0409711Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0410076Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0410440Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0410810Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0411251Z   BDL_API_KEY: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0411517Z   ODDS_API_KEY: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0411709Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0690848Z Secrets preflight (mode=daily; values are never printed):
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0691622Z   Required (present):
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0692013Z     - BDL_API_KEY: len=36  sha256_prefix=51cb7776
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0692461Z     - ODDS_API_KEY: len=32  sha256_prefix=ecc6164e
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0693112Z   Recommended (missing — soft warn):
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0693470Z     - SFTP_HOST
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0694009Z     - SFTP_USER
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0694267Z     - SFTP_PASS
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0694522Z     - SFTP_PATH
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0694814Z     - DUNKS_AND_THREES_API_KEY (or any alias)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0695821Z SECRETS_PREFLIGHT_PASS  mode=daily  required_present=2  recommended_missing=['SFTP_HOST', 'SFTP_USER', 'SFTP_PASS', 'SFTP_PATH', 'DUNKS_AND_THREES_API_KEY (or any alias)']
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0772110Z ##[group]Run if [ -n "" ]; then
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0772404Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0772655Z ^[[36;1m  echo "date=" >> "$GITHUB_OUTPUT"^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0772916Z ^[[36;1melse^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0773153Z ^[[36;1m  ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0773533Z ^[[36;1m  echo "Resolved delivery_date=$ET_DATE via America/New_York"^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0774213Z ^[[36;1m  echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0774499Z ^[[36;1mfi^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0794985Z shell: /usr/bin/bash -e {0}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0795224Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0795397Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0795636Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0795984Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0796396Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0796835Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0797195Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0797576Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0797949Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0798255Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0912599Z Resolved delivery_date=2026-05-10 via America/New_York
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0954586Z ##[group]Run python3 scripts/predictions_readiness_gate.py \
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0955046Z ^[[36;1mpython3 scripts/predictions_readiness_gate.py \^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0955364Z ^[[36;1m  --date "2026-05-10" \^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0955620Z ^[[36;1m  --predict-cron-hour-utc 13 \^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0955906Z ^[[36;1m  --mode "derek_near_lineup"^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0976271Z shell: /usr/bin/bash -e {0}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0976509Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0976682Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0976917Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0977256Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0977665Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0978077Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0978447Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0978845Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0979218Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0979796Z   ODDS_API_KEY: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0980031Z   BDL_API_KEY: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.0980222Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.1321390Z [gate] predictions missing for 2026-05-10 mode=derek_near_lineup files=all_props_2026-05-10.parquet,pmf_display_2026-05-10.json,singles_2026-05-10.json
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.1323197Z [gate] now_utc=2026-05-10T23:34:12.131960+00:00 today_utc=2026-05-10 slate_date=2026-05-10 predict_cron_hour_utc=13
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.1341894Z ##[warning]predictions missing and predict cron should have fired; invoking predict.py for slate=2026-05-10 mode=derek_near_lineup
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:12.1349688Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/predict.py
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3226521Z 2026-05-10 23:34:14,047 [INFO] ============================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3227206Z Failed validation - Injury-Report_2026-05-10_11_00PM.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3227685Z Validated Injury-Report_2026-05-10_05_00PM.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3228033Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3228231Z ======================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3229148Z   NBA Props Model — SINGLES (4 picks above 2.5% EV)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3229767Z ======================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3230146Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3230449Z [ELITE]  Anthony Edwards — Steals UNDER 1.5
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3231017Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3231591Z   Model P: 79.2%  |  EV: +90.13%  |  Odds: +140
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3232098Z   Kelly:   0.113 units  |  Q50 proj: 0.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3232406Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3232706Z [ELITE]  Jaden McDaniels — Steals UNDER 1.5
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3233250Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3234102Z   Model P: 77.8%  |  EV: +86.74%  |  Odds: +140
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3234576Z   Kelly:   0.132 units  |  Q50 proj: 1.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3234886Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3235141Z [ELITE]  Devin Vassell — Blocks OVER 0.5
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3235635Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3236148Z   Model P: 67.8%  |  EV: +52.47%  |  Odds: +125
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3236603Z   Kelly:   0.081 units  |  Q50 proj: 1.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3236890Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3237135Z [ELITE]  Anthony Edwards — Threes UNDER 2.5
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3237644Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3238148Z   Model P: 65.3%  |  EV: +51.46%  |  Odds: +132
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3238604Z   Kelly:   0.068 units  |  Q50 proj: 2.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3238886Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3239065Z ======================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3239757Z   NBA Props Model — SGPs (2 candidates above 2.5% EV)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3240593Z ======================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3240842Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3240995Z   2-LEG SGP | San Antonio Spurs @ Minnesota Timberwolves
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3241432Z     Anthony Edwards — STL UNDER 1.5  (+140)  P=79.2%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3241951Z 2026-05-10 23:34:14,047 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3242412Z 2026-05-10 23:34:14,047 [INFO] ============================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3242792Z 2026-05-10 23:34:14,047 [INFO] Target date: 2026-05-10
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3243104Z 2026-05-10 23:34:14,047 [INFO] Loading models...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3243427Z 2026-05-10 23:34:14,138 [INFO]   pts: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3244101Z 2026-05-10 23:34:14,216 [INFO]   reb: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3244441Z 2026-05-10 23:34:14,291 [INFO]   ast: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3244764Z 2026-05-10 23:34:14,360 [INFO]   fg3m: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3245093Z 2026-05-10 23:34:14,426 [INFO]   stl: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3245614Z 2026-05-10 23:34:14,492 [INFO]   blk: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3245932Z 2026-05-10 23:34:14,566 [INFO]   tov: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3246239Z 2026-05-10 23:34:14,700 [INFO]   pra: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3246557Z 2026-05-10 23:34:14,843 [INFO]   pr: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3246875Z 2026-05-10 23:34:14,979 [INFO]   pa: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3247189Z 2026-05-10 23:34:15,116 [INFO]   ra: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3247514Z 2026-05-10 23:34:15,248 [INFO]   stocks: 11 quantile models
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3247897Z 2026-05-10 23:34:15,249 [INFO]   Within-player correlation engine loaded
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3248288Z 2026-05-10 23:34:15,250 [INFO]   Global calibrator loaded: OVER
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3248680Z 2026-05-10 23:34:15,251 [INFO]   Global calibrator loaded: UNDER
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3249255Z 2026-05-10 23:34:15,251 [INFO]   Q50 bias corrections: {'ast': 1.139, 'blk': 1.04, 'fg3m': 1.092, 'pts': 5.39, 'reb': 0.911, 'stl': 0.29}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3249917Z 2026-05-10 23:34:15,261 [INFO] ResidualCenterer: learned=['pts', 'ast', 'reb', 'fg3m']  fallback=[]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3250392Z 2026-05-10 23:34:15,261 [INFO]   Residual centerer loaded
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3250734Z 2026-05-10 23:34:15,315 [INFO]   FG3M hurdle model loaded
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3251102Z 2026-05-10 23:34:15,315 [INFO]   Live calibration table loaded: 46 entries
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3251525Z 2026-05-10 23:34:15,315 [INFO]   Minutes bucket corrections loaded: 12 entries
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3252101Z 2026-05-10 23:34:15,315 [INFO]   Calibration manifest: 0 promoted stat×side calibrators
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3252726Z 2026-05-10 23:34:15,328 [INFO]   PMF pipeline ready for 8/8 stats: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3253414Z 2026-05-10 23:34:15,328 [INFO]   PMF calibrators loaded: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3257211Z 2026-05-10 23:34:18,668 [INFO]   Availability table has no rows for today; live builder ready for on-demand features_for calls per player-game.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3257860Z 2026-05-10 23:34:18,668 [INFO] Loading historical data...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3258231Z 2026-05-10 23:34:23,825 [INFO] Fetching today's games (2026-05-10)...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3258556Z 2026-05-10 23:34:24,050 [INFO]   2 games
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3258924Z 2026-05-10 23:34:24,153 [INFO] Enriching game context with line movement snapshots...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3259406Z 2026-05-10 23:34:24,154 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3260022Z 2026-05-10 23:34:24,154 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3260474Z 2026-05-10 23:34:24,154 [INFO] Fetching injuries...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3260789Z 2026-05-10 23:34:24,269 [INFO]   25 BDL injury records
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3261274Z 2026-05-10 23:34:26,133 [INFO] NBA injury report: 4 players
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3261684Z 2026-05-10 23:34:26,169 [INFO] NBA injury report: 4 players matched to player_ids
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3262146Z 2026-05-10 23:34:26,169 [INFO]   27 players marked inactive (BDL + NBA official)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3262533Z 2026-05-10 23:34:26,169 [INFO] Fetching prop lines...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3262834Z 2026-05-10 23:34:26,544 [INFO]   83 prop lines
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3263152Z 2026-05-10 23:34:26,776 [INFO] Minutes CDF calibrator loaded.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3264277Z 2026-05-10 23:34:49,578 [INFO] Saved all-prop universe: /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/all_props_2026-05-10.parquet (32 rows)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3265061Z 2026-05-10 23:34:49,731 [INFO] Singles before portfolio limits: 32
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3265451Z 2026-05-10 23:34:49,731 [INFO] Singles after portfolio limits: 4
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3266347Z 2026-05-10 23:34:49,731 [INFO] Singles written → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-10.json  (safe before SGP step)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3267755Z 2026-05-10 23:34:49,732 [INFO] PMF display written → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/pmf_display_2026-05-10.json (4 props)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3268525Z 2026-05-10 23:34:49,732 [INFO] Generating SGP candidates (Gaussian copula)...
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3269457Z 2026-05-10 23:34:49,732 [INFO]   SGP candidate pool: 4 singles (4 eligible → capped at 6/game, max 60 total)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3270219Z 2026-05-10 23:34:49,823 [INFO]   2-leg: 1 | 3-leg: 1
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3271421Z 2026-05-10 23:34:49,824 [INFO] SGPs    → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/sgps_2026-05-10.json
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3272512Z     Jaden McDaniels — STL UNDER 1.5  (+140)  P=77.8%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3273160Z   Copula P: 60.1%  Naive: 61.6%  Combined: -104  EV: +17.90%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3273594Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3274098Z   3-LEG SGP | San Antonio Spurs @ Minnesota Timberwolves
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3274810Z     Anthony Edwards — STL UNDER 1.5  (+140)  P=79.2%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3275454Z     Jaden McDaniels — STL UNDER 1.5  (+140)  P=77.8%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3275858Z     Devin Vassell — BLK OVER 0.5  (+125)  P=67.8%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3276200Z   Copula P: 42.8%  Naive: 41.8%  Combined: +145  EV: +4.75%
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3276426Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3276501Z Files written:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3276915Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-10.json
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3277592Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/sgps_2026-05-10.json
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3278257Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/paper_trade_log.csv
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.3279244Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/publish_nba_props_today.py --date 2026-05-10
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.6895016Z NBA_PROPS_TODAY_PUBLISHED  date=2026-05-10  count=32  games=1  out=predictions/nba_props_today.json
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:50.7366339Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/verify_daily_prediction_outputs.py --date 2026-05-10
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.0903131Z DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-10  parquet_rows=32  singles=4  pmf_display=4  today_count=32
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1388514Z PREDICTIONS_READY date=2026-05-10 mode=derek_near_lineup
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1493598Z ##[group]Run DATE=2026-05-10
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1494367Z ^[[36;1mDATE=2026-05-10^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1494606Z ^[[36;1mFORCE_FLAG=""^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1494833Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1495089Z ^[[36;1m  FORCE_FLAG="--force-run"^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1495326Z ^[[36;1mfi^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1495568Z ^[[36;1mpython scripts/run_daily_delivery_pipeline.py \^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1495887Z ^[[36;1m  --date $DATE \^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1496128Z ^[[36;1m  --mode derek_near_lineup \^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1496413Z ^[[36;1m  --regions us us2 $FORCE_FLAG^[[0m
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1517671Z shell: /usr/bin/bash -e {0}
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1536745Z env:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1537077Z   PYTHON_VERSION: 3.11
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1537466Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1538025Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1538511Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1538933Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1539325Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1539710Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1540090Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1540522Z   ODDS_API_KEY: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1540759Z   BDL_API_KEY: ***
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:34:51.1540946Z ##[endgroup]
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9497509Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9498418Z refresh_daily_inputs — 2026-05-10
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9498924Z   regions=['us', 'us2']  snapshot_type=close_or_lock  max_events=20
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9499509Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9500036Z   → BDL refresh (player_game_stats)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9500411Z       incoming rows: 28
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9500789Z         distinct game_dates: ['2026-05-10']
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9501189Z         distinct game_ids:   1
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9501548Z         distinct players:    28
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9501876Z     
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9502130Z       merge summary:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9502457Z         rows kept (no key conflict):     84003
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9502887Z         rows replaced (key conflict):    0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9503286Z         rows added (new keys):           28
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9503948Z         final row count:                 84031
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9504471Z     
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9504831Z     wrote data/player_game_stats.parquet  (2026-05-10T23:34:53Z)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9505415Z   WARN: DUNKS_*_API_KEY unset; skipping D&T fetch.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9505930Z   → live-snapshot regions=us
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9506337Z       [quota] used=7161 remaining=4992839 last_cost=0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9506752Z     Live events: 3
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9507104Z       [quota] used=7169 remaining=4992831 last_cost=8
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9507603Z       [quota] used=7177 remaining=4992823 last_cost=8
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9508073Z       [quota] used=7185 remaining=4992815 last_cost=8
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9508558Z     Live slate: 3 events captured; 10468 quotes, 1986 pairs
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9509090Z   → live-snapshot regions=us2
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9509486Z       [quota] used=7185 remaining=4992815 last_cost=0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9509902Z     Live events: 3
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9510247Z       [quota] used=7194 remaining=4992806 last_cost=9
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9510710Z       [quota] used=7203 remaining=4992797 last_cost=9
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9511179Z       [quota] used=7212 remaining=4992788 last_cost=9
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9511669Z     Live slate: 3 events captured; 3076 quotes, 994 pairs
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9512013Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9512194Z wrote data/freshness_manifest/2026-05-10.json
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9512616Z   overall_status         : not_ready
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9512993Z   bdl_refresh.status     : ok
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9514121Z   dnt.status             : skipped:no_api_key
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9514590Z   odds.status            : ok
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9515700Z   odds.books_seen        : ['betmgm', 'betonlineag', 'betparx', 'bovada', 'draftkings', 'espnbet', 'fanatics', 'fanduel', 'fliff', 'hardrockbet', 'hardrockbet_az', 'hardrockbet_fl', 'williamhill_us']
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9516883Z   odds.market_coverage   : full
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9517268Z   predictions.exists     : True
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9517740Z   predictions.tov_status : missing_from_prediction_source
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9518257Z   availability.freshness : fresh
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9518642Z   artifacts.all_present  : False
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:05.9519046Z   finals.finality_status : finals_present
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:12.2024701Z 2026-05-10 23:35:12,202 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:12.2026412Z 2026-05-10 23:35:12,202 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:13.6243793Z 2026-05-10 23:35:13,624 [INFO] NBA injury report: 4 players
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:13.6590154Z 2026-05-10 23:35:13,658 [INFO] NBA injury report: 4 players matched to player_ids
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:35:17.3245014Z 2026-05-10 23:35:17,324 [INFO] Minutes CDF calibrator loaded.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9193428Z   loading historical inputs…
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9194718Z   fetching BDL games for 2026-05-10…
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9195286Z     2 games
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9195759Z   fetching injuries (BDL + NBA official)…
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9196339Z Failed validation - Injury-Report_2026-05-10_11_00PM.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9197122Z Validated Injury-Report_2026-05-10_05_00PM.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9197480Z     injury_map=29 inactive=27
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9197816Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9198462Z build_stat_grid_pmfs — date=2026-05-10 stats=['pts', 'reb', 'ast', 'fg3m', 'tov']
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9199313Z  slate source: recent_rosters(max_players_per_team=18)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9200153Z  output : predictions/stat_grid_2026-05-10.parquet
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9200766Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9201163Z  slate (player_id, game_id) pairs: 70
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9201474Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9201613Z   produced rows: 338
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9201901Z   skipped (player, game): 2
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9202176Z   per-stat counts:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9202405Z stat
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9202602Z ast     68
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9202813Z fg3m    66
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9203027Z pts     68
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9203224Z reb     68
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9203425Z tov     68
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9203547Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:44.9204030Z wrote predictions/stat_grid_2026-05-10.parquet  (2026-05-10T23:37:44Z)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0813393Z FATAL: production MODEL_ONLY stat counts are uneven for /home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet: {'ast': 67, 'blk': 3, 'fg3m': 65, 'pts': 67, 'reb': 67, 'stl': 4, 'tov': 67}. This usually means stale market-row/all_props PMFs contaminated the delivery.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0815434Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0816139Z daily delivery — 2026-05-10 — snapshot=pre_close
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0816661Z   model_version=0e73097d#phase10c  run_id=7243a11f-45e9-42be-a4d9-6162525942ce
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0817157Z   snapshot_time_utc=2026-05-10T23:37:45Z
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0817528Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0818045Z   building canonical from predictions/all_props_2026-05-10.parquet …
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0818652Z   + appended 308 stat-grid model-only rows (stats: ['ast', 'fg3m', 'pts', 'reb', 'tov'])
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.0819462Z   model_only: deliveries/2026-05-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet  (auto-built)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1979406Z FATAL: step exited 1: build 2026-05-10 pre_close
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1979874Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1980526Z daily delivery pipeline — date=2026-05-10  mode=derek_near_lineup
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1980990Z   regions=['us', 'us2']  rebuild_canonical=False  predict=False  force_run=False
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1981374Z   started_at_utc=2026-05-10T23:34:51Z
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1981658Z ========================================================================
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982063Z [gate] proceed=True  reason=no schedule data on disk; cron-only enforcement
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982384Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982471Z [$] refresh (close_or_lock)
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982614Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982698Z [$] stat_grid 2026-05-10
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982830Z 
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.1982919Z [$] build 2026-05-10 pre_close
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.2408706Z ##[error]Process completed with exit code 1.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.2514883Z Post job cleanup.
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3331978Z [command]/usr/bin/git version
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3368149Z git version 2.53.0
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3406364Z Temporarily overriding HOME='/home/runner/work/_temp/f6c43dc0-5455-4804-a1a6-30053cecd6b4' before making global git config changes
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3407718Z Adding repository directory to the temporary git global config as a safe directory
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3413225Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3448062Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3480180Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3735957Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3756878Z http.https://github.com/.extraheader
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3767972Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.3798986Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.4020984Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.4051210Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+derek_near_lineup	UNKNOWN STEP	2026-05-10T23:37:46.4404378Z Cleaning up orphan processes
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	﻿2026-05-10T23:31:52.5147298Z Current runner version: '2.334.0'
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5176138Z ##[group]Runner Image Provisioner
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5177092Z Hosted Compute Agent
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5177698Z Version: 20260213.493
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5178280Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5178986Z Build Date: 2026-02-13T00:28:41Z
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5179594Z Worker ID: {1c0d5bad-5f19-473e-ab3f-3a78be04ee88}
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5180395Z Azure Region: northcentralus
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5180939Z ##[endgroup]
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5182934Z ##[group]Operating System
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5183670Z Ubuntu
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5184106Z 24.04.4
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5184572Z LTS
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5185048Z ##[endgroup]
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5185549Z ##[group]Runner Image
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5186051Z Image: ubuntu-24.04
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5186604Z Version: 20260413.86.1
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5187770Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5189290Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5190127Z ##[endgroup]
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5191227Z ##[group]GITHUB_TOKEN Permissions
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5193899Z Actions: write
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5194454Z Contents: read
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5195029Z Metadata: read
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5195548Z ##[endgroup]
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5197754Z Secret source: Actions
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5198706Z Prepare workflow directory
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5696683Z Prepare all required actions
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.5770604Z Complete job name: Derek schedule bridge from PMF delivery cron
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6741846Z ##[group]Run DATE=$(TZ=America/New_York date +%Y-%m-%d)
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6743048Z ^[[36;1mDATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6743913Z ^[[36;1mecho "Triggering Derek due-snapshot workflow for $DATE"^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6744771Z ^[[36;1mgh workflow run derek_live_game_snapshots.yml \^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6745783Z ^[[36;1m  --repo "Risky-Scout/nba-player-props-model" \^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6746472Z ^[[36;1m  --ref main \^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6747012Z ^[[36;1m  -f delivery_date="$DATE" \^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6747568Z ^[[36;1m  -f snapshot_type=all \^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6748249Z ^[[36;1m  -f allow_backfill_test=false \^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.6748889Z ^[[36;1m  -f force=false^[[0m
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7267424Z shell: /usr/bin/bash -e {0}
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7268340Z env:
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7268825Z   PYTHON_VERSION: 3.11
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7269494Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7270376Z   GH_TOKEN: ***
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7271025Z ##[endgroup]
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:52.7560857Z Triggering Derek due-snapshot workflow for 2026-05-10
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:53.9347623Z https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25642809510
+Derek schedule bridge from PMF delivery cron	UNKNOWN STEP	2026-05-10T23:31:53.9474820Z Cleaning up orphan processes

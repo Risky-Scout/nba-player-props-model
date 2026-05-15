@@ -1,0 +1,4 @@
+kind,key,count
+rollback_reason,small_fold,16
+rollback_reason,rollback_fold_worse,14
+rollback_reason,insufficient_rows_or_no_dates,2

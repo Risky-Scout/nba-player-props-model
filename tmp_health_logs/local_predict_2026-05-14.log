@@ -1,0 +1,34 @@
+2026-05-14 16:28:46,500 [INFO] ============================================================
+2026-05-14 16:28:46,500 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+2026-05-14 16:28:46,500 [INFO] ============================================================
+2026-05-14 16:28:46,500 [INFO] Target date: 2026-05-14
+2026-05-14 16:28:46,500 [INFO] Loading models...
+2026-05-14 16:28:46,681 [INFO]   pts: 11 quantile models
+2026-05-14 16:28:46,718 [INFO]   reb: 11 quantile models
+2026-05-14 16:28:46,750 [INFO]   ast: 11 quantile models
+2026-05-14 16:28:46,784 [INFO]   fg3m: 11 quantile models
+2026-05-14 16:28:46,814 [INFO]   stl: 11 quantile models
+2026-05-14 16:28:46,847 [INFO]   blk: 11 quantile models
+2026-05-14 16:28:46,878 [INFO]   tov: 11 quantile models
+2026-05-14 16:28:46,940 [INFO]   pra: 11 quantile models
+2026-05-14 16:28:46,999 [INFO]   pr: 11 quantile models
+2026-05-14 16:28:47,058 [INFO]   pa: 11 quantile models
+2026-05-14 16:28:47,119 [INFO]   ra: 11 quantile models
+2026-05-14 16:28:47,183 [INFO]   stocks: 11 quantile models
+2026-05-14 16:28:47,184 [INFO]   Within-player correlation engine loaded
+2026-05-14 16:28:47,184 [INFO]   Global calibrator loaded: OVER
+2026-05-14 16:28:47,185 [INFO]   Global calibrator loaded: UNDER
+2026-05-14 16:28:47,185 [INFO]   Q50 bias corrections: {'ast': 1.139, 'blk': 1.04, 'fg3m': 1.092, 'pts': 5.39, 'reb': 0.911, 'stl': 0.29}
+2026-05-14 16:28:47,192 [INFO] ResidualCenterer: learned=['pts', 'ast', 'reb', 'fg3m']  fallback=[]
+2026-05-14 16:28:47,192 [INFO]   Residual centerer loaded
+2026-05-14 16:28:47,233 [INFO]   FG3M hurdle model loaded
+2026-05-14 16:28:47,233 [INFO]   Live calibration table loaded: 46 entries
+2026-05-14 16:28:47,233 [INFO]   Minutes bucket corrections loaded: 12 entries
+2026-05-14 16:28:47,234 [INFO]   Calibration manifest: 0 promoted stat×side calibrators
+2026-05-14 16:28:47,244 [INFO]   PMF pipeline ready for 8/8 stats: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+2026-05-14 16:28:47,244 [INFO]   PMF calibrators loaded: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+2026-05-14 16:28:49,800 [INFO]   Availability table has no rows for today; live builder ready for on-demand features_for calls per player-game.
+2026-05-14 16:28:49,800 [INFO] Loading historical data...
+2026-05-14 16:28:53,168 [INFO] Fetching today's games (2026-05-14)...
+2026-05-14 16:28:53,813 [INFO] No games today.
+2026-05-14 16:28:53,824 [INFO] No-game slate artifacts written for 2026-05-14 (reason=no_games_slate)

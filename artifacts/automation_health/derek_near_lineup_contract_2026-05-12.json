@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "date": "2026-05-12",
+  "generated_at_utc": "2026-05-14T05:17:48+00:00",
+  "facts": {
+    "date": "2026-05-12",
+    "pred_parquet_path": "predictions/all_props_2026-05-12.parquet",
+    "pred_parquet_present": false,
+    "feed_dir_path": "deliveries/2026-05-12/derek_forward_feed",
+    "feed_dir_present": true,
+    "pmf_display_json_present": false,
+    "singles_json_present": false,
+    "schedule_records_seen": 0,
+    "et_mismatches": [],
+    "any_game_tipped": false,
+    "feed_manifest_present": true
+  },
+  "failures": [
+    "missing predictions parquet: predictions/all_props_2026-05-12.parquet",
+    "missing pmf_display_json: predictions/pmf_display_2026-05-12.json",
+    "missing singles_json: predictions/singles_2026-05-12.json"
+  ],
+  "warnings": [],
+  "outcome": "fail"
+}

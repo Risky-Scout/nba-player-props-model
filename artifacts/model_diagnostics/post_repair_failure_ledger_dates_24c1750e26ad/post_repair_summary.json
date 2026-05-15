@@ -1,0 +1,11 @@
+{
+  "label": "dates_24c1750e26ad",
+  "eligible_segments": 42,
+  "blocker_counts_eligible": {
+    "bootstrap_ci_not_better": 40,
+    "calibration_pass_false": 1,
+    "variance_too_narrow": 1
+  },
+  "recommended_next_repair_family_mode": "bootstrap_ci_not_better",
+  "claim_allowed_global": false
+}

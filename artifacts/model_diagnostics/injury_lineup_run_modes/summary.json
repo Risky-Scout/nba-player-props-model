@@ -1,0 +1,41 @@
+{
+  "date": "2026-05-13",
+  "latest_completed_date": "2026-05-12",
+  "run_mode_rows": [
+    {
+      "run_mode": "morning_expected",
+      "audit_date": "2026-05-13",
+      "n_rows": 0,
+      "official_lineup_available_any": false,
+      "stale_injury_rows": 0,
+      "stale_lineup_rows": 0
+    },
+    {
+      "run_mode": "t25",
+      "audit_date": "2026-05-12",
+      "n_rows": 32,
+      "official_lineup_available_any": false,
+      "stale_injury_rows": 32,
+      "stale_lineup_rows": 32
+    },
+    {
+      "run_mode": "t5",
+      "audit_date": "2026-05-12",
+      "n_rows": 32,
+      "official_lineup_available_any": false,
+      "stale_injury_rows": 32,
+      "stale_lineup_rows": 32
+    },
+    {
+      "run_mode": "final_after_game",
+      "audit_date": "2026-05-12",
+      "n_rows": 32,
+      "official_lineup_available_any": false,
+      "stale_injury_rows": 32,
+      "stale_lineup_rows": 0
+    }
+  ],
+  "failure_count": 1,
+  "hard_failure_count": 1,
+  "pass_all": false
+}

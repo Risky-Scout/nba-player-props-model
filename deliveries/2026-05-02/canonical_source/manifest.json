@@ -1,0 +1,83 @@
+{
+  "schema_version": "m8_6m_v1",
+  "created_at_utc": "2026-05-13T21:18:17.997773+00:00",
+  "date": "2026-05-02",
+  "canonical_source_type": "MODEL_ONLY_TRUE_ATOM_PMF",
+  "atom_pmf_policy": "atom_source_only_no_ladder_fallback",
+  "model_only_parquet": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+  "model_only_parquet_path": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+  "canonical_pmf_source_path": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+  "source_graph_id": "build_stat_grid_pmfs_to_model_only_canonical_to_delivery_m8_6",
+  "atom_pmf_present": true,
+  "atom_pmf_column": "pmf_active",
+  "atom_pmf_columns": [
+    "pmf_active"
+  ],
+  "canonical_outputs": {
+    "rows": 420,
+    "columns": [
+      "player_id",
+      "player_name",
+      "team_abbr",
+      "team_id",
+      "opponent",
+      "is_home",
+      "game_id",
+      "game",
+      "game_start_et",
+      "stat",
+      "role_bucket",
+      "role_source",
+      "mp_bucket",
+      "usage_bucket",
+      "minutes_mean",
+      "minutes_q50",
+      "p_inactive_used",
+      "injury_freshness_status",
+      "injury_context_source",
+      "injury_report_fetched_at_utc",
+      "support_min",
+      "support_max",
+      "line",
+      "market_fair_over_prob",
+      "market_source",
+      "market_offered_side",
+      "market_offered_odds",
+      "pmf_source",
+      "pmf_active"
+    ],
+    "model_only_parquet": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "model_only_parquet_path": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "parquet_path": "deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "parquet_sha256": "587c29c8f08a70a8a90a5127dcb45df8f6fda34c9533de8b55d29aac3a564a78",
+    "atom_pmf_present": true,
+    "atom_pmf_column": "pmf_active",
+    "atom_pmf_columns": [
+      "pmf_active"
+    ],
+    "stats": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "ra",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
+    ],
+    "players": 35
+  },
+  "forbidden_pmf_sources": [
+    "ladder",
+    "p_ge",
+    "survival",
+    "cdf",
+    "cumulative",
+    "reconstructed",
+    "threshold"
+  ]
+}

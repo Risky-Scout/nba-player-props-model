@@ -1,0 +1,2 @@
+join_status,error_code,severity,detail
+ok,,info,ok_rows=61

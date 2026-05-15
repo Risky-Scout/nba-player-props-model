@@ -1,0 +1,11 @@
+{
+  "out_path": "artifacts/model_diagnostics/m8_9_remaining_failures_20260514T044606Z/remaining_stat_role_failures.csv",
+  "n_segments": 37,
+  "n_with_positive_logloss_delta": 37,
+  "recommended_families": {
+    "E_calibration_only_repair": 16,
+    "F_market_residual_stacker": 12,
+    "D_sparse_p0_tail_repair": 8,
+    "C_variance_temperature_repair": 1
+  }
+}

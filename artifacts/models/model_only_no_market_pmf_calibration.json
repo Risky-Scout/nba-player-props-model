@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "label": "dates_24c1750e26ad",
+  "stats": [
+    "blk",
+    "pa",
+    "pr",
+    "pra",
+    "ra",
+    "stl",
+    "stocks"
+  ],
+  "segments": {
+    "blk|bench": {
+      "type": "identity"
+    },
+    "blk|core": {
+      "type": "identity"
+    },
+    "blk|fringe": {
+      "type": "identity"
+    },
+    "blk|inactive_risk": {
+      "type": "identity"
+    },
+    "blk|rotation": {
+      "type": "identity"
+    },
+    "blk|starter": {
+      "type": "identity"
+    },
+    "pa|bench": {
+      "type": "identity"
+    },
+    "pa|core": {
+      "type": "identity"
+    },
+    "pa|fringe": {
+      "type": "identity"
+    },
+    "pa|inactive_risk": {
+      "type": "identity"
+    },
+    "pa|rotation": {
+      "type": "identity"
+    },
+    "pa|starter": {
+      "type": "identity"
+    },
+    "pr|bench": {
+      "type": "identity"
+    },
+    "pr|core": {
+      "type": "identity"
+    },
+    "pr|fringe": {
+      "type": "identity"
+    },
+    "pr|inactive_risk": {
+      "type": "identity"
+    },
+    "pr|rotation": {
+      "type": "identity"
+    },
+    "pr|starter": {
+      "type": "identity"
+    },
+    "pra|bench": {
+      "type": "identity"
+    },
+    "pra|core": {
+      "type": "identity"
+    },
+    "pra|fringe": {
+      "type": "identity"
+    },
+    "pra|inactive_risk": {
+      "type": "identity"
+    },
+    "pra|rotation": {
+      "type": "identity"
+    },
+    "pra|starter": {
+      "type": "identity"
+    },
+    "ra|bench": {
+      "type": "identity"
+    },
+    "ra|core": {
+      "type": "identity"
+    },
+    "ra|fringe": {
+      "type": "identity"
+    },
+    "ra|inactive_risk": {
+      "type": "identity"
+    },
+    "ra|rotation": {
+      "type": "identity"
+    },
+    "ra|starter": {
+      "type": "identity"
+    },
+    "stl|bench": {
+      "type": "identity"
+    },
+    "stl|core": {
+      "type": "identity"
+    },
+    "stl|fringe": {
+      "type": "identity"
+    },
+    "stl|inactive_risk": {
+      "type": "identity"
+    },
+    "stl|rotation": {
+      "type": "identity"
+    },
+    "stl|starter": {
+      "type": "identity"
+    },
+    "stocks|bench": {
+      "type": "identity"
+    },
+    "stocks|core": {
+      "type": "identity"
+    },
+    "stocks|fringe": {
+      "type": "identity"
+    },
+    "stocks|inactive_risk": {
+      "type": "identity"
+    },
+    "stocks|rotation": {
+      "type": "identity"
+    },
+    "stocks|starter": {
+      "type": "identity"
+    }
+  },
+  "market_superiority_claim_allowed": false,
+  "global_market_superiority_claim_allowed": false
+}

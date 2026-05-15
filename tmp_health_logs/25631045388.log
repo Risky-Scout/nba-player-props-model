@@ -1,0 +1,712 @@
+predict	UNKNOWN STEP	﻿2026-05-10T14:19:02.5464555Z Current runner version: '2.334.0'
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5502583Z ##[group]Runner Image Provisioner
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5503984Z Hosted Compute Agent
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5505299Z Version: 20260213.493
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5506737Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5508172Z Build Date: 2026-02-13T00:28:41Z
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5509318Z Worker ID: {2210cbdd-cdcd-44fd-b1e9-eb30f5e8fe34}
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5510549Z Azure Region: eastus
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5511584Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5514186Z ##[group]Operating System
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5515392Z Ubuntu
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5516753Z 24.04.4
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5517659Z LTS
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5518754Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5519751Z ##[group]Runner Image
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5520925Z Image: ubuntu-24.04
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5522024Z Version: 20260413.86.1
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5524245Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5527326Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5529240Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5534477Z ##[group]GITHUB_TOKEN Permissions
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5538121Z Actions: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5539152Z ArtifactMetadata: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5540409Z Attestations: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5541550Z Checks: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5542483Z Contents: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5543450Z Deployments: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5544392Z Discussions: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5545441Z Issues: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5546729Z Metadata: read
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5547840Z Models: read
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5548874Z Packages: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5549953Z Pages: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5551228Z PullRequests: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5552279Z RepositoryProjects: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5553463Z SecurityEvents: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5554450Z Statuses: write
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5555482Z VulnerabilityAlerts: read
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5557049Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5560296Z Secret source: Actions
+predict	UNKNOWN STEP	2026-05-10T14:19:02.5561747Z Prepare workflow directory
+predict	UNKNOWN STEP	2026-05-10T14:19:02.6166518Z Prepare all required actions
+predict	UNKNOWN STEP	2026-05-10T14:19:02.6224050Z Getting action download info
+predict	UNKNOWN STEP	2026-05-10T14:19:02.8712701Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+predict	UNKNOWN STEP	2026-05-10T14:19:03.0373750Z Download action repository 'actions/setup-java@v4' (SHA:c1e323688fd81a25caa38c78aa6df2d33d3e20d9)
+predict	UNKNOWN STEP	2026-05-10T14:19:03.3000013Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+predict	UNKNOWN STEP	2026-05-10T14:19:03.5278860Z Complete job name: predict
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6098168Z ##[group]Run actions/checkout@v5
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6099033Z with:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6099536Z   repository: Risky-Scout/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6100349Z   token: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6100769Z   ssh-strict: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6101200Z   ssh-user: git
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6101669Z   persist-credentials: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6102161Z   clean: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6102606Z   sparse-checkout-cone-mode: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6103139Z   fetch-depth: 1
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6103565Z   fetch-tags: false
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6104004Z   show-progress: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6104443Z   lfs: false
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6104843Z   submodules: false
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6105290Z   set-safe-directory: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6106216Z env:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6106677Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6107238Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:19:03.6107682Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7073155Z Syncing repository: Risky-Scout/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7075090Z ##[group]Getting Git version info
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7076374Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7077599Z [command]/usr/bin/git version
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7116783Z git version 2.53.0
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7139496Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7156581Z Temporarily overriding HOME='/home/runner/work/_temp/c828d5ba-8e25-4d44-a7e3-cad1a691a6d4' before making global git config changes
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7159040Z Adding repository directory to the temporary git global config as a safe directory
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7162951Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7199222Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7203749Z ##[group]Initializing the repository
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7209708Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7309418Z hint: Using 'master' as the name for the initial branch. This default branch name
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7311183Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7312883Z hint: to use in all of your new repositories, which will suppress this warning,
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7314318Z hint: call:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7315064Z hint:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7316259Z hint: 	git config --global init.defaultBranch <name>
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7317401Z hint:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7318462Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7320103Z hint: 'development'. The just-created branch can be renamed via this command:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7321377Z hint:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7322161Z hint: 	git branch -m <name>
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7323062Z hint:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7324245Z hint: Disable this message with "git config set advice.defaultBranchName false"
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7326712Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7329848Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7356498Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7357814Z ##[group]Disabling automatic garbage collection
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7361333Z [command]/usr/bin/git config --local gc.auto 0
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7390230Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7391539Z ##[group]Setting up auth
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7397906Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7428124Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7714183Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7745886Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+predict	UNKNOWN STEP	2026-05-10T14:19:03.7966802Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+predict	UNKNOWN STEP	2026-05-10T14:19:03.8000849Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+predict	UNKNOWN STEP	2026-05-10T14:19:03.8218983Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+predict	UNKNOWN STEP	2026-05-10T14:19:03.8253910Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:03.8255296Z ##[group]Fetching the repository
+predict	UNKNOWN STEP	2026-05-10T14:19:03.8264484Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +55fc188a231e0e62ba94c02ab6c6e70c6495f4e6:refs/remotes/origin/main
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8020635Z From https://github.com/Risky-Scout/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8021977Z  * [new ref]         55fc188a231e0e62ba94c02ab6c6e70c6495f4e6 -> origin/main
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8050824Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8051719Z ##[group]Determining the checkout info
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8053837Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8060708Z [command]/usr/bin/git sparse-checkout disable
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8100647Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8126846Z ##[group]Checking out the ref
+predict	UNKNOWN STEP	2026-05-10T14:19:35.8131463Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+predict	UNKNOWN STEP	2026-05-10T14:19:36.8901704Z Updating files:  26% (728/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.0920793Z Updating files:  27% (737/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.2874644Z Updating files:  28% (764/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.3776485Z Updating files:  29% (791/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.3787203Z Updating files:  30% (818/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.3800015Z Updating files:  31% (846/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.3810523Z Updating files:  32% (873/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.3821893Z Updating files:  33% (900/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.3837578Z Updating files:  34% (927/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.4231162Z Updating files:  35% (955/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.6624236Z Updating files:  36% (982/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.6952239Z Updating files:  37% (1009/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.7319220Z Updating files:  38% (1036/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.7546874Z Updating files:  39% (1064/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.7847862Z Updating files:  40% (1091/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.7928977Z Updating files:  41% (1118/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8059418Z Updating files:  42% (1145/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8179099Z Updating files:  43% (1173/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8204385Z Updating files:  43% (1186/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8473214Z Updating files:  44% (1200/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8722403Z Updating files:  45% (1227/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8791966Z Updating files:  46% (1254/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.8999979Z Updating files:  47% (1282/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9018335Z Updating files:  48% (1309/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9036389Z Updating files:  49% (1336/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9056538Z Updating files:  50% (1363/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9120624Z Updating files:  51% (1391/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9199734Z Updating files:  52% (1418/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9243348Z Updating files:  53% (1445/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9335043Z Updating files:  54% (1473/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9410002Z Updating files:  55% (1500/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9444926Z Updating files:  56% (1527/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9550021Z Updating files:  57% (1554/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9575636Z Updating files:  58% (1582/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9595355Z Updating files:  59% (1609/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9655336Z Updating files:  60% (1636/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9739132Z Updating files:  61% (1663/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9783419Z Updating files:  62% (1691/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9823604Z Updating files:  63% (1718/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:37.9998276Z Updating files:  64% (1745/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.0049912Z Updating files:  65% (1772/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.0121109Z Updating files:  66% (1800/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.0212555Z Updating files:  67% (1827/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.0535672Z Updating files:  68% (1854/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.0658160Z Updating files:  69% (1881/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.0833296Z Updating files:  70% (1909/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.1056987Z Updating files:  71% (1936/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.1326716Z Updating files:  72% (1963/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.1400630Z Updating files:  73% (1990/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.1596585Z Updating files:  74% (2018/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.1970854Z Updating files:  75% (2045/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2141691Z Updating files:  76% (2072/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2415367Z Updating files:  77% (2100/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2448607Z Updating files:  78% (2127/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2515661Z Updating files:  79% (2154/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2554566Z Updating files:  80% (2181/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2572127Z Updating files:  81% (2209/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2621904Z Updating files:  82% (2236/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2693822Z Updating files:  83% (2263/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.2719126Z Updating files:  84% (2290/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.3023502Z Updating files:  85% (2318/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.3319408Z Updating files:  86% (2345/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.3501341Z Updating files:  87% (2372/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.3742878Z Updating files:  88% (2399/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.3824130Z Updating files:  89% (2427/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4414823Z Updating files:  90% (2454/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4584122Z Updating files:  91% (2481/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4611993Z Updating files:  92% (2508/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4643278Z Updating files:  93% (2536/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4672256Z Updating files:  94% (2563/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4697262Z Updating files:  95% (2590/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4721296Z Updating files:  96% (2617/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4744457Z Updating files:  97% (2645/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4773478Z Updating files:  98% (2672/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4787009Z Updating files:  99% (2699/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4787599Z Updating files: 100% (2726/2726)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4788093Z Updating files: 100% (2726/2726), done.
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4826261Z Switched to a new branch 'main'
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4829654Z branch 'main' set up to track 'origin/main'.
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4947739Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:38.4990620Z [command]/usr/bin/git log -1 --format=%H
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5019700Z 55fc188a231e0e62ba94c02ab6c6e70c6495f4e6
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5301182Z ##[group]Run actions/setup-java@v4
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5301492Z with:
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5301694Z   distribution: temurin
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5301925Z   java-version: 17
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5302135Z   java-package: jdk
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5302356Z   check-latest: false
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5302573Z   server-id: github
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5302786Z   server-username: GITHUB_ACTOR
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5303032Z   server-password: GITHUB_TOKEN
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5303276Z   overwrite-settings: true
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5303500Z   job-status: success
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5303862Z   token: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5304047Z env:
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5304248Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5304522Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:19:38.5304738Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:38.6982601Z ##[group]Installed distributions
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7287908Z Resolved Java 17.0.18+8 from tool-cache
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7288459Z Setting Java 17.0.18+8 as the default
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7299718Z (node:2312) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7300727Z (Use `node --trace-deprecation ...` to show where the warning was created)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7303631Z Creating toolchains.xml for JDK version 17 from temurin
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7387291Z Writing to /home/runner/.m2/toolchains.xml
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7387909Z 
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7388108Z Java configuration:
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7388584Z   Distribution: temurin
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7389135Z   Version: 17.0.18+8
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7389750Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7390115Z 
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7390760Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7408800Z Creating settings.xml with server-id: github
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7409156Z Writing to /home/runner/.m2/settings.xml
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7559811Z ##[group]Run actions/setup-python@v6
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7560100Z with:
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7560308Z   python-version: 3.11
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7560522Z   cache: pip
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7560718Z   check-latest: false
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7561057Z   token: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7561264Z   update-environment: true
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7561496Z   allow-prereleases: false
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7561723Z   freethreaded: false
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7561922Z env:
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7562118Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7562387Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7562706Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7563186Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:38.7563559Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:38.8929766Z ##[group]Installed versions
+predict	UNKNOWN STEP	2026-05-10T14:19:38.9062694Z Successfully set up CPython (3.11.15)
+predict	UNKNOWN STEP	2026-05-10T14:19:38.9063624Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:39.2245016Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+predict	UNKNOWN STEP	2026-05-10T14:19:39.5547623Z /home/runner/.cache/pip
+predict	UNKNOWN STEP	2026-05-10T14:19:39.6308284Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+predict	UNKNOWN STEP	2026-05-10T14:19:40.5564566Z Received 147023073 of 147023073 (100.0%), 161.7 MBs/sec
+predict	UNKNOWN STEP	2026-05-10T14:19:40.5565538Z Cache Size: ~140 MB (147023073 B)
+predict	UNKNOWN STEP	2026-05-10T14:19:40.5610426Z [command]/usr/bin/tar -xf /home/runner/work/_temp/8eac3946-b9f2-42e9-923f-d95cfbf07c43/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7650857Z Cache restored successfully
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7720138Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7909086Z ##[group]Run pip install --upgrade pip
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7909482Z ^[[36;1mpip install --upgrade pip^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7909797Z ^[[36;1mpip install -r requirements.txt^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7937366Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7937634Z env:
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7937866Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7938164Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7938512Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7939036Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7939511Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7939979Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7940433Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7940833Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7941296Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7941705Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:19:40.7942036Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:41.2803829Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages (26.0.1)
+predict	UNKNOWN STEP	2026-05-10T14:19:41.3852725Z Collecting pip
+predict	UNKNOWN STEP	2026-05-10T14:19:41.4446912Z   Downloading pip-26.1.1-py3-none-any.whl.metadata (4.6 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:41.4522036Z Downloading pip-26.1.1-py3-none-any.whl (1.8 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:41.4941156Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 122.3 MB/s  0:00:00
+predict	UNKNOWN STEP	2026-05-10T14:19:41.5163391Z Installing collected packages: pip
+predict	UNKNOWN STEP	2026-05-10T14:19:41.5165348Z   Attempting uninstall: pip
+predict	UNKNOWN STEP	2026-05-10T14:19:41.5179993Z     Found existing installation: pip 26.0.1
+predict	UNKNOWN STEP	2026-05-10T14:19:41.5877859Z     Uninstalling pip-26.0.1:
+predict	UNKNOWN STEP	2026-05-10T14:19:41.5936960Z       Successfully uninstalled pip-26.0.1
+predict	UNKNOWN STEP	2026-05-10T14:19:42.4190203Z Successfully installed pip-26.1.1
+predict	UNKNOWN STEP	2026-05-10T14:19:42.9070139Z Collecting lightgbm==4.3.0 (from -r requirements.txt (line 1))
+predict	UNKNOWN STEP	2026-05-10T14:19:42.9087020Z   Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl.metadata (19 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:42.9927525Z Collecting scikit-learn==1.4.2 (from -r requirements.txt (line 2))
+predict	UNKNOWN STEP	2026-05-10T14:19:42.9945011Z   Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.1191251Z Collecting pandas==2.2.3 (from -r requirements.txt (line 3))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.1208646Z   Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.3049673Z Collecting numpy==1.26.4 (from -r requirements.txt (line 4))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.3068536Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.3332892Z Collecting requests==2.32.3 (from -r requirements.txt (line 5))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.3347367Z   Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.4042091Z Collecting pyarrow==16.1.0 (from -r requirements.txt (line 6))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.4057948Z   Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.4206146Z Collecting joblib==1.4.2 (from -r requirements.txt (line 7))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.4220073Z   Using cached joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5371139Z Collecting scipy==1.13.1 (from -r requirements.txt (line 8))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5387454Z   Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5578874Z Collecting nbainjuries==1.1.1 (from -r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5592680Z   Using cached nbainjuries-1.1.1-py3-none-any.whl.metadata (9.8 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5712764Z Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.4.2->-r requirements.txt (line 2))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5726753Z   Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5838596Z Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements.txt (line 3))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.5852283Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.6155216Z Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements.txt (line 3))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.6686894Z   Downloading pytz-2026.2-py2.py3-none-any.whl.metadata (22 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.6906730Z Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements.txt (line 3))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.6949499Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.7808678Z Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 5))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.7825127Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.7963148Z Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 5))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8005587Z   Downloading idna-3.13-py3-none-any.whl.metadata (8.0 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8227573Z Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 5))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8266395Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8449140Z Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 5))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8490003Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8665944Z Collecting PyPDF2<4.0,>=3.0.1 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:43.8680308Z   Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3190859Z Collecting aiohttp<4.0,>=3.9.3 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3207396Z   Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3490133Z Collecting jpype1<1.6.0,>=1.5.2 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3504972Z   Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3643003Z Collecting tabula-py<3.0,>=2.9.0 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3656721Z   Using cached tabula_py-2.10.0-py3-none-any.whl.metadata (7.6 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3781131Z Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3794877Z   Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3878268Z Collecting aiosignal>=1.4.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.3892875Z   Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.4004220Z Collecting attrs>=17.3.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.4018641Z   Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.4583208Z Collecting frozenlist>=1.1.1 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.4599372Z   Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.6752178Z Collecting multidict<7.0,>=4.5 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.6768910Z   Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.7276313Z Collecting propcache>=0.2.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.7318814Z   Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.9694410Z Collecting yarl<2.0,>=1.17.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.9710891Z   Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:44.9912241Z Collecting packaging (from jpype1<1.6.0,>=1.5.2->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:44.9950678Z   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0091450Z Collecting distro (from tabula-py<3.0,>=2.9.0->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0105347Z   Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0298260Z Collecting typing-extensions>=4.2 (from aiosignal>=1.4.0->aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0312018Z   Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0426477Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 3))
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0440288Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0491128Z Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl (3.1 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0516425Z Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0579486Z Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0639176Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0716494Z Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0730651Z Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0890974Z Using cached joblib-1.4.2-py3-none-any.whl (301 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.0904923Z Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1054965Z Using cached nbainjuries-1.1.1-py3-none-any.whl (15 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1068816Z Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1088458Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1136308Z Downloading idna-3.13-py3-none-any.whl (68 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1227201Z Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (494 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1242699Z Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (246 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1256806Z Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1270982Z Using cached tabula_py-2.10.0-py3-none-any.whl (12.0 MB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1351490Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1439987Z Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (102 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1453716Z Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1467470Z Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1480593Z Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1516315Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1575025Z Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (231 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1613353Z Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (58 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1649520Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1686747Z Downloading pytz-2026.2-py2.py3-none-any.whl (510 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1814169Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1827868Z Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1840841Z Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1880983Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1959370Z Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.1996480Z Downloading packaging-26.2-py3-none-any.whl (100 kB)
+predict	UNKNOWN STEP	2026-05-10T14:19:45.4669380Z Installing collected packages: pytz, urllib3, tzdata, typing-extensions, threadpoolctl, six, PyPDF2, propcache, packaging, numpy, multidict, joblib, idna, frozenlist, distro, charset-normalizer, certifi, attrs, aiohappyeyeballs, yarl, scipy, requests, python-dateutil, pyarrow, jpype1, aiosignal, scikit-learn, pandas, lightgbm, aiohttp, tabula-py, nbainjuries
+predict	UNKNOWN STEP	2026-05-10T14:19:59.5458206Z 
+predict	UNKNOWN STEP	2026-05-10T14:19:59.5481017Z Successfully installed PyPDF2-3.0.1 aiohappyeyeballs-2.6.1 aiohttp-3.13.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026.4.22 charset-normalizer-3.4.7 distro-1.9.0 frozenlist-1.8.0 idna-3.13 joblib-1.4.2 jpype1-1.5.2 lightgbm-4.3.0 multidict-6.7.1 nbainjuries-1.1.1 numpy-1.26.4 packaging-26.2 pandas-2.2.3 propcache-0.5.2 pyarrow-16.1.0 python-dateutil-2.9.0.post0 pytz-2026.2 requests-2.32.3 scikit-learn-1.4.2 scipy-1.13.1 six-1.17.0 tabula-py-2.10.0 threadpoolctl-3.6.0 typing-extensions-4.15.0 tzdata-2026.2 urllib3-2.7.0 yarl-1.23.0
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7333115Z ##[group]Run python3 scripts/verify_secrets_preflight.py --mode daily
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7334036Z ^[[36;1mpython3 scripts/verify_secrets_preflight.py --mode daily^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7364298Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7364707Z env:
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7365061Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7365555Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7366333Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7367199Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7368027Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7368765Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7369514Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7370186Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7370923Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7371669Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7372455Z   BDL_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7372894Z   ODDS_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7373241Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7680654Z Secrets preflight (mode=daily; values are never printed):
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7681308Z   Required (present):
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7681713Z     - BDL_API_KEY: len=36  sha256_prefix=51cb7776
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7682266Z     - ODDS_API_KEY: len=32  sha256_prefix=ecc6164e
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7683458Z   Recommended (missing — soft warn):
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7683891Z     - SFTP_HOST
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7684206Z     - SFTP_USER
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7684500Z     - SFTP_PASS
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7684821Z     - SFTP_PATH
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7685206Z     - DUNKS_AND_THREES_API_KEY (or any alias)
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7686789Z SECRETS_PREFLIGHT_PASS  mode=daily  required_present=2  recommended_missing=['SFTP_HOST', 'SFTP_USER', 'SFTP_PASS', 'SFTP_PATH', 'DUNKS_AND_THREES_API_KEY (or any alias)']
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7796453Z ##[group]Run python scripts/grade.py
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7796836Z ^[[36;1mpython scripts/grade.py^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7820056Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7820308Z env:
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7820527Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7820829Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7821171Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7821675Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7822157Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7822589Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7823029Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7823417Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7823805Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7824245Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7824748Z   BDL_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7824995Z   ODDS_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:19:59.7825194Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:20:01.0754508Z 2026-05-10 10:20:01,075 [INFO] ========================================================================
+predict	UNKNOWN STEP	2026-05-10T14:20:01.0755571Z NBA Props Model GRADING — 2026-05-09
+predict	UNKNOWN STEP	2026-05-10T14:20:01.0756425Z ========================================================================
+predict	UNKNOWN STEP	2026-05-10T14:20:01.0757599Z 2026-05-10 10:20:01,075 [ERROR] No predictions found: /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-09.json
+predict	UNKNOWN STEP	2026-05-10T14:20:01.0762902Z 2026-05-10 10:20:01,076 [WARNING] No graded data. Check predictions/ directory.
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2119424Z ##[group]Run python scripts/predict.py
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2138859Z ^[[36;1mpython scripts/predict.py^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2161335Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2161578Z env:
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2161794Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2162086Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2162420Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2162908Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2163373Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2163797Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2164222Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2164594Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2164969Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2165381Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2165832Z   BDL_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2166394Z   ODDS_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2166596Z   SKIP_SGPS: 1
+predict	UNKNOWN STEP	2026-05-10T14:20:01.2166787Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:20:02.1357111Z 2026-05-10 10:20:02,135 [INFO] ============================================================
+predict	UNKNOWN STEP	2026-05-10T14:20:02.1358386Z 2026-05-10 10:20:02,135 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+predict	UNKNOWN STEP	2026-05-10T14:20:02.1359285Z 2026-05-10 10:20:02,135 [INFO] ============================================================
+predict	UNKNOWN STEP	2026-05-10T14:20:02.1360030Z 2026-05-10 10:20:02,135 [INFO] Target date: 2026-05-10
+predict	UNKNOWN STEP	2026-05-10T14:20:02.1360647Z 2026-05-10 10:20:02,135 [INFO] Loading models...
+predict	UNKNOWN STEP	2026-05-10T14:20:02.2816891Z 2026-05-10 10:20:02,279 [INFO]   pts: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.3937178Z 2026-05-10 10:20:02,392 [INFO]   reb: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.4647029Z 2026-05-10 10:20:02,463 [INFO]   ast: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.5367147Z 2026-05-10 10:20:02,534 [INFO]   fg3m: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.6066652Z 2026-05-10 10:20:02,605 [INFO]   stl: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.6696740Z 2026-05-10 10:20:02,668 [INFO]   blk: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.7416795Z 2026-05-10 10:20:02,739 [INFO]   tov: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:02.8763475Z 2026-05-10 10:20:02,876 [INFO]   pra: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:03.0196885Z 2026-05-10 10:20:03,017 [INFO]   pr: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:03.1557150Z 2026-05-10 10:20:03,154 [INFO]   pa: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:03.2927004Z 2026-05-10 10:20:03,291 [INFO]   ra: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4256801Z 2026-05-10 10:20:03,424 [INFO]   stocks: 11 quantile models
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4286346Z 2026-05-10 10:20:03,425 [INFO]   Within-player correlation engine loaded
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4299790Z 2026-05-10 10:20:03,426 [INFO]   Global calibrator loaded: OVER
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4300803Z 2026-05-10 10:20:03,427 [INFO]   Global calibrator loaded: UNDER
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4301911Z 2026-05-10 10:20:03,427 [INFO]   Q50 bias corrections: {'ast': 1.139, 'blk': 1.04, 'fg3m': 1.092, 'pts': 5.39, 'reb': 0.911, 'stl': 0.29}
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4373998Z 2026-05-10 10:20:03,437 [INFO] ResidualCenterer: learned=['pts', 'ast', 'reb', 'fg3m']  fallback=[]
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4374934Z 2026-05-10 10:20:03,437 [INFO]   Residual centerer loaded
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4938812Z 2026-05-10 10:20:03,493 [INFO]   FG3M hurdle model loaded
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4941015Z 2026-05-10 10:20:03,493 [INFO]   Live calibration table loaded: 46 entries
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4944659Z 2026-05-10 10:20:03,494 [INFO]   Minutes bucket corrections loaded: 12 entries
+predict	UNKNOWN STEP	2026-05-10T14:20:03.4947050Z 2026-05-10 10:20:03,494 [INFO]   Calibration manifest: 0 promoted stat×side calibrators
+predict	UNKNOWN STEP	2026-05-10T14:20:03.5078257Z 2026-05-10 10:20:03,507 [INFO]   PMF pipeline ready for 8/8 stats: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+predict	UNKNOWN STEP	2026-05-10T14:20:03.5079770Z 2026-05-10 10:20:03,507 [INFO]   PMF calibrators loaded: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'tov']
+predict	UNKNOWN STEP	2026-05-10T14:20:06.8958014Z 2026-05-10 10:20:06,895 [INFO]   Availability table has no rows for today; live builder ready for on-demand features_for calls per player-game.
+predict	UNKNOWN STEP	2026-05-10T14:20:06.8958828Z 2026-05-10 10:20:06,895 [INFO] Loading historical data...
+predict	UNKNOWN STEP	2026-05-10T14:20:12.1040391Z 2026-05-10 10:20:12,103 [INFO] Fetching today's games (2026-05-10)...
+predict	UNKNOWN STEP	2026-05-10T14:20:12.4102468Z 2026-05-10 10:20:12,409 [INFO]   2 games
+predict	UNKNOWN STEP	2026-05-10T14:20:12.5213001Z 2026-05-10 10:20:12,520 [INFO] Enriching game context with line movement snapshots...
+predict	UNKNOWN STEP	2026-05-10T14:20:12.5213982Z 2026-05-10 10:20:12,521 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+predict	UNKNOWN STEP	2026-05-10T14:20:12.5215237Z 2026-05-10 10:20:12,521 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+predict	UNKNOWN STEP	2026-05-10T14:20:12.5216420Z 2026-05-10 10:20:12,521 [INFO] Fetching injuries...
+predict	UNKNOWN STEP	2026-05-10T14:20:12.6702325Z 2026-05-10 10:20:12,669 [INFO]   25 BDL injury records
+predict	UNKNOWN STEP	2026-05-10T14:20:15.4977531Z 2026-05-10 10:20:15,497 [INFO] NBA injury report: 4 players
+predict	UNKNOWN STEP	2026-05-10T14:20:15.5326004Z 2026-05-10 10:20:15,532 [INFO] NBA injury report: 4 players matched to player_ids
+predict	UNKNOWN STEP	2026-05-10T14:20:15.5327445Z 2026-05-10 10:20:15,532 [INFO]   26 players marked inactive (BDL + NBA official)
+predict	UNKNOWN STEP	2026-05-10T14:20:15.5328306Z 2026-05-10 10:20:15,532 [INFO] Fetching prop lines...
+predict	UNKNOWN STEP	2026-05-10T14:20:16.0732457Z 2026-05-10 10:20:16,073 [INFO]   158 prop lines
+predict	UNKNOWN STEP	2026-05-10T14:20:16.3142152Z 2026-05-10 10:20:16,313 [INFO] Minutes CDF calibrator loaded.
+predict	UNKNOWN STEP	2026-05-10T14:20:57.3467926Z 2026-05-10 10:20:57,346 [INFO] Saved all-prop universe: /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/all_props_2026-05-10.parquet (83 rows)
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5020734Z 2026-05-10 10:20:57,501 [INFO] Singles before portfolio limits: 83
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5022728Z 2026-05-10 10:20:57,501 [INFO] Singles after portfolio limits: 8
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5033276Z 2026-05-10 10:20:57,503 [INFO] Singles written → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-10.json  (safe before SGP step)
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5043919Z 2026-05-10 10:20:57,504 [INFO] PMF display written → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/pmf_display_2026-05-10.json (8 props)
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5045294Z 2026-05-10 10:20:57,504 [INFO] SGP generation skipped (SKIP_SGPS=1)
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5045755Z 2026-05-10 10:20:57,504 [INFO]   2-leg: 0 | 3-leg: 0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.5047279Z 2026-05-10 10:20:57,504 [INFO] SGPs    → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/sgps_2026-05-10.json
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7449064Z Validated Injury-Report_2026-05-10_10_00AM.
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7449507Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7449692Z ======================================================================
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7450613Z   NBA Props Model — SINGLES (8 picks above 2.5% EV)
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7451191Z ======================================================================
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7451551Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7451813Z [ELITE]  Anthony Edwards — Steals UNDER 0.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7452331Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7452883Z   Model P: 65.3%  |  EV: +86.13%  |  Odds: +185
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7453270Z   Kelly:   0.081 units  |  Q50 proj: 0.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7453508Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7453726Z [ELITE]  Mitchell Robinson — Blocks UNDER 0.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7454138Z   Game:    New York Knicks @ Philadelphia 76ers
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7454531Z   Model P: 62.2%  |  EV: +61.63%  |  Odds: +160
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7454897Z   Kelly:   0.082 units  |  Q50 proj: 0.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7455151Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7455349Z [ELITE]  Karl-Anthony Towns — Points UNDER 19.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7455756Z   Game:    New York Knicks @ Philadelphia 76ers
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7456626Z   Model P: 78.7%  |  EV: +57.38%  |  Odds: +100
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7457437Z   Kelly:   0.095 units  |  Q50 proj: 14.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7457812Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7458045Z [ELITE]  Rudy Gobert — Steals UNDER 0.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7458467Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7458884Z   Model P: 65.8%  |  EV: +56.63%  |  Odds: +138
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7459249Z   Kelly:   0.095 units  |  Q50 proj: 0.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7459482Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7459669Z [ELITE]  Anthony Edwards — Assists UNDER 4.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7460083Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7460496Z   Model P: 81.9%  |  EV: +53.12%  |  Odds: -115
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7460861Z   Kelly:   0.107 units  |  Q50 proj: 3.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7461237Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7461546Z [ELITE]  Karl-Anthony Towns — Rebounds UNDER 11.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7462165Z   Game:    New York Knicks @ Philadelphia 76ers
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7462653Z   Model P: 71.7%  |  EV: +49.15%  |  Odds: +108
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7463262Z   Kelly:   0.075 units  |  Q50 proj: 9.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7463691Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7464033Z [ELITE]  Ayo Dosunmu — Steals UNDER 0.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7464688Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7465269Z   Model P: 63.6%  |  EV: +48.31%  |  Odds: +133
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7465634Z   Kelly:   0.064 units  |  Q50 proj: 0.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7465865Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7466392Z [ELITE]  Mikal Bridges — Threes UNDER 1.5
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7466813Z   Game:    New York Knicks @ Philadelphia 76ers
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7467202Z   Model P: 69.2%  |  EV: +46.67%  |  Odds: +112
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7467720Z   Kelly:   0.073 units  |  Q50 proj: 1.0
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7468010Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7468199Z No SGPs above EV threshold.
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7468739Z 
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7468862Z Files written:
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7469501Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-10.json
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7470529Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/sgps_2026-05-10.json
+predict	UNKNOWN STEP	2026-05-10T14:20:57.7471541Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/paper_trade_log.csv
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0090788Z ##[group]Run DATE=$(TZ=America/New_York date +%Y-%m-%d)
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0091540Z ^[[36;1mDATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0092105Z ^[[36;1mMISSING=""^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0092624Z ^[[36;1mfor f in "predictions/all_props_${DATE}.parquet" \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0093330Z ^[[36;1m         "predictions/pmf_display_${DATE}.json" \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0093963Z ^[[36;1m         "predictions/singles_${DATE}.json" \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0094557Z ^[[36;1m         "predictions/sgps_${DATE}.json"; do^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0095116Z ^[[36;1m  if [ ! -s "$f" ]; then^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0095583Z ^[[36;1m    MISSING="$MISSING $f"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0096299Z ^[[36;1m  fi^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0096648Z ^[[36;1mdone^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0097005Z ^[[36;1mif [ -n "$MISSING" ]; then^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0097609Z ^[[36;1m  echo "::error::Predictions missing or empty:$MISSING"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0098218Z ^[[36;1m  exit 1^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0098599Z ^[[36;1mfi^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0099593Z ^[[36;1mCOUNT=$(python3 -c "import json; d=json.load(open('predictions/singles_${DATE}.json')); print(len(d.get('picks',d.get('singles',[]))))")^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0100777Z ^[[36;1mecho "Predictions written: $COUNT picks"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0101321Z ^[[36;1mif [ "$COUNT" -eq "0" ]; then^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0101955Z ^[[36;1m  echo "::error::0 picks written - check API keys and model files"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0102590Z ^[[36;1m  exit 1^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0102925Z ^[[36;1mfi^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0134646Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0135043Z env:
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0135409Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0136191Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0136839Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0137729Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0138556Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0139321Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0140086Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0140772Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0141469Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0142190Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0142772Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0407584Z Predictions written: 8 picks
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0434108Z ##[group]Run DATE=$(TZ=America/New_York date +%Y-%m-%d)
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0434507Z ^[[36;1mDATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0435017Z ^[[36;1mpython scripts/enrich_predictions_game_start_times.py --delivery-date $DATE --no-backup^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0455721Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0456159Z env:
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0456372Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0456650Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0456974Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0457469Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0457933Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0458352Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0458769Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0459336Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0459719Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0460102Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0460587Z   BDL_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0460829Z   ODDS_API_KEY: ***
+predict	UNKNOWN STEP	2026-05-10T14:20:58.0461025Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:20:59.1555641Z PREDICTION_GAME_START_TIME_ENRICHMENT_PASS
+predict	UNKNOWN STEP	2026-05-10T14:20:59.1556959Z   delivery_date=2026-05-10 resolved=2 pre_hash=831b178fbae84c99 post_hash=54456fbb402ede5b
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2849185Z ##[group]Run DATE=$(TZ=America/New_York date +%Y-%m-%d)
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2849607Z ^[[36;1mDATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2850005Z ^[[36;1mpython3 scripts/publish_nba_props_today.py --date "$DATE"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2871750Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2871992Z env:
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2872208Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2872500Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2872824Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2873308Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2873766Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2874199Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2874625Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2875035Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2875411Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2875801Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:20:59.2876422Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:20:59.6638032Z NBA_PROPS_TODAY_PUBLISHED  date=2026-05-10  count=83  games=2  out=predictions/nba_props_today.json
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7172356Z ##[group]Run DATE=$(TZ=America/New_York date +%Y-%m-%d)
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7173142Z ^[[36;1mDATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7173923Z ^[[36;1mpython3 scripts/verify_daily_prediction_outputs.py --date "$DATE"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7203335Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7203760Z env:
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7204158Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7204677Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7205280Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7206401Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7206891Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7207328Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7207753Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7208307Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7209040Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7209771Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:20:59.7210377Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:21:00.0924184Z DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-10  parquet_rows=83  singles=8  pmf_display=8  today_count=83
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1458548Z ##[group]Run # Hard rule #6: every commit must show Joseph Shackelford as author.
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1459143Z ^[[36;1m# Hard rule #6: every commit must show Joseph Shackelford as author.^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1459569Z ^[[36;1mgit config user.name  "Joseph Shackelford"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1459917Z ^[[36;1mgit config user.email "josephshack@gmail.com"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1460346Z ^[[36;1mgit add predictions/ artifacts/graded/ artifacts/automation_health/ \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1460761Z ^[[36;1m        artifacts/scoring/ -f^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1461117Z ^[[36;1mgit diff --staged --quiet && echo "Nothing to commit" || \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1461629Z ^[[36;1m  git commit \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1461943Z ^[[36;1m    --author="Joseph Shackelford <josephshack@gmail.com>" \^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1462368Z ^[[36;1m    -m "Predictions $(TZ=America/New_York date +%Y-%m-%d)"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1462698Z ^[[36;1mPUSH_SUCCESS=0^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1462944Z ^[[36;1mfor i in 1 2 3; do^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1463269Z ^[[36;1m  if git pull --rebase origin main && git push origin main; then^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1463623Z ^[[36;1m    PUSH_SUCCESS=1^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1463843Z ^[[36;1m    break^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1464037Z ^[[36;1m  fi^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1464224Z ^[[36;1m  sleep 5^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1464415Z ^[[36;1mdone^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1464806Z ^[[36;1mif [ "$PUSH_SUCCESS" != "1" ]; then^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1465324Z ^[[36;1m  echo "::error::git push failed after 3 attempts"^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1465792Z ^[[36;1m  exit 1^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1466336Z ^[[36;1mfi^[[0m
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1489226Z shell: /usr/bin/bash -e {0}
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1489472Z env:
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1489696Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1489975Z   TZ: America/New_York
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1490306Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1490802Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.18-8/x64
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1491263Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1491688Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1492105Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1492486Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1492866Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1493243Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+predict	UNKNOWN STEP	2026-05-10T14:21:00.1493580Z ##[endgroup]
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9540902Z [main cab93e1] Predictions 2026-05-10
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9541353Z  6 files changed, 2711 insertions(+), 1197 deletions(-)
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9541753Z  create mode 100644 predictions/all_props_2026-05-10.parquet
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9542207Z  create mode 100644 predictions/pmf_display_2026-05-10.json
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9542628Z  create mode 100644 predictions/sgps_2026-05-10.json
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9543000Z  create mode 100644 predictions/singles_2026-05-10.json
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9587557Z error: cannot pull with rebase: You have unstaged changes.
+predict	UNKNOWN STEP	2026-05-10T14:21:00.9590643Z error: Please commit or stash them.
+predict	UNKNOWN STEP	2026-05-10T14:21:05.9667500Z error: cannot pull with rebase: You have unstaged changes.
+predict	UNKNOWN STEP	2026-05-10T14:21:05.9670181Z error: Please commit or stash them.
+predict	UNKNOWN STEP	2026-05-10T14:21:10.9738075Z error: cannot pull with rebase: You have unstaged changes.
+predict	UNKNOWN STEP	2026-05-10T14:21:10.9740244Z error: Please commit or stash them.
+predict	UNKNOWN STEP	2026-05-10T14:21:15.9780950Z ##[error]git push failed after 3 attempts
+predict	UNKNOWN STEP	2026-05-10T14:21:15.9789421Z ##[error]Process completed with exit code 1.
+predict	UNKNOWN STEP	2026-05-10T14:21:15.9923322Z Post job cleanup.
+predict	UNKNOWN STEP	2026-05-10T14:21:16.1218389Z (node:2598) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+predict	UNKNOWN STEP	2026-05-10T14:21:16.1219288Z (Use `node --trace-deprecation ...` to show where the warning was created)
+predict	UNKNOWN STEP	2026-05-10T14:21:16.1426527Z Post job cleanup.
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2285398Z [command]/usr/bin/git version
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2328643Z git version 2.53.0
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2372396Z Temporarily overriding HOME='/home/runner/work/_temp/ae74f37c-3702-4f50-999e-1fcc1279319e' before making global git config changes
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2373800Z Adding repository directory to the temporary git global config as a safe directory
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2380020Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2424563Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2467195Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2732318Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2764425Z http.https://github.com/.extraheader
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2778888Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+predict	UNKNOWN STEP	2026-05-10T14:21:16.2816857Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+predict	UNKNOWN STEP	2026-05-10T14:21:16.3110810Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+predict	UNKNOWN STEP	2026-05-10T14:21:16.3150320Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+predict	UNKNOWN STEP	2026-05-10T14:21:16.3530102Z Cleaning up orphan processes
+predict	UNKNOWN STEP	2026-05-10T14:21:16.3818523Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

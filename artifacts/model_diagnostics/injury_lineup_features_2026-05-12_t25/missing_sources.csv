@@ -1,0 +1,2 @@
+source,reason
+data/player_availability_asof.parquet,missing_or_no_rows_for_date

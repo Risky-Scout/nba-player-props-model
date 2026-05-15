@@ -1,0 +1,1237 @@
+derek_live_snapshots	UNKNOWN STEP	﻿2026-05-10T23:13:51.7438632Z Current runner version: '2.334.0'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7473333Z ##[group]Runner Image Provisioner
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7474626Z Hosted Compute Agent
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7475524Z Version: 20260213.493
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7476481Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7477683Z Build Date: 2026-02-13T00:28:41Z
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7478697Z Worker ID: {9c16601e-bfd5-40b5-97e9-1fe22ac75220}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7479915Z Azure Region: eastus
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7481006Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7482882Z ##[group]Operating System
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7483856Z Ubuntu
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7484538Z 24.04.4
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7485319Z LTS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7486217Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7486971Z ##[group]Runner Image
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7487857Z Image: ubuntu-24.04
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7488774Z Version: 20260413.86.1
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7490822Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7493425Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7494849Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7499507Z ##[group]GITHUB_TOKEN Permissions
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7502900Z Actions: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7503688Z ArtifactMetadata: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7504653Z Attestations: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7505457Z Checks: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7506158Z Contents: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7507133Z Deployments: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7507955Z Discussions: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7508768Z Issues: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7509627Z Metadata: read
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7510390Z Models: read
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7511273Z Packages: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7512190Z Pages: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7513075Z PullRequests: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7513951Z RepositoryProjects: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7514961Z SecurityEvents: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7515799Z Statuses: write
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7516667Z VulnerabilityAlerts: read
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7517599Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7521299Z Secret source: Actions
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.7522978Z Prepare workflow directory
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.8059457Z Prepare all required actions
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:51.8112146Z Getting action download info
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.1188444Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.2376785Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.3136205Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.5359261Z Complete job name: derek_live_snapshots
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6228220Z ##[group]Run actions/checkout@v5
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6229079Z with:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6229485Z   fetch-depth: 0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6229992Z   repository: Risky-Scout/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6230999Z   token: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6231412Z   ssh-strict: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6231875Z   ssh-user: git
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6232317Z   persist-credentials: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6232799Z   clean: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6233231Z   sparse-checkout-cone-mode: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6233749Z   fetch-tags: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6234192Z   show-progress: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6234672Z   lfs: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6235067Z   submodules: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6235494Z   set-safe-directory: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6236166Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6236558Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.6237004Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7357210Z Syncing repository: Risky-Scout/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7360168Z ##[group]Getting Git version info
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7361979Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7364252Z [command]/usr/bin/git version
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7365192Z git version 2.53.0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7382804Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7401683Z Temporarily overriding HOME='/home/runner/work/_temp/61c077b2-2938-42c5-9697-67436d95643f' before making global git config changes
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7403148Z Adding repository directory to the temporary git global config as a safe directory
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7404503Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7446205Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7450172Z ##[group]Initializing the repository
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7456638Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7525599Z hint: Using 'master' as the name for the initial branch. This default branch name
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7527454Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7529119Z hint: to use in all of your new repositories, which will suppress this warning,
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7530407Z hint: call:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7531493Z hint:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7532346Z hint: 	git config --global init.defaultBranch <name>
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7533356Z hint:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7534374Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7535633Z hint: 'development'. The just-created branch can be renamed via this command:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7536911Z hint:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7537562Z hint: 	git branch -m <name>
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7538204Z hint:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7538856Z hint: Disable this message with "git config set advice.defaultBranchName false"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7540065Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7542378Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7573842Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7574620Z ##[group]Disabling automatic garbage collection
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7578775Z [command]/usr/bin/git config --local gc.auto 0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7613829Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7614545Z ##[group]Setting up auth
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7623941Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7662889Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.7974504Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8008520Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8244105Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8278341Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8532832Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8574975Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8576371Z ##[group]Fetching the repository
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:13:52.8588314Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1792627Z From https://github.com/Risky-Scout/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1793428Z  * [new branch]        main       -> origin/main
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1831029Z [command]/usr/bin/git branch --list --remote origin/main
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1855270Z   origin/main
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1864658Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1886677Z d8a1b7ab68a4736d711368097e817d090536588a
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1891837Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1892904Z ##[group]Determining the checkout info
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1893584Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1898331Z [command]/usr/bin/git sparse-checkout disable
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1934386Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1962788Z ##[group]Checking out the ref
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:03.1966873Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.3586730Z Updating files:  26% (727/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.5959422Z Updating files:  27% (746/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.8105162Z Updating files:  28% (773/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9488545Z Updating files:  29% (801/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9506299Z Updating files:  30% (828/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9520229Z Updating files:  31% (856/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9534054Z Updating files:  32% (884/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9549177Z Updating files:  33% (911/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9568105Z Updating files:  34% (939/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:04.9590184Z Updating files:  35% (966/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.3027295Z Updating files:  36% (994/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.3092499Z Updating files:  37% (1022/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.3524154Z Updating files:  38% (1049/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.3878952Z Updating files:  39% (1077/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.4210206Z Updating files:  40% (1104/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.4477273Z Updating files:  41% (1132/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.4608251Z Updating files:  42% (1160/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.4768797Z Updating files:  43% (1187/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.4855614Z Updating files:  44% (1215/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5195114Z Updating files:  45% (1242/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5319163Z Updating files:  46% (1270/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5422446Z Updating files:  47% (1298/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5511208Z Updating files:  48% (1325/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5521839Z Updating files:  49% (1353/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5536128Z Updating files:  50% (1380/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5547413Z Updating files:  51% (1408/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5620164Z Updating files:  52% (1436/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5728981Z Updating files:  53% (1463/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5779907Z Updating files:  54% (1491/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5834815Z Updating files:  55% (1518/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.5909784Z Updating files:  56% (1546/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6002177Z Updating files:  57% (1574/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6032817Z Updating files:  58% (1601/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6051392Z Updating files:  59% (1629/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6102467Z Updating files:  60% (1656/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6276423Z Updating files:  61% (1684/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6357810Z Updating files:  62% (1712/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6404054Z Updating files:  63% (1739/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6482962Z Updating files:  64% (1767/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6550340Z Updating files:  65% (1794/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6616572Z Updating files:  66% (1822/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6745817Z Updating files:  67% (1850/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.6950557Z Updating files:  68% (1877/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.7103105Z Updating files:  69% (1905/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.7302835Z Updating files:  70% (1932/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.7604489Z Updating files:  71% (1960/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.7739556Z Updating files:  72% (1988/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.7933451Z Updating files:  73% (2015/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.8128454Z Updating files:  74% (2043/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.8474866Z Updating files:  75% (2070/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.8753104Z Updating files:  76% (2098/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9426897Z Updating files:  77% (2126/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9456970Z Updating files:  78% (2153/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9576748Z Updating files:  79% (2181/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9610356Z Updating files:  80% (2208/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9631299Z Updating files:  81% (2236/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9641681Z Updating files:  82% (2264/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9746280Z Updating files:  83% (2291/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:05.9767919Z Updating files:  84% (2319/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.0117031Z Updating files:  85% (2346/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.0433427Z Updating files:  86% (2374/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.0704786Z Updating files:  87% (2402/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.0891890Z Updating files:  88% (2429/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.1095980Z Updating files:  89% (2457/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.1693537Z Updating files:  90% (2484/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.1973728Z Updating files:  91% (2512/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2002405Z Updating files:  92% (2540/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2018659Z Updating files:  93% (2567/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2036587Z Updating files:  93% (2581/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2067094Z Updating files:  94% (2595/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2095318Z Updating files:  95% (2622/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2119285Z Updating files:  96% (2650/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2143753Z Updating files:  97% (2678/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2175778Z Updating files:  98% (2705/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2189359Z Updating files:  99% (2733/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2189798Z Updating files: 100% (2760/2760)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2190178Z Updating files: 100% (2760/2760), done.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2231977Z Switched to a new branch 'main'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2235379Z branch 'main' set up to track 'origin/main'.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2377720Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2421292Z [command]/usr/bin/git log -1 --format=%H
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2445818Z d8a1b7ab68a4736d711368097e817d090536588a
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2680334Z ##[group]Run actions/setup-python@v6
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2680603Z with:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2681117Z   python-version: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2681337Z   cache: pip
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2681529Z   check-latest: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2681886Z   token: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2682094Z   update-environment: true
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2682332Z   allow-prereleases: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2682555Z   freethreaded: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2682756Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2682929Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.2683133Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.4033449Z ##[group]Installed versions
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.4124200Z Successfully set up CPython (3.11.15)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.4124951Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.6411638Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.9121186Z /home/runner/.cache/pip
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:06.9862883Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:07.7951591Z Received 147023073 of 147023073 (100.0%), 190.0 MBs/sec
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:07.7953442Z Cache Size: ~140 MB (147023073 B)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:07.8010586Z [command]/usr/bin/tar -xf /home/runner/work/_temp/391b7f9c-6495-4f93-85bc-8d00342ffcb4/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:07.9945393Z Cache restored successfully
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0018281Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0217727Z ##[group]Run pip install -r requirements.txt
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0218129Z ^[[36;1mpip install -r requirements.txt^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0248408Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0248669Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0248861Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0249170Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0249620Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0250062Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0250442Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0251076Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0251447Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.0251762Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.5529811Z Collecting lightgbm==4.3.0 (from -r requirements.txt (line 1))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.5545144Z   Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl.metadata (19 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.6356057Z Collecting scikit-learn==1.4.2 (from -r requirements.txt (line 2))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.6373499Z   Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.7516988Z Collecting pandas==2.2.3 (from -r requirements.txt (line 3))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.7533116Z   Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.9212807Z Collecting numpy==1.26.4 (from -r requirements.txt (line 4))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.9230065Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.9506851Z Collecting requests==2.32.3 (from -r requirements.txt (line 5))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:08.9521338Z   Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.0393343Z Collecting pyarrow==16.1.0 (from -r requirements.txt (line 6))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.0409272Z   Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.0552240Z Collecting joblib==1.4.2 (from -r requirements.txt (line 7))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.0566462Z   Using cached joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.1529156Z Collecting scipy==1.13.1 (from -r requirements.txt (line 8))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.1545279Z   Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.1866752Z Collecting nbainjuries==1.1.1 (from -r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.1880077Z   Using cached nbainjuries-1.1.1-py3-none-any.whl.metadata (9.8 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.2015257Z Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.4.2->-r requirements.txt (line 2))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.2028374Z   Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.2149420Z Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.2162718Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.2736337Z Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.3295276Z   Downloading pytz-2026.2-py2.py3-none-any.whl.metadata (22 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.3496534Z Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.3533884Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4296603Z Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4311530Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4451481Z Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4488441Z   Downloading idna-3.14-py3-none-any.whl.metadata (8.0 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4709393Z Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4746115Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4930532Z Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 5))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.4975596Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.5141475Z Collecting PyPDF2<4.0,>=3.0.1 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.5154606Z   Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9298210Z Collecting aiohttp<4.0,>=3.9.3 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9314209Z   Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9569266Z Collecting jpype1<1.6.0,>=1.5.2 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9584268Z   Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9711830Z Collecting tabula-py<3.0,>=2.9.0 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9724825Z   Using cached tabula_py-2.10.0-py3-none-any.whl.metadata (7.6 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9840209Z Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:09.9853374Z   Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.0388139Z Collecting aiosignal>=1.4.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.0403083Z   Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.0521573Z Collecting attrs>=17.3.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.0534710Z   Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.1035846Z Collecting frozenlist>=1.1.1 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.1050825Z   Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.2842797Z Collecting multidict<7.0,>=4.5 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.2858479Z   Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.3329367Z Collecting propcache>=0.2.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.3380789Z   Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.5998904Z Collecting yarl<2.0,>=1.17.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6015096Z   Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6207624Z Collecting packaging (from jpype1<1.6.0,>=1.5.2->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6244355Z   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6381258Z Collecting distro (from tabula-py<3.0,>=2.9.0->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6393692Z   Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6588797Z Collecting typing-extensions>=4.2 (from aiosignal>=1.4.0->aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6601540Z   Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6706184Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 3))
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6719173Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6765651Z Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl (3.1 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6788714Z Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6840369Z Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6894579Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6966160Z Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.6978452Z Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7124232Z Using cached joblib-1.4.2-py3-none-any.whl (301 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7136845Z Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7275162Z Using cached nbainjuries-1.1.1-py3-none-any.whl (15 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7286779Z Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7304854Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7344102Z Downloading idna-3.14-py3-none-any.whl (72 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7416137Z Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (494 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7430470Z Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (246 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7443759Z Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7456664Z Using cached tabula_py-2.10.0-py3-none-any.whl (12.0 MB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7532544Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7588469Z Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (102 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7601473Z Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7614008Z Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7626603Z Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7663643Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7713891Z Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (231 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7751329Z Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (58 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7781045Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7818726Z Downloading pytz-2026.2-py2.py3-none-any.whl (510 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7930256Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7942709Z Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7955457Z Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.7992162Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.8065969Z Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:10.8103925Z Downloading packaging-26.2-py3-none-any.whl (100 kB)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:11.0680512Z Installing collected packages: pytz, urllib3, tzdata, typing-extensions, threadpoolctl, six, PyPDF2, propcache, packaging, numpy, multidict, joblib, idna, frozenlist, distro, charset-normalizer, certifi, attrs, aiohappyeyeballs, yarl, scipy, requests, python-dateutil, pyarrow, jpype1, aiosignal, scikit-learn, pandas, lightgbm, aiohttp, tabula-py, nbainjuries
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:24.8943457Z 
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:24.8967603Z Successfully installed PyPDF2-3.0.1 aiohappyeyeballs-2.6.1 aiohttp-3.13.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026.4.22 charset-normalizer-3.4.7 distro-1.9.0 frozenlist-1.8.0 idna-3.14 joblib-1.4.2 jpype1-1.5.2 lightgbm-4.3.0 multidict-6.7.1 nbainjuries-1.1.1 numpy-1.26.4 packaging-26.2 pandas-2.2.3 propcache-0.5.2 pyarrow-16.1.0 python-dateutil-2.9.0.post0 pytz-2026.2 requests-2.32.3 scikit-learn-1.4.2 scipy-1.13.1 six-1.17.0 tabula-py-2.10.0 threadpoolctl-3.6.0 typing-extensions-4.15.0 tzdata-2026.2 urllib3-2.7.0 yarl-1.23.0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.1031512Z 
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.1032148Z [notice] A new release of pip is available: 26.0.1 -> 26.1.1
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.1032744Z [notice] To update, run: pip install --upgrade pip
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5169496Z ##[group]Run python3 scripts/verify_secrets_preflight.py --mode daily
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5170039Z ^[[36;1mpython3 scripts/verify_secrets_preflight.py --mode daily^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5193324Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5193577Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5193774Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5194070Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5194495Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5195357Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5220429Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5221041Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5221425Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5221921Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5222172Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5222406Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5522576Z Secrets preflight (mode=daily; values are never printed):
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5523137Z   Required (present):
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5523426Z     - BDL_API_KEY: len=36  sha256_prefix=51cb7776
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5523769Z     - ODDS_API_KEY: len=32  sha256_prefix=ecc6164e
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5524325Z   Recommended (missing — soft warn):
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5524595Z     - SFTP_HOST
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5524804Z     - SFTP_USER
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5524979Z     - SFTP_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5525156Z     - SFTP_PATH
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5525401Z     - DUNKS_AND_THREES_API_KEY (or any alias)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5526089Z SECRETS_PREFLIGHT_PASS  mode=daily  required_present=2  recommended_missing=['SFTP_HOST', 'SFTP_USER', 'SFTP_PASS', 'SFTP_PATH', 'DUNKS_AND_THREES_API_KEY (or any alias)']
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5610413Z ##[group]Run if [ -n "" ]; then
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5610999Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5611272Z ^[[36;1m  echo "date=" >> "$GITHUB_OUTPUT"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5611558Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5611875Z ^[[36;1m  echo "date=$(TZ=America/New_York date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5612233Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5634698Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5634947Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5635141Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5635428Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5635847Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5636275Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5636642Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5637005Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5637401Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5637717Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5746842Z ##[group]Run # workflow_dispatch input wins; cron schedule fans out across all.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5747398Z ^[[36;1m# workflow_dispatch input wins; cron schedule fans out across all.^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5747777Z ^[[36;1mINPUT_TYPE=""^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5748033Z ^[[36;1mif [ -z "$INPUT_TYPE" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5748296Z ^[[36;1m  INPUT_TYPE="all"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5748524Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5748780Z ^[[36;1mecho "type=$INPUT_TYPE" >> "$GITHUB_OUTPUT"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5770203Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5770452Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5770829Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5771175Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5771599Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5772013Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5772417Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5772788Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5773147Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5773456Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5841542Z ##[group]Run python scripts/resolve_game_start_times.py --delivery-date 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5842105Z ^[[36;1mpython scripts/resolve_game_start_times.py --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5863686Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5863936Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5864123Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5864422Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5865024Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5865517Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5865912Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5866279Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5866641Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5867106Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5867395Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:25.5867627Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.3056756Z GAME_START_TIME_RESOLUTION_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.3057454Z   delivery_date=2026-05-10 reason=predictions/all_props_<date>.parquet missing or has no game_id
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4884981Z ##[group]Run python scripts/enrich_predictions_game_start_times.py --delivery-date 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4885641Z ^[[36;1mpython scripts/enrich_predictions_game_start_times.py --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4908626Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4908872Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4909061Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4909351Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4909767Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4910181Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4910546Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4911107Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4911465Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4912071Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4912361Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:27.4912562Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.2935257Z PREDICTION_GAME_START_TIME_ENRICHMENT_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.2935852Z   reason=predictions parquet missing: predictions/all_props_2026-05-10.parquet
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4303028Z ##[group]Run python scripts/verify_derek_slate_completeness.py --delivery-date 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4303663Z ^[[36;1mpython scripts/verify_derek_slate_completeness.py --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4326028Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4326272Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4326465Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4326761Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4327176Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4327587Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4327954Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4328357Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4328720Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4329153Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4329423Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:28.4329661Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.6582731Z DEREK_SLATE_COMPLETENESS_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.6583105Z   reason=no_predictions_parquet
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7986912Z ##[group]Run ARGS=()
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7987190Z ^[[36;1mARGS=()^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7987403Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7987682Z ^[[36;1m  ARGS+=(--allow-backfill-test)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7987944Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7988132Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7988369Z ^[[36;1m  ARGS+=(--force)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7988583Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7988770Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7989002Z ^[[36;1m  ARGS+=(--max-games "")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7989230Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7989504Z ^[[36;1mpython scripts/dispatch_derek_live_game_snapshots.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7989860Z ^[[36;1m  --delivery-date "2026-05-10" \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7990138Z ^[[36;1m  --snapshot-type current_live \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.7990578Z ^[[36;1m  "${ARGS[@]}"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8013998Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8014260Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8014497Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8014796Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8015230Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8015645Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8016013Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8016379Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8016746Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8017201Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8017462Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:29.8017666Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.6220766Z   delivery_date=2026-05-10  now_utc=2026-05-10T23:16:30Z  snapshot_type=current_live
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.6221784Z   predictions_parquet=predictions/all_props_2026-05-10.parquet exists=False unique_games=0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.6222553Z DEREK_LIVE_SNAPSHOT_DISPATCH_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.6222944Z DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.6223448Z   delivery_date=2026-05-10 snapshot_type=current_live
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.6224036Z   schedule_rows=0 eligible_rows=0 slate_status=predictions_parquet_missing
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7630487Z ##[group]Run ARGS=()
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7631300Z ^[[36;1mARGS=()^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7631640Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7632133Z ^[[36;1m  ARGS+=(--allow-backfill-test)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7632547Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7632821Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7633216Z ^[[36;1m  ARGS+=(--force)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7633588Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7633945Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7634360Z ^[[36;1m  ARGS+=(--max-games "")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7634743Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7635097Z ^[[36;1mpython scripts/dispatch_derek_live_game_snapshots.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7635642Z ^[[36;1m  --delivery-date "2026-05-10" \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7636068Z ^[[36;1m  --snapshot-type t_minus_25 \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7636483Z ^[[36;1m  "${ARGS[@]}"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7659502Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7659882Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7660370Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7661042Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7661584Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7677807Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7678227Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7678623Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7679024Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7679494Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7679757Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:30.7679966Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.5743858Z   delivery_date=2026-05-10  now_utc=2026-05-10T23:16:31Z  snapshot_type=t_minus_25
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.5744780Z   predictions_parquet=predictions/all_props_2026-05-10.parquet exists=False unique_games=0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.5745465Z DEREK_LIVE_SNAPSHOT_DISPATCH_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.5745911Z DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.5746418Z   delivery_date=2026-05-10 snapshot_type=t_minus_25
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.5747013Z   schedule_rows=0 eligible_rows=0 slate_status=predictions_parquet_missing
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7115146Z ##[group]Run ARGS=()
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7115408Z ^[[36;1mARGS=()^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7115616Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7115894Z ^[[36;1m  ARGS+=(--allow-backfill-test)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7116157Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7116347Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7116778Z ^[[36;1m  ARGS+=(--force)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7116996Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7117185Z ^[[36;1mif [ -n "" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7117427Z ^[[36;1m  ARGS+=(--max-games "")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7117657Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7117920Z ^[[36;1mpython scripts/dispatch_derek_live_game_snapshots.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7118276Z ^[[36;1m  --delivery-date "2026-05-10" \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7118557Z ^[[36;1m  --snapshot-type close_lock \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7118818Z ^[[36;1m  "${ARGS[@]}"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7141520Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7141769Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7142019Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7142318Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7142742Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7143152Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7143517Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7143887Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7144249Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7144680Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7144951Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:31.7145150Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.5325075Z   delivery_date=2026-05-10  now_utc=2026-05-10T23:16:32Z  snapshot_type=close_lock
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.5326149Z   predictions_parquet=predictions/all_props_2026-05-10.parquet exists=False unique_games=0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.5327228Z DEREK_LIVE_SNAPSHOT_DISPATCH_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.5328037Z DEREK_LIVE_SNAPSHOT_DISPATCH_PENDING_NO_GAMES
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.5328663Z   delivery_date=2026-05-10 snapshot_type=close_lock
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.5329418Z   schedule_rows=0 eligible_rows=0 slate_status=predictions_parquet_missing
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6803432Z ##[group]Run if [ -s "deliveries/2026-05-10/wizard_of_odds/full_pmfs_wide.parquet" ]; then
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6804043Z ^[[36;1mif [ -s "deliveries/2026-05-10/wizard_of_odds/full_pmfs_wide.parquet" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6804498Z ^[[36;1m  python scripts/verify_corrected_pmf_delivery.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6804828Z ^[[36;1m    --date 2026-05-10 \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6805106Z ^[[36;1m    --skip-derek-snapshots^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6805362Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6805757Z ^[[36;1m  echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=2026-05-10 reason=missing_full_pmfs_wide"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6806189Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6829085Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6829338Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6829527Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6829826Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6830261Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6830941Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6831345Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6831717Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6832080Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6832390Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6877812Z CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=2026-05-10 reason=missing_full_pmfs_wide
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6911139Z ##[group]Run python scripts/verify_derek_live_api_readiness.py
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6911839Z ^[[36;1mpython scripts/verify_derek_live_api_readiness.py^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6941109Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6941473Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6941771Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6942240Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6942953Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6943674Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6944531Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6945145Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6945766Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6946458Z   BDL_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6946846Z   ODDS_API_KEY: ***
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:32.6947160Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.5295048Z DEREK_LIVE_API_READINESS_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7121504Z ##[group]Run python scripts/verify_predict_lineup_context.py
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7121955Z ^[[36;1mpython scripts/verify_predict_lineup_context.py^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7145329Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7145591Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7145777Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7146071Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7146504Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7146924Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7147307Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7147677Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7148034Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:33.7148342Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.5360895Z PREDICT_DEREK_LIVE_ARGS_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.5361576Z   detail: positive + negative paths both behave correctly
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.5362113Z PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.5362689Z   detail: rows_joined=2 starter_flags=2 role_changes=1 minutes_conflicts=0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.5363255Z PREDICT_LINEUP_CONTEXT_FIXTURE_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6804972Z ##[group]Run python scripts/verify_derek_live_champion_ready.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6805454Z ^[[36;1mpython scripts/verify_derek_live_champion_ready.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6805812Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6828025Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6828288Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6828505Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6828794Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6829214Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6829625Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6829987Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6830350Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6830830Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:36.6831139Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.4930036Z DEREK_LIVE_CHAMPION_MODEL_READY_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.4931061Z   champion_model_id='challenger-2026-04-30' trained_through='2026-04-30' calibrated_through='2026-04-30'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6242455Z ##[group]Run python scripts/build_derek_snapshot_comparison.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6242926Z ^[[36;1mpython scripts/build_derek_snapshot_comparison.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6243305Z ^[[36;1m  --delivery-date 2026-05-10 || true^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6265508Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6265758Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6265952Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6266243Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6266664Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6267076Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6267439Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6267804Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6268166Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:37.6268469Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.4367007Z DEREK_SNAPSHOT_COMPARISON_PENDING_NO_GAMES
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5761654Z   delivery_date=2026-05-10 reason=no_predictions_parquet slate_games=0 predictions_parquet_present=False
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5795730Z ##[group]Run if python scripts/verify_derek_live_snapshots.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5796469Z ^[[36;1mif python scripts/verify_derek_live_snapshots.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5797039Z ^[[36;1m  --delivery-date 2026-05-10; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5797573Z ^[[36;1m  echo "legacy verify_derek_live_snapshots PASS"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5798041Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5798705Z ^[[36;1m  echo "::warning::legacy verify_derek_live_snapshots failed; corrected PMF verifier is authoritative"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5799483Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5832718Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5833107Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5833402Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5833876Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5834581Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5835277Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5835957Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5836573Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5837184Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:38.5837700Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.4056390Z DEREK_LIVE_SNAPSHOTS_PENDING_NO_GAMES
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.4057231Z   delivery_date=2026-05-10 reason=no_predictions_parquet slate_games=0 predictions_parquet_present=False
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5740236Z legacy verify_derek_live_snapshots PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5778415Z ##[group]Run if python scripts/verify_bdl_fetch_proof_for_derek.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5778930Z ^[[36;1mif python scripts/verify_bdl_fetch_proof_for_derek.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5779305Z ^[[36;1m  --delivery-date 2026-05-10; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5779645Z ^[[36;1m  echo "legacy verify_bdl_fetch_proof_for_derek PASS"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5779958Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5780367Z ^[[36;1m  echo "::warning::legacy BDL fetch proof failed; corrected PMF verifier is authoritative"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5781081Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5803475Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5803727Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5803917Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5804213Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5804643Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5805058Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5805460Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5805845Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5806209Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.5806523Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6144869Z PHASE13W_BDL_FETCH_PROOF_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6145449Z   reason=derek_game_snapshots dir missing for 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6189783Z legacy verify_bdl_fetch_proof_for_derek PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6217455Z ##[group]Run if python scripts/audit_contextual_delta_variation.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6217932Z ^[[36;1mif python scripts/audit_contextual_delta_variation.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6218293Z ^[[36;1m  --delivery-date 2026-05-10; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6218627Z ^[[36;1m  echo "legacy audit_contextual_delta_variation PASS"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6218933Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6219327Z ^[[36;1m  echo "::warning::legacy contextual delta audit failed; corrected PMF verifier is authoritative"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6219766Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6242832Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6243085Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6243270Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6243561Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6243990Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6244691Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6245084Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6245453Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6245817Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6246121Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6583254Z PHASE13W_CONTEXTUAL_DELTA_VARIATION_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6583715Z   reason=no_snapshots_present_yet
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6628482Z legacy audit_contextual_delta_variation PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6656068Z ##[group]Run python scripts/build_derek_delivery_readme.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6656506Z ^[[36;1mpython scripts/build_derek_delivery_readme.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6656844Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6678886Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6679124Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6679312Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6679607Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6680056Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6680463Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6681098Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6681468Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6681841Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.6682152Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7033778Z PHASE13W_DEREK_GITHUB_INDEX_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7034415Z   reason=no derek_game_snapshots dir under deliveries/2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7113355Z ##[group]Run if python scripts/audit_derek_edge_root_cause.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7114054Z ^[[36;1mif python scripts/audit_derek_edge_root_cause.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7114600Z ^[[36;1m  --delivery-date 2026-05-10; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7115115Z ^[[36;1m  echo "legacy audit_derek_edge_root_cause PASS"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7115619Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7116278Z ^[[36;1m  echo "::warning::legacy Derek edge root-cause audit failed; corrected PMF verifier is authoritative"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7117011Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7140610Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7140981Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7141178Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7141473Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7141898Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7142349Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7142754Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7143137Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7143503Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7143816Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7507733Z PHASE13X_EDGE_ROOT_CAUSE_WARN
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7508172Z   reason=no derek_game_snapshots dir
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7554257Z legacy audit_derek_edge_root_cause PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7583986Z ##[group]Run AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '2026-05-10')")
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7586799Z ^[[36;1mAS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '2026-05-10')")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7588525Z ^[[36;1mpython scripts/audit_derek_calibration_for_edge_buckets.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7588929Z ^[[36;1m  --delivery-date 2026-05-10 \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7589219Z ^[[36;1m  --as-of-date "$AS_OF"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7611984Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7612692Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7612886Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7613212Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7613642Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7614070Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7614436Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7614806Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7615168Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.7615477Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8201342Z PHASE13X_EDGE_CALIBRATION_WARN
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8202111Z   reason=no derek_edge_root_cause_2026-05-10.json yet. Run scripts/audit_derek_edge_root_cause.py first.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8272411Z ##[group]Run python scripts/apply_derek_edge_publishability.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8272866Z ^[[36;1mpython scripts/apply_derek_edge_publishability.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8273238Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8295550Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8295787Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8295971Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8296262Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8296683Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8297089Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8297455Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8297827Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8298187Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8298488Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8633456Z PHASE13X_DEREK_EDGE_GATING_FAILED
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8634008Z   reason=no derek_game_snapshots dir for 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8707113Z ##[error]Process completed with exit code 1.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8750053Z ##[group]Run python scripts/append_phase13x_edge_section_to_reports.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8750564Z ^[[36;1mpython scripts/append_phase13x_edge_section_to_reports.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8751284Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8773463Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8773706Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8773898Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8774189Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8774615Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8775023Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8775394Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8775763Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8776126Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.8776446Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9105913Z PHASE13X_DEREK_EDGE_REPORTS_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9106362Z   no derek_game_snapshots dir
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9177192Z ##[group]Run python scripts/build_derek_delivery_readme.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9177617Z ^[[36;1mpython scripts/build_derek_delivery_readme.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9177945Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9200309Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9200559Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9200969Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9201267Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9201696Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9202134Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9202511Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9202891Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9203461Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9203789Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9557473Z PHASE13W_DEREK_GITHUB_INDEX_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9557924Z   reason=no derek_game_snapshots dir under deliveries/2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9634111Z ##[group]Run python scripts/render_derek_human_reports.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9634546Z ^[[36;1mpython scripts/render_derek_human_reports.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9634885Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9656969Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9657221Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9657420Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9657728Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9658153Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9658572Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9658951Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9659337Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9659706Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:39.9660025Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.7961790Z PHASE13Z_POLISH_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.7962145Z   no derek_game_snapshots dir for 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9469654Z ##[group]Run echo "Skipped: corrected Derek builder writes outcome_level_probabilities directly from full PMFs."
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9471152Z ^[[36;1mecho "Skipped: corrected Derek builder writes outcome_level_probabilities directly from full PMFs."^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9472232Z ^[[36;1mecho "Source of truth: deliveries/2026-05-10/wizard_of_odds/full_pmfs_wide.parquet"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9504373Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9504749Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9505039Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9505487Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9506193Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9506902Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9507533Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9508143Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9508799Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9509313Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9557172Z Skipped: corrected Derek builder writes outcome_level_probabilities directly from full PMFs.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9557763Z Source of truth: deliveries/2026-05-10/wizard_of_odds/full_pmfs_wide.parquet
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9583779Z ##[group]Run if python scripts/verify_derek_outcome_level_probabilities.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9584425Z ^[[36;1mif python scripts/verify_derek_outcome_level_probabilities.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9584979Z ^[[36;1m  --delivery-date 2026-05-10; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9585477Z ^[[36;1m  echo "legacy verify_derek_outcome_level_probabilities PASS"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9585950Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9586700Z ^[[36;1m  echo "::warning::legacy outcome-level verifier failed; corrected Derek builder writes outcome_level_probabilities directly from full PMFs"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9587416Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9608162Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9608536Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9608887Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9609364Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9609908Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9610550Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9611291Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9611849Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9612355Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:40.9612972Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3186327Z DEREK_OUTCOME_LEVEL_PROBABILITIES_FAILED  reason=no_snapshot_folders  delivery_date=2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3760283Z ##[warning]legacy outcome-level verifier failed; corrected Derek builder writes outcome_level_probabilities directly from full PMFs
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3790443Z ##[group]Run python scripts/verify_phase13x_woo_unchanged.py
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3791329Z ^[[36;1mpython scripts/verify_phase13x_woo_unchanged.py^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3813974Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3814345Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3814738Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3815200Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3815737Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3816356Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3816819Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3817315Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3817874Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:41.3818356Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1454852Z PHASE13X_WOO_UNCHANGED_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1455415Z   protected_changes=0 documented=0 undocumented=0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1548917Z ##[group]Run python scripts/verify_derek_production_live_e2e.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1549438Z ^[[36;1mpython scripts/verify_derek_production_live_e2e.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1549796Z ^[[36;1m  --delivery-date 2026-05-10^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1572495Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1572754Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1572941Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1573237Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1573662Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1574064Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1574444Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1574817Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1575183Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1575486Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1960408Z DEREK_PRODUCTION_LIVE_E2E_PENDING
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.1961394Z   reason=no_predictions_parquet  now_utc=2026-05-10T23:16:42Z  schedule_size=0  predictions_parquet_present=False
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2033495Z ##[group]Run python scripts/verify_phase13l_no_breakage.py
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2033918Z ^[[36;1mpython scripts/verify_phase13l_no_breakage.py^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2055854Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2056102Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2056296Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2056592Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2057037Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2057471Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2057832Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2058193Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2058553Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:42.2058860Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.0592250Z PHASE13L_NO_BREAKAGE_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2081252Z ##[group]Run AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '2026-05-10')")
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2082902Z ^[[36;1mAS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '2026-05-10')")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2084155Z ^[[36;1mpython scripts/verify_daily_retrain_recalibration.py --as-of-date "$AS_OF"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2106689Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2106940Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2107134Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2107430Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2107878Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2108294Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2108659Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2109024Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2109388Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2109707Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2694347Z PHASE13W_DAILY_RETRAIN_RECALIBRATION_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2695170Z   feature_set_id=phase13s_direct_lineup_injury_pmf_driver_v1 trained_through=2026-04-30 calibrated_through=2026-04-30
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2765774Z ##[group]Run # Use the active champion's trained_through_date for the
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2766242Z ^[[36;1m# Use the active champion's trained_through_date for the^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2766635Z ^[[36;1m# report, falling back to delivery_date when missing.^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2767640Z ^[[36;1mAS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '2026-05-10')")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2768685Z ^[[36;1mpython scripts/build_daily_model_training_report.py --as-of-date "$AS_OF"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2791258Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2791501Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2791693Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2791988Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2792437Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2792850Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2793218Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2793581Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2793944Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.2794254Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3423060Z DAILY_MODEL_TRAINING_REPORT_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3423586Z PHASE13W_DAILY_MODEL_REPORT_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3423980Z   as_of_date=2026-04-30
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3424247Z   champion_model_id=challenger-2026-04-30
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3424621Z   feature_set_id=phase13s_direct_lineup_injury_pmf_driver_v1
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3424962Z   challenger_promoted=False
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3425243Z   active_champion_model_id=challenger-2026-04-30
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3425582Z   promotion_reason=gate_failed:promotion_clock_safe
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3425911Z   validation_gates_issues=[]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3426291Z   output=artifacts/model_daily_reports/2026-04-30/daily_model_training_report.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3513073Z ##[group]Run python scripts/score_derek_live_snapshots_after_game.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3513565Z ^[[36;1mpython scripts/score_derek_live_snapshots_after_game.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3513942Z ^[[36;1m  --delivery-date 2026-05-10 || true^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3536104Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3536347Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3536535Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3536828Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3537240Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3537644Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3538006Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3538382Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3538950Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:43.3539263Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.1759068Z   no derek_game_snapshots/ dir for 2026-05-10; nothing to score.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3384150Z ##[group]Run python scripts/build_rolling_derek_snapshot_benchmark.py \
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3384653Z ^[[36;1mpython scripts/build_rolling_derek_snapshot_benchmark.py \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3385065Z ^[[36;1m  --as-of-date 2026-05-10 --window-days 28 || true^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3407351Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3407603Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3407796Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3408089Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3408508Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3408934Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3409305Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3409688Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3410049Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:44.3410359Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.1667632Z DEREK_LIVE_SNAPSHOT_BENCHMARK_INSUFFICIENT_SAMPLE
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.1668382Z   rows_total=68 < min=200; dates_included=1/28
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3206768Z ##[group]Run actions/upload-artifact@v4
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3207083Z with:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3207309Z   name: derek-live-snapshots-2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3207587Z   retention-days: 14
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3207806Z   if-no-files-found: warn
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3209075Z   path: deliveries/2026-05-10/derek_game_snapshots/**
+derek_live_snapshots	UNKNOWN STEP	artifacts/derek_live_snapshots/2026-05-10/**
+derek_live_snapshots	UNKNOWN STEP	artifacts/live_lineups/2026-05-10/**
+derek_live_snapshots	UNKNOWN STEP	artifacts/automation_health/derek_live_snapshots_2026-05-10.*
+derek_live_snapshots	UNKNOWN STEP	artifacts/automation_health/derek_live_champion_ready_2026-05-10.*
+derek_live_snapshots	UNKNOWN STEP	artifacts/automation_health/derek_live_api_readiness.*
+derek_live_snapshots	UNKNOWN STEP	artifacts/automation_health/phase13l_no_breakage.*
+derek_live_snapshots	UNKNOWN STEP	
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3210358Z   compression-level: 6
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3210572Z   overwrite: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3211066Z   include-hidden-files: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3211301Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3211482Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3211753Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3212205Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3212615Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3212971Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3213333Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3213688Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.3214000Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.5608141Z Multiple search paths detected. Calculating the least common ancestor of all paths
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.5611181Z The least common ancestor is /home/runner/work/nba-player-props-model/nba-player-props-model. This will be the root directory of the artifact
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.5612448Z With the provided path, there will be 12 files uploaded
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.5615979Z Artifact name is valid!
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.5617034Z Root directory input is valid!
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.6782736Z Beginning upload of artifact content to blob storage
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.7684786Z Uploaded bytes 9822
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.7862518Z Finished uploading artifact content to blob storage!
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.7865544Z SHA256 digest of uploaded artifact zip is f855969629b131dd13cc6d3116492084bb86db7bd25308716438db013ac9ab38
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.7867680Z Finalizing artifact upload
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9239141Z Artifact derek-live-snapshots-2026-05-10.zip successfully finalized. Artifact ID 6907772630
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9240105Z Artifact derek-live-snapshots-2026-05-10 has been successfully uploaded! Final size is 9822 bytes. Artifact ID is 6907772630
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9246187Z Artifact download URL: https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25642440637/artifacts/6907772630
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9369245Z ##[group]Run actions/upload-artifact@v4
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9369538Z with:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9369769Z   name: derek-production-live-e2e-2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9370058Z   retention-days: 14
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9370284Z   if-no-files-found: warn
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9370898Z   path: artifacts/automation_health/derek_production_live_e2e_2026-05-10.*
+derek_live_snapshots	UNKNOWN STEP	
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9371325Z   compression-level: 6
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9371556Z   overwrite: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9371778Z   include-hidden-files: false
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9372011Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9372202Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9372494Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9372924Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9373342Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9373735Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9374139Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9374513Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:45.9374832Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.1619464Z With the provided path, there will be 2 files uploaded
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.1625031Z Artifact name is valid!
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.1626131Z Root directory input is valid!
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.2734500Z Beginning upload of artifact content to blob storage
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.3408794Z Uploaded bytes 795
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.3612223Z Finished uploading artifact content to blob storage!
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.3615750Z SHA256 digest of uploaded artifact zip is 090240b48ae651e52bedd4df21c7c0c07908d048e13d628609af08f36f3bcde8
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.3617238Z Finalizing artifact upload
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4845693Z Artifact derek-production-live-e2e-2026-05-10.zip successfully finalized. Artifact ID 6907772701
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4847043Z Artifact derek-production-live-e2e-2026-05-10 has been successfully uploaded! Final size is 795 bytes. Artifact ID is 6907772701
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4853666Z Artifact download URL: https://github.com/Risky-Scout/nba-player-props-model/actions/runs/25642440637/artifacts/6907772701
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4981468Z ##[group]Run git config user.name "Joseph Shackelford"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4981946Z ^[[36;1mgit config user.name "Joseph Shackelford"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4982307Z ^[[36;1mgit config user.email "josephshack@gmail.com"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4982727Z ^[[36;1m# Corrected PMF builder/verifier owns game/no-game determination.^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4983204Z ^[[36;1m# Do not create a no_games sentinel from the legacy dispatcher path.^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4984257Z ^[[36;1mAS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '2026-05-10')")^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4985246Z ^[[36;1mPATHS_TO_ADD=(^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4985544Z ^[[36;1m  "deliveries/2026-05-10/derek_game_snapshots"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4985888Z ^[[36;1m  "deliveries/2026-05-10/README.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4986247Z ^[[36;1m  "artifacts/derek_live_snapshots/2026-05-10"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4986581Z ^[[36;1m  "artifacts/live_lineups/2026-05-10"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4986891Z ^[[36;1m  "artifacts/live_schedule/2026-05-10"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4987284Z ^[[36;1m  "artifacts/automation_health/derek_live_snapshots_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4987767Z ^[[36;1m  "artifacts/automation_health/derek_live_snapshots_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4988247Z ^[[36;1m  "artifacts/automation_health/derek_live_champion_ready_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4988749Z ^[[36;1m  "artifacts/automation_health/derek_live_champion_ready_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4989252Z ^[[36;1m  "artifacts/automation_health/derek_slate_completeness_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4989946Z ^[[36;1m  "artifacts/automation_health/derek_slate_completeness_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4990444Z ^[[36;1m  "artifacts/automation_health/derek_production_live_e2e_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4991262Z ^[[36;1m  "artifacts/automation_health/derek_production_live_e2e_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4991737Z ^[[36;1m  "artifacts/automation_health/bdl_fetch_proof_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4992175Z ^[[36;1m  "artifacts/automation_health/bdl_fetch_proof_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4992647Z ^[[36;1m  "artifacts/automation_health/contextual_delta_variation_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4993153Z ^[[36;1m  "artifacts/automation_health/contextual_delta_variation_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4993638Z ^[[36;1m  "artifacts/automation_health/derek_edge_root_cause_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4994104Z ^[[36;1m  "artifacts/automation_health/derek_edge_root_cause_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4994598Z ^[[36;1m  "artifacts/automation_health/derek_edge_calibration_2026-05-10.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4995076Z ^[[36;1m  "artifacts/automation_health/derek_edge_calibration_2026-05-10.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4995541Z ^[[36;1m  "artifacts/automation_health/phase13x_woo_unchanged.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4995903Z ^[[36;1m  "artifacts/phase13z"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4996283Z ^[[36;1m  "artifacts/automation_health/daily_retrain_recalibration_$AS_OF.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4996749Z ^[[36;1m  "artifacts/automation_health/phase13l_no_breakage.json"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4997160Z ^[[36;1m  "artifacts/automation_health/phase13l_no_breakage.md"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4997533Z ^[[36;1m  "artifacts/model_daily_reports/$AS_OF"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4997820Z ^[[36;1m)^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4998043Z ^[[36;1mfor p in "${PATHS_TO_ADD[@]}"; do^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4998333Z ^[[36;1m  if [ -e "$p" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4998683Z ^[[36;1m    git add "$p" 2>/dev/null || echo "::warning::git add failed for $p"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4999037Z ^[[36;1m  else^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4999310Z ^[[36;1m    echo "::notice::path missing, skipping: $p"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4999618Z ^[[36;1m  fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.4999816Z ^[[36;1mdone^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5000212Z ^[[36;1mif git diff --staged --quiet; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5000511Z ^[[36;1m  echo "Nothing to commit"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5000982Z ^[[36;1melse^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5001184Z ^[[36;1m  git commit \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5001506Z ^[[36;1m    --author="Joseph Shackelford <josephshack@gmail.com>" \^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5001954Z ^[[36;1m    -m "phase13u: Derek live snapshots + daily model report 2026-05-10"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5002310Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5002599Z ^[[36;1m# Bug F (Bug C pattern, normal-day branch): the long git add^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5003038Z ^[[36;1m# above already commits the dated derek_*_<date>.{json,md} files^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5003528Z ^[[36;1m# plus phase13l_no_breakage.{md,json} and phase13x_woo_unchanged.json,^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5003984Z ^[[36;1m# so most verifier-mutated tracked files are not dirty here.^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5004419Z ^[[36;1m# data/player_game_stats.parquet may be mutated transitively by^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5004918Z ^[[36;1m# the dispatcher's predict.py invocation. The defensive secondary^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5005308Z ^[[36;1m# reset below catches anything else.^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5005703Z ^[[36;1mgit checkout -- data/player_game_stats.parquet 2>/dev/null || true^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5006079Z ^[[36;1mif ! git diff --quiet; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5006496Z ^[[36;1m  echo "::notice::Bug F defensive reset (normal-day branch) — dirty tracked files:"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5006929Z ^[[36;1m  git diff --name-only^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5007297Z ^[[36;1m  git diff --name-only -z | xargs -0 git checkout -- 2>/dev/null || true^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5024937Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5025392Z ^[[36;1mPUSH_SUCCESS=0^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5025653Z ^[[36;1mfor attempt in 1 2 3; do^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5025953Z ^[[36;1m  echo "git push attempt $attempt"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5026338Z ^[[36;1m  if git pull --rebase origin main && git push origin main; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5026706Z ^[[36;1m    PUSH_SUCCESS=1^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5026951Z ^[[36;1m    break^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5027160Z ^[[36;1m  fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5027355Z ^[[36;1m  sleep 5^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5027554Z ^[[36;1mdone^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5027779Z ^[[36;1mif [ "$PUSH_SUCCESS" != "1" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5028117Z ^[[36;1m  echo "::error::git push failed after 3 attempts"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5028433Z ^[[36;1m  exit 1^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5028636Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5051091Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5051355Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5051558Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5051863Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5052315Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5052748Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5053129Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5053510Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5053890Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5054211Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5390157Z ##[notice]path missing, skipping: deliveries/2026-05-10/derek_game_snapshots
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5391879Z ##[notice]path missing, skipping: deliveries/2026-05-10/README.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5443175Z ##[notice]path missing, skipping: artifacts/live_lineups/2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5537157Z ##[notice]path missing, skipping: artifacts/automation_health/derek_live_snapshots_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5835612Z ##[notice]path missing, skipping: artifacts/automation_health/bdl_fetch_proof_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5863153Z ##[notice]path missing, skipping: artifacts/automation_health/contextual_delta_variation_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5891368Z ##[notice]path missing, skipping: artifacts/automation_health/derek_edge_root_cause_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.5919473Z ##[notice]path missing, skipping: artifacts/automation_health/derek_edge_calibration_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.6328646Z [main 2143323c] phase13u: Derek live snapshots + daily model report 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.6329437Z  18 files changed, 25 insertions(+), 25 deletions(-)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.6421309Z git push attempt 1
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.8682016Z From https://github.com/Risky-Scout/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.8682655Z  * branch              main       -> FETCH_HEAD
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.8683128Z    d8a1b7ab..0e73097d  main       -> origin/main
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9039486Z Auto-merging artifacts/automation_health/derek_live_champion_ready_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9040591Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_live_champion_ready_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9041813Z Auto-merging artifacts/automation_health/derek_live_champion_ready_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9042827Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_live_champion_ready_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9043615Z Auto-merging artifacts/automation_health/derek_live_snapshots_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9044189Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_live_snapshots_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9044782Z Auto-merging artifacts/automation_health/derek_production_live_e2e_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9045392Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_production_live_e2e_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9046014Z Auto-merging artifacts/automation_health/derek_production_live_e2e_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9046636Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_production_live_e2e_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9047494Z Auto-merging artifacts/automation_health/derek_slate_completeness_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9048092Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_slate_completeness_2026-05-10.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9048686Z Auto-merging artifacts/automation_health/derek_slate_completeness_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9049269Z CONFLICT (content): Merge conflict in artifacts/automation_health/derek_slate_completeness_2026-05-10.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9049822Z Auto-merging artifacts/automation_health/phase13l_no_breakage.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9050343Z CONFLICT (content): Merge conflict in artifacts/automation_health/phase13l_no_breakage.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9051030Z Auto-merging artifacts/automation_health/phase13l_no_breakage.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9051522Z CONFLICT (content): Merge conflict in artifacts/automation_health/phase13l_no_breakage.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9052070Z Auto-merging artifacts/derek_live_snapshots/2026-05-10/dispatch_close_lock.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9052689Z CONFLICT (content): Merge conflict in artifacts/derek_live_snapshots/2026-05-10/dispatch_close_lock.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9053282Z Auto-merging artifacts/derek_live_snapshots/2026-05-10/dispatch_current_live.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9053886Z CONFLICT (content): Merge conflict in artifacts/derek_live_snapshots/2026-05-10/dispatch_current_live.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9054578Z Auto-merging artifacts/derek_live_snapshots/2026-05-10/dispatch_t_minus_25.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9055387Z CONFLICT (content): Merge conflict in artifacts/derek_live_snapshots/2026-05-10/dispatch_t_minus_25.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9056028Z Auto-merging artifacts/derek_live_snapshots/2026-05-10/rolling_derek_snapshot_benchmark.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9056704Z CONFLICT (content): Merge conflict in artifacts/derek_live_snapshots/2026-05-10/rolling_derek_snapshot_benchmark.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9057370Z Auto-merging artifacts/derek_live_snapshots/2026-05-10/rolling_derek_snapshot_benchmark.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9058090Z CONFLICT (content): Merge conflict in artifacts/derek_live_snapshots/2026-05-10/rolling_derek_snapshot_benchmark.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9058970Z Auto-merging artifacts/live_schedule/2026-05-10/game_start_time_resolution_report.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9059776Z CONFLICT (content): Merge conflict in artifacts/live_schedule/2026-05-10/game_start_time_resolution_report.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9060378Z Auto-merging artifacts/live_schedule/2026-05-10/game_start_times.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9061048Z CONFLICT (content): Merge conflict in artifacts/live_schedule/2026-05-10/game_start_times.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9061626Z Auto-merging artifacts/model_daily_reports/2026-04-30/daily_model_training_report.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9062251Z CONFLICT (content): Merge conflict in artifacts/model_daily_reports/2026-04-30/daily_model_training_report.json
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9062752Z Rebasing (1/1)
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9063149Z error: could not apply 2143323c... phase13u: Derek live snapshots + daily model report 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9063722Z hint: Resolve all conflicts manually, mark them as resolved with
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9064186Z hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9064641Z hint: You can instead skip this commit: run "git rebase --skip".
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9065237Z hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9066070Z hint: Disable this message with "git config set advice.mergeConflict false"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9066948Z Could not apply 2143323c... # phase13u: Derek live snapshots + daily model report 2026-05-10
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9067884Z Auto-merging artifacts/model_daily_reports/2026-04-30/daily_model_training_report.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:46.9068965Z CONFLICT (content): Merge conflict in artifacts/model_daily_reports/2026-04-30/daily_model_training_report.md
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:51.9092062Z git push attempt 2
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:51.9113504Z error: Pulling is not possible because you have unmerged files.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:51.9114211Z hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:51.9114654Z hint: as appropriate to mark resolution and make a commit.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:51.9115136Z fatal: Exiting because of an unresolved conflict.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:56.9131475Z git push attempt 3
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:56.9152447Z error: Pulling is not possible because you have unmerged files.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:56.9153180Z hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:56.9153622Z hint: as appropriate to mark resolution and make a commit.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:16:56.9154001Z fatal: Exiting because of an unresolved conflict.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9175562Z ##[error]git push failed after 3 attempts
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9177199Z ##[error]Process completed with exit code 1.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9205124Z ##[group]Run dispatch_current_live="success"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9205507Z ^[[36;1mdispatch_current_live="success"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9205816Z ^[[36;1mdispatch_t25="success"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9206081Z ^[[36;1mdispatch_cl="success"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9206352Z ^[[36;1mverify_derek="success"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9206607Z ^[[36;1mverify_e2e="success"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9206870Z ^[[36;1mverify_no_break="success"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9207142Z ^[[36;1mallow_backfill_test=""^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9207388Z ^[[36;1m^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9207662Z ^[[36;1mecho "dispatch_current_live=$dispatch_current_live"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9208023Z ^[[36;1mecho "dispatch_t25=$dispatch_t25"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9208316Z ^[[36;1mecho "dispatch_cl=$dispatch_cl"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9208608Z ^[[36;1mecho "verify_derek=$verify_derek"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9208896Z ^[[36;1mecho "verify_e2e=$verify_e2e"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9209234Z ^[[36;1mecho "verify_no_break=$verify_no_break"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9209530Z ^[[36;1m^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9209730Z ^[[36;1mshould_fail=0^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9209967Z ^[[36;1m^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9210237Z ^[[36;1mif [ "$verify_derek" != "success" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9211078Z ^[[36;1mif [ "$verify_e2e" != "success" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9211575Z ^[[36;1m  if [ "$allow_backfill_test" = "true" ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9212442Z ^[[36;1m    echo "::warning::verify_e2e failed during manual allow_backfill_test; scheduled production runs still enforce E2E"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9213416Z ^[[36;1m  else^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9213652Z ^[[36;1m    should_fail=1^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9213894Z ^[[36;1m  fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9214096Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9214381Z ^[[36;1mif [ "$verify_no_break" != "success" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9214823Z ^[[36;1mif [ "$dispatch_current_live" = "failure" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9215268Z ^[[36;1mif [ "$dispatch_t25" = "failure" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9215674Z ^[[36;1mif [ "$dispatch_cl" = "failure" ]; then should_fail=1; fi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9216000Z ^[[36;1m^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9216221Z ^[[36;1mif [ "$should_fail" -eq 0 ]; then^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9216579Z ^[[36;1m  echo "DEREK_LIVE_SNAPSHOT_WORKFLOW_CONSOLIDATED_PASS"^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9216914Z ^[[36;1m  exit 0^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9217119Z ^[[36;1mfi^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9217360Z ^[[36;1m^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9217754Z ^[[36;1mecho "::error::A Derek live snapshot dispatcher or verifier failed. See uploaded artifacts."^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9218205Z ^[[36;1mexit 1^[[0m
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9242722Z shell: /usr/bin/bash -e {0}
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9242999Z env:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9243216Z   PYTHON_VERSION: 3.11
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9243534Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9243994Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9244437Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9244822Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9245398Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9245782Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9246117Z ##[endgroup]
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9292377Z dispatch_current_live=success
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9292858Z dispatch_t25=success
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9293217Z dispatch_cl=success
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9293561Z verify_derek=success
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9293896Z verify_e2e=success
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9294261Z verify_no_break=success
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9294691Z DEREK_LIVE_SNAPSHOT_WORKFLOW_CONSOLIDATED_PASS
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:01.9357808Z Post job cleanup.
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0236209Z [command]/usr/bin/git version
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0273563Z git version 2.53.0
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0309725Z Temporarily overriding HOME='/home/runner/work/_temp/f06f8b2e-32c6-467d-88e4-d498c26146c5' before making global git config changes
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0311215Z Adding repository directory to the temporary git global config as a safe directory
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0316163Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0354984Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0394770Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0645592Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0670037Z http.https://github.com/.extraheader
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0680126Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0714054Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0956989Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.0989665Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.1391375Z Cleaning up orphan processes
+derek_live_snapshots	UNKNOWN STEP	2026-05-10T23:17:02.1665721Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/upload-artifact@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

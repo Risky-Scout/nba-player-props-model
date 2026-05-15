@@ -1,0 +1,7 @@
+check,ok
+workflow_dispatch,True
+odds_secret,True
+bdl_secret,True
+pythonpath_src,True
+run_daily_delivery_pipeline,True
+verify_daily_delivery_folder,True

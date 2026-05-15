@@ -1,0 +1,26 @@
+{
+  "label": "dates_e77f109a685a",
+  "n_losing_segments": 3,
+  "diagnostics_meta_keys": [
+    "market_eval_oof_opening_lines_available",
+    "lift_baseline",
+    "run_date",
+    "require_market_eval",
+    "allow_baseline_only",
+    "market_eval_status",
+    "event_market_eval_ran",
+    "strict_contract_result",
+    "market_superiority_claim_allowed",
+    "promotion_status",
+    "n_event_market_rows",
+    "n_matched_rows",
+    "n_scored_rows",
+    "dates_used",
+    "required_stats_missing_in_event_rows",
+    "global_market_superiority_claim_allowed",
+    "eligible_market_subset_superiority_claim_allowed",
+    "model_only_calibration_claim_allowed",
+    "calibration_constant_prob_summary"
+  ],
+  "training_table_used": true
+}

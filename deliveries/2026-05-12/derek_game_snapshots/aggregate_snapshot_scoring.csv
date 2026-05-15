@@ -1,0 +1,2 @@
+game_id,snapshot_type,snapshot_dir,matched_rows,mean_nll,median_p_realized,present,blocker
+21707976,close_lock,deliveries/2026-05-12/derek_game_snapshots/21707976/close_lock,98,2.043820669748598,0.14786072864772096,True,

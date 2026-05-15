@@ -1,0 +1,4 @@
+stat,role_bucket,accepted,rollback_reason,n_train,n_val,n_dates,segment_key
+pts,rotation,False,all_candidates_failed_cv_rollback,2319,2319,16,pts|rotation
+ast,starter,False,all_candidates_failed_cv_rollback,2616,2616,16,ast|starter
+pr,bench,False,all_candidates_failed_cv_rollback,604,604,13,pr|bench

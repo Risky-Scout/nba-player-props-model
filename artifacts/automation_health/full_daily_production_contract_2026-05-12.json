@@ -1,0 +1,374 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-05-14T05:17:59+00:00",
+  "date": "2026-05-12",
+  "derek_date": "2026-05-12",
+  "required_outcomes_through": "2026-05-11",
+  "checks": [
+    {
+      "name": "settled_outcome_freshness",
+      "command": "scripts/verify_player_game_stats_freshness.py --required-through-date 2026-05-11",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "PLAYER_GAME_STATS_FRESHNESS_PASS  required_through=2026-05-11  max_game_date=2026-05-12  rows_total=84123  rows_for_required_date=47",
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 0,
+      "tail": [
+        "PLAYER_GAME_STATS_FRESHNESS_PASS  required_through=2026-05-11  max_game_date=2026-05-12  rows_total=84123  rows_for_required_date=47"
+      ]
+    },
+    {
+      "name": "training_automation",
+      "command": "scripts/verify_training_automation.py --as-of-date 2026-05-11",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": "VERIFICATION FAILED (mode=unknown)",
+      "rc": 1,
+      "tail": [
+        "  - training_run_reproducible: manifests missing"
+      ]
+    },
+    {
+      "name": "recalibration_automation",
+      "command": "(inferred from training_automation chain)",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "  - training_run_reproducible: manifests missing"
+      ]
+    },
+    {
+      "name": "training_scheduled_cron",
+      "command": "(inferred from training_automation chain)",
+      "status": "FAIL",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "  - training_run_reproducible: manifests missing"
+      ]
+    },
+    {
+      "name": "training_run",
+      "command": "(inferred from training_automation chain)",
+      "status": "WARN",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": "TRAINING_VALID_SKIP_PASS",
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "  - training_run_reproducible: manifests missing"
+      ]
+    },
+    {
+      "name": "recalibration_run",
+      "command": "(inferred from training_automation chain)",
+      "status": "WARN",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": "RECALIBRATION_VALID_SKIP_PASS",
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "  - training_run_reproducible: manifests missing"
+      ]
+    },
+    {
+      "name": "daily_predictions",
+      "command": "scripts/verify_daily_prediction_outputs.py --date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DAILY_PREDICTION_OUTPUTS_FAILED  date=2026-05-12  failures=3",
+      "critical_failure_line": "DAILY_PREDICTION_OUTPUTS_FAILED  date=2026-05-12  failures=3",
+      "rc": 1,
+      "tail": [
+        "  - pmf_display_json missing at predictions/pmf_display_2026-05-12.json"
+      ]
+    },
+    {
+      "name": "derek_near_lineup",
+      "command": "scripts/verify_derek_near_lineup_contract.py --date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DEREK_NEAR_LINEUP_CONTRACT_FAILED  date=2026-05-12  failures=3",
+      "critical_failure_line": "DEREK_NEAR_LINEUP_CONTRACT_FAILED  date=2026-05-12  failures=3",
+      "rc": 1,
+      "tail": [
+        "  - missing singles_json: predictions/singles_2026-05-12.json"
+      ]
+    },
+    {
+      "name": "woo_nba_props_page",
+      "command": "scripts/verify_woo_nba_props_page.py --date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "WOO_NBA_PROPS_PAGE_FAILED  date=2026-05-12  failures=1",
+      "critical_failure_line": "WOO_NBA_PROPS_PAGE_FAILED  date=2026-05-12  failures=1",
+      "rc": 1,
+      "tail": [
+        "  - nba_props_today.json date='2026-05-08' is stale; expected '2026-05-12'. Run scripts/publish_nba_props_today.py --date 2026-05-12."
+      ]
+    },
+    {
+      "name": "woo_public_export_contract",
+      "command": "scripts/verify_woo_public_export_contract.py --date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": "Traceback (most recent call last):",
+      "rc": 1,
+      "tail": [
+        "AttributeError: 'list' object has no attribute 'items'"
+      ]
+    },
+    {
+      "name": "woo_dashboard_build",
+      "command": "scripts/build_woo_dashboard.py --date 2026-05-12",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "WOO_DASHBOARD_BUILD_PASS  date=2026-05-12",
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 0,
+      "tail": [
+        "WOO_DASHBOARD_BUILD_PASS  date=2026-05-12"
+      ]
+    },
+    {
+      "name": "woo_dashboard_render_contract",
+      "command": "scripts/verify_woo_dashboard_render_contract.py --date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": null,
+      "rc": 1,
+      "tail": [
+        "WOO_DASHBOARD_RENDER_CONTRACT_FAIL  date=2026-05-12  failures=2"
+      ]
+    },
+    {
+      "name": "woo_deploy_workflow_contract",
+      "command": "scripts/verify_woo_deploy_workflow_contract.py",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": null,
+      "critical_failure_line": "Traceback (most recent call last):",
+      "rc": 1,
+      "tail": [
+        "ModuleNotFoundError: No module named 'yaml'"
+      ]
+    },
+    {
+      "name": "daily_readme_freshness",
+      "command": "scripts/verify_daily_readme_freshness.py --date 2026-05-12 --derek-date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DAILY_README_FRESHNESS_FAILED  date=2026-05-12  failures=1",
+      "critical_failure_line": "DAILY_README_FRESHNESS_FAILED  date=2026-05-12  failures=1",
+      "rc": 1,
+      "tail": [
+        "  - README does not mention run_date '2026-05-12'"
+      ]
+    },
+    {
+      "name": "woo_snapshot_state_machine",
+      "command": "scripts/verify_woo_snapshot_schedule_state.py --date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "WOO_SNAPSHOT_STATE_MACHINE_FAILED  date=2026-05-12  reason=no_predictions_parquet_for_date",
+      "critical_failure_line": "WOO_SNAPSHOT_STATE_MACHINE_FAILED  date=2026-05-12  reason=no_predictions_parquet_for_date",
+      "rc": 1,
+      "tail": [
+        "WOO_SNAPSHOT_STATE_MACHINE_FAILED  date=2026-05-12  reason=no_predictions_parquet_for_date"
+      ]
+    },
+    {
+      "name": "woo_morning_snapshot",
+      "command": "verify_woo_snapshot_outputs.py",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "WOO_MORNING_OUTPUTS_FAILED  date=2026-05-12  failures=1",
+      "rc": 1,
+      "tail": [
+        "WOO_MORNING_OUTPUTS_FAILED  date=2026-05-12  failures=1"
+      ]
+    },
+    {
+      "name": "woo_t_minus_25",
+      "command": "verify_woo_snapshot_outputs.py",
+      "status": "WARN",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": "WOO_T_MINUS_25_OUTPUTS_PENDING  date=2026-05-12  reason=no_predictions_parquet_for_date_yet",
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "WOO_T_MINUS_25_OUTPUTS_PENDING  date=2026-05-12  reason=no_predictions_parquet_for_date_yet"
+      ]
+    },
+    {
+      "name": "woo_close_lock",
+      "command": "verify_woo_snapshot_outputs.py",
+      "status": "WARN",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": "WOO_CLOSE_LOCK_OUTPUTS_PENDING  date=2026-05-12  reason=no_predictions_parquet_for_date_yet",
+      "fail_line": null,
+      "rc": 1,
+      "tail": [
+        "WOO_CLOSE_LOCK_OUTPUTS_PENDING  date=2026-05-12  reason=no_predictions_parquet_for_date_yet"
+      ]
+    },
+    {
+      "name": "derek_current_live",
+      "command": "scripts/verify_derek_outcome_level_probabilities.py --delivery-date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_FAILED  delivery_date=2026-05-12  failures=1  ok=0  skipped=0",
+      "critical_failure_line": "DEREK_OUTCOME_LEVEL_PROBABILITIES_FAILED  delivery_date=2026-05-12  failures=1  ok=0  skipped=0",
+      "rc": 1,
+      "tail": [
+        "DEREK_OUTCOME_LEVEL_PROBABILITIES_FAILED  delivery_date=2026-05-12  failures=1  ok=0  skipped=0"
+      ]
+    },
+    {
+      "name": "derek_live_snapshots",
+      "command": "verify_derek_live_snapshots",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DEREK_LIVE_SNAPSHOTS_FAILED",
+      "rc": 1,
+      "tail": [
+        "DEREK_LIVE_SNAPSHOTS_FAILED"
+      ]
+    },
+    {
+      "name": "derek_production_live_e2e",
+      "command": "verify_derek_production_live_e2e",
+      "status": "WARN",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": "DEREK_PRODUCTION_LIVE_E2E_PENDING",
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_PRODUCTION_LIVE_E2E_PENDING"
+      ]
+    },
+    {
+      "name": "derek_email_claimed_files",
+      "command": "scripts/verify_derek_email_claimed_files.py --delivery-date 2026-05-12",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DEREK_EMAIL_CLAIMED_FILES_FAILED  delivery_date=2026-05-12  snapshot_failures=1  day_failures=4",
+      "critical_failure_line": "DEREK_EMAIL_CLAIMED_FILES_FAILED  delivery_date=2026-05-12  snapshot_failures=1  day_failures=4",
+      "rc": 1,
+      "tail": [
+        "  - missing artifacts/automation_health/derek_edge_calibration_2026-05-12.md"
+      ]
+    },
+    {
+      "name": "derek_after_game_scoring",
+      "command": "score_derek_live_snapshots_after_game",
+      "status": "PASS",
+      "critical": true,
+      "pass_line": "DEREK_AFTER_GAME_SCORING_PASS  delivery_date=2026-05-12  snapshots_scored=1  props_scored=98  unjoined=0  scoring_report=deliveries/2026-05-12/derek_game_snapshots/aggregate_snapshot_scoring.json",
+      "warn_line": null,
+      "fail_line": null,
+      "rc": 0,
+      "tail": [
+        "DEREK_AFTER_GAME_SCORING_PASS  delivery_date=2026-05-12  snapshots_scored=1  props_scored=98  unjoined=0  scoring_report=deliveries/2026-05-12/derek_game_snapshots/aggregate_snapshot_scoring.json"
+      ]
+    },
+    {
+      "name": "woo_after_game_scoring",
+      "command": "score_daily_pmf_delivery_after_game",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "EXPECTED_TARGET_STATS_SCORED_FAILED",
+      "rc": 3,
+      "tail": [
+        "EXPECTED_TARGET_STATS_SCORED_FAILED"
+      ]
+    },
+    {
+      "name": "pmf_variance_calibration_study",
+      "command": "verify_pmf_variance_experience_study",
+      "status": "FAIL",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "PMF_VARIANCE_EXPERIENCE_STUDY_FAILED  as_of_date=2026-05-12  failures=3  warnings=2",
+      "rc": 1,
+      "tail": [
+        "PMF_VARIANCE_EXPERIENCE_STUDY_FAILED  as_of_date=2026-05-12  failures=3  warnings=2"
+      ]
+    },
+    {
+      "name": "human_readable_reports",
+      "command": "(file presence check)",
+      "status": "FAIL",
+      "critical": true,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "missing human-readable reports: ['deliveries/2026-05-12/derek_game_snapshots/README.md', 'deliveries/2026-05-12/README.md', 'artifacts/experience_studies/pmf_variance_experience_2026-05-12.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-12.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-12.md']",
+      "rc": 1,
+      "tail": [
+        "missing: ['deliveries/2026-05-12/derek_game_snapshots/README.md', 'deliveries/2026-05-12/README.md', 'artifacts/experience_studies/pmf_variance_experience_2026-05-12.md', 'artifacts/automation_health/derek_edge_root_cause_2026-05-12.md', 'artifacts/automation_health/derek_edge_calibration_2026-05-12.md']"
+      ]
+    },
+    {
+      "name": "daily_automation_health",
+      "command": "verify_daily_automation_health_report",
+      "status": "FAIL",
+      "critical": false,
+      "pass_line": null,
+      "warn_line": null,
+      "fail_line": "DAILY_AUTOMATION_HEALTH_FAILED  date=2026-05-12  failures=2",
+      "rc": 1,
+      "tail": [
+        "DAILY_AUTOMATION_HEALTH_FAILED  date=2026-05-12  failures=2"
+      ]
+    }
+  ],
+  "overall": "FULL_DAILY_PRODUCTION_CONTRACT_FAILED"
+}

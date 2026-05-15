@@ -1,0 +1,326 @@
+=== WORKFLOW STATE ===
+.github/workflows/chain_health_monitor.yml
+.github/workflows/daily_pmf_delivery.yml
+.github/workflows/daily_predictions.yml
+.github/workflows/derek_live_game_snapshots.yml
+.github/workflows/nightly_training_calibration.yml
+.github/workflows/phase13o_live_context_training.yml
+.github/workflows/phase13p_live_context_challenger.yml
+.github/workflows/phase13q_contextual_challenger.yml
+.github/workflows/phase13r_contextual_deployment_verification.yml
+.github/workflows/phase13s_direct_lineup_contextual_pmf.yml
+.github/workflows/phase8.yml
+.github/workflows/retrain.yml
+.github/workflows/wizard_of_odds_ftp_deploy.yml
+
+=== WORKFLOW CONTENT GREP ===
+.github/workflows/phase13r_contextual_deployment_verification.yml:23:  workflow_dispatch:
+.github/workflows/phase13r_contextual_deployment_verification.yml:51:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/nightly_training_calibration.yml:7:#   06:30 UTC = 2:30 AM ET   after-game scoring (handled by daily_pmf_delivery.yml)
+.github/workflows/nightly_training_calibration.yml:10:#   15:00 UTC = 11 AM ET     first WoO monetization run (daily_pmf_delivery.yml).
+.github/workflows/nightly_training_calibration.yml:25:  schedule:
+.github/workflows/nightly_training_calibration.yml:39:  workflow_dispatch:
+.github/workflows/nightly_training_calibration.yml:52:        description: "Phase 13H: manual workflow_dispatch defaults to no_promote=true so operators can validate without changing production. Scheduled cron uses no_promote=false."
+.github/workflows/nightly_training_calibration.yml:189:          # workflow_dispatch may override via the as_of_date input or set
+.github/workflows/nightly_training_calibration.yml:242:          # workflow_dispatch input default is no_promote=true. Empty input
+.github/workflows/wizard_of_odds_ftp_deploy.yml:9:#   1. scripts/publish_woo_public_export.py --date <date>
+.github/workflows/wizard_of_odds_ftp_deploy.yml:12:#   2. scripts/build_woo_dashboard.py --date <date>
+.github/workflows/wizard_of_odds_ftp_deploy.yml:26:# Effective post-Phase-12D-amend deploy schedule:
+.github/workflows/wizard_of_odds_ftp_deploy.yml:34:#   - workflow_dispatch (manual)
+.github/workflows/wizard_of_odds_ftp_deploy.yml:47:  workflow_dispatch:
+.github/workflows/wizard_of_odds_ftp_deploy.yml:73:# time as a manual workflow_dispatch) don't race on the FTP server.
+.github/workflows/wizard_of_odds_ftp_deploy.yml:87:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/wizard_of_odds_ftp_deploy.yml:101:      # pipeline) AND publish_woo_public_export.py.
+.github/workflows/wizard_of_odds_ftp_deploy.yml:177:          python3 scripts/publish_woo_public_export.py --date "${{ steps.d.outputs.date }}"
+.github/workflows/wizard_of_odds_ftp_deploy.yml:182:          python3 scripts/build_woo_dashboard.py --date "${{ steps.d.outputs.date }}"
+.github/workflows/wizard_of_odds_ftp_deploy.yml:212:          # publish_woo_public_export.py — those JSONs carry the slate
+.github/workflows/wizard_of_odds_ftp_deploy.yml:213:          # `date` at the top level (see scripts/publish_woo_public_export.py
+.github/workflows/wizard_of_odds_ftp_deploy.yml:284:          python scripts/deploy_wizard_of_odds_ftp.py $FLAGS
+.github/workflows/daily_pmf_delivery.yml:23:#   3. scripts/build_daily_pmf_delivery.py  (snapshot=mode-specific)
+.github/workflows/daily_pmf_delivery.yml:30:#   6. scripts/score_daily_pmf_delivery_after_game.py  (after_game)
+.github/workflows/daily_pmf_delivery.yml:57:  schedule:
+.github/workflows/daily_pmf_delivery.yml:72:  workflow_dispatch:
+.github/workflows/daily_pmf_delivery.yml:122:      github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'morning'
+.github/workflows/daily_pmf_delivery.yml:248:    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization') || github.event.schedule == '0 15 * * *' }}
+.github/workflows/daily_pmf_delivery.yml:311:          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:312:          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:385:      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_afternoon_refresh') ||
+.github/workflows/daily_pmf_delivery.yml:443:          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:444:          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:517:      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'derek_near_lineup') ||
+.github/workflows/daily_pmf_delivery.yml:594:          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:595:          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:677:      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'close_lock') ||
+.github/workflows/daily_pmf_delivery.yml:736:          python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:737:          python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
+.github/workflows/daily_pmf_delivery.yml:810:      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'after_game') ||
+.github/workflows/daily_pmf_delivery.yml:870:          # The pipeline above invokes score_daily_pmf_delivery_after_game.py
+.github/workflows/daily_pmf_delivery.yml:875:          python scripts/score_daily_pmf_delivery_after_game.py \
+.github/workflows/daily_pmf_delivery.yml:990:    if: ${{ (github.event_name == 'schedule' && (github.event.schedule == '25 22 * * *' || github.event.schedule == '40,55 22 * * *' || github.event.schedule == '10,25,40,55 23,0,1,2 * * *' || github.event.schedule == '10 3 * * *' || github.event.schedule == '25 3 * * *')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_near_lineup' || github.event.inputs.mode == 'close_lock')) }}
+.github/workflows/daily_pmf_delivery.yml:1003:          gh workflow run derek_live_game_snapshots.yml \
+.github/workflows/retrain.yml:4:  schedule:
+.github/workflows/retrain.yml:14:  workflow_dispatch:
+.github/workflows/retrain.yml:22:# workflow_dispatch firings don't race on git push of model artifacts.
+.github/workflows/phase13s_direct_lineup_contextual_pmf.yml:29:  workflow_dispatch:
+.github/workflows/phase13s_direct_lineup_contextual_pmf.yml:69:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/phase13p_live_context_challenger.yml:21:  workflow_dispatch:
+.github/workflows/phase13p_live_context_challenger.yml:43:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/chain_health_monitor.yml:9:# H1B chain (07:00 UTC retrain → ~12-13 UTC end) AND daily_predictions's
+.github/workflows/chain_health_monitor.yml:26:  schedule:
+.github/workflows/chain_health_monitor.yml:28:  workflow_dispatch:
+.github/workflows/phase13o_live_context_training.yml:27:  workflow_dispatch:
+.github/workflows/phase13o_live_context_training.yml:54:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/phase13o_live_context_training.yml:68:          # via scripts/build_woo_dashboard etc. Confirm that commit reached
+.github/workflows/phase13o_live_context_training.yml:184:          echo "  schedule=workflow_dispatch (operator-driven; nightly cron unchanged)"
+.github/workflows/daily_predictions.yml:10:  workflow_dispatch:
+.github/workflows/daily_predictions.yml:13:        description: 'Legacy workflow disabled for M8.6 PMF production; use daily_pmf_delivery.yml and derek_live_game_snapshots.yml'
+.github/workflows/daily_predictions.yml:31:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/daily_predictions.yml:84:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/daily_predictions.yml:132:      # predict.py writes sgps_*.json even when SKIP_SGPS=1 (empty sgps array), so the
+.github/workflows/daily_predictions.yml:140:                   "predictions/singles_${DATE}.json" \
+.github/workflows/daily_predictions.yml:141:                   "predictions/sgps_${DATE}.json"; do
+.github/workflows/daily_predictions.yml:150:          COUNT=$(python3 -c "import json; d=json.load(open('predictions/singles_${DATE}.json')); print(len(d.get('picks',d.get('singles',[]))))")
+.github/workflows/daily_predictions.yml:232:          python3 scripts/publish_woo_snapshot.py --date "$DATE" --snapshot-type morning
+.github/workflows/daily_predictions.yml:255:          python3 scripts/score_daily_pmf_delivery_after_game.py \
+.github/workflows/daily_predictions.yml:301:            -T "predictions/singles_${DATE}.json" \
+.github/workflows/daily_predictions.yml:302:            "ftp://$SFTP_HOST${SFTP_PATH}/singles_${DATE}.json"
+.github/workflows/daily_predictions.yml:305:            -T "predictions/sgps_${DATE}.json" \
+.github/workflows/daily_predictions.yml:306:            "ftp://$SFTP_HOST${SFTP_PATH}/sgps_${DATE}.json"
+.github/workflows/daily_predictions.yml:326:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/phase13q_contextual_challenger.yml:23:  workflow_dispatch:
+.github/workflows/phase13q_contextual_challenger.yml:45:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/derek_live_game_snapshots.yml:20:  schedule:
+.github/workflows/derek_live_game_snapshots.yml:22:  workflow_dispatch:
+.github/workflows/derek_live_game_snapshots.yml:85:          # workflow_dispatch input wins; cron schedule fans out across all.
+.github/workflows/derek_live_game_snapshots.yml:136:          python scripts/dispatch_derek_live_game_snapshots.py \
+.github/workflows/derek_live_game_snapshots.yml:158:          python scripts/dispatch_derek_live_game_snapshots.py \
+.github/workflows/derek_live_game_snapshots.yml:180:          python scripts/dispatch_derek_live_game_snapshots.py \
+.github/workflows/phase8.yml:18:  workflow_dispatch:
+.github/workflows/phase8.yml:61:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/phase8.yml:203:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/phase8.yml:233:      github.event_name == 'workflow_dispatch' ||
+.github/workflows/phase8.yml:272:          # Bind workflow_dispatch inputs to shell variables via the
+.github/workflows/phase8.yml:314:    # On workflow_dispatch: skip when val_rows_limit is set (profiling).
+.github/workflows/phase8.yml:318:      (github.event_name == 'workflow_dispatch' && github.event.inputs.val_rows_limit == '') ||
+.github/workflows/phase8.yml:462:      (github.event_name == 'workflow_dispatch' && github.event.inputs.val_rows_limit == '') ||
+scripts/verify_woo_dashboard_render_contract.py:5:Run AFTER `build_woo_dashboard.py` to gate the upload. Static checks only —
+scripts/verify_production_pmf_entrypoints.py:80:    woo_pub = "scripts/publish_woo_public_export.py"
+scripts/verify_production_pmf_entrypoints.py:108:        "build_stat_grid_pmfs.py",
+scripts/verify_production_pmf_entrypoints.py:109:        "build_model_only_canonical_from_stat_grid.py",
+scripts/verify_production_pmf_entrypoints.py:110:        "build_daily_pmf_delivery.py",
+scripts/verify_production_pmf_entrypoints.py:112:        "publish_woo_public_export.py",
+scripts/verify_production_pmf_entrypoints.py:120:    daily_wf = ".github/workflows/daily_pmf_delivery.yml"
+scripts/verify_production_pmf_entrypoints.py:124:    require("scripts/publish_woo_public_export.py" in daily_s,
+scripts/verify_production_pmf_entrypoints.py:130:    daily_predictions_wf = ".github/workflows/daily_predictions.yml"
+scripts/verify_production_pmf_entrypoints.py:131:    daily_predictions_s = read(daily_predictions_wf)
+scripts/verify_production_pmf_entrypoints.py:132:    require("scripts/score_woo_after_game.py" not in daily_predictions_s,
+scripts/verify_production_pmf_entrypoints.py:133:            f"{daily_predictions_wf} must not call legacy all_props WoO scorer")
+scripts/verify_production_pmf_entrypoints.py:134:    require("scripts/score_daily_pmf_delivery_after_game.py" in daily_predictions_s,
+scripts/verify_production_pmf_entrypoints.py:135:            f"{daily_predictions_wf} must score corrected PMF delivery after game")
+scripts/verify_production_pmf_entrypoints.py:141:    require("scripts/score_daily_pmf_delivery_after_game.py" in full_contract_s,
+scripts/verify_production_pmf_entrypoints.py:146:    pmf_delivery_wf = ".github/workflows/daily_pmf_delivery.yml"
+scripts/verify_production_pmf_entrypoints.py:150:    require("gh workflow run derek_live_game_snapshots.yml" in pmf_delivery_s,
+scripts/verify_production_pmf_entrypoints.py:169:    derek_pending_wf = ".github/workflows/derek_live_game_snapshots.yml"
+scripts/verify_production_pmf_entrypoints.py:175:    stat_grid_builder = "scripts/build_model_only_canonical_from_stat_grid.py"
+scripts/verify_production_pmf_entrypoints.py:183:    pmf_delivery_wf = ".github/workflows/daily_pmf_delivery.yml"
+scripts/verify_production_pmf_entrypoints.py:188:    ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
+scripts/verify_production_pmf_entrypoints.py:204:    ftp_wf = ".github/workflows/wizard_of_odds_ftp_deploy.yml"
+scripts/verify_production_pmf_entrypoints.py:206:    require("scripts/publish_woo_public_export.py" in ftp_s,
+scripts/verify_production_pmf_entrypoints.py:208:    require("scripts/deploy_wizard_of_odds_ftp.py" in ftp_s,
+scripts/verify_production_pmf_entrypoints.py:213:        require(ordered(ftp_wf, "scripts/verify_corrected_pmf_delivery.py", "scripts/deploy_wizard_of_odds_ftp.py"),
+scripts/verify_production_pmf_entrypoints.py:217:    derek_wf = ".github/workflows/derek_live_game_snapshots.yml"
+scripts/verify_production_pmf_entrypoints.py:221:    require("scripts/dispatch_derek_live_game_snapshots.py" in derek_wf_s,
+scripts/verify_production_pmf_entrypoints.py:228:    derek_dispatcher = "scripts/dispatch_derek_live_game_snapshots.py"
+scripts/verify_production_pmf_entrypoints.py:244:    # build_daily_pmf_delivery may still support all_props for legacy/backfill,
+scripts/verify_production_pmf_entrypoints.py:246:    bdp = "scripts/build_daily_pmf_delivery.py"
+scripts/operator_daily_check.py:35:    ("daily_predictions",        "PREDICTIONS    "),
+scripts/refresh_bdl_player_game_stats.py:5:build_daily_pmf_delivery.py …). It is the source of truth for the
+scripts/verify_woo_deploy_workflow_contract.py:9:    .github/workflows/wizard_of_odds_ftp_deploy.yml
+scripts/verify_woo_deploy_workflow_contract.py:10:    .github/workflows/daily_pmf_delivery.yml
+scripts/verify_woo_deploy_workflow_contract.py:11:    .github/workflows/daily_predictions.yml
+scripts/verify_woo_deploy_workflow_contract.py:15:    R1. wizard_of_odds_ftp_deploy.yml MUST invoke each of the four new
+scripts/verify_woo_deploy_workflow_contract.py:17:            scripts/publish_woo_public_export.py
+scripts/verify_woo_deploy_workflow_contract.py:18:            scripts/build_woo_dashboard.py
+scripts/verify_woo_deploy_workflow_contract.py:22:    R2. wizard_of_odds_ftp_deploy.yml MUST NOT invoke the legacy
+scripts/verify_woo_deploy_workflow_contract.py:26:    R3. wizard_of_odds_ftp_deploy.yml MUST stage the rendered HTML
+scripts/verify_woo_deploy_workflow_contract.py:34:    R5. daily_pmf_delivery.yml MUST invoke the four new pipeline scripts
+scripts/verify_woo_deploy_workflow_contract.py:40:    R6. daily_predictions.yml MUST NOT invoke the legacy builder
+scripts/verify_woo_deploy_workflow_contract.py:67:DEPLOY_WF = WF_DIR / "wizard_of_odds_ftp_deploy.yml"
+scripts/verify_woo_deploy_workflow_contract.py:68:PMF_DELIVERY_WF = WF_DIR / "daily_pmf_delivery.yml"
+scripts/verify_woo_deploy_workflow_contract.py:69:PREDICTIONS_WF = WF_DIR / "daily_predictions.yml"
+scripts/verify_woo_deploy_workflow_contract.py:73:    "scripts/publish_woo_public_export.py",
+scripts/verify_woo_deploy_workflow_contract.py:74:    "scripts/build_woo_dashboard.py",
+scripts/verify_woo_deploy_workflow_contract.py:79:DEPLOY_SCRIPT_REL = "scripts/deploy_wizard_of_odds_ftp.py"
+scripts/verify_woo_deploy_workflow_contract.py:219:    # ── R6: daily_predictions yaml does NOT invoke legacy builder ───
+scripts/build_deliveries_index.py:138:            reason = ("predictions present but build_daily_pmf_delivery.py "
+scripts/build_deliveries_index.py:342:               "available manually via `workflow_dispatch` for backfills.\n")
+scripts/build_deliveries_index.py:353:    out.append("- See `docs/daily_pmf_delivery_spec.md` for the row schema and "
+scripts/verify_woo_delivery_package.py:18:    predictions/singles_<date>.json          (non-empty)
+scripts/verify_woo_delivery_package.py:102:    singles = pred_dir / f"singles_{date}.json"
+scripts/build_joint_stat_samples.py:8:AND role-bucket derivation MIRROR scripts/build_stat_grid_pmfs.py exactly
+scripts/build_joint_stat_samples.py:12:DIFFERENCE FROM build_stat_grid_pmfs.py:
+scripts/build_joint_stat_samples.py:52:# Reuse the production prep helpers from build_stat_grid_pmfs.
+scripts/build_joint_stat_samples.py:55:from build_stat_grid_pmfs import (  # noqa: E402
+scripts/build_joint_stat_samples.py:72:# CORRECTED: use the SAME helper that build_stat_grid_pmfs.py uses.
+scripts/build_joint_stat_samples.py:111:    Mirrors build_stat_grid_pmfs._row_for_player_game prep
+scripts/build_joint_stat_samples.py:197:    # ── Role bucket (PARITY with build_stat_grid_pmfs.py) ──────────────
+scripts/build_joint_stat_samples.py:263:        "source_pipeline_helper": "scripts/build_stat_grid_pmfs.py",
+scripts/dispatch_derek_live_game_snapshots.py:11:    python3 scripts/dispatch_derek_live_game_snapshots.py \\
+scripts/dispatch_derek_live_game_snapshots.py:13:    python3 scripts/dispatch_derek_live_game_snapshots.py \\
+scripts/dispatch_derek_live_game_snapshots.py:368:    if not schedule:
+scripts/dispatch_derek_live_game_snapshots.py:425:    for entry in schedule:
+scripts/build_daily_automation_health_report.py:257:    singles = pred_dir / f"singles_{date}.json"
+scripts/build_daily_automation_health_report.py:264:        "singles_path": str(singles.relative_to(REPO_ROOT)),
+scripts/build_daily_automation_health_report.py:269:        "singles_count": None,
+scripts/build_daily_automation_health_report.py:302:        out["singles_count"] = len(sj.get("picks", sj.get("singles", [])))
+scripts/build_daily_automation_health_report.py:603:        ("singles_count", "singles_count"),
+scripts/verify_contextual_predict_path.py:21:    4. scripts/build_daily_pmf_delivery.py (if present)  — daily PMF
+scripts/verify_contextual_predict_path.py:70:    "scripts/build_daily_pmf_delivery.py",
+scripts/verify_full_daily_production_contract.py:205:        "daily_predictions",
+scripts/verify_full_daily_production_contract.py:243:        [py, "scripts/build_woo_dashboard.py", "--date", args.date],
+scripts/verify_full_daily_production_contract.py:437:            py, "scripts/score_daily_pmf_delivery_after_game.py",
+scripts/verify_full_daily_production_contract.py:453:        "name": "woo_after_game_scoring", "command": "score_daily_pmf_delivery_after_game",
+scripts/predict.py:6:side-effect files (singles_*.json, sgps_*.json, paper_trade_log.csv).
+scripts/verify_woo_snapshot_schedule_state.py:196:                               "must be published by daily_predictions workflow")
+scripts/verify_phase13s_deployment.py:64:    "scripts/build_daily_pmf_delivery.py": (
+scripts/validate_champion_vs_challenger.py:406:    canonical_parquet = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
+scripts/build_derek_forward_feed.py:700:                "`build_daily_pmf_delivery.py` for this date first.\n"
+scripts/build_woo_dashboard.py:2:"""scripts/build_woo_dashboard.py
+scripts/build_woo_dashboard.py:13:INPUT (read-only — produced by scripts/publish_woo_public_export.py):
+scripts/build_woo_dashboard.py:63:# of publish_woo_public_export.py.
+scripts/build_woo_dashboard.py:155:              f"Run scripts/publish_woo_public_export.py --date {date} first.")
+scripts/build_woo_dashboard.py:191:              f"Run scripts/publish_woo_public_export.py --date {date} first.")
+scripts/build_woo_dashboard.py:229:    print(f"build_woo_dashboard --date {args.date}")
+Binary file scripts/__pycache__/build_model_only_canonical_from_stat_grid.cpython-310.pyc matches
+Binary file scripts/__pycache__/validate_champion_vs_challenger.cpython-311.pyc matches
+Binary file scripts/__pycache__/build_model_only_canonical_from_stat_grid.cpython-311.pyc matches
+Binary file scripts/__pycache__/run_derek_live_game_snapshot.cpython-311.pyc matches
+Binary file scripts/__pycache__/verify_production_pmf_entrypoints.cpython-311.pyc matches
+Binary file scripts/__pycache__/build_woo_pmf_research_from_canonical.cpython-311.pyc matches
+Binary file scripts/__pycache__/score_daily_pmf_delivery_after_game.cpython-311.pyc matches
+Binary file scripts/__pycache__/build_daily_pmf_delivery.cpython-310.pyc matches
+Binary file scripts/__pycache__/build_daily_pmf_delivery.cpython-311.pyc matches
+Binary file scripts/__pycache__/run_daily_delivery_pipeline.cpython-311.pyc matches
+Binary file scripts/__pycache__/publish_woo_public_export.cpython-311.pyc matches
+Binary file scripts/__pycache__/refresh_daily_inputs.cpython-311.pyc matches
+Binary file scripts/__pycache__/verify_full_daily_production_contract.cpython-311.pyc matches
+Binary file scripts/__pycache__/verify_woo_dashboard_render_contract.cpython-311.pyc matches
+Binary file scripts/__pycache__/build_stat_grid_pmfs.cpython-311.pyc matches
+Binary file scripts/__pycache__/verify_derek_tomorrow_readiness.cpython-311.pyc matches
+Binary file scripts/__pycache__/build_joint_stat_samples.cpython-311.pyc matches
+Binary file scripts/__pycache__/audit_model_vs_market_settled.cpython-311.pyc matches
+scripts/_phase13u_write_blocker_audit.py:197:                "scripts/dispatch_derek_live_game_snapshots.py (resolver-aware)",
+scripts/_phase13u_write_blocker_audit.py:201:                ".github/workflows/derek_live_game_snapshots.yml (cron + steps)",
+scripts/verify_end_to_end_delivery_health.py:99:        pred_dir / f"singles_{date}.json",
+scripts/verify_daily_readme_freshness.py:16:      daily_predictions, derek_near_lineup, derek_current_live,
+scripts/verify_daily_readme_freshness.py:52:    "daily_predictions",
+scripts/verify_phase13r_deployment.py:12:         scripts/build_daily_pmf_delivery.py
+scripts/verify_phase13r_deployment.py:75:    "scripts/build_daily_pmf_delivery.py": {
+scripts/build_model_only_canonical_from_stat_grid.py:5:  build_stat_grid_pmfs.py
+scripts/build_model_only_canonical_from_stat_grid.py:6:  -> build_model_only_canonical_from_stat_grid.py
+scripts/build_model_only_canonical_from_stat_grid.py:7:  -> build_daily_pmf_delivery.py --model-only ...
+scripts/build_model_only_canonical_from_stat_grid.py:10:mapping already defined in build_daily_pmf_delivery.py.
+scripts/build_model_only_canonical_from_stat_grid.py:25:from build_daily_pmf_delivery import _stat_grid_rows
+scripts/build_model_only_canonical_from_stat_grid.py:243:    print(f"build_model_only_canonical_from_stat_grid — date={date}")
+scripts/build_model_only_canonical_from_stat_grid.py:305:        "source_graph_id": "build_stat_grid_pmfs_to_model_only_canonical_to_delivery_m8_6",
+scripts/publish_woo_public_export.py:736:# M8.6 durable repair: publish_woo_public_export.py is the producer of
+scripts/verify_derek_near_lineup_contract.py:10:  3. predictions/singles_<date>.json exists.
+scripts/verify_derek_near_lineup_contract.py:66:    singles = PRED_DIR / f"singles_{date}.json"
+scripts/verify_derek_near_lineup_contract.py:84:                       ("singles_json", singles)):
+scripts/predictions_readiness_gate.py:2:"""Phase 13AM: Predictions readiness gate for daily_pmf_delivery.yml jobs.
+scripts/predictions_readiness_gate.py:18:       singles_<date>.json. If all three exist:
+scripts/predictions_readiness_gate.py:84:        PREDICTIONS_DIR / f"singles_{date}.json",
+scripts/build_wizard_of_odds_public_export.py:13:    1. scripts/publish_woo_public_export.py      → JSON
+scripts/build_wizard_of_odds_public_export.py:14:    2. scripts/build_woo_dashboard.py             → HTML
+scripts/build_wizard_of_odds_public_export.py:18:Production workflows (wizard_of_odds_ftp_deploy.yml, daily_pmf_delivery.yml)
+scripts/audit_model_vs_market_settled.py:5:Reads per-date settled scoring CSVs produced by score_daily_pmf_delivery_after_game.py:
+scripts/verify_daily_automation_health.py:55:    REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py",
+scripts/verify_daily_automation_health.py:60:    REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py",
+scripts/verify_daily_automation_health.py:189:        "wizard_of_odds_ftp_deploy.yml": "WoO FTP deploy workflow",
+scripts/verify_daily_automation_health.py:190:        "daily_pmf_delivery.yml": "Daily delivery workflow",
+scripts/verify_daily_automation_health.py:207:    text = _read_workflow_text("daily_pmf_delivery.yml") or ""
+scripts/verify_daily_automation_health.py:211:        "daily_pmf_delivery.yml references Derek",
+scripts/verify_daily_automation_health.py:216:        "daily_pmf_delivery.yml references both WoO modes",
+scripts/verify_daily_automation_health.py:236:    delivery = _read_workflow_text("daily_pmf_delivery.yml")
+scripts/verify_daily_automation_health.py:241:            "missing nightly_training_calibration.yml or daily_pmf_delivery.yml",
+scripts/verify_daily_automation_health.py:283:        "scripts/build_daily_pmf_delivery.py",
+scripts/verify_daily_automation_health.py:287:        "scripts/build_stat_grid_pmfs.py",
+scripts/verify_daily_automation_health.py:288:        ".github/workflows/daily_pmf_delivery.yml",
+scripts/verify_daily_automation_health.py:289:        ".github/workflows/wizard_of_odds_ftp_deploy.yml",
+scripts/build_daily_pmf_delivery.py:7:`docs/daily_pmf_delivery_spec.md`.
+scripts/build_daily_pmf_delivery.py:16:    python scripts/build_daily_pmf_delivery.py \
+scripts/build_daily_pmf_delivery.py:1267:        + f"Generated by `scripts/build_daily_pmf_delivery.py`. "
+scripts/build_daily_pmf_delivery.py:1268:          f"See `docs/daily_pmf_delivery_spec.md` for the row schema.\n\n"
+scripts/build_daily_pmf_delivery.py:1530:          "| `after_game_clv_and_scoring.{csv,parquet,md}` | post-tip CLV + scoring artifacts (added by `scripts/score_daily_pmf_delivery_after_game.py`). |\n\n"
+scripts/build_daily_pmf_delivery.py:1549:          "See `docs/daily_pmf_delivery_spec.md` for the full row schema and §7 validation gates, and `docs/daily_data_freshness_runbook.md` for the freshness manifest contract.\n"
+scripts/build_daily_pmf_delivery.py:1567:        f"`scripts/score_daily_pmf_delivery_after_game.py` once box-score "
+scripts/verify_workflow_schedule_contract.py:7:    1. .github/workflows/daily_predictions.yml has a `predict` job whose
+scripts/verify_workflow_schedule_contract.py:9:    2. .github/workflows/daily_pmf_delivery.yml has BOTH a `workflow_run`
+scripts/verify_workflow_schedule_contract.py:47:PREDICTIONS_WF = REPO_ROOT / ".github" / "workflows" / "daily_predictions.yml"
+scripts/verify_workflow_schedule_contract.py:48:PMF_DELIVERY_WF = REPO_ROOT / ".github" / "workflows" / "daily_pmf_delivery.yml"
+scripts/verify_workflow_schedule_contract.py:60:    "scripts/score_daily_pmf_delivery_after_game.py",
+scripts/verify_workflow_schedule_contract.py:105:        failures.append(f"daily_predictions.yml missing at {PREDICTIONS_WF}")
+scripts/verify_workflow_schedule_contract.py:111:                f"daily_predictions.yml missing cron '{PREDICT_CRON_UTC}'; "
+scripts/verify_workflow_schedule_contract.py:116:            failures.append("daily_predictions.yml missing job 'predict'")
+scripts/verify_workflow_schedule_contract.py:121:                    "daily_predictions.yml job 'predict' is not gated on "
+scripts/verify_workflow_schedule_contract.py:127:        failures.append(f"daily_pmf_delivery.yml missing at {PMF_DELIVERY_WF}")
+scripts/verify_workflow_schedule_contract.py:133:                "daily_pmf_delivery.yml missing workflow_run trigger for "
+scripts/verify_workflow_schedule_contract.py:139:                "daily_pmf_delivery.yml has no cron schedules — "
+scripts/verify_workflow_schedule_contract.py:151:                    f"daily_pmf_delivery.yml job {job_name!r} has no "
+scripts/verify_workflow_schedule_contract.py:159:                    f"daily_pmf_delivery.yml job {job_name!r} predict_gate "
+scripts/verify_workflow_schedule_contract.py:168:                        f"daily_pmf_delivery.yml job {job_name!r} step "
+scripts/verify_phase13l_no_breakage.py:7:- ``daily_pmf_delivery.yml`` still parses as YAML and still references the
+scripts/verify_phase13l_no_breakage.py:58:    "EXPECTED_TARGET_STATS_COVERAGE_ACCOUNTED_PASS": "scripts/score_daily_pmf_delivery_after_game.py",
+scripts/verify_phase13l_no_breakage.py:59:    "MODEL_VS_MARKET_SCORING_PASS": "scripts/score_daily_pmf_delivery_after_game.py",
+scripts/verify_phase13l_no_breakage.py:68:    ".github/workflows/daily_pmf_delivery.yml": (
+scripts/verify_derek_woo_champion_dependency.py:24:- Production delivery scripts (predict.py, build_daily_pmf_delivery.py,
+scripts/verify_derek_woo_champion_dependency.py:26:  build_stat_grid_pmfs.py, run_daily_delivery_pipeline.py) must NOT
+scripts/verify_derek_woo_champion_dependency.py:70:    REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py",
+scripts/verify_derek_woo_champion_dependency.py:75:    REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py",
+scripts/publish_nba_props_today.py:9:`pmf_display_<date>.json`, `singles_<date>.json`) but historically did
+scripts/publish_nba_props_today.py:164:    singles = PRED_DIR / f"singles_{args.date}.json"
+scripts/publish_nba_props_today.py:171:        "singles_json": {"path": str(singles.relative_to(REPO_ROOT)),
+scripts/build_stat_grid_pmfs.py:9:The output is consumed by `scripts/build_daily_pmf_delivery.py`, which
+scripts/build_stat_grid_pmfs.py:30:Hard rules (mirroring `docs/daily_pmf_delivery_spec.md`):
+scripts/build_stat_grid_pmfs.py:37:    python scripts/build_stat_grid_pmfs.py --date 2026-04-29
+scripts/build_stat_grid_pmfs.py:38:    python scripts/build_stat_grid_pmfs.py --date 2026-04-29 \
+scripts/build_stat_grid_pmfs.py:629:    print(f"build_stat_grid_pmfs — date={target_date} stats={args.stats}")
+scripts/_phase13z_write_root_cause_audit.py:102:                       / "dispatch_derek_live_game_snapshots.py").read_text(
+scripts/_phase13z_write_root_cause_audit.py:141:            "Force=true in the previous workflow_dispatch was honored "
+scripts/_phase13z_write_root_cause_audit.py:168:            "scripts/dispatch_derek_live_game_snapshots.py — share "
+scripts/refresh_daily_inputs.py:4:`scripts/build_daily_pmf_delivery.py`. It does five things:
+scripts/verify_daily_prediction_outputs.py:7:  predictions/singles_<date>.json
+scripts/verify_daily_prediction_outputs.py:51:    singles = PRED_DIR / f"singles_{date}.json"
+scripts/verify_daily_prediction_outputs.py:61:        ("singles_json", singles),
+scripts/verify_daily_prediction_outputs.py:100:    summary["files"]["singles_json"]["count"] = len(sj_picks)
+scripts/verify_daily_prediction_outputs.py:101:    summary["files"]["singles_json"]["date"] = sj.get("date")
+scripts/verify_daily_prediction_outputs.py:149:          f"parquet_rows={parquet_rows}  singles={summary['files']['singles_json']['count']}  "
+scripts/verify_phase13x_woo_unchanged.py:40:    "scripts/deploy_wizard_of_odds_ftp.py",
+scripts/verify_phase13x_woo_unchanged.py:42:    "scripts/build_daily_pmf_delivery.py",
+scripts/verify_derek_production_live_e2e.py:372:    for entry in schedule:
+scripts/run_daily_delivery_pipeline.py:4:`build_daily_pmf_delivery.py`, and `score_daily_pmf_delivery_after_game.py`
+scripts/run_daily_delivery_pipeline.py:68:BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
+scripts/run_daily_delivery_pipeline.py:69:SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
+scripts/run_daily_delivery_pipeline.py:71:STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
+scripts/run_daily_delivery_pipeline.py:72:CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
+scripts/run_daily_delivery_pipeline.py:76:WOO_EXPORT = REPO_ROOT / "scripts" / "publish_woo_public_export.py"
+scripts/run_daily_delivery_pipeline.py:77:WOO_DASHBOARD = REPO_ROOT / "scripts" / "build_woo_dashboard.py"
+scripts/run_daily_delivery_pipeline.py:225:    This intentionally uses publish_woo_public_export.py, not the legacy
+scripts/run_daily_delivery_pipeline.py:538:                     help="passes through to build_daily_pmf_delivery.py")
+scripts/run_derek_live_game_snapshot.py:1860:        "odds_source": "Odds-API (consumed by build_daily_pmf_delivery + predict.py upstream)",
+scripts/verify_training_automation.py:375:        REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py",
+scripts/verify_training_automation.py:380:        REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py",
+scripts/verify_training_automation.py:795:                    # in the daily_pmf_delivery workflow instead, after
+scripts/export_live_pmf_slate.py:274:        print("  ⇒ GitHub Actions workflow .github/workflows/daily_predictions.yml "
+scripts/export_live_pmf_slate.py:728:| GitHub Actions refresh path | `.github/workflows/daily_predictions.yml` runs at 13:00 UTC daily with the BDL secret; that workflow would need to be re-triggered to refresh today's all_props. |
+scripts/verify_derek_tomorrow_readiness.py:12:  1. Daily PMF delivery workflow (`daily_pmf_delivery.yml`) has a
+scripts/verify_derek_tomorrow_readiness.py:61:    # 1. daily_pmf_delivery near-lineup cron + ET resolution
+scripts/verify_derek_tomorrow_readiness.py:62:    daily_pmf = REPO_ROOT / ".github" / "workflows" / "daily_pmf_delivery.yml"
+scripts/verify_derek_tomorrow_readiness.py:68:            failures.append("daily_pmf_delivery.yml has no derek_near_lineup job")
+scripts/verify_derek_tomorrow_readiness.py:71:                "daily_pmf_delivery.yml does not resolve slate via "
+scripts/verify_derek_tomorrow_readiness.py:76:                "daily_pmf_delivery.yml does not pass BDL_API_KEY through "
+scripts/verify_derek_tomorrow_readiness.py:80:    # 2. derek_live_game_snapshots cron coverage
+scripts/verify_derek_tomorrow_readiness.py:115:    # 4. daily_predictions BDL env
+scripts/verify_derek_tomorrow_readiness.py:116:    daily_pred = REPO_ROOT / ".github" / "workflows" / "daily_predictions.yml"
+scripts/verify_derek_tomorrow_readiness.py:120:            "daily_predictions.yml does not pass BDL_API_KEY through env"
+scripts/verify_derek_tomorrow_readiness.py:124:    dispatcher = REPO_ROOT / "scripts" / "dispatch_derek_live_game_snapshots.py"

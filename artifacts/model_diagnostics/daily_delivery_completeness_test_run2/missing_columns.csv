@@ -1,0 +1,4 @@
+date,derek_feed_ready,exists,expected,failure_reason,file,folder,injury_columns_present,lineup_columns_present,llm_generated_value_suspected,market_columns_present,missing_required_columns,placeholder_value_count,pmf_validity_pass,presence_override,relative_path,required_columns_present,role_minutes_columns_present,row_count,run_mode,unexpected_null_required_columns
+2026-05-12,,True,required,,player_prop_pmfs_tonight_MODEL_ONLY.parquet,canonical_source,,,False,,snapshot_type,0,,,canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet,False,,384,t5,
+2026-05-12,,True,required,,player_prop_pmfs_tonight_MODEL_ONLY.csv,canonical_source,,,False,,snapshot_type,0,,,canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv,False,,384,t5,
+2026-05-12,,True,required,,all_props_model_only.parquet,canonical_source,,,False,,snapshot_type,0,,,canonical_source/all_props_model_only.parquet,False,,384,t5,

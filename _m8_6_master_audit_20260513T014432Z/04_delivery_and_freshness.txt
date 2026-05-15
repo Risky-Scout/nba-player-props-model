@@ -1,0 +1,1145 @@
+=== MAY 12 DELIVERY MANIFESTS / FRESHNESS ===
+
+FILE deliveries/2026-05-12/canonical_source/manifest.json
+{
+    "schema_version": "m8_6m_v1",
+    "created_at_utc": "2026-05-12T21:20:11.838393+00:00",
+    "date": "2026-05-12",
+    "canonical_source_type": "MODEL_ONLY_TRUE_ATOM_PMF",
+    "atom_pmf_policy": "atom_source_only_no_ladder_fallback",
+    "model_only_parquet": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "model_only_parquet_path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "canonical_pmf_source_path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "source_graph_id": "build_stat_grid_pmfs_to_model_only_canonical_to_delivery_m8_6",
+    "atom_pmf_present": true,
+    "atom_pmf_column": "pmf_active",
+    "atom_pmf_columns": [
+        "pmf_active"
+    ],
+    "canonical_outputs": {
+        "rows": 341,
+        "columns": [
+            "player_id",
+            "player_name",
+            "team_abbr",
+            "team_id",
+            "opponent",
+            "is_home",
+            "game_id",
+            "game",
+            "game_start_et",
+            "stat",
+            "role_bucket",
+            "role_source",
+            "mp_bucket",
+            "usage_bucket",
+            "minutes_mean",
+            "minutes_q50",
+            "p_inactive_used",
+            "injury_freshness_status",
+            "injury_context_source",
+            "injury_report_fetched_at_utc",
+            "support_min",
+            "support_max",
+            "line",
+            "market_fair_over_prob",
+            "market_source",
+            "market_offered_side",
+            "market_offered_odds",
+            "pmf_source",
+            "pmf_active"
+        ],
+        "model_only_parquet": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+        "model_only_parquet_path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+        "parquet_path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+        "parquet_sha256": "7185d03686a93e0bc494a28937e03afc57f463b7a97c6f3bb1f0b234c7f88e7d",
+        "atom_pmf_present": true,
+        "atom_pmf_column": "pmf_active",
+        "atom_pmf_columns": [
+            "pmf_active"
+        ],
+        "stats": [
+            "ast",
+            "blk",
+            "fg3m",
+            "pa",
+            "pr",
+            "pra",
+            "pts",
+            "reb",
+            "stl",
+            "stocks",
+            "tov"
+        ],
+        "players": 31
+    },
+    "forbidden_pmf_sources": [
+        "ladder",
+        "p_ge",
+        "survival",
+        "cdf",
+        "cumulative",
+        "reconstructed",
+        "threshold"
+    ]
+}
+
+FILE deliveries/2026-05-12/wizard_of_odds/run_manifest.json
+{
+    "delivery_date": "2026-05-12",
+    "pipeline_run_id": "6532ad32-e85c-4109-81cb-a4d8504b58ba",
+    "snapshot_type": "close_lock",
+    "snapshot_time_utc": "2026-05-12T21:20:12Z",
+    "model_version": "41e2363a#phase10c",
+    "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+    "phase8_blend_policy": "monotone_inactive_global_v1",
+    "finality_status": "provisional",
+    "finality_blocker_codes": [
+        "lineup_unconfirmed"
+    ],
+    "finality_blockers": [
+        {
+            "code": "lineup_unconfirmed",
+            "detail": "No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.",
+            "required_to_resolve": "Regenerate near lock after official lineups are available."
+        }
+    ],
+    "tov_overlay": "off",
+    "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+    "tov_status": "present",
+    "target_stats": {
+        "expected": [
+            "pts",
+            "reb",
+            "ast",
+            "fg3m",
+            "tov",
+            "stl",
+            "blk",
+            "stocks",
+            "pa",
+            "pr",
+            "pra"
+        ],
+        "in_delivery": [
+            "ast",
+            "blk",
+            "fg3m",
+            "pa",
+            "pr",
+            "pra",
+            "pts",
+            "reb",
+            "stl",
+            "stocks",
+            "tov"
+        ],
+        "missing": [],
+        "extra_relative_to_supported": []
+    },
+    "sources": {
+        "model_only_parquet": {
+            "path": "deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+            "mtime_utc": "2026-05-12T21:20:11.830774Z",
+            "sha256": "7185d03686a93e0bc494a28937e03afc57f463b7a97c6f3bb1f0b234c7f88e7d",
+            "auto_built_from_predictions": false
+        },
+        "predictions_parquet": {
+            "path": "predictions/all_props_2026-05-12.parquet",
+            "mtime_utc": null
+        },
+        "availability_table": {
+            "path": "data/player_availability_asof.parquet",
+            "mtime_utc": "2026-05-07T03:42:11.511500Z",
+            "freshness_status": "very_stale"
+        },
+        "odds_snapshot": {
+            "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.parquet",
+            "mtime_utc": "2026-05-12T20:50:16.454958Z",
+            "books_seen": [
+                "betmgm",
+                "betonlineag",
+                "betparx",
+                "bovada",
+                "draftkings",
+                "espnbet",
+                "fanatics",
+                "fanduel",
+                "fliff",
+                "hardrockbet",
+                "hardrockbet_az",
+                "hardrockbet_fl",
+                "williamhill_us"
+            ],
+            "coverage_status": "full",
+            "fetch_status": "consumed_from_disk"
+        }
+    },
+    "row_counts": {
+        "fair_odds_board": 7347,
+        "full_pmfs_wide": 341,
+        "market_comparison": 1285,
+        "publishable_edges": 0
+    },
+    "quality_rollup": {
+        "pmf_valid_ok_pct": 1.0,
+        "pmf_sum_error_max": 5.551115123125783e-16,
+        "calibration_confidence": {
+            "high": 154,
+            "low": 99,
+            "medium": 88
+        },
+        "market_coverage_status": {
+            "full": 341
+        },
+        "injury_freshness_status": {
+            "fresh": 341
+        },
+        "lineup_freshness_status": {
+            "projected": 341
+        },
+        "role_freshness_status": {
+            "derived_from_projected_minutes": 341
+        }
+    },
+    "warnings": [],
+    "no_odds_fetch": false,
+    "freshness_manifest": {
+        "path": "data/freshness_manifest/2026-05-12.json",
+        "built_at_utc": "2026-05-12T21:20:09Z",
+        "overall_status": "not_ready",
+        "odds_status": "ok",
+        "regions_requested": [
+            "us",
+            "us2"
+        ],
+        "books_seen": [
+            "betmgm",
+            "betonlineag",
+            "betparx",
+            "bovada",
+            "draftkings",
+            "espnbet",
+            "fanatics",
+            "fanduel",
+            "fliff",
+            "hardrockbet",
+            "hardrockbet_az",
+            "hardrockbet_fl",
+            "williamhill_us"
+        ],
+        "tov_status": "missing_from_prediction_source",
+        "predictions_mtime_utc": null,
+        "availability_freshness_status": "very_stale",
+        "finals_finality_status": "finals_pending",
+        "role_freshness_status_rollup": {
+            "derived_from_projected_minutes": 341
+        }
+    }
+}
+
+FILE deliveries/2026-05-12/wizard_of_odds/count_diagnostics.json
+{
+    "accuracy_supported_rows": 1285,
+    "affiliate_dashboard_rows": 2570,
+    "calibration_supported_rows": 1285,
+    "date": "2026-05-12",
+    "edge_publishable_rows": 2570,
+    "fair_odds_board_rows": 7347,
+    "full_pmfs_outcome_level_rows": 18476,
+    "full_pmfs_wide_rows": 341,
+    "generated_at_utc": "2026-05-12T21:25:35.143916+00:00",
+    "joinable_rows": 1285,
+    "market_comparison_rows": 1285,
+    "market_prob_resolved_rows": 1285,
+    "model_prob_resolved_rows": 1285,
+    "offered_market_rows_available": 1285,
+    "pmf_research_policy": "atom_source_only_no_ladder_fallback",
+    "pmf_rows_available": 18476,
+    "publishable_edges_rows": 0,
+    "schema_version": "m8_6o_count_diagnostics_v1",
+    "side_odds_resolved_rows": 1285,
+    "sources": {
+        "affiliate_dashboard_rows": "deliveries/2026-05-12/wizard_of_odds/market_comparison.parquet"
+    },
+    "status": "generated_from_actual_wizard_of_odds_outputs"
+}
+
+FILE deliveries/2026-05-12/derek_forward_feed/feed_manifest.json
+{
+    "delivery_date": "2026-05-12",
+    "built_at_utc": "2026-05-12T21:20:14Z",
+    "snapshot": "lineup",
+    "morning": null,
+    "lineup": {
+        "snapshot_type": "near_tip",
+        "snapshot_time_utc": "2026-05-12T21:20:12Z",
+        "rows": 1516,
+        "model_only_rows_used": 341,
+        "market_rows_referenced": 1285,
+        "files": {
+            "csv": "deliveries/2026-05-12/derek_forward_feed/lineup_snapshot.csv",
+            "parquet": "deliveries/2026-05-12/derek_forward_feed/lineup_snapshot.parquet",
+            "rows": 1516,
+            "jsonl": "deliveries/2026-05-12/derek_forward_feed/lineup_snapshot.jsonl"
+        },
+        "model_only_source": "deliveries/2026-05-12/pmf_model_review_package/machine_readable/model_only.parquet",
+        "market_comparison_source": "deliveries/2026-05-12/wizard_of_odds/market_comparison.parquet",
+        "run_manifest_source": "deliveries/2026-05-12/wizard_of_odds/run_manifest.json",
+        "freshness_manifest_source": "data/freshness_manifest/2026-05-12.json",
+        "rows_with_market": 1236,
+        "rows_model_only": 280,
+        "tov_rows": 31
+    },
+    "lineup_status": {
+        "status": "near_tip_projected_lineup_snapshot",
+        "snapshot_type_emitted": "near_tip",
+        "lineup_freshness_rollup": "projected=341",
+        "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
+        "checked_at_utc": "2026-05-12T21:20:14Z"
+    },
+    "latest_available_snapshot": {
+        "points_to": "lineup",
+        "files": {
+            "csv": "deliveries/2026-05-12/derek_forward_feed/latest_available_snapshot.csv",
+            "parquet": "deliveries/2026-05-12/derek_forward_feed/latest_available_snapshot.parquet",
+            "rows": 1516
+        }
+    },
+    "schema": {
+        "columns": [
+            "snapshot_type",
+            "snapshot_time_utc",
+            "delivery_date",
+            "game_id",
+            "game_start_time_utc",
+            "player_id",
+            "player_name",
+            "team",
+            "opponent",
+            "is_home",
+            "stat",
+            "pmf_json",
+            "mean",
+            "median",
+            "mode",
+            "p0",
+            "p_ge_1",
+            "p_ge_2",
+            "p_ge_3",
+            "p_ge_4",
+            "p_ge_5",
+            "p_ge_6",
+            "p_ge_7",
+            "p_ge_8",
+            "p_ge_9",
+            "p_ge_10",
+            "p_ge_11",
+            "p_ge_12",
+            "p_ge_13",
+            "p_ge_14",
+            "p_ge_15",
+            "p_ge_16",
+            "p_ge_17",
+            "p_ge_18",
+            "p_ge_19",
+            "p_ge_20",
+            "model_version",
+            "pmf_source",
+            "calibration_source",
+            "role_bucket",
+            "role_source",
+            "calibration_confidence",
+            "sportsbook",
+            "book",
+            "market_key",
+            "line",
+            "over_price_american",
+            "under_price_american",
+            "market_no_vig_over_prob",
+            "market_no_vig_under_prob",
+            "model_p_over",
+            "model_p_under",
+            "fair_over_odds_american",
+            "fair_under_odds_american",
+            "edge",
+            "edge_over",
+            "edge_under",
+            "market_snapshot_time_utc",
+            "market_coverage_status",
+            "finality_status",
+            "finality_blocker_codes",
+            "injury_freshness_status",
+            "availability_freshness_status",
+            "lineup_freshness_status",
+            "role_freshness_status",
+            "odds_freshness_status",
+            "outcomes_freshness_status",
+            "tov_status",
+            "pmf_valid",
+            "pmf_sum_error"
+        ],
+        "identity": [
+            "snapshot_type",
+            "snapshot_time_utc",
+            "delivery_date",
+            "game_id",
+            "game_start_time_utc",
+            "player_id",
+            "player_name",
+            "team",
+            "opponent",
+            "is_home",
+            "stat"
+        ],
+        "pmf": [
+            "pmf_json",
+            "mean",
+            "median",
+            "mode",
+            "p0",
+            "p_ge_1",
+            "p_ge_2",
+            "p_ge_3",
+            "p_ge_4",
+            "p_ge_5",
+            "p_ge_6",
+            "p_ge_7",
+            "p_ge_8",
+            "p_ge_9",
+            "p_ge_10",
+            "p_ge_11",
+            "p_ge_12",
+            "p_ge_13",
+            "p_ge_14",
+            "p_ge_15",
+            "p_ge_16",
+            "p_ge_17",
+            "p_ge_18",
+            "p_ge_19",
+            "p_ge_20",
+            "model_version",
+            "pmf_source",
+            "calibration_source",
+            "role_bucket",
+            "role_source",
+            "calibration_confidence"
+        ],
+        "market": [
+            "sportsbook",
+            "book",
+            "market_key",
+            "line",
+            "over_price_american",
+            "under_price_american",
+            "market_no_vig_over_prob",
+            "market_no_vig_under_prob",
+            "model_p_over",
+            "model_p_under",
+            "fair_over_odds_american",
+            "fair_under_odds_american",
+            "edge",
+            "edge_over",
+            "edge_under",
+            "market_snapshot_time_utc",
+            "market_coverage_status"
+        ],
+        "quality": [
+            "finality_status",
+            "finality_blocker_codes",
+            "injury_freshness_status",
+            "availability_freshness_status",
+            "lineup_freshness_status",
+            "role_freshness_status",
+            "odds_freshness_status",
+            "outcomes_freshness_status",
+            "tov_status",
+            "pmf_valid",
+            "pmf_sum_error"
+        ]
+    },
+    "rules": {
+        "pmf_source": "model_only.parquet (canonical)",
+        "market_source": "market_comparison.parquet (reference-only)",
+        "no_market_anchoring": true,
+        "tov_overlay_phase10d": "off"
+    }
+}
+
+FILE data/freshness_manifest/2026-05-12.json
+{
+    "delivery_date": "2026-05-12",
+    "built_at_utc": "2026-05-12T21:20:09Z",
+    "schema_version": 1,
+    "snapshot_type": "close_or_lock",
+    "regions_requested": [
+        "us",
+        "us2"
+    ],
+    "odds": {
+        "status": "ok",
+        "runs": [
+            {
+                "regions": "us",
+                "started_at_utc": "2026-05-12T21:20:03Z",
+                "ended_at_utc": "2026-05-12T21:20:07Z",
+                "exit_code": 0,
+                "status": "ok",
+                "stdout_tail": [
+                    "  [quota] used=67 remaining=99933 last_cost=0",
+                    "Live events: 2",
+                    "  [quota] used=75 remaining=99925 last_cost=8",
+                    "  [quota] used=83 remaining=99917 last_cost=8",
+                    "Live slate: 2 events captured; 7511 quotes, 1432 pairs"
+                ],
+                "stderr_tail": []
+            },
+            {
+                "regions": "us2",
+                "started_at_utc": "2026-05-12T21:20:07Z",
+                "ended_at_utc": "2026-05-12T21:20:09Z",
+                "exit_code": 0,
+                "status": "ok",
+                "stdout_tail": [
+                    "  [quota] used=83 remaining=99917 last_cost=0",
+                    "Live events: 2",
+                    "  [quota] used=91 remaining=99909 last_cost=8",
+                    "  [quota] used=99 remaining=99901 last_cost=8",
+                    "Live slate: 2 events captured; 2379 quotes, 774 pairs"
+                ],
+                "stderr_tail": []
+            }
+        ],
+        "files": [
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205105Z.parquet",
+                "mtime_utc": "2026-05-12T20:51:08.848677Z",
+                "bytes": 78412,
+                "rows": 1434,
+                "books": [
+                    "betmgm",
+                    "betonlineag",
+                    "bovada",
+                    "draftkings",
+                    "fanatics",
+                    "fanduel",
+                    "williamhill_us"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205109Z.parquet",
+                "mtime_utc": "2026-05-12T20:51:11.083417Z",
+                "bytes": 49751,
+                "rows": 775,
+                "books": [
+                    "betparx",
+                    "espnbet",
+                    "fliff",
+                    "hardrockbet",
+                    "hardrockbet_az",
+                    "hardrockbet_fl"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205203Z.parquet",
+                "mtime_utc": "2026-05-12T20:52:06.560220Z",
+                "bytes": 78398,
+                "rows": 1434,
+                "books": [
+                    "betmgm",
+                    "betonlineag",
+                    "bovada",
+                    "draftkings",
+                    "fanatics",
+                    "fanduel",
+                    "williamhill_us"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205206Z.parquet",
+                "mtime_utc": "2026-05-12T20:52:08.637915Z",
+                "bytes": 49687,
+                "rows": 775,
+                "books": [
+                    "betparx",
+                    "espnbet",
+                    "fliff",
+                    "hardrockbet",
+                    "hardrockbet_az",
+                    "hardrockbet_fl"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212003Z.parquet",
+                "mtime_utc": "2026-05-12T21:20:07.564881Z",
+                "bytes": 75815,
+                "rows": 1432,
+                "books": [
+                    "betmgm",
+                    "betonlineag",
+                    "bovada",
+                    "draftkings",
+                    "fanatics",
+                    "fanduel",
+                    "williamhill_us"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.parquet",
+                "mtime_utc": "2026-05-12T21:20:09.867726Z",
+                "bytes": 46955,
+                "rows": 774,
+                "books": [
+                    "betparx",
+                    "espnbet",
+                    "fliff",
+                    "hardrockbet",
+                    "hardrockbet_az",
+                    "hardrockbet_fl"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205010Z.parquet",
+                "mtime_utc": "2026-05-12T20:50:14.258145Z",
+                "bytes": 79378,
+                "rows": 1461,
+                "books": [
+                    "betmgm",
+                    "betonlineag",
+                    "bovada",
+                    "draftkings",
+                    "fanatics",
+                    "fanduel",
+                    "williamhill_us"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            },
+            {
+                "path": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.parquet",
+                "mtime_utc": "2026-05-12T20:50:16.454958Z",
+                "bytes": 49720,
+                "rows": 775,
+                "books": [
+                    "betparx",
+                    "espnbet",
+                    "fliff",
+                    "hardrockbet",
+                    "hardrockbet_az",
+                    "hardrockbet_fl"
+                ],
+                "stats": [
+                    "ast",
+                    "fg3m",
+                    "pts",
+                    "reb"
+                ]
+            }
+        ],
+        "books_seen": [
+            "betmgm",
+            "betonlineag",
+            "betparx",
+            "bovada",
+            "draftkings",
+            "espnbet",
+            "fanatics",
+            "fanduel",
+            "fliff",
+            "hardrockbet",
+            "hardrockbet_az",
+            "hardrockbet_fl",
+            "williamhill_us"
+        ],
+        "stats_seen": [
+            "ast",
+            "fg3m",
+            "pts",
+            "reb"
+        ],
+        "total_rows": 8860,
+        "market_coverage_status": "full"
+    },
+    "predictions": {
+        "path": "predictions/all_props_2026-05-12.parquet",
+        "exists": false,
+        "mtime_utc": null,
+        "age_hours": null,
+        "rows": null,
+        "stats_in_predictions": [],
+        "missing_supported_stats": [
+            "ast",
+            "blk",
+            "fg3m",
+            "pa",
+            "pr",
+            "pra",
+            "pts",
+            "reb",
+            "stl",
+            "stocks",
+            "tov"
+        ],
+        "tov_status": "missing_from_prediction_source"
+    },
+    "predictions_refresh": null,
+    "availability_table": {
+        "path": "data/player_availability_asof.parquet",
+        "exists": true,
+        "mtime_utc": "2026-05-07T03:42:11.511500Z",
+        "age_hours": 137.63,
+        "freshness_status": "very_stale"
+    },
+    "model_artifacts": {
+        "files": [
+            {
+                "path": "artifacts/models/pmf_cal_meta.json",
+                "exists": true,
+                "mtime_utc": "2026-05-11T19:20:51.757940Z",
+                "sha256": "328685706dc21db6e9b436d5cc50b428784af350390dfa3ad53fcf4008d97b5f"
+            },
+            {
+                "path": "artifacts/models/pmf_cal_pts.pkl",
+                "exists": false,
+                "mtime_utc": null,
+                "sha256": null
+            },
+            {
+                "path": "artifacts/models/pmf_cal_role_pts.pkl",
+                "exists": true,
+                "mtime_utc": "2026-05-10T23:32:52.182086Z",
+                "sha256": "4133ebd730cec6bf2401cb1e5707f3dd7eab502b693dca1886d39365d50c5eba"
+            },
+            {
+                "path": "artifacts/models/pmf_cal_role_reb.pkl",
+                "exists": true,
+                "mtime_utc": "2026-05-10T23:32:52.184296Z",
+                "sha256": "ef761e201f32102ea70d76b8ad9047829eb40cb9d3efa7e958e526bb9ffca927"
+            },
+            {
+                "path": "artifacts/models/pmf_cal_role_ast.pkl",
+                "exists": true,
+                "mtime_utc": "2026-05-10T23:32:52.175292Z",
+                "sha256": "95739abbefc7e55b5250f65a51f1aa3e69f393953f812af32194986aeef2cf4e"
+            },
+            {
+                "path": "artifacts/models/pmf_cal_role_fg3m.pkl",
+                "exists": true,
+                "mtime_utc": "2026-05-10T23:32:52.179754Z",
+                "sha256": "57edf14dad60a827bb7bda771a8b7723c48bc195c0bd90d6bda3a22bf72f852a"
+
+=== CURRENT MAY 12 PARQUET SHAPES ===
+
+PATH predictions/stat_grid_2026-05-12.parquet
+ROWS 361 COLS 33
+COLUMNS ['player_id', 'player_name', 'team_id', 'game_id', 'game', 'is_home', 'opp_team_id', 'role_bucket', 'role_source', 'mp_bucket', 'usage_bucket', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'injury_freshness_status', 'injury_context_source', 'injury_report_fetched_at_utc', 'stat', 'side', 'line', 'odds', 'model_version', 'calibrated', 'pmf', 'pmf_summary_mean', 'pmf_summary_median', 'pmf_summary_mode', 'support_max', 'pmf_sum_error', 'tov_status', 'tov_status_reason', 'line_is_real', 'scored_at_utc']
+
+stat_COUNTS
+stat
+pts       33
+reb       33
+ast       33
+tov       33
+stl       33
+blk       33
+stocks    33
+pa        33
+pr        33
+pra       33
+fg3m      31
+
+role_bucket_COUNTS
+role_bucket
+inactive_risk    99
+bench            77
+starter          77
+rotation         44
+core             33
+fringe           31
+
+role_source_COUNTS
+role_source
+derived_from_projected_minutes    361
+
+model_version_COUNTS
+model_version
+pmf_sim_v1+role_aware_pmf_cal_v1:inactive_risk                             36
+joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:inactive_risk    36
+pmf_sim_v1+role_aware_pmf_cal_v1:bench                                     28
+joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:bench            28
+pmf_sim_v1+role_aware_pmf_cal_v1:starter                                   28
+joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter          28
+hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                              18
+joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:rotation         16
+pmf_sim_v1+role_aware_pmf_cal_v1:rotation                                  16
+hurdle_v1+role_aware_pmf_cal_v1:bench                                      14
+hurdle_v1+role_aware_pmf_cal_v1:starter                                    14
+joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:fringe           12
+pmf_sim_v1+role_aware_pmf_cal_v1:core                                      12
+pmf_sim_v1+role_aware_pmf_cal_v1:fringe                                    12
+joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core             12
+fg3m_hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                          9
+hurdle_v1+role_aware_pmf_cal_v1:rotation                                    8
+fg3m_hurdle_v1+role_aware_pmf_cal_v1:bench                                  7
+fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter                                7
+hurdle_v1+role_aware_pmf_cal_v1:fringe                                      6
+hurdle_v1+role_aware_pmf_cal_v1:core                                        6
+fg3m_hurdle_v1+role_aware_pmf_cal_v1:rotation                               4
+fg3m_hurdle_v1+role_aware_pmf_cal_v1:core                                   3
+fg3m_hurdle_v1+role_aware_pmf_cal_v1:fringe                                 1
+
+injury_freshness_status_COUNTS
+injury_freshness_status
+fresh    361
+
+PATH deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+ROWS 341 COLS 29
+COLUMNS ['player_id', 'player_name', 'team_abbr', 'team_id', 'opponent', 'is_home', 'game_id', 'game', 'game_start_et', 'stat', 'role_bucket', 'role_source', 'mp_bucket', 'usage_bucket', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'injury_freshness_status', 'injury_context_source', 'injury_report_fetched_at_utc', 'support_min', 'support_max', 'line', 'market_fair_over_prob', 'market_source', 'market_offered_side', 'market_offered_odds', 'pmf_source', 'pmf_active']
+
+stat_COUNTS
+stat
+pts       31
+reb       31
+ast       31
+fg3m      31
+tov       31
+stl       31
+blk       31
+stocks    31
+pa        31
+pr        31
+pra       31
+
+role_bucket_COUNTS
+role_bucket
+inactive_risk    99
+bench            77
+starter          77
+rotation         44
+core             33
+fringe           11
+
+role_source_COUNTS
+role_source
+derived_from_projected_minutes    341
+
+pmf_source_COUNTS
+pmf_source
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:inactive_risk                             36
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:inactive_risk    36
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench                                     28
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:bench            28
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter                                   28
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter          28
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                              18
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:rotation                                  16
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:rotation         16
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench                                      14
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter                                    14
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:core                                      12
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core             12
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                          9
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:rotation                                    8
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:bench                                  7
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter                                7
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:core                                        6
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:fringe            4
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:rotation                               4
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:fringe                                     4
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:core                                   3
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:fringe                                      2
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:fringe                                 1
+
+injury_freshness_status_COUNTS
+injury_freshness_status
+fresh    341
+
+PATH deliveries/2026-05-12/wizard_of_odds/full_pmfs_wide.parquet
+ROWS 341 COLS 62
+COLUMNS ['pmf_json', 'player_name', 'player_id', 'team', 'opponent', 'is_home', 'game_id', 'game_start_time', 'stat', 'line', 'book', 'market_over_odds', 'market_under_odds', 'market_no_vig_over_prob', 'pmf_source', 'calibration_source', 'role_bucket', 'role_source', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'cal_source', 'mean', 'median', 'mode', 'p0', 'p_ge_1', 'p_ge_2', 'p_ge_3', 'p_ge_4', 'p_ge_5', 'p_ge_6', 'p_ge_7', 'p_ge_8', 'p_ge_9', 'p_ge_10', 'p_ge_11', 'p_ge_12', 'p_ge_13', 'p_ge_14', 'p_ge_15', 'p_ge_16', 'p_ge_17', 'p_ge_18', 'p_ge_19', 'p_ge_20', 'model_p_over', 'fair_over_odds_american', 'fair_under_odds_american', 'edge', 'snapshot_type', 'snapshot_time_utc', 'model_version', 'pipeline_run_id', 'pmf_valid', 'pmf_sum_error', 'calibration_confidence', 'market_coverage_status', 'tov_status', 'injury_freshness_status', 'lineup_freshness_status', 'role_freshness_status']
+
+stat_COUNTS
+stat
+pts       31
+reb       31
+ast       31
+fg3m      31
+tov       31
+stl       31
+blk       31
+stocks    31
+pa        31
+pr        31
+pra       31
+
+role_bucket_COUNTS
+role_bucket
+inactive_risk    99
+bench            77
+starter          77
+rotation         44
+core             33
+fringe           11
+
+role_source_COUNTS
+role_source
+derived_from_projected_minutes    341
+
+pmf_source_COUNTS
+pmf_source
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:inactive_risk                             36
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:inactive_risk    36
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench                                     28
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:bench            28
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter                                   28
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter          28
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                              18
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:rotation                                  16
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:rotation         16
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench                                      14
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter                                    14
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:core                                      12
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core             12
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                          9
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:rotation                                    8
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:bench                                  7
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter                                7
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:core                                        6
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:fringe            4
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:rotation                               4
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:fringe                                     4
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:core                                   3
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:fringe                                      2
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:fringe                                 1
+
+model_version_COUNTS
+model_version
+41e2363a#phase10c    341
+
+lineup_freshness_status_COUNTS
+lineup_freshness_status
+projected    341
+
+injury_freshness_status_COUNTS
+injury_freshness_status
+fresh    341
+
+market_coverage_status_COUNTS
+market_coverage_status
+full    341
+
+book_COUNTS
+Series([], )
+
+PATH deliveries/2026-05-12/wizard_of_odds/market_comparison.parquet
+ROWS 1285 COLS 61
+COLUMNS ['player_name', 'player_id', 'team', 'opponent', 'is_home', 'game_id', 'game_start_time', 'stat', 'line', 'book', 'market_over_odds', 'market_under_odds', 'market_no_vig_over_prob', 'pmf_source', 'calibration_source', 'cal_source', 'role_bucket', 'role_source', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'mean', 'median', 'mode', 'p0', 'p_ge_1', 'p_ge_2', 'p_ge_3', 'p_ge_4', 'p_ge_5', 'p_ge_6', 'p_ge_7', 'p_ge_8', 'p_ge_9', 'p_ge_10', 'p_ge_11', 'p_ge_12', 'p_ge_13', 'p_ge_14', 'p_ge_15', 'p_ge_16', 'p_ge_17', 'p_ge_18', 'p_ge_19', 'p_ge_20', 'model_p_over', 'fair_over_odds_american', 'fair_under_odds_american', 'edge', 'snapshot_type', 'snapshot_time_utc', 'model_version', 'pipeline_run_id', 'pmf_valid', 'pmf_sum_error', 'calibration_confidence', 'market_coverage_status', 'tov_status', 'injury_freshness_status', 'lineup_freshness_status', 'role_freshness_status']
+
+stat_COUNTS
+stat
+pts     506
+reb     320
+ast     243
+fg3m    216
+
+role_bucket_COUNTS
+role_bucket
+starter     640
+rotation    326
+core        266
+bench        53
+
+role_source_COUNTS
+role_source
+derived_from_projected_minutes    1285
+
+pmf_source_COUNTS
+pmf_source
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter         535
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:rotation        273
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:core            210
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter     105
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:core         56
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:rotation     53
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench            51
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:bench         2
+
+model_version_COUNTS
+model_version
+41e2363a#phase10c    1285
+
+lineup_freshness_status_COUNTS
+lineup_freshness_status
+projected    1285
+
+injury_freshness_status_COUNTS
+injury_freshness_status
+fresh    1285
+
+market_coverage_status_COUNTS
+market_coverage_status
+full    1285
+
+book_COUNTS
+book
+fanduel           378
+bovada            196
+espnbet           165
+betparx            69
+betonlineag        63
+fliff              63
+draftkings         62
+hardrockbet_fl     59
+hardrockbet        59
+hardrockbet_az     59
+betmgm             56
+williamhill_us     51
+fanatics            5
+
+PATH deliveries/2026-05-12/wizard_of_odds/fair_odds_board.parquet
+ROWS 7347 COLS 61
+COLUMNS ['player_name', 'player_id', 'team', 'opponent', 'is_home', 'game_id', 'game_start_time', 'stat', 'line', 'book', 'market_over_odds', 'market_under_odds', 'market_no_vig_over_prob', 'pmf_source', 'calibration_source', 'cal_source', 'role_bucket', 'role_source', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'mean', 'median', 'mode', 'p0', 'p_ge_1', 'p_ge_2', 'p_ge_3', 'p_ge_4', 'p_ge_5', 'p_ge_6', 'p_ge_7', 'p_ge_8', 'p_ge_9', 'p_ge_10', 'p_ge_11', 'p_ge_12', 'p_ge_13', 'p_ge_14', 'p_ge_15', 'p_ge_16', 'p_ge_17', 'p_ge_18', 'p_ge_19', 'p_ge_20', 'model_p_over', 'fair_over_odds_american', 'fair_under_odds_american', 'edge', 'snapshot_type', 'snapshot_time_utc', 'model_version', 'pipeline_run_id', 'pmf_valid', 'pmf_sum_error', 'calibration_confidence', 'market_coverage_status', 'tov_status', 'injury_freshness_status', 'lineup_freshness_status', 'role_freshness_status']
+
+stat_COUNTS
+stat
+pts       1860
+reb        682
+stl        620
+blk        620
+stocks     620
+pa         620
+pr         620
+pra        620
+ast        558
+fg3m       279
+tov        248
+
+role_bucket_COUNTS
+role_bucket
+inactive_risk    2133
+bench            1659
+starter          1659
+rotation          948
+core              711
+fringe            237
+
+role_source_COUNTS
+role_source
+derived_from_projected_minutes    7347
+
+pmf_source_COUNTS
+pmf_source
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:inactive_risk                             972
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench                                     756
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter                                   756
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:inactive_risk    720
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:bench            560
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter          560
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:rotation                                  432
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                              360
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:core                                      324
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:rotation         320
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench                                      280
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter                                    280
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core             240
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:rotation                                   160
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:core                                       120
+stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:fringe                                    108
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:inactive_risk                          81
+stat_grid:joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:fringe            80
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:bench                                  63
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter                                63
+stat_grid:hurdle_v1+role_aware_pmf_cal_v1:fringe                                      40
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:rotation                               36
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:core                                   27
+stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:fringe                                  9
+
+model_version_COUNTS
+model_version
+41e2363a#phase10c    7347
+
+lineup_freshness_status_COUNTS
+lineup_freshness_status
+projected    7347
+
+injury_freshness_status_COUNTS
+injury_freshness_status
+fresh    7347
+
+market_coverage_status_COUNTS
+market_coverage_status
+full    7347
+
+book_COUNTS
+Series([], )
+
+PATH deliveries/2026-05-12/wizard_of_odds/publishable_edges.parquet
+ROWS 0 COLS 61
+COLUMNS ['player_name', 'player_id', 'team', 'opponent', 'is_home', 'game_id', 'game_start_time', 'stat', 'line', 'book', 'market_over_odds', 'market_under_odds', 'market_no_vig_over_prob', 'pmf_source', 'calibration_source', 'cal_source', 'role_bucket', 'role_source', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'mean', 'median', 'mode', 'p0', 'p_ge_1', 'p_ge_2', 'p_ge_3', 'p_ge_4', 'p_ge_5', 'p_ge_6', 'p_ge_7', 'p_ge_8', 'p_ge_9', 'p_ge_10', 'p_ge_11', 'p_ge_12', 'p_ge_13', 'p_ge_14', 'p_ge_15', 'p_ge_16', 'p_ge_17', 'p_ge_18', 'p_ge_19', 'p_ge_20', 'model_p_over', 'fair_over_odds_american', 'fair_under_odds_american', 'edge', 'snapshot_type', 'snapshot_time_utc', 'model_version', 'pipeline_run_id', 'pmf_valid', 'pmf_sum_error', 'calibration_confidence', 'market_coverage_status', 'tov_status', 'injury_freshness_status', 'lineup_freshness_status', 'role_freshness_status']
+
+stat_COUNTS
+Series([], )
+
+role_bucket_COUNTS
+Series([], )
+
+role_source_COUNTS
+Series([], )
+
+pmf_source_COUNTS
+Series([], )
+
+model_version_COUNTS
+Series([], )
+
+lineup_freshness_status_COUNTS
+Series([], )
+
+injury_freshness_status_COUNTS
+Series([], )
+
+market_coverage_status_COUNTS
+Series([], )
+
+book_COUNTS
+Series([], )

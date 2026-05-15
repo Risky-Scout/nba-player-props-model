@@ -1,0 +1,51 @@
+=== GIT STATE ===
+m8-6-calibration-market-superiority-20260512
+e10e0ca4 Merge pull request #6 from Risky-Scout/full-pmf-gate-staging-20260512T171438Z
+4b4c8ee2 M8.6 PMF delivery contracts and May 12 production outputs
+41e2363a M8.6H: add EV and Kelly fields to WoO affiliate export
+0626e0af M8.6B: accept registry-driven corrected PMF stat guard
+3d08d143 M8.5A: restore PMF calibration metadata artifact
+7ab4f6ea M8.5: route production combo PMFs through joint-sample path
+1d47be39 M8.4: wire 11-stat PMF coverage through stat grid and WoO templates
+4dc30ea2 M8.1: align Derek and WoO delivery target coverage to 11 mission stats
+ M scripts/build_stat_grid_pmfs.py
+?? _m8_6_master_audit_20260513T014432Z/
+?? _stat_grid_delivery_calibration_optimizer/
+?? artifacts/model_diagnostics/
+?? scripts/build_event_market_loss_rows.py
+?? scripts/build_promotion_claim_report.py
+?? scripts/optimize_stat_grid_recalibration_params_v4.py
+?? scripts/verify_derek_output_schema.py
+?? scripts/verify_event_market_join_and_promotion_gate.py
+?? scripts/verify_event_market_superiority_from_delivery.py
+?? scripts/verify_pmf_source_graph_lock.py
+?? scripts/verify_stat_grid_recalibration_before_after_oof.py
+?? scripts/verify_woo_monetization_contract.py
+?? scripts/verify_woo_pmf_research_atoms.py
+?? scripts/verify_woo_pmf_research_page_contract.py
+?? scripts/verify_woo_public_artifacts_no_ra.py
+?? src/nba_props_model/calibration/stat_grid_delivery_recalibration.py
+
+=== PYTHON / ENV STATE ===
+/usr/bin/python3
+Python 3.9.6
+PYTHONPATH=src
+PATH=/opt/homebrew/opt/openjdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pmk/env/global/bin:/Applications/Visual Studio Code.app/Contents/Resources/app/bin
+BDL_API_KEY_PRESENT=no
+ODDS_API_KEY_PRESENT=yes
+STAT_GRID_RECALIBRATION_MODEL_DIR=
+SOURCE_RECALIBRATION_MODEL_DIR=
+
+=== RUNTIME ENV FILE SHAPE WITHOUT SECRET VALUES ===
+export BDL_API_KEY='***REDACTED***'
+export ODDS_API_KEY='***REDACTED***'
+export PATH="/tmp/m8_py310_bin:/opt/homebrew/bin:$PATH"
+
+=== PY310 NBAINJURIES CHECK ===
+Python 3.10.20
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+NBAINJURIES_IMPORT_OK

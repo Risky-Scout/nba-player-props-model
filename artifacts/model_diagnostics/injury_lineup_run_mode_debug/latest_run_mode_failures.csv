@@ -1,0 +1,2 @@
+run_mode,audit_date,severity,blocker_code,detail,n_rows
+morning_expected,2026-05-13,fail,SAME_DAY_SOURCE_INPUTS_MISSING,No injury/lineup feature rows were produced; canonical or source inputs are missing for this run mode/date.,0

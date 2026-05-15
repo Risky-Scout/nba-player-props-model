@@ -1,0 +1,125 @@
+{
+  "all_accounted": false,
+  "all_actually_scored": false,
+  "blockers": [],
+  "delivery_date": "2026-05-12",
+  "documented_blocked_target_stats": [],
+  "expected_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "pra"
+  ],
+  "generated_at_utc": "2026-05-14T05:17:59Z",
+  "missing_target_stats": [
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "pra"
+  ],
+  "per_stat": [
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 27,
+      "scored_rows": 27,
+      "stat": "pts",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 27,
+      "scored_rows": 27,
+      "stat": "reb",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 27,
+      "scored_rows": 27,
+      "stat": "ast",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 27,
+      "scored_rows": 27,
+      "stat": "fg3m",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 27,
+      "scored_rows": 27,
+      "stat": "tov",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 0,
+      "scored_rows": 0,
+      "stat": "stl",
+      "status": "undocumented_missing"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 0,
+      "scored_rows": 0,
+      "stat": "blk",
+      "status": "undocumented_missing"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 0,
+      "scored_rows": 0,
+      "stat": "stocks",
+      "status": "undocumented_missing"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 0,
+      "scored_rows": 0,
+      "stat": "pa",
+      "status": "undocumented_missing"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 0,
+      "scored_rows": 0,
+      "stat": "pr",
+      "status": "undocumented_missing"
+    },
+    {
+      "canonical_pmf_rows": 32,
+      "outcome_rows": 0,
+      "scored_rows": 0,
+      "stat": "pra",
+      "status": "undocumented_missing"
+    }
+  ],
+  "schema_version": "1.0",
+  "scored_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov"
+  ],
+  "source_columns_checked": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "turnover"
+  ],
+  "tov_rows_scored": 27,
+  "tov_source_column": "turnover"
+}

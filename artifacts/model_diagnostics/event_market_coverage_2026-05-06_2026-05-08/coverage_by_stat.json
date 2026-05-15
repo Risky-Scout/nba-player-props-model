@@ -1,0 +1,1124 @@
+{
+  "dates": [
+    "2026-05-06",
+    "2026-05-07",
+    "2026-05-08"
+  ],
+  "dates_fingerprint": null,
+  "dates_used": [
+    "2026-05-06",
+    "2026-05-07",
+    "2026-05-08"
+  ],
+  "label": "2026-05-06_2026-05-08",
+  "min_scored_rows": 100,
+  "odds_snapshots_by_date": {
+    "2026-05-06": {
+      "odds_pairs_selected_exists": true,
+      "odds_snapshot_family": "hist_lockday",
+      "odds_snapshot_is_historical": true,
+      "odds_snapshot_lock_offset_minutes": 5,
+      "odds_snapshot_path": "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+      "odds_snapshot_rank": 1,
+      "odds_snapshot_substr_used": "auto",
+      "odds_snapshot_type": "hist_lockday"
+    },
+    "2026-05-07": {
+      "odds_pairs_selected_exists": true,
+      "odds_snapshot_family": "close_or_lock",
+      "odds_snapshot_is_historical": false,
+      "odds_snapshot_lock_offset_minutes": null,
+      "odds_snapshot_path": "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet",
+      "odds_snapshot_rank": 0,
+      "odds_snapshot_substr_used": "auto",
+      "odds_snapshot_type": "close_or_lock"
+    },
+    "2026-05-08": {
+      "odds_pairs_selected_exists": false,
+      "odds_snapshot_family": null,
+      "odds_snapshot_is_historical": false,
+      "odds_snapshot_lock_offset_minutes": null,
+      "odds_snapshot_path": null,
+      "odds_snapshot_rank": null,
+      "odds_snapshot_substr_used": "auto",
+      "odds_snapshot_type": null
+    }
+  },
+  "oddsapi_default_market_count": 23,
+  "snapshot_substr": "auto",
+  "stats": [
+    {
+      "books_count": 14,
+      "canonical_rows": 202,
+      "event_join_presence_status": "scored_sample_sufficient",
+      "event_market_rows": 1548,
+      "expected_market_keys_for_stat": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "final_missing_reason": "covered",
+      "games_count": 4,
+      "market_keys_requested": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "market_keys_seen_raw": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "matched_rows": 949,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 136,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 63,
+      "processed_market_keys_seen_for_stat": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "processed_market_presence_status": "two_way_present",
+      "processed_odds_rows": 1548,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "raw_market_presence_status": "expected_keys_present_in_raw",
+      "raw_odds_rows": 360,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_points",
+        "player_points_alternate"
+      ],
+      "scored_rows": 949,
+      "stat": "pts",
+      "two_way_odds_rows": 1548
+    },
+    {
+      "books_count": 14,
+      "canonical_rows": 202,
+      "event_join_presence_status": "scored_sample_sufficient",
+      "event_market_rows": 915,
+      "expected_market_keys_for_stat": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "final_missing_reason": "covered",
+      "games_count": 4,
+      "market_keys_requested": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "market_keys_seen_raw": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "matched_rows": 560,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 136,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 58,
+      "processed_market_keys_seen_for_stat": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "processed_market_presence_status": "two_way_present",
+      "processed_odds_rows": 915,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "raw_market_presence_status": "expected_keys_present_in_raw",
+      "raw_odds_rows": 358,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_rebounds",
+        "player_rebounds_alternate"
+      ],
+      "scored_rows": 560,
+      "stat": "reb",
+      "two_way_odds_rows": 915
+    },
+    {
+      "books_count": 14,
+      "canonical_rows": 202,
+      "event_join_presence_status": "scored_sample_sufficient",
+      "event_market_rows": 643,
+      "expected_market_keys_for_stat": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "final_missing_reason": "covered",
+      "games_count": 4,
+      "market_keys_requested": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "market_keys_seen_raw": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "matched_rows": 397,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 136,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 51,
+      "processed_market_keys_seen_for_stat": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "processed_market_presence_status": "two_way_present",
+      "processed_odds_rows": 643,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "raw_market_presence_status": "expected_keys_present_in_raw",
+      "raw_odds_rows": 360,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_assists",
+        "player_assists_alternate"
+      ],
+      "scored_rows": 397,
+      "stat": "ast",
+      "two_way_odds_rows": 643
+    },
+    {
+      "books_count": 14,
+      "canonical_rows": 200,
+      "event_join_presence_status": "scored_sample_sufficient",
+      "event_market_rows": 668,
+      "expected_market_keys_for_stat": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "final_missing_reason": "covered",
+      "games_count": 4,
+      "market_keys_requested": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "market_keys_seen_raw": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "matched_rows": 410,
+      "missing_reason": "covered",
+      "model_stat_grid_rows": 134,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 54,
+      "processed_market_keys_seen_for_stat": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "processed_market_presence_status": "two_way_present",
+      "processed_odds_rows": 668,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "raw_market_presence_status": "expected_keys_present_in_raw",
+      "raw_odds_rows": 346,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_threes",
+        "player_threes_alternate"
+      ],
+      "scored_rows": 410,
+      "stat": "fg3m",
+      "two_way_odds_rows": 668
+    },
+    {
+      "books_count": 1,
+      "canonical_rows": 202,
+      "event_join_presence_status": "matched_but_insufficient_scored_sample",
+      "event_market_rows": 5,
+      "expected_market_keys_for_stat": [
+        "player_turnovers",
+        "player_turnovers_alternate"
+      ],
+      "final_missing_reason": "insufficient_scored_rows",
+      "games_count": 1,
+      "market_keys_requested": [
+        "player_turnovers",
+        "player_turnovers_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_turnovers"
+      ],
+      "market_keys_seen_raw": [
+        "player_turnovers"
+      ],
+      "matched_rows": 1,
+      "missing_reason": "insufficient_scored_rows",
+      "model_stat_grid_rows": 136,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 1,
+      "processed_market_keys_seen_for_stat": [
+        "player_turnovers"
+      ],
+      "processed_market_presence_status": "two_way_present",
+      "processed_odds_rows": 5,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [
+        "player_turnovers"
+      ],
+      "raw_market_presence_status": "expected_keys_present_in_raw",
+      "raw_odds_rows": 9,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_turnovers",
+        "player_turnovers_alternate"
+      ],
+      "scored_rows": 1,
+      "stat": "tov",
+      "two_way_odds_rows": 5
+    },
+    {
+      "books_count": 3,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 81,
+      "expected_market_keys_for_stat": [
+        "player_steals",
+        "player_steals_alternate"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 2,
+      "market_keys_requested": [
+        "player_steals",
+        "player_steals_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_steals"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 51,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 22,
+      "processed_market_keys_seen_for_stat": [
+        "player_steals"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 81,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_steals",
+        "player_steals_alternate"
+      ],
+      "scored_rows": 51,
+      "stat": "stl",
+      "two_way_odds_rows": 81
+    },
+    {
+      "books_count": 4,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 107,
+      "expected_market_keys_for_stat": [
+        "player_blocks",
+        "player_blocks_alternate"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 2,
+      "market_keys_requested": [
+        "player_blocks",
+        "player_blocks_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_blocks"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 67,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 23,
+      "processed_market_keys_seen_for_stat": [
+        "player_blocks"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 107,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_blocks",
+        "player_blocks_alternate"
+      ],
+      "scored_rows": 67,
+      "stat": "blk",
+      "two_way_odds_rows": 107
+    },
+    {
+      "books_count": 1,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 9,
+      "expected_market_keys_for_stat": [
+        "player_blocks_steals"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 1,
+      "market_keys_requested": [
+        "player_blocks_steals"
+      ],
+      "market_keys_seen_processed": [
+        "player_blocks_steals"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 9,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 9,
+      "processed_market_keys_seen_for_stat": [
+        "player_blocks_steals"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 9,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_blocks_steals"
+      ],
+      "scored_rows": 9,
+      "stat": "stocks",
+      "two_way_odds_rows": 9
+    },
+    {
+      "books_count": 4,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 499,
+      "expected_market_keys_for_stat": [
+        "player_points_assists",
+        "player_points_assists_alternate"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 2,
+      "market_keys_requested": [
+        "player_points_assists",
+        "player_points_assists_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_points_assists",
+        "player_points_assists_alternate"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 330,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 25,
+      "processed_market_keys_seen_for_stat": [
+        "player_points_assists",
+        "player_points_assists_alternate"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 499,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_points_assists",
+        "player_points_assists_alternate"
+      ],
+      "scored_rows": 330,
+      "stat": "pa",
+      "two_way_odds_rows": 499
+    },
+    {
+      "books_count": 4,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 708,
+      "expected_market_keys_for_stat": [
+        "player_points_rebounds",
+        "player_points_rebounds_alternate"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 2,
+      "market_keys_requested": [
+        "player_points_rebounds",
+        "player_points_rebounds_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_points_rebounds",
+        "player_points_rebounds_alternate"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 463,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 28,
+      "processed_market_keys_seen_for_stat": [
+        "player_points_rebounds",
+        "player_points_rebounds_alternate"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 708,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_points_rebounds",
+        "player_points_rebounds_alternate"
+      ],
+      "scored_rows": 463,
+      "stat": "pr",
+      "two_way_odds_rows": 708
+    },
+    {
+      "books_count": 4,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 344,
+      "expected_market_keys_for_stat": [
+        "player_rebounds_assists",
+        "player_rebounds_assists_alternate"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 2,
+      "market_keys_requested": [
+        "player_rebounds_assists",
+        "player_rebounds_assists_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_rebounds_assists",
+        "player_rebounds_assists_alternate"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 229,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 24,
+      "processed_market_keys_seen_for_stat": [
+        "player_rebounds_assists",
+        "player_rebounds_assists_alternate"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 344,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_rebounds_assists",
+        "player_rebounds_assists_alternate"
+      ],
+      "scored_rows": 229,
+      "stat": "ra",
+      "two_way_odds_rows": 344
+    },
+    {
+      "books_count": 7,
+      "canonical_rows": 69,
+      "event_join_presence_status": "no_event_rows_expected",
+      "event_market_rows": 859,
+      "expected_market_keys_for_stat": [
+        "player_points_rebounds_assists",
+        "player_points_rebounds_assists_alternate"
+      ],
+      "final_missing_reason": "no_offered_market",
+      "games_count": 2,
+      "market_keys_requested": [
+        "player_points_rebounds_assists",
+        "player_points_rebounds_assists_alternate"
+      ],
+      "market_keys_seen_processed": [
+        "player_points_rebounds_assists",
+        "player_points_rebounds_assists_alternate"
+      ],
+      "market_keys_seen_raw": [],
+      "matched_rows": 525,
+      "missing_reason": "no_offered_market",
+      "model_stat_grid_rows": 70,
+      "odds_snapshot_files_checked": [
+        "data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet",
+        "data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet"
+      ],
+      "players_count": 33,
+      "processed_market_keys_seen_for_stat": [
+        "player_points_rebounds_assists",
+        "player_points_rebounds_assists_alternate"
+      ],
+      "processed_market_presence_status": "no_processed_rows_for_stat",
+      "processed_odds_rows": 859,
+      "raw_json_files_checked": 38,
+      "raw_json_paths_checked": [
+        "data/odds_api/raw/2026-05-06/hist_event_246001ab42d44857430f7fe63f423461_lock_2026-05-07T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_event_d146e10295545e18ac8915a1f5860317_lock_2026-05-06T230500Z.json",
+        "data/odds_api/raw/2026-05-06/hist_events_2026-05-06T110000Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_1b5c084f510006e8f30cd6cac40e231d_lock_2026-05-09T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_30d614c5d781b768faf9cf885e890851_lock_2026-05-08T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_862af0717b53a01b5e93a188a655d663_lock_2026-05-07T230500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_event_a306b74e13d87d2f8d64b1e01c2cf958_lock_2026-05-08T013500Z.json",
+        "data/odds_api/raw/2026-05-07/hist_events_2026-05-07T110000Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_09800f9101b348d4a66742a3d8888b82_2026-05-12T193703Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_1b5c084f510006e8f30cd6cac40e231d_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_30d614c5d781b768faf9cf885e890851_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_862af0717b53a01b5e93a188a655d663_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195655Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T195702Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200904Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T200910Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201317Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_a306b74e13d87d2f8d64b1e01c2cf958_2026-05-07T201323Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193700Z.json",
+        "data/odds_api/raw/2026-05-07/live_event_c3531530e77a4ada542bdbff23de5409_2026-05-12T193703Z.json"
+      ],
+      "raw_market_keys_seen_for_stat": [],
+      "raw_market_presence_status": "expected_keys_absent_in_raw",
+      "raw_odds_rows": 0,
+      "request_coverage_status": "all_expected_keys_in_registry",
+      "request_registry_source": "nba_props_model.markets.oddsapi_markets.ODDSAPI_NBA_DEFAULT_MARKETS",
+      "requested_market_keys": [
+        "player_points_rebounds_assists",
+        "player_points_rebounds_assists_alternate"
+      ],
+      "scored_rows": 525,
+      "stat": "pra",
+      "two_way_odds_rows": 859
+    }
+  ]
+}

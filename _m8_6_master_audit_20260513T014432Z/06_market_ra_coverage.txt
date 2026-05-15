@@ -1,0 +1,1015 @@
+=== TARGETS / RA / ALLOWLIST AUDIT ===
+src/nba_props_model/schedule/game_start_times.py:3:Resolves a per-game UTC start time using only real sources, in priority
+src/nba_props_model/schedule/game_start_times.py:6:    1. existing ``predictions/all_props_<date>.parquet`` ``game_start_time``
+src/nba_props_model/schedule/game_start_times.py:8:    2. ``predictions/pmf_display_<date>.json`` top-level / row-level
+src/nba_props_model/schedule/game_start_times.py:9:       time keys when present.
+src/nba_props_model/schedule/game_start_times.py:10:    3. cached Odds API processed parquet
+src/nba_props_model/schedule/game_start_times.py:11:       ``data/odds_api/processed/<date>/odds_pairs_*.parquet`` —
+src/nba_props_model/schedule/game_start_times.py:26:    * source_payload_hash (str, used to audit subsequent resolutions)
+src/nba_props_model/schedule/game_start_times.py:29:No fabricated timestamps are ever produced; if every source returns
+src/nba_props_model/schedule/game_start_times.py:39:import urllib.parse
+src/nba_props_model/schedule/game_start_times.py:42:from pathlib import Path
+src/nba_props_model/schedule/game_start_times.py:46:REPO_ROOT = Path(__file__).resolve().parents[3]
+src/nba_props_model/schedule/game_start_times.py:81:    source_payload_hash: str = ""
+src/nba_props_model/schedule/game_start_times.py:92:            "source_payload_hash": self.source_payload_hash,
+src/nba_props_model/schedule/game_start_times.py:97:def _hash_payload(payload) -> str:
+src/nba_props_model/schedule/game_start_times.py:98:    if isinstance(payload, (dict, list)):
+src/nba_props_model/schedule/game_start_times.py:99:        s = json.dumps(payload, sort_keys=True, default=str)
+src/nba_props_model/schedule/game_start_times.py:101:        s = str(payload)
+src/nba_props_model/schedule/game_start_times.py:106:    p = repo_root / "data" / "player_game_stats.parquet"
+src/nba_props_model/schedule/game_start_times.py:110:        import pandas as pd
+src/nba_props_model/schedule/game_start_times.py:111:        df = pd.read_parquet(p, columns=["team_id", "team_abbr"]).drop_duplicates()
+src/nba_props_model/schedule/game_start_times.py:117:def _load_predictions(repo_root: Path, delivery_date: str):
+src/nba_props_model/schedule/game_start_times.py:118:    p = repo_root / "predictions" / f"all_props_{delivery_date}.parquet"
+src/nba_props_model/schedule/game_start_times.py:122:        import pandas as pd
+src/nba_props_model/schedule/game_start_times.py:123:        return pd.read_parquet(p), p
+src/nba_props_model/schedule/game_start_times.py:129:    p = repo_root / "predictions" / f"pmf_display_{delivery_date}.json"
+src/nba_props_model/schedule/game_start_times.py:138:def _parse_pmf_display_matchups(pmf_disp: Optional[dict]) -> dict[tuple[str, str], str]:
+src/nba_props_model/schedule/game_start_times.py:140:    parsed from ``pmf_display['props'][i]['game']`` strings."""
+src/nba_props_model/schedule/game_start_times.py:144:    for prop in (pmf_disp.get("props") or []):
+src/nba_props_model/schedule/game_start_times.py:145:        s = prop.get("game") or ""
+src/nba_props_model/schedule/game_start_times.py:157:def _from_predictions(predictions_df, repo_root: Path
+src/nba_props_model/schedule/game_start_times.py:159:    """Source 1: existing predictions parquet ``game_start_time`` column."""
+src/nba_props_model/schedule/game_start_times.py:161:    if predictions_df is None or "game_id" not in predictions_df.columns:
+src/nba_props_model/schedule/game_start_times.py:163:    if "game_start_time" not in predictions_df.columns:
+src/nba_props_model/schedule/game_start_times.py:166:    for gid, sub in predictions_df.groupby(predictions_df["game_id"].astype(str)):
+src/nba_props_model/schedule/game_start_times.py:181:            source_used="predictions_parquet_game_start_time",
+src/nba_props_model/schedule/game_start_times.py:183:            source_payload_hash=_hash_payload(gt),
+src/nba_props_model/schedule/game_start_times.py:192:    "event_id": str, "source_payload_hash": str}`` records."""
+src/nba_props_model/schedule/game_start_times.py:194:    proc = repo_root / "data" / "odds_api" / "processed" / delivery_date
+src/nba_props_model/schedule/game_start_times.py:195:    if proc.exists():
+src/nba_props_model/schedule/game_start_times.py:197:            import pandas as pd
+src/nba_props_model/schedule/game_start_times.py:198:            files = sorted(proc.glob("odds_pairs_*.parquet"))
+src/nba_props_model/schedule/game_start_times.py:201:                df = pd.read_parquet(files[-1])
+src/nba_props_model/schedule/game_start_times.py:214:                            "source": "odds_api_processed_cached",
+src/nba_props_model/schedule/game_start_times.py:218:            pass
+src/nba_props_model/schedule/game_start_times.py:246:    qs = urllib.parse.urlencode({"apiKey": api_key, "dateFormat": "iso"})
+src/nba_props_model/schedule/game_start_times.py:263:    qs = urllib.parse.urlencode([
+src/nba_props_model/schedule/game_start_times.py:266:        ("per_page", 100),
+src/nba_props_model/schedule/game_start_times.py:275:            payload = json.loads(resp.read().decode("utf-8"))
+src/nba_props_model/schedule/game_start_times.py:276:            return list(payload.get("data") or [])
+src/nba_props_model/schedule/game_start_times.py:305:    """Index BDL ``/v1/games`` payloads by ``id``-as-string and team
+src/nba_props_model/schedule/game_start_times.py:308:    by_pair: dict[tuple[str, str], dict] = {}
+src/nba_props_model/schedule/game_start_times.py:319:        # midpoint approximation — but to avoid fabricating, we treat
+src/nba_props_model/schedule/game_start_times.py:320:        # BDL as providing only the date (no precise tip), and only
+src/nba_props_model/schedule/game_start_times.py:336:            by_pair[(a, h)] = record
+src/nba_props_model/schedule/game_start_times.py:337:            by_pair[(h, a)] = record
+src/nba_props_model/schedule/game_start_times.py:338:    return {"by_gid": by_gid, "by_pair": by_pair}
+src/nba_props_model/schedule/game_start_times.py:355:        predictions_df, _pred_path = _load_predictions(
+src/nba_props_model/schedule/game_start_times.py:358:        matchups_from_pmf = _parse_pmf_display_matchups(pmf_disp)
+src/nba_props_model/schedule/game_start_times.py:360:        # Source 1 — existing parquet column.
+src/nba_props_model/schedule/game_start_times.py:361:        from_pred = _from_predictions(predictions_df, self.repo_root)
+src/nba_props_model/schedule/game_start_times.py:391:            "predictions_present": predictions_df is not None,
+src/nba_props_model/schedule/game_start_times.py:392:            "predictions_rows": int(len(predictions_df)) if predictions_df is not None else 0,
+src/nba_props_model/schedule/game_start_times.py:393:            "predictions_unique_games": (
+src/nba_props_model/schedule/game_start_times.py:394:                int(predictions_df["game_id"].astype(str).nunique())
+src/nba_props_model/schedule/game_start_times.py:395:                if predictions_df is not None and "game_id" in predictions_df.columns
+src/nba_props_model/schedule/game_start_times.py:398:            "from_predictions_count": len(from_pred),
+src/nba_props_model/schedule/game_start_times.py:402:            "odds_api_key_present": bool(self.odds_api_key),
+src/nba_props_model/schedule/game_start_times.py:403:            "bdl_api_key_present": bool(self.bdl_api_key),
+src/nba_props_model/schedule/game_start_times.py:404:            "pmf_display_matchups_parsed": len(matchups_from_pmf) // 2,
+src/nba_props_model/schedule/game_start_times.py:407:        if predictions_df is None or "game_id" not in predictions_df.columns:
+src/nba_props_model/schedule/game_start_times.py:409:                "predictions/all_props_<date>.parquet missing or has no game_id"
+src/nba_props_model/schedule/game_start_times.py:413:        # Iterate over unique games in the predictions parquet.
+src/nba_props_model/schedule/game_start_times.py:414:        for gid, sub in predictions_df.groupby(
+src/nba_props_model/schedule/game_start_times.py:415:            predictions_df["game_id"].astype(str)
+src/nba_props_model/schedule/game_start_times.py:426:            rec = from_pred.get(gid)
+src/nba_props_model/schedule/game_start_times.py:445:                    source_payload_hash=_hash_payload(cand),
+src/nba_props_model/schedule/game_start_times.py:458:                    source_payload_hash=_hash_payload(cand),
+src/nba_props_model/schedule/game_start_times.py:462:            # Source 6: live BDL by game_id (preferred when both
+src/nba_props_model/schedule/game_start_times.py:463:            # systems use BDL ids), else by team-pair.
+src/nba_props_model/schedule/game_start_times.py:465:                bdl_lookup["by_pair"].get(key1) if key1 else None
+src/nba_props_model/schedule/game_start_times.py:474:                    source_payload_hash=_hash_payload(bdl_rec),
+src/nba_props_model/schedule/game_start_times.py:479:            blocker_parts = []
+src/nba_props_model/schedule/game_start_times.py:481:                blocker_parts.append(
+src/nba_props_model/schedule/game_start_times.py:485:                blocker_parts.append(
+src/nba_props_model/schedule/game_start_times.py:490:                blocker_parts.append(
+src/nba_props_model/schedule/game_start_times.py:500:                resolution_blocker=("; ".join(blocker_parts)
+src/nba_props_model/schedule/__init__.py:4:existing predictions metadata → cached Odds API events → live Odds API
+src/nba_props_model/derek/snapshot_state.py:1:"""Phase 13Z — shared snapshot state machine for Derek dispatcher /
+src/nba_props_model/derek/snapshot_state.py:7:    EXISTS              snapshot_manifest.json present and valid
+src/nba_props_model/derek/snapshot_state.py:14:    INVALID_NO_START    game_start_time is missing/unparseable
+src/nba_props_model/derek/snapshot_state.py:23:from pathlib import Path
+src/nba_props_model/derek/snapshot_state.py:55:def _parse_iso_to_utc(s) -> Optional[dt.datetime]:
+src/nba_props_model/derek/snapshot_state.py:95:        gs = _parse_iso_to_utc(game_start_time_utc)
+src/nba_props_model/derek/snapshot_state.py:107:            detail="snapshot_manifest.json present",
+src/nba_props_model/derek/snapshot_state.py:109:    gs = _parse_iso_to_utc(game_start_time_utc)
+src/nba_props_model/derek/snapshot_state.py:119:            detail="game_start_time_utc missing or unparseable",
+src/nba_props_model/derek/snapshot_state.py:170:                f"now is past target+{late_tolerance_min}min but "
+src/nba_props_model/derek/snapshot_state.py:184:            "fabricate pre-tip data — write missed_snapshot_manifest.json"
+src/nba_props_model/derek/snapshot_state.py:196:    missed_reason: str = "post_tip_no_pretip_snapshot_was_generated",
+src/nba_props_model/derek/snapshot_state.py:199:    snapshot folder. Never produces fake PMFs. Idempotent."""
+src/nba_props_model/derek/snapshot_state.py:200:    snapshot_dir.mkdir(parents=True, exist_ok=True)
+src/nba_props_model/derek/snapshot_state.py:201:    payload = {
+src/nba_props_model/derek/snapshot_state.py:226:        "no_fake_pretip_snapshot": True,
+src/nba_props_model/derek/snapshot_state.py:227:        "production_fix_applied": True,
+src/nba_props_model/derek/snapshot_state.py:237:        __import__("json").dumps(payload, indent=2, sort_keys=True),
+src/nba_props_model/derek/snapshot_state.py:246:        f"- game_start_time_utc: `{payload['game_start_time_utc']}`",
+src/nba_props_model/derek/snapshot_state.py:247:        f"- snapshot_target_time_utc: `{payload['snapshot_target_time_utc']}`",
+src/nba_props_model/derek/snapshot_state.py:248:        f"- now_utc: `{payload['now_utc']}`",
+src/nba_props_model/derek/snapshot_state.py:254:        "pre-tip snapshot after the fact — pre-tip lineups, injury "
+src/nba_props_model/derek/snapshot_state.py:261:        "- `no_fake_pretip_snapshot: true`",
+src/nba_props_model/derek/snapshot_state.py:262:        "- `production_fix_applied: true`",
+src/nba_props_model/derek/snapshot_state.py:267:    return payload
+src/nba_props_model/derek/team_labels.py:2:sources (predictions parquet, snapshot manifest, pmf_display, etc.).
+src/nba_props_model/derek/team_labels.py:15:from pathlib import Path
+src/nba_props_model/derek/team_labels.py:59:def parse_matchup_string(s: str) -> Optional[dict]:
+src/nba_props_model/derek/team_labels.py:81:      1. ``predictions/all_props_<date>.parquet`` ``game`` column
+src/nba_props_model/derek/team_labels.py:83:      2. ``predictions/pmf_display_<date>.json`` props with matching
+src/nba_props_model/derek/team_labels.py:84:         player_id reverse-mapped through the parquet.
+src/nba_props_model/derek/team_labels.py:91:    # Source 1 — predictions parquet.
+src/nba_props_model/derek/team_labels.py:92:    parquet = repo_root / "predictions" / f"all_props_{delivery_date}.parquet"
+src/nba_props_model/derek/team_labels.py:93:    if parquet.exists():
+src/nba_props_model/derek/team_labels.py:95:            import pandas as pd
+src/nba_props_model/derek/team_labels.py:96:            df = pd.read_parquet(parquet, columns=["game_id", "game"])
+src/nba_props_model/derek/team_labels.py:100:                parsed = parse_matchup_string(game_str)
+src/nba_props_model/derek/team_labels.py:101:                if parsed:
+src/nba_props_model/derek/team_labels.py:102:                    return parsed
+src/nba_props_model/derek/team_labels.py:104:            pass
+src/nba_props_model/derek/team_labels.py:115:                parsed = parse_matchup_string(game_str)
+src/nba_props_model/derek/team_labels.py:116:                if parsed:
+src/nba_props_model/derek/team_labels.py:117:                    return parsed
+src/nba_props_model/derek/team_labels.py:119:            pass
+Binary file src/nba_props_model/derek/__pycache__/snapshot_state.cpython-311.pyc matches
+Binary file src/nba_props_model/derek/__pycache__/__init__.cpython-311.pyc matches
+src/nba_props_model/paths.py:1:"""Canonical filesystem paths for the NBA Props Model.
+src/nba_props_model/paths.py:3:Every module imports from here so repo-relative paths stay consistent whether
+src/nba_props_model/paths.py:6:from pathlib import Path
+src/nba_props_model/paths.py:8:REPO_ROOT = Path(__file__).resolve().parents[2]
+src/nba_props_model/paths.py:14:PRED_DIR      = REPO_ROOT / "predictions"
+src/nba_props_model/paths.py:17:    _d.mkdir(parents=True, exist_ok=True)
+src/nba_props_model/targets/__init__.py:8:  - src/nba_props_model/training_automation.py (SUPPORTED_STATS, full 7-stat)
+src/nba_props_model/targets/__init__.py:9:  - src/nba_props_model/correlation/sgp_engine.py (COMBO_STATS, COMBO_COMPONENTS — full 5-combo)
+src/nba_props_model/targets/__init__.py:10:  - src/nba_props_model/features/engineering.py  (COMBO_STATS duplicate of sgp_engine)
+src/nba_props_model/targets/__init__.py:11:  - src/nba_props_model/models/combos.py         (COMBO_COMPONENTS — partial: 4 combos, missing "stocks")
+src/nba_props_model/targets/__init__.py:12:  - src/nba_props_model/pipelines/pmf_predict.py (COMBO_STATS derived from combos.py — also partial)
+src/nba_props_model/targets/__init__.py:13:remain in place unchanged. New code SHOULD prefer importing from this
+src/nba_props_model/targets/__init__.py:18:    (e.g., "pra", "stocks").
+src/nba_props_model/targets/__init__.py:20:    spec (e.g., "pts_reb_ast", "stl_blk").
+src/nba_props_model/targets/__init__.py:26:    (missing only "stocks"); for shared keys the values match
+src/nba_props_model/targets/__init__.py:64:    "pra",     # pts + reb + ast
+src/nba_props_model/targets/__init__.py:65:    "pr",      # pts + reb
+src/nba_props_model/targets/__init__.py:66:    "pa",      # pts + ast
+src/nba_props_model/targets/__init__.py:67:    "ra",      # reb + ast
+src/nba_props_model/targets/__init__.py:68:    "stocks",  # stl + blk
+src/nba_props_model/targets/__init__.py:72:    "pra":    ("pts", "reb", "ast"),
+src/nba_props_model/targets/__init__.py:73:    "pr":     ("pts", "reb"),
+src/nba_props_model/targets/__init__.py:74:    "pa":     ("pts", "ast"),
+src/nba_props_model/targets/__init__.py:75:    "ra":     ("reb", "ast"),
+src/nba_props_model/targets/__init__.py:76:    "stocks": ("stl", "blk"),
+src/nba_props_model/targets/__init__.py:82:    "pra":    "pts_reb_ast",
+src/nba_props_model/targets/__init__.py:83:    "pr":     "pts_reb",
+src/nba_props_model/targets/__init__.py:84:    "pa":     "pts_ast",
+src/nba_props_model/targets/__init__.py:85:    "ra":     "reb_ast",
+src/nba_props_model/targets/__init__.py:86:    "stocks": "stl_blk",
+src/nba_props_model/targets/__init__.py:90:# ── Mission-required subset (per master prompt: 7 base + 4 combo = 11) ──
+src/nba_props_model/targets/__init__.py:91:# The master prompt's ALL_TARGET_STATS does NOT include reb_ast/ra. The
+src/nba_props_model/targets/__init__.py:92:# registry exposes ra/reb_ast for codebase compatibility but flags the
+src/nba_props_model/targets/__init__.py:97:    "stocks", "pa", "pr", "pra",
+src/nba_props_model/targets/__init__.py:100:    "stl_blk", "pts_ast", "pts_reb", "pts_reb_ast",
+src/nba_props_model/targets/__init__.py:102:MISSION_REQUIRED_TARGETS_CANONICAL: tuple[str, ...] = (
+src/nba_props_model/targets/__init__.py:109:# ── Full codebase target universe (12 = 7 base + 5 combo, includes "ra") ─
+src/nba_props_model/targets/__init__.py:126:    >>> canonical("pra")
+src/nba_props_model/targets/__init__.py:127:    'pra'
+src/nba_props_model/targets/__init__.py:128:    >>> canonical("pts_reb_ast")
+src/nba_props_model/targets/__init__.py:129:    'pra'
+src/nba_props_model/targets/__init__.py:131:    'stocks'
+src/nba_props_model/targets/__init__.py:145:    >>> mission_name("pra")
+src/nba_props_model/targets/__init__.py:146:    'pts_reb_ast'
+src/nba_props_model/targets/__init__.py:147:    >>> mission_name("pts_reb_ast")
+src/nba_props_model/targets/__init__.py:148:    'pts_reb_ast'
+src/nba_props_model/targets/__init__.py:149:    >>> mission_name("stocks")
+src/nba_props_model/targets/__init__.py:204:        from nba_props_model.targets import _self_test
+src/nba_props_model/targets/__init__.py:207:    This module is a package without __main__.py, so `python -m
+src/nba_props_model/targets/__init__.py:208:    nba_props_model.targets` does NOT work. Call _self_test() via import.
+src/nba_props_model/targets/__init__.py:241:    assert len(MISSION_REQUIRED_TARGETS_CANONICAL) == 11
+src/nba_props_model/targets/__init__.py:248:    # PMF subsets partition base stats
+src/nba_props_model/targets/__init__.py:250:    # Mission-required combos = full combos minus "ra"
+src/nba_props_model/targets/__init__.py:251:    assert set(MISSION_REQUIRED_COMBOS_CANONICAL) == set(COMBO_STATS_CANONICAL) - {"ra"}
+src/nba_props_model/targets/__init__.py:255:    assert normalize(("pts_reb_ast", "stl_blk", "pts")) == ("pra", "stocks", "pts")
+src/nba_props_model/targets/__init__.py:257:    assert normalize(("pra", "totally_fake_stat", "stl_blk")) == ("pra", "stocks")
+src/nba_props_model/targets/__init__.py:259:    print("nba_props_model.targets self-test PASS")
+src/nba_props_model/targets/__init__.py:260:    print(f"  BASE_STATS_FULL ({len(BASE_STATS_FULL)}): {BASE_STATS_FULL}")
+src/nba_props_model/targets/__init__.py:261:    print(f"  COMBO_STATS_CANONICAL ({len(COMBO_STATS_CANONICAL)}): {COMBO_STATS_CANONICAL}")
+src/nba_props_model/targets/__init__.py:262:    print(f"  ALL_TARGETS_CANONICAL ({len(ALL_TARGETS_CANONICAL)}): {ALL_TARGETS_CANONICAL}")
+src/nba_props_model/targets/__init__.py:263:    print(f"  ALL_TARGETS_MISSION   ({len(ALL_TARGETS_MISSION)}): {ALL_TARGETS_MISSION}")
+src/nba_props_model/targets/__init__.py:264:    print(f"  MISSION_REQUIRED_TARGETS_CANONICAL ({len(MISSION_REQUIRED_TARGETS_CANONICAL)}): {MISSION_REQUIRED_TARGETS_CANONICAL}")
+src/nba_props_model/targets/__init__.py:265:    print(f"  MISSION_REQUIRED_TARGETS_MISSION   ({len(MISSION_REQUIRED_TARGETS_MISSION)}): {MISSION_REQUIRED_TARGETS_MISSION}")
+Binary file src/nba_props_model/targets/__pycache__/__init__.cpython-311.pyc matches
+Binary file src/nba_props_model/targets/__pycache__/__init__.cpython-310.pyc matches
+src/nba_props_model/_legacy_aliases.py:3:Pickles serialize fully-qualified class paths. Before the repo was
+src/nba_props_model/_legacy_aliases.py:4:reorganized into src/nba_props_model/, classes lived at flat module paths
+src/nba_props_model/_legacy_aliases.py:16:    "bdl_client":             "nba_props_model.data.bdl_client",
+src/nba_props_model/_legacy_aliases.py:17:    "feature_engineering":    "nba_props_model.features.engineering",
+src/nba_props_model/_legacy_aliases.py:18:    "retrospective_features": "nba_props_model.features.retrospective",
+src/nba_props_model/_legacy_aliases.py:19:    "minutes_model":          "nba_props_model.models.minutes",
+src/nba_props_model/_legacy_aliases.py:20:    "fg3m_hurdle":            "nba_props_model.models.fg3m_hurdle",
+src/nba_props_model/_legacy_aliases.py:21:    "calibrate_stat_side":    "nba_props_model.calibration.stat_side_platt",
+src/nba_props_model/_legacy_aliases.py:22:    "residual_centering":     "nba_props_model.calibration.residual_centering",
+src/nba_props_model/_legacy_aliases.py:23:    "correlation_engine":     "nba_props_model.correlation.sgp_engine",
+src/nba_props_model/_legacy_aliases.py:34:            pass
+src/nba_props_model/calibration/residual_centering.py:6:predicted from meta-features (raw q50, expected minutes, role stability,
+src/nba_props_model/calibration/residual_centering.py:18:    python -m nba_props_model.calibration.residual_centering --train
+src/nba_props_model/calibration/residual_centering.py:21:    from nba_props_model.calibration.residual_centering import load_centerer
+src/nba_props_model/calibration/residual_centering.py:23:    q_preds = centerer.correct_quantiles(target, q_preds, base_features)
+src/nba_props_model/calibration/residual_centering.py:32:from pathlib import Path
+src/nba_props_model/calibration/residual_centering.py:39:from sklearn.preprocessing import StandardScaler
+src/nba_props_model/calibration/residual_centering.py:45:from nba_props_model.paths import GRADED_DIR, MODEL_DIR
+src/nba_props_model/calibration/residual_centering.py:91:        # Issue 21 fix: proportional cap (10% of raw_q50) instead of symmetric absolute
+src/nba_props_model/calibration/residual_centering.py:100:                correction = float(self.models[stat].predict(X_scaled)[0])
+src/nba_props_model/calibration/residual_centering.py:112:    def correct_quantiles(self, stat: str, q_preds: dict, meta_features: dict) -> dict:
+src/nba_props_model/calibration/residual_centering.py:120:            return q_preds
+src/nba_props_model/calibration/residual_centering.py:125:            raw_q = float(q_preds.get(q, q_preds.get(0.50, 0)))
+src/nba_props_model/calibration/residual_centering.py:131:        for q, v in q_preds.items():
+src/nba_props_model/calibration/residual_centering.py:152:        Target: actual - q50 (projection error)
+src/nba_props_model/calibration/residual_centering.py:154:        Sparse-data policy: if a stat has fewer than LEARN_MIN rows, fall back
+src/nba_props_model/calibration/residual_centering.py:158:        No WARNING is emitted — sparse handling is normal operating behavior.
+src/nba_props_model/calibration/residual_centering.py:164:        # Global prior for shrinkage — median residual across ALL correctable
+src/nba_props_model/calibration/residual_centering.py:282:        meta_path = model_dir / "residual_centering_meta.json"
+src/nba_props_model/calibration/residual_centering.py:283:        if meta_path.exists():
+src/nba_props_model/calibration/residual_centering.py:284:            meta_data = json.loads(meta_path.read_text())
+src/nba_props_model/calibration/residual_centering.py:302:        Build meta-feature vector for residual prediction.
+src/nba_props_model/calibration/residual_centering.py:311:            q50,                                    # raw projection
+src/nba_props_model/calibration/residual_centering.py:312:            q50 ** 0.5,                             # sqrt projection (nonlinearity)
+src/nba_props_model/calibration/residual_centering.py:321:            g("team_pace",        99.0),             # team pace
+src/nba_props_model/calibration/residual_centering.py:337:                            "clv":    float(r.get("clv_proxy") or 0),
+src/nba_props_model/calibration/residual_centering.py:353:# Integration helper for the prediction pipeline
+src/nba_props_model/calibration/residual_centering.py:366:    import argparse
+src/nba_props_model/calibration/residual_centering.py:367:    parser = argparse.ArgumentParser()
+src/nba_props_model/calibration/residual_centering.py:368:    parser.add_argument("--train", action="store_true", help="Train residual centerers")
+src/nba_props_model/calibration/residual_centering.py:369:    parser.add_argument("--evaluate", action="store_true", help="Evaluate on holdout")
+src/nba_props_model/calibration/residual_centering.py:370:    parser.add_argument("--graded-dir", default=str(GRADED_DIR))
+src/nba_props_model/calibration/residual_centering.py:371:    args = parser.parse_args()
+src/nba_props_model/calibration/residual_centering.py:378:        print("\n" + "="*60)
+src/nba_props_model/calibration/residual_centering.py:379:        print("RESIDUAL CENTERING TRAINING RESULTS")
+src/nba_props_model/calibration/residual_centering.py:380:        print("="*60)
+src/nba_props_model/calibration/residual_centering.py:382:            print(f"\n{stat.upper()}:")
+src/nba_props_model/calibration/residual_centering.py:383:            print(f"  n={m['n']}  model={m['model_type']}")
+src/nba_props_model/calibration/residual_centering.py:384:            print(f"  cv_MAE={m['cv_mae_mean']:.3f}±{m['cv_mae_std']:.3f}")
+src/nba_props_model/calibration/residual_centering.py:385:            print(f"  median_residual={m['target_median']:+.3f}")
+src/nba_props_model/calibration/residual_centering.py:386:            print(f"  fallback_correction={m['fallback_correction']:+.3f}")
+src/nba_props_model/calibration/residual_centering.py:387:        print(f"\nSaved to {MODEL_DIR}/")
+src/nba_props_model/calibration/residual_centering.py:391:        print("Loaded centerers:", list(centerer.models.keys()))
+src/nba_props_model/calibration/residual_centering.py:392:        print("Fallbacks:", centerer.fallback)
+src/nba_props_model/calibration/residual_centering.py:398:            print(f"  {stat}: raw={raw_q50}  corrected={corrected:.2f}  shift={corrected-raw_q50:+.2f}")
+src/nba_props_model/calibration/residual_centering.py:400:        parser.print_help()
+src/nba_props_model/calibration/role_buckets.py:4:based on the predicted minutes distribution. Used by:
+src/nba_props_model/calibration/role_buckets.py:11:  - Live prediction at inference time
+src/nba_props_model/calibration/role_buckets.py:13:Role buckets are derived ONLY from the predicted minutes distribution.
+src/nba_props_model/calibration/role_buckets.py:33:    Uses only the predicted minutes distribution (mean, q25, p_inactive),
+src/nba_props_model/calibration/role_buckets.py:36:    Bucket definitions (predicted-minutes mean μ):
+src/nba_props_model/calibration/role_buckets.py:37:      inactive_risk  P(inactive) >= 0.12 OR predicted q25 <= 3.0
+src/nba_props_model/calibration/role_buckets.py:53:        p_inactive = float(minutes_dist.state_probs[0])
+src/nba_props_model/calibration/role_buckets.py:74:    Returns the role bucket plus the predicted minutes summary statistics
+src/nba_props_model/calibration/role_buckets.py:78:    All values are derived from the predicted minutes distribution.
+src/nba_props_model/calibration/role_buckets.py:81:    The state_probs extraction uses defensive indexing so this module
+src/nba_props_model/calibration/role_buckets.py:82:    remains compatible if the minutes-model state space later expands
+src/nba_props_model/calibration/role_buckets.py:86:        state_probs = list(minutes_dist.state_probs)
+src/nba_props_model/calibration/role_buckets.py:87:        p0 = float(state_probs[0]) if len(state_probs) > 0 else 0.0
+src/nba_props_model/calibration/role_buckets.py:88:        p_limited = float(state_probs[1]) if len(state_probs) > 1 else 0.0
+src/nba_props_model/calibration/role_buckets.py:89:        p_normal = float(state_probs[2]) if len(state_probs) > 2 else 1.0
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:7:from pathlib import Path
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:30:        pass
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:34:def repair_and_validate_pmf(pmf: Any, *, eps: float = 1e-12) -> np.ndarray:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:59:    pmf = repair_and_validate_pmf(pmf)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:87:    return repair_and_validate_pmf(q_best), exact
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:91:    pmf = repair_and_validate_pmf(pmf)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:136:    return repair_and_validate_pmf(q_best), exact
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:140:    pmf = repair_and_validate_pmf(pmf)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:153:    return repair_and_validate_pmf(out), True
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:156:def _extract_pmf(payload: Any) -> np.ndarray:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:157:    if isinstance(payload, np.ndarray):
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:158:        return repair_and_validate_pmf(payload)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:159:    if isinstance(payload, (list, tuple)):
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:160:        return repair_and_validate_pmf(payload)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:161:    if isinstance(payload, dict):
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:163:        if "pmf" in payload:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:164:            return _extract_pmf(payload["pmf"])
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:166:        for k, v in sorted(payload.items(), key=lambda kv: int(kv[0]) if str(kv[0]).lstrip("-").isdigit() else str(kv[0])):
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:170:            return repair_and_validate_pmf(vals)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:171:    if isinstance(payload, str):
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:172:        s = payload.strip()
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:176:    raise ValueError(f"unsupported PMF payload type: {type(payload)}")
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:185:    params: dict[str, Any]
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:190:        self.enabled = bool(self.params.get("enabled", self.enabled))
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:191:        self.version = str(self.params.get("version", self.version))
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:192:        self.cells = self.params.get("cells", {}) or {}
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:193:        self.global_params = self.params.get("global", {}) or {}
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:195:    def _params_for(self, stat: str | None, role_bucket: str | None) -> dict[str, Any]:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:201:        g = dict(self.global_params)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:222:        p = self._params_for(stat, role_bucket)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:246:        # Apply p0 after mean for sparse cells.
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:257:        q = repair_and_validate_pmf(q)
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:271:    # Compatibility aliases for prior patches.
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:287:    params: dict[str, Any]
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:292:        self.enabled = bool(self.params.get("event_calibration_enabled", True))
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:293:        self.version = str(self.params.get("version", self.version))
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:294:        self.weights = self.params.get("event_weights", {}) or {}
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:304:    def calibrate_event_probability(
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:309:        raw_model_prob_over: float | None = None,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:310:        model_prob_over: float | None = None,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:311:        market_prob_over_no_vig: float | None = None,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:314:        q = raw_model_prob_over if raw_model_prob_over is not None else model_prob_over
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:316:        m = market_prob_over_no_vig
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:318:            "raw_model_prob_over": q,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:319:            "calibrated_model_prob_over": q,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:320:            "final_model_prob_over": q,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:332:            "market_prob_over_no_vig": m,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:333:            "final_model_prob_over": final,
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:341:def _load_params(model_dir: str | os.PathLike[str] | None = None) -> dict[str, Any]:
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:343:    p = d / "stat_grid_recalibration_params.json"
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:360:    return StatGridDeliveryRecalibrator(_load_params(model_dir))
+src/nba_props_model/calibration/stat_grid_delivery_recalibration.py:364:    return DeliveryEventCalibrator(_load_params(model_dir))
+Binary file src/nba_props_model/calibration/__pycache__/source_pmf_recalibration.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/pmf_calibration.cpython-310.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/pmf_calibration.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/role_buckets.cpython-310.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/role_buckets.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/stat_side_platt.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/stat_side_platt.cpython-310.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/stat_grid_delivery_recalibration.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/residual_centering.cpython-310.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/residual_centering.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/__init__.cpython-311.pyc matches
+Binary file src/nba_props_model/calibration/__pycache__/__init__.cpython-310.pyc matches
+src/nba_props_model/calibration/stat_side_platt.py:9:  4. Promote calibrator only if hard gate passes.
+src/nba_props_model/calibration/stat_side_platt.py:17:will deprecate in favor of full-PMF calibration. Retained during the
+src/nba_props_model/calibration/stat_side_platt.py:23:from pathlib import Path
+src/nba_props_model/calibration/stat_side_platt.py:42:from nba_props_model.paths import GRADED_DIR, MODEL_DIR
+src/nba_props_model/calibration/stat_side_platt.py:59:    Simpler and more stable than CalibratedClassifierCV passthrough.
+src/nba_props_model/calibration/stat_side_platt.py:70:    def fit(self, probs, outcomes):
+src/nba_props_model/calibration/stat_side_platt.py:71:        X = self._logit(probs).reshape(-1, 1)
+src/nba_props_model/calibration/stat_side_platt.py:81:    def predict_proba(self, probs):
+src/nba_props_model/calibration/stat_side_platt.py:84:        X = self._logit(np.array(probs)).reshape(-1, 1)
+src/nba_props_model/calibration/stat_side_platt.py:85:        return self.lr.predict_proba(X)[:, 1]
+src/nba_props_model/calibration/stat_side_platt.py:87:    def predict_proba_2d(self, X):
+src/nba_props_model/calibration/stat_side_platt.py:88:        """sklearn-compatible interface: X is (n,1) raw probs."""
+src/nba_props_model/calibration/stat_side_platt.py:89:        cal = self.predict_proba(X[:, 0])
+src/nba_props_model/calibration/stat_side_platt.py:95:    Isotonic regression calibrator — non-parametric, strictly superior to
+src/nba_props_model/calibration/stat_side_platt.py:96:    Platt scaling when the probability-outcome relationship is non-sigmoid.
+src/nba_props_model/calibration/stat_side_platt.py:104:    def fit(self, probs, outcomes):
+src/nba_props_model/calibration/stat_side_platt.py:105:        probs    = np.clip(np.array(probs, dtype=float), 1e-4, 1 - 1e-4)
+src/nba_props_model/calibration/stat_side_platt.py:109:        self.ir.fit(probs, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:113:    def predict_proba(self, probs):
+src/nba_props_model/calibration/stat_side_platt.py:116:        probs = np.clip(np.array(probs, dtype=float), 1e-4, 1 - 1e-4)
+src/nba_props_model/calibration/stat_side_platt.py:117:        return np.clip(self.ir.predict(probs), 1e-4, 1 - 1e-4)
+src/nba_props_model/calibration/stat_side_platt.py:119:    def predict_proba_2d(self, X):
+src/nba_props_model/calibration/stat_side_platt.py:120:        cal = self.predict_proba(X[:, 0])
+src/nba_props_model/calibration/stat_side_platt.py:124:def _compute_ece(probs, outcomes, n_bins=8):
+src/nba_props_model/calibration/stat_side_platt.py:125:    probs    = np.array(probs)
+src/nba_props_model/calibration/stat_side_platt.py:127:    bins     = np.linspace(0.4, 0.9, n_bins + 1)
+src/nba_props_model/calibration/stat_side_platt.py:130:        mask = (probs >= bins[i]) & (probs < bins[i + 1])
+src/nba_props_model/calibration/stat_side_platt.py:133:        ece += (mask.sum() / len(probs)) * abs(probs[mask].mean() - outcomes[mask].mean())
+src/nba_props_model/calibration/stat_side_platt.py:137:def _calibration_slope(probs, outcomes):
+src/nba_props_model/calibration/stat_side_platt.py:140:    X  = np.clip(probs, 1e-4, 1 - 1e-4)
+src/nba_props_model/calibration/stat_side_platt.py:161:                prob = float(r.get('model_prob') or 0)
+src/nba_props_model/calibration/stat_side_platt.py:162:                if not (0.01 < prob < 0.99):
+src/nba_props_model/calibration/stat_side_platt.py:168:                    'prob':    prob,
+src/nba_props_model/calibration/stat_side_platt.py:172:                pass
+src/nba_props_model/calibration/stat_side_platt.py:178:def oof_evaluate(probs, outcomes, n_splits=5):
+src/nba_props_model/calibration/stat_side_platt.py:180:    TimeSeriesSplit walk-forward: fit on past, predict on future.
+src/nba_props_model/calibration/stat_side_platt.py:181:    Returns oof_probs array aligned with input arrays.
+src/nba_props_model/calibration/stat_side_platt.py:183:    probs    = np.array(probs)
+src/nba_props_model/calibration/stat_side_platt.py:185:    n        = len(probs)
+src/nba_props_model/calibration/stat_side_platt.py:189:    for train_idx, val_idx in tscv.split(probs):
+src/nba_props_model/calibration/stat_side_platt.py:197:            cal.fit(probs[train_idx], y_tr)
+src/nba_props_model/calibration/stat_side_platt.py:198:            oof[val_idx] = cal.predict_proba(probs[val_idx])
+src/nba_props_model/calibration/stat_side_platt.py:200:            pass
+src/nba_props_model/calibration/stat_side_platt.py:207:def compute_metrics(probs_raw, probs_cal, outcomes):
+src/nba_props_model/calibration/stat_side_platt.py:208:    """Compute full metric suite for raw and calibrated probabilities."""
+src/nba_props_model/calibration/stat_side_platt.py:209:    probs_raw = np.array(probs_raw)
+src/nba_props_model/calibration/stat_side_platt.py:218:    slope_raw, int_raw = _calibration_slope(probs_raw, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:220:        'brier_raw':      round(float(brier_score_loss(outcomes, probs_raw)), 5),
+src/nba_props_model/calibration/stat_side_platt.py:221:        'logloss_raw':    round(float(log_loss(outcomes, probs_raw)), 5),
+src/nba_props_model/calibration/stat_side_platt.py:222:        'auc_raw':        round(safe_auc(probs_raw, outcomes), 4),
+src/nba_props_model/calibration/stat_side_platt.py:223:        'ece_raw':        round(_compute_ece(probs_raw, outcomes), 5),
+src/nba_props_model/calibration/stat_side_platt.py:227:    if probs_cal is not None:
+src/nba_props_model/calibration/stat_side_platt.py:228:        probs_cal = np.array(probs_cal)
+src/nba_props_model/calibration/stat_side_platt.py:229:        slope_cal, int_cal = _calibration_slope(probs_cal, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:231:            'brier_cal_oof':    round(float(brier_score_loss(outcomes, probs_cal)), 5),
+src/nba_props_model/calibration/stat_side_platt.py:232:            'logloss_cal_oof':  round(float(log_loss(outcomes, probs_cal)), 5),
+src/nba_props_model/calibration/stat_side_platt.py:233:            'auc_cal_oof':      round(safe_auc(probs_cal, outcomes), 4),
+src/nba_props_model/calibration/stat_side_platt.py:234:            'ece_cal_oof':      round(_compute_ece(probs_cal, outcomes), 5),
+src/nba_props_model/calibration/stat_side_platt.py:242:def check_promotion(metrics, n_total, n_oof):
+src/nba_props_model/calibration/stat_side_platt.py:286:            probs    = np.array([r['prob']    for r in subset])
+src/nba_props_model/calibration/stat_side_platt.py:290:            oof_probs, valid = oof_evaluate(probs, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:295:                # Must filter probs_raw to same indices as oof_probs to avoid length mismatch
+src/nba_props_model/calibration/stat_side_platt.py:296:                metrics = compute_metrics(probs[valid], oof_probs[valid], outcomes[valid])
+src/nba_props_model/calibration/stat_side_platt.py:298:                metrics = compute_metrics(probs, None, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:304:            promoted, reasons = check_promotion(metrics, n_total, n_oof)
+src/nba_props_model/calibration/stat_side_platt.py:307:            # non-parametric, so slope/intercept come from regressing the
+src/nba_props_model/calibration/stat_side_platt.py:308:            # calibrated probabilities against outcomes (NOT from non-existent
+src/nba_props_model/calibration/stat_side_platt.py:310:            # leftover and produced an AttributeError warning on every run).
+src/nba_props_model/calibration/stat_side_platt.py:313:                final_cal.fit(probs, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:314:                cal_probs = final_cal.predict_proba(probs)
+src/nba_props_model/calibration/stat_side_platt.py:315:                slope_final, intercept_final = _calibration_slope(cal_probs, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:320:                promoted = False
+src/nba_props_model/calibration/stat_side_platt.py:323:            gate_str = "✓ PROMOTED" if promoted else f"✗ NOT PROMOTED ({'; '.join(reasons)})"
+src/nba_props_model/calibration/stat_side_platt.py:331:            if promoted:
+src/nba_props_model/calibration/stat_side_platt.py:332:                path = MODEL_DIR / f"platt_{key}.pkl"
+src/nba_props_model/calibration/stat_side_platt.py:333:                joblib.dump(final_cal, path)
+src/nba_props_model/calibration/stat_side_platt.py:342:                'promoted':       promoted,
+src/nba_props_model/calibration/stat_side_platt.py:343:                'promotion_reasons': reasons if not promoted else [],
+src/nba_props_model/calibration/stat_side_platt.py:350:                'promoted': promoted,
+src/nba_props_model/calibration/stat_side_platt.py:355:    # Subject global side calibrators to the same promotion gate as stat×side.
+src/nba_props_model/calibration/stat_side_platt.py:357:    # calibrator is NOT written to the production MODEL_DIR — it is saved
+src/nba_props_model/calibration/stat_side_platt.py:358:    # to a diagnostics subdirectory so predict.py never loads it. Also
+src/nba_props_model/calibration/stat_side_platt.py:359:    # remove any stale production artifact from a previous promoted run.
+src/nba_props_model/calibration/stat_side_platt.py:361:    diagnostics_dir.mkdir(parents=True, exist_ok=True)
+src/nba_props_model/calibration/stat_side_platt.py:368:        probs    = np.array([r['prob']    for r in subset])
+src/nba_props_model/calibration/stat_side_platt.py:371:        if len(probs) < 7:  # need at least n_splits+1 samples
+src/nba_props_model/calibration/stat_side_platt.py:374:        oof_probs, valid = oof_evaluate(probs, outcomes, n_splits=5)
+src/nba_props_model/calibration/stat_side_platt.py:377:            metrics = compute_metrics(probs[valid], oof_probs[valid], outcomes[valid])
+src/nba_props_model/calibration/stat_side_platt.py:379:            metrics = compute_metrics(probs, None, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:384:        final_cal.fit(probs, outcomes)
+src/nba_props_model/calibration/stat_side_platt.py:386:        # Gate: production load ONLY when OOF Brier improves AND log-loss
+src/nba_props_model/calibration/stat_side_platt.py:388:        prod_path = MODEL_DIR / f"platt_{side}.pkl"
+src/nba_props_model/calibration/stat_side_platt.py:389:        diag_path = diagnostics_dir / f"platt_{side}.pkl"
+src/nba_props_model/calibration/stat_side_platt.py:391:        brier_improves = (
+src/nba_props_model/calibration/stat_side_platt.py:399:        if not brier_improves:
+src/nba_props_model/calibration/stat_side_platt.py:409:        promoted = len(gate_reasons) == 0
+src/nba_props_model/calibration/stat_side_platt.py:411:        if promoted:
+src/nba_props_model/calibration/stat_side_platt.py:412:            joblib.dump(final_cal, prod_path)
+src/nba_props_model/calibration/stat_side_platt.py:419:            if diag_path.exists():
+src/nba_props_model/calibration/stat_side_platt.py:421:                    diag_path.unlink()
+src/nba_props_model/calibration/stat_side_platt.py:423:                    pass
+src/nba_props_model/calibration/stat_side_platt.py:425:            joblib.dump(final_cal, diag_path)
+src/nba_props_model/calibration/stat_side_platt.py:426:            # Remove any stale production artifact so predict.py never
+src/nba_props_model/calibration/stat_side_platt.py:427:            # picks up a worsening calibrator from a prior promoted run.
+src/nba_props_model/calibration/stat_side_platt.py:428:            if prod_path.exists():
+src/nba_props_model/calibration/stat_side_platt.py:430:                    prod_path.unlink()
+src/nba_props_model/calibration/stat_side_platt.py:432:                    pass
+src/nba_props_model/calibration/stat_side_platt.py:439:        manifest[key] = {'key': key, 'scope': 'global', 'promoted': promoted,
+src/nba_props_model/calibration/stat_side_platt.py:440:                         'promotion_reasons': gate_reasons if not promoted else [],
+src/nba_props_model/calibration/stat_side_platt.py:442:        report_rows.append({'key': key, 'scope': 'global', 'promoted': promoted,
+src/nba_props_model/calibration/stat_side_platt.py:456:    manifest_path = MODEL_DIR / 'calibration_manifest.json'
+src/nba_props_model/calibration/stat_side_platt.py:457:    manifest_path.write_text(json.dumps(manifest, indent=2))
+src/nba_props_model/calibration/stat_side_platt.py:458:    logger.info(f"\nSaved calibration_manifest.json → {manifest_path}")
+src/nba_props_model/calibration/stat_side_platt.py:460:    report_path = MODEL_DIR / 'calibration_report_oof.csv'
+src/nba_props_model/calibration/stat_side_platt.py:463:        with open(report_path, 'w', newline='') as f:
+src/nba_props_model/calibration/stat_side_platt.py:468:    logger.info(f"Saved calibration_report_oof.csv → {report_path}")
+src/nba_props_model/calibration/stat_side_platt.py:471:    promoted_keys = [k for k,v in manifest.items()
+src/nba_props_model/calibration/stat_side_platt.py:472:                     if k != '_meta' and v.get('promoted') and v.get('scope') == 'stat_side']
+src/nba_props_model/calibration/stat_side_platt.py:474:                     if k != '_meta' and not v.get('promoted') and v.get('scope') == 'stat_side']
+src/nba_props_model/calibration/stat_side_platt.py:476:    print("\n" + "="*60)
+src/nba_props_model/calibration/stat_side_platt.py:477:    print("CALIBRATION REBUILD COMPLETE")
+src/nba_props_model/calibration/stat_side_platt.py:478:    print("="*60)
+src/nba_props_model/calibration/stat_side_platt.py:479:    print(f"  Promoted stat×side: {len(promoted_keys)}")
+src/nba_props_model/calibration/stat_side_platt.py:480:    for k in promoted_keys:
+src/nba_props_model/calibration/stat_side_platt.py:482:        print(f"    ✓ {k:<15} Brier {m.get('brier_raw',0):.4f}→{m.get('brier_cal_oof',0):.4f}")
+src/nba_props_model/calibration/stat_side_platt.py:483:    print(f"\n  Not promoted (falling back to global): {len(skipped_keys)}")
+src/nba_props_model/calibration/stat_side_platt.py:485:        reasons = manifest[k].get('promotion_reasons', [])
+src/nba_props_model/calibration/stat_side_platt.py:486:        print(f"    ✗ {k:<15} {'; '.join(reasons)}")
+src/nba_props_model/calibration/stat_side_platt.py:487:    print(f"\n  Global fallbacks saved: platt_OVER.pkl, platt_UNDER.pkl")
+src/nba_props_model/calibration/stat_side_platt.py:488:    print(f"  Manifest: {manifest_path}")
+src/nba_props_model/calibration/stat_side_platt.py:489:    print(f"  Report:   {report_path}")
+src/nba_props_model/calibration/pmf_calibration.py:5:with a proper CDF calibration trained walk-forward on the full evaluated
+src/nba_props_model/calibration/pmf_calibration.py:6:universe. The calibrator is monotone-preserving and per-stat.
+src/nba_props_model/calibration/pmf_calibration.py:11:        predicted CDF values F_pred(y) in [0, 1]
+src/nba_props_model/calibration/pmf_calibration.py:13:is the "universal" property of a correctly-specified continuous CDF:
+src/nba_props_model/calibration/pmf_calibration.py:16:    u = F_pred(y - 1) + U * p(y), with U ~ Uniform(0, 1),
+src/nba_props_model/calibration/pmf_calibration.py:18:isotonic map g: u -> q such that the transformed CDF g(F_pred(y)) is
+src/nba_props_model/calibration/pmf_calibration.py:22:prior data and evaluates on a 28-day window; the per-stat g is fit on
+src/nba_props_model/calibration/pmf_calibration.py:23:the union of out-of-fold (u, q) pairs.
+src/nba_props_model/calibration/pmf_calibration.py:33:CDF, applies g monotone-preservingly to every CDF knot, and then
+src/nba_props_model/calibration/pmf_calibration.py:42:from pathlib import Path
+src/nba_props_model/calibration/pmf_calibration.py:47:import pandas as pd
+src/nba_props_model/calibration/pmf_calibration.py:50:from nba_props_model.paths import MODEL_DIR
+src/nba_props_model/calibration/pmf_calibration.py:69:    # Phase 14 promotion: monotone_inactive_global_v1
+src/nba_props_model/calibration/pmf_calibration.py:71:    # bucket signal where A/B paired-row evidence proved it safe.
+src/nba_props_model/calibration/pmf_calibration.py:81:    # Phase 14 promotion: monotone_inactive_global_v1
+src/nba_props_model/calibration/pmf_calibration.py:93:# calibrators in the pickle are intentionally bypassed for these buckets,
+src/nba_props_model/calibration/pmf_calibration.py:94:# regardless of bucket sample size. Per Phase 14 paired A/B: inactive_risk
+src/nba_props_model/calibration/pmf_calibration.py:114:    Fitted by `fit_calibrator` on (u, q) pairs. Applied via `apply` to
+src/nba_props_model/calibration/pmf_calibration.py:120:    fold_spans: list[tuple[str, str]]
+src/nba_props_model/calibration/pmf_calibration.py:169:        return _repair_basketball_tail_shape(raw, calibrated, self.stat)
+src/nba_props_model/calibration/pmf_calibration.py:172:def _repair_basketball_tail_shape(raw: np.ndarray, cal: np.ndarray, stat: str) -> np.ndarray:
+src/nba_props_model/calibration/pmf_calibration.py:204:        "stocks": 8,
+src/nba_props_model/calibration/pmf_calibration.py:215:        "stocks": 2e-4,
+src/nba_props_model/calibration/pmf_calibration.py:277:    shrinkage on bucket sample size. Backward compatible: apply() with
+src/nba_props_model/calibration/pmf_calibration.py:369:    """Yield (train_mask, val_mask) pairs across monotone date windows."""
+src/nba_props_model/calibration/pmf_calibration.py:401:    bucket-level calibrators that should not produce per-fit artifacts.
+src/nba_props_model/calibration/pmf_calibration.py:418:    spans: list[tuple[str, str]] = []
+src/nba_props_model/calibration/pmf_calibration.py:426:        spans.append((
+src/nba_props_model/calibration/pmf_calibration.py:462:        fold_spans=spans,
+src/nba_props_model/calibration/pmf_calibration.py:477:    `_fit_calibrator_no_save` that preserves the historical
+src/nba_props_model/calibration/pmf_calibration.py:503:    NOT saved as separate artifacts.
+src/nba_props_model/calibration/pmf_calibration.py:554:    """Load the role-aware bundle for `stat` if present; otherwise fall
+src/nba_props_model/calibration/pmf_calibration.py:631:                "fold_spans": cal.global_calibrator.fold_spans,
+src/nba_props_model/calibration/pmf_calibration.py:657:                "fold_spans": cal.fold_spans,
+src/nba_props_model/contextual/__init__.py:13:``phase13q_<stat>_adjustment_features.pkl``. Every PMF-estimating path
+Binary file src/nba_props_model/contextual/__pycache__/score.cpython-311.pyc matches
+Binary file src/nba_props_model/contextual/__pycache__/__init__.cpython-311.pyc matches
+src/nba_props_model/contextual/score.py:33:from pathlib import Path
+src/nba_props_model/contextual/score.py:77:    """Project a (potentially noisy) per-player prediction row into the
+src/nba_props_model/contextual/score.py:84:    row, we write 0.0 for ``starter_proxy_lagged`` only when no lagged
+src/nba_props_model/contextual/score.py:85:    minutes are present; otherwise we use the lagged proxy value.
+src/nba_props_model/contextual/score.py:100:        elif c == "is_probable":
+src/nba_props_model/contextual/score.py:101:            out.append(_safe_bool(row.get("is_probable")))
+src/nba_props_model/contextual/score.py:130:        elif c == "starter_proxy_lagged":
+src/nba_props_model/contextual/score.py:131:            # Use the lagged proxy when present; otherwise infer from
+src/nba_props_model/contextual/score.py:133:            # row carries a confirmed_starter signal we DO NOT promote
+src/nba_props_model/contextual/score.py:134:            # it into starter_proxy_lagged — the trained model wasn't
+src/nba_props_model/contextual/score.py:136:            # separately on the snapshot for downstream consumers.
+src/nba_props_model/contextual/score.py:137:            v = row.get("starter_proxy_lagged")
+src/nba_props_model/contextual/score.py:187:        of deltas. Missing models produce no entry."""
+src/nba_props_model/contextual/score.py:197:                delta = float(model.predict(np.array([vec], dtype=float))[0])
+src/nba_props_model/contextual/score.py:217:            "model_manifest_promoted_at_utc": self.model_manifest.get("promoted_at_utc"),
+src/nba_props_model/contextual/score.py:224:    payload = "|".join(sorted(cols))
+src/nba_props_model/contextual/score.py:225:    return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+src/nba_props_model/contextual/score.py:229:                            *, prefix: str | None = None,
+src/nba_props_model/contextual/score.py:240:    When ``prefix`` is None (default) the loader autodetects.
+src/nba_props_model/contextual/score.py:245:    train_manifest_path = challenger_dir / "train_manifest.json"
+src/nba_props_model/contextual/score.py:246:    model_manifest_path = challenger_dir / "model_manifest.json"
+src/nba_props_model/contextual/score.py:247:    if not train_manifest_path.exists():
+src/nba_props_model/contextual/score.py:248:        raise FileNotFoundError(f"missing {train_manifest_path}")
+src/nba_props_model/contextual/score.py:249:    train_manifest = json.loads(train_manifest_path.read_text(encoding="utf-8"))
+src/nba_props_model/contextual/score.py:253:    if model_manifest_path.exists():
+src/nba_props_model/contextual/score.py:255:            model_manifest = json.loads(model_manifest_path.read_text(encoding="utf-8"))
+src/nba_props_model/contextual/score.py:265:    if prefix is not None:
+src/nba_props_model/contextual/score.py:267:            layout for layout in candidate_layouts if layout[0] == prefix
+src/nba_props_model/contextual/score.py:275:    for layout_prefix, feat_template, model_template in candidate_layouts:
+src/nba_props_model/contextual/score.py:278:            layout_used = layout_prefix
+src/nba_props_model/contextual/score.py:289:                        f"failed to load {layout_prefix}_{stat} artifacts: {exc}"
+src/nba_props_model/contextual/score.py:318:    references. Returns ``(path_or_none, reason)``.
+src/nba_props_model/contextual/score.py:324:        pointer_path = (
+src/nba_props_model/contextual/score.py:328:        if not pointer_path.exists():
+src/nba_props_model/contextual/score.py:331:            champion_pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+src/nba_props_model/contextual/score.py:333:            return None, f"cannot parse champion_pointer.json: {exc}"
+src/nba_props_model/contextual/score.py:345:    # take priority so once they exist we exercise the most recent
+src/nba_props_model/contextual/score.py:348:    # contextual when the active champion has not yet been promoted.
+src/nba_props_model/contextual/score.py:363:    contextual_fs_prefixes = ("phase13q_", "phase13r_", "phase13s_")
+src/nba_props_model/contextual/score.py:364:    is_contextual_pointer = fs_id.startswith(contextual_fs_prefixes)
+src/nba_props_model/contextual/score.py:366:    # Pick the best candidate. Phase 13S direct-lineup wins when present.
+src/nba_props_model/contextual/score.py:376:                f"contextual artifacts present at {chosen.name} but "
+src/nba_props_model/contextual/score.py:378:                "contextual feature set — promote the contextual challenger "
+src/nba_props_model/contextual/score.py:379:                "before claiming contextual_pmf_engine in production"
+src/nba_props_model/correlation/sgp_engine.py:6:    resid_S = actual_S - pred_Q50_S
+src/nba_props_model/correlation/sgp_engine.py:7:    scale_S = max(pred_Q75_S - pred_Q25_S, 0.5)
+src/nba_props_model/correlation/sgp_engine.py:13:  - Bounded leg-space: within-player (8 stats) + between-teammate (fixed pairs)
+src/nba_props_model/correlation/sgp_engine.py:14:  - Gaussian copula simulation (50k samples) for joint probability
+src/nba_props_model/correlation/sgp_engine.py:22:from pathlib import Path
+src/nba_props_model/correlation/sgp_engine.py:25:import pandas as pd
+src/nba_props_model/correlation/sgp_engine.py:34:COMBO_STATS  = ["pra", "pr", "pa", "ra", "stocks"]
+src/nba_props_model/correlation/sgp_engine.py:39:# Shrinkage hyperparameter k: higher = more shrinkage toward global
+src/nba_props_model/correlation/sgp_engine.py:46:# Between-teammate fixed stat pairs to model
+src/nba_props_model/correlation/sgp_engine.py:51:    ("blk", "blk"),    # rim protector competition (negative)
+src/nba_props_model/correlation/sgp_engine.py:60:def enforce_monotonicity(q_preds: dict) -> dict:
+src/nba_props_model/correlation/sgp_engine.py:66:    q_preds: {0.10: val, 0.20: val, ..., 0.90: val}
+src/nba_props_model/correlation/sgp_engine.py:69:    qs   = sorted(q_preds.keys())
+src/nba_props_model/correlation/sgp_engine.py:70:    vals = [q_preds[q] for q in qs]
+src/nba_props_model/correlation/sgp_engine.py:81:def p_over(q_preds: dict, line: float) -> float:
+src/nba_props_model/correlation/sgp_engine.py:84:    q_preds MUST be monotone-enforced before calling.
+src/nba_props_model/correlation/sgp_engine.py:87:    q_preds = enforce_monotonicity(q_preds)
+src/nba_props_model/correlation/sgp_engine.py:88:    qs   = sorted(q_preds.keys())
+src/nba_props_model/correlation/sgp_engine.py:89:    vals = [q_preds[q] for q in qs]
+src/nba_props_model/correlation/sgp_engine.py:125:def p_under(q_preds: dict, line: float) -> float:
+src/nba_props_model/correlation/sgp_engine.py:126:    return 1.0 - p_over(q_preds, line)
+src/nba_props_model/correlation/sgp_engine.py:129:def inverse_cdf(q_preds: dict, u: np.ndarray) -> np.ndarray:
+src/nba_props_model/correlation/sgp_engine.py:134:    q_preds must be monotone-enforced.
+src/nba_props_model/correlation/sgp_engine.py:136:    q_preds = enforce_monotonicity(q_preds)
+src/nba_props_model/correlation/sgp_engine.py:137:    qs   = np.array(sorted(q_preds.keys()))
+src/nba_props_model/correlation/sgp_engine.py:138:    vals = np.array([q_preds[q] for q in qs])
+src/nba_props_model/correlation/sgp_engine.py:155:    q_preds: dict,
+src/nba_props_model/correlation/sgp_engine.py:160:    Convert a quantile prediction dict to a discrete PMF over integer outcomes.
+src/nba_props_model/correlation/sgp_engine.py:170:    q_preds : {quantile: predicted_value} — must cover at least Q10..Q90
+src/nba_props_model/correlation/sgp_engine.py:178:    q_preds = enforce_monotonicity(q_preds)
+src/nba_props_model/correlation/sgp_engine.py:179:    qs   = np.array(sorted(q_preds.keys()))
+src/nba_props_model/correlation/sgp_engine.py:180:    vals = np.array([q_preds[q] for q in qs])
+src/nba_props_model/correlation/sgp_engine.py:187:            "pra": 90, "pr": 70,  "pa": 70, "ra": 35, "stocks": 12,
+src/nba_props_model/correlation/sgp_engine.py:192:    u_grid  = np.linspace(0.001, 0.999, 2000)
+src/nba_props_model/correlation/sgp_engine.py:198:    cdf_prev = 0.0
+src/nba_props_model/correlation/sgp_engine.py:201:        mass  = max(cdf_k - cdf_prev, 0.0)
+src/nba_props_model/correlation/sgp_engine.py:203:        cdf_prev = cdf_k
+src/nba_props_model/correlation/sgp_engine.py:220:    line : the prop line (e.g. 1.5, 22.5)
+src/nba_props_model/correlation/sgp_engine.py:281:    Measure how efficiently the market has priced a prop.
+src/nba_props_model/correlation/sgp_engine.py:283:    Returns edge (our prob - market implied prob) for over and under,
+src/nba_props_model/correlation/sgp_engine.py:299:    # Remove vig (proportional method)
+src/nba_props_model/correlation/sgp_engine.py:327:def ev_from_prob(prob: float, american_odds: int) -> float:
+src/nba_props_model/correlation/sgp_engine.py:328:    profit = american_to_decimal(american_odds)
+src/nba_props_model/correlation/sgp_engine.py:329:    return float(prob * profit - (1.0 - prob) * 1.0)
+src/nba_props_model/correlation/sgp_engine.py:332:def kelly_fraction(prob: float, american_odds: int,
+src/nba_props_model/correlation/sgp_engine.py:335:    q = 1.0 - prob
+src/nba_props_model/correlation/sgp_engine.py:336:    full_kelly = (b * prob - q) / b
+src/nba_props_model/correlation/sgp_engine.py:344:# Standard Kelly sizes each bet independently, ignoring that same-game props
+src/nba_props_model/correlation/sgp_engine.py:348:# Method (diagonal approximation — fast and stable):
+src/nba_props_model/correlation/sgp_engine.py:350:#   2. Build a covariance matrix from pairwise correlations
+src/nba_props_model/correlation/sgp_engine.py:369:        prob        : model probability (float)
+src/nba_props_model/correlation/sgp_engine.py:390:        k = kelly_fraction(b["prob"], b["american_odds"], fraction, max_per_bet)
+src/nba_props_model/correlation/sgp_engine.py:397:    # Step 2: pairwise correlation estimates
+src/nba_props_model/correlation/sgp_engine.py:401:        ("pts", "pra"): 0.92, ("pts", "pr"): 0.88, ("pts", "pa"): 0.88,
+src/nba_props_model/correlation/sgp_engine.py:402:        ("reb", "pra"): 0.78, ("reb", "pr"): 0.82, ("reb", "ra"): 0.82,
+
+=== MARKET / ODDS FILES FOR MAY 12 ===
+data/historical_game_odds.parquet
+data/odds_api
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201317Z.csv
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201317Z.parquet
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.csv
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_live_2026-05-07T200904Z.csv
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_live_2026-05-07T200904Z.parquet
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_live_2026-05-07T200910Z.csv
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_live_2026-05-07T200910Z.parquet
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_morning_7am_2026-05-12T193700Z.csv
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_morning_7am_2026-05-12T193700Z.parquet
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_morning_7am_2026-05-12T193703Z.csv
+data/odds_api/processed/2026-05-07/odds_pairs_live_slate_morning_7am_2026-05-12T193703Z.parquet
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_close_or_lock_2026-05-07T201317Z.csv
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_close_or_lock_2026-05-07T201317Z.parquet
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_close_or_lock_2026-05-07T201323Z.csv
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_close_or_lock_2026-05-07T201323Z.parquet
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_live_2026-05-07T200904Z.csv
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_live_2026-05-07T200904Z.parquet
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_live_2026-05-07T200910Z.csv
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_live_2026-05-07T200910Z.parquet
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_morning_7am_2026-05-12T193700Z.csv
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_morning_7am_2026-05-12T193700Z.parquet
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_morning_7am_2026-05-12T193703Z.csv
+data/odds_api/processed/2026-05-07/odds_quotes_live_slate_morning_7am_2026-05-12T193703Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205105Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205105Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205109Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205109Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205203Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205203Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205206Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205206Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212003Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212003Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205010Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205010Z.parquet
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.csv
+data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205105Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205105Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205109Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205109Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205203Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205203Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205206Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205206Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T212003Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T212003Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T212007Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T212007Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_morning_7am_2026-05-12T205010Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_morning_7am_2026-05-12T205010Z.parquet
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_morning_7am_2026-05-12T205014Z.csv
+data/odds_api/processed/2026-05-12/odds_quotes_live_slate_morning_7am_2026-05-12T205014Z.parquet
+data/opening_lines_2026-03-13.json
+data/opening_lines_2026-03-14.json
+data/opening_lines_2026-03-15.json
+data/opening_lines_2026-03-16.json
+data/opening_lines_2026-03-17.json
+data/opening_lines_2026-03-18.json
+data/opening_lines_2026-03-19.json
+data/opening_lines_2026-03-20.json
+data/opening_lines_2026-03-21.json
+data/opening_lines_2026-03-22.json
+data/opening_lines_2026-03-23.json
+data/opening_lines_2026-03-24.json
+data/opening_lines_2026-03-25.json
+data/opening_lines_2026-03-26.json
+data/opening_lines_2026-03-27.json
+data/opening_lines_2026-03-28.json
+data/opening_lines_2026-03-29.json
+data/opening_lines_2026-03-30.json
+data/opening_lines_2026-03-31.json
+data/opening_lines_2026-04-01.json
+data/opening_lines_2026-04-02.json
+data/opening_lines_2026-04-03.json
+data/opening_lines_2026-04-05.json
+data/opening_lines_2026-04-06.json
+data/opening_lines_2026-04-07.json
+data/opening_lines_2026-04-08.json
+data/opening_lines_2026-04-09.json
+data/opening_lines_2026-04-10.json
+data/opening_lines_2026-04-11.json
+data/opening_lines_2026-04-12.json
+data/opening_lines_2026-04-13.json
+data/opening_lines_2026-04-14.json
+data/opening_lines_2026-04-15.json
+data/opening_lines_2026-04-16.json
+data/opening_lines_2026-04-17.json
+data/opening_lines_2026-04-18.json
+data/opening_lines_2026-04-19.json
+data/opening_lines_2026-04-20.json
+data/opening_lines_2026-04-21.json
+data/opening_lines_2026-04-22.json
+data/opening_lines_2026-04-23.json
+data/opening_lines_2026-04-24.json
+data/opening_lines_2026-04-25.json
+data/opening_lines_2026-04-26.json
+data/opening_lines_2026-04-27.json
+data/opening_lines_2026-04-28.json
+data/opening_lines_2026-04-29.json
+data/opening_lines_2026-04-30.json
+data/opening_lines_2026-05-01.json
+data/opening_lines_2026-05-02.json
+data/opening_lines_2026-05-03.json
+data/opening_lines_2026-05-04.json
+data/opening_lines_2026-05-05.json
+data/opening_lines_2026-05-06.json
+data/opening_lines_2026-05-07.json
+data/opening_lines_2026-05-08.json
+data/opening_lines_2026-05-09.json
+data/opening_lines_2026-05-10.json
+deliveries/2026-05-12/after_game_scoring/fair_odds_board_for_scoring.csv
+deliveries/2026-05-12/after_game_scoring/fair_odds_board_for_scoring.parquet
+deliveries/2026-05-12/after_game_scoring/market_comparison_for_scoring.csv
+deliveries/2026-05-12/after_game_scoring/market_comparison_for_scoring.parquet
+deliveries/2026-05-12/derek_forward_feed/lineup_snapshot_status.json
+deliveries/2026-05-12/derek_forward_feed/lineup_snapshot.csv
+deliveries/2026-05-12/derek_forward_feed/lineup_snapshot.jsonl
+deliveries/2026-05-12/derek_forward_feed/lineup_snapshot.parquet
+deliveries/2026-05-12/derek_game_snapshots/21707976/close_lock/market_comparison.csv
+deliveries/2026-05-12/derek_game_snapshots/21707976/close_lock/market_comparison.parquet
+deliveries/2026-05-12/derek_game_snapshots/21707976/lineup
+deliveries/2026-05-12/derek_game_snapshots/21707976/lineup/market_comparison.csv
+deliveries/2026-05-12/derek_game_snapshots/21707976/lineup/market_comparison.parquet
+deliveries/2026-05-12/derek_game_snapshots/21707976/morning/market_comparison.csv
+deliveries/2026-05-12/derek_game_snapshots/21707976/morning/market_comparison.parquet
+deliveries/2026-05-12/wizard_of_odds
+deliveries/2026-05-12/wizard_of_odds/fair_odds_board.csv
+deliveries/2026-05-12/wizard_of_odds/fair_odds_board.jsonl
+deliveries/2026-05-12/wizard_of_odds/fair_odds_board.parquet
+deliveries/2026-05-12/wizard_of_odds/market_comparison.csv
+deliveries/2026-05-12/wizard_of_odds/market_comparison.parquet
+
+=== MARKET STAT COVERAGE ===
+
+PATH deliveries/2026-05-12/wizard_of_odds/market_comparison.parquet
+ROWS 1285 COLS 61
+COLUMNS ['player_name', 'player_id', 'team', 'opponent', 'is_home', 'game_id', 'game_start_time', 'stat', 'line', 'book', 'market_over_odds', 'market_under_odds', 'market_no_vig_over_prob', 'pmf_source', 'calibration_source', 'cal_source', 'role_bucket', 'role_source', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'mean', 'median', 'mode', 'p0', 'p_ge_1', 'p_ge_2', 'p_ge_3', 'p_ge_4', 'p_ge_5', 'p_ge_6', 'p_ge_7', 'p_ge_8', 'p_ge_9', 'p_ge_10', 'p_ge_11', 'p_ge_12', 'p_ge_13', 'p_ge_14', 'p_ge_15', 'p_ge_16', 'p_ge_17', 'p_ge_18', 'p_ge_19', 'p_ge_20', 'model_p_over', 'fair_over_odds_american', 'fair_under_odds_american', 'edge', 'snapshot_type', 'snapshot_time_utc', 'model_version', 'pipeline_run_id', 'pmf_valid', 'pmf_sum_error', 'calibration_confidence', 'market_coverage_status', 'tov_status', 'injury_freshness_status', 'lineup_freshness_status', 'role_freshness_status']
+
+stat_COUNTS
+stat
+pts     506
+reb     320
+ast     243
+fg3m    216
+
+BOOK_COUNTS
+book
+fanduel           378
+bovada            196
+espnbet           165
+betparx            69
+betonlineag        63
+fliff              63
+draftkings         62
+hardrockbet_fl     59
+hardrockbet        59
+hardrockbet_az     59
+betmgm             56
+williamhill_us     51
+fanatics            5
+
+PATH deliveries/2026-05-12/wizard_of_odds/fair_odds_board.parquet
+ROWS 7347 COLS 61
+COLUMNS ['player_name', 'player_id', 'team', 'opponent', 'is_home', 'game_id', 'game_start_time', 'stat', 'line', 'book', 'market_over_odds', 'market_under_odds', 'market_no_vig_over_prob', 'pmf_source', 'calibration_source', 'cal_source', 'role_bucket', 'role_source', 'minutes_mean', 'minutes_q50', 'p_inactive_used', 'mean', 'median', 'mode', 'p0', 'p_ge_1', 'p_ge_2', 'p_ge_3', 'p_ge_4', 'p_ge_5', 'p_ge_6', 'p_ge_7', 'p_ge_8', 'p_ge_9', 'p_ge_10', 'p_ge_11', 'p_ge_12', 'p_ge_13', 'p_ge_14', 'p_ge_15', 'p_ge_16', 'p_ge_17', 'p_ge_18', 'p_ge_19', 'p_ge_20', 'model_p_over', 'fair_over_odds_american', 'fair_under_odds_american', 'edge', 'snapshot_type', 'snapshot_time_utc', 'model_version', 'pipeline_run_id', 'pmf_valid', 'pmf_sum_error', 'calibration_confidence', 'market_coverage_status', 'tov_status', 'injury_freshness_status', 'lineup_freshness_status', 'role_freshness_status']
+
+stat_COUNTS
+stat
+pts       1860
+reb        682
+stl        620
+blk        620
+stocks     620
+pa         620
+pr         620
+pra        620
+ast        558
+fg3m       279
+tov        248
+
+BOOK_COUNTS
+book
+none    7347
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205105Z.parquet
+ROWS 1434 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                353
+player_points_alternate      318
+player_rebounds              200
+player_assists               173
+player_threes                137
+player_rebounds_alternate    134
+player_threes_alternate       63
+player_assists_alternate      56
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205109Z.parquet
+ROWS 775 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points      248
+player_rebounds    187
+player_assists     180
+player_threes      160
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205203Z.parquet
+ROWS 1434 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                353
+player_points_alternate      318
+player_rebounds              200
+player_assists               173
+player_threes                137
+player_rebounds_alternate    134
+player_threes_alternate       63
+player_assists_alternate      56
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205206Z.parquet
+ROWS 775 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points      248
+player_rebounds    187
+player_assists     180
+player_threes      160
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212003Z.parquet
+ROWS 1432 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                349
+player_points_alternate      295
+player_rebounds              202
+player_assists               174
+player_threes                141
+player_rebounds_alternate    139
+player_assists_alternate      67
+player_threes_alternate       65
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.parquet
+ROWS 774 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points      248
+player_rebounds    187
+player_assists     180
+player_threes      159
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205010Z.parquet
+ROWS 1461 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                351
+player_points_alternate      316
+player_rebounds              202
+player_assists               173
+player_threes                139
+player_rebounds_alternate    139
+player_threes_alternate       71
+player_assists_alternate      70
+
+PATH data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.parquet
+ROWS 775 COLS 29
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'market_key', 'market_stat', 'is_alternate', 'player_name', 'line', 'over_odds_american', 'under_odds_american', 'over_odds_decimal', 'under_odds_decimal', 'over_implied_prob', 'under_implied_prob', 'no_vig_over_prob', 'no_vig_under_prob', 'bookmaker_last_update', 'market_last_update', 'over_sid', 'under_sid', 'pair_key', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points      248
+player_rebounds    187
+player_assists     180
+player_threes      160
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205105Z.parquet
+ROWS 7505 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points_alternate      2329
+player_rebounds_alternate    1582
+player_assists_alternate     1013
+player_threes_alternate       855
+player_points                 706
+player_rebounds               400
+player_assists                346
+player_threes                 274
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205109Z.parquet
+ROWS 2379 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                560
+player_rebounds              399
+player_assists               378
+player_threes                338
+player_points_alternate      218
+player_rebounds_alternate    191
+player_threes_alternate      160
+player_assists_alternate     135
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205203Z.parquet
+ROWS 7505 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points_alternate      2329
+player_rebounds_alternate    1583
+player_assists_alternate     1013
+player_threes_alternate       854
+player_points                 706
+player_rebounds               400
+player_assists                346
+player_threes                 274
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T205206Z.parquet
+ROWS 2382 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                560
+player_rebounds              399
+player_assists               378
+player_threes                338
+player_points_alternate      219
+player_rebounds_alternate    192
+player_threes_alternate      162
+player_assists_alternate     134
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T212003Z.parquet
+ROWS 7511 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points_alternate      2288
+player_rebounds_alternate    1595
+player_assists_alternate     1036
+player_threes_alternate       860
+player_points                 698
+player_rebounds               404
+player_assists                348
+player_threes                 282
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_close_or_lock_2026-05-12T212007Z.parquet
+ROWS 2379 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                561
+player_rebounds              399
+player_assists               378
+player_threes                336
+player_points_alternate      221
+player_rebounds_alternate    189
+player_threes_alternate      163
+player_assists_alternate     132
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_morning_7am_2026-05-12T205010Z.parquet
+ROWS 7561 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points_alternate      2325
+player_rebounds_alternate    1594
+player_assists_alternate     1039
+player_threes_alternate       871
+player_points                 704
+player_rebounds               404
+player_assists                346
+player_threes                 278
+
+PATH data/odds_api/processed/2026-05-12/odds_quotes_live_slate_morning_7am_2026-05-12T205014Z.parquet
+ROWS 2378 COLS 25
+COLUMNS ['snapshot_id', 'snapshot_time_utc', 'snapshot_type', 'api_mode', 'sport_key', 'event_id', 'commence_time_utc', 'home_team', 'away_team', 'bookmaker_key', 'bookmaker_title', 'bookmaker_last_update', 'market_key', 'market_stat', 'is_alternate', 'market_last_update', 'player_name', 'side', 'line', 'odds_american', 'outcome_sid', 'raw_description', 'raw_name', 'source_file', 'fetched_at_utc']
+
+market_key_COUNTS
+market_key
+player_points                560
+player_rebounds              399
+player_assists               378
+player_threes                338
+player_points_alternate      218
+player_rebounds_alternate    191
+player_threes_alternate      160
+player_assists_alternate     134

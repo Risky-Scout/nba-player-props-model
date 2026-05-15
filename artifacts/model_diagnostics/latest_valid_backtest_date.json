@@ -1,0 +1,12 @@
+{
+  "current_date": "2026-05-13",
+  "max_actuals_date": "2026-05-12",
+  "latest_valid_backtest_date": "2026-05-12",
+  "excluded_dates_after_latest": [
+    "2026-05-13"
+  ],
+  "reason": "latest_valid_backtest_date=min(max_actuals_game_date=2026-05-12, as_of_minus_1day=2026-05-12) with as_of=2026-05-13.",
+  "data_sources_checked": [
+    "data/player_game_stats.parquet"
+  ]
+}

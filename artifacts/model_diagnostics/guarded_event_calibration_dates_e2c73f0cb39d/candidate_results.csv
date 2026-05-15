@@ -1,0 +1,13 @@
+stat,role_bucket,n,method,selected
+ast,bench,14,none,False
+ast,core,194,none,False
+ast,fringe,4,none,False
+ast,inactive_risk,20,none,False
+ast,rotation,81,none,False
+ast,starter,193,none,False
+blk,core,34,none,False
+blk,fringe,2,none,False
+blk,rotation,6,none,False
+blk,starter,25,none,False
+fg3m,bench,27,none,False
+fg3m,core,174,none,False

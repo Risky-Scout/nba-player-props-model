@@ -1,0 +1,1283 @@
+\n[1/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-04-27 --run-mode backtest --out data/features/player_prop_features_2026-04-27_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=1176
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-04-27_backtest.parquet
+\n[2/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-04-27 --run-mode backtest --out data/features/injury_lineup_features_2026-04-27_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=98
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-04-27_backtest.parquet
+\n[3/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-04-27_backtest.parquet --out data/features/role_state_features_2026-04-27.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-04-27.parquet
+\n[4/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-04-27_backtest.parquet --out data/features/teammate_on_off_features_2026-04-27.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-04-27.parquet
+\n[5/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-04-27_backtest.parquet --out data/features/opponent_matchup_features_2026-04-27.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-04-27.parquet
+\n[6/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-04-27_backtest.parquet --out data/features/sparse_stat_features_2026-04-27.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-04-27.parquet
+\n[7/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-04-27_backtest.parquet --out data/features/combo_covariance_features_2026-04-27.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-04-27.parquet
+\n[8/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-04-27 --feature-snapshot data/features/player_prop_features_2026-04-27_backtest.parquet --out predictions/stat_grid_2026-04-27.parquet\n2026-05-14 00:08:36,861 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:08:36,873 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-04-27.json
+2026-05-14 00:08:36,874 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:08:38,604 [INFO] NBA injury report: 0 players
+2026-05-14 00:08:39,856 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-04-27…
+    3 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.44116096933683
+========================================================================
+build_stat_grid_pmfs — date=2026-04-27 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-04-27.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 108
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 1221
+  skipped (player, game): 6
+  per-stat counts:
+stat
+ast       102
+blk       102
+fg3m       99
+pa        102
+pr        102
+pra       102
+pts       102
+ra        102
+reb       102
+stl       102
+stocks    102
+tov       102
+
+wrote predictions/stat_grid_2026-04-27.parquet  (2026-05-14T04:10:44Z)
+\n[9/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-04-27 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-04-27 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=a5ee40d5-267d-4ca0-82a9-eeedd307fd56
+  snapshot_time_utc=2026-05-14T04:10:45Z
+========================================================================
+MODEL_ONLY_PARQUET_WARN deliveries/2026-04-27: 2 MODEL_ONLY parquets; using canonical_source (preferred).
+  candidate: deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  candidate: deliveries/2026-04-27/live_after_2029_et/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  model_only: deliveries/2026-04-27/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 1,176
+  odds_snapshot: data/odds_api/processed/2026-04-27/odds_pairs_hist_lockday_2026-04-27.parquet
+  freshness_manifest: <none>
+  canonical rows: 1176
+  fair_odds_board rows: 25,186  diagnostics: {'fair_over_odds_null_count': 4164, 'fair_under_odds_null_count': 4164, 'zero_or_one_prob_count': 2746}
+  wrote deliveries/2026-04-27/pmf_model_review_package
+  wrote deliveries/2026-04-27/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[10/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-04-28 --run-mode backtest --out data/features/player_prop_features_2026-04-28_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=1260
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-04-28_backtest.parquet
+\n[11/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-04-28 --run-mode backtest --out data/features/injury_lineup_features_2026-04-28_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=105
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-04-28_backtest.parquet
+\n[12/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-04-28_backtest.parquet --out data/features/role_state_features_2026-04-28.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-04-28.parquet
+\n[13/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-04-28_backtest.parquet --out data/features/teammate_on_off_features_2026-04-28.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-04-28.parquet
+\n[14/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-04-28_backtest.parquet --out data/features/opponent_matchup_features_2026-04-28.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-04-28.parquet
+\n[15/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-04-28_backtest.parquet --out data/features/sparse_stat_features_2026-04-28.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-04-28.parquet
+\n[16/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-04-28_backtest.parquet --out data/features/combo_covariance_features_2026-04-28.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-04-28.parquet
+\n[17/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-04-28 --feature-snapshot data/features/player_prop_features_2026-04-28_backtest.parquet --out predictions/stat_grid_2026-04-28.parquet\n2026-05-14 00:11:04,754 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:11:04,764 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-04-28.json
+2026-05-14 00:11:04,765 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:11:05,821 [INFO] NBA injury report: 0 players
+2026-05-14 00:11:07,207 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-04-28…
+    3 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.4820890637901
+========================================================================
+build_stat_grid_pmfs — date=2026-04-28 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-04-28.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 108
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 1271
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       106
+blk       106
+fg3m      105
+pa        106
+pr        106
+pra       106
+pts       106
+ra        106
+reb       106
+stl       106
+stocks    106
+tov       106
+
+wrote predictions/stat_grid_2026-04-28.parquet  (2026-05-14T04:13:15Z)
+\n[18/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-04-28 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-04-28 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=bdae5d17-32bf-4c62-a036-700e69d07035
+  snapshot_time_utc=2026-05-14T04:13:16Z
+========================================================================
+  model_only: deliveries/2026-04-28/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 1,260
+  odds_snapshot: data/odds_api/processed/2026-04-28/odds_pairs_hist_lockday_2026-04-28.parquet
+  freshness_manifest: <none>
+  canonical rows: 1260
+  fair_odds_board rows: 26,985  diagnostics: {'fair_over_odds_null_count': 4069, 'fair_under_odds_null_count': 4069, 'zero_or_one_prob_count': 2262}
+  wrote deliveries/2026-04-28/pmf_model_review_package
+  wrote deliveries/2026-04-28/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[19/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-04-29 --run-mode backtest --out data/features/player_prop_features_2026-04-29_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=1212
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-04-29_backtest.parquet
+\n[20/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-04-29 --run-mode backtest --out data/features/injury_lineup_features_2026-04-29_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=101
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-04-29_backtest.parquet
+\n[21/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-04-29_backtest.parquet --out data/features/role_state_features_2026-04-29.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-04-29.parquet
+\n[22/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-04-29_backtest.parquet --out data/features/teammate_on_off_features_2026-04-29.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-04-29.parquet
+\n[23/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-04-29_backtest.parquet --out data/features/opponent_matchup_features_2026-04-29.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-04-29.parquet
+\n[24/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-04-29_backtest.parquet --out data/features/sparse_stat_features_2026-04-29.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-04-29.parquet
+\n[25/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-04-29_backtest.parquet --out data/features/combo_covariance_features_2026-04-29.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-04-29.parquet
+\n[26/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-04-29 --feature-snapshot data/features/player_prop_features_2026-04-29_backtest.parquet --out predictions/stat_grid_2026-04-29.parquet\n2026-05-14 00:13:39,829 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:13:39,845 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-04-29.json
+2026-05-14 00:13:39,846 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:13:41,425 [INFO] NBA injury report: 0 players
+2026-05-14 00:13:43,628 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-04-29…
+    3 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.52545450965565
+========================================================================
+build_stat_grid_pmfs — date=2026-04-29 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-04-29.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 104
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 1212
+  skipped (player, game): 3
+  per-stat counts:
+stat
+ast       101
+blk       101
+fg3m      101
+pa        101
+pr        101
+pra       101
+pts       101
+ra        101
+reb       101
+stl       101
+stocks    101
+tov       101
+
+wrote predictions/stat_grid_2026-04-29.parquet  (2026-05-14T04:15:45Z)
+\n[27/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-04-29 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-04-29 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=9916e6f8-db18-40ed-925e-c57836196aca
+  snapshot_time_utc=2026-05-14T04:15:47Z
+========================================================================
+  model_only: deliveries/2026-04-29/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 1,212
+  odds_snapshot: data/odds_api/processed/2026-04-29/odds_pairs_hist_lockday_2026-04-29.parquet
+  freshness_manifest: <none>
+  canonical rows: 1212
+  fair_odds_board rows: 25,957  diagnostics: {'fair_over_odds_null_count': 3681, 'fair_under_odds_null_count': 3681, 'zero_or_one_prob_count': 2119}
+  wrote deliveries/2026-04-29/pmf_model_review_package
+  wrote deliveries/2026-04-29/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[28/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-04-30 --run-mode backtest --out data/features/player_prop_features_2026-04-30_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=1212
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-04-30_backtest.parquet
+\n[29/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-04-30 --run-mode backtest --out data/features/injury_lineup_features_2026-04-30_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=101
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-04-30_backtest.parquet
+\n[30/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-04-30_backtest.parquet --out data/features/role_state_features_2026-04-30.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-04-30.parquet
+\n[31/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-04-30_backtest.parquet --out data/features/teammate_on_off_features_2026-04-30.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-04-30.parquet
+\n[32/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-04-30_backtest.parquet --out data/features/opponent_matchup_features_2026-04-30.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-04-30.parquet
+\n[33/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-04-30_backtest.parquet --out data/features/sparse_stat_features_2026-04-30.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-04-30.parquet
+\n[34/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-04-30_backtest.parquet --out data/features/combo_covariance_features_2026-04-30.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-04-30.parquet
+\n[35/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-04-30 --feature-snapshot data/features/player_prop_features_2026-04-30_backtest.parquet --out predictions/stat_grid_2026-04-30.parquet\n2026-05-14 00:16:09,996 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:16:10,007 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-04-30.json
+2026-05-14 00:16:10,008 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:16:11,285 [INFO] NBA injury report: 0 players
+2026-05-14 00:16:12,890 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-04-30…
+    3 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.5669963701566
+========================================================================
+build_stat_grid_pmfs — date=2026-04-30 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-04-30.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 108
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 1256
+  skipped (player, game): 3
+  per-stat counts:
+stat
+ast       105
+blk       105
+fg3m      101
+pa        105
+pr        105
+pra       105
+pts       105
+ra        105
+reb       105
+stl       105
+stocks    105
+tov       105
+
+wrote predictions/stat_grid_2026-04-30.parquet  (2026-05-14T04:18:20Z)
+\n[36/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-04-30 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-04-30 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=863010c4-a78f-4aed-a853-275255853561
+  snapshot_time_utc=2026-05-14T04:18:22Z
+========================================================================
+  model_only: deliveries/2026-04-30/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 1,212
+  odds_snapshot: data/odds_api/processed/2026-04-30/odds_pairs_hist_lockday_2026-04-30.parquet
+  freshness_manifest: <none>
+  canonical rows: 1212
+  fair_odds_board rows: 25,957  diagnostics: {'fair_over_odds_null_count': 3749, 'fair_under_odds_null_count': 3749, 'zero_or_one_prob_count': 2146}
+  wrote deliveries/2026-04-30/pmf_model_review_package
+  wrote deliveries/2026-04-30/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[37/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-01 --run-mode backtest --out data/features/player_prop_features_2026-05-01_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=1212
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-01_backtest.parquet
+\n[38/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-01 --run-mode backtest --out data/features/injury_lineup_features_2026-05-01_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=101
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-01_backtest.parquet
+\n[39/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-01_backtest.parquet --out data/features/role_state_features_2026-05-01.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-01.parquet
+\n[40/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-01_backtest.parquet --out data/features/teammate_on_off_features_2026-05-01.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-01.parquet
+\n[41/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-01_backtest.parquet --out data/features/opponent_matchup_features_2026-05-01.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-01.parquet
+\n[42/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-01_backtest.parquet --out data/features/sparse_stat_features_2026-05-01.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-01.parquet
+\n[43/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-01_backtest.parquet --out data/features/combo_covariance_features_2026-05-01.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-01.parquet
+\n[44/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-01 --feature-snapshot data/features/player_prop_features_2026-05-01_backtest.parquet --out predictions/stat_grid_2026-05-01.parquet\n2026-05-14 00:18:44,994 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:18:45,002 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-01.json
+2026-05-14 00:18:45,003 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:18:46,473 [INFO] NBA injury report: 0 players
+2026-05-14 00:18:48,080 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-01…
+    3 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.61009898073144
+========================================================================
+build_stat_grid_pmfs — date=2026-05-01 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-01.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 104
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 1212
+  skipped (player, game): 3
+  per-stat counts:
+stat
+ast       101
+blk       101
+fg3m      101
+pa        101
+pr        101
+pra       101
+pts       101
+ra        101
+reb       101
+stl       101
+stocks    101
+tov       101
+
+wrote predictions/stat_grid_2026-05-01.parquet  (2026-05-14T04:20:48Z)
+\n[45/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-01 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-01 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=2692c9fe-d90d-4b06-9b68-af434c804447
+  snapshot_time_utc=2026-05-14T04:20:50Z
+========================================================================
+  model_only: deliveries/2026-05-01/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 1,212
+  odds_snapshot: data/odds_api/processed/2026-05-01/odds_pairs_hist_lockday_2026-05-01.parquet
+  freshness_manifest: <none>
+  canonical rows: 1212
+  fair_odds_board rows: 25,957  diagnostics: {'fair_over_odds_null_count': 3852, 'fair_under_odds_null_count': 3852, 'zero_or_one_prob_count': 2128}
+  wrote deliveries/2026-05-01/pmf_model_review_package
+  wrote deliveries/2026-05-01/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[46/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-02 --run-mode backtest --out data/features/player_prop_features_2026-05-02_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=420
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-02_backtest.parquet
+\n[47/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-02 --run-mode backtest --out data/features/injury_lineup_features_2026-05-02_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=35
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-02_backtest.parquet
+\n[48/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-02_backtest.parquet --out data/features/role_state_features_2026-05-02.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-02.parquet
+\n[49/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-02_backtest.parquet --out data/features/teammate_on_off_features_2026-05-02.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-02.parquet
+\n[50/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-02_backtest.parquet --out data/features/opponent_matchup_features_2026-05-02.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-02.parquet
+\n[51/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-02_backtest.parquet --out data/features/sparse_stat_features_2026-05-02.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-02.parquet
+\n[52/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-02_backtest.parquet --out data/features/combo_covariance_features_2026-05-02.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-02.parquet
+\n[53/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-02 --feature-snapshot data/features/player_prop_features_2026-05-02_backtest.parquet --out predictions/stat_grid_2026-05-02.parquet\n2026-05-14 00:21:14,868 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:21:14,878 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-02.json
+2026-05-14 00:21:14,879 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:21:16,431 [INFO] NBA injury report: 0 players
+2026-05-14 00:21:18,576 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-02…
+    1 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.65189960181712
+========================================================================
+build_stat_grid_pmfs — date=2026-05-02 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-02.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 36
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 431
+  skipped (player, game): 0
+  per-stat counts:
+stat
+ast       36
+blk       36
+fg3m      35
+pa        36
+pr        36
+pra       36
+pts       36
+ra        36
+reb       36
+stl       36
+stocks    36
+tov       36
+
+wrote predictions/stat_grid_2026-05-02.parquet  (2026-05-14T04:22:04Z)
+\n[54/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-02 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-02 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=360dcfb7-6b82-498d-83a9-26beaabeafc7
+  snapshot_time_utc=2026-05-14T04:22:05Z
+========================================================================
+  model_only: deliveries/2026-05-02/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 420
+  odds_snapshot: data/odds_api/processed/2026-05-02/odds_pairs_hist_lockday_2026-05-02.parquet
+  freshness_manifest: <none>
+  canonical rows: 420
+  fair_odds_board rows: 8,995  diagnostics: {'fair_over_odds_null_count': 1246, 'fair_under_odds_null_count': 1246, 'zero_or_one_prob_count': 745}
+  wrote deliveries/2026-05-02/pmf_model_review_package
+  wrote deliveries/2026-05-02/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[55/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-03 --run-mode backtest --out data/features/player_prop_features_2026-05-03_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=828
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-03_backtest.parquet
+\n[56/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-03 --run-mode backtest --out data/features/injury_lineup_features_2026-05-03_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=69
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-03_backtest.parquet
+\n[57/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-03_backtest.parquet --out data/features/role_state_features_2026-05-03.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-03.parquet
+\n[58/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-03_backtest.parquet --out data/features/teammate_on_off_features_2026-05-03.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-03.parquet
+\n[59/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-03_backtest.parquet --out data/features/opponent_matchup_features_2026-05-03.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-03.parquet
+\n[60/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-03_backtest.parquet --out data/features/sparse_stat_features_2026-05-03.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-03.parquet
+\n[61/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-03_backtest.parquet --out data/features/combo_covariance_features_2026-05-03.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-03.parquet
+\n[62/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-03 --feature-snapshot data/features/player_prop_features_2026-05-03_backtest.parquet --out predictions/stat_grid_2026-05-03.parquet\n2026-05-14 00:22:24,487 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:22:24,496 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-03.json
+2026-05-14 00:22:24,497 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:22:25,799 [INFO] NBA injury report: 0 players
+2026-05-14 00:22:28,124 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-03…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.6712262488074
+========================================================================
+build_stat_grid_pmfs — date=2026-05-03 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-03.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 71
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 828
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       69
+blk       69
+fg3m      69
+pa        69
+pr        69
+pra       69
+pts       69
+ra        69
+reb       69
+stl       69
+stocks    69
+tov       69
+
+wrote predictions/stat_grid_2026-05-03.parquet  (2026-05-14T04:23:52Z)
+\n[63/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-03 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-03 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=668020a0-96cf-4820-ab25-edd7cc47252e
+  snapshot_time_utc=2026-05-14T04:23:53Z
+========================================================================
+  model_only: deliveries/2026-05-03/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 828
+  odds_snapshot: data/odds_api/processed/2026-05-03/odds_pairs_hist_lockday_2026-05-03.parquet
+  freshness_manifest: <none>
+  canonical rows: 828
+  fair_odds_board rows: 17,733  diagnostics: {'fair_over_odds_null_count': 2571, 'fair_under_odds_null_count': 2571, 'zero_or_one_prob_count': 1434}
+  wrote deliveries/2026-05-03/pmf_model_review_package
+  wrote deliveries/2026-05-03/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[64/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-04 --run-mode backtest --out data/features/player_prop_features_2026-05-04_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=816
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-04_backtest.parquet
+\n[65/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-04 --run-mode backtest --out data/features/injury_lineup_features_2026-05-04_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=68
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-04_backtest.parquet
+\n[66/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-04_backtest.parquet --out data/features/role_state_features_2026-05-04.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-04.parquet
+\n[67/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-04_backtest.parquet --out data/features/teammate_on_off_features_2026-05-04.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-04.parquet
+\n[68/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-04_backtest.parquet --out data/features/opponent_matchup_features_2026-05-04.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-04.parquet
+\n[69/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-04_backtest.parquet --out data/features/sparse_stat_features_2026-05-04.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-04.parquet
+\n[70/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-04_backtest.parquet --out data/features/combo_covariance_features_2026-05-04.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-04.parquet
+\n[71/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-04 --feature-snapshot data/features/player_prop_features_2026-05-04_backtest.parquet --out predictions/stat_grid_2026-05-04.parquet\n2026-05-14 00:24:13,546 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:24:13,553 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-04.json
+2026-05-14 00:24:13,554 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:24:15,150 [INFO] NBA injury report: 0 players
+2026-05-14 00:24:16,938 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-04…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.70145561522907
+========================================================================
+build_stat_grid_pmfs — date=2026-05-04 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-04.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 72
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 838
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      68
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-04.parquet  (2026-05-14T04:25:41Z)
+\n[72/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-04 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-04 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=389f13fa-a1f8-46e7-8f92-c075be88cf5c
+  snapshot_time_utc=2026-05-14T04:25:42Z
+========================================================================
+  model_only: deliveries/2026-05-04/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 816
+  odds_snapshot: data/odds_api/processed/2026-05-04/odds_pairs_hist_lockday_2026-05-04.parquet
+  freshness_manifest: <none>
+  canonical rows: 816
+  fair_odds_board rows: 17,476  diagnostics: {'fair_over_odds_null_count': 2603, 'fair_under_odds_null_count': 2603, 'zero_or_one_prob_count': 1468}
+  wrote deliveries/2026-05-04/pmf_model_review_package
+  wrote deliveries/2026-05-04/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[73/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-05 --run-mode backtest --out data/features/player_prop_features_2026-05-05_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=840
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-05_backtest.parquet
+\n[74/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-05 --run-mode backtest --out data/features/injury_lineup_features_2026-05-05_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=70
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-05_backtest.parquet
+\n[75/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-05_backtest.parquet --out data/features/role_state_features_2026-05-05.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-05.parquet
+\n[76/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-05_backtest.parquet --out data/features/teammate_on_off_features_2026-05-05.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-05.parquet
+\n[77/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-05_backtest.parquet --out data/features/opponent_matchup_features_2026-05-05.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-05.parquet
+\n[78/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-05_backtest.parquet --out data/features/sparse_stat_features_2026-05-05.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-05.parquet
+\n[79/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-05_backtest.parquet --out data/features/combo_covariance_features_2026-05-05.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-05.parquet
+\n[80/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-05 --feature-snapshot data/features/player_prop_features_2026-05-05_backtest.parquet --out predictions/stat_grid_2026-05-05.parquet\n2026-05-14 00:26:02,042 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:26:02,048 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-05.json
+2026-05-14 00:26:02,048 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:26:03,930 [INFO] NBA injury report: 0 players
+2026-05-14 00:26:06,191 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-05…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.73180060346922
+========================================================================
+build_stat_grid_pmfs — date=2026-05-05 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-05.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 71
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 840
+  skipped (player, game): 1
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      70
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-05.parquet  (2026-05-14T04:27:31Z)
+\n[81/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-05 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-05 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=e7ee70bc-8376-4441-8d11-526bc00008f2
+  snapshot_time_utc=2026-05-14T04:27:32Z
+========================================================================
+  model_only: deliveries/2026-05-05/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 840
+  odds_snapshot: data/odds_api/processed/2026-05-05/odds_pairs_hist_lockday_2026-05-05.parquet
+  freshness_manifest: <none>
+  canonical rows: 840
+  fair_odds_board rows: 17,990  diagnostics: {'fair_over_odds_null_count': 2736, 'fair_under_odds_null_count': 2736, 'zero_or_one_prob_count': 1463}
+  wrote deliveries/2026-05-05/pmf_model_review_package
+  wrote deliveries/2026-05-05/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[82/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-06 --run-mode backtest --out data/features/player_prop_features_2026-05-06_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=816
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-06_backtest.parquet
+\n[83/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-06 --run-mode backtest --out data/features/injury_lineup_features_2026-05-06_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=68
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-06_backtest.parquet
+\n[84/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-06_backtest.parquet --out data/features/role_state_features_2026-05-06.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-06.parquet
+\n[85/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-06_backtest.parquet --out data/features/teammate_on_off_features_2026-05-06.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-06.parquet
+\n[86/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-06_backtest.parquet --out data/features/opponent_matchup_features_2026-05-06.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-06.parquet
+\n[87/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-06_backtest.parquet --out data/features/sparse_stat_features_2026-05-06.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-06.parquet
+\n[88/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-06_backtest.parquet --out data/features/combo_covariance_features_2026-05-06.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-06.parquet
+\n[89/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-06 --feature-snapshot data/features/player_prop_features_2026-05-06_backtest.parquet --out predictions/stat_grid_2026-05-06.parquet\n2026-05-14 00:27:53,170 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:27:53,180 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-06.json
+2026-05-14 00:27:53,181 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:27:54,556 [INFO] NBA injury report: 0 players
+2026-05-14 00:27:56,369 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-06…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.76240783294043
+========================================================================
+build_stat_grid_pmfs — date=2026-05-06 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-06.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 72
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 838
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      68
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-06.parquet  (2026-05-14T04:29:22Z)
+\n[90/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-06 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-06 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=ae4ab677-2375-4106-b271-37c5d6f7de11
+  snapshot_time_utc=2026-05-14T04:29:23Z
+========================================================================
+  model_only: deliveries/2026-05-06/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 816
+  odds_snapshot: data/odds_api/processed/2026-05-06/odds_pairs_hist_lockday_2026-05-06.parquet
+  freshness_manifest: <none>
+  canonical rows: 816
+  fair_odds_board rows: 17,476  diagnostics: {'fair_over_odds_null_count': 2509, 'fair_under_odds_null_count': 2509, 'zero_or_one_prob_count': 1477}
+  wrote deliveries/2026-05-06/pmf_model_review_package
+  wrote deliveries/2026-05-06/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[91/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-07 --run-mode backtest --out data/features/player_prop_features_2026-05-07_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=840
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-07_backtest.parquet
+\n[92/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-07 --run-mode backtest --out data/features/injury_lineup_features_2026-05-07_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=70
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-07_backtest.parquet
+\n[93/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-07_backtest.parquet --out data/features/role_state_features_2026-05-07.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-07.parquet
+\n[94/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-07_backtest.parquet --out data/features/teammate_on_off_features_2026-05-07.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-07.parquet
+\n[95/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-07_backtest.parquet --out data/features/opponent_matchup_features_2026-05-07.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-07.parquet
+\n[96/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-07_backtest.parquet --out data/features/sparse_stat_features_2026-05-07.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-07.parquet
+\n[97/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-07_backtest.parquet --out data/features/combo_covariance_features_2026-05-07.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-07.parquet
+\n[98/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-07 --feature-snapshot data/features/player_prop_features_2026-05-07_backtest.parquet --out predictions/stat_grid_2026-05-07.parquet\n2026-05-14 00:29:42,962 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:29:42,970 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-07.json
+2026-05-14 00:29:42,972 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:29:44,433 [INFO] NBA injury report: 0 players
+2026-05-14 00:29:46,296 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-07…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.79294270210795
+========================================================================
+build_stat_grid_pmfs — date=2026-05-07 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-07.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 71
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 840
+  skipped (player, game): 1
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      70
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-07.parquet  (2026-05-14T04:31:11Z)
+\n[99/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-07 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-07 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=9937fd69-486f-4eeb-9b84-eb90be71f37b
+  snapshot_time_utc=2026-05-14T04:31:12Z
+========================================================================
+  model_only: deliveries/2026-05-07/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 840
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_hist_lockday_2026-05-07.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201317Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_live_slate_close_or_lock_2026-05-07T201323Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_live_slate_live_2026-05-07T200904Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_live_slate_live_2026-05-07T200910Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_live_slate_morning_7am_2026-05-12T193700Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-07/odds_pairs_live_slate_morning_7am_2026-05-12T193703Z.parquet
+  freshness_manifest: data/freshness_manifest/2026-05-07.json  (overall=not_ready)
+  canonical rows: 840
+  fair_odds_board rows: 17,990  diagnostics: {'fair_over_odds_null_count': 2771, 'fair_under_odds_null_count': 2771, 'zero_or_one_prob_count': 1463}
+  wrote deliveries/2026-05-07/pmf_model_review_package
+  wrote deliveries/2026-05-07/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[100/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-08 --run-mode backtest --out data/features/player_prop_features_2026-05-08_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=816
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-08_backtest.parquet
+\n[101/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-08 --run-mode backtest --out data/features/injury_lineup_features_2026-05-08_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=68
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-08_backtest.parquet
+\n[102/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-08_backtest.parquet --out data/features/role_state_features_2026-05-08.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-08.parquet
+\n[103/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-08_backtest.parquet --out data/features/teammate_on_off_features_2026-05-08.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-08.parquet
+\n[104/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-08_backtest.parquet --out data/features/opponent_matchup_features_2026-05-08.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-08.parquet
+\n[105/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-08_backtest.parquet --out data/features/sparse_stat_features_2026-05-08.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-08.parquet
+\n[106/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-08_backtest.parquet --out data/features/combo_covariance_features_2026-05-08.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-08.parquet
+\n[107/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-08 --feature-snapshot data/features/player_prop_features_2026-05-08_backtest.parquet --out predictions/stat_grid_2026-05-08.parquet\n2026-05-14 00:31:35,169 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:31:35,177 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-08.json
+2026-05-14 00:31:35,178 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:31:36,860 [INFO] NBA injury report: 0 players
+2026-05-14 00:31:39,082 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-08…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.82426118572553
+========================================================================
+build_stat_grid_pmfs — date=2026-05-08 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-08.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 72
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 838
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      68
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-08.parquet  (2026-05-14T04:33:05Z)
+\n[108/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-08 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-08 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=24d38ea8-4d1e-4242-b314-0988df8e1e2a
+  snapshot_time_utc=2026-05-14T04:33:06Z
+========================================================================
+  model_only: deliveries/2026-05-08/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 816
+  odds_snapshot: data/odds_api/processed/2026-05-08/odds_pairs_hist_lockday_2026-05-08.parquet
+  freshness_manifest: <none>
+  canonical rows: 816
+  fair_odds_board rows: 17,476  diagnostics: {'fair_over_odds_null_count': 2517, 'fair_under_odds_null_count': 2517, 'zero_or_one_prob_count': 1450}
+  wrote deliveries/2026-05-08/pmf_model_review_package
+  wrote deliveries/2026-05-08/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[109/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-09 --run-mode backtest --out data/features/player_prop_features_2026-05-09_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=828
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-09_backtest.parquet
+\n[110/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-09 --run-mode backtest --out data/features/injury_lineup_features_2026-05-09_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=69
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-09_backtest.parquet
+\n[111/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-09_backtest.parquet --out data/features/role_state_features_2026-05-09.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-09.parquet
+\n[112/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-09_backtest.parquet --out data/features/teammate_on_off_features_2026-05-09.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-09.parquet
+\n[113/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-09_backtest.parquet --out data/features/opponent_matchup_features_2026-05-09.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-09.parquet
+\n[114/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-09_backtest.parquet --out data/features/sparse_stat_features_2026-05-09.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-09.parquet
+\n[115/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-09_backtest.parquet --out data/features/combo_covariance_features_2026-05-09.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-09.parquet
+\n[116/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-09 --feature-snapshot data/features/player_prop_features_2026-05-09_backtest.parquet --out predictions/stat_grid_2026-05-09.parquet\n2026-05-14 00:33:29,210 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:33:29,217 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-09.json
+2026-05-14 00:33:29,218 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:33:30,615 [INFO] NBA injury report: 0 players
+2026-05-14 00:33:32,544 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-09…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.85577841652764
+========================================================================
+build_stat_grid_pmfs — date=2026-05-09 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-09.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 71
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 839
+  skipped (player, game): 1
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      69
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-09.parquet  (2026-05-14T04:35:00Z)
+\n[117/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-09 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-09 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=1f2f5f4e-83d5-4030-aca7-22ff2d37f9fc
+  snapshot_time_utc=2026-05-14T04:35:01Z
+========================================================================
+  model_only: deliveries/2026-05-09/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 828
+  odds_snapshot: data/odds_api/processed/2026-05-09/odds_pairs_hist_lockday_2026-05-09.parquet
+  freshness_manifest: <none>
+  canonical rows: 828
+  fair_odds_board rows: 17,733  diagnostics: {'fair_over_odds_null_count': 2561, 'fair_under_odds_null_count': 2561, 'zero_or_one_prob_count': 1434}
+  wrote deliveries/2026-05-09/pmf_model_review_package
+  wrote deliveries/2026-05-09/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[118/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-10 --run-mode backtest --out data/features/player_prop_features_2026-05-10_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=816
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-10_backtest.parquet
+\n[119/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-10 --run-mode backtest --out data/features/injury_lineup_features_2026-05-10_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=68
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-10_backtest.parquet
+\n[120/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-10_backtest.parquet --out data/features/role_state_features_2026-05-10.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-10.parquet
+\n[121/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-10_backtest.parquet --out data/features/teammate_on_off_features_2026-05-10.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-10.parquet
+\n[122/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-10_backtest.parquet --out data/features/opponent_matchup_features_2026-05-10.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-10.parquet
+\n[123/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-10_backtest.parquet --out data/features/sparse_stat_features_2026-05-10.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-10.parquet
+\n[124/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-10_backtest.parquet --out data/features/combo_covariance_features_2026-05-10.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-10.parquet
+\n[125/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-10 --feature-snapshot data/features/player_prop_features_2026-05-10_backtest.parquet --out predictions/stat_grid_2026-05-10.parquet\n2026-05-14 00:35:20,858 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:35:20,865 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-10.json
+2026-05-14 00:35:20,866 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:35:22,862 [INFO] NBA injury report: 0 players
+2026-05-14 00:35:24,389 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-10…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.88686160690256
+========================================================================
+build_stat_grid_pmfs — date=2026-05-10 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-10.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 72
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 838
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      68
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-10.parquet  (2026-05-14T04:36:49Z)
+\n[126/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-10 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-10 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=c5d1d5c4-cd62-4349-ae43-9d1bb658e636
+  snapshot_time_utc=2026-05-14T04:36:51Z
+========================================================================
+  model_only: deliveries/2026-05-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 816
+  odds_snapshot: data/odds_api/processed/2026-05-10/odds_pairs_hist_lockday_2026-05-10.parquet
+  freshness_manifest: <none>
+  canonical rows: 816
+  fair_odds_board rows: 17,476  diagnostics: {'fair_over_odds_null_count': 2580, 'fair_under_odds_null_count': 2580, 'zero_or_one_prob_count': 1477}
+  wrote deliveries/2026-05-10/pmf_model_review_package
+  wrote deliveries/2026-05-10/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[127/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-11 --run-mode backtest --out data/features/player_prop_features_2026-05-11_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=828
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-11_backtest.parquet
+\n[128/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-11 --run-mode backtest --out data/features/injury_lineup_features_2026-05-11_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=69
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-11_backtest.parquet
+\n[129/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-11_backtest.parquet --out data/features/role_state_features_2026-05-11.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-11.parquet
+\n[130/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-11_backtest.parquet --out data/features/teammate_on_off_features_2026-05-11.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-11.parquet
+\n[131/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-11_backtest.parquet --out data/features/opponent_matchup_features_2026-05-11.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-11.parquet
+\n[132/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-11_backtest.parquet --out data/features/sparse_stat_features_2026-05-11.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-11.parquet
+\n[133/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-11_backtest.parquet --out data/features/combo_covariance_features_2026-05-11.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-11.parquet
+\n[134/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-11 --feature-snapshot data/features/player_prop_features_2026-05-11_backtest.parquet --out predictions/stat_grid_2026-05-11.parquet\n2026-05-14 00:37:14,352 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:37:14,352 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:37:16,011 [INFO] NBA injury report: 0 players
+2026-05-14 00:37:18,188 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-11…
+    2 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.91845787545046
+========================================================================
+build_stat_grid_pmfs — date=2026-05-11 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-11.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 71
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 839
+  skipped (player, game): 1
+  per-stat counts:
+stat
+ast       70
+blk       70
+fg3m      69
+pa        70
+pr        70
+pra       70
+pts       70
+ra        70
+reb       70
+stl       70
+stocks    70
+tov       70
+
+wrote predictions/stat_grid_2026-05-11.parquet  (2026-05-14T04:38:45Z)
+\n[135/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-11 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-11 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=1e6d436a-a779-4bb2-a841-544e6c34d43d
+  snapshot_time_utc=2026-05-14T04:38:46Z
+========================================================================
+  model_only: deliveries/2026-05-11/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 828
+  odds_snapshot: data/odds_api/processed/2026-05-11/odds_pairs_hist_lockday_2026-05-11.parquet
+  freshness_manifest: <none>
+  canonical rows: 828
+  fair_odds_board rows: 17,733  diagnostics: {'fair_over_odds_null_count': 2747, 'fair_under_odds_null_count': 2747, 'zero_or_one_prob_count': 1443}
+  wrote deliveries/2026-05-11/pmf_model_review_package
+  wrote deliveries/2026-05-11/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[136/148] $ python3 scripts/build_player_prop_feature_snapshot.py --date 2026-05-12 --run-mode backtest --out data/features/player_prop_features_2026-05-12_backtest.parquet\nPLAYER_PROP_FEATURE_SNAPSHOT_PASS
+  rows=384
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/player_prop_features_2026-05-12_backtest.parquet
+\n[137/148] $ python3 scripts/build_injury_lineup_features.py --date 2026-05-12 --run-mode backtest --out data/features/injury_lineup_features_2026-05-12_backtest.parquet\nINJURY_LINEUP_FEATURES_PASS
+  rows=32
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/injury_lineup_features_2026-05-12_backtest.parquet
+\n[138/148] $ python3 scripts/predict_role_state_distribution.py --input data/features/player_prop_features_2026-05-12_backtest.parquet --out data/features/role_state_features_2026-05-12.parquet\nROLE_STATE_MODEL_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/role_state_features_2026-05-12.parquet
+\n[139/148] $ python3 scripts/build_teammate_on_off_features.py --input data/features/player_prop_features_2026-05-12_backtest.parquet --out data/features/teammate_on_off_features_2026-05-12.parquet\nTEAMMATE_ON_OFF_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/teammate_on_off_features_2026-05-12.parquet
+\n[140/148] $ python3 scripts/build_opponent_matchup_features.py --input data/features/player_prop_features_2026-05-12_backtest.parquet --out data/features/opponent_matchup_features_2026-05-12.parquet\nOPPONENT_MATCHUP_FEATURES_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/opponent_matchup_features_2026-05-12.parquet
+\n[141/148] $ python3 scripts/build_sparse_stat_features.py --input data/features/player_prop_features_2026-05-12_backtest.parquet --out data/features/sparse_stat_features_2026-05-12.parquet\nSPARSE_STAT_HURDLE_FEATURES_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/sparse_stat_features_2026-05-12.parquet
+\n[142/148] $ python3 scripts/build_combo_covariance_features.py --input data/features/player_prop_features_2026-05-12_backtest.parquet --out data/features/combo_covariance_features_2026-05-12.parquet\nCOMBO_JOINT_PMF_OOF_PASS
+  out=/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/data/features/combo_covariance_features_2026-05-12.parquet
+\n[143/148] $ python3 scripts/build_stat_grid_pmfs.py --date 2026-05-12 --feature-snapshot data/features/player_prop_features_2026-05-12_backtest.parquet --out predictions/stat_grid_2026-05-12.parquet\n2026-05-14 00:39:05,554 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-05-14 00:39:05,554 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.jpype.JPypeContext in an unnamed module (file:/opt/homebrew/lib/python3.10/site-packages/org.jpype.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-05-14 00:39:06,605 [INFO] NBA injury report: 0 players
+2026-05-14 00:39:07,851 [INFO] Minutes CDF calibrator loaded.
+  loading historical inputs…
+  fetching BDL games for 2026-05-12…
+    1 games
+  fetching injuries (BDL + NBA official)…
+Validated Injury-Report_2026-05-14_12_00AM.
+    injury_map=25 inactive=25
+  availability guard: suppress_inactive_risk=True freshness='stale' age_hours=168.94894334071213
+========================================================================
+build_stat_grid_pmfs — date=2026-05-12 stats=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk', 'stocks', 'pa', 'pr', 'ra', 'pra']
+ slate source: recent_rosters(max_players_per_team=18)
+ output : predictions/stat_grid_2026-05-12.parquet
+========================================================================
+ slate (player_id, game_id) pairs: 36
+  source recalibrator: enabled=True version=v4_guarded_oof_rollforward
+
+  produced rows: 406
+  skipped (player, game): 2
+  per-stat counts:
+stat
+ast       34
+blk       34
+fg3m      32
+pa        34
+pr        34
+pra       34
+pts       34
+ra        34
+reb       34
+stl       34
+stocks    34
+tov       34
+
+wrote predictions/stat_grid_2026-05-12.parquet  (2026-05-14T04:39:49Z)
+\n[144/148] $ python3 scripts/build_daily_pmf_delivery.py --date 2026-05-12 --snapshot after_game --no-odds-fetch\n========================================================================
+daily delivery — 2026-05-12 — snapshot=after_game
+  model_version=5c9c8e3a#phase10c  run_id=6aa21c04-1276-4e65-8d94-5bc8b6bda358
+  snapshot_time_utc=2026-05-14T04:39:51Z
+========================================================================
+  model_only: deliveries/2026-05-12/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+  rows: 384
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205105Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205109Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205203Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T205206Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212003Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205010Z.parquet
+  odds_snapshot: data/odds_api/processed/2026-05-12/odds_pairs_live_slate_morning_7am_2026-05-12T205014Z.parquet
+  freshness_manifest: data/freshness_manifest/2026-05-12.json  (overall=not_ready)
+  canonical rows: 384
+  fair_odds_board rows: 8,224  diagnostics: {'fair_over_odds_null_count': 1148, 'fair_under_odds_null_count': 1148, 'zero_or_one_prob_count': 667}
+  wrote deliveries/2026-05-12/pmf_model_review_package
+  wrote deliveries/2026-05-12/wizard_of_odds
+  publishable_edges: 0 rows (edge ≥ 0.04)
+  finality_status: final (blockers: none)
+\n[145/148] $ python3 scripts/build_event_market_loss_rows.py --dates-file artifacts/model_diagnostics/event_market_backtest_date_inventory.csv\nM8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=18977 matched=6592 scored_all_fields=6592
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-04-27.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=15319 matched=6944 scored_all_fields=6944
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-04-28.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=13553 matched=5856 scored_all_fields=5856
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-04-29.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=13916 matched=6431 scored_all_fields=6431
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-04-30.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=11030 matched=6193 scored_all_fields=6193
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-01.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=9244 matched=1997 scored_all_fields=1997
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-02.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=9124 matched=4106 scored_all_fields=4106
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-03.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=6736 matched=3892 scored_all_fields=3892
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-04.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=8484 matched=4146 scored_all_fields=4146
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-05.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=4884 matched=3127 scored_all_fields=3127
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-06.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=1502 matched=864 scored_all_fields=864
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-07.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=9320 matched=4423 scored_all_fields=4423
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-08.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=9512 matched=4648 scored_all_fields=4648
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-09.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=9538 matched=4620 scored_all_fields=4605
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-10.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=5229 matched=4759 scored_all_fields=4759
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-11.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS
+  rows=774 matched=466 scored_all_fields=466
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_2026-05-12.parquet
+  pmf_col_single=pmf pmf_col_combo=pmf
+  sign_convention=model_minus_market_negative_better
+M8_6Q_EVENT_MARKET_LOSS_ROWS_BUILD_PASS (dates-file)
+  rows=147142 matched=69064 scored_all_fields=69049
+  wrote: artifacts/model_diagnostics/event_market_loss_rows_dates_24c1750e26ad.parquet
+\n[146/148] $ python3 scripts/build_stat_role_market_superiority_report.py --dates-file artifacts/model_diagnostics/event_market_backtest_date_inventory.csv\nSTAT_ROLE_MARKET_SUPERIORITY_REPORT_PASS out=artifacts/model_diagnostics/event_market_superiority_dates_24c1750e26ad
+\n[147/148] $ python3 scripts/verify_market_superiority_math_contract.py --label dates_24c1750e26ad\nMARKET_SUPERIORITY_MATH_CONTRACT_FAIL

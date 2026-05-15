@@ -1,0 +1,658 @@
+woo_morning_monetization	UNKNOWN STEP	﻿2026-05-10T23:42:46.8807997Z Current runner version: '2.334.0'
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8836191Z ##[group]Runner Image Provisioner
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8837104Z Hosted Compute Agent
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8837667Z Version: 20260213.493
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8838321Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8839021Z Build Date: 2026-02-13T00:28:41Z
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8839732Z Worker ID: {65f1d109-6ef0-41db-80b6-80ccb4d565e9}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8840446Z Azure Region: northcentralus
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8840996Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8842420Z ##[group]Operating System
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8843068Z Ubuntu
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8843531Z 24.04.4
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8844258Z LTS
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8844771Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8845262Z ##[group]Runner Image
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8845806Z Image: ubuntu-24.04
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8846351Z Version: 20260413.86.1
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8847569Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260413.86/images/ubuntu/Ubuntu2404-Readme.md
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8849079Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260413.86
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8849933Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8852762Z ##[group]GITHUB_TOKEN Permissions
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8855420Z Actions: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8856026Z ArtifactMetadata: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8856619Z Attestations: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8857154Z Checks: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8857642Z Contents: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8858147Z Deployments: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8858710Z Discussions: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8859219Z Issues: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8859702Z Metadata: read
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8860247Z Models: read
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8860739Z Packages: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8861242Z Pages: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8861893Z PullRequests: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8862434Z RepositoryProjects: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8863001Z SecurityEvents: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8863543Z Statuses: write
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8864503Z VulnerabilityAlerts: read
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8865093Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8867302Z Secret source: Actions
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.8868077Z Prepare workflow directory
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.9291905Z Prepare all required actions
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:46.9331099Z Getting action download info
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.2649904Z Download action repository 'actions/checkout@v5' (SHA:93cb6efe18208431cddfb8368fd83d5badbf9bfd)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.4558627Z Download action repository 'actions/setup-python@v6' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.6291062Z Complete job name: woo_morning_monetization
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7038599Z ##[group]Run actions/checkout@v5
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7039499Z with:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7039892Z   fetch-depth: 0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7040395Z   repository: Risky-Scout/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7041185Z   token: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7041583Z   ssh-strict: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7041983Z   ssh-user: git
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7042394Z   persist-credentials: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7042889Z   clean: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7043293Z   sparse-checkout-cone-mode: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7044065Z   fetch-tags: false
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7044478Z   show-progress: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7044875Z   lfs: false
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7045257Z   submodules: false
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7045671Z   set-safe-directory: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7046374Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7046754Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7047228Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.7047746Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8053255Z Syncing repository: Risky-Scout/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8055816Z ##[group]Getting Git version info
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8056725Z Working directory is '/home/runner/work/nba-player-props-model/nba-player-props-model'
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8057929Z [command]/usr/bin/git version
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8116780Z git version 2.53.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8137627Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8153139Z Temporarily overriding HOME='/home/runner/work/_temp/b7d0d818-bd6c-4647-86ac-df3d4b559e8c' before making global git config changes
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8155887Z Adding repository directory to the temporary git global config as a safe directory
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8159591Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8196944Z Deleting the contents of '/home/runner/work/nba-player-props-model/nba-player-props-model'
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8201160Z ##[group]Initializing the repository
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8206060Z [command]/usr/bin/git init /home/runner/work/nba-player-props-model/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8299986Z hint: Using 'master' as the name for the initial branch. This default branch name
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8301705Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8302710Z hint: to use in all of your new repositories, which will suppress this warning,
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8303420Z hint: call:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8304256Z hint:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8305081Z hint: 	git config --global init.defaultBranch <name>
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8306079Z hint:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8306659Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8307585Z hint: 'development'. The just-created branch can be renamed via this command:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8308270Z hint:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8308646Z hint: 	git branch -m <name>
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8309069Z hint:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8309663Z hint: Disable this message with "git config set advice.defaultBranchName false"
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8311586Z Initialized empty Git repository in /home/runner/work/nba-player-props-model/nba-player-props-model/.git/
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8314897Z [command]/usr/bin/git remote add origin https://github.com/Risky-Scout/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8346476Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8347194Z ##[group]Disabling automatic garbage collection
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8351994Z [command]/usr/bin/git config --local gc.auto 0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8382496Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8383967Z ##[group]Setting up auth
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8390521Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8421959Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8746542Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.8784461Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.9040692Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.9078279Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.9330420Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.9377429Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.9383162Z ##[group]Fetching the repository
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:42:47.9384899Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6810085Z From https://github.com/Risky-Scout/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6811103Z  * [new branch]        main       -> origin/main
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6847668Z [command]/usr/bin/git branch --list --remote origin/main
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6870480Z   origin/main
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6881345Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6900759Z ec334e793e731c494f80bda7d9a4823f465881c4
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6905690Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6906625Z ##[group]Determining the checkout info
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6912818Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6914661Z [command]/usr/bin/git sparse-checkout disable
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6950071Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6975557Z ##[group]Checking out the ref
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:47.6979218Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:48.7465244Z Updating files:  26% (740/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:48.9645659Z Updating files:  27% (746/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.1495554Z Updating files:  28% (774/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2812669Z Updating files:  29% (801/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2825974Z Updating files:  30% (829/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2837666Z Updating files:  31% (856/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2849506Z Updating files:  32% (884/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2860853Z Updating files:  33% (912/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2876229Z Updating files:  34% (939/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.2892545Z Updating files:  35% (967/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.4735539Z Updating files:  36% (994/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.6282016Z Updating files:  37% (1022/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.6646155Z Updating files:  38% (1050/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.6991927Z Updating files:  39% (1077/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.7029921Z Updating files:  40% (1105/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.7297341Z Updating files:  40% (1119/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.7556554Z Updating files:  41% (1133/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.7703451Z Updating files:  42% (1160/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.7853939Z Updating files:  43% (1188/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.7939980Z Updating files:  44% (1215/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8257682Z Updating files:  45% (1243/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8383303Z Updating files:  46% (1271/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8480603Z Updating files:  47% (1298/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8563350Z Updating files:  48% (1326/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8575913Z Updating files:  49% (1353/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8590615Z Updating files:  50% (1381/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8602109Z Updating files:  51% (1409/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8671478Z Updating files:  52% (1436/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8774998Z Updating files:  53% (1464/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8826477Z Updating files:  54% (1491/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8879660Z Updating files:  55% (1519/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.8950965Z Updating files:  56% (1547/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9040565Z Updating files:  57% (1574/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9069131Z Updating files:  58% (1602/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9088853Z Updating files:  59% (1629/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9138675Z Updating files:  60% (1657/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9306752Z Updating files:  61% (1685/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9385204Z Updating files:  62% (1712/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9429490Z Updating files:  63% (1740/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9508019Z Updating files:  64% (1768/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9572928Z Updating files:  65% (1795/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9635384Z Updating files:  66% (1823/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9763217Z Updating files:  67% (1850/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:49.9954412Z Updating files:  68% (1878/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.0097853Z Updating files:  69% (1906/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.0285259Z Updating files:  70% (1933/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.0583740Z Updating files:  71% (1961/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.0735377Z Updating files:  72% (1988/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.0915717Z Updating files:  73% (2016/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.1099042Z Updating files:  74% (2044/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.1435894Z Updating files:  75% (2071/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.1706388Z Updating files:  76% (2099/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2351524Z Updating files:  77% (2126/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2381114Z Updating files:  78% (2154/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2493437Z Updating files:  79% (2182/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2526654Z Updating files:  80% (2209/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2546991Z Updating files:  81% (2237/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2558587Z Updating files:  82% (2265/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2656340Z Updating files:  83% (2292/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.2679578Z Updating files:  84% (2320/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.3009588Z Updating files:  85% (2347/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.3307422Z Updating files:  86% (2375/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.3561005Z Updating files:  87% (2403/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.3766068Z Updating files:  88% (2430/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4009388Z Updating files:  89% (2458/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4606219Z Updating files:  90% (2485/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4880285Z Updating files:  91% (2513/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4908968Z Updating files:  92% (2541/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4941731Z Updating files:  93% (2568/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4971450Z Updating files:  94% (2596/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.4999537Z Updating files:  95% (2623/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5023395Z Updating files:  96% (2651/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5048311Z Updating files:  97% (2679/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5079498Z Updating files:  98% (2706/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5093639Z Updating files:  99% (2734/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5094034Z Updating files: 100% (2761/2761)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5094648Z Updating files: 100% (2761/2761), done.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5134202Z Switched to a new branch 'main'
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5137930Z branch 'main' set up to track 'origin/main'.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5272867Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5311234Z [command]/usr/bin/git log -1 --format=%H
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5335034Z ec334e793e731c494f80bda7d9a4823f465881c4
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5645809Z ##[group]Run actions/setup-python@v6
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5646105Z with:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5646301Z   python-version: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5646519Z   cache: pip
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5646692Z   check-latest: false
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5647122Z   token: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5647316Z   update-environment: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5647541Z   allow-prereleases: false
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5647762Z   freethreaded: false
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5647982Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5648143Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5648368Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.5648628Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.6990269Z ##[group]Installed versions
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.7098113Z Successfully set up CPython (3.11.15)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:50.7098973Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:51.0328996Z [command]/opt/hostedtoolcache/Python/3.11.15/x64/bin/pip cache dir
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:52.7788395Z /home/runner/.cache/pip
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:52.8972050Z Cache hit for: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.0150357Z Received 121634816 of 147023073 (82.7%), 116.0 MBs/sec
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.2144331Z Received 147023073 of 147023073 (100.0%), 116.8 MBs/sec
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.2145867Z Cache Size: ~140 MB (147023073 B)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.2184792Z [command]/usr/bin/tar -xf /home/runner/work/_temp/7b930fa0-a5de-4ced-aa5a-01effee11a1d/cache.tzst -P -C /home/runner/work/nba-player-props-model/nba-player-props-model --use-compress-program unzstd
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4057951Z Cache restored successfully
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4126610Z Cache restored from key: setup-python-Linux-x64-24.04-Ubuntu-python-3.11.15-pip-3e9e7c2978b23fdb16f0e637f6a7deaf7d63f24c0c2943aa0f5820072112f5df
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4301558Z ##[group]Run pip install -r requirements.txt
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4302006Z ^[[36;1mpip install -r requirements.txt^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4331314Z shell: /usr/bin/bash -e {0}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4331575Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4331762Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4332013Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4332362Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4332802Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4333214Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4333588Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4334289Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4334673Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:54.4335264Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:55.8932706Z Collecting lightgbm==4.3.0 (from -r requirements.txt (line 1))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:55.8950672Z   Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl.metadata (19 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:55.9828585Z Collecting scikit-learn==1.4.2 (from -r requirements.txt (line 2))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:55.9846183Z   Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.1151062Z Collecting pandas==2.2.3 (from -r requirements.txt (line 3))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.1167835Z   Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.3085069Z Collecting numpy==1.26.4 (from -r requirements.txt (line 4))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.3101647Z   Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.3385910Z Collecting requests==2.32.3 (from -r requirements.txt (line 5))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.3401192Z   Using cached requests-2.32.3-py3-none-any.whl.metadata (4.6 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.4391971Z Collecting pyarrow==16.1.0 (from -r requirements.txt (line 6))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.4408694Z   Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.0 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.4575670Z Collecting joblib==1.4.2 (from -r requirements.txt (line 7))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.4590181Z   Using cached joblib-1.4.2-py3-none-any.whl.metadata (5.4 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.5699266Z Collecting scipy==1.13.1 (from -r requirements.txt (line 8))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.5714943Z   Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.5945535Z Collecting nbainjuries==1.1.1 (from -r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.5959154Z   Using cached nbainjuries-1.1.1-py3-none-any.whl.metadata (9.8 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.6092981Z Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.4.2->-r requirements.txt (line 2))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.6106339Z   Using cached threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.6240159Z Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements.txt (line 3))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.6253382Z   Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.6568354Z Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements.txt (line 3))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.7170351Z   Downloading pytz-2026.2-py2.py3-none-any.whl.metadata (22 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.7391556Z Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements.txt (line 3))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.7427594Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.8334140Z Collecting charset-normalizer<4,>=2 (from requests==2.32.3->-r requirements.txt (line 5))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.8353989Z   Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.8504645Z Collecting idna<4,>=2.5 (from requests==2.32.3->-r requirements.txt (line 5))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.8541552Z   Downloading idna-3.14-py3-none-any.whl.metadata (8.0 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.8774256Z Collecting urllib3<3,>=1.21.1 (from requests==2.32.3->-r requirements.txt (line 5))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.8810980Z   Downloading urllib3-2.7.0-py3-none-any.whl.metadata (6.9 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.9008697Z Collecting certifi>=2017.4.17 (from requests==2.32.3->-r requirements.txt (line 5))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.9075702Z   Downloading certifi-2026.4.22-py3-none-any.whl.metadata (2.5 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.9268508Z Collecting PyPDF2<4.0,>=3.0.1 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:56.9282297Z   Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4171777Z Collecting aiohttp<4.0,>=3.9.3 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4187848Z   Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.1 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4484080Z Collecting jpype1<1.6.0,>=1.5.2 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4499647Z   Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4712562Z Collecting tabula-py<3.0,>=2.9.0 (from nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4726649Z   Using cached tabula_py-2.10.0-py3-none-any.whl.metadata (7.6 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4866906Z Collecting aiohappyeyeballs>=2.5.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.4880864Z   Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl.metadata (5.9 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.5464765Z Collecting aiosignal>=1.4.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.5480733Z   Using cached aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.5607998Z Collecting attrs>=17.3.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.5621773Z   Using cached attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.6226429Z Collecting frozenlist>=1.1.1 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.6242861Z   Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.8392379Z Collecting multidict<7.0,>=4.5 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.8408738Z   Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.3 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.9030093Z Collecting propcache>=0.2.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:57.9072479Z   Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (16 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.1982562Z Collecting yarl<2.0,>=1.17.0 (from aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.1998874Z   Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2218854Z Collecting packaging (from jpype1<1.6.0,>=1.5.2->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2256136Z   Downloading packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2409747Z Collecting distro (from tabula-py<3.0,>=2.9.0->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2423667Z   Using cached distro-1.9.0-py3-none-any.whl.metadata (6.8 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2661712Z Collecting typing-extensions>=4.2 (from aiosignal>=1.4.0->aiohttp<4.0,>=3.9.3->nbainjuries==1.1.1->-r requirements.txt (line 9))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2676951Z   Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2802563Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements.txt (line 3))
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2816976Z   Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2869447Z Using cached lightgbm-4.3.0-py3-none-manylinux_2_28_x86_64.whl (3.1 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2895234Z Using cached scikit_learn-1.4.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.1 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.2954368Z Using cached pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3017222Z Using cached numpy-1.26.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (18.3 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3096288Z Using cached requests-2.32.3-py3-none-any.whl (64 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3109654Z Using cached pyarrow-16.1.0-cp311-cp311-manylinux_2_28_x86_64.whl (40.8 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3271215Z Using cached joblib-1.4.2-py3-none-any.whl (301 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3286012Z Using cached scipy-1.13.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3440113Z Using cached nbainjuries-1.1.1-py3-none-any.whl (15 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3453384Z Using cached aiohttp-3.13.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.8 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3473944Z Using cached charset_normalizer-3.4.7-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (214 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3514496Z Downloading idna-3.14-py3-none-any.whl (72 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3582472Z Using cached jpype1-1.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (494 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3597835Z Using cached multidict-6.7.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (246 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3611564Z Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3625921Z Using cached tabula_py-2.10.0-py3-none-any.whl (12.0 MB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3705652Z Downloading urllib3-2.7.0-py3-none-any.whl (131 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3760668Z Using cached yarl-1.23.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (102 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3774042Z Using cached aiohappyeyeballs-2.6.1-py3-none-any.whl (15 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3787786Z Using cached aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3801651Z Using cached attrs-26.1.0-py3-none-any.whl (67 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3836616Z Downloading certifi-2026.4.22-py3-none-any.whl (135 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3890577Z Using cached frozenlist-1.8.0-cp311-cp311-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (231 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3930355Z Downloading propcache-0.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (58 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.3967620Z Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4013524Z Downloading pytz-2026.2-py2.py3-none-any.whl (510 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4138067Z Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4151365Z Using cached threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4164340Z Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4205754Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4273352Z Using cached distro-1.9.0-py3-none-any.whl (20 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.4311721Z Downloading packaging-26.2-py3-none-any.whl (100 kB)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:44:58.6981929Z Installing collected packages: pytz, urllib3, tzdata, typing-extensions, threadpoolctl, six, PyPDF2, propcache, packaging, numpy, multidict, joblib, idna, frozenlist, distro, charset-normalizer, certifi, attrs, aiohappyeyeballs, yarl, scipy, requests, python-dateutil, pyarrow, jpype1, aiosignal, scikit-learn, pandas, lightgbm, aiohttp, tabula-py, nbainjuries
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.3569957Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.3591425Z Successfully installed PyPDF2-3.0.1 aiohappyeyeballs-2.6.1 aiohttp-3.13.5 aiosignal-1.4.0 attrs-26.1.0 certifi-2026.4.22 charset-normalizer-3.4.7 distro-1.9.0 frozenlist-1.8.0 idna-3.14 joblib-1.4.2 jpype1-1.5.2 lightgbm-4.3.0 multidict-6.7.1 nbainjuries-1.1.1 numpy-1.26.4 packaging-26.2 pandas-2.2.3 propcache-0.5.2 pyarrow-16.1.0 python-dateutil-2.9.0.post0 pytz-2026.2 requests-2.32.3 scikit-learn-1.4.2 scipy-1.13.1 six-1.17.0 tabula-py-2.10.0 threadpoolctl-3.6.0 typing-extensions-4.15.0 tzdata-2026.2 urllib3-2.7.0 yarl-1.23.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.4539025Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.4539736Z [notice] A new release of pip is available: 26.0.1 -> 26.1.1
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.4540440Z [notice] To update, run: pip install --upgrade pip
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9117674Z ##[group]Run python3 scripts/verify_secrets_preflight.py --mode daily
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9118195Z ^[[36;1mpython3 scripts/verify_secrets_preflight.py --mode daily^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9140790Z shell: /usr/bin/bash -e {0}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9141025Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9141198Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9141432Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9141994Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9142438Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9142868Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9143242Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9143608Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9144482Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9144921Z   BDL_API_KEY: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9145198Z   ODDS_API_KEY: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9145390Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9430034Z Secrets preflight (mode=daily; values are never printed):
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9430685Z   Required (present):
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9431124Z     - BDL_API_KEY: len=36  sha256_prefix=51cb7776
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9431690Z     - ODDS_API_KEY: len=32  sha256_prefix=ecc6164e
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9432526Z   Recommended (missing — soft warn):
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9432967Z     - SFTP_HOST
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9433288Z     - SFTP_USER
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9433597Z     - SFTP_PASS
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9434189Z     - SFTP_PATH
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9434569Z     - DUNKS_AND_THREES_API_KEY (or any alias)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9435777Z SECRETS_PREFLIGHT_PASS  mode=daily  required_present=2  recommended_missing=['SFTP_HOST', 'SFTP_USER', 'SFTP_PASS', 'SFTP_PATH', 'DUNKS_AND_THREES_API_KEY (or any alias)']
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9518440Z ##[group]Run if [ -n "" ]; then
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9518750Z ^[[36;1mif [ -n "" ]; then^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9519005Z ^[[36;1m  echo "date=" >> "$GITHUB_OUTPUT"^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9519268Z ^[[36;1melse^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9519504Z ^[[36;1m  ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9519889Z ^[[36;1m  echo "Resolved delivery_date=$ET_DATE via America/New_York"^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9520255Z ^[[36;1m  echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9520537Z ^[[36;1mfi^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9542467Z shell: /usr/bin/bash -e {0}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9542714Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9542889Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9543129Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9543477Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9544071Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9544528Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9544900Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9545275Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9545658Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9545972Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9604482Z Resolved delivery_date=2026-05-10 via America/New_York
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9650030Z ##[group]Run python3 scripts/predictions_readiness_gate.py \
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9650482Z ^[[36;1mpython3 scripts/predictions_readiness_gate.py \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9650797Z ^[[36;1m  --date "2026-05-10" \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9651059Z ^[[36;1m  --predict-cron-hour-utc 13 \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9651358Z ^[[36;1m  --mode "woo_morning_monetization"^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9672214Z shell: /usr/bin/bash -e {0}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9672457Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9672632Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9672875Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9673230Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9673895Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9674362Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9674753Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9675177Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9675561Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9676183Z   ODDS_API_KEY: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9676510Z   BDL_API_KEY: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:12.9676703Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:13.0029138Z [gate] predictions missing for 2026-05-10 mode=woo_morning_monetization files=all_props_2026-05-10.parquet,pmf_display_2026-05-10.json,singles_2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:13.0030501Z [gate] now_utc=2026-05-10T23:45:13.002725+00:00 today_utc=2026-05-10 slate_date=2026-05-10 predict_cron_hour_utc=13
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:13.0050309Z ##[warning]predictions missing and predict cron should have fired; invoking predict.py for slate=2026-05-10 mode=woo_morning_monetization
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:13.0058156Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/predict.py
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6620215Z 2026-05-10 23:45:15,042 [INFO] ============================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6621307Z 2026-05-10 23:45:15,042 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6622163Z 2026-05-10 23:45:15,042 [INFO] ============================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6622890Z 2026-05-10 23:45:15,042 [INFO] Target date: 2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6623548Z 2026-05-10 23:45:15,042 [INFO] Loading models...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6624583Z 2026-05-10 23:45:15,134 [INFO]   pts: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6625170Z 2026-05-10 23:45:15,213 [INFO]   reb: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6625714Z 2026-05-10 23:45:15,288 [INFO]   ast: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6626221Z 2026-05-10 23:45:15,358 [INFO]   fg3m: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6626750Z 2026-05-10 23:45:15,425 [INFO]   stl: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6627254Z 2026-05-10 23:45:15,493 [INFO]   blk: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6627769Z 2026-05-10 23:45:15,567 [INFO]   tov: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6628269Z 2026-05-10 23:45:15,705 [INFO]   pra: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6628837Z 2026-05-10 23:45:15,849 [INFO]   pr: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6629382Z 2026-05-10 23:45:15,984 [INFO]   pa: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6629890Z 2026-05-10 23:45:16,123 [INFO]   ra: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6630255Z 2026-05-10 23:45:16,256 [INFO]   stocks: 11 quantile models
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6630644Z 2026-05-10 23:45:16,257 [INFO]   Within-player correlation engine loaded
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6631048Z 2026-05-10 23:45:16,258 [INFO]   Global calibrator loaded: OVER
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6631418Z 2026-05-10 23:45:16,259 [INFO]   Global calibrator loaded: UNDER
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6631973Z 2026-05-10 23:45:16,259 [INFO]   Q50 bias corrections: {'ast': 1.139, 'blk': 1.04, 'fg3m': 1.092, 'pts': 5.39, 'reb': 0.911, 'stl': 0.29}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6632955Z 2026-05-10 23:45:16,268 [INFO] ResidualCenterer: learned=['pts', 'ast', 'reb', 'fg3m']  fallback=[]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6633486Z Failed validation - Injury-Report_2026-05-10_11_00PM.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6634320Z Validated Injury-Report_2026-05-10_05_00PM.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6634910Z 2026-05-10 23:45:16,268 [INFO]   Residual centerer loaded
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6635513Z 2026-05-10 23:45:16,324 [INFO]   FG3M hurdle model loaded
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6636183Z 2026-05-10 23:45:16,324 [INFO]   Live calibration table loaded: 46 entries
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6636949Z 2026-05-10 23:45:16,324 [INFO]   Minutes bucket corrections loaded: 12 entries
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6638013Z 2026-05-10 23:45:16,325 [INFO]   Calibration manifest: 0 promoted stat×side calibrators
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6639104Z 2026-05-10 23:45:16,337 [INFO]   PMF pipeline ready for 8/8 stats: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6640274Z 2026-05-10 23:45:16,337 [INFO]   PMF calibrators loaded: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6641107Z 2026-05-10 23:45:19,669 [INFO]   Availability table has no rows for today; live builder ready for on-demand features_for calls per player-game.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6641980Z 2026-05-10 23:45:19,669 [INFO] Loading historical data...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6642354Z 2026-05-10 23:45:24,974 [INFO] Fetching today's games (2026-05-10)...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6642698Z 2026-05-10 23:45:25,166 [INFO]   2 games
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6643075Z 2026-05-10 23:45:25,282 [INFO] Enriching game context with line movement snapshots...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6643575Z 2026-05-10 23:45:25,282 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6644709Z 2026-05-10 23:45:25,291 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6645836Z 2026-05-10 23:45:25,292 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6646553Z 2026-05-10 23:45:25,292 [INFO] Fetching injuries...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6647009Z 2026-05-10 23:45:25,452 [INFO]   25 BDL injury records
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6647353Z 2026-05-10 23:45:28,428 [INFO] NBA injury report: 4 players
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6647772Z 2026-05-10 23:45:28,463 [INFO] NBA injury report: 4 players matched to player_ids
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6648244Z 2026-05-10 23:45:28,463 [INFO]   27 players marked inactive (BDL + NBA official)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6648645Z 2026-05-10 23:45:28,463 [INFO] Fetching prop lines...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6648947Z 2026-05-10 23:45:28,838 [INFO]   70 prop lines
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6649269Z 2026-05-10 23:45:29,098 [INFO] Minutes CDF calibrator loaded.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6650034Z 2026-05-10 23:45:51,834 [INFO] Saved all-prop universe: /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/all_props_2026-05-10.parquet (29 rows)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6650812Z 2026-05-10 23:45:51,993 [INFO] Singles before portfolio limits: 29
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6651211Z 2026-05-10 23:45:51,993 [INFO] Singles after portfolio limits: 4
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6652121Z 2026-05-10 23:45:51,994 [INFO] Singles written → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-10.json  (safe before SGP step)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6653373Z 2026-05-10 23:45:51,994 [INFO] PMF display written → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/pmf_display_2026-05-10.json (4 props)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6654478Z 2026-05-10 23:45:51,994 [INFO] Generating SGP candidates (Gaussian copula)...
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6655121Z 2026-05-10 23:45:51,994 [INFO]   SGP candidate pool: 4 singles (4 eligible → capped at 6/game, max 60 total)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6655603Z 2026-05-10 23:45:52,089 [INFO]   2-leg: 0 | 3-leg: 0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6656283Z 2026-05-10 23:45:52,089 [INFO] SGPs    → /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/sgps_2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6656776Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6656888Z ======================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6657437Z   NBA Props Model — SINGLES (4 picks above 2.5% EV)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6657771Z ======================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6657985Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6658128Z [ELITE]  Devin Vassell — Blocks OVER 0.5
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6658427Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6658742Z   Model P: 67.8%  |  EV: +52.47%  |  Odds: +125
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6659024Z   Kelly:   0.089 units  |  Q50 proj: 1.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6659192Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6659336Z [ELITE]  Anthony Edwards — Threes UNDER 2.5
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6659640Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6659979Z   Model P: 65.3%  |  EV: +46.89%  |  Odds: +125
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6660377Z   Kelly:   0.066 units  |  Q50 proj: 2.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6660550Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6660716Z [ELITE]  Victor Wembanyama — Assists UNDER 3.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6661023Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6661331Z   Model P: 60.5%  |  EV: +44.02%  |  Odds: +138
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6661595Z   Kelly:   0.068 units  |  Q50 proj: 2.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6661901Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6662051Z [ELITE]  Anthony Edwards — Blocks UNDER 0.5
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6662356Z   Game:    San Antonio Spurs @ Minnesota Timberwolves
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6662650Z   Model P: 61.1%  |  EV: +43.46%  |  Odds: +135
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6662923Z   Kelly:   0.056 units  |  Q50 proj: 0.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6663091Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6682960Z No SGPs above EV threshold.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6683254Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6683350Z Files written:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6684064Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/singles_2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6685269Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/sgps_2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6686444Z   /home/runner/work/nba-player-props-model/nba-player-props-model/predictions/paper_trade_log.csv
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:52.6688244Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/publish_nba_props_today.py --date 2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.0419304Z NBA_PROPS_TODAY_PUBLISHED  date=2026-05-10  count=29  games=1  out=predictions/nba_props_today.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.1036685Z [gate] invoking /opt/hostedtoolcache/Python/3.11.15/x64/bin/python3 /home/runner/work/nba-player-props-model/nba-player-props-model/scripts/verify_daily_prediction_outputs.py --date 2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.4785661Z DAILY_PREDICTION_OUTPUTS_PASS  date=2026-05-10  parquet_rows=29  singles=4  pmf_display=4  today_count=29
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5432081Z PREDICTIONS_READY date=2026-05-10 mode=woo_morning_monetization
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5545759Z ##[group]Run PREDICT_FLAG=""
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5546078Z ^[[36;1mPREDICT_FLAG=""^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5546306Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5546570Z ^[[36;1m  PREDICT_FLAG="--predict"^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5546814Z ^[[36;1mfi^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5546989Z ^[[36;1mFORCE_FLAG=""^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5547212Z ^[[36;1mif [ "" = "true" ]; then^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5547474Z ^[[36;1m  FORCE_FLAG="--force-run"^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5547704Z ^[[36;1mfi^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5547947Z ^[[36;1mpython scripts/run_daily_delivery_pipeline.py \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5548265Z ^[[36;1m  --date 2026-05-10 \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5548513Z ^[[36;1m  --mode woo_morning_monetization \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5548783Z ^[[36;1m  --regions us us2 \^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5549062Z ^[[36;1m  --rebuild-canonical $PREDICT_FLAG $FORCE_FLAG^[[0m
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5570821Z shell: /usr/bin/bash -e {0}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5571063Z env:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5571279Z   PYTHON_VERSION: 3.11
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5571526Z   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5571874Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5572301Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib/pkgconfig
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5572718Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5573093Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5573495Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.15/x64
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5574237Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.15/x64/lib
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5574685Z   ODDS_API_KEY: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5574939Z   BDL_API_KEY: ***
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:45:53.5575128Z ##[endgroup]
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7802307Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7803241Z refresh_daily_inputs — 2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7803881Z   regions=['us', 'us2']  snapshot_type=morning_7am  max_events=20
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7804266Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7804626Z   → BDL refresh (player_game_stats)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7804890Z       incoming rows: 28
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7805114Z         distinct game_dates: ['2026-05-10']
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7805386Z         distinct game_ids:   1
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7805905Z         distinct players:    28
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7806127Z     
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7806293Z       merge summary:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7806512Z         rows kept (no key conflict):     84003
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7806796Z         rows replaced (key conflict):    0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7807073Z         rows added (new keys):           28
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7807344Z         final row count:                 84031
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7807590Z     
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7807847Z     wrote data/player_game_stats.parquet  (2026-05-10T23:45:55Z)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7808246Z   WARN: DUNKS_*_API_KEY unset; skipping D&T fetch.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7808603Z   → live-snapshot regions=us
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7808870Z       [quota] used=7248 remaining=4992752 last_cost=0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7809156Z     Live events: 3
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7809387Z       [quota] used=7256 remaining=4992744 last_cost=8
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7809689Z       [quota] used=7264 remaining=4992736 last_cost=8
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7809980Z       [quota] used=7272 remaining=4992728 last_cost=8
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7810316Z     Live slate: 3 events captured; 9612 quotes, 1698 pairs
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7810660Z   → live-snapshot regions=us2
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7810920Z       [quota] used=7272 remaining=4992728 last_cost=0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7811190Z     Live events: 3
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7811398Z       [quota] used=7281 remaining=4992719 last_cost=9
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7811687Z       [quota] used=7290 remaining=4992710 last_cost=9
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7811976Z       [quota] used=7299 remaining=4992701 last_cost=9
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7812484Z     Live slate: 3 events captured; 2745 quotes, 855 pairs
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7812728Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7812846Z wrote data/freshness_manifest/2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7813126Z   overall_status         : not_ready
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7813373Z   bdl_refresh.status     : ok
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7813765Z   dnt.status             : skipped:no_api_key
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7814040Z   odds.status            : ok
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7814739Z   odds.books_seen        : ['betmgm', 'betonlineag', 'betparx', 'bovada', 'draftkings', 'espnbet', 'fanatics', 'fanduel', 'fliff', 'hardrockbet', 'hardrockbet_az', 'hardrockbet_fl', 'williamhill_us']
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7815478Z   odds.market_coverage   : full
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7815727Z   predictions.exists     : True
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7816023Z   predictions.tov_status : missing_from_prediction_source
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7816353Z   availability.freshness : fresh
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7816600Z   artifacts.all_present  : False
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:07.7816848Z   finals.finality_status : finals_present
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:14.3552798Z 2026-05-10 23:46:14,354 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:14.3648547Z 2026-05-10 23:46:14,364 [INFO] load_line_movement_snapshot: 0 games from opening_lines_2026-05-10.json
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:14.3658976Z 2026-05-10 23:46:14,365 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:15.9310555Z 2026-05-10 23:46:15,930 [INFO] NBA injury report: 4 players
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:15.9660735Z 2026-05-10 23:46:15,965 [INFO] NBA injury report: 4 players matched to player_ids
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:46:19.6850855Z 2026-05-10 23:46:19,684 [INFO] Minutes CDF calibrator loaded.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7642339Z   loading historical inputs…
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7644061Z   fetching BDL games for 2026-05-10…
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7644495Z     2 games
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7644860Z   fetching injuries (BDL + NBA official)…
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7645394Z Failed validation - Injury-Report_2026-05-10_11_00PM.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7646007Z Validated Injury-Report_2026-05-10_05_00PM.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7646447Z     injury_map=29 inactive=27
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7646824Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7647556Z build_stat_grid_pmfs — date=2026-05-10 stats=['pts', 'reb', 'ast', 'fg3m', 'tov']
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7648211Z  slate source: recent_rosters(max_players_per_team=18)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7649267Z  output : predictions/stat_grid_2026-05-10.parquet
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7649778Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7650222Z  slate (player_id, game_id) pairs: 70
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7650521Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7650718Z   produced rows: 338
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7651023Z   skipped (player, game): 2
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7651399Z   per-stat counts:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7651716Z stat
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7652006Z ast     68
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7652204Z fg3m    66
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7652409Z pts     68
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7652708Z reb     68
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7652950Z tov     68
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7653051Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:49.7653241Z wrote predictions/stat_grid_2026-05-10.parquet  (2026-05-10T23:48:49Z)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9836084Z STAT_GRID_RECTANGULARIZE_WARN key_cols=['game_id', 'player_id'] before_rows=338 after_rows=330 before_pairs=68 after_pairs=66 dropped_incomplete_pairs=2 before_counts={'ast': 68, 'fg3m': 66, 'pts': 68, 'reb': 68, 'tov': 68} after_counts={'ast': 66, 'fg3m': 66, 'pts': 66, 'reb': 66, 'tov': 66}
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9837913Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9838841Z build_model_only_canonical_from_stat_grid — date=2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9839488Z source: predictions/stat_grid_2026-05-10.parquet
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9839918Z rows: 330
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9840162Z stat_counts:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9840420Z stat
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9840664Z ast     66
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9840922Z fg3m    66
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9841167Z pts     66
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9841409Z reb     66
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9842004Z tov     66
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9842272Z players: 65
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9842816Z wrote: deliveries/2026-05-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:50.9843555Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0424960Z FATAL: production MODEL_ONLY stat set mismatch for /home/runner/work/nba-player-props-model/nba-player-props-model/deliveries/2026-05-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet: expected=['pts', 'reb', 'ast', 'fg3m', 'tov', 'stl', 'blk'] missing=['blk', 'stl'] extra=[]. Regenerate from predictions/stat_grid_{date}.parquet; do not use stale all_props canonical.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0426511Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0427109Z daily delivery — 2026-05-10 — snapshot=morning
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0427528Z   model_version=ec334e79#phase10c  run_id=7c6c85f0-4bdd-421f-a3d7-c67736ef7b58
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0427952Z   snapshot_time_utc=2026-05-10T23:48:52Z
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0428240Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.0428731Z   model_only: deliveries/2026-05-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2066025Z FATAL: step exited 1: build 2026-05-10 morning
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2066627Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2067457Z daily delivery pipeline — date=2026-05-10  mode=woo_morning_monetization
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2068114Z   regions=['us', 'us2']  rebuild_canonical=True  predict=False  force_run=False
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2068798Z   started_at_utc=2026-05-10T23:45:53Z
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2069230Z ========================================================================
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2069648Z [gate] proceed=True  reason=mode=woo_morning_monetization skips tipoff gate
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2069961Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070046Z [$] refresh (morning_7am)
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070206Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070294Z [$] stat_grid 2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070429Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070529Z [$] canonical_from_stat_grid 2026-05-10
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070705Z 
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2070791Z [$] build 2026-05-10 morning
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2131684Z ##[error]Process completed with exit code 1.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.2236641Z Post job cleanup.
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3107421Z [command]/usr/bin/git version
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3147179Z git version 2.53.0
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3185540Z Temporarily overriding HOME='/home/runner/work/_temp/457f5b01-a277-4b60-985f-0824a1d1cbac' before making global git config changes
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3186612Z Adding repository directory to the temporary git global config as a safe directory
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3191600Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/nba-player-props-model/nba-player-props-model
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3229294Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3263989Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3504814Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3529228Z http.https://github.com/.extraheader
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3542580Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3579040Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3827525Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.3860324Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+woo_morning_monetization	UNKNOWN STEP	2026-05-10T23:48:52.4252696Z Cleaning up orphan processes

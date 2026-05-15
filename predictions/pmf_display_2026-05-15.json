@@ -1,0 +1,612 @@
+{
+  "date": "2026-05-15",
+  "generated_at": "2026-05-14T14:34:03.485925",
+  "props": [
+    {
+      "player_name": "Anthony Edwards",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.7475,
+      "market_prob": 0.4187,
+      "ev": 0.779,
+      "edge": 0.3288,
+      "fair_odds_over": 296,
+      "fair_odds_under": -296,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -140,
+        "under_odds": 138,
+        "best_odds": 138
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.7475,
+          "fair_odds": -296,
+          "display_prob": "74.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1852,
+          "fair_odds": 440,
+          "display_prob": "18.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0231,
+          "fair_odds": 4229,
+          "display_prob": "2.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0074,
+          "fair_odds": 13414,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0075,
+          "fair_odds": 13233,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0067,
+          "fair_odds": 14825,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0097,
+          "fair_odds": 10209,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.009,
+          "fair_odds": 11011,
+          "display_prob": "0.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Anthony Edwards",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.7329,
+      "market_prob": 0.452,
+      "ev": 0.583,
+      "edge": 0.2809,
+      "fair_odds_over": 274,
+      "fair_odds_under": -274,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "fanduel",
+        "over_odds": -128,
+        "under_odds": 116,
+        "best_odds": 116
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1547,
+          "fair_odds": 546,
+          "display_prob": "15.5%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2991,
+          "fair_odds": 234,
+          "display_prob": "29.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.279,
+          "fair_odds": 258,
+          "display_prob": "27.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.168,
+          "fair_odds": 495,
+          "display_prob": "16.8%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0609,
+          "fair_odds": 1542,
+          "display_prob": "6.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0382,
+          "fair_odds": 2518,
+          "display_prob": "3.8%"
+        }
+      ]
+    },
+    {
+      "player_name": "Donovan Mitchell",
+      "game": "Detroit Pistons @ Cleveland Cavaliers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 2.5,
+      "model_prob": 0.6875,
+      "market_prob": 0.4242,
+      "ev": 0.5813,
+      "edge": 0.2633,
+      "fair_odds_over": 220,
+      "fair_odds_under": -220,
+      "pmf_median": 2,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -144,
+        "under_odds": 130,
+        "best_odds": 130
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1409,
+          "fair_odds": 610,
+          "display_prob": "14.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.284,
+          "fair_odds": 252,
+          "display_prob": "28.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2625,
+          "fair_odds": 281,
+          "display_prob": "26.2%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1844,
+          "fair_odds": 442,
+          "display_prob": "18.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0804,
+          "fair_odds": 1144,
+          "display_prob": "8.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0282,
+          "fair_odds": 3446,
+          "display_prob": "2.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0195,
+          "fair_odds": 5028,
+          "display_prob": "1.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Stephon Castle",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 1.5,
+      "model_prob": 0.5483,
+      "market_prob": 0.348,
+      "ev": 0.5463,
+      "edge": 0.2003,
+      "fair_odds_over": -121,
+      "fair_odds_under": 121,
+      "pmf_median": 2,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 182,
+        "under_odds": -198,
+        "best_odds": 182
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1612,
+          "fair_odds": 520,
+          "display_prob": "16.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2905,
+          "fair_odds": 244,
+          "display_prob": "29.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2958,
+          "fair_odds": 238,
+          "display_prob": "29.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1592,
+          "fair_odds": 528,
+          "display_prob": "15.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0566,
+          "fair_odds": 1667,
+          "display_prob": "5.7%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0368,
+          "fair_odds": 2617,
+          "display_prob": "3.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Julius Randle",
+      "game": "San Antonio Spurs @ Minnesota Timberwolves",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 3.5,
+      "model_prob": 0.6655,
+      "market_prob": 0.4346,
+      "ev": 0.484,
+      "edge": 0.2309,
+      "fair_odds_over": 199,
+      "fair_odds_under": -199,
+      "pmf_median": 3,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -140,
+        "under_odds": 123,
+        "best_odds": 123
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1225,
+          "fair_odds": 716,
+          "display_prob": "12.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.181,
+          "fair_odds": 452,
+          "display_prob": "18.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.1933,
+          "fair_odds": 417,
+          "display_prob": "19.3%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1687,
+          "fair_odds": 493,
+          "display_prob": "16.9%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1373,
+          "fair_odds": 628,
+          "display_prob": "13.7%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0883,
+          "fair_odds": 1033,
+          "display_prob": "8.8%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0536,
+          "fair_odds": 1766,
+          "display_prob": "5.4%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0287,
+          "fair_odds": 3384,
+          "display_prob": "2.9%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0132,
+          "fair_odds": 7476,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0073,
+          "fair_odds": 13599,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Jalen Duren",
+      "game": "Detroit Pistons @ Cleveland Cavaliers",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 9.0,
+      "model_prob": 0.6691,
+      "market_prob": 0.5024,
+      "ev": 0.3917,
+      "edge": 0.1667,
+      "fair_odds_over": 202,
+      "fair_odds_under": -202,
+      "pmf_median": 8,
+      "line_vs_median": 1.0,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": 110,
+        "under_odds": 108,
+        "best_odds": 108
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0182,
+          "fair_odds": 5395,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0239,
+          "fair_odds": 4084,
+          "display_prob": "2.4%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0335,
+          "fair_odds": 2885,
+          "display_prob": "3.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0504,
+          "fair_odds": 1884,
+          "display_prob": "5.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0677,
+          "fair_odds": 1377,
+          "display_prob": "6.8%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0923,
+          "fair_odds": 983,
+          "display_prob": "9.2%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.1028,
+          "fair_odds": 873,
+          "display_prob": "10.3%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.1089,
+          "fair_odds": 818,
+          "display_prob": "10.9%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.1081,
+          "fair_odds": 825,
+          "display_prob": "10.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0946,
+          "fair_odds": 957,
+          "display_prob": "9.5%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0806,
+          "fair_odds": 1141,
+          "display_prob": "8.1%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0646,
+          "fair_odds": 1448,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0494,
+          "fair_odds": 1924,
+          "display_prob": "4.9%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.038,
+          "fair_odds": 2532,
+          "display_prob": "3.8%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0211,
+          "fair_odds": 4639,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.016,
+          "fair_odds": 6150,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.011,
+          "fair_odds": 8991,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0073,
+          "fair_odds": 13599,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Evan Mobley",
+      "game": "Detroit Pistons @ Cleveland Cavaliers",
+      "stat": "ast",
+      "stat_display": "Assists",
+      "side": "UNDER",
+      "line": 3.5,
+      "model_prob": 0.6205,
+      "market_prob": 0.4402,
+      "ev": 0.3527,
+      "edge": 0.1803,
+      "fair_odds_over": 164,
+      "fair_odds_under": -164,
+      "pmf_median": 3,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -140,
+        "under_odds": 118,
+        "best_odds": 118
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0825,
+          "fair_odds": 1112,
+          "display_prob": "8.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1548,
+          "fair_odds": 546,
+          "display_prob": "15.5%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2058,
+          "fair_odds": 386,
+          "display_prob": "20.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1774,
+          "fair_odds": 464,
+          "display_prob": "17.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1298,
+          "fair_odds": 670,
+          "display_prob": "13.0%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.1111,
+          "fair_odds": 800,
+          "display_prob": "11.1%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.065,
+          "fair_odds": 1438,
+          "display_prob": "6.5%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0328,
+          "fair_odds": 2949,
+          "display_prob": "3.3%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0211,
+          "fair_odds": 4639,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.01,
+          "fair_odds": 9900,
+          "display_prob": "1.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Dennis Schroder",
+      "game": "Detroit Pistons @ Cleveland Cavaliers",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.6739,
+      "market_prob": 0.4785,
+      "ev": 0.3218,
+      "edge": 0.1954,
+      "fair_odds_over": -207,
+      "fair_odds_under": 207,
+      "pmf_median": 1,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -104,
+        "under_odds": -125,
+        "best_odds": -104
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.3261,
+          "fair_odds": 207,
+          "display_prob": "32.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4077,
+          "fair_odds": 145,
+          "display_prob": "40.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2087,
+          "fair_odds": 379,
+          "display_prob": "20.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0576,
+          "fair_odds": 1636,
+          "display_prob": "5.8%"
+        }
+      ]
+    }
+  ]
+}
