@@ -1,1 +1,3 @@
 game_id,team_abbr,opponent_abbr,resolved_game_start_time_utc,source_used,source_confidence,source_payload_hash,resolution_blocker
+21707977,MIN,SAS,2026-05-16T01:40:00Z,odds_api_live_events,high,da66b86a00d8319c,
+21709238,CLE,DET,2026-05-15T23:10:00Z,odds_api_live_events,high,9ce09af98a2a9f63,
