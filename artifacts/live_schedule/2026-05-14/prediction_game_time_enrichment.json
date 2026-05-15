@@ -1,6 +1,21 @@
 {
-  "blocker": "predictions parquet missing: predictions/all_props_2026-05-14.parquet",
+  "blocker": "no real source resolved any tip time; resolver telemetry = {'delivery_date': '2026-05-14', 'predictions_present': True, 'predictions_rows': 0, 'predictions_unique_games': 0, 'from_predictions_count': 0, 'odds_api_cached_events': 0, 'odds_api_live_events': 2, 'bdl_live_games': 0, 'odds_api_key_present': True, 'bdl_api_key_present': True, 'pmf_display_matchups_parsed': 0, 'resolved_count': 0, 'unresolved_count': 0}",
   "delivery_date": "2026-05-14",
   "outcome": "pending",
-  "schema_version": "1.0"
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 0,
+    "delivery_date": "2026-05-14",
+    "from_predictions_count": 0,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 2,
+    "pmf_display_matchups_parsed": 0,
+    "predictions_present": true,
+    "predictions_rows": 0,
+    "predictions_unique_games": 0,
+    "resolved_count": 0,
+    "unresolved_count": 0
+  }
 }

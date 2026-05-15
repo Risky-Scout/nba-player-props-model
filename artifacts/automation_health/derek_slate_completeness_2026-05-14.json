@@ -11,8 +11,8 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-15T00:57:51Z",
-  "predictions_parquet_present": false,
+  "now_utc": "2026-05-15T01:48:33Z",
+  "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {
     "bdl_api_key_present": true,
@@ -23,9 +23,10 @@
     "odds_api_key_present": true,
     "odds_api_live_events": 2,
     "pmf_display_matchups_parsed": 0,
-    "predictions_present": false,
+    "predictions_present": true,
     "predictions_rows": 0,
     "predictions_unique_games": 0,
-    "resolution_blocker": "predictions/all_props_<date>.parquet missing or has no game_id"
+    "resolved_count": 0,
+    "unresolved_count": 0
   }
 }

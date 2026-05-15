@@ -6,9 +6,9 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-14",
-    "now_utc": "2026-05-15T00:58:06Z",
-    "pending_reason": "no_predictions_parquet",
-    "predictions_parquet_present": false,
+    "now_utc": "2026-05-15T01:48:48Z",
+    "pending_reason": "predictions_have_zero_games",
+    "predictions_parquet_present": true,
     "schedule_eval": [],
     "schedule_size": 0
   },

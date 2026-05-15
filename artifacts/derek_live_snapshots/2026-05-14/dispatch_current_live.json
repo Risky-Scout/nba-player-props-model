@@ -1,13 +1,13 @@
 {
-  "code_commit": "33cf7e3731045dcdc44abe0b6f536ff23d6b9a02",
+  "code_commit": "799d4ef1a79e82d4c77e0d23c5443991a71b7c41",
   "decisions": [],
   "delivery_date": "2026-05-14",
   "eligible_rows": 0,
-  "note": "no schedule loaded \u2014 predictions/all_props_2026-05-14.parquet slate_status=predictions_parquet_missing. Dispatcher exits cleanly with no work.",
-  "now_utc": "2026-05-15T00:57:52Z",
+  "note": "no schedule loaded \u2014 predictions/all_props_2026-05-14.parquet slate_status=predictions_parquet_present_but_no_games. Dispatcher exits cleanly with no work.",
+  "now_utc": "2026-05-15T01:48:35Z",
   "schedule_rows": 0,
   "schema_version": "1.0",
-  "slate_status": "predictions_parquet_missing",
+  "slate_status": "predictions_parquet_present_but_no_games",
   "snapshot_type": "current_live",
   "summary": {
     "failures": 0,
