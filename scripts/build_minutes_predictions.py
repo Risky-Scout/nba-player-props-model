@@ -3,7 +3,22 @@
 
 Writes:
     artifacts/minutes_predictions/{slate_date}/minutes_predictions.parquet
+        FULL player-game universe (every active roster slot the minutes
+        model can produce a prediction for — INCLUDING deep-bench rows).
+        This artifact powers the upstream eligibility gate but must NEVER
+        be treated as a publication-ready universe.
+    artifacts/minutes_predictions/{slate_date}/minutes_predictions_eligible.parquet
+        Filtered universe restricted to rows that satisfy the
+        ``player_game_eligibility`` rule (current market line OR
+        starter_probability >= 0.50 OR rotation_probability >= 0.50 OR
+        minutes_mean >= 12). Adds two columns to the base schema:
+        ``has_current_market_line`` (bool) and ``eligibility_reason``
+        (one of ``current_market_line``, ``starter_probability``,
+        ``rotation_probability``, ``minutes_floor``). This is the artifact
+        downstream publication code (canonical, review, Derek) must
+        derive its player universe from.
     artifacts/minutes_predictions/{slate_date}/manifest.json
+        Both artifact paths + universe / eligible row counts.
 
 This is the upstream signal used by the player-game eligibility gate
 (see ``src/nba_props_model/pipelines/player_game_eligibility.py``). It is
@@ -69,6 +84,12 @@ from nba_props_model.models.minutes import (  # noqa: E402
     projected_role_from_minutes_summary,
     role_probabilities_from_minutes_summary,
     summarize_minutes_distribution,
+)
+from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
+    ROTATION_MINUTES_FLOOR,
+    ROTATION_PROB_FLOOR,
+    STARTER_PROB_FLOOR,
+    build_current_market_player_signal,
 )
 
 
@@ -458,6 +479,115 @@ def validate_minutes_artifact(df: pd.DataFrame, *, slate_date: str) -> None:
         )
 
 
+_VALID_ELIGIBILITY_REASONS = (
+    "current_market_line",
+    "starter_probability",
+    "rotation_probability",
+    "minutes_floor",
+)
+
+
+def _load_current_market_df(slate_date: str) -> tuple[pd.DataFrame, Optional[Path]]:
+    """Locate today's odds snapshot (or fall back to market_comparison) so the
+    eligible-view builder can compute ``has_current_market_line``.
+
+    Returns ``(market_df, source_path)``. ``market_df`` is empty if no
+    source is available — the eligibility builder then relies on the
+    three model-derived floors (starter / rotation / minutes).
+    """
+    odds_dir = REPO_ROOT / "data" / "odds_api" / "processed" / slate_date
+    if odds_dir.exists():
+        cands = sorted(odds_dir.glob("odds_pairs_*.parquet"))
+        if cands:
+            try:
+                return pd.read_parquet(cands[-1]), cands[-1]
+            except Exception:
+                pass
+    market_cmp = (
+        REPO_ROOT
+        / "deliveries"
+        / slate_date
+        / "wizard_of_odds"
+        / "market_comparison.parquet"
+    )
+    if market_cmp.exists():
+        try:
+            return pd.read_parquet(market_cmp), market_cmp
+        except Exception:
+            pass
+    return pd.DataFrame(columns=["slate_date", "game_id", "player_id", "line"]), None
+
+
+def build_eligible_view(
+    universe_df: pd.DataFrame,
+    *,
+    slate_date: str,
+    market_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Filter the universe down to eligibility-positive rows and append
+    ``has_current_market_line`` + ``eligibility_reason``.
+
+    Eligibility rule mirrors
+    ``player_game_eligibility.build_player_game_eligibility``:
+        has_current_market_line OR
+        starter_probability >= 0.50 OR
+        rotation_probability >= 0.50 OR
+        minutes_mean >= 12.0
+    """
+    base = universe_df.copy()
+    base["slate_date"] = base["slate_date"].astype(str).str[:10]
+
+    sig = build_current_market_player_signal(market_df, slate_date=slate_date)
+    if sig is None or sig.empty:
+        sig = pd.DataFrame(
+            columns=[
+                "slate_date",
+                "game_id",
+                "player_id",
+                "has_current_market_line",
+                "quoted_stats",
+            ]
+        )
+    else:
+        sig = sig.copy()
+        sig["slate_date"] = sig["slate_date"].astype(str).str[:10]
+
+    keys = ["slate_date", "game_id", "player_id"]
+    sig_int = sig[keys + ["has_current_market_line"]].copy() if not sig.empty else sig.copy()
+    if not sig_int.empty:
+        sig_int["game_id"] = pd.to_numeric(sig_int["game_id"], errors="coerce").astype("Int64")
+        sig_int["player_id"] = pd.to_numeric(sig_int["player_id"], errors="coerce").astype("Int64")
+        sig_int = sig_int.dropna(subset=["game_id", "player_id"])
+
+    base["game_id"] = pd.to_numeric(base["game_id"], errors="coerce").astype("Int64")
+    base["player_id"] = pd.to_numeric(base["player_id"], errors="coerce").astype("Int64")
+
+    merged = base.merge(sig_int, on=keys, how="left")
+    merged["has_current_market_line"] = (
+        merged["has_current_market_line"].fillna(False).astype(bool)
+    )
+
+    for col in ("minutes_mean", "rotation_probability", "starter_probability"):
+        merged[col] = pd.to_numeric(merged[col], errors="coerce")
+
+    mask_market = merged["has_current_market_line"]
+    mask_starter = merged["starter_probability"].ge(STARTER_PROB_FLOOR).fillna(False)
+    mask_rotation = merged["rotation_probability"].ge(ROTATION_PROB_FLOOR).fillna(False)
+    mask_minutes = merged["minutes_mean"].ge(ROTATION_MINUTES_FLOOR).fillna(False)
+
+    eligible_mask = mask_market | mask_starter | mask_rotation | mask_minutes
+    merged["eligibility_reason"] = np.select(
+        [mask_market, mask_starter, mask_rotation, mask_minutes],
+        list(_VALID_ELIGIBILITY_REASONS),
+        default="not_eligible",
+    )
+
+    out = merged.loc[eligible_mask].copy()
+    out["game_id"] = out["game_id"].astype("int64")
+    out["player_id"] = out["player_id"].astype("int64")
+    return out.reset_index(drop=True)
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--slate-date", required=True, help="YYYY-MM-DD")
@@ -500,16 +630,39 @@ def main(argv: Optional[list[str]] = None) -> int:
     df.to_parquet(out_pq, index=False)
     print(f"  wrote {out_pq.relative_to(REPO_ROOT)} rows={len(df)}")
 
+    market_df, market_source = _load_current_market_df(slate_date)
+    eligible_df = build_eligible_view(
+        df, slate_date=slate_date, market_df=market_df
+    )
+    out_eligible_pq = out_dir / "minutes_predictions_eligible.parquet"
+    eligible_df.to_parquet(out_eligible_pq, index=False)
+    print(
+        f"  wrote {out_eligible_pq.relative_to(REPO_ROOT)} "
+        f"rows={len(eligible_df)} "
+        f"(universe={len(df)} dropped={len(df) - len(eligible_df)})"
+    )
+
     manifest = {
         "slate_date": slate_date,
         "train_through_date": train_through,
         "run_mode": run_mode,
         "status": "passed" if len(df) > 0 else "empty_slate",
         "row_count": int(len(df)),
+        "filtered_eligible_row_count": int(len(eligible_df)),
+        "universe_artifact_path": str(out_pq.relative_to(REPO_ROOT)),
+        "eligible_artifact_path": str(out_eligible_pq.relative_to(REPO_ROOT)),
         "source_features_path": str(feature_source.relative_to(REPO_ROOT)),
         "feature_snapshot_id": _hash_path(feature_source),
+        "current_market_source_path": (
+            str(market_source.relative_to(REPO_ROOT)) if market_source is not None else None
+        ),
         "minutes_model_version": "state_aware_v1",
         "required_columns_present": [c for c in REQUIRED_OUTPUT_COLUMNS if c in df.columns],
+        "eligibility_floors": {
+            "starter_probability": STARTER_PROB_FLOOR,
+            "rotation_probability": ROTATION_PROB_FLOOR,
+            "minutes_mean": ROTATION_MINUTES_FLOOR,
+        },
         "created_at_utc": _now_utc_iso(),
     }
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")

@@ -105,6 +105,106 @@ def _check_deep_bench(df: pd.DataFrame) -> int:
     return int(mask.sum())
 
 
+def _check_universe_contract(
+    df: pd.DataFrame, *, label: str, failures: list[dict]
+) -> None:
+    """Universe-artifact gate: schema + uniqueness + non-null minutes/role
+    quantiles + probability/minute ranges. NO deep-bench gate. The
+    universe artifact (``minutes_predictions.parquet``) is allowed to
+    contain deep-bench rows by design — the eligible view filters them
+    out for publication.
+    """
+    missing_min_cols = [c for c in REQUIRED_MINUTES_COLUMNS if c not in df.columns]
+    if missing_min_cols:
+        _add_failure(
+            failures, f"{label}_schema_missing",
+            f"missing columns {missing_min_cols}",
+        )
+
+    if not df.empty and all(
+        c in df.columns for c in ("slate_date", "game_id", "player_id")
+    ):
+        dupes = int(df.duplicated(["slate_date", "game_id", "player_id"]).sum())
+        if dupes:
+            _add_failure(
+                failures, f"{label}_duplicate_keys",
+                f"{dupes} duplicate slate_date/game_id/player_id rows",
+            )
+
+    if df.empty:
+        return
+
+    import numpy as _np
+
+    for col in (
+        "minutes_mean",
+        "minutes_p10",
+        "minutes_p50",
+        "minutes_p90",
+        "minutes_std",
+        "rotation_probability",
+        "starter_probability",
+    ):
+        if col not in df.columns:
+            continue
+        s = pd.to_numeric(df[col], errors="coerce")
+        bad = int(s.isna().sum() + (~_np.isfinite(s.astype(float))).sum())
+        if bad > 0:
+            _add_failure(
+                failures, f"{label}_null_or_nonfinite_{col}",
+                f"{bad} {label} rows with null/non-finite {col}",
+            )
+
+    for col in ("minutes_mean", "minutes_p10", "minutes_p50", "minutes_p90"):
+        if col not in df.columns:
+            continue
+        s = pd.to_numeric(df[col], errors="coerce")
+        bad = int(((s < 0.0) | (s > 60.0)).sum())
+        if bad > 0:
+            _add_failure(
+                failures, f"{label}_{col}_out_of_range",
+                f"{bad} {label} rows have {col} outside [0, 60]",
+            )
+
+    for col in ("rotation_probability", "starter_probability"):
+        if col not in df.columns:
+            continue
+        s = pd.to_numeric(df[col], errors="coerce")
+        bad = int(((s < 0.0) | (s > 1.0)).sum())
+        if bad > 0:
+            _add_failure(
+                failures, f"{label}_{col}_out_of_range",
+                f"{bad} {label} rows have {col} outside [0, 1]",
+            )
+
+
+def _check_publication_contract(
+    df: pd.DataFrame, *, label: str, failures: list[dict]
+) -> None:
+    """Publication-artifact gate: every row must be eligible (if a
+    ``player_game_eligible`` column is present) AND no deep-bench
+    no-line rows. Applies to the canonical, the model-review package,
+    Derek's forward feed, and the filtered ``minutes_predictions_eligible``
+    artifact.
+    """
+    if df.empty:
+        return
+    if "player_game_eligible" in df.columns:
+        bad = int(df["player_game_eligible"].astype(bool).eq(False).sum())
+        if bad > 0:
+            _add_failure(
+                failures, f"{label}_ineligible_rows",
+                f"{bad} {label} rows with player_game_eligible=False",
+            )
+    deep_bench = _check_deep_bench(df)
+    if deep_bench > 0:
+        _add_failure(
+            failures, f"{label}_deep_bench_no_line_PMFs",
+            f"{deep_bench} {label} rows are no-line, sub-12-min, "
+            "sub-50% rotation/starter",
+        )
+
+
 def _key_set(df: pd.DataFrame, keys: list[str]) -> set[tuple]:
     df2 = df.dropna(subset=keys)
     return set(zip(*[df2[k].astype(int) if df2[k].dtype != "object" else df2[k] for k in keys]))
@@ -116,6 +216,9 @@ def validate(date: str, train_through_date: str) -> dict:
     print(f"validate_daily_pmf_delivery date={date} train_through={train_through_date}")
 
     minutes_path = _path(f"artifacts/minutes_predictions/{date}/minutes_predictions.parquet")
+    minutes_eligible_path = _path(
+        f"artifacts/minutes_predictions/{date}/minutes_predictions_eligible.parquet"
+    )
     canonical_path = _path(f"deliveries/{date}/canonical_source/all_props_model_only.parquet")
     review_path = _path(
         f"deliveries/{date}/pmf_model_review_package/machine_readable/model_only.parquet"
@@ -124,7 +227,7 @@ def validate(date: str, train_through_date: str) -> dict:
     market_csv_path = _path(f"deliveries/{date}/wizard_of_odds/market_comparison.csv")
     derek_path = _path(f"deliveries/{date}/derek_forward_feed/derek_forward_feed.parquet")
 
-    # 1. minutes artifact missing
+    # 1. minutes UNIVERSE artifact missing
     minutes_df = _safe_read(minutes_path)
     if minutes_df is None:
         _add_failure(
@@ -132,25 +235,43 @@ def validate(date: str, train_through_date: str) -> dict:
             f"missing {minutes_path.relative_to(REPO_ROOT)}",
         )
 
-    # 2. minutes missing schema
+    # 2-3. universe-gate proof: schema + uniqueness + null/range checks.
+    # Deep-bench rows in the universe artifact are EXPECTED (by design); the
+    # eligible view filters them for publication. No deep-bench gate here.
     if minutes_df is not None:
-        missing_min_cols = [c for c in REQUIRED_MINUTES_COLUMNS if c not in minutes_df.columns]
-        if missing_min_cols:
-            _add_failure(
-                failures, "minutes_schema_missing",
-                f"missing columns {missing_min_cols}",
-            )
+        _check_universe_contract(
+            minutes_df, label="minutes_universe", failures=failures,
+        )
 
-    # 3. duplicate slate_date/game_id/player_id in minutes
-    if minutes_df is not None and not minutes_df.empty and all(
-        c in minutes_df.columns for c in ("slate_date", "game_id", "player_id")
-    ):
-        dupes = int(minutes_df.duplicated(["slate_date", "game_id", "player_id"]).sum())
-        if dupes:
-            _add_failure(
-                failures, "minutes_duplicate_keys",
-                f"{dupes} duplicate slate_date/game_id/player_id rows in minutes_predictions",
+    # 3b. eligible-view artifact: must exist, must pass publication gate.
+    minutes_eligible_df = _safe_read(minutes_eligible_path)
+    if minutes_eligible_df is None:
+        _add_failure(
+            failures, "minutes_eligible_artifact_missing",
+            f"missing {minutes_eligible_path.relative_to(REPO_ROOT)} — "
+            "rebuild via scripts/build_minutes_predictions.py",
+        )
+    else:
+        _check_publication_contract(
+            minutes_eligible_df, label="minutes_eligible", failures=failures,
+        )
+        if "eligibility_reason" in minutes_eligible_df.columns:
+            valid_reasons = {
+                "current_market_line",
+                "starter_probability",
+                "rotation_probability",
+                "minutes_floor",
+            }
+            bad_reason = int(
+                (~minutes_eligible_df["eligibility_reason"].astype(str).isin(valid_reasons))
+                .sum()
             )
+            if bad_reason > 0:
+                _add_failure(
+                    failures, "minutes_eligible_invalid_reason",
+                    f"{bad_reason} eligible rows with eligibility_reason not in "
+                    f"{sorted(valid_reasons)}",
+                )
 
     # 4. canonical missing required columns
     canonical_df = _safe_read(canonical_path)
@@ -292,10 +413,19 @@ def validate(date: str, train_through_date: str) -> dict:
         status = "passed"
 
     notes["minutes_predictions_rows"] = int(0 if minutes_df is None else len(minutes_df))
+    notes["minutes_eligible_rows"] = int(
+        0 if minutes_eligible_df is None else len(minutes_eligible_df)
+    )
     notes["canonical_rows"] = int(0 if canonical_df is None else len(canonical_df))
     notes["review_rows"] = int(0 if review_df is None else len(review_df))
     notes["market_rows"] = int(0 if market_df is None else len(market_df))
     notes["derek_rows"] = int(0 if derek_df is None else len(derek_df))
+    notes["proof_gates"] = {
+        "minutes_universe": "schema+uniqueness+null/range checks (NO deep-bench gate)",
+        "minutes_eligible_and_publication": (
+            "schema + deep-bench gate + player_game_eligible==True"
+        ),
+    }
 
     return {
         "delivery_date": date,

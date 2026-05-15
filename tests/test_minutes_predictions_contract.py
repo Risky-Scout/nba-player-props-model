@@ -153,3 +153,86 @@ def test_validator_rejects_probability_out_of_range():
     df = _good_df([_good_row(101, 9001, starter_probability=1.5)])
     with pytest.raises(SystemExit, match=r"outside \[0, 1\]"):
         validate_minutes_artifact(df, slate_date=SLATE_DATE)
+
+
+def _deep_bench_row(player_id, game_id, **overrides):
+    return _good_row(
+        player_id,
+        game_id,
+        rotation_probability=0.10,
+        starter_probability=0.05,
+        projected_role="deep_bench",
+        minutes_mean=4.0,
+        minutes_p10=0.0,
+        minutes_p50=3.0,
+        minutes_p90=9.0,
+        minutes_std=2.5,
+        p_inactive_used=0.40,
+        **overrides,
+    )
+
+
+def test_eligible_view_excludes_deep_bench_when_no_market_line():
+    """Q1 contract: universe artifact INCLUDES deep-bench rows by design,
+    eligible artifact EXCLUDES them when none of the four floors
+    (market line / starter / rotation / minutes) clears."""
+    build_eligible_view = build_minutes_predictions.build_eligible_view
+
+    universe = _good_df(
+        [
+            _good_row(101, 9001),
+            _deep_bench_row(102, 9001),
+            _good_row(103, 9001, rotation_probability=0.20, starter_probability=0.10,
+                      minutes_mean=20.0),
+            _good_row(104, 9001, rotation_probability=0.20, starter_probability=0.80,
+                      minutes_mean=8.0),
+        ]
+    )
+    # Empty market frame -> no current_market_line signal.
+    empty_market = pd.DataFrame(columns=["slate_date", "game_id", "player_id", "line", "stat"])
+
+    eligible = build_eligible_view(universe, slate_date=SLATE_DATE, market_df=empty_market)
+
+    universe_ids = set(universe["player_id"].tolist())
+    eligible_ids = set(eligible["player_id"].tolist())
+    assert 102 in universe_ids, "universe must include the deep-bench row"
+    assert 102 not in eligible_ids, "eligible view must drop deep-bench rows"
+    assert 101 in eligible_ids, "starter (>=0.50) must remain eligible"
+    assert 103 in eligible_ids, "minutes_mean>=12 must remain eligible"
+    assert 104 in eligible_ids, "starter_probability>=0.50 must remain eligible"
+
+    assert "has_current_market_line" in eligible.columns
+    assert "eligibility_reason" in eligible.columns
+    valid = {
+        "current_market_line",
+        "starter_probability",
+        "rotation_probability",
+        "minutes_floor",
+    }
+    assert set(eligible["eligibility_reason"].astype(str).tolist()).issubset(valid)
+
+
+def test_eligible_view_keeps_deep_bench_with_market_line():
+    """Same deep-bench row becomes eligible when a current market line
+    exists for it (current_market_line floor)."""
+    build_eligible_view = build_minutes_predictions.build_eligible_view
+
+    universe = _good_df([_deep_bench_row(202, 9002)])
+    market = pd.DataFrame(
+        [
+            {
+                "slate_date": SLATE_DATE,
+                "game_id": 9002,
+                "player_id": 202,
+                "line": 4.5,
+                "stat": "points",
+            }
+        ]
+    )
+
+    eligible = build_eligible_view(universe, slate_date=SLATE_DATE, market_df=market)
+    assert len(eligible) == 1
+    row = eligible.iloc[0].to_dict()
+    assert row["player_id"] == 202
+    assert bool(row["has_current_market_line"]) is True
+    assert row["eligibility_reason"] == "current_market_line"
