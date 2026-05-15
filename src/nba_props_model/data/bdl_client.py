@@ -21,7 +21,10 @@ import os
 import time
 import logging
 import statistics
-from typing import Any, Optional
+from datetime import date, datetime, timezone
+from pathlib import Path
+from typing import Any, Optional, AbstractSet
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -1024,56 +1027,55 @@ def enrich_game_context_with_snapshots(
 
 # ── NBA Official Injury Report ────────────────────────────────────────────────
 
-def get_nba_injury_report() -> dict:
+def get_nba_injury_report(
+    *,
+    slate_date: str | None = None,
+    slate_team_full_names: AbstractSet[str] | None = None,
+    repo_root: Path | None = None,
+    now_utc: datetime | None = None,
+) -> dict:
     """
-    Fetch the latest NBA official injury report.
+    Fetch the latest NBA official injury report (PDF) with structured logging.
     Returns {player_name_lower: {status, reason}} for all players listed.
     Statuses: Out, Questionable, Doubtful, Probable, Available
     Falls back gracefully if nbainjuries package unavailable.
+
+    When ``slate_date`` and ``repo_root`` are set, writes
+    ``artifacts/injury_report_selection/{slate_date}.json``.
     """
-    try:
-        from nbainjuries import injury
-        from datetime import datetime
-        import warnings
-        warnings.filterwarnings("ignore")
+    import warnings
 
-        now = datetime.now()
-        df = None
-        # Try current hour first, then fall back to 5PM report
-        for hour in [now.hour, 17, 13]:
-            try:
-                dt = datetime(now.year, now.month, now.day, hour, 0)
-                df = injury.get_reportdata(dt, return_df=True)
-                if df is not None and not df.empty:
-                    break
-            except Exception:
-                continue
+    from nba_props_model.data.nba_official_injury_report_fetch import (
+        fetch_nba_official_injury_report,
+    )
 
-        if df is None or df.empty:
-            logger.warning("NBA injury report: no data returned")
-            return {}
+    warnings.filterwarnings("ignore")
 
-        injury_dict = {}
-        for _, row in df.iterrows():
-            name = str(row.get('Player Name', '')).strip()
-            status = str(row.get('Current Status', '')).strip()
-            reason = str(row.get('Reason', '')).strip()
-            if not name or name == 'nan':
-                continue
-            # Convert "Last, First" to "first last"
-            parts = name.split(',')
-            if len(parts) == 2:
-                name_lower = f"{parts[1].strip()} {parts[0].strip()}".lower()
-            else:
-                name_lower = name.lower()
-            injury_dict[name_lower] = {'status': status, 'reason': reason}
+    if slate_date:
+        report_day = date.fromisoformat(slate_date)
+    else:
+        report_day = datetime.now(timezone.utc).astimezone(ZoneInfo("America/New_York")).date()
 
-        logger.info(f"NBA injury report: {len(injury_dict)} players")
-        return injury_dict
-
-    except Exception as e:
-        logger.warning(f"NBA injury report unavailable: {e}")
-        return {}
+    res = fetch_nba_official_injury_report(
+        report_day=report_day,
+        now_utc=now_utc,
+        slate_team_full_names=slate_team_full_names,
+        repo_root=repo_root,
+        slate_date_for_artifact=slate_date,
+    )
+    if not res.injury_dict:
+        logger.warning(
+            "NBA injury report: no data returned (freshness=%s attempts=%s)",
+            res.injury_freshness_status,
+            len(res.failed_injury_report_candidates),
+        )
+    else:
+        logger.info(
+            "NBA injury report: %s players from %s",
+            len(res.injury_dict),
+            res.selected_injury_report,
+        )
+    return res.injury_dict
 
 
 def merge_injury_sources(bdl_map: dict, nba_report: dict, stats_df) -> dict:

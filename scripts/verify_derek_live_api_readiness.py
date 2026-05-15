@@ -34,17 +34,19 @@ Rules baked in:
 from __future__ import annotations
 
 import argparse
-import importlib
 import json
 import os
 import sys
-from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from nba_props_model.data.nba_official_injury_report_fetch import (  # noqa: E402
+    INJURY_FRAGMENT_KEYS,
+    load_injury_report_selection,
+)
 
 
 def _now_utc_iso() -> str:
@@ -198,6 +200,12 @@ def main(argv=None) -> int:
             "that gating downstream."
         ),
     }
+
+    inj_blob = load_injury_report_selection(REPO_ROOT, args.date)
+    if inj_blob:
+        for key in INJURY_FRAGMENT_KEYS:
+            if key in inj_blob:
+                payload[key] = inj_blob[key]
 
     out_dir = REPO_ROOT / "artifacts" / "source_readiness" / args.date
     out_dir.mkdir(parents=True, exist_ok=True)

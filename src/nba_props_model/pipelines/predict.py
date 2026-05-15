@@ -126,6 +126,8 @@ except ImportError as e:
 
 from nba_props_model.paths import DATA_DIR, MODEL_DIR, PRED_DIR  # noqa: E402
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+
 # ── Constants ──────────────────────────────────────────────────────────────────
 
 STAT_DISPLAY = {
@@ -1060,8 +1062,19 @@ def main(argv=None):
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
     logger.info(f"  {len(injury_map)} BDL injury records")
+    slate_teams: set[str] = set()
+    for g in games:
+        for key in ("home_team", "visitor_team"):
+            t = g.get(key) or {}
+            fn = t.get("full_name")
+            if fn:
+                slate_teams.add(str(fn))
+    nba_report = get_nba_injury_report(
+        slate_date=target_date,
+        slate_team_full_names=slate_teams if slate_teams else None,
+        repo_root=REPO_ROOT,
+    )
     # Merge with NBA official injury report (more current, covers game-time decisions)
-    nba_report = get_nba_injury_report()
     injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
     INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
     inactive_player_ids = {

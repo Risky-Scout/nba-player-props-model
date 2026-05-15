@@ -139,7 +139,15 @@ def _file_sha256(p: Path) -> Optional[str]:
 
 
 def _find_feature_source(slate_date: str, run_mode: str) -> Path:
+    # Prefer the player_prop_features snapshot produced by the daily
+    # delivery orchestrator (scripts/run_daily_delivery_pipeline.py)
+    # via build_player_prop_feature_snapshot.py during the morning
+    # publish flow. It carries the same (player_id, game_id) universe
+    # and team / is_home identity columns build_minutes_predictions
+    # needs, so it is the canonical feature source for the upstream
+    # minutes / rotation artifact required by the stat-grid eligibility gate.
     candidates = [
+        REPO_ROOT / "data" / "features" / f"player_prop_features_{slate_date}_{run_mode}.parquet",
         REPO_ROOT / "data" / "features" / f"player_game_features_{slate_date}_{run_mode}.parquet",
         REPO_ROOT / "data" / "features" / f"injury_lineup_features_{slate_date}_{run_mode}.parquet",
         REPO_ROOT / "data" / "features" / f"player_game_features_{slate_date}_close_lock.parquet",
@@ -149,13 +157,15 @@ def _find_feature_source(slate_date: str, run_mode: str) -> Path:
             return path
     raise SystemExit(
         "FATAL: no feature-row source found for slate_date={d}, run_mode={m}. "
-        "Searched:\n  - {a}\n  - {b}\n  - {c}\n"
-        "Build features first via scripts/build_player_feature_store.py or "
-        "scripts/build_injury_lineup_features.py.".format(
+        "Searched:\n  - {a}\n  - {b}\n  - {c}\n  - {e}\n"
+        "Build features first via scripts/build_player_feature_store.py, "
+        "scripts/build_injury_lineup_features.py, or "
+        "scripts/build_player_prop_feature_snapshot.py.".format(
             d=slate_date, m=run_mode,
             a=candidates[0].relative_to(REPO_ROOT),
             b=candidates[1].relative_to(REPO_ROOT),
             c=candidates[2].relative_to(REPO_ROOT),
+            e=candidates[3].relative_to(REPO_ROOT),
         )
     )
 
@@ -280,7 +290,13 @@ def _seeded_std_from_distribution(
 
 
 def _resolve_team(features_row: pd.Series, team_abbr_map: dict) -> tuple[Optional[str], Optional[str], Optional[bool]]:
-    """Best-effort team/opponent/is_home resolution from a feature row."""
+    """Best-effort team/opponent/is_home resolution from a feature row.
+
+    Prefers team_id -> abbr lookup when team_id is present (player_game /
+    injury_lineup feature sources). Falls back to existing `team` /
+    `opponent` string columns when the feature source carries them
+    directly (canonical-derived player_prop_features snapshot).
+    """
     team_id = features_row.get("team_id")
     opp_id = features_row.get("opp_team_id")
     is_home_v = features_row.get("is_home")
@@ -292,6 +308,14 @@ def _resolve_team(features_row: pd.Series, team_abbr_map: dict) -> tuple[Optiona
         opp_abbr = team_abbr_map.get(int(opp_id)) if opp_id is not None and not (isinstance(opp_id, float) and math.isnan(opp_id)) else None
     except Exception:
         opp_abbr = None
+    if team_abbr is None:
+        existing = features_row.get("team")
+        if isinstance(existing, str) and existing:
+            team_abbr = existing
+    if opp_abbr is None:
+        existing_opp = features_row.get("opponent")
+        if isinstance(existing_opp, str) and existing_opp:
+            opp_abbr = existing_opp
     if isinstance(is_home_v, float) and math.isnan(is_home_v):
         is_home = None
     else:
@@ -591,13 +615,23 @@ def build_eligible_view(
 def main(argv: Optional[list[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--slate-date", required=True, help="YYYY-MM-DD")
-    ap.add_argument("--train-through-date", required=True, help="YYYY-MM-DD")
+    ap.add_argument(
+        "--train-through-date",
+        required=False,
+        default=None,
+        help=(
+            "YYYY-MM-DD. Metadata stamp for the manifest. "
+            "Defaults to --slate-date when omitted (live morning runs do "
+            "not retrain the minutes model, so a separate train-through "
+            "date is not strictly required)."
+        ),
+    )
     ap.add_argument("--run-mode", default="morning_expected",
                     help="morning_expected / close_lock / custom label")
     args = ap.parse_args(argv)
 
     slate_date = args.slate_date
-    train_through = args.train_through_date
+    train_through = args.train_through_date or slate_date
     run_mode = args.run_mode
 
     feature_source = _find_feature_source(slate_date, run_mode)
