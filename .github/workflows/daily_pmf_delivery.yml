@@ -255,6 +255,118 @@ jobs:
             exit 1
           fi
 
+  # ── Full day pipeline (manual dispatch: predict + refresh + Derek + WoO)
+  full_day:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: |
+      github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'full_day'
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install -r requirements.txt
+      - name: Secrets preflight (Phase 13AL)
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/verify_secrets_preflight.py --mode daily
+      - name: Resolve delivery date (America/New_York)
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
+            echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
+          else
+            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
+            echo "Resolved delivery_date=$ET_DATE via America/New_York"
+            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Predictions readiness gate (Phase 13AM)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
+          python3 scripts/predictions_readiness_gate.py \
+            --date "${{ steps.d.outputs.date }}" \
+            --predict-cron-hour-utc 13 \
+            --mode "full_day" \
+            $FORCE_PREDICT_ARG
+      - name: Run delivery pipeline (full_day, manual)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          PREDICT_FLAG=""
+          if [ "${{ github.event.inputs.run_predict }}" = "true" ]; then
+            PREDICT_FLAG="--predict"
+          fi
+          FORCE_FLAG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_FLAG="--force-run"
+          fi
+          python scripts/run_daily_delivery_pipeline.py \
+            --date ${{ steps.d.outputs.date }} \
+            --mode full_day \
+            --regions us us2 \
+            --rebuild-canonical \
+            --verify --fail-on-missing-delivery \
+            $PREDICT_FLAG $FORCE_FLAG
+      - name: Stage and commit approved files
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          python scripts/stamp_delivery_champion_metadata.py \
+            --delivery-date ${{ steps.d.outputs.date }}
+          python scripts/verify_derek_woo_champion_dependency.py \
+            --delivery-date ${{ steps.d.outputs.date }} \
+            --require-both-sides false
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          if ! git add deliveries/${{ steps.d.outputs.date }} \
+                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
+                       deliveries/README.md \
+                       deliveries/index.html \
+                       public_export/wizard_of_odds; then
+            echo "::error::git add failed for one or more paths"
+            exit 1
+          fi
+          git diff --staged --quiet && echo "Nothing to commit" || \
+            git commit \
+              --author="Joseph Shackelford <josephshack@gmail.com>" \
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (full_day)"
+          git checkout -- data/player_game_stats.parquet \
+                          artifacts/automation_health/derek_woo_champion_dependency.json \
+                          artifacts/automation_health/derek_woo_champion_dependency.md \
+                          2>/dev/null || true
+          DIRTY_REMAINING=$(git diff --name-only)
+          if [ -n "$DIRTY_REMAINING" ]; then
+            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
+            echo "$DIRTY_REMAINING"
+            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
+          fi
+          PUSH_SUCCESS=0
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push origin main; then
+              PUSH_SUCCESS=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$PUSH_SUCCESS" != "1" ]; then
+            echo "::error::git push failed after 3 attempts"
+            exit 1
+          fi
+
   # ── WoO morning monetization (15:00 UTC = 11 AM ET) ──────────────────────
   woo_morning_monetization:
     runs-on: ubuntu-latest

@@ -5,13 +5,16 @@ name: NBA PMF Model — Nightly Training & Calibration
 #
 # Schedule rationale:
 #   06:30 UTC = 2:30 AM ET   after-game scoring (handled by daily_pmf_delivery.yml)
-#   09:30 UTC = 5:30 AM ET   THIS WORKFLOW: train challenger, calibrate, validate, maybe promote.
-#   14:30 UTC                hard cutoff — the orchestrator will refuse to promote past this point.
-#   15:00 UTC = 11 AM ET     first WoO monetization run (daily_pmf_delivery.yml).
+#   09:30 UTC = 5:30 AM ET   THIS WORKFLOW: train challenger, calibrate, validate,
+#                            maybe promote (retries at 12:30 / 15:30 / 18:30 / 21:30 UTC).
+#   15:00 UTC = 11 AM ET     first WoO monetization run (daily_pmf_delivery.yml). Delivery
+#                            gates enforce champion freshness vs the slate date (no orchestrator
+#                            wall-clock promotion veto).
 #
 # Hard rules echoed:
 #   - Production champion is unchanged on any failure path.
-#   - Promotion is forbidden at or after 14:30 UTC. The orchestrator enforces this.
+#   - Promotion is **not** blocked by a 14:30 UTC wall clock; late-day retries can still
+#     advance the champion so deliveries see a slate_minus_1-trained pointer.
 #   - Never market-anchor model-only PMFs.
 #   - Never reference Phase 10D / 10D.2 overlays.
 #   - Never log or stage secrets, raw API data, zips, logs, or scratch files.
@@ -68,9 +71,11 @@ jobs:
 
   nightly_training:
     runs-on: ubuntu-latest
-    # Hard cap: 240 minutes. The 09:30 UTC start + 240 min cap = 13:30 UTC
-    # latest finish, which is still 90 minutes before the 14:30 UTC promotion
-    # cutoff and 5.5 hours before the 15:00 UTC WoO publish window.
+    permissions:
+      contents: write
+      actions: write
+    # Hard cap: 240 minutes. The 09:30 UTC slot + retries through 21:30 UTC must finish
+    # within this window ahead of WoO monetization publishes.
     timeout-minutes: 240
     concurrency:
       group: phase13a-nightly-training
@@ -472,3 +477,13 @@ jobs:
             echo "::error::git push failed after 3 attempts"
             exit 1
           fi
+
+      - name: Trigger PMF delivery after nightly registry push
+        if: success() && steps.d.outputs.date != '' && steps.run_nightly.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run daily_pmf_delivery.yml \
+            --ref ${{ github.ref_name }} \
+            -f mode=woo_morning_monetization \
+            -f run_predict=true

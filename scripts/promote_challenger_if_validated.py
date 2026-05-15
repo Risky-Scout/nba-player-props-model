@@ -9,7 +9,9 @@ Usage:
     python3 scripts/promote_challenger_if_validated.py --as-of-date YYYY-MM-DD --force-no-promote
 
 Hard rules:
-- Promotion is forbidden at or after 14:30 UTC (protects 15:00 UTC WoO run).
+- Promotion has **no** 14:30 UTC veto; scheduled nightly retries later the same day
+  must be able to advance the champion whenever validation passes (WoO publishes
+  can still lag; delivery gates enforce freshness vs the slate date).
 - Promotion is forbidden if validation_report.json or promotion_decision.json
   is missing, malformed, or carries any failed safety gate.
 - Promotion is forbidden if the lockfile cannot be acquired safely.
@@ -41,7 +43,6 @@ from nba_props_model.training_automation import (  # noqa: E402
     REGISTRY_DIR,
     challenger_dir,
     git_commit,
-    is_past_promotion_cutoff,
     load_champion_pointer,
     parse_date,
     promotion_lock,
@@ -218,15 +219,6 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(marker))
         return 0
-    if is_past_promotion_cutoff():
-        marker = _no_promotion(
-            ch_dir,
-            reason="promotion_clock_unsafe_at_or_after_14:30_utc",
-            decision=decision,
-        )
-        print(json.dumps(marker))
-        return 0
-
     # All vetoes cleared. Acquire the lock and swap the pointer.
     pointer = load_champion_pointer()
     from_version = pointer.get("model_version", "unknown")

@@ -11,8 +11,9 @@ Usage:
 
 Hard rules:
 - Production champion is unchanged on any failure path.
-- Promotion is forbidden at or after 14:30 UTC; orchestrator stops short of
-  promote() if cutoff would be crossed.
+- Promotion is **not** gated on the legacy 14:30 UTC cutoff: automated retries
+  (including 15:30 / 18:30 / 21:30 UTC) must be able to advance the champion
+  the same UTC day whenever train/cal/validate succeeds.
 - Never market-anchors model-only PMFs. Never references Phase 10D / 10D.2
   overlays.
 """
@@ -33,7 +34,6 @@ from nba_props_model.training_automation import (  # noqa: E402
     NIGHTLY_TRAINING_DIR,
     challenger_dir,
     git_commit,
-    is_past_promotion_cutoff,
     nightly_run_dir,
     parse_date,
     read_json,
@@ -511,7 +511,7 @@ def main(argv: list[str] | None = None) -> int:
         if decision_path.exists():
             shutil.copy2(decision_path, run_dir / "promotion_decision.json")
 
-    # 6. Maybe promote — guard against the WoO cutoff.
+    # 6. Maybe promote (no wall-clock cutoff — retries must ship the pointer).
     if final_status == "ok":
         if args.no_promote:
             steps.append(
@@ -521,16 +521,6 @@ def main(argv: list[str] | None = None) -> int:
                     "reason": "--no-promote was set",
                 }
             )
-        elif is_past_promotion_cutoff():
-            steps.append(
-                {
-                    "name": "promote",
-                    "skipped": True,
-                    "reason": "promotion_clock_unsafe_at_or_after_14:30_utc",
-                }
-            )
-            halted_reason = "promotion_clock_cutoff"
-            final_status = "halted_no_promotion"
         else:
             steps.append(
                 _step(

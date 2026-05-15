@@ -14,17 +14,22 @@ This gate centralizes the readiness check:
 
     1. Resolve the slate date (caller passes --date already resolved in
        America/New_York by the workflow).
-    2. Check predictions/all_props_<date>.parquet, pmf_display_<date>.json,
-       singles_<date>.json. If all three exist:
+    2. Require ``artifacts/models/registry/champion_pointer.json`` to carry
+       ``trained_through_date`` / ``calibrated_through_date`` (including
+       contextual overrides) covering the slate's **previous calendar day**
+       (slate_minus_1): the champion must incorporate outcomes through every
+       game night before today's slate date.
+    3. Check predictions/all_props_<date>.parquet, pmf_display_<date>.json,
+       singles_<date>.json. If all three exist after step 3:
          - emit PREDICTIONS_READY
          - set should_proceed=true
          - exit 0 (job continues)
-    3. If predictions are missing AND now (UTC) is before predict-cron-hour:
+    4. If predictions are missing AND now (UTC) is before predict-cron-hour:
          - emit WAITING_FOR_PREDICTIONS_VALID_SKIP
          - set should_proceed=false
          - exit 0 GREEN (downstream steps gated `if: should_proceed=='true'`
            skip cleanly; job conclusion=success)
-    4. If predictions are missing AND we are at/past the predict cron AND
+    5. If predictions are missing AND we are at/past the predict cron AND
        --no-run-predict is NOT passed (forward-looking modes):
          - invoke scripts/predict.py
          - if predict.py exits non-zero or still does not produce all
@@ -32,20 +37,21 @@ This gate centralizes the readiness check:
            PREDICT_OUTPUTS_MISSING and exit 1
          - on success, run scripts/verify_daily_prediction_outputs.py and
            continue with should_proceed=true
-    5. If --no-run-predict is set (after-game mode for past slates):
+    6. If --no-run-predict is set (after-game mode for past slates):
          - emit WAITING_FOR_PREDICTIONS_VALID_SKIP if missing (no chance
            to regenerate a past slate's predictions from this workflow)
          - set should_proceed=false; exit 0
 
-Hard rule: this gate must NEVER red-fail in cases (3) or (5). Only case
-(4) — predictions are due AND predict.py was unable to produce them — is
-allowed to fail the job, and it MUST do so visibly so the operator notices.
+Hard rule: this gate must NEVER red-fail in cases (4) or (6). Champion
+staleness (step 2) and predict failures (step 5) are allowed to fail the job
+so the operator notices before PMFs ship.
 
 Output contract — exactly one of these tokens appears on stdout:
 
     PREDICTIONS_READY                       date=<DATE> mode=<MODE>
     WAITING_FOR_PREDICTIONS_VALID_SKIP      date=<DATE> mode=<MODE>
                                             reason=<early|past_slate|...>
+    CHAMPION_POINTER_STALE                   date=<DATE> mode=<MODE>
     PREDICT_PY_FAILED                       date=<DATE> mode=<MODE>
     PREDICT_OUTPUTS_MISSING                 date=<DATE> mode=<MODE>
 
@@ -58,15 +64,21 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
-import json
 import os
 import subprocess
 import sys
 from pathlib import Path
 
-from nba_props_model.data.bdl_client import get_games
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from nba_props_model.data.bdl_client import get_games  # noqa: E402
+from nba_props_model.training_automation import (  # noqa: E402
+    CHAMPION_POINTER_PATH,
+    parse_date,
+    read_json,
+)
+
 PREDICTIONS_DIR = REPO_ROOT / "predictions"
 
 
@@ -118,6 +130,61 @@ def _is_no_game_slate(date: str) -> bool:
         return False
 
 
+def _champion_covers_prior_slate_calendar_day(slate_date: str) -> tuple[bool, str]:
+    """Champion trained+calibrated through must reach the calendar day before the slate.
+
+    The workflow passes slate_date in America/New_York; previous-day semantics
+    for that slate are ``slate_calendar_date − 1 day``.
+    """
+    try:
+        slate = parse_date(slate_date)
+    except ValueError:
+        return False, f"unparseable_slate_date={slate_date!r}"
+    need = slate - _dt.timedelta(days=1)
+    if not CHAMPION_POINTER_PATH.exists():
+        return False, (
+            f"missing {CHAMPION_POINTER_PATH.relative_to(REPO_ROOT)} "
+            f"need_calibrated_through>={need} for slate={slate.isoformat()}"
+        )
+    try:
+        pointer = read_json(CHAMPION_POINTER_PATH)
+    except Exception as exc:
+        return False, f"champion_pointer_invalid_json:{exc}"
+
+    trained_raw = pointer.get("contextual_trained_through_date") or pointer.get(
+        "trained_through_date"
+    )
+    cal_raw = pointer.get("contextual_calibrated_through_date") or pointer.get(
+        "calibrated_through_date"
+    )
+    if not trained_raw or not cal_raw:
+        return (
+            False,
+            "pointer_missing_trained_through_or_calibrated_through "
+            f"need>={need} slate={slate.isoformat()}",
+        )
+    try:
+        trained_through = parse_date(str(trained_raw))
+        calibrated_through = parse_date(str(cal_raw))
+    except ValueError:
+        return (
+            False,
+            "unparseable_trained_through_or_calibrated_through "
+            f"trained_through={trained_raw!r} calibrated_through={cal_raw!r}",
+        )
+    eff = min(trained_through, calibrated_through)
+    if eff < need:
+        return (
+            False,
+            (
+                f"effective_through={eff} trained_through={trained_through} "
+                f"calibrated_through={calibrated_through} "
+                f"need_through>={need} slate={slate.isoformat()}"
+            ),
+        )
+    return True, ""
+
+
 def _proceed(date: str, mode: str) -> int:
     _emit(f"PREDICTIONS_READY date={date} mode={mode}")
     _emit_github_output("should_proceed", "true")
@@ -138,39 +205,6 @@ def _hard_fail(token: str, date: str, mode: str, detail: str = "") -> int:
     _emit(f"{token} date={date} mode={mode}{suffix}")
     _emit_github_output("should_proceed", "false")
     return 1
-
-
-def _check_champion_freshness(date: str) -> tuple[bool, str]:
-    """Ensure champion pointer is trained/calibrated through previous day."""
-    p = REPO_ROOT / "artifacts" / "models" / "registry" / "champion_pointer.json"
-    if not p.exists():
-        return False, "champion_pointer_missing"
-    try:
-        j = json.loads(p.read_text(encoding="utf-8"))
-    except Exception as exc:
-        return False, f"champion_pointer_unreadable:{exc}"
-    trained = str(j.get("trained_through_date") or "")
-    calibrated = str(j.get("calibrated_through_date") or "")
-    try:
-        target_prev = (
-            _dt.date.fromisoformat(date) - _dt.timedelta(days=1)
-        ).isoformat()
-    except Exception:
-        return False, f"invalid_slate_date:{date}"
-    if not trained or not calibrated:
-        return False, (
-            f"champion_pointer_missing_dates trained={trained!r} "
-            f"calibrated={calibrated!r}"
-        )
-    if trained < target_prev or calibrated < target_prev:
-        return False, (
-            f"champion_pointer_stale required_prev_day={target_prev} "
-            f"trained_through={trained} calibrated_through={calibrated}"
-        )
-    return True, (
-        f"champion_pointer_fresh required_prev_day={target_prev} "
-        f"trained_through={trained} calibrated_through={calibrated}"
-    )
 
 
 def _run_predict_py(date: str) -> tuple[int, str, bool]:
@@ -279,18 +313,17 @@ def main() -> int:
     date = args.date
     mode = args.mode
 
-    fresh_ok, fresh_detail = _check_champion_freshness(date)
-    if not fresh_ok:
+    if _is_no_game_slate(date):
+        return _valid_skip(date, mode, reason="no_games_slate")
+
+    champ_ok, champ_detail = _champion_covers_prior_slate_calendar_day(date)
+    if not champ_ok:
         return _hard_fail(
             "CHAMPION_POINTER_STALE",
             date,
             mode,
-            detail=fresh_detail,
+            detail=champ_detail,
         )
-    _emit(f"[gate] {fresh_detail}")
-
-    if _is_no_game_slate(date):
-        return _valid_skip(date, mode, reason="no_games_slate")
 
     missing = _missing(date)
     if not missing:
