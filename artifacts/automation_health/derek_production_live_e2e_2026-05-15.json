@@ -2,11 +2,11 @@
   "facts": {
     "any_target_in_past": false,
     "any_target_overdue": false,
-    "champion_pointer_contextual_pmf_engine": true,
-    "champion_pointer_direct_lineup_pmf_driver": true,
-    "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+    "champion_pointer_contextual_pmf_engine": null,
+    "champion_pointer_direct_lineup_pmf_driver": null,
+    "champion_pointer_feature_set_id": null,
     "delivery_date": "2026-05-15",
-    "now_utc": "2026-05-15T04:17:31Z",
+    "now_utc": "2026-05-15T06:46:53Z",
     "pending_reason": "all_targets_in_future",
     "predictions_parquet_present": true,
     "schedule_eval": [
