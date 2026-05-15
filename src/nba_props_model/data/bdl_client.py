@@ -12,7 +12,7 @@ Critical spec findings implemented here:
   - v2/advanced_stats:  usage%, pace, possessions, touches, rebound_chances_*,
                         defended_at_rim_*, assist_percentage
   - v1/injuries:        status, return_date, description
-  - v2/lineups:         starter=bool per player per game
+  - v1/lineups:         starter=bool per player per game (game_ids[] array param)
 
 Auth:  BDL_API_KEY env var ONLY. Hard fail if missing. Zero hardcoded defaults.
 """
@@ -457,16 +457,110 @@ def get_advanced_stats_v2(
 
 def get_lineups(game_id: int) -> list[dict]:
     """
-    GET /nba/v2/lineups?game_id=<id>
-    Returns NBALineup: starter=bool, position, player, team.
-    Use to detect missing starters (star-out flags).
+    GET https://api.balldontlie.io/v1/lineups?game_ids[]=<id>
+
+    Returns the data array on HTTP 200 (empty array means
+    confirmed lineups not posted yet).  Returns [] on any error
+    for backward-compat with callers that only need the rows; use
+    get_lineups_status() if you need to distinguish HTTP 404 /
+    auth failure / network error from a legitimate empty response.
     """
     try:
-        result = bdl_get(f"{BASE_V2}/lineups", {"game_id": game_id})
-        return result.get("data", [])
+        result = bdl_get(
+            "https://api.balldontlie.io/v1/lineups",
+            {"game_ids[]": int(game_id)},
+        )
+        return result.get("data", []) or []
     except Exception as exc:
         logger.warning(f"get_lineups(game_id={game_id}): {exc}")
         return []
+
+
+def get_lineups_status(game_ids: list[int]) -> dict:
+    """
+    GET https://api.balldontlie.io/v1/lineups with repeated game_ids[]
+    array params.  Returns a structured status dict that the live
+    fetcher uses to distinguish:
+      - ``lineups_available``                   (HTTP 200 + rows)
+      - ``confirmed_lineups_not_available_yet`` (HTTP 200 + empty data)
+      - ``endpoint_misconfigured``              (HTTP 404)
+      - ``auth_failed``                         (HTTP 401 / 403)
+      - ``request_failed``                      (network exception / 5xx after retries)
+
+    The dict shape is::
+
+        {
+          "status": <one of the enum strings above>,
+          "http_status": <int|None>,
+          "url": "https://api.balldontlie.io/v1/lineups",
+          "params": [("game_ids[]", <int>), ...],
+          "rows": [<NBALineup dict>, ...],
+          "error": <str|None>,
+        }
+    """
+    url = "https://api.balldontlie.io/v1/lineups"
+    headers = _headers()
+    params = [("game_ids[]", int(g)) for g in game_ids]
+    try:
+        resp = requests.get(url, headers=headers, params=params, timeout=30)
+    except requests.exceptions.RequestException as exc:
+        return {
+            "status": "request_failed",
+            "http_status": None,
+            "url": url,
+            "params": params,
+            "rows": [],
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+    if resp.status_code == 200:
+        try:
+            body = resp.json()
+        except Exception as exc:
+            return {
+                "status": "request_failed",
+                "http_status": 200,
+                "url": url,
+                "params": params,
+                "rows": [],
+                "error": f"json decode failed: {exc}",
+            }
+        rows = body.get("data") or []
+        return {
+            "status": (
+                "lineups_available" if rows else "confirmed_lineups_not_available_yet"
+            ),
+            "http_status": 200,
+            "url": url,
+            "params": params,
+            "rows": rows,
+            "error": None,
+        }
+    if resp.status_code in (401, 403):
+        return {
+            "status": "auth_failed",
+            "http_status": resp.status_code,
+            "url": url,
+            "params": params,
+            "rows": [],
+            "error": resp.text[:300],
+        }
+    if resp.status_code == 404:
+        return {
+            "status": "endpoint_misconfigured",
+            "http_status": 404,
+            "url": url,
+            "params": params,
+            "rows": [],
+            "error": resp.text[:300],
+        }
+    return {
+        "status": "request_failed",
+        "http_status": resp.status_code,
+        "url": url,
+        "params": params,
+        "rows": [],
+        "error": resp.text[:300],
+    }
 
 
 # ── Prop parsing ──────────────────────────────────────────────────────────────

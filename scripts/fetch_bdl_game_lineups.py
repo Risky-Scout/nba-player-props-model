@@ -1,19 +1,39 @@
 """Phase 13M — fetch BDL confirmed lineups for one or more games.
 
-Wraps the existing ``nba_props_model.data.bdl_client.get_lineups`` (BDL v2
-``/lineups?game_id=<id>`` endpoint) and persists per-game artifacts:
+Wraps ``nba_props_model.data.bdl_client.get_lineups_status`` which hits
+the BDL v1 lineups endpoint with the ``game_ids[]`` array query param:
 
-    artifacts/live_lineups/<delivery_date>/<game_id>/
-      bdl_lineups_raw.json
-      bdl_lineups_normalized.csv
-      bdl_lineups_normalized.parquet
-      lineup_status.json
-      lineup_status.md
+    GET https://api.balldontlie.io/v1/lineups?game_ids[]=<id>
 
-``lineup_confirmed=True`` only when both teams are present, each team has
-exactly 5 ``starter=True`` rows, and the fetch occurred before
-``game_start_time_utc`` (when known). Otherwise ``lineup_confirmed=False``
-and ``lineup_blocker`` records the exact reason.
+The previous implementation called ``/nba/v2/lineups?game_id=<id>`` which
+BDL responds to with ``404 Route not found``.  The v2-path mistake was
+silently swallowed and reported as "no rows returned (lineups not posted
+yet)", producing false ``BDL_LINEUPS_FETCH_PASS`` lines on disk.  The
+corrected fetcher writes a structured ``bdl_fetch_status`` field that
+distinguishes endpoint misconfiguration from a legitimate empty
+pre-confirmation response.
+
+Per-game artifacts written under ``artifacts/live_lineups/<date>/<gid>/``:
+
+    bdl_lineups_raw.json
+    bdl_lineups_normalized.csv
+    bdl_lineups_normalized.parquet
+    lineup_status.json   (now carries ``bdl_fetch_status``)
+    lineup_status.md
+
+``bdl_fetch_status`` enum (set by ``bdl_client.get_lineups_status``):
+
+    lineups_available                    HTTP 200 + non-empty data array
+    confirmed_lineups_not_available_yet  HTTP 200 + empty data array
+    endpoint_misconfigured               HTTP 404 (wrong URL/route)
+    auth_failed                          HTTP 401 / 403
+    request_failed                       network exception / 5xx
+
+``lineup_confirmed=True`` only when ``bdl_fetch_status="lineups_available"``
+AND both teams are present AND each team has exactly 5 ``starter=True``
+rows AND the fetch occurred before ``game_start_time_utc`` (when known).
+In every other case ``lineup_confirmed=False`` and ``lineup_blocker``
+records the exact reason.
 
 Usage:
     python3 scripts/fetch_bdl_game_lineups.py --delivery-date YYYY-MM-DD --game-id 21681995
@@ -21,7 +41,17 @@ Usage:
         --game-ids 21681995,21681996
 
 Pass line:  BDL_LINEUPS_FETCH_PASS
-Fail line:  BDL_LINEUPS_FETCH_FAILED  (only on actual API/IO failures)
+            Printed only when every game returned HTTP 200 (mix of
+            ``lineups_available`` and ``confirmed_lineups_not_available_yet``
+            is allowed).
+Fail line:  BDL_LINEUPS_FETCH_FAILED
+            Printed when ANY game returned ``endpoint_misconfigured``,
+            ``auth_failed``, or ``request_failed``.
+
+Modeling-rule reminder: an empty BDL pre-confirmation response is NOT a
+projected-lineup source.  The morning player universe must come from the
+internal projected rotation/minutes artifact; empty BDL must NOT cause
+full-roster PMFs.  See the player-game eligibility gate.
 """
 from __future__ import annotations
 
@@ -37,15 +67,32 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from nba_props_model.data.bdl_client import get_lineups  # noqa: E402
+from nba_props_model.data.bdl_client import (  # noqa: E402
+    get_lineups,
+    get_lineups_status,
+)
 
 
 LIVE_LINEUPS_DIR = REPO_ROOT / "artifacts" / "live_lineups"
 PRED_DIR = REPO_ROOT / "predictions"
-SOURCE_TAG = "balldontlie_v1_lineups"  # canonical source tag (BDL v2 endpoint;
-                                        # tag is stable across endpoint version
+SOURCE_TAG = "balldontlie_v1_lineups"  # canonical source tag matching the
+                                        # actual v1 endpoint hit by
+                                        # get_lineups_status() — keep this
+                                        # stable across endpoint version
                                         # bumps so downstream consumers don't
-                                        # re-key on minor URL changes).
+                                        # re-key on minor URL changes.
+
+# Fetch-status enum values returned by bdl_client.get_lineups_status().
+# Any value other than the two HTTP-200 cases is a hard failure.
+BDL_FETCH_STATUS_OK = {
+    "lineups_available",
+    "confirmed_lineups_not_available_yet",
+}
+BDL_FETCH_STATUS_FAIL = {
+    "endpoint_misconfigured",
+    "auth_failed",
+    "request_failed",
+}
 
 
 def _utcnow() -> dt.datetime:
@@ -201,48 +248,93 @@ def _write_status_md(out_dir: Path, status: dict) -> None:
     (out_dir / "lineup_status.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
 
+def _status_from_fetch_failure(
+    *,
+    delivery_date: str,
+    game_id: str,
+    fetched_at_iso: str,
+    bdl_fetch_status: str,
+    http_status: int | None,
+    error: str | None,
+) -> dict:
+    """Build the on-disk lineup_status payload for a fetch-failure outcome.
+
+    Covers ``endpoint_misconfigured`` / ``auth_failed`` / ``request_failed``.
+    The structured ``bdl_fetch_status`` lets downstream consumers
+    distinguish a real BDL routing problem from a legitimate
+    "lineups_not_posted_yet" empty response.
+    """
+    if bdl_fetch_status == "endpoint_misconfigured":
+        blocker = "endpoint_misconfigured: HTTP 404 from BDL /v1/lineups"
+    elif bdl_fetch_status == "auth_failed":
+        blocker = f"auth_failed: HTTP {http_status}"
+    else:
+        blocker = f"request_failed: {error}"
+    return {
+        "schema_version": "1.1",
+        "delivery_date": delivery_date,
+        "game_id": str(game_id),
+        "source": SOURCE_TAG,
+        "fetched_at_utc": fetched_at_iso,
+        "bdl_fetch_status": bdl_fetch_status,
+        "bdl_http_status": http_status,
+        "bdl_fetch_error": error,
+        "lineup_confirmed": False,
+        "lineup_complete": "fetch_failed",
+        "lineup_blocker": blocker,
+        "teams_present": [],
+        "starter_count_by_team": {},
+        "bench_count_by_team": {},
+        "total_rows": 0,
+        "starters": [],
+        "bench_players": [],
+        "unmapped_players": [],
+        "lineup_hash": "",
+    }
+
+
 def fetch_one(delivery_date: str, game_id: str) -> dict:
-    """Fetch + persist lineup artifacts for a single game; returns status dict."""
+    """Fetch + persist lineup artifacts for a single game; returns status dict.
+
+    Calls ``bdl_client.get_lineups_status([game_id])`` and maps the
+    structured ``status`` field to the on-disk ``bdl_fetch_status`` /
+    ``lineup_complete`` / ``lineup_blocker`` triple.  HTTP-200 outcomes
+    proceed through the existing ``_classify`` flow; non-200 outcomes
+    short-circuit with an explicit fetch-failure status payload.
+    """
     out_dir = LIVE_LINEUPS_DIR / delivery_date / str(game_id)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     fetched_at = _utcnow()
     fetched_at_iso = _utc_iso(fetched_at)
 
-    try:
-        raw = get_lineups(int(game_id))
-    except Exception as exc:
-        # Persist a status with the API error so callers can see the blocker.
-        err_status = {
-            "schema_version": "1.0",
-            "delivery_date": delivery_date,
-            "game_id": str(game_id),
-            "source": SOURCE_TAG,
-            "fetched_at_utc": fetched_at_iso,
-            "lineup_confirmed": False,
-            "lineup_complete": "fetch_failed",
-            "lineup_blocker": f"BDL get_lineups raised: {exc}",
-            "teams_present": [],
-            "starter_count_by_team": {},
-            "bench_count_by_team": {},
-            "total_rows": 0,
-            "starters": [],
-            "bench_players": [],
-            "unmapped_players": [],
-            "lineup_hash": "",
-        }
-        (out_dir / "lineup_status.json").write_text(
-            json.dumps(err_status, indent=2, sort_keys=True), encoding="utf-8"
-        )
-        _write_status_md(out_dir, err_status)
-        raise
+    fetch_result = get_lineups_status([int(game_id)])
+    bdl_fetch_status = fetch_result.get("status") or "request_failed"
+    http_status = fetch_result.get("http_status")
+    error_text = fetch_result.get("error")
+    raw = fetch_result.get("rows") or []
 
     (out_dir / "bdl_lineups_raw.json").write_text(
         json.dumps(raw, indent=2, sort_keys=True, default=str), encoding="utf-8"
     )
 
-    norm = [_normalize_row(r, game_id, fetched_at_iso) for r in (raw or [])]
-    # Persist normalized rows (CSV + parquet).
+    if bdl_fetch_status in BDL_FETCH_STATUS_FAIL:
+        status = _status_from_fetch_failure(
+            delivery_date=delivery_date,
+            game_id=game_id,
+            fetched_at_iso=fetched_at_iso,
+            bdl_fetch_status=bdl_fetch_status,
+            http_status=http_status,
+            error=error_text,
+        )
+        (out_dir / "lineup_status.json").write_text(
+            json.dumps(status, indent=2, sort_keys=True), encoding="utf-8"
+        )
+        _write_status_md(out_dir, status)
+        return status
+
+    # HTTP 200 path — empty array is a legitimate pre-confirmation outcome.
+    norm = [_normalize_row(r, game_id, fetched_at_iso) for r in raw]
     try:
         import pandas as pd
         df = pd.DataFrame(norm)
@@ -261,12 +353,21 @@ def fetch_one(delivery_date: str, game_id: str) -> dict:
     game_start = _load_game_start_time(delivery_date, game_id)
     confirmed, complete, blocker = _classify(norm, game_start, fetched_at)
 
+    if bdl_fetch_status == "confirmed_lineups_not_available_yet":
+        # Override the legacy "no rows returned ... lineups not posted yet"
+        # string with the canonical bdl_fetch_status token so downstream
+        # consumers don't have to string-match a humanized sentence.
+        blocker = "confirmed_lineups_not_available_yet"
+
     status = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "delivery_date": delivery_date,
         "game_id": str(game_id),
         "source": SOURCE_TAG,
         "fetched_at_utc": fetched_at_iso,
+        "bdl_fetch_status": bdl_fetch_status,
+        "bdl_http_status": http_status,
+        "bdl_fetch_error": error_text,
         "game_start_time_utc": game_start,
         "lineup_confirmed": confirmed,
         "lineup_complete": complete,
@@ -287,9 +388,9 @@ def fetch_one(delivery_date: str, game_id: str) -> dict:
                 "lineup_position", "player_position",
             )} for r in bench
         ],
-        # Phase 13M does not wire BDL→model player_id mapping (BDL ids are the
-        # native model id universe per Phase 13M scout). If a future phase
-        # introduces a mapping this list captures unmapped ids.
+        # Phase 13M does not wire BDL→model player_id mapping (BDL ids are
+        # the native model id universe per Phase 13M scout).  If a future
+        # phase introduces a mapping this list captures unmapped ids.
         "unmapped_players": [],
         "lineup_hash": _hash_lineup(norm),
     }
@@ -327,11 +428,33 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  reason: game_id={gid} fetch raised: {exc}", file=sys.stderr)
             return 1
 
+    # Any HTTP non-200 outcome (endpoint_misconfigured / auth_failed /
+    # request_failed) is a hard failure.  Mixed HTTP-200 outcomes of
+    # `lineups_available` and `confirmed_lineups_not_available_yet` are
+    # both legitimate pass states (the latter is normal for a morning run
+    # before lineups are posted).
+    failing = [
+        st for st in statuses if st.get("bdl_fetch_status") in BDL_FETCH_STATUS_FAIL
+    ]
+    if failing:
+        print("BDL_LINEUPS_FETCH_FAILED", file=sys.stderr)
+        for st in failing:
+            print(
+                f"  - game_id={st['game_id']}  "
+                f"bdl_fetch_status={st['bdl_fetch_status']}  "
+                f"http_status={st.get('bdl_http_status')}  "
+                f"blocker={st['lineup_blocker']}",
+                file=sys.stderr,
+            )
+        return 1
+
     print("BDL_LINEUPS_FETCH_PASS")
     print(f"  delivery_date={args.delivery_date} games_fetched={len(statuses)}")
     for st in statuses:
         print(
-            f"  - game_id={st['game_id']}  lineup_confirmed={st['lineup_confirmed']}  "
+            f"  - game_id={st['game_id']}  "
+            f"bdl_fetch_status={st.get('bdl_fetch_status')}  "
+            f"lineup_confirmed={st['lineup_confirmed']}  "
             f"complete={st['lineup_complete']}  total_rows={st['total_rows']}  "
             f"hash={st['lineup_hash'] or '(empty)'}"
         )
