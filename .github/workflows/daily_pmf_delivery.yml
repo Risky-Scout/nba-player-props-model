@@ -162,10 +162,15 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "morning"
+            --mode "morning" \
+            $FORCE_PREDICT_ARG
       - name: Run delivery pipeline (morning, manual)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -288,10 +293,15 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "woo_morning_monetization"
+            --mode "woo_morning_monetization" \
+            $FORCE_PREDICT_ARG
       - name: Run delivery pipeline (woo_morning_monetization)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -458,10 +468,15 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "woo_afternoon_refresh"
+            --mode "woo_afternoon_refresh" \
+            $FORCE_PREDICT_ARG
       - name: Run delivery pipeline (woo_afternoon_refresh)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -620,10 +635,15 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "derek_near_lineup"
+            --mode "derek_near_lineup" \
+            $FORCE_PREDICT_ARG
 
       - name: Run delivery pipeline (derek_near_lineup)
         if: steps.predict_gate.outputs.should_proceed == 'true'
@@ -797,10 +817,15 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "close_lock"
+            --mode "close_lock" \
+            $FORCE_PREDICT_ARG
       - name: Run delivery pipeline (close_lock)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -964,11 +989,16 @@ jobs:
           # past slate, so the gate is configured with --no-run-predict
           # (still emits WAITING_FOR_PREDICTIONS_VALID_SKIP if the prior
           # day's predictions never landed, instead of red-failing).
+          FORCE_PREDICT_ARG=""
+          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_PREDICT_ARG="--force-run-predict"
+          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
             --mode "after_game" \
-            --no-run-predict
+            --no-run-predict \
+            $FORCE_PREDICT_ARG
       - name: Run delivery pipeline (after_game)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:

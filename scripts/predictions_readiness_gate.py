@@ -232,6 +232,14 @@ def main() -> int:
             "past slate's predictions from this workflow."
         ),
     )
+    parser.add_argument(
+        "--force-run-predict",
+        action="store_true",
+        help=(
+            "If set, allows predict.py invocation even before the scheduled "
+            "predict cron hour for same-day manual backfills."
+        ),
+    )
     args = parser.parse_args()
 
     date = args.date
@@ -303,8 +311,9 @@ def main() -> int:
     # slate_date == today_utc from here on.
 
     # Still BEFORE today's predict cron has had a chance to fire — this
-    # is an expected pre-tip firing; valid-skip green.
-    if now_hour < args.predict_cron_hour_utc:
+    # is normally an expected pre-tip firing; valid-skip green unless
+    # manual force-run explicitly asks us to generate now.
+    if now_hour < args.predict_cron_hour_utc and not args.force_run_predict:
         return _valid_skip(
             date,
             mode,
