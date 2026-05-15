@@ -18,6 +18,35 @@ from nba_props_model.delivery.delivery_contract import (  # noqa: E402
 )
 
 
+# Modes for which derek_forward_feed.parquet is OPTIONAL per the M8.8
+# delivery contract (DEREK_UNIFIED_REQUIRED_COLUMNS spec in
+# nba_props_model.delivery.delivery_contract). The historical strict
+# behaviour ignored run_mode entirely and red-flagged every after-game
+# slate that the producer honestly skipped because there were no rows
+# to write (no-game-day, empty pipeline). We now mirror the spec.
+_OPTIONAL_PARQUET_RUN_MODES = frozenset({"final_after_game", "backtest"})
+
+
+def _detect_honest_skip(feed_dir: Path, date: str) -> tuple[bool, str]:
+    """Return (is_honest_skip, reason) when the producer documented why
+    derek_forward_feed.parquet is absent. We look for any of the
+    sentinel files the orchestrator / builder write on no-game slates.
+
+    Order: builder skip JSON, after-game no-games status JSON, slate-
+    level no_games_today.json. Each is sufficient on its own.
+    """
+    skip = feed_dir / "derek_forward_feed_unified_skip.json"
+    if skip.is_file():
+        return True, "builder_emitted_unified_skip"
+    no_games_status = feed_dir / "after_game_no_games_status.json"
+    if no_games_status.is_file():
+        return True, "after_game_no_games_prev_day"
+    slate_sentinel = feed_dir.parent / "no_games_today.json"
+    if slate_sentinel.is_file():
+        return True, "slate_no_games_today_sentinel"
+    return False, ""
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
@@ -26,13 +55,34 @@ def main() -> int:
         default=None,
         help="Override repository root (testing only).",
     )
+    ap.add_argument(
+        "--run-mode",
+        default=None,
+        help=(
+            "Active M8.8 run mode (morning_expected|t25|t5|final_after_game|"
+            "backtest). When set to a mode where derek_forward_feed.parquet "
+            "is OPTIONAL per the delivery contract and an honest no-game "
+            "skip marker is on disk, the verifier emits a non-fatal "
+            "CONTRACT_VALID_SKIP and returns 0 instead of failing."
+        ),
+    )
     args = ap.parse_args()
     root = Path(args.repo_root).resolve() if args.repo_root else REPO_ROOT
     feed_dir = root / "deliveries" / args.date / "derek_forward_feed"
     pq = feed_dir / "derek_forward_feed.parquet"
+
     if not pq.is_file():
+        is_skip, reason = _detect_honest_skip(feed_dir, args.date)
+        run_mode = (args.run_mode or "").strip().lower()
+        if is_skip and run_mode in _OPTIONAL_PARQUET_RUN_MODES:
+            print(
+                "DEREK_FORWARD_FEED_CONTRACT_VALID_SKIP "
+                f"date={args.date} run_mode={run_mode} reason={reason}"
+            )
+            return 0
         print("DEREK_FORWARD_FEED_CONTRACT_FAIL missing derek_forward_feed.parquet")
         return 2
+
     df = pd.read_parquet(pq)
     miss = [c for c in DEREK_UNIFIED_REQUIRED_COLUMNS if c not in df.columns]
     if miss:

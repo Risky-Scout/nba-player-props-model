@@ -94,5 +94,114 @@ def test_verify_passes_on_minimal_unified(tmp_path: Path, monkeypatch):
     assert "DEREK_FORWARD_FEED_CONTRACT_PASS" in res.stdout
 
 
+def test_verify_fails_when_parquet_missing_and_no_skip_marker(tmp_path: Path):
+    feed = tmp_path / "deliveries" / "2099-06-02" / "derek_forward_feed"
+    feed.mkdir(parents=True)
+    script = REPO / "scripts" / "verify_derek_forward_feed_contract.py"
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--date",
+            "2099-06-02",
+            "--repo-root",
+            str(tmp_path),
+        ],
+        cwd=str(REPO),
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 2
+    assert "DEREK_FORWARD_FEED_CONTRACT_FAIL" in res.stdout
+
+
+def test_verify_valid_skip_on_no_games_after_game(tmp_path: Path):
+    """After-game runs on a true no-game day must accept the producer's
+    honest skip marker instead of red-failing the missing parquet."""
+    date = "2099-06-03"
+    delivery = tmp_path / "deliveries" / date
+    feed = delivery / "derek_forward_feed"
+    feed.mkdir(parents=True)
+    (feed / "derek_forward_feed_unified_skip.json").write_text(
+        '{"unified_feed_status": "skipped_no_rows"}'
+    )
+    script = REPO / "scripts" / "verify_derek_forward_feed_contract.py"
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--date",
+            date,
+            "--repo-root",
+            str(tmp_path),
+            "--run-mode",
+            "final_after_game",
+        ],
+        cwd=str(REPO),
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0, res.stdout + res.stderr
+    assert "DEREK_FORWARD_FEED_CONTRACT_VALID_SKIP" in res.stdout
+
+
+def test_verify_valid_skip_honors_slate_sentinel(tmp_path: Path):
+    date = "2099-06-04"
+    delivery = tmp_path / "deliveries" / date
+    feed = delivery / "derek_forward_feed"
+    feed.mkdir(parents=True)
+    (delivery / "no_games_today.json").write_text(
+        '{"status": "after_game_skipped_no_games_prev_day"}'
+    )
+    script = REPO / "scripts" / "verify_derek_forward_feed_contract.py"
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--date",
+            date,
+            "--repo-root",
+            str(tmp_path),
+            "--run-mode",
+            "final_after_game",
+        ],
+        cwd=str(REPO),
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0, res.stdout + res.stderr
+    assert "DEREK_FORWARD_FEED_CONTRACT_VALID_SKIP" in res.stdout
+
+
+def test_verify_does_not_skip_for_strict_run_modes(tmp_path: Path):
+    """Producer skip markers do NOT satisfy the contract for t25/t5/
+    morning_expected — those modes require a real parquet."""
+    date = "2099-06-05"
+    delivery = tmp_path / "deliveries" / date
+    feed = delivery / "derek_forward_feed"
+    feed.mkdir(parents=True)
+    (feed / "derek_forward_feed_unified_skip.json").write_text("{}")
+    script = REPO / "scripts" / "verify_derek_forward_feed_contract.py"
+    res = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--date",
+            date,
+            "--repo-root",
+            str(tmp_path),
+            "--run-mode",
+            "t25",
+        ],
+        cwd=str(REPO),
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 2
+    assert "DEREK_FORWARD_FEED_CONTRACT_FAIL" in res.stdout
+
+
 if __name__ == "__main__":
+    import pytest  # noqa: F401
+
     pytest.main([__file__, "-q"])
