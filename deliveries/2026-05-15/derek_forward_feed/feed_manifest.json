@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-15T08:20:46Z",
+  "built_at_utc": "2026-05-15T16:12:26Z",
   "calibrated_through_date": "2026-05-13",
   "calibration_run_id": "nightly-20260515T020255",
   "champion_artifact_dir": "artifacts/models",
@@ -11,36 +11,36 @@
     "files": {
       "csv": "deliveries/2026-05-15/derek_forward_feed/latest_available_snapshot.csv",
       "parquet": "deliveries/2026-05-15/derek_forward_feed/latest_available_snapshot.parquet",
-      "rows": 5238
+      "rows": 5256
     },
     "points_to": "morning"
   },
   "lineup": null,
   "lineup_status": null,
-  "metadata_stamped_at_utc": "2026-05-15T08:21:24+00:00",
+  "metadata_stamped_at_utc": "2026-05-15T16:13:04+00:00",
   "model_source": "champion_pointer",
   "morning": {
     "files": {
       "csv": "deliveries/2026-05-15/derek_forward_feed/morning_snapshot.csv",
       "jsonl": "deliveries/2026-05-15/derek_forward_feed/morning_snapshot.jsonl",
       "parquet": "deliveries/2026-05-15/derek_forward_feed/morning_snapshot.parquet",
-      "rows": 5238
+      "rows": 5256
     },
     "freshness_manifest_source": "data/freshness_manifest/2026-05-15.json",
     "market_comparison_source": "deliveries/2026-05-15/wizard_of_odds/market_comparison.parquet",
-    "market_rows_referenced": 4873,
+    "market_rows_referenced": 4895,
     "model_only_rows_used": 792,
     "model_only_source": "deliveries/2026-05-15/pmf_model_review_package/machine_readable/model_only.parquet",
-    "rows": 5238,
-    "rows_model_only": 498,
-    "rows_with_market": 4740,
+    "rows": 5256,
+    "rows_model_only": 496,
+    "rows_with_market": 4760,
     "run_manifest_source": "deliveries/2026-05-15/wizard_of_odds/run_manifest.json",
-    "snapshot_time_utc": "2026-05-15T08:20:34Z",
+    "snapshot_time_utc": "2026-05-15T16:12:14Z",
     "snapshot_type": "morning",
     "tov_rows": 66
   },
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-05-15T08:21:24+00:00",
+  "output_generated_at_utc": "2026-05-15T16:13:04+00:00",
   "promotion_decision_id": "promotion-2026-05-13-20260515T021101",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
@@ -201,7 +201,7 @@
     ]
   },
   "snapshot": "morning",
-  "stamp_code_commit": "5090241216490c6e3f6da6bc3106041d44928666",
+  "stamp_code_commit": "691761ab6760df1dbf6896cd7e8cb7f39617c469",
   "trained_through_date": "2026-05-13",
   "training_run_id": "nightly-20260515T020255",
   "validation_run_id": "nightly-20260515T020255"
