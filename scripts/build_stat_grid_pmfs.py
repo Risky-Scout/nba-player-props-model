@@ -83,6 +83,15 @@ from nba_props_model.calibration.source_pmf_recalibration import (  # noqa: E402
 from nba_props_model.calibration.role_buckets import role_bucket_features_from_minutes_dist  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
+from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
+    build_current_market_player_signal,
+    build_player_game_eligibility,
+    assert_no_ineligible_pmfs,
+)
+from nba_props_model.pipelines._stat_grid_eligibility_gate import (  # noqa: E402
+    build_eligibility_map,
+)
+
 
 PRED_DIR = REPO_ROOT / "predictions"
 DATA_DIR = REPO_ROOT / "data"
@@ -393,10 +402,19 @@ def _build_pipeline_state(target_date: str) -> dict:
 
 
 def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
-                            state: dict, fg3m_model, stats: list[str], recalibrator=None) -> list[dict]:
+                            state: dict, fg3m_model, stats: list[str], recalibrator=None,
+                            eligibility_row=None) -> list[dict]:
     """Compute PMFs for one (player, game). Returns list of canonical
     delivery rows — one per stat in `stats` — or an empty list if the
-    feature build / minutes model fails."""
+    feature build / minutes model fails.
+
+    ``eligibility_row`` (dict | None): when provided, the canonical
+    eligibility / minutes columns are stamped onto every emitted PMF
+    row so downstream (canonical_source, review, derek) can rely on
+    them without re-deriving. The upstream eligibility gate guarantees
+    that ``eligibility_row['player_game_eligible']`` is True for every
+    (player_id, game_id) reaching this function.
+    """
     if player_id in state["inactive_player_ids"]:
         return []
     game = state["games_by_id"].get(gid)
@@ -549,6 +567,11 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
 
         s = _pmf_summary(pmf_out)
         recal_applied = bool(recal_meta.get("source_recalibration_applied", False))
+        # Eligibility row carries the canonical-shape minutes/role/
+        # market columns the upstream eligibility gate computed. Stamp
+        # them onto every emitted PMF row so canonical_source can be
+        # validated by a simple column-presence + truthiness check.
+        elig = eligibility_row or {}
         out_rows.append({
             "player_id": int(player_id),
             "player_name": player_name,
@@ -561,9 +584,22 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
             "role_source": role_source,
             "mp_bucket": mp_bucket_val,
             "usage_bucket": usage_bucket_val,
-            "minutes_mean": minutes_mean,
-            "minutes_q50": minutes_q50,
-            "p_inactive_used": p_inactive_used,
+            "slate_date": str(target_date),
+            "minutes_mean": elig.get("minutes_mean", minutes_mean),
+            "minutes_q50": elig.get("minutes_p50", minutes_q50),
+            "minutes_p10": elig.get("minutes_p10"),
+            "minutes_p50": elig.get("minutes_p50", minutes_q50),
+            "minutes_p90": elig.get("minutes_p90"),
+            "minutes_std": elig.get("minutes_std"),
+            "p_inactive_used": elig.get("p_inactive_used", p_inactive_used),
+            "rotation_probability": elig.get("rotation_probability"),
+            "starter_probability": elig.get("starter_probability"),
+            "projected_role": elig.get("projected_role"),
+            "player_game_eligible": bool(elig.get("player_game_eligible", True)),
+            "eligibility_reason": elig.get("eligibility_reason"),
+            "has_current_market_line": bool(elig.get("has_current_market_line", False)),
+            "minutes_source": elig.get("minutes_source"),
+            "minutes_model_version": elig.get("minutes_model_version"),
             "injury_freshness_status": state.get("injury_freshness_status"),
             "injury_context_source": state.get("injury_context_source"),
             "injury_report_fetched_at_utc": state.get("injury_report_fetched_at_utc"),
@@ -669,7 +705,18 @@ def main() -> int:
     print(f" output : {_display_path(out_path)}")
     print("=" * 72)
 
-    print(f" slate (player_id, game_id) pairs: {len(keys)}")
+    print(" slate (player_id, game_id) pairs: " + str(len(keys)))
+    # Upstream player-game eligibility gate. Filter the slate to player-games
+    # passing the rule (market line OR projected starter/rotation OR
+    # minutes_mean >= 12) BEFORE any PMF is built. See
+    # src/nba_props_model/pipelines/player_game_eligibility.py for the rule.
+    eligibility_by_key = build_eligibility_map(REPO_ROOT, target_date, keys)
+    eligible_keys = [k for k in keys if k in eligibility_by_key]
+    print("  eligibility-filtered slate kept " + str(len(eligible_keys))
+          + " of " + str(len(keys)) + " candidates")
+    if not eligible_keys:
+        print(" WARN: zero player-games passed eligibility; nothing to compute.")
+        return 1
     if not keys:
         print(" WARN: empty slate — nothing to compute.")
         return 1
@@ -685,11 +732,12 @@ def main() -> int:
 
     rows: list[dict] = []
     skipped = 0
-    for pid, gid in keys:
+    for pid, gid in eligible_keys:
         produced = _row_for_player_game(
             pid, gid, target_date=target_date, state=state,
             fg3m_model=fg3m_model, stats=args.stats,
             recalibrator=recalibrator,
+            eligibility_row=eligibility_by_key.get((pid, gid)),
         )
         if not produced:
             skipped += 1
@@ -703,6 +751,7 @@ def main() -> int:
         return 1
 
     df = pd.DataFrame(rows)
+    assert_no_ineligible_pmfs(df, label="stat_grid_pmfs")
     if args.feature_snapshot:
         snap_path = Path(args.feature_snapshot)
         if not snap_path.is_absolute():
