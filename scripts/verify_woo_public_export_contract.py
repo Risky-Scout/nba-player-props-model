@@ -68,7 +68,7 @@ def _check_affiliate(payload: dict, label: str) -> list[str]:
         failures.append(f"{label}: rows is empty (count={len(rows)})")
         return failures
     sample = rows[0]
-    required_base = ("player", "stat", "side", "line", "market_prob")
+    required_base = ("player", "stat", "side", "line")
     missing = [k for k in required_base if k not in sample]
     if missing:
         failures.append(f"{label}: sample row missing keys: {missing}")
@@ -78,6 +78,14 @@ def _check_affiliate(payload: dict, label: str) -> list[str]:
         failures.append(
             f"{label}: sample row has none of model_prob/"
             "model_probability_for_side/model_prob_over"
+        )
+    market_prob_keys = ("market_prob", "market_probability_for_side",
+                        "market_prob_over_no_vig", "market_prob_over",
+                        "market_no_vig_over_prob")
+    if not any(k in sample for k in market_prob_keys):
+        failures.append(
+            f"{label}: sample row has none of market_prob/"
+            "market_probability_for_side/market_prob_over_no_vig"
         )
     return failures
 
