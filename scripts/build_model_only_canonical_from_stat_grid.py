@@ -199,6 +199,14 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--date", required=True, help="YYYY-MM-DD")
     ap.add_argument(
+        "--stat-grid-path",
+        default=None,
+        help=(
+            "Path to predictions/stat_grid_{date}.parquet (prod contract). "
+            "Default: predictions/stat_grid_{--date}.parquet"
+        ),
+    )
+    ap.add_argument(
         "--canonical-dir",
         default=None,
         help="default: deliveries/{date}/canonical_source",
@@ -206,14 +214,41 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     date = args.date
-    stat_grid_path = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
-    if not stat_grid_path.exists():
-        print(f"FATAL: missing {stat_grid_path.relative_to(REPO_ROOT)}", file=sys.stderr)
+    stat_grid_path = (
+        Path(args.stat_grid_path)
+        if args.stat_grid_path
+        else REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+    )
+    if not stat_grid_path.is_absolute():
+        stat_grid_path = REPO_ROOT / stat_grid_path
+    stat_grid_path = stat_grid_path.resolve()
+
+    posix_path = stat_grid_path.as_posix()
+    if "predictions/all_props_" in posix_path:
+        print(
+            "FATAL: CANONICAL_SOURCE_CONTRACT_VIOLATION "
+            "all_props_is_sparse_not_stat_grid",
+            file=sys.stderr,
+        )
         return 1
 
-    rows = _stat_grid_rows(date)
+    if not stat_grid_path.exists():
+        print(
+            f"FATAL: missing stat_grid parquet {stat_grid_path}",
+            file=sys.stderr,
+        )
+        return 1
+
+    rows = _stat_grid_rows(date, stat_grid_path=stat_grid_path)
+    try:
+        _sg_rel = str(stat_grid_path.relative_to(REPO_ROOT))
+    except ValueError:
+        _sg_rel = str(stat_grid_path)
     if not rows:
-        print(f"FATAL: no canonical rows produced from {stat_grid_path.relative_to(REPO_ROOT)}", file=sys.stderr)
+        print(
+            f"FATAL: no canonical rows produced from {_sg_rel}",
+            file=sys.stderr,
+        )
         return 1
 
     out_dir = Path(args.canonical_dir or REPO_ROOT / "deliveries" / date / "canonical_source")
@@ -241,7 +276,11 @@ def main(argv: list[str] | None = None) -> int:
 
     print("=" * 72)
     print(f"build_model_only_canonical_from_stat_grid — date={date}")
-    print(f"source: {stat_grid_path.relative_to(REPO_ROOT)}")
+    try:
+        _src_rel = str(stat_grid_path.relative_to(REPO_ROOT))
+    except ValueError:
+        _src_rel = str(stat_grid_path)
+    print(f"source: {_src_rel}")
     print(f"rows: {len(df)}")
     if "stat" in df.columns:
         print("stat_counts:")

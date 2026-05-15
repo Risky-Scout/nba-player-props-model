@@ -66,6 +66,9 @@ from nba_props_model.delivery.delivery_contract import (  # noqa: E402
     RunMode,
 )
 from nba_props_model.data.bdl_client import get_games  # noqa: E402
+from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
+
+MISSION_STAT_GRID_STATS = list(MISSION_REQUIRED_TARGETS_CANONICAL)
 
 # Phase 12D — first publishable scheduled run is at earliest tipoff − 35
 # minutes (default 22:25 UTC during NBA playoffs). Refreshes fire every
@@ -82,6 +85,7 @@ BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
 SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
 PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
+MINUTES_PREDICTIONS = REPO_ROOT / "scripts" / "build_minutes_predictions.py"
 CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
 BUILD_AVAILABILITY = REPO_ROOT / "scripts" / "build_availability_table.py"
 VERIFY_AVAILABILITY = REPO_ROOT / "scripts" / "verify_availability_freshness.py"
@@ -191,21 +195,104 @@ def _feature_snapshot(date: str, *, run_mode_stamp: str) -> Path | None:
     return out if out.is_file() else None
 
 
-def _stat_grid(date: str, *, feature_snapshot_path: Path | None = None) -> int:
-    """Phase 12 Part G: emit `predictions/stat_grid_{date}.parquet` so
-    the canonical build can include TOV (and any other model-only stats
-    BDL doesn't sell). Allowed to fail — the canonical build still works
-    without TOV when this step is skipped.
+def _minutes_predictions(date: str, *, run_mode_stamp: str) -> int:
+    """Build the upstream minutes / rotation artifact required by the
+    stat-grid eligibility gate.
 
-    Default stats are the 12-stat mission grid from
-    ``build_stat_grid_pmfs.DEFAULT_STATS`` (includes ``ra``).
+    Writes:
+        artifacts/minutes_predictions/{date}/minutes_predictions.parquet
+        artifacts/minutes_predictions/{date}/minutes_predictions_eligible.parquet
+        artifacts/minutes_predictions/{date}/manifest.json
+
+    Consumed by ``nba_props_model.pipelines._stat_grid_eligibility_gate``
+    via ``build_stat_grid_pmfs.py``. Without this artifact the gate
+    hard-fails with ``FATAL: missing artifacts/minutes_predictions/<date>/
+    minutes_predictions.parquet``. This step must therefore run AFTER
+    ``_feature_snapshot`` (which writes the input feature parquet) and
+    BEFORE ``_run_mission_stat_grid_and_canonical``. Allowed to fail at the subprocess level so the
+    eligibility gate emits the canonical missing-artifact error if the
+    build cannot complete.
     """
-    if not STAT_GRID.exists():
+    if not MINUTES_PREDICTIONS.exists():
         return 0
-    cmd = [PYTHON, str(STAT_GRID), "--date", date]
-    if feature_snapshot_path is not None and feature_snapshot_path.is_file():
-        cmd.extend(["--feature-snapshot", str(feature_snapshot_path)])
-    return _run(cmd, allow_fail=True, label=f"stat_grid {date}")
+    cmd = [
+        PYTHON,
+        str(MINUTES_PREDICTIONS),
+        "--slate-date",
+        date,
+        "--train-through-date",
+        date,
+        "--run-mode",
+        run_mode_stamp,
+    ]
+    return _run(
+        cmd,
+        allow_fail=True,
+        label=f"minutes_predictions {date} {run_mode_stamp}",
+    )
+
+
+def _run_mission_stat_grid_and_canonical(
+    date: str,
+    feature_snapshot: Path | None,
+) -> None:
+    """12-stat stat_grid from full feature snapshot, then canonical MODEL_ONLY.
+
+    Fails with ``STAT_GRID_BUILD_MISSING_OUTPUT`` / ``STAT_GRID_BUILD_INCOMPLETE_STATS``
+    instead of deferring to sparse ``all_props`` rectangularization.
+    """
+    if not STAT_GRID.is_file():
+        sys.exit(
+            "FATAL: STAT_GRID_BUILD_MISSING_OUTPUT "
+            f"scripts/build_stat_grid_pmfs.py not found at {STAT_GRID}"
+        )
+    cmd = [
+        PYTHON,
+        str(STAT_GRID),
+        "--date",
+        date,
+        "--slate-source",
+        "feature_snapshot_morning_expected",
+        "--stats",
+        *MISSION_STAT_GRID_STATS,
+    ]
+    if feature_snapshot is not None and feature_snapshot.is_file():
+        cmd.extend(["--feature-snapshot", str(feature_snapshot)])
+    _run(cmd, allow_fail=False, label=f"mission stat_grid {date}")
+
+    sg_path = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+    if not sg_path.is_file():
+        sys.exit(
+            f"FATAL: STAT_GRID_BUILD_MISSING_OUTPUT "
+            f"predictions/stat_grid_{date}.parquet not written"
+        )
+
+    import pandas as pd
+
+    stat_col = pd.read_parquet(sg_path, columns=["stat"])
+    present = set(stat_col["stat"].astype(str).unique())
+    need = set(MISSION_STAT_GRID_STATS)
+    missing = need - present
+    if missing:
+        sys.exit(
+            "FATAL: STAT_GRID_BUILD_INCOMPLETE_STATS "
+            f"missing_stats={sorted(missing)} present_stats={sorted(present)}"
+        )
+
+    if not CANONICAL_FROM_STAT_GRID.is_file():
+        sys.exit(
+            f"FATAL: STAT_GRID_BUILD_MISSING_OUTPUT "
+            f"scripts/build_model_only_canonical_from_stat_grid.py not found"
+        )
+    canon_cmd = [
+        PYTHON,
+        str(CANONICAL_FROM_STAT_GRID),
+        "--date",
+        date,
+        "--stat-grid-path",
+        str(sg_path),
+    ]
+    _run(canon_cmd, allow_fail=False, label=f"canonical_from_stat_grid {date}")
 
 
 def _canonical_model_only_path(date: str) -> Path:
@@ -216,21 +303,6 @@ def _canonical_model_only_path(date: str) -> Path:
         / "canonical_source"
         / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
     )
-
-
-def _canonical_from_stat_grid(date: str) -> Path | None:
-    """Build canonical MODEL_ONLY parquet from the PMF-only stat grid."""
-    if not CANONICAL_FROM_STAT_GRID.exists():
-        print(f" canonical_from_stat_grid: {CANONICAL_FROM_STAT_GRID} missing, skipping")
-        return None
-
-    cmd = [PYTHON, str(CANONICAL_FROM_STAT_GRID), "--date", date]
-    rc = _run(cmd, allow_fail=True, label=f"canonical_from_stat_grid {date}")
-    if rc != 0:
-        return None
-
-    p = _canonical_model_only_path(date)
-    return p if p.exists() else None
 
 
 def _build(
@@ -645,8 +717,9 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
-    _stat_grid(date, feature_snapshot_path=fs)
-    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _minutes_predictions(date, run_mode_stamp="morning_expected")
+    _run_mission_stat_grid_and_canonical(date, fs)
+    model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning", run_mode_stamp="morning_expected")
     _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
@@ -671,8 +744,9 @@ def run_woo_morning_monetization(
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
-    _stat_grid(date, feature_snapshot_path=fs)
-    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _minutes_predictions(date, run_mode_stamp="morning_expected")
+    _run_mission_stat_grid_and_canonical(date, fs)
+    model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
     _build(date, snapshot="morning", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="morning", run_mode_stamp="morning_expected")
     _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
@@ -699,8 +773,9 @@ def run_woo_afternoon_refresh(
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
-    _stat_grid(date, feature_snapshot_path=fs)
-    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _minutes_predictions(date, run_mode_stamp="morning_expected")
+    _run_mission_stat_grid_and_canonical(date, fs)
+    model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _woo_export(
         snapshot_type_label="woo_afternoon_refresh",
@@ -726,8 +801,9 @@ def run_derek_near_lineup(
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="t25")
-    _stat_grid(date, feature_snapshot_path=fs)
-    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _minutes_predictions(date, run_mode_stamp="t25")
+    _run_mission_stat_grid_and_canonical(date, fs)
+    model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
     _build(date, snapshot="pre_close", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup", run_mode_stamp="t25")
     _derek_game_snapshots_from_delivery(date, snapshot_type="lineup")
@@ -749,8 +825,9 @@ def run_close_lock(date: str, *, regions: list[str],
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="t5")
-    _stat_grid(date, feature_snapshot_path=fs)
-    model_only_path = _canonical_from_stat_grid(date) if rebuild_canonical else None
+    _minutes_predictions(date, run_mode_stamp="t5")
+    _run_mission_stat_grid_and_canonical(date, fs)
+    model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
     _build(date, snapshot="close_lock", rebuild_canonical=rebuild_canonical, model_only_path=model_only_path)
     _derek_feed(date, snapshot="lineup", run_mode_stamp="t5")
     _derek_game_snapshots_from_delivery(date, snapshot_type="close_lock")

@@ -511,13 +511,15 @@ def _odds_commence_lookup(date: str) -> dict[int, str]:
     return out
 
 
-def _stat_grid_rows(date: str) -> list[dict]:
-    """If `predictions/stat_grid_{date}.parquet` exists (Phase-12 Part G),
-    return its rows as canonical-schema dicts. These rows carry model-only
-    PMFs for stats whose markets BDL does not sell — most importantly
-    TOV. Returns [] when the file is absent so the canonical build still
-    succeeds with whatever stats predictions/all_props supplies."""
-    p = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+def _stat_grid_rows(date: str, stat_grid_path: Path | None = None) -> list[dict]:
+    """If ``stat_grid_path`` (or default ``predictions/stat_grid_{date}.parquet``)
+    exists, return its rows as canonical-schema dicts. These rows carry
+    model-only PMFs for stats whose markets BDL does not sell — most
+    importantly TOV. Returns [] when the file is absent so merge callers
+    can fall back."""
+    p = Path(stat_grid_path) if stat_grid_path is not None else (
+        REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+    )
     if not p.exists():
         return []
     grid = pd.read_parquet(p)
