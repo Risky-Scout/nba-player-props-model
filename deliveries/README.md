@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-15T16:54:36Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-15T19:33:23Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -24,7 +24,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-11** | `FINAL_DELIVERABLE_READY` | 828 | 17733 | 4759 | 0 | `full` | `very_stale` | `present` | `absent` | — | `—` | — | `n/a` | `5c9c8e3a#phase10c` |
 | **2026-05-12** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 384 | 8224 | 1285 | 1087 | `full` | `very_stale` | `present` | `incomplete` | — | `present` | 1516 | `scored` | `78f9ba3c#phase10c` |
 | **2026-05-14** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 0 | 0 | 0 | 0 | `none` | `very_stale` | `missing_from_prediction_source` | `morning_present` | 0 | `pending_lineup_snapshot` | 0 | `pending_outcomes` | `8611c657#phase10c` |
-| **2026-05-15** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 792 | 16962 | 4927 | 3760 | `full` | `fresh` | `present` | `morning_present` | 5287 | `—` | 5287 | `pending_outcomes` | `d4b944f8#phase10c` |
+| **2026-05-15** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 792 | 16962 | 5011 | 3908 | `full` | `fresh` | `present` | `morning_present` | 5287 | `—` | 5287 | `pending_outcomes` | `d09a8dd4#phase10c` |
 
 ## Per-date links
 
@@ -773,12 +773,12 @@ Derek's evaluation feed and WoO's monetization feed run on separate clocks.
 - 15:00 UTC / 11:00 AM ET — `woo_morning_monetization` (`finality_status_public=PROVISIONAL_EARLY_MARKET`)
 - 18:00 UTC / 2:00 PM ET — `woo_afternoon_refresh`
 - 20:00 UTC / 4:00 PM ET — `woo_afternoon_refresh`
-- Refreshed automatically alongside every `derek_near_lineup` and `close_lock` run.
+- Refreshed automatically alongside every `derek_pre_tipoff_refresh` and `close_lock` run.
 
 **Derek evaluation feed:**
 
-- 22:25 UTC / 6:25 PM ET — `derek_near_lineup` first publishable evaluation snapshot (earliest tipoff − 35 min default during NBA playoffs).
-- Every 15 min from 22:40 UTC through 03:10 UTC — `derek_near_lineup` refresh as lineups confirm.
+- 22:25 UTC / 6:25 PM ET — `derek_pre_tipoff_refresh` first publishable evaluation snapshot (earliest tipoff − 35 min default during NBA playoffs).
+- Every 15 min from 22:40 UTC through 03:10 UTC — `derek_pre_tipoff_refresh` refresh as lineups confirm.
 - 03:25 UTC — `close_lock` final lineup/market lock.
 - 06:30 UTC — `after_game` scoring (yesterday's slate).
 
