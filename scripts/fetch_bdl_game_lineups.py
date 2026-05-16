@@ -401,12 +401,98 @@ def fetch_one(delivery_date: str, game_id: str) -> dict:
     return status
 
 
+class GameIdResolutionError(RuntimeError):
+    """Raised when the BDL games schedule returns games but no usable IDs.
+
+    This is a hard-fail condition — it indicates an upstream BDL schema
+    contract regression, never a "no games tonight" scenario.
+    """
+
+
+def _extract_game_ids_from_schedule(games: list) -> tuple[list[str], list[str], list]:
+    """Return (ids, present_columns, sample_rows).
+
+    ``ids`` is the list of resolvable BDL game_id strings. Any record that
+    is not a dict is skipped silently. ``present_columns`` is the union
+    of keys observed across the input records (sorted) — used by the
+    hard-fail audit line when ``games`` is non-empty but every record is
+    missing a usable id. ``sample_rows`` is the first two records (or
+    fewer) for debuggability.
+    """
+    ids: list[str] = []
+    present: set[str] = set()
+    for g in games or []:
+        if isinstance(g, dict):
+            present.update(g.keys())
+            gid = g.get("id")
+            if gid is not None:
+                ids.append(str(gid))
+    sample = list(games[:2]) if games else []
+    return ids, sorted(present), sample
+
+
+def _discover_game_ids_for_delivery_date(delivery_date: str) -> list[str]:
+    """Return the list of BDL game_id strings on the schedule for date.
+
+    Behavior contract:
+      - Empty list  → real no-games slate (legitimate, caller soft-skips).
+      - len(ids)>0  → fetch each one.
+      - API/network/schema errors propagate as exceptions (hard fail).
+      - Schedule returned games but none had usable ``id`` keys → raise
+        :class:`GameIdResolutionError` (hard fail with structured marker).
+
+    Schedule errors and games-without-id are NEVER silently soft-skipped
+    here; only the genuine "BDL says no games today" case soft-skips.
+    """
+    from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
+    games = get_games(start_date=delivery_date, end_date=delivery_date)
+    ids, present, sample = _extract_game_ids_from_schedule(games or [])
+    if (games or []) and not ids:
+        raise GameIdResolutionError(
+            f"BDL_GAME_LINEUPS_GAME_ID_RESOLUTION_FAILED "
+            f"date={delivery_date} present_columns={present} "
+            f"sample={sample}"
+        )
+    return ids
+
+
+def _write_no_games_audit(delivery_date: str) -> Path:
+    """Persist a small audit artifact for the soft-skipped no-games slate.
+
+    Surfaces the soft-skip decision under the same delivery-date tree the
+    rest of the pipeline already inspects, so on-call review can confirm
+    BDL said "no games today" rather than a hidden API failure.
+    """
+    out_dir = LIVE_LINEUPS_DIR / delivery_date
+    out_dir.mkdir(parents=True, exist_ok=True)
+    audit_path = out_dir / "no_games_soft_skip.json"
+    payload = {
+        "delivery_date": delivery_date,
+        "marker": "BDL_GAME_LINEUPS_SOFT_SKIP_NO_GAMES",
+        "reason": "no_games_on_bdl_schedule",
+        "source": SOURCE_TAG,
+        "fetched_at_utc": _utc_iso(_utcnow()),
+    }
+    audit_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8"
+    )
+    return audit_path
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Fetch BDL confirmed lineups.")
     p.add_argument("--delivery-date", required=True, help="YYYY-MM-DD")
-    g = p.add_mutually_exclusive_group(required=True)
+    g = p.add_mutually_exclusive_group(required=False)
     g.add_argument("--game-id", help="Single BDL game_id")
-    g.add_argument("--game-ids", help="Comma-separated BDL game_ids")
+    g.add_argument(
+        "--game-ids",
+        help=(
+            "Comma-separated BDL game_ids. When neither --game-id nor "
+            "--game-ids is provided the script discovers all games for "
+            "--delivery-date from the BDL games schedule and fetches "
+            "lineups for each one."
+        ),
+    )
     args = p.parse_args(argv)
 
     if not os.environ.get("BDL_API_KEY", "").strip():
@@ -416,8 +502,33 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.game_id:
         ids = [args.game_id.strip()]
-    else:
+    elif args.game_ids:
         ids = [s.strip() for s in args.game_ids.split(",") if s.strip()]
+    else:
+        # --delivery-date only: discover game IDs from the BDL games
+        # schedule. A real no-games slate is the ONLY soft-skip path
+        # here; API/network/schema failures propagate as hard errors.
+        try:
+            ids = _discover_game_ids_for_delivery_date(args.delivery_date)
+        except GameIdResolutionError as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+        except Exception as exc:
+            print("BDL_LINEUPS_FETCH_FAILED", file=sys.stderr)
+            print(
+                "  reason: BDL games schedule lookup raised "
+                f"{type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
+            return 1
+        if not ids:
+            audit_path = _write_no_games_audit(args.delivery_date)
+            print(
+                f"BDL_GAME_LINEUPS_SOFT_SKIP_NO_GAMES "
+                f"date={args.delivery_date} "
+                f"audit={audit_path.relative_to(REPO_ROOT)}"
+            )
+            return 0
 
     statuses: list[dict] = []
     for gid in ids:
