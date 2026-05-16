@@ -905,6 +905,52 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         fair_under = get(r, "fair_under_odds_american", "fair_odds_under", "fair_odds_model", default=0)
         edge = num(get(r, "edge", default=0.0), 0.0)
 
+        # M8.6Q: market_prob is the per-side no-vig probability the
+        # public-export contract verifier requires on every affiliate
+        # row. Resolve it from any of the canonical no-vig over-prob
+        # aliases (or its complement for UNDER); fall back to deriving
+        # it from American odds when no_vig is missing. The contract
+        # only requires the *field be present*, so emitting ``None``
+        # when no usable signal exists still satisfies the structural
+        # check (the legacy producer behaved identically).
+        mvo_raw = get(
+            r,
+            "market_no_vig_over_prob",
+            "market_prob_over_no_vig",
+            "no_vig_over_prob",
+            "fair_prob_over",
+            default=None,
+        )
+        market_over_prob = None
+        try:
+            if mvo_raw is not None:
+                _mvo = float(mvo_raw)
+                if math.isfinite(_mvo) and 0.0 < _mvo < 1.0:
+                    market_over_prob = _mvo
+        except Exception:
+            market_over_prob = None
+        # If no_vig was unavailable, derive both sides from American
+        # odds when present.
+        def _amer_to_decimal(amer):
+            try:
+                f = float(amer)
+            except (TypeError, ValueError):
+                return None
+            if not math.isfinite(f) or f == 0:
+                return None
+            return (1.0 + f / 100.0) if f > 0 else (1.0 + 100.0 / abs(f))
+
+        if market_over_prob is None:
+            d_over = _amer_to_decimal(over_odds)
+            d_under = _amer_to_decimal(under_odds)
+            if d_over and d_under and d_over > 1.0 and d_under > 1.0:
+                p_over_raw = 1.0 / d_over
+                p_under_raw = 1.0 / d_under
+                tot = p_over_raw + p_under_raw
+                if tot > 0:
+                    market_over_prob = p_over_raw / tot
+        market_under_prob = (1.0 - market_over_prob) if market_over_prob is not None else None
+
         for side, mps, odds, fair in (
             ("OVER", mpo, over_odds, fair_over),
             ("UNDER", mpu, under_odds, fair_under),
@@ -917,10 +963,21 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             # never trip ``WOO_DASHBOARD_RENDER_CONTRACT_FAIL`` with the
             # ``rows have null model_prob`` reason.
             model_prob_side = float(mps)
+            market_prob_side = (
+                market_over_prob if side == "OVER" else market_under_prob
+            )
             out.update({
                 "side": side,
                 "model_prob": model_prob_side,
                 "model_probability_for_side": model_prob_side,
+                # M8.6Q: WOO_PUBLIC_EXPORT contract requires ``market_prob``
+                # to be present on each affiliate row (the legacy
+                # publisher emitted this; the M8.6 repair pass had been
+                # dropping it).
+                "market_prob": market_prob_side,
+                "market_prob_over_no_vig": market_over_prob,
+                "market_prob_under_no_vig": market_under_prob,
+                "market_no_vig_over_prob": market_over_prob,
                 "side_odds": odds,
                 "fair_odds_model": fair,
                 "edge": float(edge if side == "OVER" else -edge),
