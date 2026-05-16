@@ -235,15 +235,34 @@ def cond_02_predict_date_contract(date: str) -> ReadinessFinding:
 
     pre_run_marker_emitter_ok = True
     pre_run_evidence: dict[str, Any] = {}
-    src = (REPO_ROOT / "scripts" / "predict.py").read_text(encoding="utf-8") if (
+    orch_src = (REPO_ROOT / "scripts" / "run_daily_delivery_pipeline.py").read_text(encoding="utf-8") if (
+        (REPO_ROOT / "scripts" / "run_daily_delivery_pipeline.py").is_file()
+    ) else ""
+    predict_src = (REPO_ROOT / "scripts" / "predict.py").read_text(encoding="utf-8") if (
         (REPO_ROOT / "scripts" / "predict.py").is_file()
     ) else ""
-    pre_run_evidence["predict_py_emits_date_contract"] = "PREDICT_DATE_CONTRACT_PASS" in src
-    pre_run_evidence["orchestrator_passes_date"] = (
-        "--delivery-date" in (REPO_ROOT / "scripts" / "run_daily_delivery_pipeline.py").read_text(encoding="utf-8")
-        or "--date" in (REPO_ROOT / "scripts" / "run_daily_delivery_pipeline.py").read_text(encoding="utf-8")
+    # The PREDICT_DATE_CONTRACT_PASS / _VIOLATION markers are emitted
+    # by the orchestrator's post-predict gate (the gate runs
+    # immediately after scripts/predict.py and checks that the
+    # produced predictions/*.parquet are tagged with the requested
+    # delivery date). Either the orchestrator or predict.py emitting
+    # the marker is acceptable; both being silent is the failure.
+    pre_run_evidence["orchestrator_emits_predict_date_contract"] = (
+        "PREDICT_DATE_CONTRACT_PASS" in orch_src
     )
-    if not pre_run_evidence["predict_py_emits_date_contract"]:
+    pre_run_evidence["orchestrator_emits_predict_date_violation"] = (
+        "PREDICT_DATE_CONTRACT_VIOLATION" in orch_src
+    )
+    pre_run_evidence["predict_py_emits_date_contract"] = (
+        "PREDICT_DATE_CONTRACT_PASS" in predict_src
+    )
+    pre_run_evidence["orchestrator_passes_date"] = (
+        "--delivery-date" in orch_src or "--date" in orch_src
+    )
+    if not (
+        pre_run_evidence["orchestrator_emits_predict_date_contract"]
+        or pre_run_evidence["predict_py_emits_date_contract"]
+    ):
         pre_run_marker_emitter_ok = False
 
     if not singles.is_file():
