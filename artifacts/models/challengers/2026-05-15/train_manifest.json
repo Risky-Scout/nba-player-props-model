@@ -11,7 +11,7 @@
       "--output-dir",
       "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-15"
     ],
-    "calibrate_pmf_elapsed_seconds": 55.4,
+    "calibrate_pmf_elapsed_seconds": 71.1,
     "calibrate_pmf_log": "artifacts/models/challengers/2026-05-15/calibrate_pmf.log",
     "challenger_kind": "real-aggregate-mode-from-rolling-oof",
     "files": [
@@ -56,9 +56,9 @@
     "training_table_sha256": null,
     "training_table_snapshot": null
   },
-  "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
+  "code_commit": "04663576d9b1cabb620784c2ccb7a4a8b4193a80",
   "dry_run": false,
-  "finished_at_utc": "2026-05-16T14:07:56+00:00",
+  "finished_at_utc": "2026-05-16T16:32:29+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -68,15 +68,15 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-15",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260516T140655"
+    "training_run_id": "nightly-20260516T163111"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
+    "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
     "model_version": "sim-2099-12-31"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-16T14:07:00+00:00",
+  "started_at_utc": "2026-05-16T16:31:17+00:00",
   "stats_trained": [
     "pts",
     "reb",
@@ -91,7 +91,7 @@
     "aggregate_oof_future_rows_excluded": null,
     "aggregate_oof_rows_after_cutoff": 153664,
     "aggregate_oof_rows_pre_cutoff": 153664,
-    "calibrate_pmf_elapsed_seconds": 55.4,
+    "calibrate_pmf_elapsed_seconds": 71.1,
     "future_rows_excluded": 0,
     "max_date": "2026-05-15",
     "min_date": "2023-10-24",

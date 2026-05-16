@@ -17,7 +17,7 @@
       },
       "fringe": {
         "n": 1267,
-        "nll": 2.063039977961056,
+        "nll": 2.0630399779610564,
         "p0_err": 0.34569578369027953
       },
       "inactive_risk": {
@@ -55,7 +55,7 @@
       },
       "fg3m": {
         "calibrator_present": true,
-        "mean_bias": -0.030314272879967356,
+        "mean_bias": -0.030314272879967363,
         "nll": 2.646614698414948,
         "p0_err": 0.3162697033943827,
         "rows_scored": 1719,
@@ -63,7 +63,7 @@
       },
       "pts": {
         "calibrator_present": true,
-        "mean_bias": -0.9464832003382181,
+        "mean_bias": -0.9464832003382182,
         "nll": 2.99149203598365,
         "p0_err": 0.2045404085777178,
         "rows_scored": 1719,
@@ -79,7 +79,7 @@
       },
       "stl": {
         "calibrator_present": true,
-        "mean_bias": -0.5361393766652782,
+        "mean_bias": -0.5361393766652781,
         "nll": 9.785255794322078,
         "p0_err": 0.43883194159432604,
         "rows_scored": 1719,
@@ -134,7 +134,7 @@
       },
       "fringe": {
         "n": 1267,
-        "nll": 2.063039977961056,
+        "nll": 2.0630399779610564,
         "p0_err": 0.34569578369027953
       },
       "inactive_risk": {
@@ -172,7 +172,7 @@
       },
       "fg3m": {
         "calibrator_present": true,
-        "mean_bias": -0.030314272879967356,
+        "mean_bias": -0.030314272879967363,
         "nll": 2.646614698414948,
         "p0_err": 0.3162697033943827,
         "rows_scored": 1719,
@@ -180,7 +180,7 @@
       },
       "pts": {
         "calibrator_present": true,
-        "mean_bias": -0.9464832003382181,
+        "mean_bias": -0.9464832003382182,
         "nll": 2.99149203598365,
         "p0_err": 0.2045404085777178,
         "rows_scored": 1719,
@@ -196,7 +196,7 @@
       },
       "stl": {
         "calibrator_present": true,
-        "mean_bias": -0.5361393766652782,
+        "mean_bias": -0.5361393766652781,
         "nll": 9.785255794322078,
         "p0_err": 0.43883194159432604,
         "rows_scored": 1719,
@@ -235,7 +235,7 @@
       "rps": 0.5798870725669074
     }
   },
-  "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
+  "code_commit": "04663576d9b1cabb620784c2ccb7a4a8b4193a80",
   "gates_failed": [
     "m6_3_stat_role_matrix_valid",
     "m6_3_review_cells_guarded",
@@ -261,7 +261,7 @@
     "no_phase10d_overlays_referenced",
     "market_benchmark_available"
   ],
-  "generated_at_utc": "2026-05-16T14:08:07+00:00",
+  "generated_at_utc": "2026-05-16T16:32:43+00:00",
   "m6_3_matrix_summary": {
     "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
     "expected_role_buckets": [
@@ -582,7 +582,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
+    "code_commit": "04663576d9b1cabb620784c2ccb7a4a8b4193a80",
     "dates_included": [
       "2026-05-12",
       "2026-05-08",
@@ -617,7 +617,7 @@
     ],
     "delta_brier": 0.012077780653008373,
     "delta_logloss": 0.036980768653124906,
-    "generated_at_utc": "2026-05-16T14:07:57+00:00",
+    "generated_at_utc": "2026-05-16T16:32:31+00:00",
     "market_brier": 0.23386606711450633,
     "market_logloss": 0.6591127199592747,
     "min_bucket_rows": 50,
@@ -767,7 +767,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-15",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260516T140655"
+    "training_run_id": "nightly-20260516T163111"
   },
   "promote": false,
   "reason": "gate_failed:m6_3_stat_role_matrix_valid",

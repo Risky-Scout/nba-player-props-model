@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-16T14:08:07+00:00 |
+| Generated (UTC) | 2026-05-16T16:32:43+00:00 |
 | Promote | no |
 | Reason | gate_failed:m6_3_stat_role_matrix_valid |
 | Champion model_version | sim-2099-12-31 |
