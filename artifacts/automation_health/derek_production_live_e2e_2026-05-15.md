@@ -1,8 +1,6 @@
 # Derek production-live E2E — 2026-05-15
 
 - outcome: **pending**
-- reason: all_targets_in_future
-- now_utc: 2026-05-15T19:12:14Z
-- predictions_parquet_present: True
+- reason: schedule_present_but_no_target_overdue_yet
 - schedule_size: 2
-- any_target_in_past: False
+- now_utc: 2026-05-16T03:58:43Z

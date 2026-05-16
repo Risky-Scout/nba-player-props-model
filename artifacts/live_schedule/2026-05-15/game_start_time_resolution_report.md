@@ -1,6 +1,6 @@
 # Game start time resolution — 2026-05-15
 
-- generated_at_utc: 2026-05-15T19:11:53+00:00Z
+- generated_at_utc: 2026-05-16T03:58:22+00:00Z
 - predictions_unique_games: 2
 - resolved: **2**
 - unresolved: **0**
@@ -14,5 +14,5 @@
 
 | game_id | team | opponent | resolved_utc | source | confidence | blocker |
 | --- | --- | --- | --- | --- | --- | --- |
-| 21707977 | MIN | SAS | `2026-05-16T01:40:00Z` | odds_api_live_events | high |  |
-| 21709238 | CLE | DET | `2026-05-15T23:10:00Z` | odds_api_live_events | high |  |
+| 21707977 | MIN | SAS | `2026-05-16T01:49:00Z` | odds_api_live_events | high |  |
+| 21709238 | CLE | DET | `2026-05-17T22:10:00Z` | odds_api_live_events | high |  |

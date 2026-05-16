@@ -1,14 +1,14 @@
 {
   "delivery_date": "2026-05-15",
-  "generated_at_utc": "2026-05-15T19:11:53+00:00Z",
+  "generated_at_utc": "2026-05-16T03:58:22+00:00Z",
   "records": [
     {
       "game_id": "21707977",
       "opponent_abbr": "SAS",
       "resolution_blocker": "",
-      "resolved_game_start_time_utc": "2026-05-16T01:40:00Z",
+      "resolved_game_start_time_utc": "2026-05-16T01:49:00Z",
       "source_confidence": "high",
-      "source_payload_hash": "da66b86a00d8319c",
+      "source_payload_hash": "86878c8e6e6ac622",
       "source_used": "odds_api_live_events",
       "team_abbr": "MIN"
     },
@@ -16,9 +16,9 @@
       "game_id": "21709238",
       "opponent_abbr": "DET",
       "resolution_blocker": "",
-      "resolved_game_start_time_utc": "2026-05-15T23:10:00Z",
+      "resolved_game_start_time_utc": "2026-05-17T22:10:00Z",
       "source_confidence": "high",
-      "source_payload_hash": "9ce09af98a2a9f63",
+      "source_payload_hash": "d0b9fd30179a210c",
       "source_used": "odds_api_live_events",
       "team_abbr": "CLE"
     }
