@@ -1,0 +1,127 @@
+name: Normal Game-Day Pipeline Readiness Audit
+
+# A pre-flight audit that proves every condition required for the
+# games-exist delivery path to run end-to-end and produce Derek's
+# forward feed from the validated PMF surface. Explicitly NOT the
+# no-games soft-skip path.
+#
+# Inputs:
+#   delivery_date    — YYYY-MM-DD start date for the audit lookahead
+#   mode             — pipeline mode (default woo_morning_monetization)
+#   lookahead_days   — walk forward up to N days from delivery_date to
+#                      find the next games-exist slate (default 14)
+#   strict           — fail the gate on any non-pass blocking finding
+#
+# Outputs:
+#   * artifacts/normal_game_day_readiness/<resolved_date>/normal_game_day_readiness_report.json
+#   * markdown twin at the same prefix
+#   * an uploaded GitHub artifact for download/inspection
+
+on:
+  workflow_dispatch:
+    inputs:
+      delivery_date:
+        description: "Start date for lookahead (YYYY-MM-DD). Blank = tomorrow (ET)."
+        required: false
+        default: ""
+      mode:
+        description: "Pipeline mode to audit (must match the woo_morning_monetization production path by default)."
+        required: false
+        default: "woo_morning_monetization"
+      lookahead_days:
+        description: "Days to walk forward looking for the next games-exist slate."
+        required: false
+        default: "14"
+      strict:
+        description: "Fail the gate on any non-pass blocking finding."
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+
+concurrency:
+  group: normal-game-day-readiness-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PYTHON_VERSION: "3.11"
+  PYTHONPATH: src
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  readiness_audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 1 }
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      - name: Install python deps
+        run: pip install -r requirements.txt
+      - name: Resolve start date (America/New_York)
+        id: d
+        run: |
+          if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
+            echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
+          else
+            ET_TOMORROW=$(TZ=America/New_York date -d "tomorrow" +%Y-%m-%d 2>/dev/null \
+              || TZ=America/New_York date -v+1d +%Y-%m-%d)
+            echo "date=$ET_TOMORROW" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run readiness audit
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          STRICT_FLAG=""
+          if [ "${{ github.event.inputs.strict }}" = "true" ]; then
+            STRICT_FLAG="--strict"
+          fi
+          python3 scripts/audit_normal_game_day_pipeline_readiness.py \
+            --delivery-date "${{ steps.d.outputs.date }}" \
+            --mode "${{ github.event.inputs.mode }}" \
+            --lookahead-days "${{ github.event.inputs.lookahead_days }}" \
+            $STRICT_FLAG \
+            | tee /tmp/normal_game_day_readiness_output.txt
+      - name: Locate resolved game date
+        id: g
+        run: |
+          # The audit writes reports under artifacts/normal_game_day_readiness/<resolved_date>/
+          RESOLVED=""
+          for d in artifacts/normal_game_day_readiness/*/; do
+            if [ -f "$d/normal_game_day_readiness_report.json" ]; then
+              RESOLVED=$(basename "$d")
+            fi
+          done
+          echo "resolved=$RESOLVED" >> "$GITHUB_OUTPUT"
+          echo "Resolved game date: $RESOLVED"
+          if [ -n "$RESOLVED" ]; then
+            python3 -c "
+import json, pathlib, sys
+p = pathlib.Path('artifacts/normal_game_day_readiness/$RESOLVED/normal_game_day_readiness_report.json')
+m = json.loads(p.read_text())
+print('selected_game_date:', m.get('selected_game_date'))
+print('mode:', m.get('mode'))
+print('strict:', m.get('strict'))
+print()
+print('BDL schedule trace:')
+for row in m.get('bdl_schedule_trace', []):
+    print(f\"  {row['date']}  games_count={row['games_count']}  ev={row['evidence']}\")
+print()
+print('Findings (status / blocking / marker):')
+for f in m.get('findings', []):
+    print(f\"  {f['condition_id']:<35} {f['status']:<28} blocking={f['blocking']} marker={f.get('marker')}\")
+"
+          fi
+      - name: Upload readiness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: normal-game-day-readiness-${{ steps.g.outputs.resolved || steps.d.outputs.date }}-${{ github.run_id }}
+          path: artifacts/normal_game_day_readiness/
+          if-no-files-found: warn
+          retention-days: 14
