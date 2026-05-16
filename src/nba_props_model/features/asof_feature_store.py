@@ -103,12 +103,35 @@ def _populate_identity(df: pd.DataFrame, date: str, run_mode: RunMode, run_id: s
     return out
 
 
+AVAILABILITY_CONFIDENCE_NUMERIC_ALIASES: tuple[str, ...] = (
+    "availability_confidence_score",
+    "confidence_score",
+)
+AVAILABILITY_CONFIDENCE_PERMISSIVE_ALIASES: tuple[str, ...] = (
+    "confidence",
+)
+# Backwards-compat union for tests that iterate "all known names".
 AVAILABILITY_CONFIDENCE_ALIASES: tuple[str, ...] = (
     "availability_confidence",
-    "confidence",
-    "confidence_score",
-    "availability_confidence_score",
+    *AVAILABILITY_CONFIDENCE_NUMERIC_ALIASES,
+    *AVAILABILITY_CONFIDENCE_PERMISSIVE_ALIASES,
 )
+
+# Categorical tier strings sometimes appear in source feeds. Map them to
+# stable numeric points so downstream ``availability_confidence`` is always
+# a float and the original tier label survives in ``availability_confidence_tier``.
+AVAILABILITY_CONFIDENCE_TIER_MAP: dict[str, float] = {
+    "HIGH": 0.9,
+    "HIGH_CONFIDENCE": 0.9,
+    "MEDIUM": 0.7,
+    "MED": 0.7,
+    "MODERATE": 0.7,
+    "LOW": 0.5,
+    "LOW_CONFIDENCE": 0.5,
+    "UNKNOWN": 0.5,
+    "NONE": 0.5,
+    "": 0.5,
+}
 
 _AVAILABILITY_COLUMN_DEFAULTS: dict[str, Any] = {
     "availability_status": "source_unavailable",
@@ -125,16 +148,59 @@ _AVAILABILITY_COLUMN_DEFAULTS: dict[str, Any] = {
 
 
 def _coalesce_availability_confidence(df: pd.DataFrame) -> pd.DataFrame:
-    """Rename the first present alias into ``availability_confidence``.
+    """Build the canonical ``availability_confidence`` column.
 
-    Aliases are checked in priority order; the canonical name wins when present.
+    Priority:
+      1. Existing ``availability_confidence`` — kept as-is (may be numeric
+         or tier strings; numeric coercion happens later).
+      2. Numeric-named score aliases (``availability_confidence_score``,
+         ``confidence_score``) — only adopted when the values coerce to
+         numbers. A score column carrying tier labels is refused.
+      3. Generic ``confidence`` column — accepted as-is (may be numeric or
+         categorical tier strings).
     """
     if "availability_confidence" in df.columns:
         return df
-    for alias in AVAILABILITY_CONFIDENCE_ALIASES[1:]:
+    for alias in AVAILABILITY_CONFIDENCE_NUMERIC_ALIASES:
+        if alias in df.columns:
+            numeric = pd.to_numeric(df[alias], errors="coerce")
+            if numeric.notna().any() and float(numeric.notna().mean()) >= 0.5:
+                return df.rename(columns={alias: "availability_confidence"})
+    for alias in AVAILABILITY_CONFIDENCE_PERMISSIVE_ALIASES:
         if alias in df.columns:
             return df.rename(columns={alias: "availability_confidence"})
     return df
+
+
+def _coerce_availability_confidence_to_numeric(out: pd.DataFrame) -> None:
+    """In-place: split tier strings out into ``availability_confidence_tier``
+    and force ``availability_confidence`` to ``float64``.
+
+    Rules:
+      * Numeric values pass through.
+      * Tier strings (``HIGH``/``MEDIUM``/``MED``/``LOW``/etc.) get preserved
+        upper-cased in ``availability_confidence_tier`` and mapped via
+        :data:`AVAILABILITY_CONFIDENCE_TIER_MAP`.
+      * Unknown / null / unmapped values fall back to 0.5.
+      * Pre-existing non-null entries in ``availability_confidence_tier``
+        take priority over freshly inferred labels (caller-supplied wins).
+    """
+    s = out["availability_confidence"]
+    numeric_direct = pd.to_numeric(s, errors="coerce")
+    s_str_upper = s.astype("string").str.upper().str.strip()
+    inferred_tier = s_str_upper.where(numeric_direct.isna(), other=pd.NA)
+    tier_numeric = inferred_tier.map(AVAILABILITY_CONFIDENCE_TIER_MAP)
+    final_numeric = (
+        numeric_direct.fillna(tier_numeric).fillna(0.5).astype("float64")
+    )
+    out["availability_confidence"] = final_numeric
+    if "availability_confidence_tier" in out.columns:
+        existing = out["availability_confidence_tier"].astype("string")
+        out["availability_confidence_tier"] = existing.where(
+            existing.notna() & (existing.str.len() > 0), other=inferred_tier
+        ).astype("object")
+    else:
+        out["availability_confidence_tier"] = inferred_tier.astype("object")
 
 
 def _apply_availability_defaults(df: pd.DataFrame) -> list[str]:
@@ -204,7 +270,7 @@ def _populate_availability(snapshot: pd.DataFrame, avail: pd.DataFrame) -> pd.Da
     out["inactive_risk_current"] = 1.0 - out["prob_active_current"].astype(float)
     out["inactive_risk_reason"] = "availability_model"
     out["has_injury_data"] = out["availability_status"].notna()
-    out["availability_confidence"] = out["availability_confidence"].fillna(0.5)
+    _coerce_availability_confidence_to_numeric(out)
     out["minutes_restriction_flag"] = out["minutes_restriction_flag"].fillna(False)
     out["returning_from_injury_flag"] = out["is_returning_from_absence"].fillna(False)
     out["first_game_back_flag"] = out["returning_from_injury_flag"]
@@ -263,6 +329,33 @@ def _populate_lineup(snapshot: pd.DataFrame, run_mode: RunMode, status_blob: dic
     return out
 
 
+def assert_availability_confidence_is_numeric(snapshot: pd.DataFrame) -> None:
+    """Final pre-parquet guard: ``availability_confidence`` must be numeric.
+
+    Surfaces a structured ``AVAILABILITY_CONFIDENCE_NON_NUMERIC`` failure
+    instead of letting pyarrow raise a raw ``ArrowInvalid`` on
+    ``to_parquet`` (the tier-string regression that took down run
+    25950902639).
+    """
+    if "availability_confidence" not in snapshot.columns:
+        return
+    col = snapshot["availability_confidence"]
+    if pd.api.types.is_numeric_dtype(col):
+        return
+    coerced = pd.to_numeric(col, errors="coerce")
+    bad_mask = coerced.isna() & col.notna()
+    sample = (
+        col[bad_mask]
+        .astype("string")
+        .head(5)
+        .tolist()
+    )
+    raise RuntimeError(
+        "AVAILABILITY_CONFIDENCE_NON_NUMERIC "
+        f"dtype={col.dtype} n_bad={int(bad_mask.sum())} sample={sample}"
+    )
+
+
 def build_feature_snapshot(repo_root: Path, date: str, run_mode: RunMode) -> SnapshotResult:
     generated_at = _now_utc()
     run_id = f"{date}_{run_mode.value}_{uuid.uuid4().hex[:10]}"
@@ -277,6 +370,7 @@ def build_feature_snapshot(repo_root: Path, date: str, run_mode: RunMode) -> Sna
     snapshot = _populate_lineup(snapshot, run_mode, _load_lineup_status(repo_root, date))
     if "unavailable_reason" in snapshot.columns:
         snapshot["unavailable_reason"] = snapshot["unavailable_reason"].fillna("source_unavailable")
+    assert_availability_confidence_is_numeric(snapshot)
     metadata = {
         "date": date,
         "run_mode": run_mode.value,
