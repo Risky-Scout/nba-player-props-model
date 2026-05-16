@@ -312,6 +312,11 @@ def _build(
     rebuild_canonical: bool,
     model_only_path: Path | None = None,
 ) -> int:
+    """Invoke ``build_daily_pmf_delivery.py``.
+
+    With ``model_only_path`` set, daily delivery reads that parquet via
+    ``--model-only`` only — it must not rebuild MODEL_ONLY from ``all_props``.
+    """
     cmd = [PYTHON, str(BUILD), "--date", date, "--snapshot", snapshot]
 
     if model_only_path is not None:

@@ -92,8 +92,6 @@ from nba_props_model.calibration.role_buckets import role_bucket_features_from_m
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
 from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
-    build_current_market_player_signal,
-    build_player_game_eligibility,
     assert_no_ineligible_pmfs,
 )
 from nba_props_model.pipelines._stat_grid_eligibility_gate import (  # noqa: E402

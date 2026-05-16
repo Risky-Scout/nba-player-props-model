@@ -896,6 +896,29 @@ def _market_coverage_status(books_seen: list[str]) -> str:
 PRODUCTION_TARGET_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 11-stat mission canonical (was 7-stat BASE_STATS_FULL pre-M8.1, 5-stat literal pre-M4A2)
 PRODUCTION_TARGET_STAT_SET = set(PRODUCTION_TARGET_STATS)
 
+# Stat-grid / MODEL_ONLY parquet must carry these for production + daily validation.
+MODEL_ONLY_ELIGIBILITY_MINUTES_COLUMNS = [
+    "minutes_mean",
+    "minutes_p10",
+    "minutes_p50",
+    "minutes_p90",
+    "minutes_std",
+    "p_inactive_used",
+    "rotation_probability",
+    "starter_probability",
+    "projected_role",
+    "player_game_eligible",
+    "eligibility_reason",
+    "has_current_market_line",
+]
+
+MODEL_ONLY_PUBLISH_ID_STAT_COLUMNS = [
+    "slate_date",
+    "game_id",
+    "player_id",
+    "stat",
+]
+
 
 def _validate_eligibility_contract_for_model_only(df: pd.DataFrame, path: Path) -> None:
     """M8.9 root-cause rewire: model_only must carry eligibility + minutes
@@ -908,35 +931,38 @@ def _validate_eligibility_contract_for_model_only(df: pd.DataFrame, path: Path) 
     if os.environ.get("NBA_ALLOW_LEGACY_NO_ELIGIBILITY", "").strip() == "1":
         return
 
-    required_cols = [
-        "minutes_mean",
-        "minutes_p10",
-        "minutes_p50",
-        "minutes_p90",
-        "minutes_std",
-        "p_inactive_used",
-        "rotation_probability",
-        "starter_probability",
-        "projected_role",
-        "player_game_eligible",
-        "eligibility_reason",
-        "has_current_market_line",
-    ]
+    required_cols = list(MODEL_ONLY_ELIGIBILITY_MINUTES_COLUMNS)
     missing = [c for c in required_cols if c not in df.columns]
     if missing:
         raise SystemExit(
-            "FATAL: production MODEL_ONLY missing eligibility/minutes "
-            f"columns {missing}; regenerate via "
-            "scripts/build_minutes_predictions.py + "
-            "scripts/build_stat_grid_pmfs.py (path=" + str(path) + ")."
+            "MODEL_ONLY_SCHEMA_MISSING_COLUMNS "
+            f"path={path} missing={missing} present={list(df.columns)}"
         )
 
     bad_eligible = df["player_game_eligible"].astype(bool).eq(False)
     if bool(bad_eligible.any()):
+        sample = (
+            df.loc[
+                bad_eligible,
+                [
+                    c
+                    for c in (
+                        "slate_date",
+                        "game_id",
+                        "player_id",
+                        "stat",
+                        "player_name",
+                        "player_game_eligible",
+                    )
+                    if c in df.columns
+                ],
+            ]
+            .head(15)
+            .to_dict("records")
+        )
         raise SystemExit(
-            "FATAL: production MODEL_ONLY contains "
-            + str(int(bad_eligible.sum()))
-            + " rows with player_game_eligible=False (path=" + str(path) + ")."
+            "MODEL_ONLY_INELIGIBLE_ROWS_PRESENT "
+            f"count={int(bad_eligible.sum())} sample_rows={sample}"
         )
 
     for col in ("minutes_mean", "rotation_probability", "starter_probability"):

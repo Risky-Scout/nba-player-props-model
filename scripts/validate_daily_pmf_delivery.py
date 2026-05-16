@@ -288,8 +288,9 @@ def validate(date: str, train_through_date: str) -> dict:
         missing_canon_cols = [c for c in REQUIRED_CANONICAL_COLUMNS if c not in canonical_df.columns]
         if missing_canon_cols:
             _add_failure(
-                failures, "canonical_schema_missing",
-                f"missing columns {missing_canon_cols}",
+                failures, "MODEL_ONLY_SCHEMA_MISSING_COLUMNS",
+                f"path={canonical_path.relative_to(REPO_ROOT)} "
+                f"missing={missing_canon_cols} present={list(canonical_df.columns)}",
             )
 
         # 5. canonical with player_game_eligible=False
@@ -324,6 +325,35 @@ def validate(date: str, train_through_date: str) -> dict:
                 failures, "canonical_deep_bench_no_line_PMFs",
                 f"{deep_bench} canonical rows are no-line, sub-12-min, sub-50% rotation/starter",
             )
+
+    # 4b. Legacy MODEL_ONLY filename must mirror all_props schema (dual-write contract).
+    model_only_legacy_path = _path(
+        f"deliveries/{date}/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+    mol_df = _safe_read(model_only_legacy_path)
+    if canonical_df is not None and not canonical_df.empty:
+        if mol_df is None:
+            _add_failure(
+                failures, "MODEL_ONLY_DUAL_WRITE_MISSING_PRIMARY",
+                f"missing {model_only_legacy_path.relative_to(REPO_ROOT)} alongside "
+                f"{canonical_path.relative_to(REPO_ROOT)}",
+            )
+        else:
+            miss_legacy = [
+                c for c in REQUIRED_CANONICAL_COLUMNS if c not in mol_df.columns
+            ]
+            if miss_legacy:
+                _add_failure(
+                    failures, "MODEL_ONLY_SCHEMA_MISSING_COLUMNS",
+                    f"path={model_only_legacy_path.relative_to(REPO_ROOT)} "
+                    f"missing={miss_legacy} present={list(mol_df.columns)}",
+                )
+            lc = _check_deep_bench(mol_df)
+            if lc > 0:
+                _add_failure(
+                    failures, "model_only_tonight_deep_bench_PMFs",
+                    f"{lc} MODEL_ONLY parquet rows failed deep-bench publication gate",
+                )
 
     # 9. review keys mismatch canonical on (slate_date, game_id, player_id, stat)
     review_df = _safe_read(review_path)
