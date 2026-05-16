@@ -89,10 +89,13 @@ jobs:
             | tee /tmp/normal_game_day_readiness_output.txt
       - name: Locate resolved game date
         id: g
+        env:
+          REPORT_ROOT: artifacts/normal_game_day_readiness
         run: |
-          # The audit writes reports under artifacts/normal_game_day_readiness/<resolved_date>/
+          # The audit writes reports under
+          # artifacts/normal_game_day_readiness/<resolved_date>/
           RESOLVED=""
-          for d in artifacts/normal_game_day_readiness/*/; do
+          for d in "$REPORT_ROOT"/*/; do
             if [ -f "$d/normal_game_day_readiness_report.json" ]; then
               RESOLVED=$(basename "$d")
             fi
@@ -100,22 +103,13 @@ jobs:
           echo "resolved=$RESOLVED" >> "$GITHUB_OUTPUT"
           echo "Resolved game date: $RESOLVED"
           if [ -n "$RESOLVED" ]; then
-            python3 -c "
-import json, pathlib, sys
-p = pathlib.Path('artifacts/normal_game_day_readiness/$RESOLVED/normal_game_day_readiness_report.json')
-m = json.loads(p.read_text())
-print('selected_game_date:', m.get('selected_game_date'))
-print('mode:', m.get('mode'))
-print('strict:', m.get('strict'))
-print()
-print('BDL schedule trace:')
-for row in m.get('bdl_schedule_trace', []):
-    print(f\"  {row['date']}  games_count={row['games_count']}  ev={row['evidence']}\")
-print()
-print('Findings (status / blocking / marker):')
-for f in m.get('findings', []):
-    print(f\"  {f['condition_id']:<35} {f['status']:<28} blocking={f['blocking']} marker={f.get('marker')}\")
-"
+            RP="$REPORT_ROOT/$RESOLVED/normal_game_day_readiness_report.json"
+            echo "Readiness report: $RP"
+            jq -r '"selected_game_date: \(.selected_game_date)\nmode: \(.mode)\nstrict: \(.strict)\n\nBDL schedule trace:"' "$RP" || true
+            jq -r '.bdl_schedule_trace[]? | "  \(.date)  games_count=\(.games_count)  ev=\(.evidence)"' "$RP" || true
+            echo
+            echo "Findings:"
+            jq -r '.findings[] | "  \(.condition_id)  status=\(.status)  blocking=\(.blocking)  marker=\(.marker // "")"' "$RP" || true
           fi
       - name: Upload readiness report
         if: always()
