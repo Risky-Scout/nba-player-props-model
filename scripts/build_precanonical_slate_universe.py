@@ -47,11 +47,37 @@ if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from nba_props_model.features.precanonical_slate_universe import (  # noqa: E402
+    NoGamesSlateSoftSkip,
     PrecanonicalSlateUniverseError,
     materialize_precanonical_slate_universe,
     precanonical_seed_path,
     predictions_all_props_path,
 )
+
+
+def _write_no_games_seed_audit(repo_root: Path, date: str, run_mode: str, marker_line: str) -> Path:
+    """Persist a small audit artifact alongside the BDL no-games audit.
+
+    The pre-canonical seed soft-skip and the BDL lineups soft-skip both
+    surface a real no-games slate. Co-locating the audit under
+    ``artifacts/live_lineups/<date>/`` keeps on-call review in one
+    place when the morning delivery is force-run against an empty
+    slate.
+    """
+    out_dir = repo_root / "artifacts" / "live_lineups" / date
+    out_dir.mkdir(parents=True, exist_ok=True)
+    audit_path = out_dir / "precanonical_seed_no_games_soft_skip.json"
+    payload = {
+        "delivery_date": date,
+        "run_mode": run_mode,
+        "marker": "PRECANNONICAL_SLATE_UNIVERSE_SOFT_SKIP_NO_GAMES",
+        "marker_line": marker_line,
+        "reason": "predict_no_games_placeholder",
+        "source": "predictions/all_props_<date>.parquet + predictions/singles_<date>.json reason=no_games_slate",
+    }
+    import json as _json
+    audit_path.write_text(_json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    return audit_path
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -97,6 +123,15 @@ def main(argv: list[str] | None = None) -> int:
             source_path=source,
             out_path=target,
         )
+    except NoGamesSlateSoftSkip as exc:
+        marker = str(exc)
+        audit = _write_no_games_seed_audit(REPO_ROOT, args.date, args.run_mode, marker)
+        try:
+            audit_rel = audit.relative_to(REPO_ROOT)
+        except ValueError:
+            audit_rel = audit
+        print(f"{marker} audit={audit_rel}")
+        return 0
     except PrecanonicalSlateUniverseError as exc:
         print(str(exc), file=sys.stderr)
         return 2

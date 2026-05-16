@@ -24,11 +24,13 @@ if str(SRC) not in sys.path:
 from nba_props_model.features.precanonical_slate_universe import (  # noqa: E402
     OPTIONAL_IDENTITY_COLUMNS,
     REQUIRED_IDENTITY_COLUMNS,
+    NoGamesSlateSoftSkip,
     PrecanonicalSlateUniverseError,
     build_precanonical_slate_universe,
     materialize_precanonical_slate_universe,
     precanonical_seed_path,
     predictions_all_props_path,
+    predictions_singles_path,
 )
 
 
@@ -228,3 +230,96 @@ def test_predictions_all_props_path_helper(tmp_path):
     p = predictions_all_props_path(tmp_path, "2026-05-16")
     assert p.name == "all_props_2026-05-16.parquet"
     assert p.parent.name == "predictions"
+
+
+def _write_no_games_signal(repo_root: Path, date: str) -> Path:
+    """Mirror predict.py's write_no_game_outputs side-effect — just the
+    singles_<date>.json with reason=no_games_slate signal."""
+    import json
+    p = predictions_singles_path(repo_root, date)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(
+        json.dumps(
+            {
+                "date": date,
+                "version": "test",
+                "total_picks": 0,
+                "picks": [],
+                "reason": "no_games_slate",
+            }
+        ),
+        encoding="utf-8",
+    )
+    return p
+
+
+def test_materialize_soft_skips_on_no_games_signal_with_empty_parquet(tmp_path):
+    """predict.py's no-games path writes an empty all_props parquet AND
+    a singles_<date>.json with reason=no_games_slate. The seed builder
+    must soft-skip in that case rather than hard-fail."""
+    repo_root = tmp_path
+    pred_dir = repo_root / "predictions"
+    pred_dir.mkdir()
+    empty = pd.DataFrame(columns=["slate_date", "player_id", "game_id", "stat", "line", "model_prob", "pmf"])
+    empty.to_parquet(pred_dir / "all_props_2026-05-16.parquet", index=False)
+    _write_no_games_signal(repo_root, "2026-05-16")
+
+    with pytest.raises(NoGamesSlateSoftSkip) as exc:
+        materialize_precanonical_slate_universe(
+            repo_root, date="2026-05-16", run_mode="morning_expected"
+        )
+    msg = str(exc.value)
+    assert "PRECANNONICAL_SLATE_UNIVERSE_SOFT_SKIP_NO_GAMES" in msg
+    assert "date=2026-05-16" in msg
+    assert "upstream_signal=predictions/singles_2026-05-16.json" in msg
+
+
+def test_materialize_soft_skips_when_all_props_missing_but_signal_present(tmp_path):
+    """Some predict no-games paths may delete the all_props file rather
+    than write an empty one. Soft-skip still applies when the explicit
+    upstream signal is on disk."""
+    repo_root = tmp_path
+    (repo_root / "predictions").mkdir()
+    _write_no_games_signal(repo_root, "2026-05-16")
+    with pytest.raises(NoGamesSlateSoftSkip) as exc:
+        materialize_precanonical_slate_universe(
+            repo_root, date="2026-05-16", run_mode="morning_expected"
+        )
+    assert "PRECANNONICAL_SLATE_UNIVERSE_SOFT_SKIP_NO_GAMES" in str(exc.value)
+
+
+def test_empty_parquet_without_no_games_signal_still_hard_fails(tmp_path):
+    """No upstream no-games signal means an empty all_props parquet is
+    a regression (predict ran but produced no rows for a games-bearing
+    slate). Must remain a hard fail."""
+    repo_root = tmp_path
+    pred_dir = repo_root / "predictions"
+    pred_dir.mkdir()
+    empty = pd.DataFrame(columns=["slate_date", "player_id", "game_id", "stat", "line"])
+    empty.to_parquet(pred_dir / "all_props_2026-05-16.parquet", index=False)
+    with pytest.raises(PrecanonicalSlateUniverseError) as exc:
+        materialize_precanonical_slate_universe(
+            repo_root, date="2026-05-16", run_mode="morning_expected"
+        )
+    assert "PRECANNONICAL_SLATE_UNIVERSE_EMPTY" in str(exc.value)
+
+
+def test_no_games_signal_with_other_reason_does_not_soft_skip(tmp_path):
+    """A singles_<date>.json with a different reason field must NOT
+    trigger soft-skip — only ``reason == "no_games_slate"`` is the
+    legitimate upstream signal."""
+    import json
+    repo_root = tmp_path
+    pred_dir = repo_root / "predictions"
+    pred_dir.mkdir()
+    empty = pd.DataFrame(columns=["slate_date", "player_id", "game_id", "stat", "line"])
+    empty.to_parquet(pred_dir / "all_props_2026-05-16.parquet", index=False)
+    (pred_dir / "singles_2026-05-16.json").write_text(
+        json.dumps({"date": "2026-05-16", "reason": "odds_api_offline", "picks": []}),
+        encoding="utf-8",
+    )
+    with pytest.raises(PrecanonicalSlateUniverseError) as exc:
+        materialize_precanonical_slate_universe(
+            repo_root, date="2026-05-16", run_mode="morning_expected"
+        )
+    assert "PRECANNONICAL_SLATE_UNIVERSE_EMPTY" in str(exc.value)

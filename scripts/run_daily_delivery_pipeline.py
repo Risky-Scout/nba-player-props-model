@@ -260,6 +260,143 @@ def _canonical_model_only_path_for_seed_gate(date: str) -> Path:
     )
 
 
+_NO_GAMES_SLATE_MARKER = "PIPELINE_SOFT_SKIP_NO_GAMES_SLATE"
+
+
+def _predict_signaled_no_games_slate(date: str) -> str | None:
+    """Return relative path of the upstream no-games signal, or None.
+
+    ``scripts/predict.py``'s :func:`write_no_game_outputs` writes
+    ``predictions/singles_<date>.json`` with ``reason ==
+    "no_games_slate"`` on a real BDL no-games slate. This helper
+    detects that signal so the orchestrator can short-circuit the
+    same-day chain cleanly (instead of letting feature_snapshot /
+    stat_grid / canonical hard-fail on legitimately empty inputs).
+    """
+    p = REPO_ROOT / "predictions" / f"singles_{date}.json"
+    if not p.is_file():
+        return None
+    try:
+        payload = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("reason") == "no_games_slate":
+        try:
+            return str(p.relative_to(REPO_ROOT))
+        except ValueError:
+            return str(p)
+    return None
+
+
+def _emit_no_games_delivery_package(date: str) -> None:
+    """Produce a properly-flagged no-games delivery package.
+
+    Writes a manifest.json that carries ``reason=no_games_slate`` plus
+    minimal empty parquets at the canonical/wizard_of_odds paths the
+    forced-manual delivery assertion checks. The files exist purely so
+    downstream tooling can see "delivery completed, no games today" —
+    they DO NOT contain fabricated PMFs / model probabilities / market
+    edges. Every file carries the explicit ``no_games_slate`` flag so
+    consumers can distinguish a real-but-empty slate from a regression.
+
+    The Derek forward feed is intentionally NOT produced on a no-games
+    slate: there is no model PMF surface to evaluate.
+    """
+    import pandas as pd  # local import keeps top-level cost down
+
+    base = REPO_ROOT / "deliveries" / date
+    canon = base / "canonical_source"
+    woo = base / "wizard_of_odds"
+    canon.mkdir(parents=True, exist_ok=True)
+    woo.mkdir(parents=True, exist_ok=True)
+
+    no_games_columns = [
+        "slate_date",
+        "player_id",
+        "game_id",
+        "stat",
+        "line",
+        "model_prob",
+        "pmf",
+        "no_games_slate",
+    ]
+    empty_canonical = pd.DataFrame(columns=no_games_columns)
+    empty_canonical.to_parquet(canon / "player_prop_pmfs_tonight_MODEL_ONLY.parquet", index=False)
+    empty_canonical.to_parquet(canon / "all_props_model_only.parquet", index=False)
+
+    empty_market = pd.DataFrame(
+        columns=[
+            "slate_date",
+            "player_id",
+            "game_id",
+            "stat",
+            "book",
+            "line",
+            "market_no_vig_over_prob",
+            "model_p_over",
+            "edge",
+            "no_games_slate",
+        ]
+    )
+    empty_market.to_parquet(woo / "market_comparison.parquet", index=False)
+
+    manifest = {
+        "delivery_date": date,
+        "reason": "no_games_slate",
+        "no_games_slate": True,
+        "marker": _NO_GAMES_SLATE_MARKER,
+        "canonical_source": {
+            "player_prop_pmfs_tonight_MODEL_ONLY": "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+            "all_props_model_only": "canonical_source/all_props_model_only.parquet",
+        },
+        "wizard_of_odds": {
+            "market_comparison": "wizard_of_odds/market_comparison.parquet",
+        },
+        "derek_forward_feed": None,
+        "schema": {
+            "canonical_columns": no_games_columns,
+            "market_comparison_columns": list(empty_market.columns),
+        },
+        "notes": (
+            "predict.py wrote a no-games slate placeholder for this date "
+            "(reason=no_games_slate in predictions/singles_<date>.json). "
+            "The orchestrator emitted this no-games delivery package "
+            "instead of attempting to materialize a feature snapshot / "
+            "stat grid / canonical PMF surface from an empty universe. "
+            "No PMFs, projections, market edges, or Derek-feed outputs "
+            "are fabricated."
+        ),
+    }
+    (base / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def _short_circuit_if_no_games(date: str) -> bool:
+    """Return True (and write the no-games delivery package) when the
+    upstream predict step signaled no-games.
+
+    Same-day callers in this module check this immediately after
+    ``_predict`` + ``_assert_predict_date_contract``. When True,
+    callers short-circuit their own pipeline and return 0; the
+    workflow's forced-manual delivery assertion still finds the
+    expected files under ``deliveries/<date>/`` because
+    :func:`_emit_no_games_delivery_package` wrote them.
+    """
+    signal = _predict_signaled_no_games_slate(date)
+    if signal is None:
+        return False
+    _emit_no_games_delivery_package(date)
+    print(
+        f"{_NO_GAMES_SLATE_MARKER} date={date} "
+        f"upstream_signal={signal} "
+        f"package=deliveries/{date}/manifest.json"
+    )
+    return True
+
+
 def _materialize_precanonical_seed(
     date: str, *, run_mode_stamp: str
 ) -> Path | None:
@@ -953,6 +1090,8 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     if do_predict:
         _predict(date)
         _assert_predict_date_contract(date)
+    if _short_circuit_if_no_games(date):
+        return 0
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
@@ -985,6 +1124,8 @@ def run_woo_morning_monetization(
     if do_predict:
         _predict(date)
         _assert_predict_date_contract(date)
+    if _short_circuit_if_no_games(date):
+        return 0
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
@@ -1018,6 +1159,8 @@ def run_woo_afternoon_refresh(
     re-publishes the WoO public export. Still tagged
     PROVISIONAL_EARLY_MARKET because lineups typically aren't confirmed
     yet. Does not touch Derek's evaluation feed."""
+    if _short_circuit_if_no_games(date):
+        return 0
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
@@ -1055,6 +1198,8 @@ def run_derek_pre_tipoff_refresh(
 
     Legacy callers can still use ``run_derek_near_lineup`` (a thin
     backward-compat shim defined immediately below)."""
+    if _short_circuit_if_no_games(date):
+        return 0
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
@@ -1090,6 +1235,8 @@ def run_derek_near_lineup(*args, **kwargs):
 
 def run_close_lock(date: str, *, regions: list[str],
                      rebuild_canonical: bool) -> int:
+    if _short_circuit_if_no_games(date):
+        return 0
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")

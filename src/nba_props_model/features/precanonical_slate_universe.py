@@ -34,14 +34,25 @@ verbatim and the CI step exits non-zero):
   * ``PRECANNONICAL_SLATE_UNIVERSE_MISSING``     — input parquet
     absent or unreadable
   * ``PRECANNONICAL_SLATE_UNIVERSE_EMPTY``       — input present but
-    zero rows
+    zero rows AND no upstream no-games signal (i.e. an unexpected
+    empty parquet, not a real no-games slate)
   * ``PRECANNONICAL_SLATE_UNIVERSE_KEYS_MISSING`` — player_id /
     game_id missing or null
   * ``PRECANNONICAL_SLATE_UNIVERSE_DATE_MISMATCH`` — ``slate_date``
     column carries a value other than the requested delivery date
+
+Soft-skip marker (caller-side decision):
+
+  * :class:`NoGamesSlateSoftSkip` — raised when the upstream predict
+    output is an explicit no-games placeholder (``reason ==
+    "no_games_slate"`` in ``predictions/singles_<date>.json``).
+    Distinct from ``PRECANNONICAL_SLATE_UNIVERSE_EMPTY`` so callers
+    can soft-skip the seed/feature/stat-grid chain without hiding
+    real empty-due-to-bug regressions.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -52,6 +63,49 @@ class PrecanonicalSlateUniverseError(RuntimeError):
 
     The ``args[0]`` carries the structured marker line ready for stderr.
     """
+
+
+class NoGamesSlateSoftSkip(RuntimeError):
+    """Soft-skip signal: predict's no-games placeholder is on disk.
+
+    Carries the structured marker
+    ``PRECANNONICAL_SLATE_UNIVERSE_SOFT_SKIP_NO_GAMES date=<date>
+    upstream_signal=<path>`` so the CLI / orchestrator can render it
+    verbatim and exit 0 (or short-circuit the rest of the same-day
+    pipeline) without masking real failures.
+    """
+
+
+def predictions_singles_path(repo_root: Path, date: str) -> Path:
+    return repo_root / "predictions" / f"singles_{date}.json"
+
+
+def _upstream_no_games_signal(repo_root: Path, date: str) -> str | None:
+    """Return the relative path of the no-games signal file, or None.
+
+    The signal is ``reason == "no_games_slate"`` in
+    ``predictions/singles_<date>.json``. ``predict.py``'s
+    ``write_no_game_outputs`` writes this field whenever it detects a
+    real BDL no-games slate; an empty all_props parquet without this
+    upstream signal is treated as a hard failure (regression /
+    fabrication / wrong date), not a soft-skip.
+    """
+    p = predictions_singles_path(repo_root, date)
+    if not p.is_file():
+        return None
+    try:
+        payload = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    reason = payload.get("reason")
+    if isinstance(reason, str) and reason == "no_games_slate":
+        try:
+            return str(p.relative_to(repo_root))
+        except ValueError:
+            return str(p)
+    return None
 
 
 REQUIRED_IDENTITY_COLUMNS: tuple[str, ...] = ("player_id", "game_id")
@@ -205,9 +259,40 @@ def materialize_precanonical_slate_universe(
     :class:`PrecanonicalSlateUniverseError` (with structured marker) on
     any contract violation; callers should surface the exception's
     message verbatim and exit non-zero.
+
+    Raises :class:`NoGamesSlateSoftSkip` when the predict output is the
+    explicit no-games placeholder. Distinguishing the soft-skip path
+    from generic empty-input requires both:
+
+      * an empty (zero-row) ``predictions/all_props_<date>.parquet`` (or
+        a missing parquet when the no-games signal is on disk), AND
+      * the upstream no-games signal — ``reason == "no_games_slate"``
+        in ``predictions/singles_<date>.json``, which predict.py only
+        writes when it actually observed a no-games slate from BDL.
+
+    This dual-check keeps the strict empty-due-to-bug detection intact.
     """
     src = source_path if source_path is not None else predictions_all_props_path(repo_root, date)
+    no_games_signal = _upstream_no_games_signal(repo_root, date)
+
+    if not src.is_file():
+        if no_games_signal is not None:
+            raise NoGamesSlateSoftSkip(
+                f"PRECANNONICAL_SLATE_UNIVERSE_SOFT_SKIP_NO_GAMES "
+                f"date={date} upstream_signal={no_games_signal} "
+                f"reason=predict_no_games_placeholder_missing_all_props"
+            )
+        raise PrecanonicalSlateUniverseError(
+            f"PRECANNONICAL_SLATE_UNIVERSE_MISSING path={src}"
+        )
+
     df = _read_all_props_parquet(src)
+    if (df is None or len(df) == 0) and no_games_signal is not None:
+        raise NoGamesSlateSoftSkip(
+            f"PRECANNONICAL_SLATE_UNIVERSE_SOFT_SKIP_NO_GAMES "
+            f"date={date} upstream_signal={no_games_signal} "
+            f"reason=predict_no_games_placeholder all_props_rows=0"
+        )
     seed = build_precanonical_slate_universe(df, date)
 
     target = out_path if out_path is not None else precanonical_seed_path(repo_root, date, run_mode)
