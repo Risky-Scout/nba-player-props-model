@@ -1,6 +1,6 @@
 # Derek Live Champion Model Readiness — 2026-05-16
 
-- generated_at_utc: 2026-05-16T22:08:06+00:00
+- generated_at_utc: 2026-05-16T23:08:29+00:00
 - passed: **False**
 
 ## Checks
@@ -14,7 +14,7 @@
 | calibrated_through_ge_trained_through | yes | trained=2099-12-31 calibrated=2099-12-31 |
 | pointer_flag:leakage_checks_passed | yes | value=True |
 | pointer_flag:no_future_rows_verified | yes | value=True |
-| champion_not_dry_run_or_synthetic | yes | promotion_decision_id='promotion-2099-12-31-20260516T194239' |
+| champion_not_dry_run_or_synthetic | yes | promotion_decision_id='promotion-2099-12-31-20260516T222858' |
 
 ## Facts
 
@@ -22,7 +22,7 @@
 {
   "calibrated_through_date": "2099-12-31",
   "champion_model_id": "sim-2099-12-31",
-  "champion_pointer_hash": "84fa52ae275c6f0e792a8c95efee7f31",
+  "champion_pointer_hash": "13d849c990a945f6bc83867fc7cc9541",
   "delivery_date_minus_one_utc": "2026-05-15",
   "trained_through_date": "2099-12-31"
 }
