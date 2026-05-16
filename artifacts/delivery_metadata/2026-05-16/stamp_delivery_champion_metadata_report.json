@@ -1,0 +1,8 @@
+{
+  "delivery_date": "2026-05-16",
+  "no_prediction_values_modified": true,
+  "results": [],
+  "schema_version": "1.0",
+  "soft_skip_reason": "confirmed_no_games_slate",
+  "status": "soft_skipped_no_games_slate"
+}

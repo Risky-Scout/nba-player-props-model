@@ -1,0 +1,48 @@
+{
+  "canonical_source": {
+    "all_props_model_only": "canonical_source/all_props_model_only.parquet",
+    "player_prop_pmfs_tonight_MODEL_ONLY": "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+  },
+  "confirmation": {
+    "predict_signal": "predictions/singles_2026-05-16.json reason=no_games_slate",
+    "rule": "soft_skip_requires_both_predict_signal_and_bdl_zero_games",
+    "schedule_resolver": "bdl_games_returned_zero_for_delivery_date"
+  },
+  "confirmed_no_games_slate": true,
+  "delivery_date": "2026-05-16",
+  "derek_forward_feed": null,
+  "derek_forward_feed_expected": false,
+  "eligible_player_game_rows": 0,
+  "marker": "PIPELINE_SOFT_SKIP_NO_GAMES_SLATE",
+  "market_superiority_evaluated": false,
+  "no_games_slate": true,
+  "notes": "predict.py wrote a no-games slate placeholder for this date (reason=no_games_slate in predictions/singles_<date>.json) AND the independent BDL /games schedule lookup returned zero games. The orchestrator emitted this no-games delivery package instead of attempting to materialize a feature snapshot / stat grid / canonical PMF surface from an empty universe. There are zero eligible player-game rows; no market-superiority evaluation was performed; no Derek forward-feed rows are expected because no games exist. No PMFs, projections, market edges, or Derek-feed outputs are fabricated.",
+  "reason": "no_games_slate",
+  "schema": {
+    "canonical_columns": [
+      "slate_date",
+      "player_id",
+      "game_id",
+      "stat",
+      "line",
+      "model_prob",
+      "pmf",
+      "no_games_slate"
+    ],
+    "market_comparison_columns": [
+      "slate_date",
+      "player_id",
+      "game_id",
+      "stat",
+      "book",
+      "line",
+      "market_no_vig_over_prob",
+      "model_p_over",
+      "edge",
+      "no_games_slate"
+    ]
+  },
+  "wizard_of_odds": {
+    "market_comparison": "wizard_of_odds/market_comparison.parquet"
+  }
+}
