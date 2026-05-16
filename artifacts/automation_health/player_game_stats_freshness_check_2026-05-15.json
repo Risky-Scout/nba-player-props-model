@@ -1,13 +1,22 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-14T17:57:41+00:00",
+  "generated_at_utc": "2026-05-16T10:49:06+00:00",
   "required_through_date": "2026-05-15",
-  "max_game_date": "2026-05-13",
+  "max_game_date": "2026-05-15",
   "min_game_date": "2023-10-24",
-  "rows_total": 84142,
-  "rows_for_required_date": 0,
+  "rows_total": 84196,
+  "rows_for_required_date": 54,
   "duplicate_key_rows": 0,
-  "null_core_stats_on_required_date": {},
+  "null_core_stats_on_required_date": {
+    "pts": 0,
+    "reb": 0,
+    "ast": 0,
+    "fg3m": 0,
+    "stl": 0,
+    "blk": 0,
+    "turnover": 0,
+    "min": 0
+  },
   "schema_columns_present": [
     "player_id",
     "player_name",
@@ -25,7 +34,5 @@
     "turnover"
   ],
   "schema_columns_missing": [],
-  "failures": [
-    "latest game_date '2026-05-13' < required_through_date '2026-05-15' \u2014 backfill is missing dates 2026-05-14 through 2026-05-15"
-  ]
+  "failures": []
 }
