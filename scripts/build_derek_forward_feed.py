@@ -335,6 +335,30 @@ def _none_if_nan(v: Any) -> Any:
     return v
 
 
+def _maybe_rel(p: Path, root: Path) -> str:
+    """Best-effort relative-to-root path; falls back to absolute."""
+    try:
+        return str(p.relative_to(root))
+    except ValueError:
+        return str(p)
+
+
+def _clean_optional_str(v: Any) -> str | None:
+    """Coerce a maybe-null/maybe-NaN value to a clean optional string.
+
+    Returns ``None`` for ``None``, NaN floats, empty / whitespace-only
+    strings, or the literal strings ``"nan"`` / ``"none"``.
+    """
+    if v is None:
+        return None
+    if isinstance(v, float) and math.isnan(v):
+        return None
+    s = str(v).strip()
+    if not s or s.lower() in {"nan", "none"}:
+        return None
+    return s
+
+
 def _row_template() -> dict:
     return {c: None for c in FEED_COLS}
 
@@ -881,13 +905,38 @@ def write_m88_unified_feed(
             "minutes_q50": r.get("minutes_q50") if has_min_q50 else None,
             "minutes_q90": None,
             "inactive_risk": inactive,
-            "expected_lineup_status": lin_f,
-            "official_lineup_status": official,
+            "expected_lineup_status": (
+                _clean_optional_str(r.get("expected_lineup_status"))
+                or lin_f
+            ),
+            "official_lineup_status": (
+                _clean_optional_str(r.get("official_lineup_status"))
+                or official
+            ),
             "injury_status": inj,
-            "injury_source": "bdl_availability_freshness_manifest",
-            "injury_last_updated_utc": None,
-            "lineup_source": "bdl_lineup_freshness_manifest",
-            "lineup_last_updated_utc": None,
+            "injury_source": (
+                _clean_optional_str(r.get("injury_context_source"))
+                or "bdl_availability_freshness_manifest"
+            ),
+            # Surface the row-level injury timestamp stamped by
+            # stat_grid (``injury_report_fetched_at_utc``) rather
+            # than the hardcoded ``None`` historically emitted here.
+            "injury_last_updated_utc": (
+                _clean_optional_str(r.get("injury_report_fetched_at_utc"))
+                or None
+            ),
+            "lineup_source": (
+                _clean_optional_str(r.get("lineup_source"))
+                or "bdl_lineup_freshness_manifest"
+            ),
+            # Surface the row-level ``lineup_last_updated_utc`` from
+            # the freshness manifest (set when
+            # ``artifacts/live_lineups/<DATE>/<GAME>/lineup_status.json``
+            # exists) rather than the hardcoded ``None``.
+            "lineup_last_updated_utc": (
+                _clean_optional_str(r.get("lineup_last_updated_utc"))
+                or None
+            ),
             "stale_injury_flag": stale_inj,
             "stale_lineup_flag": stale_lin,
             "model_prob_over_raw": m_over_f,
@@ -1001,6 +1050,68 @@ def write_m88_unified_feed(
     with jl_out.open("w", encoding="utf-8") as f:
         for rec in rows_out:
             f.write(json.dumps(rec, default=str) + "\n")
+
+    # Unique props summary — Derek's at-a-glance view of every
+    # unique (player, stat, market_line) combination produced by
+    # the model. Exact column contract:
+    #
+    #   player_name | projected_minutes | stat | market_line
+    #   | model_projected_mean (← pmf_mean)
+    #   | model_probability_over_market_line (← model_prob_over_active)
+    #
+    # The full feed contains one row per (player, stat, line, book)
+    # combination. Derek's downstream tooling reads the summary
+    # without needing to dedupe per-book rows itself.
+    summary_csv_out = out_dir / "derek_unique_props_summary.csv"
+    if out_df.empty:
+        summary_df = pd.DataFrame(
+            columns=[
+                "player_name",
+                "projected_minutes",
+                "stat",
+                "market_line",
+                "model_projected_mean",
+                "model_probability_over_market_line",
+            ]
+        )
+    else:
+        dedupe_keys = [
+            c for c in ("player_id", "stat", "line") if c in out_df.columns
+        ]
+        if dedupe_keys:
+            unique_df = out_df.drop_duplicates(
+                subset=dedupe_keys, keep="first"
+            ).copy()
+        else:
+            unique_df = out_df.copy()
+        summary_df = pd.DataFrame(
+            {
+                "player_name": unique_df["player_name"],
+                "projected_minutes": unique_df["projected_minutes"],
+                "stat": unique_df["stat"],
+                "market_line": unique_df["line"],
+                "model_projected_mean": unique_df["pmf_mean"],
+                "model_probability_over_market_line": (
+                    unique_df["model_prob_over_active"]
+                ),
+            }
+        )
+        summary_df = summary_df.sort_values(
+            ["player_name", "stat", "market_line"],
+            na_position="last",
+            kind="mergesort",
+        ).reset_index(drop=True)
+    summary_df.to_csv(summary_csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
+    try:
+        _summary_rel = str(summary_csv_out.relative_to(REPO_ROOT))
+    except ValueError:
+        _summary_rel = str(summary_csv_out)
+    print(
+        "DEREK_UNIQUE_PROPS_SUMMARY_WRITTEN "
+        f"path={_summary_rel} "
+        f"rows={len(summary_df)} "
+        f"columns={list(summary_df.columns)}"
+    )
     man = {
         "delivery_date": date,
         "run_mode": run_mode,
@@ -1023,9 +1134,29 @@ def write_m88_unified_feed(
             ),
         },
         "files": {
-            "parquet": str(pq_out.relative_to(REPO_ROOT)),
-            "csv": str(csv_out.relative_to(REPO_ROOT)),
-            "jsonl": str(jl_out.relative_to(REPO_ROOT)),
+            "parquet": _maybe_rel(pq_out, REPO_ROOT),
+            "csv": _maybe_rel(csv_out, REPO_ROOT),
+            "jsonl": _maybe_rel(jl_out, REPO_ROOT),
+            "unique_props_summary_csv": _maybe_rel(summary_csv_out, REPO_ROOT),
+        },
+        "unique_props_summary": {
+            "path": _maybe_rel(summary_csv_out, REPO_ROOT),
+            "row_count": int(len(summary_df)),
+            "columns": [
+                "player_name",
+                "projected_minutes",
+                "stat",
+                "market_line",
+                "model_projected_mean",
+                "model_probability_over_market_line",
+            ],
+            "column_lineage": {
+                "model_projected_mean": "pmf_mean",
+                "model_probability_over_market_line": (
+                    "model_prob_over_active"
+                ),
+            },
+            "dedupe_keys": ["player_id", "stat", "line"],
         },
     }
     (out_dir / "manifest.json").write_text(json.dumps(man, indent=2, default=str) + "\n", encoding="utf-8")

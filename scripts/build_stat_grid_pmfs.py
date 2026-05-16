@@ -97,6 +97,11 @@ from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
 from nba_props_model.pipelines._stat_grid_eligibility_gate import (  # noqa: E402
     build_eligibility_map,
 )
+from nba_props_model.data.lineup_freshness import (  # noqa: E402
+    LINEUP_SOURCE_DEFAULT,
+    derive_lineup_metadata_for_row,
+    load_bdl_lineup_freshness_snapshot,
+)
 
 
 PRED_DIR = REPO_ROOT / "predictions"
@@ -443,6 +448,24 @@ def _build_pipeline_state(target_date: str) -> dict:
 
     games_by_id = {int(g["id"]): g for g in games if g.get("id")}
 
+    lineup_snapshot = load_bdl_lineup_freshness_snapshot(
+        REPO_ROOT, target_date
+    )
+    if lineup_snapshot.has_any_rows:
+        print(
+            "  bdl lineup freshness manifest loaded: "
+            f"games={len(lineup_snapshot.game_lookup)} "
+            f"players={len(lineup_snapshot.player_lookup)} "
+            f"manifest_last_updated_utc={lineup_snapshot.manifest_last_updated_utc}"
+        )
+    else:
+        print(
+            "  bdl lineup freshness manifest absent for "
+            f"{target_date} — every stat-grid row will stamp "
+            "expected_lineup_status=projected, "
+            "official_lineup_status=not_available_yet"
+        )
+
     return {
         "stats_df": stats_df,
         "adv_by_player": adv_by_player,
@@ -458,6 +481,7 @@ def _build_pipeline_state(target_date: str) -> dict:
         "suppress_inactive_risk": suppress_inactive_risk,
         "availability_table_freshness": availability_table_freshness,
         "availability_table_age_hours": availability_age_hours,
+        "lineup_snapshot": lineup_snapshot,
     }
 
 
@@ -653,6 +677,34 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
         # them onto every emitted PMF row so canonical_source can be
         # validated by a simple column-presence + truthiness check.
         elig = eligibility_row or {}
+        lineup_snapshot_obj = state.get("lineup_snapshot")
+        if lineup_snapshot_obj is None:
+            # Empty snapshot stand-in. We still want the row stamped
+            # with default expected/official statuses so canonical
+            # MODEL_ONLY and downstream consumers never see nulls.
+            from nba_props_model.data.lineup_freshness import (
+                LineupFreshnessSnapshot as _LFS,
+            )
+            lineup_snapshot_obj = _LFS({}, {}, None)
+        lineup_meta = derive_lineup_metadata_for_row(
+            game_id=int(gid),
+            player_id=int(player_id),
+            role_source=role_source,
+            snapshot=lineup_snapshot_obj,
+            allow_official_confirmation=False,
+        )
+        # Stat-grid is upstream of canonical MODEL_ONLY and must not
+        # silently upgrade role_source — the morning contract is
+        # "projected lineup, never confirmed". Preserve the original
+        # role_source from minutes (we just consult the lineup
+        # snapshot for status fields). If the snapshot offers
+        # projected_bdl_lineup, prefer it over the generic
+        # derived_from_projected_minutes default.
+        if (
+            role_source in ("unknown", "derived_from_projected_minutes")
+            and lineup_meta["role_source"] == "projected_bdl_lineup"
+        ):
+            role_source = "projected_bdl_lineup"
         out_rows.append({
             "player_id": int(player_id),
             "player_name": player_name,
@@ -684,6 +736,11 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
             "injury_freshness_status": state.get("injury_freshness_status"),
             "injury_context_source": state.get("injury_context_source"),
             "injury_report_fetched_at_utc": state.get("injury_report_fetched_at_utc"),
+            "expected_lineup_status": lineup_meta["expected_lineup_status"],
+            "official_lineup_status": lineup_meta["official_lineup_status"],
+            "lineup_source": lineup_meta["lineup_source"],
+            "lineup_last_updated_utc": lineup_meta["lineup_last_updated_utc"],
+            "lineup_freshness_status": lineup_meta["lineup_freshness_status"],
             "availability_table_freshness": state.get("availability_table_freshness"),
             "availability_table_age_hours": state.get("availability_table_age_hours"),
             "suppress_inactive_risk": bool(state.get("suppress_inactive_risk")),

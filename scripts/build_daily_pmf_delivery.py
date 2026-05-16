@@ -92,6 +92,15 @@ from nba_props_model.targets import (  # noqa: E402
     BASE_STATS_FULL,
     MISSION_REQUIRED_TARGETS_CANONICAL,
 )
+from nba_props_model.data.lineup_freshness import (  # noqa: E402
+    LINEUP_SOURCE_DEFAULT,
+    LineupFreshnessSnapshot,
+    derive_lineup_metadata_for_row,
+    load_bdl_lineup_freshness_snapshot,
+)
+from nba_props_model.data.injury_freshness import (  # noqa: E402
+    classify_canonical_injury_freshness,
+)
 
 SUPPORTED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL  # M8.1: 12-stat mission canonical (incl. ra)
 ROLE_ORDER = ("inactive_risk", "fringe", "bench", "rotation", "core", "starter")
@@ -142,6 +151,18 @@ CANONICAL_COLUMNS_BASE = [
     "market_coverage_status", "tov_status",
     "injury_freshness_status", "lineup_freshness_status",
     "role_freshness_status",
+    # Row-level provenance for the row-level injury/lineup freshness
+    # rollups in deliveries/<DATE>/manifest.json. These fields must
+    # propagate from stat_grid -> canonical MODEL_ONLY ->
+    # market_comparison -> Derek's feed so each downstream consumer
+    # can reason about freshness from row evidence rather than file
+    # mtimes.
+    "injury_context_source",
+    "injury_report_fetched_at_utc",
+    "expected_lineup_status",
+    "official_lineup_status",
+    "lineup_source",
+    "lineup_last_updated_utc",
 ]
 # Columns that carry the full untruncated PMF so consumers can reconstruct
 # exactly for stats whose support exceeds 20 (e.g. points). These are added
@@ -849,55 +870,23 @@ def _load_freshness_manifest(path: Path | None) -> dict | None:
 
 def _load_bdl_lineup_context(
     delivery_date: str,
-) -> tuple[dict[tuple[str, int], dict[str, Any]], dict[str, dict[str, Any]]]:
-    """Load per-player and per-game BDL lineup context from artifacts/live_lineups."""
-    root = REPO_ROOT / "artifacts" / "live_lineups" / delivery_date
-    if not root.is_dir():
-        return {}, {}
+) -> tuple[
+    dict[tuple[str, int], dict[str, Any]],
+    dict[str, dict[str, Any]],
+    LineupFreshnessSnapshot,
+]:
+    """Load per-player and per-game BDL lineup context from
+    ``artifacts/live_lineups/<delivery_date>/``.
 
-    player_lookup: dict[tuple[str, int], dict[str, Any]] = {}
-    game_lookup: dict[str, dict[str, Any]] = {}
-
-    for game_dir in sorted(p for p in root.iterdir() if p.is_dir()):
-        gid = str(game_dir.name)
-        status_path = game_dir / "lineup_status.json"
-        status: dict[str, Any] = {}
-        if status_path.is_file():
-            try:
-                status = json.loads(status_path.read_text(encoding="utf-8"))
-            except Exception:
-                status = {}
-        confirmed = bool(status.get("lineup_confirmed"))
-        total_rows = int(status.get("total_rows") or 0)
-        game_lookup[gid] = {
-            "confirmed": confirmed,
-            "has_rows": total_rows > 0,
-            "source": str(status.get("source") or "balldontlie_v1_lineups"),
-        }
-
-        norm_parquet = game_dir / "bdl_lineups_normalized.parquet"
-        norm_csv = game_dir / "bdl_lineups_normalized.csv"
-        lineup_df: pd.DataFrame | None = None
-        try:
-            if norm_parquet.is_file():
-                lineup_df = pd.read_parquet(norm_parquet)
-            elif norm_csv.is_file():
-                lineup_df = pd.read_csv(norm_csv)
-        except Exception:
-            lineup_df = None
-        if lineup_df is None or lineup_df.empty:
-            continue
-        for _, row in lineup_df.iterrows():
-            try:
-                pid = int(row.get("player_id"))
-            except Exception:
-                continue
-            player_lookup[(gid, pid)] = {
-                "starter": bool(row.get("starter")),
-                "lineup_position": row.get("lineup_position"),
-                "source": str(row.get("source") or "balldontlie_v1_lineups"),
-            }
-    return player_lookup, game_lookup
+    Thin wrapper around
+    :func:`nba_props_model.data.lineup_freshness.load_bdl_lineup_freshness_snapshot`
+    so the legacy tuple-shape callers in ``build_daily_pmf_delivery``
+    keep working. The third tuple slot is the snapshot dataclass —
+    callers that need ``manifest_last_updated_utc`` should read it
+    from there.
+    """
+    snapshot = load_bdl_lineup_freshness_snapshot(REPO_ROOT, delivery_date)
+    return snapshot.player_lookup, snapshot.game_lookup, snapshot
 
 
 def _injury_freshness(path: Path | None) -> str:
@@ -1174,7 +1163,8 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                           pipeline_run_id: str,
                           injury_path: Path | None,
                           bdl_lineup_players: dict[tuple[str, int], dict[str, Any]] | None = None,
-                          bdl_lineup_games: dict[str, dict[str, Any]] | None = None) -> pd.DataFrame:
+                          bdl_lineup_games: dict[str, dict[str, Any]] | None = None,
+                          bdl_lineup_snapshot: "LineupFreshnessSnapshot | None" = None) -> pd.DataFrame:
     """Per (player, stat) one row with full PMF summary + provenance. The
     line/book/market fields are null at this stage; market join lands them."""
     rows = []
@@ -1200,6 +1190,20 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
         official_lineup_status = (
             _clean_optional_meta(r.get("official_lineup_status")) or "not_available_yet"
         )
+        lineup_source_val = (
+            _clean_optional_meta(r.get("lineup_source")) or LINEUP_SOURCE_DEFAULT
+        )
+        lineup_last_updated_utc_val = (
+            _clean_optional_meta(r.get("lineup_last_updated_utc")) or None
+        )
+        # Pre-tipoff / close-lock are the only modes allowed to
+        # promote ``official_lineup_status`` to ``"confirmed"``. The
+        # morning / forced-manual paths intentionally hold the line
+        # at ``"projected"`` even when BDL reports
+        # ``lineup_confirmed=True``.
+        allow_official_confirmation = snapshot_type in (
+            "pre_tipoff", "close_lock", "after_game",
+        )
         if gid is not None and bdl_lineup_games:
             game_key = str(gid)
             game_ctx = bdl_lineup_games.get(game_key)
@@ -1210,10 +1214,17 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             )
             if game_ctx:
                 expected_lineup_status = "projected"
-                if game_ctx.get("confirmed"):
+                snapshot_fetched = game_ctx.get("fetched_at_utc")
+                if isinstance(snapshot_fetched, str) and snapshot_fetched.strip():
+                    lineup_last_updated_utc_val = snapshot_fetched.strip()
+                if game_ctx.get("confirmed") and allow_official_confirmation:
                     official_lineup_status = "confirmed"
                     if player_ctx and bool(player_ctx.get("starter")):
                         role_source = "confirmed_bdl_lineup"
+                elif game_ctx.get("confirmed"):
+                    official_lineup_status = "projected"
+                    if role_source == ROLE_SOURCE_UNKNOWN:
+                        role_source = "projected_bdl_lineup"
                 elif game_ctx.get("has_rows"):
                     official_lineup_status = "projected"
                     if role_source == ROLE_SOURCE_UNKNOWN:
@@ -1289,8 +1300,22 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                 r.get("injury_freshness_status")
                 if pd.notna(r.get("injury_freshness_status")) else inj_fresh
             ),
+            # Row-level injury provenance — preserved end-to-end so
+            # the canonical delivery quality rollup can decide
+            # freshness from row-level evidence rather than file
+            # mtime.
+            "injury_context_source": (
+                _clean_optional_meta(r.get("injury_context_source"))
+                if pd.notna(r.get("injury_context_source")) else None
+            ),
+            "injury_report_fetched_at_utc": (
+                _clean_optional_meta(r.get("injury_report_fetched_at_utc"))
+                if pd.notna(r.get("injury_report_fetched_at_utc")) else None
+            ),
             "expected_lineup_status": expected_lineup_status,
             "official_lineup_status": official_lineup_status,
+            "lineup_source": lineup_source_val,
+            "lineup_last_updated_utc": lineup_last_updated_utc_val,
             "lineup_freshness_status": _lineup_freshness_for_row(pd.Series({
                 "official_lineup_status": official_lineup_status,
                 "expected_lineup_status": expected_lineup_status,
@@ -2157,7 +2182,18 @@ def main() -> int:
 
     # 3. Build canonical row frame.
     injury_path = REPO_ROOT / "data" / "player_availability_asof.parquet"
-    bdl_lineup_players, bdl_lineup_games = _load_bdl_lineup_context(delivery_date)
+    (
+        bdl_lineup_players,
+        bdl_lineup_games,
+        bdl_lineup_snapshot,
+    ) = _load_bdl_lineup_context(delivery_date)
+    if bdl_lineup_snapshot.has_any_rows:
+        print(
+            "  bdl lineup snapshot: "
+            f"games={len(bdl_lineup_snapshot.game_lookup)} "
+            f"manifest_last_updated_utc="
+            f"{bdl_lineup_snapshot.manifest_last_updated_utc}"
+        )
     canonical = build_canonical_rows(
         model_only, delivery_date=delivery_date,
         snapshot_type=snapshot_type, snapshot_time_utc=snapshot_time_utc,
@@ -2165,6 +2201,7 @@ def main() -> int:
         injury_path=injury_path,
         bdl_lineup_players=bdl_lineup_players,
         bdl_lineup_games=bdl_lineup_games,
+        bdl_lineup_snapshot=bdl_lineup_snapshot,
     )
     print(f"  canonical rows: {len(canonical)}")
 
@@ -2258,21 +2295,39 @@ def main() -> int:
             "required_to_resolve": "Attach a valid odds snapshot for this delivery date.",
         })
 
-    injury_counts = quality_rollup.get("injury_freshness_status", {})
-    injury_has_fresh = any(
-        str(k).lower() == "fresh" and int(v) > 0
-        for k, v in injury_counts.items()
-    )
-    if not injury_has_fresh:
+    # Row-level injury freshness verdict. The legacy rollup compared
+    # ``injury_freshness_status`` against the literal string "fresh",
+    # which is a *file mtime* taxonomy emitted by ``_injury_freshness``
+    # — it ignored the actual statuses written by the NBA fetcher
+    # (``latest_valid_report_selected`` / ``fallback_used``) and never
+    # consulted the row-level ``injury_report_fetched_at_utc``
+    # timestamps. The new ``classify_canonical_injury_freshness``
+    # helper makes the rollup a strict function of row-level evidence.
+    if not canonical.empty:
+        injury_verdict = classify_canonical_injury_freshness(
+            statuses=canonical.get(
+                "injury_freshness_status", pd.Series(dtype="object")
+            ).tolist(),
+            fetched_at_values=canonical.get(
+                "injury_report_fetched_at_utc",
+                pd.Series([None] * len(canonical), dtype="object"),
+            ).tolist(),
+        )
+    else:
+        injury_verdict = classify_canonical_injury_freshness(
+            statuses=[], fetched_at_values=[]
+        )
+    if not injury_verdict.is_fresh_overall:
         finality_blockers.append({
             "code": "injury_very_stale",
-            "detail": (
-                "No row-level fresh injury context was present in the PMF "
-                "delivery quality rollup."
-            ),
+            "detail": injury_verdict.to_manifest_detail(),
             "required_to_resolve": (
-                "Regenerate stat-grid PMFs in the Python 3.11 environment "
-                "with nbainjuries available, or provide a fresh injury context."
+                "Wait for the NBA official injury report to be published "
+                "for the slate, or regenerate stat-grid PMFs in the "
+                "Python 3.11 environment with nbainjuries available. "
+                "File mtime alone is no longer accepted; canonical rows "
+                "must carry a row-level injury_freshness_status of "
+                "latest_valid_report_selected/fallback_used/fresh."
             ),
         })
 
