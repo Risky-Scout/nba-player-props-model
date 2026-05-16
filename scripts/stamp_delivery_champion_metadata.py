@@ -171,6 +171,46 @@ def _write_report(delivery_date: str, payload: dict) -> tuple[Path, Path]:
     return json_path, md_path
 
 
+def _delivery_manifest_confirmed_no_games_slate(date: str) -> bool:
+    """Strict 4-flag no-games gate for the champion-metadata stamper.
+
+    Returns True if and only if ``deliveries/<date>/manifest.json``
+    declares ALL of: ``no_games_slate == True``,
+    ``confirmed_no_games_slate == True``,
+    ``reason == "no_games_slate"``,
+    ``market_superiority_evaluated == False``, and
+    ``derek_forward_feed_expected == False``.
+
+    These four fields are stamped together only by the orchestrator's
+    ``_emit_no_games_delivery_package`` after BOTH the predict
+    no-games signal AND an independent BDL ``/games`` schedule lookup
+    have confirmed zero games for the date. On a confirmed no-games
+    slate there are by design no Derek or WoO manifests to stamp —
+    soft-skip rather than hard-fail. Any other manifest shape returns
+    False so a games-bearing slate still hard-fails on a missing
+    Derek/WoO manifest.
+    """
+    import json as _json
+    if not date:
+        return False
+    manifest_path = REPO_ROOT / "deliveries" / date / "manifest.json"
+    if not manifest_path.is_file():
+        return False
+    try:
+        payload = _json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    return (
+        payload.get("no_games_slate") is True
+        and payload.get("confirmed_no_games_slate") is True
+        and payload.get("reason") == "no_games_slate"
+        and payload.get("market_superiority_evaluated") is False
+        and payload.get("derek_forward_feed_expected") is False
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Stamp Derek/WoO manifests with champion metadata.")
     p.add_argument("--delivery-date", default=None, help="YYYY-MM-DD")
@@ -196,6 +236,26 @@ def main(argv: list[str] | None = None) -> int:
         print("DELIVERY_CHAMPION_METADATA_STAMP_FAILED", file=sys.stderr)
         print("  reason: no_delivery_dirs", file=sys.stderr)
         return 1
+
+    if _delivery_manifest_confirmed_no_games_slate(delivery_date):
+        payload = {
+            "schema_version": "1.0",
+            "status": "soft_skipped_no_games_slate",
+            "delivery_date": delivery_date,
+            "no_prediction_values_modified": True,
+            "results": [],
+            "soft_skip_reason": "confirmed_no_games_slate",
+        }
+        _write_report(delivery_date, payload)
+        print(
+            f"DELIVERY_CHAMPION_METADATA_STAMP_SOFT_SKIP_NO_GAMES "
+            f"date={delivery_date} "
+            f"manifest=deliveries/{delivery_date}/manifest.json "
+            f"gate=no_games_slate+confirmed_no_games_slate+"
+            f"market_superiority_evaluated=false+derek_forward_feed_expected=false "
+            f"reason=no_derek_or_woo_manifest_to_stamp_on_confirmed_no_games_slate"
+        )
+        return 0
 
     base = DELIVERIES_DIR / delivery_date
     if not base.exists():
