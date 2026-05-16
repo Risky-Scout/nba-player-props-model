@@ -629,6 +629,21 @@ def _stat_grid_rows(date: str, stat_grid_path: Path | None = None) -> list[dict]
                 if pd.notna(r.get("official_lineup_status"))
                 else None
             ),
+            "lineup_source": (
+                r.get("lineup_source")
+                if pd.notna(r.get("lineup_source"))
+                else None
+            ),
+            "lineup_last_updated_utc": (
+                r.get("lineup_last_updated_utc")
+                if pd.notna(r.get("lineup_last_updated_utc"))
+                else None
+            ),
+            "lineup_freshness_status": (
+                r.get("lineup_freshness_status")
+                if pd.notna(r.get("lineup_freshness_status"))
+                else None
+            ),
             "projected_minutes": (
                 r.get("projected_minutes")
                 if pd.notna(r.get("projected_minutes"))

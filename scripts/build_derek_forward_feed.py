@@ -119,6 +119,19 @@ QUALITY_COLS = [
     "tov_status",
     "pmf_valid",
     "pmf_sum_error",
+    # Row-level provenance fields propagated from
+    # stat_grid → canonical MODEL_ONLY → market_comparison so the
+    # per-snapshot feed can carry them too. Without these, the
+    # unified ``derek_forward_feed.parquet`` (built from
+    # ``morning_snapshot.parquet``) loses
+    # ``lineup_last_updated_utc`` and
+    # ``injury_report_fetched_at_utc`` and falls back to ``None``.
+    "expected_lineup_status",
+    "official_lineup_status",
+    "lineup_source",
+    "lineup_last_updated_utc",
+    "injury_context_source",
+    "injury_report_fetched_at_utc",
 ]
 
 FEED_COLS = IDENTITY_COLS + PMF_COLS + MARKET_COLS + QUALITY_COLS
@@ -445,6 +458,28 @@ def _populate_identity_pmf_quality(
             "tov_status": _none_if_nan(mo_row.get("tov_status")),
             "pmf_valid": pmf_valid,
             "pmf_sum_error": pmf_sum_error,
+            # Row-level provenance — surfaces ``lineup_source``,
+            # ``lineup_last_updated_utc``,
+            # ``injury_context_source`` and
+            # ``injury_report_fetched_at_utc`` onto every per-snapshot
+            # row so morning_snapshot.parquet (and therefore the
+            # unified Derek feed read from it) carry them.
+            "expected_lineup_status": _none_if_nan(
+                mo_row.get("expected_lineup_status")
+            ),
+            "official_lineup_status": _none_if_nan(
+                mo_row.get("official_lineup_status")
+            ),
+            "lineup_source": _none_if_nan(mo_row.get("lineup_source")),
+            "lineup_last_updated_utc": _none_if_nan(
+                mo_row.get("lineup_last_updated_utc")
+            ),
+            "injury_context_source": _none_if_nan(
+                mo_row.get("injury_context_source")
+            ),
+            "injury_report_fetched_at_utc": _none_if_nan(
+                mo_row.get("injury_report_fetched_at_utc")
+            ),
         }
     )
 
