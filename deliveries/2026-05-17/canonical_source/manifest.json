@@ -1,6 +1,6 @@
 {
   "schema_version": "m8_6m_v1",
-  "created_at_utc": "2026-05-16T22:31:57.764548+00:00",
+  "created_at_utc": "2026-05-16T22:43:27.370230+00:00",
   "date": "2026-05-17",
   "canonical_source_type": "MODEL_ONLY_TRUE_ATOM_PMF",
   "atom_pmf_policy": "atom_source_only_no_ladder_fallback",
@@ -43,6 +43,9 @@
       "injury_report_fetched_at_utc",
       "expected_lineup_status",
       "official_lineup_status",
+      "lineup_source",
+      "lineup_last_updated_utc",
+      "lineup_freshness_status",
       "projected_minutes",
       "minutes_q10",
       "minutes_q90",
@@ -70,7 +73,7 @@
     "model_only_parquet": "deliveries/2026-05-17/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "model_only_parquet_path": "deliveries/2026-05-17/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "parquet_path": "deliveries/2026-05-17/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-    "parquet_sha256": "4601eadffb3ab890ed996c6749a018d8c8a9d2990e2c0f3367e3edad486e9523",
+    "parquet_sha256": "6fa367d5f4389ad9e945f027fdd86d06083d211ff7a5e7f70fae87de24d34dd2",
     "atom_pmf_present": true,
     "atom_pmf_column": "pmf_active",
     "atom_pmf_columns": [
