@@ -292,8 +292,29 @@ jobs:
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
             --mode "woo_morning_monetization"
+      - name: Delivery pipeline gate flags (forced manual bypass)
+        id: delivery_flags
+        if: always()
+        run: |
+          GATE="${{ steps.predict_gate.outputs.should_proceed }}"
+          FORCE_MANUAL=false
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ "${{ github.event.inputs.mode }}" = "woo_morning_monetization" ] && \
+             [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_MANUAL=true
+          fi
+          if [ "$GATE" = "true" ] || [ "$FORCE_MANUAL" = "true" ]; then
+            echo "run_delivery=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_delivery=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Fail when forced manual delivery pipeline would not run
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization' && github.event.inputs.force_run == 'true' && steps.delivery_flags.outputs.run_delivery != 'true' }}
+        run: |
+          echo "FATAL: DELIVERY_PIPELINE_SKIPPED_IN_FORCED_MANUAL_RUN"
+          exit 1
       - name: Run delivery pipeline (woo_morning_monetization)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -317,14 +338,14 @@ jobs:
       # pipeline so the public export is authoritatively from the new
       # builder, not the legacy build_wizard_of_odds_public_export.py.
       - name: Phase 13AM WoO new pipeline (publish/build/verify)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         run: |
           python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
           python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
       - name: M8.6 post-delivery verifiers
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         env:
           PYTHONPATH: src
         run: |
@@ -336,13 +357,61 @@ jobs:
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
       - name: M8.6 morning completeness + OddsAPI/BDL coverage (slate date)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         env:
           PYTHONPATH: src
         run: |
           D="${{ steps.d.outputs.date }}"
           python3 scripts/verify_morning_delivery_completeness.py --date "$D"
           python3 scripts/verify_oddsapi_bdl_full_prop_coverage.py --date "$D" --snapshot-substr auto --ensure-audit
+      - name: Forced manual delivery outputs assertion
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ "${{ github.event.inputs.mode }}" = "woo_morning_monetization" ] && \
+             [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+
+            D="${{ steps.d.outputs.date }}"
+            test -f "deliveries/$D/manifest.json" || {
+              echo "FATAL: DELIVERY_MANIFEST_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            test -f "deliveries/$D/canonical_source/all_props_model_only.parquet" || {
+              echo "FATAL: ALL_PROPS_MODEL_ONLY_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            test -f "deliveries/$D/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet" || {
+              echo "FATAL: PLAYER_PROP_PMFS_MODEL_ONLY_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            test -f "deliveries/$D/wizard_of_odds/market_comparison.parquet" || {
+              echo "FATAL: MARKET_COMPARISON_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            echo "FORCED_MANUAL_DELIVERY_RUN_ASSERTION_PASS"
+          fi
+      - name: Upload daily PMF delivery bundle
+        if: ${{ success() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pmf-delivery-${{ steps.d.outputs.date }}-${{ github.run_id }}
+          path: |
+            deliveries/${{ steps.d.outputs.date }}
+            predictions/stat_grid_${{ steps.d.outputs.date }}.parquet
+            predictions/all_props_${{ steps.d.outputs.date }}.parquet
+            artifacts/minutes_predictions/${{ steps.d.outputs.date }}
+            artifacts/current_market_signal/${{ steps.d.outputs.date }}.json
+            artifacts/injury_report_selection/${{ steps.d.outputs.date }}.json
+            data/freshness_manifest/${{ steps.d.outputs.date }}.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: DELIVERY_ARTIFACT_UPLOAD_PASS marker
+        if: ${{ success() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        run: echo "DELIVERY_ARTIFACT_UPLOAD_PASS"
       - name: Upload diagnostics on failure (woo morning)
         if: failure()
         uses: actions/upload-artifact@v4
@@ -353,7 +422,7 @@ jobs:
             artifacts/automation_health
             artifacts/model_diagnostics
       - name: Stage and commit approved files
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
