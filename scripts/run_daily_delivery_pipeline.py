@@ -86,7 +86,7 @@ TIPOFF_WINDOW_POST_MIN = 15
 REFRESH = REPO_ROOT / "scripts" / "refresh_daily_inputs.py"
 BUILD = REPO_ROOT / "scripts" / "build_daily_pmf_delivery.py"
 SCORE = REPO_ROOT / "scripts" / "score_daily_pmf_delivery_after_game.py"
-PREDICT = REPO_ROOT / "src" / "nba_props_model" / "pipelines" / "predict.py"
+PREDICT = REPO_ROOT / "scripts" / "predict.py"
 STAT_GRID = REPO_ROOT / "scripts" / "build_stat_grid_pmfs.py"
 MINUTES_PREDICTIONS = REPO_ROOT / "scripts" / "build_minutes_predictions.py"
 CANONICAL_FROM_STAT_GRID = REPO_ROOT / "scripts" / "build_model_only_canonical_from_stat_grid.py"
@@ -142,12 +142,70 @@ def _refresh(date: str, *, snapshot_type: str, no_odds_fetch: bool,
 def _predict(date: str) -> int:
     """Optional predict.py invocation. Allowed to fail when BDL_API_KEY is
     unset — the wrapper still proceeds with whatever predictions are on
-    disk so the rest of the pipeline can run."""
+    disk so the rest of the pipeline can run.
+
+    NOTE: invokes ``scripts/predict.py`` (the wrapper that forwards
+    ``sys.argv[1:]`` into ``main``). Calling
+    ``src/nba_props_model/pipelines/predict.py`` directly silently drops
+    CLI flags because the module's ``__main__`` block invokes
+    ``main()`` without forwarding argv.
+    """
     if not PREDICT.exists():
         print(f"  predict: {PREDICT} not found, skipping")
         return 0
     cmd = [PYTHON, str(PREDICT), "--date", date]
     return _run(cmd, allow_fail=True, label=f"predict {date}")
+
+
+PREDICT_DATE_REQUIRED_FILES = (
+    "predictions/all_props_{date}.parquet",
+    "predictions/pmf_display_{date}.json",
+    "predictions/singles_{date}.json",
+)
+
+
+def _detect_predict_actual_date(predictions_dir: Path, requested_date: str) -> str | None:
+    """Best-effort: pick the date stamped on the most recently written
+    ``predictions/all_props_*.parquet`` (or pmf_display/singles JSON) when
+    the file for the requested date is missing. Used to surface the actual
+    date predict.py ran for in the ``PREDICT_DATE_CONTRACT_VIOLATION`` line.
+    """
+    if not predictions_dir.is_dir():
+        return None
+    candidates: list[Path] = []
+    for pattern in ("all_props_*.parquet", "pmf_display_*.json", "singles_*.json"):
+        candidates.extend(predictions_dir.glob(pattern))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    for p in candidates:
+        stem = p.stem
+        for prefix in ("all_props_", "pmf_display_", "singles_"):
+            if stem.startswith(prefix):
+                actual = stem.removeprefix(prefix)
+                if actual != requested_date and len(actual) == 10:
+                    return actual
+                break
+    return None
+
+
+def _assert_predict_date_contract(date: str) -> None:
+    """Hard post-predict gate: predictions must exist for the requested date.
+
+    Emits ``PREDICT_DATE_CONTRACT_PASS`` on success or
+    ``PREDICT_DATE_CONTRACT_VIOLATION`` and ``sys.exit(1)`` on drift.
+    """
+    pred_dir = REPO_ROOT / "predictions"
+    required = [REPO_ROOT / tmpl.format(date=date) for tmpl in PREDICT_DATE_REQUIRED_FILES]
+    missing = [str(p.relative_to(REPO_ROOT)) for p in required if not p.is_file()]
+    if missing:
+        actual = _detect_predict_actual_date(pred_dir, date)
+        print("PREDICT_DATE_CONTRACT_VIOLATION")
+        print(f"  requested_date={date}")
+        print(f"  actual_logged_or_output_date={actual or 'unknown'}")
+        print(f"  missing_for_requested_date={missing}")
+        sys.exit(1)
+    print(f"PREDICT_DATE_CONTRACT_PASS date={date}")
 
 
 def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
@@ -176,7 +234,14 @@ def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
 
 
 def _feature_snapshot(date: str, *, run_mode_stamp: str) -> Path | None:
-    """Build feature snapshot for the run mode (best-effort)."""
+    """Build feature snapshot for the run mode (best-effort).
+
+    Callers MUST invoke :func:`_require_feature_snapshot` immediately
+    afterwards when the snapshot is a hard precondition for minutes /
+    stat_grid / canonical (i.e. every same-day pipeline). A best-effort
+    rc here keeps the script self-describing — the precondition is what
+    fails the pipeline.
+    """
     if not BUILD_FEATURE_SNAPSHOT.exists():
         return None
     out = REPO_ROOT / "data" / "features" / f"player_prop_features_{date}_{run_mode_stamp}.parquet"
@@ -197,6 +262,50 @@ def _feature_snapshot(date: str, *, run_mode_stamp: str) -> Path | None:
     if rc != 0:
         return None
     return out if out.is_file() else None
+
+
+def _require_feature_snapshot(
+    *,
+    date: str,
+    run_mode_stamp: str,
+    path: Path | None,
+) -> Path:
+    """Hard precondition before minutes/stat_grid.
+
+    Fails with ``FEATURE_SNAPSHOT_MISSING_AFTER_BUILD`` /
+    ``FEATURE_SNAPSHOT_EMPTY`` / ``FEATURE_SNAPSHOT_UNREADABLE`` so the
+    pipeline never proceeds with a missing feature snapshot.
+    """
+    expected = (
+        path
+        if path is not None
+        else REPO_ROOT
+        / "data"
+        / "features"
+        / f"player_prop_features_{date}_{run_mode_stamp}.parquet"
+    )
+    rel = expected.relative_to(REPO_ROOT) if expected.is_absolute() else expected
+    if not expected.is_file():
+        sys.exit(
+            "FATAL: FEATURE_SNAPSHOT_MISSING_AFTER_BUILD "
+            f"path=data/features/player_prop_features_{date}_{run_mode_stamp}.parquet"
+        )
+    try:
+        import pandas as pd
+
+        n_rows = int(len(pd.read_parquet(expected, columns=None)))
+    except Exception as exc:
+        sys.exit(
+            "FATAL: FEATURE_SNAPSHOT_UNREADABLE "
+            f"path={rel} exc={type(exc).__name__}:{exc}"
+        )
+    if n_rows <= 0:
+        sys.exit(
+            "FATAL: FEATURE_SNAPSHOT_EMPTY "
+            f"path={rel} rows=0"
+        )
+    print(f"PLAYER_PROP_FEATURE_SNAPSHOT_PASS rows={n_rows} out={rel}")
+    return expected
 
 
 def _minutes_predictions(date: str, *, run_mode_stamp: str) -> int:
@@ -756,10 +865,12 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     feed has its own scheduled lifecycle starting at 15:00 UTC."""
     if do_predict:
         _predict(date)
+        _assert_predict_date_contract(date)
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
     _minutes_predictions(date, run_mode_stamp="morning_expected")
     _run_mission_stat_grid_and_canonical(date, fs)
     model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
@@ -783,10 +894,12 @@ def run_woo_morning_monetization(
     Derek's evaluation feed — that runs later, near lineup time."""
     if do_predict:
         _predict(date)
+        _assert_predict_date_contract(date)
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
     _minutes_predictions(date, run_mode_stamp="morning_expected")
     _run_mission_stat_grid_and_canonical(date, fs)
     model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
@@ -816,6 +929,7 @@ def run_woo_afternoon_refresh(
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
     _minutes_predictions(date, run_mode_stamp="morning_expected")
     _run_mission_stat_grid_and_canonical(date, fs)
     model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
@@ -844,6 +958,7 @@ def run_derek_near_lineup(
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="t25")
+    fs = _require_feature_snapshot(date=date, run_mode_stamp="t25", path=fs)
     _minutes_predictions(date, run_mode_stamp="t25")
     _run_mission_stat_grid_and_canonical(date, fs)
     model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None
@@ -868,6 +983,7 @@ def run_close_lock(date: str, *, regions: list[str],
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
     fs = _feature_snapshot(date, run_mode_stamp="t5")
+    fs = _require_feature_snapshot(date=date, run_mode_stamp="t5", path=fs)
     _minutes_predictions(date, run_mode_stamp="t5")
     _run_mission_stat_grid_and_canonical(date, fs)
     model_only_path = _canonical_model_only_path(date) if rebuild_canonical else None

@@ -103,13 +103,92 @@ def _populate_identity(df: pd.DataFrame, date: str, run_mode: RunMode, run_id: s
     return out
 
 
+AVAILABILITY_CONFIDENCE_ALIASES: tuple[str, ...] = (
+    "availability_confidence",
+    "confidence",
+    "confidence_score",
+    "availability_confidence_score",
+)
+
+_AVAILABILITY_COLUMN_DEFAULTS: dict[str, Any] = {
+    "availability_status": "source_unavailable",
+    "prob_active": 0.5,
+    "availability_confidence": 0.5,
+    "availability_source": "player_availability_asof",
+    "minutes_restriction_flag": False,
+    "num_teammates_out_total": 0,
+    "teammate_out_count_guard": 0,
+    "teammate_out_count_wing": 0,
+    "teammate_out_count_big": 0,
+    "is_returning_from_absence": False,
+}
+
+
+def _coalesce_availability_confidence(df: pd.DataFrame) -> pd.DataFrame:
+    """Rename the first present alias into ``availability_confidence``.
+
+    Aliases are checked in priority order; the canonical name wins when present.
+    """
+    if "availability_confidence" in df.columns:
+        return df
+    for alias in AVAILABILITY_CONFIDENCE_ALIASES[1:]:
+        if alias in df.columns:
+            return df.rename(columns={alias: "availability_confidence"})
+    return df
+
+
+def _apply_availability_defaults(df: pd.DataFrame) -> list[str]:
+    """Insert any missing or fully-null availability columns.
+
+    Returns the list of column names that were defaulted (either missing
+    outright, or present but entirely null after the merge — which is
+    the same effective signal: there was no source row). Never raises on
+    missing columns.
+    """
+    defaulted: list[str] = []
+    for col, default in _AVAILABILITY_COLUMN_DEFAULTS.items():
+        if col not in df.columns:
+            df[col] = default
+            defaulted.append(col)
+            continue
+        if len(df) > 0 and bool(df[col].isna().all()):
+            df[col] = default
+            defaulted.append(col)
+    return defaulted
+
+
 def _populate_availability(snapshot: pd.DataFrame, avail: pd.DataFrame) -> pd.DataFrame:
     out = snapshot.copy()
-    if avail.empty or "player_id" not in out.columns or "player_id" not in avail.columns:
-        return out
-    cols = [c for c in ["player_id", "availability_status", "prob_active", "availability_confidence", "availability_source", "minutes_restriction_flag", "num_teammates_out_total", "teammate_out_count_guard", "teammate_out_count_wing", "teammate_out_count_big", "days_since_last_played", "is_returning_from_absence"] if c in avail.columns]
-    av = avail[cols].drop_duplicates(subset=["player_id"])
-    out = out.merge(av, on="player_id", how="left")
+    keyless = (
+        avail.empty
+        or "player_id" not in out.columns
+        or "player_id" not in avail.columns
+    )
+    if not keyless:
+        avail = _coalesce_availability_confidence(avail)
+        cols = [
+            c
+            for c in ("player_id", *_AVAILABILITY_COLUMN_DEFAULTS.keys(), "days_since_last_played")
+            if c in avail.columns
+        ]
+        av = avail[cols].drop_duplicates(subset=["player_id"])
+        overlap = [c for c in av.columns if c != "player_id" and c in out.columns]
+        if overlap:
+            out = out.drop(columns=overlap)
+        out = out.merge(av, on="player_id", how="left")
+
+    defaulted = _apply_availability_defaults(out)
+    if "availability_confidence" in defaulted:
+        print(
+            "AVAILABILITY_CONFIDENCE_DEFAULTED "
+            f"rows={len(out)} reason=column_missing_after_merge"
+        )
+    if defaulted:
+        print(
+            "AVAILABILITY_FEATURE_SCHEMA_MISSING "
+            f"missing={defaulted} present={[c for c in _AVAILABILITY_COLUMN_DEFAULTS if c not in defaulted]}"
+        )
+
     out["injury_status_current"] = out["availability_status"].fillna("source_unavailable")
     out["injury_status_previous"] = out["injury_status_current"]
     out["injury_status_changed_since_morning"] = False
@@ -127,7 +206,7 @@ def _populate_availability(snapshot: pd.DataFrame, avail: pd.DataFrame) -> pd.Da
     out["has_injury_data"] = out["availability_status"].notna()
     out["availability_confidence"] = out["availability_confidence"].fillna(0.5)
     out["minutes_restriction_flag"] = out["minutes_restriction_flag"].fillna(False)
-    out["returning_from_injury_flag"] = out.get("is_returning_from_absence", False).fillna(False)
+    out["returning_from_injury_flag"] = out["is_returning_from_absence"].fillna(False)
     out["first_game_back_flag"] = out["returning_from_injury_flag"]
     out["probable_flag"] = out["injury_status_current"].astype(str).str.contains("prob", case=False, na=False)
     out["questionable_flag"] = out["injury_status_current"].astype(str).str.contains("questionable", case=False, na=False)
@@ -136,11 +215,11 @@ def _populate_availability(snapshot: pd.DataFrame, avail: pd.DataFrame) -> pd.Da
     out["rest_flag"] = out["injury_status_current"].astype(str).str.contains("rest", case=False, na=False)
     out["personal_absence_flag"] = out["injury_status_current"].astype(str).str.contains("personal", case=False, na=False)
     out["coach_dnp_risk_flag"] = False
-    out["num_teammates_out_total"] = out.get("num_teammates_out_total", 0).fillna(0)
+    out["num_teammates_out_total"] = out["num_teammates_out_total"].fillna(0)
     out["num_teammates_inactive"] = out["num_teammates_out_total"]
-    out["teammate_out_count_guard"] = out.get("teammate_out_count_guard", 0).fillna(0)
-    out["teammate_out_count_wing"] = out.get("teammate_out_count_wing", 0).fillna(0)
-    out["teammate_out_count_big"] = out.get("teammate_out_count_big", 0).fillna(0)
+    out["teammate_out_count_guard"] = out["teammate_out_count_guard"].fillna(0)
+    out["teammate_out_count_wing"] = out["teammate_out_count_wing"].fillna(0)
+    out["teammate_out_count_big"] = out["teammate_out_count_big"].fillna(0)
     out["injury_freshness_status"] = out["injury_status_current"].where(out["has_injury_data"], "source_unavailable")
     return out
 
