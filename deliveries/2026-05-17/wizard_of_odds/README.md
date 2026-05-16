@@ -9,13 +9,13 @@
 - market coverage: **full**
 - injury freshness: **unknown**
 - role provenance: `derived_from_projected_minutes`: 168
-- model: `e15111fd#phase10c`
+- model: `7cbec0bd#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No row-level fresh injury context was present in the PMF delivery quality rollup.
+- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/168; dominant_status='unknown' (count=168); sample_injury_report_fetched_at_utc='2026-05-16T22:31:10Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 
 ---
@@ -40,12 +40,12 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
 - **books_seen**: `13`
-- **freshness.overall_status**: `ready`
+- **freshness.overall_status**: `not_ready`
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 168}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=1285, publishable_edges=1077
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 486, 'fair_under_odds_null_count': 486, 'zero_or_one_prob_count': 280}`
+- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=2033, publishable_edges=1627
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 502, 'fair_under_odds_null_count': 502, 'zero_or_one_prob_count': 280}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

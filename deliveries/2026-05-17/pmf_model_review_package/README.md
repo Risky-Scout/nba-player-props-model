@@ -9,13 +9,13 @@
 - market coverage: **full**
 - injury freshness: **unknown**
 - role provenance: `derived_from_projected_minutes`: 168
-- model: `e15111fd#phase10c`
+- model: `7cbec0bd#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No row-level fresh injury context was present in the PMF delivery quality rollup.
+- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/168; dominant_status='unknown' (count=168); sample_injury_report_fetched_at_utc='2026-05-16T22:31:10Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 
 ---

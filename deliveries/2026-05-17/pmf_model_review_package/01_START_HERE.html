@@ -22,10 +22,10 @@ th{background:#f0f0f0}
 status: <b>PROVISIONAL</b> &middot; safe to use, with the caveats below<br>
 props: <b>168</b> &middot; books: <b>13</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>unknown</b><br>
 role provenance: derived_from_projected_minutes: 168<br>
-model: <code>e15111fd#phase10c</code>
+model: <code>7cbec0bd#phase10c</code>
 <br><br>
 <b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>
-- <code>injury_very_stale</code> — No row-level fresh injury context was present in the PMF delivery quality rollup.
+- <code>injury_very_stale</code> — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/168; dominant_status='unknown' (count=168); sample_injury_report_fetched_at_utc='2026-05-16T22:31:10Z'; reason=injury_report_not_yet_published_or_unavailable
 - <code>lineup_unconfirmed</code> — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 </div>
 
