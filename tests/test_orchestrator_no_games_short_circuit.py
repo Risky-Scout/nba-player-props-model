@@ -139,3 +139,46 @@ def test_short_circuit_returns_false_when_signal_absent(tmp_path, monkeypatch, c
     out = capsys.readouterr().out
     assert "PIPELINE_SOFT_SKIP_NO_GAMES_SLATE" not in out
     assert not (tmp_path / "deliveries" / "2026-05-16" / "manifest.json").exists()
+
+
+def test_verify_m88_delivery_bundle_soft_skips_on_no_games_signal(tmp_path, monkeypatch, capsys):
+    """The post-delivery verify suite (audit_daily_delivery_completeness,
+    verify_derek_forward_feed_contract, audit_injury_lineup_run_modes,
+    audit_github_delivery_automation) must not hard-fail on a real
+    no-games slate. None of those gates can pass without a real model
+    PMF surface / Derek feed / lineup file."""
+    mod = _load_orchestrator_module(monkeypatch, tmp_path)
+    _write_no_games_signal(tmp_path, "2026-05-16")
+
+    rc = mod._verify_m88_delivery_bundle("2026-05-16", "morning_expected", fail_on_missing=True)
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "VERIFY_SUITE_SOFT_SKIP_NO_GAMES_SLATE" in out
+    assert "date=2026-05-16" in out
+
+
+def test_verify_m88_delivery_bundle_does_not_soft_skip_without_signal(tmp_path, monkeypatch):
+    """No upstream no-games signal means the verify suite must run
+    normally (and would hard-fail if delivery artifacts are missing).
+    We verify by checking that the soft-skip code path was NOT taken —
+    i.e. the function attempted to execute the auditor scripts."""
+    mod = _load_orchestrator_module(monkeypatch, tmp_path)
+    invoked: list[list[str]] = []
+
+    def fake_run(cmd, cwd=None, env=None):
+        invoked.append(cmd)
+        class _R: returncode = 0
+        return _R()
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run, raising=True)
+    # Each audit script must exist for the function to attempt to run it.
+    for script in (mod.AUDIT_DAILY_DELIVERY, mod.VERIFY_DEREK_CONTRACT,
+                   mod.AUDIT_INJURY_LINEUP, mod.AUDIT_GITHUB_AUTOMATION):
+        if not script.exists():
+            pytest.skip(f"script {script.name} missing in this checkout; can't assert call-path")
+
+    rc = mod._verify_m88_delivery_bundle("2026-05-16", "morning_expected", fail_on_missing=False)
+    assert rc == 0
+    # If we got past the soft-skip we should have attempted at least one auditor.
+    assert any("audit_daily_delivery_completeness.py" in " ".join(map(str, c)) for c in invoked), \
+        "verify suite must invoke auditors when no-games signal is absent"

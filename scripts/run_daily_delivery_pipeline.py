@@ -992,7 +992,22 @@ def _verify_m88_delivery_bundle(
     *,
     fail_on_missing: bool,
 ) -> int:
-    """Run delivery completeness + Derek contract + injury-lineup + GitHub audits."""
+    """Run delivery completeness + Derek contract + injury-lineup + GitHub audits.
+
+    Short-circuits when ``predict.py`` signaled a real no-games slate
+    (``reason == "no_games_slate"`` in ``predictions/singles_<date>.json``).
+    The completeness / Derek-contract / injury-lineup auditors all
+    require a real model PMF surface + lineup + Derek feed, none of
+    which exist on a legitimate no-games slate. Running them anyway
+    produces a hard-fail "false red" that masks the genuine soft-skip
+    the orchestrator already emitted in :func:`_short_circuit_if_no_games`.
+    """
+    if _predict_signaled_no_games_slate(date) is not None:
+        print(
+            f"VERIFY_SUITE_SOFT_SKIP_NO_GAMES_SLATE date={date} "
+            f"upstream_signal=predictions/singles_{date}.json"
+        )
+        return 0
 
     outd = REPO_ROOT / "artifacts" / "model_diagnostics" / "daily_delivery_completeness_last_run"
     prev = (datetime.strptime(date, "%Y-%m-%d").date() - timedelta(days=1)).isoformat()
