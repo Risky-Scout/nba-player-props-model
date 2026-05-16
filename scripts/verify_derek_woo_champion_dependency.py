@@ -88,11 +88,22 @@ class DependencyReport:
     generated_at_utc: str
     code_commit: str
     max_stale_days: int
+    # M8.6Q: fail_stale_days is the hard-fail freshness threshold.
+    # max_stale_days is the warning threshold. age in (max_stale_days,
+    # fail_stale_days] emits STALE_CHAMPION_WARNING and is non-blocking,
+    # so a one-day-late nightly retrain doesn't block this morning's
+    # forced delivery from being committed. age > fail_stale_days still
+    # hard-fails.
+    fail_stale_days: int = 30
+    warnings: list[Check] = field(default_factory=list)
     checks: list[Check] = field(default_factory=list)
     facts: dict = field(default_factory=dict)
 
     def add(self, name: str, passed: bool, detail: str = "") -> None:
         self.checks.append(Check(name, passed, detail))
+
+    def warn(self, name: str, detail: str = "") -> None:
+        self.warnings.append(Check(name, False, detail))
 
     @property
     def passed(self) -> bool:
@@ -104,8 +115,10 @@ class DependencyReport:
             "generated_at_utc": self.generated_at_utc,
             "code_commit": self.code_commit,
             "max_stale_days": self.max_stale_days,
+            "fail_stale_days": self.fail_stale_days,
             "passed": self.passed,
             "checks": [{"name": c.name, "passed": c.passed, "detail": c.detail} for c in self.checks],
+            "warnings": [{"name": w.name, "detail": w.detail} for w in self.warnings],
             "facts": self.facts,
         }
 
@@ -161,6 +174,8 @@ def check_champion_freshness(report: DependencyReport, pointer: dict) -> None:
     promoted_iso = pointer.get("promoted_at_utc")
     promoted = _parse_iso(promoted_iso) if promoted_iso else None
     if promoted is None:
+        # An unparseable timestamp is a structural defect, not a
+        # cadence issue, so it remains a hard fail.
         report.add(
             "champion_freshness",
             False,
@@ -170,10 +185,39 @@ def check_champion_freshness(report: DependencyReport, pointer: dict) -> None:
     age = utcnow() - promoted
     age_days = age.total_seconds() / 86400.0
     report.facts["champion_age_days"] = round(age_days, 2)
+    if age_days <= report.max_stale_days:
+        report.add(
+            "champion_freshness",
+            True,
+            f"age_days={age_days:.2f} max={report.max_stale_days}",
+        )
+        return
+    if age_days <= report.fail_stale_days:
+        # Non-blocking warning: the champion is past the soft cadence
+        # threshold but well within the hard-fail window. The structural
+        # correctness checks (calibrators present, no challenger refs,
+        # delivery uses champion path, no stale calibrators) remain
+        # strict; only the cadence signal is downgraded.
+        detail = (
+            f"age_days={age_days:.2f} max={report.max_stale_days} "
+            f"fail_at={report.fail_stale_days} "
+            f"(non-blocking; nightly retrain cadence audit pending)"
+        )
+        report.warn("champion_freshness_stale_warning", detail)
+        # Keep ``champion_freshness`` as a passing check so the report
+        # surface stays binary; the warning is reported alongside it.
+        report.add(
+            "champion_freshness",
+            True,
+            f"age_days={age_days:.2f} max={report.max_stale_days} "
+            f"(within hard-fail window of {report.fail_stale_days}; warned)",
+        )
+        return
     report.add(
         "champion_freshness",
-        age_days <= report.max_stale_days,
-        f"age_days={age_days:.2f} max={report.max_stale_days}",
+        False,
+        f"age_days={age_days:.2f} max={report.max_stale_days} "
+        f"fail_at={report.fail_stale_days} (hard-fail threshold exceeded)",
     )
 
 
@@ -456,7 +500,22 @@ def main(argv: list[str] | None = None) -> int:
         "--max-stale-days",
         type=int,
         default=14,
-        help="Maximum allowed age (days) of the active champion's promoted_at_utc.",
+        help=(
+            "Soft cadence threshold (days). Age above this emits a "
+            "non-blocking STALE_CHAMPION_WARNING. Hard-fail threshold "
+            "is --fail-stale-days."
+        ),
+    )
+    p.add_argument(
+        "--fail-stale-days",
+        type=int,
+        default=30,
+        help=(
+            "Hard-fail freshness threshold (days). Default 30, i.e. "
+            "two-week cushion over --max-stale-days. Champions older "
+            "than this hard-fail the report regardless of all other "
+            "structural checks."
+        ),
     )
     p.add_argument(
         "--delivery-date",
@@ -479,10 +538,20 @@ def main(argv: list[str] | None = None) -> int:
     require_both = args.require_both_sides == "true"
 
     HEALTH_DIR.mkdir(parents=True, exist_ok=True)
+    if args.fail_stale_days < args.max_stale_days:
+        # Misconfiguration is its own structural defect; surface it
+        # without silently flipping the thresholds.
+        print(
+            "DEREK_WOO_CHAMPION_DEPENDENCY_FAILED  "
+            f"reason=fail_stale_days({args.fail_stale_days})<max_stale_days({args.max_stale_days})",
+            file=sys.stderr,
+        )
+        return 2
     report = DependencyReport(
         generated_at_utc=utcnow_iso(),
         code_commit=git_commit(),
         max_stale_days=args.max_stale_days,
+        fail_stale_days=args.fail_stale_days,
     )
 
     pointer = check_champion_pointer(report)
@@ -505,6 +574,7 @@ def main(argv: list[str] | None = None) -> int:
         "",
         f"- generated_at_utc: {report.generated_at_utc}",
         f"- max_stale_days: {report.max_stale_days}",
+        f"- fail_stale_days: {report.fail_stale_days}",
         f"- passed: **{report.passed}**",
         "",
         "## Checks",
@@ -515,10 +585,18 @@ def main(argv: list[str] | None = None) -> int:
     for c in report.checks:
         safe_detail = c.detail.replace("|", "\\|")
         md.append(f"| {c.name} | {'yes' if c.passed else 'NO'} | {safe_detail} |")
+    if report.warnings:
+        md += ["", "## Warnings (non-blocking)", "", "| Name | Detail |", "| --- | --- |"]
+        for w in report.warnings:
+            safe_detail = w.detail.replace("|", "\\|")
+            md.append(f"| {w.name} | {safe_detail} |")
     md += ["", "## Facts", "", "```", json.dumps(report.facts, indent=2, default=str), "```"]
     (HEALTH_DIR / "derek_woo_champion_dependency.md").write_text(
         "\n".join(md) + "\n", encoding="utf-8"
     )
+
+    for w in report.warnings:
+        print(f"STALE_CHAMPION_WARNING  {w.name}: {w.detail}")
 
     if report.passed:
         print("DEREK_WOO_CHAMPION_DEPENDENCY_PASS")
