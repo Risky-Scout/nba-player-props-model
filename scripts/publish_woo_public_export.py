@@ -66,6 +66,87 @@ def _coerce_float(v):
     return f
 
 
+_MODEL_PROB_OVER_ALIASES: tuple[str, ...] = (
+    "model_prob_over",
+    "model_p_over",
+    "prob_over",
+    "p_over",
+    "model_probability_over",
+)
+_MODEL_PROB_UNDER_ALIASES: tuple[str, ...] = (
+    "model_prob_under",
+    "model_p_under",
+    "prob_under",
+    "p_under",
+    "model_probability_under",
+)
+_MODEL_PROB_SIDE_AGNOSTIC_ALIASES: tuple[str, ...] = (
+    "model_p",
+    "model_probability",
+    "edge_model_prob",
+    "probability",
+)
+
+
+def _coerce_unit_float(v):
+    f = _coerce_float(v)
+    if f is None:
+        return None
+    if not (0.0 < f < 1.0):
+        return None
+    return f
+
+
+def derive_model_prob_for_row(row):
+    """Return the per-side ``model_prob`` for an affiliate-dashboard row.
+
+    Deterministic precedence (specified by the WoO render contract):
+
+    1. ``row["model_prob"]`` if already populated.
+    2. Side-aware over/under aliases:
+       - OVER row → ``model_prob_over``/``model_p_over``/``prob_over``/...
+       - UNDER row → ``model_prob_under``/``model_p_under``/...
+    3. Side-agnostic ``model_p``/``model_probability``/``edge_model_prob``/
+       ``probability``.
+
+    Returns ``None`` when no usable probability is available; the caller is
+    expected to assert ``WOO_MODEL_PROB_UNMAPPABLE`` in that case.
+    """
+    if not hasattr(row, "get"):
+        return None
+    direct = _coerce_unit_float(row.get("model_prob"))
+    if direct is not None:
+        return direct
+
+    side_raw = row.get("side") or row.get("pick_side") or row.get("over_under")
+    side = str(side_raw or "").upper()
+
+    if side == "OVER":
+        for alias in _MODEL_PROB_OVER_ALIASES:
+            cand = _coerce_unit_float(row.get(alias))
+            if cand is not None:
+                return cand
+        # OVER without a direct over column — fall through to side-agnostic
+        # candidates rather than silently inverting the row.
+    elif side == "UNDER":
+        for alias in _MODEL_PROB_UNDER_ALIASES:
+            cand = _coerce_unit_float(row.get(alias))
+            if cand is not None:
+                return cand
+        # Derive from the over-prob when only the over alias is present.
+        for alias in _MODEL_PROB_OVER_ALIASES:
+            cand = _coerce_unit_float(row.get(alias))
+            if cand is not None:
+                return 1.0 - cand
+
+    for alias in _MODEL_PROB_SIDE_AGNOSTIC_ALIASES:
+        cand = _coerce_unit_float(row.get(alias))
+        if cand is not None:
+            return cand
+
+    return None
+
+
 # M8.6H: server-side odds math for affiliate_dashboard.json.
 # The front-end already recomputes EV/Kelly for user-selected bankroll and
 # Kelly fraction. These fields make the JSON contract self-describing and
@@ -768,7 +849,24 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
 
     rows = []
     for _, r in df.iterrows():
-        mpo = num(get(r, "model_prob_over", "model_p_over", "prob_over", "p_over", default=0.5), 0.5)
+        # M8.6P: deterministic precedence for the side-agnostic model_prob_over.
+        # We accept any of the canonical numeric over-prob aliases the market
+        # comparison emits. ``model_prob`` alone (without a side suffix) is
+        # also accepted as a last-resort treat-as-over fallback so per-row
+        # writers that already publish ``model_prob`` don't get dropped.
+        mpo = num(
+            get(
+                r,
+                "model_prob_over",
+                "model_p_over",
+                "prob_over",
+                "p_over",
+                "model_probability_over",
+                "model_prob",
+                default=0.5,
+            ),
+            0.5,
+        )
         mpo = min(max(mpo, 1e-9), 1.0 - 1e-9)
         mpu = 1.0 - mpo
 
@@ -812,9 +910,17 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             ("UNDER", mpu, under_odds, fair_under),
         ):
             out = dict(base)
+            # M8.6P: ``model_prob`` is the flat per-side probability the
+            # render-contract verifier checks for null. Every row that
+            # makes it here has a finite ``mps`` from the precedence
+            # above, so we never emit ``null`` for ``model_prob`` and
+            # never trip ``WOO_DASHBOARD_RENDER_CONTRACT_FAIL`` with the
+            # ``rows have null model_prob`` reason.
+            model_prob_side = float(mps)
             out.update({
                 "side": side,
-                "model_probability_for_side": float(mps),
+                "model_prob": model_prob_side,
+                "model_probability_for_side": model_prob_side,
                 "side_odds": odds,
                 "fair_odds_model": fair,
                 "edge": float(edge if side == "OVER" else -edge),
@@ -824,6 +930,35 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
                 "kelly_capped": 0.0,
             })
             rows.append(out)
+
+    # M8.6P: WOO_DASHBOARD_RENDER_CONTRACT guard — ``model_prob`` must
+    # be non-null on every renderable row (the verifier flags ``rows have
+    # null model_prob`` and exits 1 otherwise).
+    unmappable: list[dict] = []
+    for row in rows:
+        if row.get("model_prob") is None:
+            mp = derive_model_prob_for_row(row)
+            if mp is None:
+                unmappable.append(row)
+                continue
+            row["model_prob"] = float(mp)
+            row.setdefault("model_probability_for_side", float(mp))
+    if unmappable:
+        sample = []
+        for row in unmappable[:3]:
+            sample.append({
+                "player_id": row.get("player_id"),
+                "stat": row.get("stat"),
+                "side": row.get("side"),
+                "line": row.get("line"),
+                "book": row.get("book"),
+                "present_keys": sorted(row.keys()),
+            })
+        raise SystemExit(
+            "WOO_MODEL_PROB_UNMAPPABLE "
+            f"date={date} unmappable_rows={len(unmappable)} "
+            f"sample={json.dumps(sample, default=str)}"
+        )
 
     payload = {
         "schema_version": "1.0",

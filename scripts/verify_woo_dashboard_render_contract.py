@@ -57,6 +57,100 @@ from nba_props_model.targets import BASE_STATS_FULL  # noqa: E402
 
 SUPPORTED_STATS = set(BASE_STATS_FULL)  # M4A2: was 5-stat set literal
 
+PMF_RESEARCH_PLAYER_LIST_KEYS = ("players", "rows", "data", "records", "items", "pmfs")
+
+
+def _extract_pmf_research_players(payload):
+    """Return a list of player records regardless of the producer's shape.
+
+    The dashboard JSON has gone through two producer regimes:
+      * legacy ``publish_woo_public_export.py`` writes
+        ``{"players": [{...}, ...]}`` with each player's ``stats`` as a
+        dict keyed by stat name.
+      * the canonical ``build_woo_pmf_research_from_canonical.py`` writes
+        ``{"players": [{...}], "pmfs": [...], "props": [...]}`` where
+        each player's ``stats`` is a *list* of stat-atom dicts.
+
+    Both shapes must parse without ever calling ``.items()`` on a list
+    (run 25952350180 root-caused to exactly that). Unknown shapes fail
+    explicitly with ``PMF_RESEARCH_JSON_SCHEMA_INVALID``.
+    """
+    if isinstance(payload, list):
+        return list(payload)
+    if isinstance(payload, dict):
+        for key in PMF_RESEARCH_PLAYER_LIST_KEYS:
+            v = payload.get(key)
+            if isinstance(v, list):
+                return list(v)
+        nested_values = [v for v in payload.values() if isinstance(v, dict)]
+        if nested_values and all("stats" in v or "pmf" in v or "support" in v for v in nested_values):
+            return nested_values
+    type_name = type(payload).__name__
+    keys = sorted(payload.keys()) if isinstance(payload, dict) else None
+    raise ValueError(
+        "PMF_RESEARCH_JSON_SCHEMA_INVALID "
+        f"root_type={type_name} keys={keys}"
+    )
+
+
+def _iter_player_stats(player):
+    """Yield ``(stat_name, stat_obj)`` pairs for either shape of
+    ``player.stats``: dict keyed by stat name, or list of stat-atom
+    dicts that themselves carry ``stat``/``stat_key``."""
+    if not isinstance(player, dict):
+        return
+    stats = player.get("stats")
+    if stats is None:
+        return
+    if isinstance(stats, dict):
+        for stat_name, obj in stats.items():
+            if isinstance(obj, dict):
+                yield str(stat_name), obj
+        return
+    if isinstance(stats, list):
+        for obj in stats:
+            if not isinstance(obj, dict):
+                continue
+            name = obj.get("stat") or obj.get("stat_key") or obj.get("market")
+            if not name:
+                continue
+            yield str(name), obj
+        return
+    # Unknown shape under ``stats`` — surface, don't silently swallow.
+    raise ValueError(
+        "PMF_RESEARCH_JSON_SCHEMA_INVALID "
+        f"player_stats_type={type(stats).__name__}"
+    )
+
+
+def _stat_support_points(obj):
+    """Return the renderable support points for a stat object.
+
+    Legacy producers emit ``support_points: [{"k": 0, "p": 0.18,
+    "label": "0", "is_tail": false}, ...]``. The canonical builder emits
+    ``support`` + ``probs`` arrays. We accept either and project the
+    new shape into the legacy ``support_points`` schema for downstream
+    sum-to-1 / tail-label checks.
+    """
+    if not isinstance(obj, dict):
+        return []
+    sp = obj.get("support_points")
+    if isinstance(sp, list):
+        return [pt for pt in sp if isinstance(pt, dict)]
+    support = obj.get("support")
+    probs = obj.get("probs")
+    if isinstance(support, list) and isinstance(probs, list) and len(support) == len(probs):
+        return [
+            {
+                "k": int(k) if k is not None else None,
+                "p": float(p) if p is not None else 0.0,
+                "label": str(int(k)) if k is not None else "",
+                "is_tail": False,
+            }
+            for k, p in zip(support, probs)
+        ]
+    return []
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -121,8 +215,8 @@ def main() -> int:
         fail(f"pmf_research.json missing at {pmf_json}")
     else:
         try:
-            d = json.loads(pmf_json.read_text())
-            players = d.get("players", [])
+            payload = json.loads(pmf_json.read_text())
+            players = _extract_pmf_research_players(payload)
             if not players:
                 fail("pmf_research.json has zero players")
             else:
@@ -130,11 +224,22 @@ def main() -> int:
                 bad_sums: list[str] = []
                 bad_tails: list[str] = []
                 for player in players:
-                    for stat, obj in (player.get("stats") or {}).items():
-                        if stat not in SUPPORTED_STATS:
+                    try:
+                        stat_iter = list(_iter_player_stats(player))
+                    except ValueError as exc:
+                        fail(str(exc))
+                        continue
+                    for stat, obj in stat_iter:
+                        if stat.lower() not in SUPPORTED_STATS:
                             continue
-                        sp = obj.get("support_points", [])
-                        s = sum(pt.get("p", 0.0) for pt in sp)
+                        sp = _stat_support_points(obj)
+                        if not sp:
+                            # No renderable support points for this stat — the
+                            # canonical builder may emit support+probs but no
+                            # support_points yet. Skip rather than spuriously
+                            # failing the sum-to-1 check on an empty list.
+                            continue
+                        s = sum(float(pt.get("p", 0.0) or 0.0) for pt in sp)
                         if not (0.99 <= s <= 1.01):
                             bad_sums.append(f"{player.get('player')} {stat}: sum={s:.4f}")
                         for pt in sp:

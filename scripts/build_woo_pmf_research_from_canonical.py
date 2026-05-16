@@ -562,6 +562,143 @@ def _write_html(payload: Dict[str, Any], paths: Iterable[Path]) -> None:
         print(f"WROTE {p}")
 
 
+PMF_RESEARCH_MODEL_PROB_PRECEDENCE: tuple[str, ...] = (
+    "model_prob",
+    "model_p",
+    "model_probability",
+    "edge_model_prob",
+    "probability",
+)
+
+
+def _renderable_model_prob_for_pmf_record(record: Dict[str, Any]) -> Optional[float]:
+    """Best-effort: return a non-null per-record ``model_prob`` for the
+    PMF research payload's per-prop rows.
+
+    The canonical builder preserves ``model_prob_over``/``model_prob_under``
+    in the per-record passthrough. Renderable rows must always carry one
+    of those, or a side-agnostic direct field. Returns ``None`` only when
+    no probability can be derived — the caller emits
+    ``PMF_RESEARCH_RENDER_CONTRACT_FAIL`` in that case.
+    """
+    for field in PMF_RESEARCH_MODEL_PROB_PRECEDENCE:
+        v = record.get(field)
+        if v is None:
+            continue
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(f) and 0.0 <= f <= 1.0:
+            return f
+    side = str(record.get("side") or record.get("pick_side") or "").upper()
+    over = record.get("model_prob_over")
+    under = record.get("model_prob_under")
+
+    def _unit(v):
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return None
+        return f if (math.isfinite(f) and 0.0 <= f <= 1.0) else None
+
+    over_f = _unit(over)
+    under_f = _unit(under)
+    if side == "UNDER":
+        if under_f is not None:
+            return under_f
+        if over_f is not None:
+            return 1.0 - over_f
+    if side == "OVER":
+        if over_f is not None:
+            return over_f
+        if under_f is not None:
+            return 1.0 - under_f
+    # Side-less PMF rows: ``model_prob_over`` is the conventional
+    # canonical-PMF representative probability.
+    if over_f is not None:
+        return over_f
+    if under_f is not None:
+        return 1.0 - under_f
+    return None
+
+
+def assert_pmf_research_render_contract(
+    payload: Dict[str, Any],
+    json_paths: Iterable[Path],
+) -> None:
+    """Producer-side WoO render-contract check.
+
+    Asserts the freshly-written ``pmf_research.json`` is structurally
+    parseable, has non-empty ``rows``/``players``, and every renderable
+    record exposes a usable ``model_prob``. Emits the structured
+    success/failure markers the workflow gates on.
+    """
+    rows = payload.get("pmfs") or payload.get("rows") or payload.get("props") or []
+    if not isinstance(rows, list):
+        raise SystemExit(
+            "PMF_RESEARCH_RENDER_CONTRACT_FAIL reason=rows_not_list "
+            f"actual_type={type(rows).__name__}"
+        )
+    players = payload.get("players") or []
+    if not rows:
+        raise SystemExit("PMF_RESEARCH_RENDER_CONTRACT_FAIL reason=empty_rows")
+    if not players:
+        raise SystemExit("PMF_RESEARCH_RENDER_CONTRACT_FAIL reason=empty_players")
+
+    # Round-trip every written path so we surface JSON corruption /
+    # encoding errors here instead of at downstream verifier time.
+    sample_path = None
+    for p in json_paths:
+        if Path(p).is_file():
+            sample_path = Path(p)
+            break
+    if sample_path is not None:
+        try:
+            with open(sample_path, "r", encoding="utf-8") as fh:
+                parsed = json.load(fh)
+            if not isinstance(parsed, dict):
+                raise SystemExit(
+                    "PMF_RESEARCH_RENDER_CONTRACT_FAIL "
+                    f"reason=root_not_object actual={type(parsed).__name__} "
+                    f"path={sample_path}"
+                )
+        except (OSError, ValueError) as exc:
+            raise SystemExit(
+                "PMF_RESEARCH_RENDER_CONTRACT_FAIL "
+                f"reason=parse_error path={sample_path} exc={type(exc).__name__}:{exc}"
+            )
+
+    non_null = 0
+    unmappable: List[Dict[str, Any]] = []
+    for rec in rows:
+        if not isinstance(rec, dict):
+            unmappable.append({"row": rec})
+            continue
+        mp = _renderable_model_prob_for_pmf_record(rec)
+        if mp is None:
+            unmappable.append({
+                "player_id": rec.get("player_id"),
+                "stat": rec.get("stat"),
+                "line": rec.get("line"),
+                "book": rec.get("book"),
+                "present_keys": sorted(k for k in rec.keys() if not k.startswith("_")),
+            })
+            continue
+        rec["model_prob"] = mp
+        non_null += 1
+    if unmappable:
+        raise SystemExit(
+            "PMF_RESEARCH_RENDER_CONTRACT_FAIL "
+            f"reason=WOO_MODEL_PROB_UNMAPPABLE rows={len(rows)} "
+            f"unmappable={len(unmappable)} sample={json.dumps(unmappable[:3], default=str)}"
+        )
+    print(
+        "PMF_RESEARCH_RENDER_CONTRACT_PASS "
+        f"rows={len(rows)} players={len(players)} model_prob_non_null={non_null}"
+    )
+
+
 def build(date: str, root: Path) -> Dict[str, Any]:
     source_path, df, pmf_col = _load_source(root, date)
 
@@ -622,6 +759,8 @@ def build(date: str, root: Path) -> Dict[str, Any]:
         f"date={date} source={source_path} pmf_column={pmf_col} "
         f"rows_valid={len(records)} players={len(players)}"
     )
+
+    assert_pmf_research_render_contract(payload, json_paths)
 
     return payload
 

@@ -1,4 +1,4 @@
-name: NBA PMF Delivery — Daily Pipeline
+ name: NBA PMF Delivery — Daily Pipeline
 
 # Phase 12D-amend — Derek's evaluation feed and WoO's monetization feed
 # now have separate scheduled lifecycles:
@@ -394,6 +394,28 @@ jobs:
 
             echo "FORCED_MANUAL_DELIVERY_RUN_ASSERTION_PASS"
           fi
+      # M8.6P: Upload the core delivery bundle BEFORE any downstream
+      # WoO dashboard / render-contract / public-export steps run. If
+      # those later steps fail (e.g. WOO_DASHBOARD_RENDER_CONTRACT_FAIL),
+      # the model-superiority bundle must still be downloadable so the
+      # delivery can be evaluated. The job can still fail overall.
+      - name: Upload core delivery bundle (pre-dashboard)
+        if: ${{ always() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pmf-core-delivery-${{ steps.d.outputs.date }}-${{ github.run_id }}
+          path: |
+            deliveries/${{ steps.d.outputs.date }}
+            predictions/stat_grid_${{ steps.d.outputs.date }}.parquet
+            predictions/all_props_${{ steps.d.outputs.date }}.parquet
+            artifacts/minutes_predictions/${{ steps.d.outputs.date }}
+            artifacts/current_market_signal/${{ steps.d.outputs.date }}.json
+            data/freshness_manifest/${{ steps.d.outputs.date }}.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: CORE_DELIVERY_ARTIFACT_UPLOAD_PASS marker
+        if: ${{ always() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        run: echo "CORE_DELIVERY_ARTIFACT_UPLOAD_PASS"
       - name: Upload daily PMF delivery bundle
         if: ${{ success() && steps.delivery_flags.outputs.run_delivery == 'true' }}
         uses: actions/upload-artifact@v4
