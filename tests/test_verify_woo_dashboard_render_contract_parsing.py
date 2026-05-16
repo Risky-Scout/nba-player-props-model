@@ -106,6 +106,72 @@ def test_stat_support_points_empty_when_no_recognised_shape():
     assert mod._stat_support_points({"support": [1, 2], "probs": [0.5]}) == []
 
 
+def test_verifier_does_not_require_model_prob_on_pmf_distribution_rows(tmp_path, monkeypatch):
+    """The dashboard render-contract verifier only enforces
+    ``model_prob`` non-null on ``affiliate_dashboard.json`` rows — the
+    *market-side* artifact. ``pmf_research.json`` rows are PMF
+    distribution rows and must not be probed for ``model_prob``."""
+    import json
+    import sys
+
+    repo = tmp_path
+    date = "2026-05-15"
+
+    aff_dir = repo / "public_export" / "wizard_of_odds" / date
+    aff_dir.mkdir(parents=True)
+    pred_dir = repo / "predictions"
+    pred_dir.mkdir()
+
+    # Market rows DO carry model_prob (verifier requirement for the
+    # affiliate dashboard).
+    aff_rows = [
+        {"player_id": pid, "stat": "pts", "side": "OVER", "model_prob": 0.55}
+        for pid in range(3)
+    ]
+    (aff_dir / "affiliate_dashboard.json").write_text(
+        json.dumps({"rows": aff_rows, "count": len(aff_rows)})
+    )
+
+    # PMF distribution rows DO NOT carry model_prob. The verifier must
+    # tolerate this.
+    pmf_payload = {
+        "players": [
+            {
+                "player": "Bob",
+                "player_id": 1,
+                "stats": [
+                    {
+                        "stat": "pts",
+                        "support": [0, 1, 2],
+                        "probs": [0.25, 0.5, 0.25],
+                    }
+                ],
+            }
+        ],
+        "pmfs": [
+            {
+                "player_id": 1,
+                "stat": "pts",
+                "support": [0, 1, 2],
+                "probs": [0.25, 0.5, 0.25],
+                "mean": 1.0,
+                "variance": 0.5,
+            }
+        ],
+    }
+    (aff_dir / "pmf_research.json").write_text(json.dumps(pmf_payload))
+
+    props_html = "\n".join(["dummy", *mod.REQUIRED_PROPS_PRESENT])
+    pmf_html = "\n".join(["dummy", *mod.REQUIRED_PMF_PRESENT])
+    (pred_dir / "nba-props.html").write_text(props_html)
+    (pred_dir / "nba-pmf-research.html").write_text(pmf_html)
+
+    monkeypatch.setattr(sys, "argv", ["verify", "--date", date])
+    monkeypatch.setattr(mod, "__file__", str(repo / "scripts" / "verify.py"))
+    rc = mod.main()
+    assert rc == 0
+
+
 def test_verifier_passes_on_canonical_shape_fixture(tmp_path, monkeypatch):
     """End-to-end sanity: synthesize a canonical-shape pmf_research.json
     plus matching affiliate_dashboard.json (every row has a non-null

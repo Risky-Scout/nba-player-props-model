@@ -334,6 +334,33 @@ jobs:
             --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $PREDICT_FLAG $FORCE_FLAG
+      # M8.6Q: upload the core model-superiority bundle BEFORE any
+      # downstream WoO publish / dashboard / render-contract steps.
+      # The pipeline above can succeed (canonical / MODEL_ONLY / stat
+      # grid all produced) and the WoO dashboard step can later fail
+      # on the render contract — we still need the bundle downloadable
+      # for diagnosis/evaluation. This upload does NOT make the job
+      # pass; the success-gated bundle below remains the contract.
+      - name: Upload core delivery bundle after pipeline attempt
+        if: ${{ always() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pmf-core-delivery-${{ steps.d.outputs.date }}-${{ github.run_id }}
+          path: |
+            deliveries/${{ steps.d.outputs.date }}/canonical_source/
+            deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/
+            public_export/wizard_of_odds/
+            predictions/stat_grid_${{ steps.d.outputs.date }}.parquet
+            predictions/all_props_${{ steps.d.outputs.date }}.parquet
+            predictions/pmf_research.json
+            artifacts/minutes_predictions/${{ steps.d.outputs.date }}/
+            artifacts/current_market_signal/${{ steps.d.outputs.date }}.json
+            data/freshness_manifest/${{ steps.d.outputs.date }}.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: CORE_DELIVERY_ARTIFACT_UPLOAD_PASS marker
+        if: ${{ always() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        run: echo "CORE_DELIVERY_ARTIFACT_UPLOAD_PASS"
       # Phase 13AM: refresh customer-facing JSON + HTML using the new
       # pipeline so the public export is authoritatively from the new
       # builder, not the legacy build_wizard_of_odds_public_export.py.

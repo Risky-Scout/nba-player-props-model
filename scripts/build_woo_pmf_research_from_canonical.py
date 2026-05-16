@@ -570,16 +570,83 @@ PMF_RESEARCH_MODEL_PROB_PRECEDENCE: tuple[str, ...] = (
     "probability",
 )
 
+# Keys that mark a record as a market-side / bet / render row.
+# A record carrying ANY of these is treated as a renderable bet and
+# REQUIRES a derivable ``model_prob``.
+_MARKET_ROW_SIDE_KEYS: tuple[str, ...] = ("side", "pick_side", "over_under")
+_MARKET_ROW_BOOK_KEYS: tuple[str, ...] = ("book", "sportsbook", "bookmaker")
+_MARKET_ROW_LINE_KEYS: tuple[str, ...] = ("line",)
+_MARKET_ROW_SIDE_PROB_KEYS: tuple[str, ...] = (
+    "model_p_over",
+    "model_p_under",
+    "prob_over",
+    "prob_under",
+    "p_over",
+    "p_under",
+    "model_probability_over",
+    "model_probability_under",
+    "market_over_odds",
+    "market_under_odds",
+)
+
+
+def _has_meaningful(record: Dict[str, Any], keys: Iterable[str]) -> bool:
+    for k in keys:
+        if k not in record:
+            continue
+        v = record[k]
+        if v is None:
+            continue
+        if isinstance(v, float):
+            try:
+                if math.isnan(v):
+                    continue
+            except Exception:
+                pass
+        if isinstance(v, str) and not v.strip():
+            continue
+        return True
+    return False
+
+
+def _classify_pmf_research_record(record: Dict[str, Any]) -> str:
+    """Return ``"distribution"``, ``"market"``, or ``"unknown"``.
+
+    A *distribution* row is a player+stat PMF (support/probs, mean,
+    variance) with no market-side structure. A *market* row carries
+    a side / line / book and is the kind of row that downstream
+    dashboard renderers actually plot edges/EV on — those still
+    require a derivable ``model_prob``. Anything that has neither a
+    PMF distribution nor a market-side structure is ``"unknown"``.
+    """
+    if not isinstance(record, dict):
+        return "unknown"
+    has_distribution = (
+        (isinstance(record.get("support"), list) and isinstance(record.get("probs"), list))
+        or isinstance(record.get("pmf"), (dict, list))
+        or isinstance(record.get("atom_pmf"), (dict, list))
+    )
+    is_market = (
+        _has_meaningful(record, _MARKET_ROW_SIDE_KEYS)
+        and _has_meaningful(record, _MARKET_ROW_LINE_KEYS)
+    ) or _has_meaningful(record, _MARKET_ROW_SIDE_PROB_KEYS) or _has_meaningful(record, _MARKET_ROW_BOOK_KEYS)
+    if is_market:
+        return "market"
+    if has_distribution:
+        return "distribution"
+    return "unknown"
+
 
 def _renderable_model_prob_for_pmf_record(record: Dict[str, Any]) -> Optional[float]:
-    """Best-effort: return a non-null per-record ``model_prob`` for the
-    PMF research payload's per-prop rows.
+    """Return a non-null per-record ``model_prob`` for a *market-side*
+    PMF research row.
 
     The canonical builder preserves ``model_prob_over``/``model_prob_under``
-    in the per-record passthrough. Renderable rows must always carry one
-    of those, or a side-agnostic direct field. Returns ``None`` only when
-    no probability can be derived — the caller emits
-    ``PMF_RESEARCH_RENDER_CONTRACT_FAIL`` in that case.
+    in the per-record passthrough. Returns ``None`` only when no
+    probability can be derived; the caller emits
+    ``WOO_MODEL_PROB_UNMAPPABLE`` in that case. This helper is no
+    longer called for PMF distribution rows (see
+    :func:`_classify_pmf_research_record`).
     """
     for field in PMF_RESEARCH_MODEL_PROB_PRECEDENCE:
         v = record.get(field)
@@ -614,13 +681,48 @@ def _renderable_model_prob_for_pmf_record(record: Dict[str, Any]) -> Optional[fl
             return over_f
         if under_f is not None:
             return 1.0 - under_f
-    # Side-less PMF rows: ``model_prob_over`` is the conventional
-    # canonical-PMF representative probability.
     if over_f is not None:
         return over_f
     if under_f is not None:
         return 1.0 - under_f
     return None
+
+
+def _validate_distribution_row(record: Dict[str, Any]) -> Optional[str]:
+    """Return ``None`` if the distribution row is well-formed, else a
+    short reason string."""
+    if record.get("player_id") in (None, "") and not record.get("player"):
+        return "missing_player_identifier"
+    if not record.get("stat"):
+        return "missing_stat"
+
+    support = record.get("support")
+    probs = record.get("probs")
+    pmf_obj = record.get("pmf") if isinstance(record.get("pmf"), dict) else None
+
+    if isinstance(support, list) and isinstance(probs, list):
+        if len(support) != len(probs):
+            return f"support_probs_length_mismatch({len(support)}!={len(probs)})"
+        if not probs:
+            return "empty_probs"
+        try:
+            total = sum(float(p) for p in probs)
+        except (TypeError, ValueError):
+            return "probs_not_numeric"
+        if not (0.99 <= total <= 1.01):
+            return f"probs_sum_out_of_tolerance({total:.4f})"
+        return None
+
+    if isinstance(pmf_obj, dict) and pmf_obj:
+        try:
+            total = sum(float(v) for v in pmf_obj.values())
+        except (TypeError, ValueError):
+            return "pmf_dict_not_numeric"
+        if not (0.99 <= total <= 1.01):
+            return f"pmf_dict_sum_out_of_tolerance({total:.4f})"
+        return None
+
+    return "no_support_probs_or_pmf"
 
 
 def assert_pmf_research_render_contract(
@@ -630,9 +732,20 @@ def assert_pmf_research_render_contract(
     """Producer-side WoO render-contract check.
 
     Asserts the freshly-written ``pmf_research.json`` is structurally
-    parseable, has non-empty ``rows``/``players``, and every renderable
-    record exposes a usable ``model_prob``. Emits the structured
-    success/failure markers the workflow gates on.
+    parseable, has non-empty ``rows``/``players``, and the renderable
+    contract is met:
+
+      * **Distribution rows** (player+stat PMF — ``support``/``probs``,
+        ``pmf``, or ``atom_pmf``) must have a well-formed support/probs
+        shape and a non-trivial probability sum (~ 1.0). They do NOT
+        require ``model_prob`` because they carry no market-side
+        structure (line/side/book) to render against.
+      * **Market-side rows** (carry ``side``/``line``/``book`` or a
+        side-aware prob field) must have a derivable ``model_prob``
+        from the existing precedence; if not, the contract fails with
+        ``WOO_MODEL_PROB_UNMAPPABLE``.
+
+    Emits the structured success/failure markers the workflow gates on.
     """
     rows = payload.get("pmfs") or payload.get("rows") or payload.get("props") or []
     if not isinstance(rows, list):
@@ -646,8 +759,6 @@ def assert_pmf_research_render_contract(
     if not players:
         raise SystemExit("PMF_RESEARCH_RENDER_CONTRACT_FAIL reason=empty_players")
 
-    # Round-trip every written path so we surface JSON corruption /
-    # encoding errors here instead of at downstream verifier time.
     sample_path = None
     for p in json_paths:
         if Path(p).is_file():
@@ -669,33 +780,69 @@ def assert_pmf_research_render_contract(
                 f"reason=parse_error path={sample_path} exc={type(exc).__name__}:{exc}"
             )
 
-    non_null = 0
-    unmappable: List[Dict[str, Any]] = []
+    pmf_rows = 0
+    market_rows = 0
+    model_prob_required = 0
+    model_prob_non_null = 0
+    bad_distribution: List[Dict[str, Any]] = []
+    unmappable_market: List[Dict[str, Any]] = []
+
     for rec in rows:
         if not isinstance(rec, dict):
-            unmappable.append({"row": rec})
+            bad_distribution.append({"reason": "non_dict_row", "row": rec})
             continue
-        mp = _renderable_model_prob_for_pmf_record(rec)
-        if mp is None:
-            unmappable.append({
+        kind = _classify_pmf_research_record(rec)
+        if kind == "market":
+            market_rows += 1
+            model_prob_required += 1
+            mp = _renderable_model_prob_for_pmf_record(rec)
+            if mp is None:
+                unmappable_market.append({
+                    "player_id": rec.get("player_id"),
+                    "stat": rec.get("stat"),
+                    "line": rec.get("line"),
+                    "book": rec.get("book"),
+                    "side": rec.get("side"),
+                    "present_keys": sorted(k for k in rec.keys() if not k.startswith("_")),
+                })
+                continue
+            rec["model_prob"] = mp
+            model_prob_non_null += 1
+            continue
+
+        # Distribution or unknown row — never required to carry
+        # ``model_prob`` (these are PMF support arrays, not bets).
+        pmf_rows += 1
+        reason = _validate_distribution_row(rec)
+        if reason is not None:
+            bad_distribution.append({
+                "reason": reason,
                 "player_id": rec.get("player_id"),
                 "stat": rec.get("stat"),
-                "line": rec.get("line"),
-                "book": rec.get("book"),
                 "present_keys": sorted(k for k in rec.keys() if not k.startswith("_")),
             })
-            continue
-        rec["model_prob"] = mp
-        non_null += 1
-    if unmappable:
+
+    if bad_distribution:
+        raise SystemExit(
+            "PMF_RESEARCH_RENDER_CONTRACT_FAIL "
+            f"reason=PMF_DISTRIBUTION_MALFORMED rows={len(rows)} "
+            f"bad_distribution={len(bad_distribution)} "
+            f"sample={json.dumps(bad_distribution[:3], default=str)}"
+        )
+    if unmappable_market:
         raise SystemExit(
             "PMF_RESEARCH_RENDER_CONTRACT_FAIL "
             f"reason=WOO_MODEL_PROB_UNMAPPABLE rows={len(rows)} "
-            f"unmappable={len(unmappable)} sample={json.dumps(unmappable[:3], default=str)}"
+            f"market_rows={market_rows} unmappable={len(unmappable_market)} "
+            f"sample={json.dumps(unmappable_market[:3], default=str)}"
         )
+
     print(
         "PMF_RESEARCH_RENDER_CONTRACT_PASS "
-        f"rows={len(rows)} players={len(players)} model_prob_non_null={non_null}"
+        f"rows={len(rows)} players={len(players)} "
+        f"pmf_rows={pmf_rows} market_rows={market_rows} "
+        f"model_prob_required={model_prob_required} "
+        f"model_prob_non_null={model_prob_non_null}"
     )
 
 
