@@ -15,9 +15,10 @@ Design
 We reuse the production calibrators and feature builders. We never
 fabricate. Specifically:
 
-  - The slate's (player_id, game_id) universe comes from
-    `predictions/all_props_{date}.parquet` (the same set the existing
-    delivery is built on).
+  - The slate's (player_id, game_id) universe comes from the **feature
+    snapshot** `data/features/player_prop_features_{date}_morning_expected.parquet`
+    by default (full 12-stat feature surface — not sparse
+    ``predictions/all_props_{date}.parquet``).
   - For each (player, game) we rebuild the same minutes distribution
     and feature row that `scripts/predict.py` would build (exact module
     calls — no shortcut).
@@ -63,7 +64,11 @@ from nba_props_model.data.bdl_client import (  # noqa: E402
     get_games, get_game_odds,
     get_injuries, get_advanced_stats_v2,
     build_game_context_map, build_injury_map,
+    get_nba_injury_report, merge_injury_sources,
     enrich_game_context_with_snapshots,
+)
+from nba_props_model.data.nba_official_injury_report_fetch import (  # noqa: E402
+    peek_last_nba_official_injury_fetch,
 )
 from nba_props_model.features.engineering import (  # noqa: E402
     build_player_game_features,
@@ -75,13 +80,24 @@ from nba_props_model.features.availability_asof import (  # noqa: E402
     load_availability_table as _load_availability_table,
     AvailabilityBuilder as _AvailabilityBuilder,
 )
-from nba_props_model.pipelines.pmf_predict import build_prop_pmfs  # noqa: E402
+from nba_props_model.pipelines.pmf_predict import (  # noqa: E402
+    build_prop_pmfs,
+    ensure_mission_combos_present,
+    MISSION_COMBOS,
+)
 from nba_props_model.calibration.source_pmf_recalibration import (  # noqa: E402
     load_stat_grid_delivery_recalibrator,
 )
 from nba_props_model.calibration.role_buckets import role_bucket_features_from_minutes_dist  # noqa: E402
 from nba_props_model.paths import MODEL_DIR  # noqa: E402
 from nba_props_model.targets import MISSION_REQUIRED_TARGETS_CANONICAL  # noqa: E402
+from nba_props_model.pipelines.player_game_eligibility import (  # noqa: E402
+    assert_no_ineligible_pmfs,
+)
+from nba_props_model.pipelines._stat_grid_eligibility_gate import (  # noqa: E402
+    build_eligibility_map,
+)
+
 
 PRED_DIR = REPO_ROOT / "predictions"
 DATA_DIR = REPO_ROOT / "data"
@@ -105,6 +121,20 @@ ALLOWED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 # PMFs and MUST NOT carry legacy convolution/independence model_version tags.
 M8_5_MISSION_COMBOS = frozenset({"stocks", "pa", "pr", "ra", "pra"})
 M8_5_LEGACY_COMBO_TAGS = ("stocks_conv_v1", "combo_independence_v1")
+
+# Generation contract: base PMFs first, then joint-sampled mission combos.
+STAT_GRID_BASE_STATS_ORDER = (
+    "pts", "reb", "ast", "fg3m", "tov", "stl", "blk",
+)
+
+
+def _stat_grid_emission_order(requested: Iterable[str]) -> list[str]:
+    """Emit base stats before combos; remaining stats last (deterministic)."""
+    req_set = set(requested)
+    base = [s for s in STAT_GRID_BASE_STATS_ORDER if s in req_set]
+    combo_seq = [s for s in MISSION_COMBOS if s in req_set]
+    rest = sorted(s for s in req_set if s not in set(base) | set(combo_seq))
+    return base + combo_seq + rest
 
 
 def _display_path(path: Path) -> str:
@@ -172,6 +202,29 @@ def _pmf_summary(pmf: np.ndarray) -> dict:
     return {"mean": mean, "median": median, "mode": mode,
             "support_max": int(K - 1) if K > 0 else 0,
             "pmf_sum": s}
+
+
+def _default_morning_expected_feature_path(target_date: str) -> Path:
+    return (
+        DATA_DIR / "features"
+        / f"player_prop_features_{target_date}_morning_expected.parquet"
+    )
+
+
+def _slate_keys_from_feature_snapshot(feature_path: Path) -> list[tuple[int, int]]:
+    """Unique eligible (player_id, game_id) pairs from the feature parquet."""
+    df = pd.read_parquet(feature_path)
+    if "player_id" not in df.columns or "game_id" not in df.columns:
+        raise SystemExit(
+            f"FATAL: feature snapshot missing player_id/game_id columns: {feature_path}"
+        )
+    sub = df.dropna(subset=["player_id", "game_id"]).copy()
+    if sub.empty:
+        return []
+    sub["player_id"] = sub["player_id"].astype(int)
+    sub["game_id"] = sub["game_id"].astype(int)
+    pairs = set(zip(sub["player_id"].tolist(), sub["game_id"].tolist()))
+    return sorted(pairs)
 
 
 def _slate_keys_from_all_props(all_props_path: Path) -> list[tuple[int, int]]:
@@ -312,12 +365,34 @@ def _build_pipeline_state(target_date: str) -> dict:
     ctx_map = build_game_context_map(today_odds_raw) if today_odds_raw else {}
     ctx_map = enrich_game_context_with_snapshots(ctx_map, games, target_date)
 
-    print("  fetching injuries (BDL only)…")
+    print("  fetching injuries (BDL + NBA official)…")
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
+    slate_teams: set[str] = set()
+    for g in games:
+        for key in ("home_team", "visitor_team"):
+            t = g.get(key) or {}
+            fn = t.get("full_name")
+            if fn:
+                slate_teams.add(str(fn))
+    nba_report = get_nba_injury_report(
+        slate_date=target_date,
+        slate_team_full_names=slate_teams if slate_teams else None,
+        repo_root=REPO_ROOT,
+    )
     injury_report_fetched_at_utc = _now_utc_iso()
-    injury_freshness_status = "fresh" if injury_raw else "unknown"
-    injury_context_source = "bdl_injuries_only" if injury_raw else "none"
+    _nba_meta = peek_last_nba_official_injury_fetch()
+    if _nba_meta and _nba_meta.injury_dict:
+        injury_freshness_status = _nba_meta.injury_freshness_status
+    elif nba_report:
+        injury_freshness_status = "latest_valid_report_selected"
+    else:
+        injury_freshness_status = "unknown"
+    injury_context_source = (
+        "bdl_plus_nba_official" if nba_report
+        else ("bdl_injuries_only" if injury_raw else "none")
+    )
+    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
     inactive_ids = {
         int(pid) for pid, info in injury_map.items()
         if str(info.get("status", "")).lower().strip() in _INACTIVE_STATUSES
@@ -387,10 +462,19 @@ def _build_pipeline_state(target_date: str) -> dict:
 
 
 def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
-                            state: dict, fg3m_model, stats: list[str], recalibrator=None) -> list[dict]:
+                            state: dict, fg3m_model, stats: list[str], recalibrator=None,
+                            eligibility_row=None) -> list[dict]:
     """Compute PMFs for one (player, game). Returns list of canonical
     delivery rows — one per stat in `stats` — or an empty list if the
-    feature build / minutes model fails."""
+    feature build / minutes model fails.
+
+    ``eligibility_row`` (dict | None): when provided, the canonical
+    eligibility / minutes columns are stamped onto every emitted PMF
+    row so downstream (canonical_source, review, derek) can rely on
+    them without re-deriving. The upstream eligibility gate guarantees
+    that ``eligibility_row['player_game_eligible']`` is True for every
+    (player_id, game_id) reaching this function.
+    """
     if player_id in state["inactive_player_ids"]:
         return []
     game = state["games_by_id"].get(gid)
@@ -489,13 +573,34 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
         pmf_pack = build_prop_pmfs(
             minutes_dist=mp_dist, feature_row=base,
             fg3m_hurdle_model=fg3m_model, rng=rng,
+            stat_grid_mode=True,
         )
+    except RuntimeError as e:
+        if "TOV_MISSING_FROM_STAT_GRID_SOURCE" in str(e):
+            raise SystemExit(f"FATAL: {e}") from e
+        raise
     except Exception:
         return []
 
+    # M8.6: synthesize mission combos via joint samples before row emission
+    # (defense in depth if the primary path omitted combo keys).
+    try:
+        ensure_mission_combos_present(
+            pmf_pack,
+            minutes_dist=mp_dist,
+            feature_row=base,
+            fg3m_hurdle_model=fg3m_model,
+            rng=rng,
+        )
+    except RuntimeError as e:
+        msg = str(e)
+        if "COMBO_PMF_SYNTHESIS_FAILED" not in msg:
+            msg = f"COMBO_PMF_SYNTHESIS_FAILED: {msg}"
+        raise SystemExit(f"FATAL: {msg}") from e
+
     player_name = str(pdata.iloc[-1].get("player_name", f"Player {player_id}"))
     out_rows: list[dict] = []
-    for stat in stats:
+    for stat in _stat_grid_emission_order(stats):
         prop = pmf_pack.get(stat)
         if prop is None or prop.pmf is None:
             # M8.5: per-player missing for mission combos is a
@@ -543,6 +648,11 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
 
         s = _pmf_summary(pmf_out)
         recal_applied = bool(recal_meta.get("source_recalibration_applied", False))
+        # Eligibility row carries the canonical-shape minutes/role/
+        # market columns the upstream eligibility gate computed. Stamp
+        # them onto every emitted PMF row so canonical_source can be
+        # validated by a simple column-presence + truthiness check.
+        elig = eligibility_row or {}
         out_rows.append({
             "player_id": int(player_id),
             "player_name": player_name,
@@ -555,9 +665,22 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
             "role_source": role_source,
             "mp_bucket": mp_bucket_val,
             "usage_bucket": usage_bucket_val,
-            "minutes_mean": minutes_mean,
-            "minutes_q50": minutes_q50,
-            "p_inactive_used": p_inactive_used,
+            "slate_date": str(target_date),
+            "minutes_mean": elig.get("minutes_mean", minutes_mean),
+            "minutes_q50": elig.get("minutes_p50", minutes_q50),
+            "minutes_p10": elig.get("minutes_p10"),
+            "minutes_p50": elig.get("minutes_p50", minutes_q50),
+            "minutes_p90": elig.get("minutes_p90"),
+            "minutes_std": elig.get("minutes_std"),
+            "p_inactive_used": elig.get("p_inactive_used", p_inactive_used),
+            "rotation_probability": elig.get("rotation_probability"),
+            "starter_probability": elig.get("starter_probability"),
+            "projected_role": elig.get("projected_role"),
+            "player_game_eligible": bool(elig.get("player_game_eligible", True)),
+            "eligibility_reason": elig.get("eligibility_reason"),
+            "has_current_market_line": bool(elig.get("has_current_market_line", False)),
+            "minutes_source": elig.get("minutes_source"),
+            "minutes_model_version": elig.get("minutes_model_version"),
             "injury_freshness_status": state.get("injury_freshness_status"),
             "injury_context_source": state.get("injury_context_source"),
             "injury_report_fetched_at_utc": state.get("injury_report_fetched_at_utc"),
@@ -597,7 +720,7 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
     return out_rows
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--date", required=True,
                      help="YYYY-MM-DD slate date (US/Eastern)")
@@ -606,10 +729,16 @@ def main() -> int:
                      help=("stats to emit (default: 12-stat mission "
                            "canonical [pts reb ast fg3m tov stl blk "
                            "stocks pa pr ra pra])"))
-    ap.add_argument("--slate-source", choices=["recent_rosters", "all_props"],
-                    default="recent_rosters",
-                    help=("player-game slate source; default recent_rosters "
-                          "keeps PMF-only delivery independent of market rows"))
+    ap.add_argument(
+        "--slate-source",
+        choices=["feature_snapshot_morning_expected", "recent_rosters", "all_props"],
+        default="feature_snapshot_morning_expected",
+        help=(
+            "Slate (player_id, game_id) source: feature snapshot "
+            "(default morning_expected parquet), recent_rosters, or all_props "
+            "(legacy sparse market parquet — not recommended)."
+        ),
+    )
     ap.add_argument("--max-players-per-team", type=int, default=18,
                     help="recent-roster candidates per team for PMF-only slate")
     ap.add_argument("--all-props",
@@ -623,9 +752,13 @@ def main() -> int:
     ap.add_argument(
         "--feature-snapshot",
         default=None,
-        help="Optional player-prop feature snapshot parquet to merge on player_id/stat.",
+        help=(
+            "Feature snapshot parquet: defines slate keys when set (overrides "
+            "default morning_expected path), and is merged on player_id/stat "
+            "when columns allow."
+        ),
     )
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     target_date = args.date
     if not os.environ.get("BDL_API_KEY", "").strip():
@@ -641,9 +774,35 @@ def main() -> int:
         args.all_props or PRED_DIR / f"all_props_{target_date}.parquet"
     )
 
-    if args.slate_source == "all_props":
+    resolved_feature_slate: Path | None = None
+    if args.slate_source == "feature_snapshot_morning_expected":
+        resolved_feature_slate = (
+            Path(args.feature_snapshot)
+            if args.feature_snapshot
+            else _default_morning_expected_feature_path(target_date)
+        )
+        if not resolved_feature_slate.is_absolute():
+            resolved_feature_slate = REPO_ROOT / resolved_feature_slate
+        if not resolved_feature_slate.is_file():
+            print(
+                f"FATAL: feature snapshot slate missing: {resolved_feature_slate}",
+                file=sys.stderr,
+            )
+            return 1
+        keys = _slate_keys_from_feature_snapshot(resolved_feature_slate)
+        try:
+            slate_source_label = str(
+                resolved_feature_slate.resolve().relative_to(REPO_ROOT.resolve())
+            )
+        except Exception:
+            slate_source_label = str(resolved_feature_slate)
+    elif args.slate_source == "all_props":
         if not all_props_path.exists():
-            print(f"FATAL: {all_props_path} missing and --slate-source all_props was requested")
+            print(
+                f"FATAL: {all_props_path} missing and --slate-source all_props "
+                "was requested",
+                file=sys.stderr,
+            )
             return 1
         keys = _slate_keys_from_all_props(all_props_path)
         slate_source_label = str(all_props_path.relative_to(REPO_ROOT))
@@ -663,7 +822,18 @@ def main() -> int:
     print(f" output : {_display_path(out_path)}")
     print("=" * 72)
 
-    print(f" slate (player_id, game_id) pairs: {len(keys)}")
+    print(" slate (player_id, game_id) pairs: " + str(len(keys)))
+    # Upstream player-game eligibility gate. Filter the slate to player-games
+    # passing the rule (market line OR projected starter/rotation OR
+    # minutes_mean >= 12) BEFORE any PMF is built. See
+    # src/nba_props_model/pipelines/player_game_eligibility.py for the rule.
+    eligibility_by_key = build_eligibility_map(REPO_ROOT, target_date, keys)
+    eligible_keys = [k for k in keys if k in eligibility_by_key]
+    print("  eligibility-filtered slate kept " + str(len(eligible_keys))
+          + " of " + str(len(keys)) + " candidates")
+    if not eligible_keys:
+        print(" WARN: zero player-games passed eligibility; nothing to compute.")
+        return 1
     if not keys:
         print(" WARN: empty slate — nothing to compute.")
         return 1
@@ -679,11 +849,12 @@ def main() -> int:
 
     rows: list[dict] = []
     skipped = 0
-    for pid, gid in keys:
+    for pid, gid in eligible_keys:
         produced = _row_for_player_game(
             pid, gid, target_date=target_date, state=state,
             fg3m_model=fg3m_model, stats=args.stats,
             recalibrator=recalibrator,
+            eligibility_row=eligibility_by_key.get((pid, gid)),
         )
         if not produced:
             skipped += 1
@@ -697,8 +868,15 @@ def main() -> int:
         return 1
 
     df = pd.DataFrame(rows)
-    if args.feature_snapshot:
-        snap_path = Path(args.feature_snapshot)
+    assert_no_ineligible_pmfs(df, label="stat_grid_pmfs")
+    merge_snap = args.feature_snapshot or (
+        str(resolved_feature_slate)
+        if args.slate_source == "feature_snapshot_morning_expected"
+        and resolved_feature_slate is not None
+        else None
+    )
+    if merge_snap:
+        snap_path = Path(merge_snap)
         if not snap_path.is_absolute():
             snap_path = REPO_ROOT / snap_path
         if not snap_path.is_file():
@@ -739,4 +917,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(None))

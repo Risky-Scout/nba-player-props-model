@@ -416,8 +416,29 @@ jobs:
             --predict-cron-hour-utc 13 \
             --mode "woo_morning_monetization" \
             $FORCE_PREDICT_ARG
+      - name: Delivery pipeline gate flags (forced manual bypass)
+        id: delivery_flags
+        if: always()
+        run: |
+          GATE="${{ steps.predict_gate.outputs.should_proceed }}"
+          FORCE_MANUAL=false
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ "${{ github.event.inputs.mode }}" = "woo_morning_monetization" ] && \
+             [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_MANUAL=true
+          fi
+          if [ "$GATE" = "true" ] || [ "$FORCE_MANUAL" = "true" ]; then
+            echo "run_delivery=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_delivery=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Fail when forced manual delivery pipeline would not run
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'woo_morning_monetization' && github.event.inputs.force_run == 'true' && steps.delivery_flags.outputs.run_delivery != 'true' }}
+        run: |
+          echo "FATAL: DELIVERY_PIPELINE_SKIPPED_IN_FORCED_MANUAL_RUN"
+          exit 1
       - name: Run delivery pipeline (woo_morning_monetization)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -437,18 +458,45 @@ jobs:
             --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $PREDICT_FLAG $FORCE_FLAG
+      # M8.6Q: upload the core model-superiority bundle BEFORE any
+      # downstream WoO publish / dashboard / render-contract steps.
+      # The pipeline above can succeed (canonical / MODEL_ONLY / stat
+      # grid all produced) and the WoO dashboard step can later fail
+      # on the render contract — we still need the bundle downloadable
+      # for diagnosis/evaluation. This upload does NOT make the job
+      # pass; the success-gated bundle below remains the contract.
+      - name: Upload core delivery bundle after pipeline attempt
+        if: ${{ always() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pmf-core-delivery-${{ steps.d.outputs.date }}-${{ github.run_id }}
+          path: |
+            deliveries/${{ steps.d.outputs.date }}/canonical_source/
+            deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/
+            public_export/wizard_of_odds/
+            predictions/stat_grid_${{ steps.d.outputs.date }}.parquet
+            predictions/all_props_${{ steps.d.outputs.date }}.parquet
+            predictions/pmf_research.json
+            artifacts/minutes_predictions/${{ steps.d.outputs.date }}/
+            artifacts/current_market_signal/${{ steps.d.outputs.date }}.json
+            data/freshness_manifest/${{ steps.d.outputs.date }}.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: CORE_DELIVERY_ARTIFACT_UPLOAD_PASS marker
+        if: ${{ always() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        run: echo "CORE_DELIVERY_ARTIFACT_UPLOAD_PASS"
       # Phase 13AM: refresh customer-facing JSON + HTML using the new
       # pipeline so the public export is authoritatively from the new
       # builder, not the legacy build_wizard_of_odds_public_export.py.
       - name: Phase 13AM WoO new pipeline (publish/build/verify)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         run: |
           python3 scripts/publish_woo_public_export.py     --date ${{ steps.d.outputs.date }}
           python3 scripts/build_woo_dashboard.py            --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_dashboard_render_contract.py --date ${{ steps.d.outputs.date }}
           python3 scripts/verify_woo_public_export_contract.py    --date ${{ steps.d.outputs.date }}
       - name: M8.6 post-delivery verifiers
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         env:
           PYTHONPATH: src
         run: |
@@ -460,13 +508,61 @@ jobs:
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
       - name: M8.6 morning completeness + OddsAPI/BDL coverage (slate date)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         env:
           PYTHONPATH: src
         run: |
           D="${{ steps.d.outputs.date }}"
           python3 scripts/verify_morning_delivery_completeness.py --date "$D"
           python3 scripts/verify_oddsapi_bdl_full_prop_coverage.py --date "$D" --snapshot-substr auto --ensure-audit
+      - name: Forced manual delivery outputs assertion
+        if: always()
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ "${{ github.event.inputs.mode }}" = "woo_morning_monetization" ] && \
+             [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+
+            D="${{ steps.d.outputs.date }}"
+            test -f "deliveries/$D/manifest.json" || {
+              echo "FATAL: DELIVERY_MANIFEST_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            test -f "deliveries/$D/canonical_source/all_props_model_only.parquet" || {
+              echo "FATAL: ALL_PROPS_MODEL_ONLY_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            test -f "deliveries/$D/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet" || {
+              echo "FATAL: PLAYER_PROP_PMFS_MODEL_ONLY_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            test -f "deliveries/$D/wizard_of_odds/market_comparison.parquet" || {
+              echo "FATAL: MARKET_COMPARISON_MISSING_AFTER_FORCED_RUN"
+              exit 1
+            }
+
+            echo "FORCED_MANUAL_DELIVERY_RUN_ASSERTION_PASS"
+          fi
+      - name: Upload daily PMF delivery bundle
+        if: ${{ success() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pmf-delivery-${{ steps.d.outputs.date }}-${{ github.run_id }}
+          path: |
+            deliveries/${{ steps.d.outputs.date }}
+            predictions/stat_grid_${{ steps.d.outputs.date }}.parquet
+            predictions/all_props_${{ steps.d.outputs.date }}.parquet
+            artifacts/minutes_predictions/${{ steps.d.outputs.date }}
+            artifacts/current_market_signal/${{ steps.d.outputs.date }}.json
+            artifacts/injury_report_selection/${{ steps.d.outputs.date }}.json
+            data/freshness_manifest/${{ steps.d.outputs.date }}.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: DELIVERY_ARTIFACT_UPLOAD_PASS marker
+        if: ${{ success() && steps.delivery_flags.outputs.run_delivery == 'true' }}
+        run: echo "DELIVERY_ARTIFACT_UPLOAD_PASS"
       - name: Upload diagnostics on failure (woo morning)
         if: failure()
         uses: actions/upload-artifact@v4
@@ -477,7 +573,7 @@ jobs:
             artifacts/automation_health
             artifacts/model_diagnostics
       - name: Stage and commit approved files
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.delivery_flags.outputs.run_delivery == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
@@ -605,6 +701,7 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode woo_afternoon_refresh \
             --regions us us2 \
+            --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
@@ -776,6 +873,7 @@ jobs:
             --date $DATE \
             --mode derek_pre_tipoff_refresh \
             --regions us us2 \
+            --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
 
@@ -956,6 +1054,7 @@ jobs:
             --date ${{ steps.d.outputs.date }} \
             --mode close_lock \
             --regions us us2 \
+            --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $FORCE_FLAG
       # Phase 13AM: refresh customer-facing JSON + HTML using the new pipeline.
@@ -1165,7 +1264,7 @@ jobs:
         run: |
           python scripts/build_rolling_market_benchmark.py \
             --as-of-date ${{ steps.d.outputs.date }} \
-            --window-days 28 || echo "::warning::rolling market benchmark insufficient_sample"
+            --window-days 28 || echo "::notice::rolling market benchmark insufficient_sample"
       - name: Phase 13AA — PMF variance experience study (non-blocking)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         # Runs after after-game scoring so settled outcomes are joined.
@@ -1178,10 +1277,10 @@ jobs:
             --as-of-date ${{ steps.d.outputs.date }} \
             --lookback-days 60 \
             --min-bucket-n 30 || \
-            echo "::warning::pmf variance experience study insufficient_sample_or_missing_inputs"
+            echo "::notice::pmf variance experience study insufficient_sample_or_missing_inputs"
           python scripts/verify_pmf_variance_experience_study.py \
             --as-of-date ${{ steps.d.outputs.date }} || \
-            echo "::warning::pmf variance experience verifier WARN/FAILED — see step log"
+            echo "::notice::pmf variance experience verifier WARN/FAILED — see step log"
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |

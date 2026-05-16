@@ -80,6 +80,7 @@ try:
         get_player_game_stats, get_games, get_game_odds,
         get_injuries, get_advanced_stats_v2,
         build_game_context_map, build_injury_map,
+        get_nba_injury_report, merge_injury_sources,
         parse_props_for_game,
         enrich_game_context_with_snapshots,
     )
@@ -124,6 +125,8 @@ except ImportError as e:
 # ── Paths ──────────────────────────────────────────────────────────────────────
 
 from nba_props_model.paths import DATA_DIR, MODEL_DIR, PRED_DIR  # noqa: E402
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -516,7 +519,35 @@ def save_all_props_snapshot(rows: list, target_date: str):
 
     out_path = PRED_DIR / f"all_props_{target_date}.parquet"
     df = pd.DataFrame(rows).copy()
+    if "slate_date" not in df.columns:
+        df["slate_date"] = str(target_date)
 
+    if "market_over_odds" not in df.columns and "over_odds" in df.columns:
+        df["market_over_odds"] = df["over_odds"]
+    if "market_under_odds" not in df.columns and "under_odds" in df.columns:
+        df["market_under_odds"] = df["under_odds"]
+    if "book" not in df.columns:
+        if "bet_vendor" in df.columns:
+            df["book"] = df["bet_vendor"]
+        elif "source_book" in df.columns:
+            df["book"] = df["source_book"]
+
+    if "market_no_vig_over_prob" not in df.columns and "market_prob" in df.columns:
+        df["market_no_vig_over_prob"] = df["market_prob"]
+
+    for col in ("game_id", "player_id"):
+        if col not in df.columns:
+            sample = df.head(8).to_dict("records") if len(df) else []
+            raise SystemExit(
+                "CURRENT_MARKET_SIGNAL_UNMAPPABLE_KEYS "
+                f"missing identity column {col!r} in all_props snapshot sample_rows={sample!r}"
+            )
+        if df[col].isna().any():
+            sample = df[df[col].isna()].head(8).to_dict("records") if len(df) else []
+            raise SystemExit(
+                "CURRENT_MARKET_SIGNAL_UNMAPPABLE_KEYS "
+                f"missing/null {col} in all_props snapshot rows sample_rows={sample!r}"
+            )
     def _jsonify(x):
         if isinstance(x, (dict, list, tuple, set)):
             return json.dumps(x, default=str)
@@ -533,6 +564,63 @@ def save_all_props_snapshot(rows: list, target_date: str):
         fallback = out_path.with_suffix(".jsonl")
         df.to_json(fallback, orient="records", lines=True)
         logger.warning(f"Parquet save failed ({e}); wrote {fallback} instead")
+
+
+def write_no_game_outputs(target_date: str) -> None:
+    """Emit explicit no-game artifacts so downstream jobs can valid-skip."""
+    reason = "no_games_slate"
+
+    # Keep parquet schema minimally compatible with downstream verifiers.
+    all_props_path = PRED_DIR / f"all_props_{target_date}.parquet"
+    empty_cols = [
+        "slate_date",
+        "player_id",
+        "game_id",
+        "stat",
+        "line",
+        "model_prob",
+        "pmf",
+    ]
+    pd.DataFrame(columns=empty_cols).to_parquet(all_props_path, index=False)
+
+    generated_at = datetime.utcnow().isoformat()
+    singles_out = {
+        "date": target_date,
+        "generated_at": generated_at,
+        "version": "2026-03-17-v13",
+        "total_picks": 0,
+        "picks": [],
+        "reason": reason,
+    }
+    with open(PRED_DIR / f"singles_{target_date}.json", "w") as f:
+        json.dump(singles_out, f, indent=2, default=str)
+
+    pmf_display = {
+        "date": target_date,
+        "generated_at": generated_at,
+        "props": [],
+        "reason": reason,
+    }
+    with open(PRED_DIR / f"pmf_display_{target_date}.json", "w") as f:
+        json.dump(pmf_display, f, indent=2, default=str)
+
+    sgps_out = {
+        "date": target_date,
+        "generated_at": generated_at,
+        "version": "2026-03-17-v13",
+        "two_leg": 0,
+        "three_leg": 0,
+        "sgps": [],
+        "reason": reason,
+    }
+    with open(PRED_DIR / f"sgps_{target_date}.json", "w") as f:
+        json.dump(sgps_out, f, indent=2, default=str)
+
+    logger.info(
+        "No-game slate artifacts written for %s (reason=%s)",
+        target_date,
+        reason,
+    )
 
 
 # ── Console summary ────────────────────────────────────────────────────────────
@@ -986,7 +1074,8 @@ def main(argv=None):
     logger.info(f"Fetching today's games ({target_date})...")
     games = get_games(start_date=target_date, end_date=target_date)
     if not games:
-        logger.warning("No games today.")
+        logger.info("No games today.")
+        write_no_game_outputs(target_date)
         return 0
     # Phase 13M-bis: filter slate to one game in Derek live-snapshot mode.
     if derek and derek_game_id_filter:
@@ -1009,12 +1098,26 @@ def main(argv=None):
     injury_raw = get_injuries()
     injury_map = build_injury_map(injury_raw) if injury_raw else {}
     logger.info(f"  {len(injury_map)} BDL injury records")
+    slate_teams: set[str] = set()
+    for g in games:
+        for key in ("home_team", "visitor_team"):
+            t = g.get(key) or {}
+            fn = t.get("full_name")
+            if fn:
+                slate_teams.add(str(fn))
+    nba_report = get_nba_injury_report(
+        slate_date=target_date,
+        slate_team_full_names=slate_teams if slate_teams else None,
+        repo_root=REPO_ROOT,
+    )
+    # Merge with NBA official injury report (more current, covers game-time decisions)
+    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
     INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
     inactive_player_ids = {
         pid for pid, info in injury_map.items()
         if str(info.get("status","")).lower().strip() in INACTIVE_STATUSES
     }
-    logger.info(f"  {len(inactive_player_ids)} players marked inactive (BDL)")
+    logger.info(f"  {len(inactive_player_ids)} players marked inactive (BDL + NBA official)")
 
     logger.info("Fetching prop lines...")
     prop_map = {}
@@ -1034,12 +1137,16 @@ def main(argv=None):
     all_singles = []
 
     for game in games:
-        gid     = game.get("id")
+        gid = game.get("id")
+        if not gid:
+            continue
         home_id = (game.get("home_team") or {}).get("id") or game.get("home_team_id")
-        vis_id  = (game.get("visitor_team") or {}).get("id") or game.get("visitor_team_id")
+        vis_id = (game.get("visitor_team") or {}).get("id") or game.get("visitor_team_id")
         home_nm = (game.get("home_team") or {}).get("full_name", "")
-        vis_nm  = (game.get("visitor_team") or {}).get("full_name", "")
-        glabel  = f"{vis_nm} @ {home_nm}"
+        vis_nm = (game.get("visitor_team") or {}).get("full_name", "")
+        home_abbr = (game.get("home_team") or {}).get("abbreviation", "") or ""
+        vis_abbr = (game.get("visitor_team") or {}).get("abbreviation", "") or ""
+        glabel = f"{vis_nm} @ {home_nm}"
         ctx     = ctx_map.get(gid, {})
 
         player_ids = list(set(pid for (pid, pg, _) in prop_map if pg == gid))
@@ -1087,6 +1194,9 @@ def main(argv=None):
             except Exception as e:
                 logger.warning(f"Feature error player={player_id}: {e}")
                 continue
+
+            team_abbr = home_abbr if is_home else vis_abbr
+            opp_abbr = vis_abbr if is_home else home_abbr
 
             player_name = str(pdata.iloc[-1].get("player_name", f"Player {player_id}"))
             ub = usage_bucket(float(base.get("adv_usage_percentage_mean_last10") or 0))
@@ -1305,11 +1415,14 @@ def main(argv=None):
                     raw_edge_val= (prob - novig_over) if side=="OVER" else (prob - novig_under)
 
                     all_singles.append({
+                        "slate_date":   target_date,
                         "player_id":    player_id,
                         "player_name":  player_name,
                         "game_id":      gid,
                         "game":         glabel,
                         "team_id":      team_id,
+                        "team":         team_abbr,
+                        "opponent":     opp_abbr,
                         "stat":         target,
                         "side":         side,
                         "line":         line,
@@ -1653,6 +1766,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    import sys as _sys
-
-    raise SystemExit(main(_sys.argv[1:]))
+    main()

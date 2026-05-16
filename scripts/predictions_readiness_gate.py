@@ -107,9 +107,14 @@ def _emit(line: str) -> None:
 
 
 def _is_no_game_slate(date: str) -> bool:
-    """Return True when BDL reports no games for the target slate date."""
+    """Return True when BDL reports no games for the target slate date.
+
+    Uses ``start_date=date, end_date=date`` so the window is exactly the
+    requested slate; a positional ``get_games(date)`` only constrains
+    ``start_date``, which can leak future games into the check.
+    """
     try:
-        games = get_games(date)
+        games = get_games(start_date=date, end_date=date)
         return len(games) == 0
     except Exception as exc:
         _emit(

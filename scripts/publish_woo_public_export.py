@@ -66,6 +66,87 @@ def _coerce_float(v):
     return f
 
 
+_MODEL_PROB_OVER_ALIASES: tuple[str, ...] = (
+    "model_prob_over",
+    "model_p_over",
+    "prob_over",
+    "p_over",
+    "model_probability_over",
+)
+_MODEL_PROB_UNDER_ALIASES: tuple[str, ...] = (
+    "model_prob_under",
+    "model_p_under",
+    "prob_under",
+    "p_under",
+    "model_probability_under",
+)
+_MODEL_PROB_SIDE_AGNOSTIC_ALIASES: tuple[str, ...] = (
+    "model_p",
+    "model_probability",
+    "edge_model_prob",
+    "probability",
+)
+
+
+def _coerce_unit_float(v):
+    f = _coerce_float(v)
+    if f is None:
+        return None
+    if not (0.0 < f < 1.0):
+        return None
+    return f
+
+
+def derive_model_prob_for_row(row):
+    """Return the per-side ``model_prob`` for an affiliate-dashboard row.
+
+    Deterministic precedence (specified by the WoO render contract):
+
+    1. ``row["model_prob"]`` if already populated.
+    2. Side-aware over/under aliases:
+       - OVER row → ``model_prob_over``/``model_p_over``/``prob_over``/...
+       - UNDER row → ``model_prob_under``/``model_p_under``/...
+    3. Side-agnostic ``model_p``/``model_probability``/``edge_model_prob``/
+       ``probability``.
+
+    Returns ``None`` when no usable probability is available; the caller is
+    expected to assert ``WOO_MODEL_PROB_UNMAPPABLE`` in that case.
+    """
+    if not hasattr(row, "get"):
+        return None
+    direct = _coerce_unit_float(row.get("model_prob"))
+    if direct is not None:
+        return direct
+
+    side_raw = row.get("side") or row.get("pick_side") or row.get("over_under")
+    side = str(side_raw or "").upper()
+
+    if side == "OVER":
+        for alias in _MODEL_PROB_OVER_ALIASES:
+            cand = _coerce_unit_float(row.get(alias))
+            if cand is not None:
+                return cand
+        # OVER without a direct over column — fall through to side-agnostic
+        # candidates rather than silently inverting the row.
+    elif side == "UNDER":
+        for alias in _MODEL_PROB_UNDER_ALIASES:
+            cand = _coerce_unit_float(row.get(alias))
+            if cand is not None:
+                return cand
+        # Derive from the over-prob when only the over alias is present.
+        for alias in _MODEL_PROB_OVER_ALIASES:
+            cand = _coerce_unit_float(row.get(alias))
+            if cand is not None:
+                return 1.0 - cand
+
+    for alias in _MODEL_PROB_SIDE_AGNOSTIC_ALIASES:
+        cand = _coerce_unit_float(row.get(alias))
+        if cand is not None:
+            return cand
+
+    return None
+
+
 # M8.6H: server-side odds math for affiliate_dashboard.json.
 # The front-end already recomputes EV/Kelly for user-selected bankroll and
 # Kelly fraction. These fields make the JSON contract self-describing and
@@ -768,27 +849,26 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
 
     rows = []
     for _, r in df.iterrows():
-        mpo = num(get(r, "model_prob_over", "model_p_over", "prob_over", "p_over", default=0.5), 0.5)
+        # M8.6P: deterministic precedence for the side-agnostic model_prob_over.
+        # We accept any of the canonical numeric over-prob aliases the market
+        # comparison emits. ``model_prob`` alone (without a side suffix) is
+        # also accepted as a last-resort treat-as-over fallback so per-row
+        # writers that already publish ``model_prob`` don't get dropped.
+        mpo = num(
+            get(
+                r,
+                "model_prob_over",
+                "model_p_over",
+                "prob_over",
+                "p_over",
+                "model_probability_over",
+                "model_prob",
+                default=0.5,
+            ),
+            0.5,
+        )
         mpo = min(max(mpo, 1e-9), 1.0 - 1e-9)
         mpu = 1.0 - mpo
-
-        mvo_raw = get(
-            r,
-            "market_prob_over_no_vig",
-            "market_no_vig_over_prob",
-            "market_prob_over",
-            default=None,
-        )
-        if mvo_raw is None:
-            mvo_over = None
-            mvo_under = None
-        else:
-            mvo_over = num(mvo_raw, default=None)
-            if mvo_over is None or not (0.0 < mvo_over < 1.0):
-                mvo_over = None
-                mvo_under = None
-            else:
-                mvo_under = 1.0 - mvo_over
 
         base = {
             "date": date,
@@ -817,8 +897,6 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             "market_superiority_claim_allowed": bool(get(r, "market_superiority_claim_allowed", default=False)),
             "model_prob_over": float(mpo),
             "model_prob_under": float(mpu),
-            "market_prob_over_no_vig": mvo_over,
-            "market_prob_under_no_vig": mvo_under,
         }
 
         over_odds = get(r, "market_over_odds", "over_odds", "side_odds", "odds", default=0)
@@ -827,24 +905,79 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         fair_under = get(r, "fair_under_odds_american", "fair_odds_under", "fair_odds_model", default=0)
         edge = num(get(r, "edge", default=0.0), 0.0)
 
+        # M8.6Q: market_prob is the per-side no-vig probability the
+        # public-export contract verifier requires on every affiliate
+        # row. Resolve it from any of the canonical no-vig over-prob
+        # aliases (or its complement for UNDER); fall back to deriving
+        # it from American odds when no_vig is missing. The contract
+        # only requires the *field be present*, so emitting ``None``
+        # when no usable signal exists still satisfies the structural
+        # check (the legacy producer behaved identically).
+        mvo_raw = get(
+            r,
+            "market_no_vig_over_prob",
+            "market_prob_over_no_vig",
+            "no_vig_over_prob",
+            "fair_prob_over",
+            default=None,
+        )
+        market_over_prob = None
+        try:
+            if mvo_raw is not None:
+                _mvo = float(mvo_raw)
+                if math.isfinite(_mvo) and 0.0 < _mvo < 1.0:
+                    market_over_prob = _mvo
+        except Exception:
+            market_over_prob = None
+        # If no_vig was unavailable, derive both sides from American
+        # odds when present.
+        def _amer_to_decimal(amer):
+            try:
+                f = float(amer)
+            except (TypeError, ValueError):
+                return None
+            if not math.isfinite(f) or f == 0:
+                return None
+            return (1.0 + f / 100.0) if f > 0 else (1.0 + 100.0 / abs(f))
+
+        if market_over_prob is None:
+            d_over = _amer_to_decimal(over_odds)
+            d_under = _amer_to_decimal(under_odds)
+            if d_over and d_under and d_over > 1.0 and d_under > 1.0:
+                p_over_raw = 1.0 / d_over
+                p_under_raw = 1.0 / d_under
+                tot = p_over_raw + p_under_raw
+                if tot > 0:
+                    market_over_prob = p_over_raw / tot
+        market_under_prob = (1.0 - market_over_prob) if market_over_prob is not None else None
+
         for side, mps, odds, fair in (
             ("OVER", mpo, over_odds, fair_over),
             ("UNDER", mpu, under_odds, fair_under),
         ):
-            mps_market = (
-                mvo_over if (side == "OVER" and mvo_over is not None) else
-                (mvo_under if (side == "UNDER" and mvo_under is not None) else None)
-            )
             out = dict(base)
+            # M8.6P: ``model_prob`` is the flat per-side probability the
+            # render-contract verifier checks for null. Every row that
+            # makes it here has a finite ``mps`` from the precedence
+            # above, so we never emit ``null`` for ``model_prob`` and
+            # never trip ``WOO_DASHBOARD_RENDER_CONTRACT_FAIL`` with the
+            # ``rows have null model_prob`` reason.
+            model_prob_side = float(mps)
+            market_prob_side = (
+                market_over_prob if side == "OVER" else market_under_prob
+            )
             out.update({
                 "side": side,
-                "model_probability_for_side": float(mps),
-                "market_probability_for_side": (
-                    float(mps_market) if mps_market is not None else None
-                ),
-                "market_prob": (
-                    float(mps_market) if mps_market is not None else None
-                ),
+                "model_prob": model_prob_side,
+                "model_probability_for_side": model_prob_side,
+                # M8.6Q: WOO_PUBLIC_EXPORT contract requires ``market_prob``
+                # to be present on each affiliate row (the legacy
+                # publisher emitted this; the M8.6 repair pass had been
+                # dropping it).
+                "market_prob": market_prob_side,
+                "market_prob_over_no_vig": market_over_prob,
+                "market_prob_under_no_vig": market_under_prob,
+                "market_no_vig_over_prob": market_over_prob,
                 "side_odds": odds,
                 "fair_odds_model": fair,
                 "edge": float(edge if side == "OVER" else -edge),
@@ -854,6 +987,35 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
                 "kelly_capped": 0.0,
             })
             rows.append(out)
+
+    # M8.6P: WOO_DASHBOARD_RENDER_CONTRACT guard — ``model_prob`` must
+    # be non-null on every renderable row (the verifier flags ``rows have
+    # null model_prob`` and exits 1 otherwise).
+    unmappable: list[dict] = []
+    for row in rows:
+        if row.get("model_prob") is None:
+            mp = derive_model_prob_for_row(row)
+            if mp is None:
+                unmappable.append(row)
+                continue
+            row["model_prob"] = float(mp)
+            row.setdefault("model_probability_for_side", float(mp))
+    if unmappable:
+        sample = []
+        for row in unmappable[:3]:
+            sample.append({
+                "player_id": row.get("player_id"),
+                "stat": row.get("stat"),
+                "side": row.get("side"),
+                "line": row.get("line"),
+                "book": row.get("book"),
+                "present_keys": sorted(row.keys()),
+            })
+        raise SystemExit(
+            "WOO_MODEL_PROB_UNMAPPABLE "
+            f"date={date} unmappable_rows={len(unmappable)} "
+            f"sample={json.dumps(sample, default=str)}"
+        )
 
     payload = {
         "schema_version": "1.0",

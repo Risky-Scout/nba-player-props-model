@@ -45,104 +45,314 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any, Optional
 from urllib.parse import urljoin
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRED_DIR = REPO_ROOT / "predictions"
 EXPORT_ROOT = REPO_ROOT / "public_export" / "wizard_of_odds"
 
+# Keys a dict-root ``pmf_research.json`` may use to carry the list of
+# rows / players. Checked in priority order.
+PMF_RESEARCH_LIST_KEYS = ("players", "rows", "records", "data", "items", "pmfs")
 
-def _read_json(path: Path) -> tuple[dict | None, str | None]:
+# Market-side row indicators — only rows carrying any of these are
+# treated as bets and subjected to the strict ``model_prob`` check.
+_MARKET_ROW_SIDE_KEYS = ("side", "pick_side", "over_under")
+_MARKET_ROW_LINE_KEYS = ("line",)
+_MARKET_ROW_BOOK_KEYS = ("book", "sportsbook", "bookmaker")
+_MARKET_ROW_SIDE_PROB_KEYS = (
+    "model_p_over",
+    "model_p_under",
+    "prob_over",
+    "prob_under",
+    "p_over",
+    "p_under",
+    "model_probability_over",
+    "model_probability_under",
+    "market_over_odds",
+    "market_under_odds",
+)
+
+
+def _rel(path: Path) -> str:
+    """Return ``path`` relative to ``REPO_ROOT`` when possible; otherwise
+    fall back to ``str(path)``. Used to keep error messages stable
+    regardless of where the verifier is invoked from."""
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def _read_json(path: Path) -> tuple[Optional[Any], Optional[str]]:
+    """Return the parsed JSON (dict OR list) or a structured error.
+
+    The return type intentionally is *not* restricted to ``dict``;
+    ``pmf_research.json`` is allowed to be a bare list of records (run
+    25955470154 surfaced exactly this case: the verifier crashed when
+    it assumed dict-only and called ``.get()`` on a list)."""
     if not path.exists():
-        return None, f"missing {path.relative_to(REPO_ROOT)}"
+        return None, f"missing {_rel(path)}"
     try:
         return json.loads(path.read_text(encoding="utf-8")), None
     except Exception as e:
-        return None, f"parse error {path.relative_to(REPO_ROOT)}: {e}"
+        return None, f"parse error {_rel(path)}: {e}"
 
 
-def _check_affiliate(payload: dict, label: str) -> list[str]:
+def _check_affiliate(payload: Any, label: str) -> list[str]:
     failures: list[str] = []
+    if not isinstance(payload, dict):
+        failures.append(
+            f"{label}: WOO_PUBLIC_EXPORT_AFFILIATE_SCHEMA_INVALID "
+            f"root_type={type(payload).__name__}"
+        )
+        return failures
     rows = payload.get("rows") or []
     if not rows:
         failures.append(f"{label}: rows is empty (count={len(rows)})")
         return failures
     sample = rows[0]
-    required_base = ("player", "stat", "side", "line")
-    missing = [k for k in required_base if k not in sample]
+    if not isinstance(sample, dict):
+        failures.append(
+            f"{label}: WOO_PUBLIC_EXPORT_AFFILIATE_SCHEMA_INVALID "
+            f"sample_type={type(sample).__name__}"
+        )
+        return failures
+    required = ("player", "stat", "side", "line", "model_prob",
+                "market_prob")
+    missing = [k for k in required if k not in sample]
     if missing:
         failures.append(f"{label}: sample row missing keys: {missing}")
-    model_prob_keys = ("model_prob", "model_probability_for_side",
-                       "model_prob_over", "model_p_over")
-    if not any(k in sample for k in model_prob_keys):
-        failures.append(
-            f"{label}: sample row has none of model_prob/"
-            "model_probability_for_side/model_prob_over"
-        )
-    market_prob_keys = ("market_prob", "market_probability_for_side",
-                        "market_prob_over_no_vig", "market_prob_over",
-                        "market_no_vig_over_prob")
-    if not any(k in sample for k in market_prob_keys):
-        failures.append(
-            f"{label}: sample row has none of market_prob/"
-            "market_probability_for_side/market_prob_over_no_vig"
-        )
     return failures
 
 
-def _iter_stat_blocks(player_obj: dict):
-    """Yield (stat_name, block) supporting both dict- and list-shaped ``stats``."""
-    stats_field = player_obj.get("stats")
-    if isinstance(stats_field, dict):
-        for stat_name, block in stats_field.items():
-            yield stat_name, block
-    elif isinstance(stats_field, list):
-        for block in stats_field:
+def _extract_pmf_research_rows(payload: Any) -> tuple[list, str]:
+    """Return ``(rows, shape_tag)`` for any supported pmf_research.json shape.
+
+    Supported shapes:
+      - bare list of records (``shape_tag='list_root'``)
+      - dict with ``players`` list of player dicts (``shape_tag='dict_players'``)
+      - dict with ``rows``/``records``/``data``/``items``/``pmfs`` list
+        (``shape_tag='dict_records'``)
+      - dict keyed by player id with each value being a player dict
+        (``shape_tag='dict_keyed_players'``)
+
+    Returns ``([], 'invalid')`` when the shape can't be interpreted.
+    """
+    if isinstance(payload, list):
+        return list(payload), "list_root"
+    if isinstance(payload, dict):
+        for key in PMF_RESEARCH_LIST_KEYS:
+            v = payload.get(key)
+            if isinstance(v, list):
+                tag = "dict_players" if key == "players" else "dict_records"
+                return list(v), tag
+        # Last-ditch: dict-of-dicts keyed by player id.
+        nested = [v for v in payload.values() if isinstance(v, dict)]
+        if nested and all(
+            ("stats" in v or "support" in v or "probs" in v or "pmf" in v)
+            for v in nested
+        ):
+            return nested, "dict_keyed_players"
+    return [], "invalid"
+
+
+def _is_market_row(rec: dict) -> bool:
+    has_side = any(rec.get(k) not in (None, "") for k in _MARKET_ROW_SIDE_KEYS)
+    has_line = any(rec.get(k) not in (None, "") for k in _MARKET_ROW_LINE_KEYS)
+    if has_side and has_line:
+        return True
+    if any(rec.get(k) not in (None, "") for k in _MARKET_ROW_SIDE_PROB_KEYS):
+        return True
+    if any(rec.get(k) not in (None, "") for k in _MARKET_ROW_BOOK_KEYS):
+        return True
+    return False
+
+
+def _iter_stat_blocks(rec: dict):
+    """Yield ``(stat_name, stat_block)`` for both legacy and canonical
+    player record shapes. Never calls ``.items()`` on a list."""
+    stats = rec.get("stats")
+    if isinstance(stats, dict):
+        for stat_name, block in stats.items():
             if isinstance(block, dict):
-                yield str(block.get("stat") or block.get("stat_key") or ""), block
+                yield str(stat_name), block
+        return
+    if isinstance(stats, list):
+        for block in stats:
+            if not isinstance(block, dict):
+                continue
+            name = block.get("stat") or block.get("stat_key") or block.get("market") or ""
+            yield str(name), block
+        return
 
 
-def _check_pmf_research(payload: dict, label: str) -> list[str]:
+def _support_points(block: dict) -> list[dict]:
+    """Project a stat block into the legacy ``support_points`` shape so
+    the tail-bucket check works whether the producer emitted the new
+    ``support``/``probs`` arrays or the legacy ``support_points``
+    dicts."""
+    sp = block.get("support_points")
+    if isinstance(sp, list):
+        return [pt for pt in sp if isinstance(pt, dict)]
+    support = block.get("support")
+    probs = block.get("probs")
+    if isinstance(support, list) and isinstance(probs, list) and len(support) == len(probs):
+        return [
+            {
+                "k": int(k) if k is not None else None,
+                "p": float(p) if p is not None else 0.0,
+                "label": str(int(k)) if k is not None else "",
+                "is_tail": False,
+            }
+            for k, p in zip(support, probs)
+        ]
+    return []
+
+
+def _validate_distribution_row(rec: dict) -> Optional[str]:
+    """Return a short reason on malformed distribution rows, else None."""
+    if not rec.get("stat"):
+        return "missing_stat"
+    if rec.get("player_id") in (None, "") and not rec.get("player"):
+        return "missing_player_identifier"
+    support = rec.get("support")
+    probs = rec.get("probs")
+    if isinstance(support, list) and isinstance(probs, list):
+        if len(support) != len(probs):
+            return f"support_probs_length_mismatch({len(support)}!={len(probs)})"
+        try:
+            total = sum(float(p) for p in probs)
+        except (TypeError, ValueError):
+            return "probs_not_numeric"
+        if not (0.99 <= total <= 1.01):
+            return f"probs_sum_out_of_tolerance({total:.4f})"
+        return None
+    pmf = rec.get("pmf")
+    if isinstance(pmf, dict) and pmf:
+        try:
+            total = sum(float(v) for v in pmf.values())
+        except (TypeError, ValueError):
+            return "pmf_not_numeric"
+        if not (0.99 <= total <= 1.01):
+            return f"pmf_sum_out_of_tolerance({total:.4f})"
+        return None
+    atoms = rec.get("atom_pmf")
+    if isinstance(atoms, (list, dict)) and atoms:
+        return None
+    return "no_support_probs_or_pmf"
+
+
+def _tail_bucket_violations(player_label: str, stat_name: str, pts: list[dict]) -> list[str]:
+    if len(pts) < 2:
+        return []
+    last = pts[-1]
+    second_last = pts[-2]
+    if "k_min" in last:
+        return []
+    if "k" in last and "k" in second_last:
+        try:
+            gap = int(last["k"]) - int(second_last["k"])
+        except (TypeError, ValueError):
+            return []
+        if gap > 1:
+            return [
+                f"{player_label}/{stat_name}: tail at k={last['k']} not "
+                f"labeled as tail bucket (prev k={second_last['k']}, gap={gap})"
+            ]
+    return []
+
+
+def _check_pmf_research(payload: Any, label: str) -> list[str]:
+    """Schema-safe pmf_research.json validation.
+
+    The verifier accepts every shape the canonical builder /
+    publish_woo_public_export.py producer can emit. It NEVER calls
+    ``.items()`` or ``.get()`` on a list. PMF distribution rows are
+    validated by support/probs/pmf shape only — they don't need
+    ``model_prob``. Market-side rows (rows that carry side+line, a
+    side-aware prob, or a book) still go through the strict
+    affiliate-style check.
+    """
     failures: list[str] = []
-    players = payload.get("players") or []
-    if not players:
-        failures.append(f"{label}: players is empty")
+    rows, shape = _extract_pmf_research_rows(payload)
+    if shape == "invalid" or not rows:
+        keys = sorted(payload.keys()) if isinstance(payload, dict) else None
+        sample_keys = None
+        if isinstance(payload, list) and payload and isinstance(payload[0], dict):
+            sample_keys = sorted(payload[0].keys())
+        failures.append(
+            f"{label}: WOO_PUBLIC_EXPORT_PMF_RESEARCH_SCHEMA_INVALID "
+            f"root_type={type(payload).__name__} keys={keys} "
+            f"sample_keys={sample_keys}"
+        )
         return failures
-    sample = players[0]
-    if "stats" not in sample or not sample["stats"]:
-        failures.append(f"{label}: sample player has no stats")
-        return failures
-    # Tail-bucket check applies only to the legacy ``support_points`` schema.
-    # The current atom-PMF schema emits ``support``/``probs`` arrays without
-    # an explicit tail bucket; skip the tail check for that shape rather than
-    # false-failing.
-    bug_seen = []
-    for player in players[:25]:  # sample, not exhaustive
-        for stat_name, stat_block in _iter_stat_blocks(player):
-            if not isinstance(stat_block, dict):
-                continue
-            pts = stat_block.get("support_points") or []
-            if len(pts) < 2:
-                continue
-            last = pts[-1]
-            second_last = pts[-2]
-            if not isinstance(last, dict) or not isinstance(second_last, dict):
-                continue
-            if "k_min" in last:
-                continue  # already a labeled tail
-            if "k" in last and "k" in second_last:
-                gap = int(last["k"]) - int(second_last["k"])
-                if gap > 1:
-                    bug_seen.append(
-                        f"{player.get('player')}/{stat_name}: tail at "
-                        f"k={last['k']} not labeled as tail bucket "
-                        f"(prev k={second_last['k']}, gap={gap})"
-                    )
+
+    bug_seen: list[str] = []
+    bad_distribution: list[str] = []
+    market_missing_model_prob = 0
+
+    # Sample-not-exhaustive scan, but generous enough to surface every
+    # variant the canonical builder emits for a single date.
+    for rec in rows[:200]:
+        if not isinstance(rec, dict):
+            bad_distribution.append(
+                f"non_dict_row({type(rec).__name__})"
+            )
+            continue
+        player_label = str(rec.get("player") or rec.get("player_id") or "?")
+        stat_blocks = list(_iter_stat_blocks(rec))
+        if stat_blocks:
+            for stat_name, block in stat_blocks:
+                bug_seen.extend(
+                    _tail_bucket_violations(player_label, stat_name, _support_points(block))
+                )
+            continue
+
+        # Row has no nested ``stats``. Either it's a distribution row
+        # (canonical builder's per-stat record) or a market-side row.
+        if _is_market_row(rec):
+            mp = rec.get("model_prob")
+            if mp is None:
+                market_missing_model_prob += 1
+            stat_name = str(rec.get("stat") or "")
+            bug_seen.extend(
+                _tail_bucket_violations(player_label, stat_name, _support_points(rec))
+            )
+            continue
+
+        # Distribution row: validate PMF shape only.
+        reason = _validate_distribution_row(rec)
+        if reason is not None:
+            bad_distribution.append(f"{player_label}: {reason}")
+        bug_seen.extend(
+            _tail_bucket_violations(player_label, str(rec.get("stat") or ""), _support_points(rec))
+        )
+
+    if bad_distribution:
+        failures.append(
+            f"{label}: WOO_PUBLIC_EXPORT_PMF_RESEARCH_DISTRIBUTION_MALFORMED "
+            f"samples={bad_distribution[:3]}"
+        )
+    if market_missing_model_prob > 0:
+        failures.append(
+            f"{label}: {market_missing_model_prob} market rows have null model_prob"
+        )
     if bug_seen:
         failures.append(
             f"{label}: PMF tail-bucket bug present in samples: {bug_seen[:3]}"
         )
     return failures
+
+
+def _payload_date(payload: Any) -> Optional[str]:
+    """Return the dated payload's ``date`` field when present, else None.
+    Schema-safe: a list root has no top-level date."""
+    if isinstance(payload, dict):
+        v = payload.get("date")
+        return None if v is None else str(v)
+    return None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -190,22 +400,26 @@ def main(argv: list[str] | None = None) -> int:
             continue
         failures.extend(_check_affiliate(payload, f"affiliate[{label}]"))
         # Date staleness check on date-keyed file.
-        if label == "date" and str(payload.get("date")) != date:
-            failures.append(
-                f"affiliate[{label}].date={payload.get('date')!r} != "
-                f"requested {date!r}"
-            )
+        if label == "date":
+            payload_date = _payload_date(payload)
+            if payload_date is not None and payload_date != date:
+                failures.append(
+                    f"affiliate[{label}].date={payload_date!r} != "
+                    f"requested {date!r}"
+                )
     for label, p in pmf_paths:
         payload, err = _read_json(p)
         if err:
             failures.append(err)
             continue
         failures.extend(_check_pmf_research(payload, f"pmf_research[{label}]"))
-        if label == "date" and str(payload.get("date")) != date:
-            failures.append(
-                f"pmf_research[{label}].date={payload.get('date')!r} != "
-                f"requested {date!r}"
-            )
+        if label == "date":
+            payload_date = _payload_date(payload)
+            if payload_date is not None and payload_date != date:
+                failures.append(
+                    f"pmf_research[{label}].date={payload_date!r} != "
+                    f"requested {date!r}"
+                )
 
     if failures:
         print("WOO_PUBLIC_EXPORT_CONTRACT_FAILED  "

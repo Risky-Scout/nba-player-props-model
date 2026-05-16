@@ -69,3 +69,5 @@ artifacts/nightly_training/**/logs/
 # Claude Code
 .claude/
 CLAUDE.md
+.run_with_env.py
+.run_with_env.py

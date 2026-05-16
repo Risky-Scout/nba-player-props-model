@@ -17,6 +17,31 @@ from nba_props_model.features.injury_lineup_features import build_injury_lineup_
 from nba_props_model.features.player_prop_feature_contract import RunMode
 
 
+def demote_injury_lineup_failures_for_woo_morning(failures: list[dict]) -> bool:
+    """WoO morning monetization audits only ``morning_expected`` for the slate date.
+
+    Downgrade hard failures for other run modes to warnings so unrelated missing
+    t25/t5/final_after_game rows do not block morning delivery.
+
+    Returns True when any finding was demoted (caller may emit a log marker).
+    """
+    demoted = False
+    for f in failures:
+        if f.get("run_mode") == RunMode.MORNING_EXPECTED.value:
+            continue
+        if f.get("severity") != "fail":
+            continue
+        prev_code = str(f.get("blocker_code") or "")
+        f["severity"] = "warn"
+        f["blocker_code"] = "INJURY_LINEUP_RUN_MODE_NONCURRENT_WARN"
+        f["detail"] = (
+            "[scoped under woo_morning_monetization — non-current run mode] "
+            f"(was {prev_code}) {f.get('detail', '')}"
+        )
+        demoted = True
+    return demoted
+
+
 def _make_row(
     *,
     run_mode: str,
@@ -40,7 +65,6 @@ def _audit_mode(
     *,
     run_mode: RunMode,
     date: str,
-    active_run_mode: RunMode | None,
 ) -> tuple[pd.DataFrame | None, dict | None, list[dict]]:
     failures: list[dict] = []
     try:
@@ -61,22 +85,14 @@ def _audit_mode(
     summary = dict(result.summary)
     n_rows = int(len(frame))
 
-    # same-day source missing is only fatal for the active run mode being
-    # validated in this pipeline invocation. For non-active modes, this is
-    # expected when those snapshots have not been generated yet.
+    # same-day source missing must be explicit and fatal
     if n_rows == 0:
-        severity = "fail" if (active_run_mode is None or run_mode == active_run_mode) else "warn"
-        blocker_code = (
-            "SAME_DAY_SOURCE_INPUTS_MISSING"
-            if severity == "fail"
-            else "RUN_MODE_NOT_AVAILABLE_YET"
-        )
         failures.append(
             _make_row(
                 run_mode=run_mode.value,
                 audit_date=date,
-                severity=severity,
-                blocker_code=blocker_code,
+                severity="fail",
+                blocker_code="SAME_DAY_SOURCE_INPUTS_MISSING",
                 detail=(
                     "No injury/lineup feature rows were produced; canonical or source "
                     "inputs are missing for this run mode/date."
@@ -158,13 +174,20 @@ def main() -> int:
     ap.add_argument("--date", required=True)
     ap.add_argument("--latest-completed-date", required=True)
     ap.add_argument(
+        "--delivery-pipeline-mode",
+        default=None,
+        help="When woo_morning_monetization, only morning_expected gates exit status.",
+    )
+    ap.add_argument(
         "--active-run-mode",
         choices=[m.value for m in RunMode],
         default=None,
-        help="Only this run mode is treated as hard-fail when rows are missing.",
+        help=(
+            "Legacy compat alias retained for orchestrator callers; "
+            "demotion is driven by --delivery-pipeline-mode."
+        ),
     )
     args = ap.parse_args()
-    active_mode = RunMode(args.active_run_mode) if args.active_run_mode else None
 
     out = REPO_ROOT / "artifacts" / "model_diagnostics" / "injury_lineup_run_modes"
     out.mkdir(parents=True, exist_ok=True)
@@ -181,11 +204,7 @@ def main() -> int:
     ]
 
     for mode, mode_date in run_plan:
-        _, summary, mode_failures = _audit_mode(
-            run_mode=mode,
-            date=mode_date,
-            active_run_mode=active_mode,
-        )
+        _, summary, mode_failures = _audit_mode(run_mode=mode, date=mode_date)
         failures.extend(mode_failures)
         summaries.append(
             {
@@ -197,6 +216,10 @@ def main() -> int:
                 "stale_lineup_rows": int((summary or {}).get("stale_lineup_rows", 0)),
             }
         )
+
+    if args.delivery_pipeline_mode == "woo_morning_monetization":
+        if demote_injury_lineup_failures_for_woo_morning(failures):
+            print("INJURY_LINEUP_RUN_MODE_NONCURRENT_WARN")
 
     failures_df = pd.DataFrame(
         failures,

@@ -13,6 +13,7 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 from nba_props_model.features.asof_feature_store import (  # noqa: E402
     MissingSourceInputsError,
+    assert_availability_confidence_is_numeric,
     build_feature_snapshot,
 )
 from nba_props_model.features.player_prop_feature_contract import RunMode  # noqa: E402
@@ -35,6 +36,12 @@ def main() -> int:
     except MissingSourceInputsError as exc:
         print(str(exc))
         return 2
+
+    try:
+        assert_availability_confidence_is_numeric(result.snapshot)
+    except RuntimeError as exc:
+        print(str(exc))
+        return 3
 
     result.snapshot.to_parquet(out_path, index=False)
     meta_path = out_path.with_suffix(".meta.json")

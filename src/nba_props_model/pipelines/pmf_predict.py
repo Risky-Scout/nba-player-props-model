@@ -31,7 +31,7 @@ import logging
 import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import Collection, Optional
 
 import numpy as np
 import pandas as pd
@@ -122,6 +122,146 @@ class PropPMF:
     model_version: str
 
 
+def _apply_pmf_calibrators(
+    out: dict[str, PropPMF],
+    minutes_dist: MinutesDistribution,
+    *,
+    only_stats: Optional[Collection[str]] = None,
+) -> None:
+    """In-place calibration (+ active conditioning / sparse guard / monotone).
+
+    When ``only_stats`` is set, only those keys are processed (must already
+    exist in ``out``). Used to calibrate mission combos attached after the
+    main ``build_prop_pmfs`` path.
+    """
+    role_bucket = role_bucket_from_minutes_dist(minutes_dist)
+    calibration_target_active = _is_active_conditioned_calibration()
+    try:
+        p_inactive = float(np.clip(float(minutes_dist.state_probs[0]), 0.0, 0.99))
+    except Exception:
+        p_inactive = 0.0
+
+    stat_iter = (
+        list(only_stats) if only_stats is not None else list(out.keys())
+    )
+    for stat in stat_iter:
+        if stat not in out:
+            continue
+        prop = out[stat]
+        if (
+            calibration_target_active
+            and stat in ACTIVE_CONDITION_STATS
+            and p_inactive > 0.0
+        ):
+            target_pmf = active_condition_pmf(prop.pmf, p_inactive)
+            active_tag = "+active_conditioned"
+        else:
+            target_pmf = prop.pmf
+            active_tag = ""
+
+        sparse_cal = _load_sparse_hurdle_calibrator()
+        if sparse_cal is not None and stat in {"stl", "blk", "stocks", "tov", "fg3m"}:
+            try:
+                target_pmf = sparse_cal.apply(target_pmf, stat=stat, role_bucket=role_bucket)
+                active_tag += "+sparse_hurdle_guarded"
+            except Exception as e:
+                logger.warning(f"sparse_hurdle_cal apply failed stat={stat}: {e}")
+
+        cal = load_calibrator(stat)
+        if cal is None:
+            if active_tag:
+                out[stat] = PropPMF(
+                    stat=stat, pmf=target_pmf, calibrated=False,
+                    model_version=f"{prop.model_version}{active_tag}",
+                )
+            continue
+
+        if getattr(cal, "version", None) == "role_aware_pmf_cal_v1":
+            cal_pmf = cal.apply(target_pmf, role_bucket=role_bucket)
+            version_tag = f"role_aware_pmf_cal_v1:{role_bucket}"
+        else:
+            cal_pmf = cal.apply(target_pmf)
+            version_tag = "pmf_cal_v1"
+
+        mono = _load_monotone_cdf_calibrator()
+        if mono is not None:
+            try:
+                cal_pmf = mono.apply(cal_pmf, stat=stat, role_bucket=role_bucket)
+                version_tag += "+monotone_pit_cdf_v1"
+            except Exception as e:
+                logger.warning(f"monotone_cdf_cal apply failed stat={stat}: {e}")
+
+        out[stat] = PropPMF(
+            stat=stat, pmf=cal_pmf, calibrated=True,
+            model_version=f"{prop.model_version}+{version_tag}{active_tag}",
+        )
+
+
+def ensure_mission_combos_present(
+    pack: dict[str, PropPMF],
+    *,
+    minutes_dist: MinutesDistribution,
+    feature_row: dict,
+    fg3m_hurdle_model=None,
+    rng: Optional[np.random.Generator] = None,
+) -> None:
+    """Attach any missing mission combo PMFs via joint sampling + empirical combo PMFs.
+
+    Mutates ``pack`` in place. Raises if joint sampling cannot produce the
+    requested mission combos (no independence / mean-only fallback).
+    """
+    if rng is None:
+        rng = np.random.default_rng()
+    missing = tuple(
+        c for c in MISSION_COMBOS
+        if c not in pack or pack[c].pmf is None
+    )
+    if not missing:
+        return
+
+    joint = simulate_joint_stat_samples(
+        minutes_dist=minutes_dist,
+        feature_row=feature_row,
+        n_draws=PMF_SIM_DRAWS,
+        rng=rng,
+        fg3m_hurdle_model=fg3m_hurdle_model,
+    )
+    if joint is None:
+        raise RuntimeError(
+            "COMBO_PMF_SYNTHESIS_FAILED: simulate_joint_stat_samples returned "
+            f"None; cannot synthesize mission combos missing={list(missing)} "
+            "(joint path requires rate quantiles for pts/reb/ast/tov)."
+        )
+    samples_df = pd.DataFrame({
+        "pts": joint["pts"],
+        "reb": joint["reb"],
+        "ast": joint["ast"],
+        "tov": joint["tov"],
+        "fg3m": joint["fg3m"],
+        "stl": joint["stl"],
+        "blk": joint["blk"],
+    })
+    combo_pmfs = build_combo_pmfs_for_group(
+        group=samples_df,
+        combos=missing,
+    )
+    combo_model_version = f"{JOINT_SAMPLER_VERSION}+{JOINT_COMBO_PMF_VERSION}"
+    for combo_key in missing:
+        arr = combo_pmfs.get(combo_key)
+        if arr is None:
+            from nba_props_model.targets import COMBO_COMPONENTS as _CC
+            comps = _CC.get(combo_key, ())
+            raise RuntimeError(
+                f"COMBO_PMF_SYNTHESIS_FAILED: mission combo {combo_key!r} missing; "
+                f"required_component_stats={list(comps)}"
+            )
+        pack[combo_key] = PropPMF(
+            stat=combo_key, pmf=arr, calibrated=False,
+            model_version=combo_model_version,
+        )
+    _apply_pmf_calibrators(pack, minutes_dist, only_stats=missing)
+
+
 # ── Per-player PMF build ─────────────────────────────────────────────────────
 
 
@@ -130,11 +270,17 @@ def build_prop_pmfs(
     feature_row: dict,
     fg3m_hurdle_model=None,
     rng: Optional[np.random.Generator] = None,
+    *,
+    stat_grid_mode: bool = False,
 ) -> dict[str, PropPMF]:
     """Build the full per-stat PMF collection for one player-game.
 
     Returns `{stat: PropPMF}` keyed by stat name. Missing artifacts
     silently drop their stat from the output.
+
+    ``stat_grid_mode=True`` (``scripts/build_stat_grid_pmfs.py``): require
+    TOV whenever any other main rate PMF was simulated, so sparse stat-grid
+    output cannot silently omit TOV and fail later at rectangularize.
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -145,6 +291,12 @@ def build_prop_pmfs(
         minutes_dist=minutes_dist, feature_row=feature_row,
         n_draws=PMF_SIM_DRAWS, rng=rng,
     )
+    if stat_grid_mode and main_pmfs and "tov" not in main_pmfs:
+        raise RuntimeError(
+            "TOV_MISSING_FROM_STAT_GRID_SOURCE: TOV absent while other "
+            "main rate PMFs were simulated; check rate_quantiles('tov', "
+            "feature_row) and rate_tov model artifacts."
+        )
     for stat, spmf in main_pmfs.items():
         out[stat] = PropPMF(stat=stat, pmf=spmf.pmf, calibrated=False,
                             model_version="pmf_sim_v1")
@@ -191,16 +343,26 @@ def build_prop_pmfs(
     except Exception as e:
         if no_artifacts_mode:
             return out
+        if stat_grid_mode:
+            raise RuntimeError(
+                f"COMBO_PMF_SYNTHESIS_FAILED: simulate_joint_stat_samples failed: "
+                f"{type(e).__name__}: {e}"
+            ) from e
         raise RuntimeError(
             f"M8.5: simulate_joint_stat_samples failed: "
             f"{type(e).__name__}: {e}. Production combo emission "
             f"requires joint samples; cannot fall back to "
             f"convolution/independence (would re-introduce M6.2 "
             f"train/serve skew)."
-        )
+        ) from e
     if joint is None:
         if no_artifacts_mode:
             return out
+        if stat_grid_mode:
+            raise RuntimeError(
+                "COMBO_PMF_SYNTHESIS_FAILED: simulate_joint_stat_samples returned None "
+                "(missing rate quantiles or hurdle inputs for combo component stats)."
+            )
         raise RuntimeError(
             "M8.5: simulate_joint_stat_samples returned None. "
             "Production mission combo emission requires joint samples; "
@@ -223,94 +385,18 @@ def build_prop_pmfs(
     for combo_key in MISSION_COMBOS:
         arr = combo_pmfs.get(combo_key)
         if arr is None:
+            from nba_props_model.targets import COMBO_COMPONENTS as _CC
+            comps = _CC.get(combo_key, ())
             raise RuntimeError(
-                f"M8.5: build_combo_pmfs_for_group returned None "
-                f"for mission combo {combo_key!r}. Cannot silently "
-                f"fall back."
+                f"COMBO_PMF_SYNTHESIS_FAILED: mission combo {combo_key!r} missing; "
+                f"required_component_stats={list(comps)}"
             )
         out[combo_key] = PropPMF(
             stat=combo_key, pmf=arr, calibrated=False,
             model_version=combo_model_version,
         )
 
-    # Ex-ante role bucket: depends only on the predicted minutes
-    # distribution, never on realized minutes or outcomes. Used as the
-    # calibrator key for role-aware bundles.
-    role_bucket = role_bucket_from_minutes_dist(minutes_dist)
-    # Ex-ante P(inactive) used only when the loaded calibrator's
-    # training target is active-conditioned (per pmf_cal_meta.json).
-    # In legacy mode, target_pmf falls through to the raw PMF and
-    # downstream behavior is identical to pre-patch.
-    calibration_target_active = _is_active_conditioned_calibration()
-    try:
-        p_inactive = float(np.clip(float(minutes_dist.state_probs[0]), 0.0, 0.99))
-    except Exception:
-        p_inactive = 0.0
-
-    # Per-stat target PMF + calibrator application. The target PMF is
-    # decided FIRST, independent of whether a calibrator is loaded —
-    # so prop pricing always sees the market-aligned (active-
-    # conditioned) distribution for RATE_STATS in active mode, even
-    # when no calibrator artifact exists for that stat.
-    for stat, prop in out.items():
-        # Decide the calibration-target shape for this stat.
-        if (
-            calibration_target_active
-            and stat in ACTIVE_CONDITION_STATS
-            and p_inactive > 0.0
-        ):
-            target_pmf = active_condition_pmf(prop.pmf, p_inactive)
-            active_tag = "+active_conditioned"
-        else:
-            target_pmf = prop.pmf
-            active_tag = ""
-
-        # Optional sparse-stat hurdle recalibration (p0 + positive-tail tilt).
-        sparse_cal = _load_sparse_hurdle_calibrator()
-        if sparse_cal is not None and stat in {"stl", "blk", "stocks", "tov", "fg3m"}:
-            try:
-                target_pmf = sparse_cal.apply(target_pmf, stat=stat, role_bucket=role_bucket)
-                active_tag += f"+sparse_hurdle_guarded"
-            except Exception as e:
-                logger.warning(f"sparse_hurdle_cal apply failed stat={stat}: {e}")
-
-        cal = load_calibrator(stat)
-        if cal is None:
-            # No calibrator artifact for this stat. In active mode we
-            # still persist the active-conditioned PMF so downstream
-            # pricing/export sees the market-aligned distribution; in
-            # legacy mode we leave out[stat] alone (raw uncalibrated).
-            if active_tag:
-                out[stat] = PropPMF(
-                    stat=stat, pmf=target_pmf, calibrated=False,
-                    model_version=f"{prop.model_version}{active_tag}",
-                )
-            continue
-
-        # Calibrator exists; apply it to target_pmf. Detect role-aware
-        # bundles explicitly via the bundle's `version` attribute —
-        # no broad TypeError fallback, so a real bug inside apply()
-        # surfaces rather than silently routing to the legacy branch.
-        if getattr(cal, "version", None) == "role_aware_pmf_cal_v1":
-            cal_pmf = cal.apply(target_pmf, role_bucket=role_bucket)
-            version_tag = f"role_aware_pmf_cal_v1:{role_bucket}"
-        else:
-            cal_pmf = cal.apply(target_pmf)
-            version_tag = "pmf_cal_v1"
-
-        # Optional monotone PIT/CDF calibration layer (stat-role/stat/role/global).
-        mono = _load_monotone_cdf_calibrator()
-        if mono is not None:
-            try:
-                cal_pmf = mono.apply(cal_pmf, stat=stat, role_bucket=role_bucket)
-                version_tag += "+monotone_pit_cdf_v1"
-            except Exception as e:
-                logger.warning(f"monotone_cdf_cal apply failed stat={stat}: {e}")
-
-        out[stat] = PropPMF(
-            stat=stat, pmf=cal_pmf, calibrated=True,
-            model_version=f"{prop.model_version}+{version_tag}{active_tag}",
-        )
+    _apply_pmf_calibrators(out, minutes_dist)
     return out
 
 

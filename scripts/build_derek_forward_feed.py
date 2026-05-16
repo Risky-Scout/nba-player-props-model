@@ -62,6 +62,30 @@ PMF_COLS = (
         "role_bucket",
         "role_source",
         "calibration_confidence",
+        # M8.9 minutes-model + eligibility passthrough. The upstream
+        # canonical model_only.parquet carries these columns produced
+        # by the player-game eligibility gate
+        # (src/nba_props_model/pipelines/player_game_eligibility.py)
+        # plus the minutes builder
+        # (scripts/build_minutes_predictions.py). Without listing them
+        # here the morning_snapshot strips them and the downstream
+        # unified feed cannot reproduce the upstream eligibility
+        # contract.
+        "minutes_mean",
+        "minutes_q50",
+        "minutes_p10",
+        "minutes_p50",
+        "minutes_p90",
+        "minutes_std",
+        "p_inactive_used",
+        "rotation_probability",
+        "starter_probability",
+        "projected_role",
+        "player_game_eligible",
+        "eligibility_reason",
+        "has_current_market_line",
+        "minutes_source",
+        "minutes_model_version",
     ]
 )
 MARKET_COLS = [
@@ -218,6 +242,34 @@ def _populate_identity_pmf_quality(
             "role_bucket": _none_if_nan(mo_row.get("role_bucket")),
             "role_source": _role_source_from_freshness(role_freshness),
             "calibration_confidence": _none_if_nan(mo_row.get("calibration_confidence")),
+            # M8.9 minutes-model + eligibility passthrough.
+            "minutes_mean": _none_if_nan(mo_row.get("minutes_mean")),
+            "minutes_q50": _none_if_nan(mo_row.get("minutes_q50")),
+            "minutes_p10": _none_if_nan(mo_row.get("minutes_p10")),
+            "minutes_p50": _none_if_nan(mo_row.get("minutes_p50")),
+            "minutes_p90": _none_if_nan(mo_row.get("minutes_p90")),
+            "minutes_std": _none_if_nan(mo_row.get("minutes_std")),
+            "p_inactive_used": _none_if_nan(mo_row.get("p_inactive_used")),
+            "rotation_probability": _none_if_nan(
+                mo_row.get("rotation_probability")
+            ),
+            "starter_probability": _none_if_nan(
+                mo_row.get("starter_probability")
+            ),
+            "projected_role": _none_if_nan(mo_row.get("projected_role")),
+            "player_game_eligible": _none_if_nan(
+                mo_row.get("player_game_eligible")
+            ),
+            "eligibility_reason": _none_if_nan(
+                mo_row.get("eligibility_reason")
+            ),
+            "has_current_market_line": _none_if_nan(
+                mo_row.get("has_current_market_line")
+            ),
+            "minutes_source": _none_if_nan(mo_row.get("minutes_source")),
+            "minutes_model_version": _none_if_nan(
+                mo_row.get("minutes_model_version")
+            ),
             "finality_status": finality_status,
             "finality_blocker_codes": finality_blocker_codes,
             "injury_freshness_status": _none_if_nan(mo_row.get("injury_freshness_status")),
@@ -621,8 +673,22 @@ def write_m88_unified_feed(
         pmean, pvar, p10, p50, p90 = _discrete_pmf_stats(pmf_json)
         m_over = r.get("model_p_over")
         m_over_f = float(m_over) if m_over is not None and not (isinstance(m_over, float) and math.isnan(m_over)) else None
-        role = str(r.get("role_bucket") or "")
-        inactive = 1.0 if role == "inactive_risk" else 0.0
+        # M8.8 — use the real predict_minutes-derived p_inactive_used when
+        # present (a continuous probability in [0, 1]). Fall back to the
+        # legacy role-string binary when minutes_model output is missing.
+        p_inact = r.get("p_inactive_used")
+        if (
+            p_inact is None
+            or (isinstance(p_inact, float) and math.isnan(p_inact))
+        ):
+            role = str(r.get("role_bucket") or "")
+            inactive = 1.0 if role == "inactive_risk" else 0.0
+        else:
+            try:
+                inactive = float(p_inact)
+            except Exception:
+                role = str(r.get("role_bucket") or "")
+                inactive = 1.0 if role == "inactive_risk" else 0.0
         mkt = str(r.get("market_coverage_status") or "unknown")
         if mkt in {"", "none", "nan"}:
             mkt_status = "no_offered_market" if r.get("line") is None or (isinstance(r.get("line"), float) and math.isnan(r.get("line"))) else "missing_raw_snapshot"
@@ -706,6 +772,87 @@ def write_m88_unified_feed(
         rows_out.append(row)
 
     out_df = pd.DataFrame(rows_out)
+
+    # M8.9 — defensive publication guard.
+    #
+    # The PRIMARY player-universe gate is upstream projected
+    # rotation/minutes eligibility (the M8.9 player-game eligibility
+    # gate enforced by
+    # src/nba_props_model/pipelines/player_game_eligibility.py before
+    # PMFs are computed). This Derek filter is a defensive publication
+    # guard only. It should rarely drop rows after canonical is fixed.
+    # If it drops many rows, upstream validation
+    # (scripts/validate_daily_pmf_delivery.py) should fail.
+    #
+    # Preferred path: respect the upstream `player_game_eligible` column
+    # whenever it is present on every row of the latest snapshot. Any
+    # row reaching this point with `player_game_eligible == False`
+    # means upstream validation slipped; we still drop it for safety
+    # but emit a loud WARN so the operator knows to fix the canonical
+    # pipeline rather than rely on this guard.
+    #
+    # Legacy fallback (used only when the eligibility column is absent
+    # from the snapshot — e.g. running against a pre-M8.9 canonical
+    # rebuild): use the prior market-quoted-player heuristic so the
+    # forward feed remains usable. This fallback must NEVER be the
+    # primary mechanism — if it is firing in production, something
+    # upstream is broken.
+    rotation_filter_dropped_rows = 0
+    rotation_filter_dropped_players: list[str] = []
+    filter_strategy = "noop"
+    if not out_df.empty:
+        has_elig_col = (
+            "player_game_eligible" in out_df.columns
+            and out_df["player_game_eligible"].notna().all()
+        )
+        if has_elig_col:
+            filter_strategy = "upstream_player_game_eligible"
+            eligible_mask = out_df["player_game_eligible"].astype(bool)
+            before_rows = len(out_df)
+            dropped_df = out_df.loc[~eligible_mask].copy()
+            out_df = out_df.loc[eligible_mask].copy()
+            rotation_filter_dropped_rows = before_rows - len(out_df)
+            if rotation_filter_dropped_rows > 0:
+                rotation_filter_dropped_players = sorted(
+                    str(p) for p in dropped_df["player_name"].dropna().unique()
+                )
+                print(
+                    "  WARN: Derek defensive filter dropped "
+                    f"{rotation_filter_dropped_rows} upstream-ineligible "
+                    "rows; canonical validation should have prevented "
+                    "this. Players: "
+                    f"{', '.join(rotation_filter_dropped_players[:10])}"
+                    f"{'...' if len(rotation_filter_dropped_players) > 10 else ''}"
+                )
+        elif "player_id" in out_df.columns and "line" in out_df.columns:
+            # Legacy safeguard only — keep behaviour identical to M8.8
+            # for snapshots produced before the M8.9 eligibility gate.
+            filter_strategy = "legacy_market_quoted_player_fallback"
+            has_line = out_df["line"].notna()
+            market_quoted_players = set(
+                out_df.loc[has_line, "player_id"].unique()
+            )
+            rotation_mask = has_line | out_df["player_id"].isin(
+                market_quoted_players
+            )
+            before_rows = len(out_df)
+            dropped_df = out_df.loc[~rotation_mask].copy()
+            out_df = out_df.loc[rotation_mask].copy()
+            rotation_filter_dropped_rows = before_rows - len(out_df)
+            if rotation_filter_dropped_rows > 0:
+                rotation_filter_dropped_players = sorted(
+                    str(p) for p in dropped_df["player_name"].dropna().unique()
+                )
+                print(
+                    "  legacy bench-filter (no upstream eligibility "
+                    f"column): dropped {rotation_filter_dropped_rows} "
+                    "model-only rows for "
+                    f"{len(rotation_filter_dropped_players)} non-quoted "
+                    "players. "
+                    f"Dropped: {', '.join(rotation_filter_dropped_players[:10])}"
+                    f"{'...' if len(rotation_filter_dropped_players) > 10 else ''}"
+                )
+
     pq_out = out_dir / "derek_forward_feed.parquet"
     csv_out = out_dir / "derek_forward_feed.csv"
     jl_out = out_dir / "derek_forward_feed.jsonl"
@@ -721,6 +868,20 @@ def write_m88_unified_feed(
         "row_count": int(len(out_df)),
         "schema": "m88_derek_unified_v1",
         "lineup_status": lineup_status,
+        "rotation_bench_filter": {
+            "policy": "defensive_publication_guard_only",
+            "strategy": filter_strategy,
+            "rows_dropped": int(rotation_filter_dropped_rows),
+            "players_dropped_count": int(len(rotation_filter_dropped_players)),
+            "players_dropped": rotation_filter_dropped_players,
+            "rationale": (
+                "Primary player-universe gate is upstream projected "
+                "rotation/minutes eligibility (M8.9). This filter is a "
+                "defensive publication guard only. If it drops many rows, "
+                "scripts/validate_daily_pmf_delivery.py upstream should "
+                "have failed first."
+            ),
+        },
         "files": {
             "parquet": str(pq_out.relative_to(REPO_ROOT)),
             "csv": str(csv_out.relative_to(REPO_ROOT)),

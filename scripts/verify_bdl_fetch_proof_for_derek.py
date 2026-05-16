@@ -1,190 +1,224 @@
-"""Phase 13W Part C — strict BDL fetch proof verifier.
+#!/usr/bin/env python3
+"""Emit a structured proof of the BDL /v2/lineups fetch state.
 
-For each Derek snapshot under
-``deliveries/<delivery_date>/derek_game_snapshots/<game_id>/<snapshot_type>/``
-asserts that snapshot_manifest.json contains explicit (non-null)
-BDL fetch fields. Never prints API keys.
+Writes ``artifacts/source_readiness/{date}/bdl_fetch_proof.json``.
 
-Required manifest fields (per snapshot):
+States distinguished:
 
-  * BDL_lineup_fetch_attempted (bool)
-  * BDL_lineup_fetch_status (str)
-  * BDL_lineup_rows (int)
-  * BDL_lineup_endpoint (str)
-  * BDL_lineup_fetched_at_utc (str when attempted)
-  * BDL_injury_fetch_attempted (bool)
-  * BDL_injury_fetch_status (str)
-  * BDL_injury_rows (int)
-  * BDL_injury_endpoint or deferred_source (str)
+    bdl_key_missing
+        ``BDL_API_KEY`` env var is unset; we never made a fetch attempt.
+    bdl_request_failed
+        BDL HTTP call raised; surface the exception.
+    bdl_empty_pre_confirmation
+        BDL responded but with zero rows. This is honest pre-confirmation
+        state (most morning publishes) and must NOT permit a full-roster
+        PMF publish — the M8.9 eligibility gate handles that.
+    bdl_populated_confirmed_live
+        BDL responded with one or more lineup rows.
+    bdl_snapshot_missing
+        We have no local snapshot under ``data/bdl_lineups/{date}/`` AND
+        the run was operating in disk-only mode.
+    bdl_snapshot_stale
+        Local snapshot age exceeds ``--max-age-hours``.
 
-Pass line:  PHASE13W_BDL_FETCH_PROOF_PASS
-Fail line:  PHASE13W_BDL_FETCH_PROOF_FAILED
-Pending:    PHASE13W_BDL_FETCH_PROOF_PENDING (no snapshots present)
+The morning projected-mode pipeline does NOT require confirmed BDL
+lineups — but it DOES require an explicit state representation so we
+never silently fall back to publishing a full-roster.
 """
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
+import os
 import sys
+import time
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DELIVERIES = REPO_ROOT / "deliveries"
-HEALTH = REPO_ROOT / "artifacts" / "automation_health"
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 
-REQUIRED_BOOL = (
-    "BDL_lineup_fetch_attempted",
-    "BDL_injury_fetch_attempted",
-)
-REQUIRED_STR = (
-    "BDL_lineup_fetch_status",
-    "BDL_lineup_endpoint",
-    "BDL_injury_fetch_status",
-    "BDL_injury_endpoint",
-)
-REQUIRED_INT = (
-    "BDL_lineup_rows",
-    "BDL_injury_rows",
-)
+def _now_utc_iso() -> str:
+    return (
+        datetime.now(timezone.utc)
+        .isoformat(timespec="seconds")
+        .replace("+00:00", "Z")
+    )
 
 
-def _audit_snapshot(snap_dir: Path) -> tuple[list[str], dict]:
-    issues: list[str] = []
-    m_path = snap_dir / "snapshot_manifest.json"
-    if not m_path.exists():
-        return ["snapshot_manifest.json missing"], {}
+def _scan_local_snapshot(date: str) -> dict[str, Any]:
+    """Look for previously-captured BDL snapshots under
+    ``data/bdl_lineups/{date}/``. Returns metadata used to classify
+    bdl_snapshot_missing / bdl_snapshot_stale."""
+    d = REPO_ROOT / "data" / "bdl_lineups" / date
+    if not d.exists():
+        return {"present": False, "rows": 0, "files": [], "oldest_age_hours": None,
+                "newest_age_hours": None}
+
+    files = sorted(d.iterdir())
+    if not files:
+        return {"present": False, "rows": 0, "files": [], "oldest_age_hours": None,
+                "newest_age_hours": None}
+
+    rows = 0
+    ages_hours: list[float] = []
+    file_meta: list[dict[str, Any]] = []
+    now = time.time()
     try:
-        m = json.loads(m_path.read_text(encoding="utf-8"))
+        import pandas as pd
+    except Exception:
+        pd = None
+
+    for f in files:
+        try:
+            mtime = f.stat().st_mtime
+            age_h = (now - mtime) / 3600.0
+            ages_hours.append(age_h)
+            file_rows = 0
+            if pd is not None and f.suffix == ".parquet":
+                try:
+                    file_rows = int(len(pd.read_parquet(f)))
+                except Exception:
+                    file_rows = 0
+            elif f.suffix == ".json":
+                try:
+                    obj = json.loads(f.read_text())
+                    if isinstance(obj, list):
+                        file_rows = len(obj)
+                    elif isinstance(obj, dict) and isinstance(obj.get("data"), list):
+                        file_rows = len(obj["data"])
+                except Exception:
+                    file_rows = 0
+            rows += file_rows
+            file_meta.append({
+                "path": str(f.relative_to(REPO_ROOT)),
+                "rows": file_rows,
+                "age_hours": age_h,
+            })
+        except Exception:
+            continue
+
+    return {
+        "present": True,
+        "rows": int(rows),
+        "files": file_meta,
+        "oldest_age_hours": max(ages_hours) if ages_hours else None,
+        "newest_age_hours": min(ages_hours) if ages_hours else None,
+    }
+
+
+def _attempt_live_fetch(game_ids: list[int]) -> dict[str, Any]:
+    """Optional live BDL /v2/lineups fetch. Returns success/error details
+    without persisting state. Empty response is acceptable
+    (pre-confirmation)."""
+    result: dict[str, Any] = {
+        "attempted": False,
+        "ok": False,
+        "rows": 0,
+        "error": None,
+    }
+    if not game_ids:
+        return result
+
+    try:
+        bdl = importlib.import_module("nba_props_model.data.bdl_client")
     except Exception as exc:
-        return [f"cannot parse snapshot_manifest.json: {exc}"], {}
-    facts: dict = {}
-    for f in REQUIRED_BOOL:
-        v = m.get(f)
-        facts[f] = v
-        if not isinstance(v, bool):
-            issues.append(f"{f} not bool (got {type(v).__name__}={v!r})")
-    for f in REQUIRED_STR:
-        v = m.get(f)
-        facts[f] = v
-        if v is None or not isinstance(v, str) or not v:
-            issues.append(f"{f} not a non-empty string (got {v!r})")
-    for f in REQUIRED_INT:
-        v = m.get(f)
-        facts[f] = v
-        if not isinstance(v, int):
-            issues.append(f"{f} not int (got {type(v).__name__}={v!r})")
-    # When fetch attempted, fetched_at_utc must be present.
-    if m.get("BDL_lineup_fetch_attempted") is True:
-        ts = m.get("BDL_lineup_fetched_at_utc")
-        facts["BDL_lineup_fetched_at_utc"] = ts
-        if not ts:
-            issues.append("BDL_lineup_fetched_at_utc missing despite attempted")
-    # API key invariants — manifest must NOT carry literal keys.
-    blob = json.dumps(m)
-    for keyname in ("BDL_API_KEY=", "ODDS_API_KEY="):
-        if keyname in blob:
-            issues.append(f"manifest leaks {keyname[:-1]} value")
-    return issues, facts
+        result["error"] = f"import bdl_client failed: {exc}"
+        return result
+
+    if not callable(getattr(bdl, "get_lineups", None)):
+        result["error"] = "bdl_client.get_lineups missing"
+        return result
+
+    result["attempted"] = True
+    total = 0
+    for gid in game_ids:
+        try:
+            resp = bdl.get_lineups(int(gid))
+            if isinstance(resp, list):
+                total += len(resp)
+            elif isinstance(resp, dict) and isinstance(resp.get("data"), list):
+                total += len(resp["data"])
+        except Exception as exc:
+            result["error"] = f"get_lineups({gid}) raised {type(exc).__name__}: {exc}"
+            return result
+    result["ok"] = True
+    result["rows"] = int(total)
+    return result
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser()
-    p.add_argument("--delivery-date", required=True)
-    args = p.parse_args(argv)
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--date", required=True, help="YYYY-MM-DD slate date")
+    ap.add_argument(
+        "--max-age-hours",
+        type=float,
+        default=6.0,
+        help="snapshot older than this is bdl_snapshot_stale",
+    )
+    ap.add_argument(
+        "--smoke-game-id",
+        type=int,
+        nargs="*",
+        default=None,
+        help="optional list of game_ids to live-fetch /v2/lineups (no persistence)",
+    )
+    args = ap.parse_args(argv)
 
-    HEALTH.mkdir(parents=True, exist_ok=True)
-    base = DELIVERIES / args.delivery_date / "derek_game_snapshots"
-    payload: dict = {
-        "schema_version": "1.0",
-        "delivery_date": args.delivery_date,
-        "snapshots": [],
+    bdl_key_present = bool(os.environ.get("BDL_API_KEY", "").strip())
+    snap = _scan_local_snapshot(args.date)
+    fetch = _attempt_live_fetch(args.smoke_game_id or []) if bdl_key_present else {
+        "attempted": False, "ok": False, "rows": 0, "error": "BDL_API_KEY not set",
     }
 
-    if not base.exists():
-        payload["outcome"] = "pending"
-        payload["reason"] = (
-            f"derek_game_snapshots dir missing for {args.delivery_date}"
-        )
-        (HEALTH / f"bdl_fetch_proof_{args.delivery_date}.json").write_text(
-            json.dumps(payload, indent=2, sort_keys=True, default=str),
-            encoding="utf-8",
-        )
-        print("PHASE13W_BDL_FETCH_PROOF_PENDING")
-        print(f"  reason={payload['reason']}")
-        return 0
+    if not bdl_key_present:
+        state = "bdl_key_missing"
+    elif fetch["attempted"] and not fetch["ok"]:
+        state = "bdl_request_failed"
+    elif fetch["attempted"] and fetch["ok"] and fetch["rows"] == 0:
+        state = "bdl_empty_pre_confirmation"
+    elif fetch["attempted"] and fetch["ok"] and fetch["rows"] > 0:
+        state = "bdl_populated_confirmed_live"
+    elif not snap["present"]:
+        state = "bdl_snapshot_missing"
+    elif snap["present"] and snap.get("rows", 0) == 0:
+        state = "bdl_empty_pre_confirmation"
+    elif snap["present"] and (snap.get("oldest_age_hours") or 0.0) > float(args.max_age_hours):
+        state = "bdl_snapshot_stale"
+    else:
+        state = "bdl_populated_confirmed_live"
 
-    failures = 0
-    counted = 0
-    for game_dir in sorted(base.iterdir()):
-        if not game_dir.is_dir():
-            continue
-        for snap_type in ("current_live", "t_minus_25", "close_lock"):
-            sd = game_dir / snap_type
-            if not (sd / "snapshot_manifest.json").exists():
-                continue
-            counted += 1
-            issues, facts = _audit_snapshot(sd)
-            payload["snapshots"].append({
-                "game_id": game_dir.name,
-                "snapshot_type": snap_type,
-                "issues": issues,
-                "facts": facts,
-            })
-            if issues:
-                failures += 1
+    payload = {
+        "delivery_date": args.date,
+        "checked_at_utc": _now_utc_iso(),
+        "bdl_key_present": bdl_key_present,
+        "local_snapshot": snap,
+        "live_fetch": fetch,
+        "max_age_hours": float(args.max_age_hours),
+        "state": state,
+        "morning_projected_mode_allowed": state in {
+            "bdl_empty_pre_confirmation",
+            "bdl_populated_confirmed_live",
+            "bdl_snapshot_missing",
+        },
+        "note": (
+            "Morning projected mode does not require confirmed BDL lineups, "
+            "but the M8.9 eligibility gate must run upstream so empty BDL "
+            "never permits a full-roster PMF publish."
+        ),
+    }
 
-    if counted == 0:
-        payload["outcome"] = "pending"
-        payload["reason"] = "no snapshots present yet"
-        (HEALTH / f"bdl_fetch_proof_{args.delivery_date}.json").write_text(
-            json.dumps(payload, indent=2, sort_keys=True, default=str),
-            encoding="utf-8",
-        )
-        print("PHASE13W_BDL_FETCH_PROOF_PENDING")
-        print(f"  reason={payload['reason']}")
-        return 0
-
-    payload["outcome"] = "fail" if failures else "pass"
-    payload["snapshot_count"] = counted
-    payload["failure_count"] = failures
-    out_json = HEALTH / f"bdl_fetch_proof_{args.delivery_date}.json"
-    out_json.write_text(
-        json.dumps(payload, indent=2, sort_keys=True, default=str),
-        encoding="utf-8",
-    )
-    out_md = HEALTH / f"bdl_fetch_proof_{args.delivery_date}.md"
-    md = [
-        f"# BDL fetch proof — {args.delivery_date}",
-        "",
-        f"- snapshots: **{counted}**",
-        f"- failures: **{failures}**",
-        "",
-        "## Per-snapshot findings",
-        "",
-    ]
-    for s in payload["snapshots"]:
-        md.append(f"### {s['game_id']}/{s['snapshot_type']}")
-        md.append("")
-        md.append("```")
-        for k, v in s["facts"].items():
-            md.append(f"  {k}={v!r}")
-        md.append("```")
-        if s["issues"]:
-            md.append("**issues:**")
-            for i in s["issues"]:
-                md.append(f"  - {i}")
-        md.append("")
-    out_md.write_text("\n".join(md) + "\n", encoding="utf-8")
-
-    if failures:
-        print("PHASE13W_BDL_FETCH_PROOF_FAILED", file=sys.stderr)
-        for s in payload["snapshots"]:
-            for i in s["issues"]:
-                print(f"  - {s['game_id']}/{s['snapshot_type']}: {i}", file=sys.stderr)
+    out_dir = REPO_ROOT / "artifacts" / "source_readiness" / args.date
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "bdl_fetch_proof.json"
+    out_path.write_text(json.dumps(payload, indent=2, default=str) + "\n")
+    print(f"  wrote {out_path.relative_to(REPO_ROOT)}")
+    print(f"  state={state}")
+    if state in {"bdl_key_missing", "bdl_request_failed"}:
         return 1
-    print("PHASE13W_BDL_FETCH_PROOF_PASS")
-    print(f"  delivery_date={args.delivery_date} snapshots={counted}")
     return 0
 
 

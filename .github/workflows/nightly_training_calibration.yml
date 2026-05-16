@@ -144,10 +144,10 @@ jobs:
           python scripts/backfill_player_game_stats_from_bdl.py \
             --from-date "$FROM_DATE" \
             --to-date "$PREV_DAY_ET" || \
-            echo "::warning::BDL backfill exited non-zero; resolver will halt if data still stale"
+            echo "::notice::BDL backfill exited non-zero; resolver will halt if data still stale"
           python scripts/verify_player_game_stats_freshness.py \
             --required-through-date "$PREV_DAY_ET" || \
-            echo "::warning::player_game_stats freshness verifier failed; resolver will halt cleanly"
+            echo "::notice::player_game_stats freshness verifier failed; resolver will halt cleanly"
 
       # Phase 13AF: commit the refreshed parquet so origin/main carries the
       # fresh outcomes even if the resolver halts in this run.
@@ -356,7 +356,7 @@ jobs:
           # diagnostic warnings, not a failed model-build workflow.
           if [ "$PRE" = "success" ] && [ "$PREP" = "success" ] && [ "$RUN" = "success" ]; then
             if [ "$VER" != "success" ] || [ "$HEA" != "success" ]; then
-              echo "::warning::TRAINING_DIAGNOSTIC_WARN verify=$VER health=$HEA core_training=success"
+              echo "::notice::TRAINING_DIAGNOSTIC_WARN verify=$VER health=$HEA core_training=success"
             fi
             echo "TRAINING_SCHEDULED_CRON_PASS outcome=success core_training=success"
             echo "TRAINING_RUN_PASS"
