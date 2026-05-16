@@ -1,0 +1,19 @@
+{
+  "as_of_date": "2026-05-15",
+  "backup_dir": "artifacts/models/champion/v_20260516T105117p0000",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "champion_pointer_sha256_after_swap": "6a70f09cda7ffde5cf9340d5afdd80bcda00e8629a93e5940a99b4fe92288201",
+  "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
+  "from_version": "challenger-2026-05-13",
+  "promoted": true,
+  "promoted_at_utc": "2026-05-16T10:51:17+00:00",
+  "schema_version": "1.0",
+  "soft_gate_failures_ignored": [
+    "m6_3_review_cells_guarded",
+    "m6_3_stat_role_matrix_valid",
+    "market_brier_non_inferior_or_better",
+    "market_logloss_non_inferior_or_better",
+    "no_severe_market_stat_bucket_regression"
+  ],
+  "to_version": "challenger-2026-05-15"
+}

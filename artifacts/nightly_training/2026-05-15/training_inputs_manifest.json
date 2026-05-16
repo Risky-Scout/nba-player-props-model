@@ -1,0 +1,64 @@
+{
+  "as_of_date": "2026-05-15",
+  "champion_calibrators": {
+    "ast": {
+      "path": "artifacts/models/pmf_cal_role_ast.pkl",
+      "sha256_prefix": "95739abbefc7e55b",
+      "size_bytes": 354429
+    },
+    "fg3m": {
+      "path": "artifacts/models/pmf_cal_role_fg3m.pkl",
+      "sha256_prefix": "57edf14dad60a827",
+      "size_bytes": 337405
+    },
+    "pts": {
+      "path": "artifacts/models/pmf_cal_role_pts.pkl",
+      "sha256_prefix": "4133ebd730cec6bf",
+      "size_bytes": 354357
+    },
+    "reb": {
+      "path": "artifacts/models/pmf_cal_role_reb.pkl",
+      "sha256_prefix": "ef761e201f32102e",
+      "size_bytes": 354493
+    },
+    "tov": {
+      "path": "artifacts/models/pmf_cal_role_tov.pkl",
+      "sha256_prefix": "deedd3f0ed6faedd",
+      "size_bytes": 354541
+    }
+  },
+  "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
+  "errors": [],
+  "generated_at_utc": "2026-05-16T10:49:17+00:00",
+  "inputs": {
+    "fold_aggregate.parquet": {
+      "future_rows_excluded": 0,
+      "rows_after_cutoff": 153664,
+      "rows_pre_cutoff": 153664,
+      "scoped_path": "artifacts/models/challengers/2026-05-15/aggregate_input/fold_aggregate.parquet",
+      "scoped_sha256_prefix": "71fd0236eb6f1c48",
+      "source": "data/oof_pmfs.parquet",
+      "source_sha256_prefix": "56df983bb0bedf2e"
+    },
+    "training_table.parquet": {
+      "advisory_only": true,
+      "consumed_by_aggregate_mode": false,
+      "note": "Not required for the daily aggregate-mode challenger path; is required for the periodic per-fold refresh in phase8.yml.",
+      "present": false,
+      "source": "data/training_table.parquet"
+    }
+  },
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-15",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-15",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260516T104912"
+  },
+  "schema_version": "1.0",
+  "stale_state_cleaned": [
+    "aggregate_input/"
+  ]
+}
