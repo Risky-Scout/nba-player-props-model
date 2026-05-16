@@ -3,7 +3,7 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
+    "code_commit": "9c3ff8d4c6ca5ffcaef1e942c989a22dd3b6f4fe",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -126,7 +126,7 @@
   },
   "champion": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "04663576d9b1cabb620784c2ccb7a4a8b4193a80",
+    "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
     "metrics": {
       "brier_logloss_at_market": null,
       "by_line_bucket": {},
@@ -246,7 +246,7 @@
     },
     "model_version": "sim-2099-12-31"
   },
-  "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
+  "code_commit": "9c3ff8d4c6ca5ffcaef1e942c989a22dd3b6f4fe",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -341,7 +341,7 @@
       "name": "market_benchmark_available"
     }
   ],
-  "generated_at_utc": "2026-05-16T19:42:34+00:00",
+  "generated_at_utc": "2026-05-16T22:28:54+00:00",
   "m6_3_matrix_summary": {
     "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
     "expected_role_buckets": [
@@ -664,7 +664,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
+    "code_commit": "9c3ff8d4c6ca5ffcaef1e942c989a22dd3b6f4fe",
     "dates_included": [
       "2026-05-12",
       "2026-05-08",
@@ -699,7 +699,7 @@
     ],
     "delta_brier": 0.012077780653008373,
     "delta_logloss": 0.036980768653124906,
-    "generated_at_utc": "2026-05-16T19:42:17+00:00",
+    "generated_at_utc": "2026-05-16T22:28:37+00:00",
     "market_brier": 0.23386606711450633,
     "market_logloss": 0.6591127199592747,
     "min_bucket_rows": 50,
@@ -850,7 +850,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-15",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260516T194029"
+    "training_run_id": "nightly-20260516T222650"
   },
   "pmf_validity": {
     "checked_files": 1,

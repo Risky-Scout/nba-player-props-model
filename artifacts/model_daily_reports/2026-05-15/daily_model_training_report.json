@@ -15,14 +15,14 @@
     "direct_lineup_pmf_driver": null,
     "feature_set_id": null,
     "no_leakage_manifest_path": null,
-    "promotion_decision_id": "promotion-2099-12-31-20260516T194239",
+    "promotion_decision_id": "promotion-2099-12-31-20260516T222858",
     "promotion_decision_path": "artifacts/models/challengers/2099-12-31/promotion_decision.json",
     "train_manifest_path": "artifacts/models/challengers/2099-12-31/train_manifest.json",
     "trained_through_date": "2099-12-31",
     "training_run_id": "nightly-20991231",
     "validation_report_path": "artifacts/models/challengers/2099-12-31/validation_report.json"
   },
-  "generated_at_utc": "2026-05-16T19:43:50+00:00Z",
+  "generated_at_utc": "2026-05-16T22:30:10+00:00Z",
   "metrics_per_target": {},
   "no_leakage": {
     "no_leakage_manifest": null,
@@ -286,7 +286,7 @@
           "rps": 0.5798870725669074
         }
       },
-      "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
+      "code_commit": "9c3ff8d4c6ca5ffcaef1e942c989a22dd3b6f4fe",
       "gates_failed": [
         "m6_3_stat_role_matrix_valid",
         "m6_3_review_cells_guarded",
@@ -312,7 +312,7 @@
         "no_phase10d_overlays_referenced",
         "market_benchmark_available"
       ],
-      "generated_at_utc": "2026-05-16T19:42:34+00:00",
+      "generated_at_utc": "2026-05-16T22:28:54+00:00",
       "m6_3_matrix_summary": {
         "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
         "expected_role_buckets": [
@@ -633,7 +633,7 @@
             "stat": "reb"
           }
         ],
-        "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
+        "code_commit": "9c3ff8d4c6ca5ffcaef1e942c989a22dd3b6f4fe",
         "dates_included": [
           "2026-05-12",
           "2026-05-08",
@@ -668,7 +668,7 @@
         ],
         "delta_brier": 0.012077780653008373,
         "delta_logloss": 0.036980768653124906,
-        "generated_at_utc": "2026-05-16T19:42:17+00:00",
+        "generated_at_utc": "2026-05-16T22:28:37+00:00",
         "market_brier": 0.23386606711450633,
         "market_logloss": 0.6591127199592747,
         "min_bucket_rows": 50,
@@ -818,7 +818,7 @@
         "stale_fallback_used": false,
         "target_date_et": "2026-05-15",
         "target_policy": "manual_override",
-        "training_run_id": "nightly-20260516T194029"
+        "training_run_id": "nightly-20260516T222650"
       },
       "promote": false,
       "reason": "gate_failed:m6_3_stat_role_matrix_valid",
@@ -1391,13 +1391,13 @@
     "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-15/promotion_decision.json",
     "promotion_manifest": {
       "as_of_date": "2026-05-15",
-      "backup_dir": "artifacts/models/champion/v_20260516T194235p0000",
+      "backup_dir": "artifacts/models/champion/v_20260516T222855p0000",
       "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-      "champion_pointer_sha256_after_swap": "b3838205654799517fb3f7a79292cc02eb4dc4a7213648cc1cde15c6ab102df1",
-      "code_commit": "57e68dfa04396d9dbec5de533de97ebb4b9c6eef",
+      "champion_pointer_sha256_after_swap": "a4eb4990164cf0b953798bcb6ff589159f64abb89d91909435c68d3104247b4e",
+      "code_commit": "9c3ff8d4c6ca5ffcaef1e942c989a22dd3b6f4fe",
       "from_version": "sim-2099-12-31",
       "promoted": true,
-      "promoted_at_utc": "2026-05-16T19:42:35+00:00",
+      "promoted_at_utc": "2026-05-16T22:28:55+00:00",
       "schema_version": "1.0",
       "soft_gate_failures_ignored": [
         "m6_3_review_cells_guarded",
