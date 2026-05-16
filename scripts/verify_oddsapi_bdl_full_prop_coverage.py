@@ -106,6 +106,18 @@ def main() -> int:
 
     inv_path = (args.dates_file or DEFAULT_INVENTORY).resolve()
     if not inv_path.is_file():
+        # The inventory is a backtest/training artifact; a one-off
+        # forced morning-delivery date is allowed to be missing from
+        # it because the date hasn't been scored yet. Hard-failing here
+        # would block a perfectly valid morning delivery on absent
+        # training inventory. Range-mode invocations (which audit a
+        # historical backfill window) keep the hard failure.
+        if args.date:
+            print(
+                f"ODDSAPI_BDL_FULL_PROP_COVERAGE_AUDIT_SKIPPED "
+                f"reason=MISSING_INVENTORY date={args.date} inventory={inv_path}"
+            )
+            return 0
         print(f"MISSING_INVENTORY {inv_path}", file=sys.stderr)
         return 2
 
@@ -120,6 +132,17 @@ def main() -> int:
             eligible_only=eligible_only,
         )
         if not dates_used:
+            # ``--date`` mode: a forced morning slate not yet present in
+            # the backtest inventory is structurally normal and must not
+            # block delivery. Range mode (a historical backfill window)
+            # keeps the hard failure because empty-range is a real bug.
+            if args.date and not args.start_date:
+                print(
+                    f"ODDSAPI_BDL_FULL_PROP_COVERAGE_AUDIT_SKIPPED "
+                    f"reason=DATE_NOT_IN_INVENTORY date={args.date} "
+                    f"inventory={inv_path}"
+                )
+                return 0
             print(
                 "ODDSAPI_BDL_FULL_PROP_COVERAGE_AUDIT_FAIL no eligible dates for the requested filter",
                 file=sys.stderr,
