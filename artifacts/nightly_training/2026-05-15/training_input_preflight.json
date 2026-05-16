@@ -17,8 +17,8 @@
   },
   "all_required_present": true,
   "as_of_date": "2026-05-15",
-  "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
-  "generated_at_utc": "2026-05-16T10:49:16+00:00",
+  "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
+  "generated_at_utc": "2026-05-16T14:06:58+00:00",
   "missing_advisory": [
     "data/training_table.parquet"
   ],
@@ -37,7 +37,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-15",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260516T104912"
+    "training_run_id": "nightly-20260516T140655"
   },
   "required_inputs": {
     "champion_pmf_cal_role_ast": {
@@ -77,8 +77,8 @@
     },
     "champion_pointer": {
       "path": "artifacts/models/registry/champion_pointer.json",
-      "sha256_prefix": "228ac31ddb965e44",
-      "size_bytes": 25270
+      "sha256_prefix": "6464f5e68840cc0b",
+      "size_bytes": 3174
     },
     "data/oof_pmfs.parquet": {
       "path": "data/oof_pmfs.parquet",
@@ -87,7 +87,7 @@
     },
     "data/player_game_stats.parquet": {
       "path": "data/player_game_stats.parquet",
-      "sha256_prefix": "85607cd0fe8c379d",
+      "sha256_prefix": "aa7a6cfdd2ef2bd4",
       "size_bytes": 1293653
     }
   },

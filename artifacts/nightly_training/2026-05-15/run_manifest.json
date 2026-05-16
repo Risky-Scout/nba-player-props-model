@@ -1,9 +1,9 @@
 {
   "as_of_date": "2026-05-15",
-  "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
+  "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
   "dry_run": false,
   "final_status": "ok",
-  "finished_at_utc": "2026-05-16T10:51:18+00:00",
+  "finished_at_utc": "2026-05-16T14:08:09+00:00",
   "halted_reason": null,
   "no_promote": false,
   "phase10d_overlays_in_use": false,
@@ -14,10 +14,10 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-15",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260516T104912"
+    "training_run_id": "nightly-20260516T140655"
   },
   "promotion_summary": {
-    "from_version": "challenger-2026-05-13",
+    "from_version": "sim-2099-12-31",
     "promoted": true,
     "reason": null,
     "to_version": "challenger-2026-05-15"
@@ -28,7 +28,7 @@
     "derek_compat_smoke": true,
     "woo_compat_smoke": true
   },
-  "started_at_utc": "2026-05-16T10:49:12+00:00",
+  "started_at_utc": "2026-05-16T14:06:55+00:00",
   "steps": [
     {
       "command": [
@@ -166,5 +166,5 @@
       "tail": "  files_stamped=['deliveries/2026-05-15/wizard_of_odds/run_manifest.json', 'deliveries/2026-05-15/derek_forward_feed/feed_manifest.json']"
     }
   ],
-  "training_run_id": "nightly-20260516T104912"
+  "training_run_id": "nightly-20260516T140655"
 }
