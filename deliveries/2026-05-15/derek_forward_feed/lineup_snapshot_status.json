@@ -1,5 +1,8 @@
 {
-  "status": "pending_lineup_snapshot",
-  "reason": "No pre_close/close_lock/lineup snapshot is on disk for deliveries/2026-05-15/wizard_of_odds/. The current wizard_of_odds/run_manifest.json snapshot_type is 'morning'. Run scripts/run_daily_delivery_pipeline.py --date 2026-05-15 --mode pre_close (or close_lock) to produce a lineup-aware delivery.",
-  "checked_at_utc": "2026-05-14T14:58:06Z"
+  "status": "pending_pre_tipoff_run",
+  "reason": "Morning-only forward-feed run for 2026-05-15. BDL confirmed lineups are not yet available; the lineup snapshot will be produced by the later derek_pre_tipoff_refresh / close_lock runs. Re-check after the pre-tipoff window.",
+  "snapshot_mode_running": "morning",
+  "lineup_phase_executed_today": false,
+  "checked_at_utc": "2026-05-16T00:02:33Z",
+  "schema_version": "lineup_snapshot_status.v2"
 }

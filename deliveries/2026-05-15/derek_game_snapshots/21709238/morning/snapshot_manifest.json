@@ -4,8 +4,8 @@
   "game_id": "21709238",
   "snapshot_type": "morning",
   "snapshot_mode": "production_live",
-  "generated_at_utc": "2026-05-15T16:54:23Z",
-  "snapshot_time_utc": "2026-05-15T16:54:23Z",
+  "generated_at_utc": "2026-05-16T00:02:35Z",
+  "snapshot_time_utc": "2026-05-16T00:02:35Z",
   "game_start_time_utc": null,
   "source": "deliveries/2026-05-15/wizard_of_odds/full_pmfs_wide.parquet",
   "pmf_source": "corrected_wizard_of_odds_full_pmfs_wide",
@@ -29,12 +29,12 @@
     "tov"
   ],
   "rows": 408,
-  "market_rows": 2299,
+  "market_rows": 491,
   "outputs": {
     "prop_summary": 408,
     "full_pmf_wide": 408,
-    "market_comparison": 2299,
-    "outcome_level_probabilities": 13779
+    "market_comparison": 491,
+    "outcome_level_probabilities": 13824
   },
   "lineup_freshness_status": {
     "projected": 408
