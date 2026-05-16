@@ -116,6 +116,7 @@ VERIFY_DEREK_CONTRACT = REPO_ROOT / "scripts" / "verify_derek_forward_feed_contr
 AUDIT_INJURY_LINEUP = REPO_ROOT / "scripts" / "audit_injury_lineup_run_modes.py"
 AUDIT_GITHUB_AUTOMATION = REPO_ROOT / "scripts" / "audit_github_delivery_automation.py"
 BUILD_FEATURE_SNAPSHOT = REPO_ROOT / "scripts" / "build_player_prop_feature_snapshot.py"
+BUILD_PRECANONICAL_SEED = REPO_ROOT / "scripts" / "build_precanonical_slate_universe.py"
 FETCH_BDL_LINEUPS = REPO_ROOT / "scripts" / "fetch_bdl_game_lineups.py"
 
 
@@ -243,7 +244,76 @@ def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
     return 0
 
 
-def _feature_snapshot(date: str, *, run_mode_stamp: str) -> Path | None:
+def _canonical_model_only_path_for_seed_gate(date: str) -> Path:
+    """Mirror of :func:`_canonical_model_only_path` defined later in this
+    module — duplicated here so :func:`_materialize_precanonical_seed`
+    can be defined ahead of :func:`_feature_snapshot` without a forward
+    reference. Returning the same path keeps the production-graph
+    contract intact (canonical MODEL_ONLY remains the only authoritative
+    base universe for the feature snapshot)."""
+    return (
+        REPO_ROOT
+        / "deliveries"
+        / date
+        / "canonical_source"
+        / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+
+
+def _materialize_precanonical_seed(
+    date: str, *, run_mode_stamp: str
+) -> Path | None:
+    """Materialize the identity-only pre-canonical slate universe seed.
+
+    Only runs when canonical MODEL_ONLY is NOT yet on disk for the
+    date — on warm slates with canonical already present, the seed
+    step is a no-op and ``_feature_snapshot`` reads canonical
+    directly. Returns the seed parquet path on success, or ``None``
+    when canonical already exists (no seed needed) or the seed
+    builder script is unavailable.
+
+    Hard-fails the pipeline on any pre-canonical contract violation
+    (``PRECANNONICAL_SLATE_UNIVERSE_*`` markers) — empty/missing
+    predict output, null keys, or slate_date mismatch must NOT be
+    swallowed. The seed never carries PMFs, model probabilities,
+    market edges, or any downstream model surface, so it is safe to
+    consult only as the feature-snapshot base universe.
+    """
+    if _canonical_model_only_path_for_seed_gate(date).is_file():
+        return None
+    if not BUILD_PRECANONICAL_SEED.exists():
+        return None
+    seed_out = (
+        REPO_ROOT
+        / "data"
+        / "features"
+        / f"precanonical_slate_universe_{date}_{run_mode_stamp}.parquet"
+    )
+    rc = _run(
+        [
+            PYTHON,
+            str(BUILD_PRECANONICAL_SEED),
+            "--date",
+            date,
+            "--run-mode",
+            run_mode_stamp,
+            "--out",
+            str(seed_out),
+        ],
+        allow_fail=False,
+        label=f"precanonical_slate_universe {date} {run_mode_stamp}",
+    )
+    if rc != 0:
+        return None
+    return seed_out if seed_out.is_file() else None
+
+
+def _feature_snapshot(
+    date: str,
+    *,
+    run_mode_stamp: str,
+    precanonical_seed_path: Path | None = None,
+) -> Path | None:
     """Build feature snapshot for the run mode (best-effort).
 
     Callers MUST invoke :func:`_require_feature_snapshot` immediately
@@ -251,21 +321,29 @@ def _feature_snapshot(date: str, *, run_mode_stamp: str) -> Path | None:
     stat_grid / canonical (i.e. every same-day pipeline). A best-effort
     rc here keeps the script self-describing — the precondition is what
     fails the pipeline.
+
+    ``precanonical_seed_path`` is forwarded to
+    ``build_player_prop_feature_snapshot.py`` only when canonical
+    MODEL_ONLY does not yet exist. The seed is identity-only and is
+    never consulted when canonical is present.
     """
     if not BUILD_FEATURE_SNAPSHOT.exists():
         return None
     out = REPO_ROOT / "data" / "features" / f"player_prop_features_{date}_{run_mode_stamp}.parquet"
+    cmd = [
+        PYTHON,
+        str(BUILD_FEATURE_SNAPSHOT),
+        "--date",
+        date,
+        "--run-mode",
+        run_mode_stamp,
+        "--out",
+        str(out),
+    ]
+    if precanonical_seed_path is not None and precanonical_seed_path.is_file():
+        cmd.extend(["--precanonical-seed-path", str(precanonical_seed_path)])
     rc = _run(
-        [
-            PYTHON,
-            str(BUILD_FEATURE_SNAPSHOT),
-            "--date",
-            date,
-            "--run-mode",
-            run_mode_stamp,
-            "--out",
-            str(out),
-        ],
+        cmd,
         allow_fail=True,
         label=f"feature_snapshot {date} {run_mode_stamp}",
     )
@@ -878,7 +956,8 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    seed = _materialize_precanonical_seed(date, run_mode_stamp="morning_expected")
+    fs = _feature_snapshot(date, run_mode_stamp="morning_expected", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
     _minutes_predictions(date, run_mode_stamp="morning_expected")
     _run_mission_stat_grid_and_canonical(date, fs)
@@ -909,7 +988,8 @@ def run_woo_morning_monetization(
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    seed = _materialize_precanonical_seed(date, run_mode_stamp="morning_expected")
+    fs = _feature_snapshot(date, run_mode_stamp="morning_expected", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
     _minutes_predictions(date, run_mode_stamp="morning_expected")
     _run_mission_stat_grid_and_canonical(date, fs)
@@ -941,7 +1021,8 @@ def run_woo_afternoon_refresh(
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    fs = _feature_snapshot(date, run_mode_stamp="morning_expected")
+    seed = _materialize_precanonical_seed(date, run_mode_stamp="morning_expected")
+    fs = _feature_snapshot(date, run_mode_stamp="morning_expected", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
     _minutes_predictions(date, run_mode_stamp="morning_expected")
     _run_mission_stat_grid_and_canonical(date, fs)
@@ -977,7 +1058,8 @@ def run_derek_pre_tipoff_refresh(
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    fs = _feature_snapshot(date, run_mode_stamp="t25")
+    seed = _materialize_precanonical_seed(date, run_mode_stamp="t25")
+    fs = _feature_snapshot(date, run_mode_stamp="t25", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="t25", path=fs)
     _minutes_predictions(date, run_mode_stamp="t25")
     _run_mission_stat_grid_and_canonical(date, fs)
@@ -1011,7 +1093,8 @@ def run_close_lock(date: str, *, regions: list[str],
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
     _preflight_before_stat_grid(date, availability_mode="close_lock")
-    fs = _feature_snapshot(date, run_mode_stamp="t5")
+    seed = _materialize_precanonical_seed(date, run_mode_stamp="t5")
+    fs = _feature_snapshot(date, run_mode_stamp="t5", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="t5", path=fs)
     _minutes_predictions(date, run_mode_stamp="t5")
     _run_mission_stat_grid_and_canonical(date, fs)

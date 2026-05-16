@@ -124,6 +124,146 @@ QUALITY_COLS = [
 FEED_COLS = IDENTITY_COLS + PMF_COLS + MARKET_COLS + QUALITY_COLS
 
 
+# ── Source-contract guard ──────────────────────────────────────────────
+#
+# Derek's forward feed must be built from the full, validated model PMF
+# surface — i.e. canonical MODEL_ONLY (built from stat-grid) joined with
+# market_comparison (built from canonical/stat-grid + market lines). It
+# must NEVER source projection / probability / PMF / edge fields from
+# the raw ``predictions/all_props_*.parquet`` snapshot or the
+# pre-canonical slate universe seed (which is identity-only and predates
+# stat-grid). The required source graph is:
+#
+#   feature_snapshot
+#     → minutes_predictions / minutes_predictions_eligible
+#     → stat_grid (12 mission stats)
+#     → canonical MODEL_ONLY built from stat_grid
+#     → market_comparison
+#     → derek_forward_feed   ← this script
+#
+# The guard below renders ``DEREK_FORWARD_FEED_SOURCE_CONTRACT_PASS`` on
+# legitimate inputs and ``DEREK_FORWARD_FEED_SOURCE_CONTRACT_VIOLATION``
+# with the offending substring on attempted regressions (and exits 2).
+
+DEREK_FEED_MODEL_SOURCE_CONTRACT = "stat_grid_canonical_market_comparison"
+
+DEREK_FEED_FORBIDDEN_SOURCE_SUBSTRINGS = (
+    "predictions/all_props_",
+    "precanonical_slate_universe_",
+)
+
+
+def _stat_grid_source_path(repo_root: Path, date: str) -> Path:
+    return repo_root / "predictions" / f"stat_grid_{date}.parquet"
+
+
+def _canonical_model_only_source_path(repo_root: Path, date: str) -> Path:
+    return (
+        repo_root
+        / "deliveries"
+        / date
+        / "canonical_source"
+        / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+
+
+def _assert_derek_feed_source_contract(
+    *,
+    date: str,
+    model_only_path: Path,
+    market_comparison_path: Path | None,
+) -> dict:
+    """Hard guard before any rows are emitted.
+
+    ``model_only_path`` must point at the canonical-derived review
+    package parquet under ``deliveries/<date>/pmf_model_review_package/
+    machine_readable/model_only.parquet`` (which is dual-written from
+    canonical MODEL_ONLY by ``build_daily_pmf_delivery.py``). The
+    canonical MODEL_ONLY parquet itself MUST be the
+    stat-grid-derived ``deliveries/<date>/canonical_source/
+    player_prop_pmfs_tonight_MODEL_ONLY.parquet`` — its existence is
+    confirmed here so callers cannot silently route Derek to a raw
+    ``predictions/all_props_*.parquet`` shortcut.
+
+    Returns the lineage descriptor that is stamped on the feed
+    manifest so post-run forensics can prove the source contract was
+    honored.
+
+    Emits ``DEREK_FORWARD_FEED_SOURCE_CONTRACT_PASS`` on success and
+    raises SystemExit(2) with
+    ``DEREK_FORWARD_FEED_SOURCE_CONTRACT_VIOLATION ...`` on any
+    violation.
+    """
+    model_src = str(model_only_path)
+    for bad in DEREK_FEED_FORBIDDEN_SOURCE_SUBSTRINGS:
+        if bad in model_src:
+            print(
+                "DEREK_FORWARD_FEED_SOURCE_CONTRACT_VIOLATION "
+                f"date={date} field=model_source forbidden_substring={bad!r} "
+                f"path={model_src}",
+                file=sys.stderr,
+            )
+            raise SystemExit(2)
+    if market_comparison_path is not None:
+        mc_src = str(market_comparison_path)
+        for bad in DEREK_FEED_FORBIDDEN_SOURCE_SUBSTRINGS:
+            if bad in mc_src:
+                print(
+                    "DEREK_FORWARD_FEED_SOURCE_CONTRACT_VIOLATION "
+                    f"date={date} field=market_comparison_source "
+                    f"forbidden_substring={bad!r} path={mc_src}",
+                    file=sys.stderr,
+                )
+                raise SystemExit(2)
+
+    canonical_path = _canonical_model_only_source_path(REPO_ROOT, date)
+    stat_grid_path = _stat_grid_source_path(REPO_ROOT, date)
+
+    if not canonical_path.is_file():
+        print(
+            "DEREK_FORWARD_FEED_SOURCE_CONTRACT_VIOLATION "
+            f"date={date} field=canonical_source "
+            f"reason=canonical_MODEL_ONLY_missing path={canonical_path}",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+    if not stat_grid_path.is_file():
+        print(
+            "DEREK_FORWARD_FEED_SOURCE_CONTRACT_VIOLATION "
+            f"date={date} field=stat_grid_source "
+            f"reason=stat_grid_parquet_missing path={stat_grid_path}",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+
+    def _rel(p: Path) -> str:
+        try:
+            return str(p.relative_to(REPO_ROOT))
+        except ValueError:
+            return str(p)
+
+    lineage = {
+        "model_source_contract": DEREK_FEED_MODEL_SOURCE_CONTRACT,
+        "model_source": _rel(model_only_path),
+        "canonical_source": _rel(canonical_path),
+        "stat_grid_source": _rel(stat_grid_path),
+        "market_comparison_source": (
+            _rel(market_comparison_path)
+            if market_comparison_path is not None
+            else None
+        ),
+    }
+    print(
+        "DEREK_FORWARD_FEED_SOURCE_CONTRACT_PASS "
+        f"date={date} contract={DEREK_FEED_MODEL_SOURCE_CONTRACT} "
+        f"model_source={lineage['model_source']} "
+        f"canonical_source={lineage['canonical_source']} "
+        f"stat_grid_source={lineage['stat_grid_source']} "
+        f"market_comparison_source={lineage['market_comparison_source']}"
+    )
+    return lineage
+
+
 def _now_utc_iso() -> str:
     return (
         datetime.now(timezone.utc)
@@ -1058,6 +1198,19 @@ def main() -> int:
     print(f"  out_dir={out_dir.relative_to(REPO_ROOT)}")
     print("=" * 72)
 
+    # Hard source-contract guard: refuse to build Derek's evaluation
+    # feed off a raw predictions/all_props snapshot or off the
+    # identity-only pre-canonical seed. Both Derek inputs must be
+    # downstream of stat_grid → canonical MODEL_ONLY → market_comparison.
+    base = DEL_DIR / args.date
+    review_pkg_model_only = base / "pmf_model_review_package" / "machine_readable" / "model_only.parquet"
+    market_comparison_for_guard = base / "wizard_of_odds" / "market_comparison.parquet"
+    source_lineage = _assert_derek_feed_source_contract(
+        date=args.date,
+        model_only_path=review_pkg_model_only,
+        market_comparison_path=market_comparison_for_guard if market_comparison_for_guard.exists() else None,
+    )
+
     morning_entry: dict | None = None
     lineup_entry: dict | None = None
     lineup_status_payload: dict | None = None
@@ -1224,6 +1377,11 @@ def main() -> int:
             "no_market_anchoring": True,
             "tov_overlay_phase10d": "off",
         },
+        "model_source_contract": source_lineage["model_source_contract"],
+        "model_source": source_lineage["model_source"],
+        "canonical_source": source_lineage["canonical_source"],
+        "stat_grid_source": source_lineage["stat_grid_source"],
+        "market_comparison_source": source_lineage["market_comparison_source"],
     }
     (out_dir / "feed_manifest.json").write_text(json.dumps(feed_manifest, indent=2, default=str))
     write_feed_readme(

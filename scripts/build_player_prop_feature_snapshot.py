@@ -24,6 +24,16 @@ def main() -> int:
     ap.add_argument("--date", required=True)
     ap.add_argument("--run-mode", required=True, choices=[m.value for m in RunMode])
     ap.add_argument("--out", default=None)
+    ap.add_argument(
+        "--precanonical-seed-path",
+        default=None,
+        help=(
+            "Optional pre-canonical slate universe seed parquet used "
+            "ONLY when canonical MODEL_ONLY does not yet exist for the "
+            "date (early-pipeline ordering break). The seed is "
+            "identity-only and is never used when canonical is present."
+        ),
+    )
     args = ap.parse_args()
 
     run_mode = RunMode(args.run_mode)
@@ -31,8 +41,20 @@ def main() -> int:
     if not out_path.is_absolute():
         out_path = REPO_ROOT / out_path
     out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    seed_path: Path | None = None
+    if args.precanonical_seed_path:
+        seed_path = Path(args.precanonical_seed_path)
+        if not seed_path.is_absolute():
+            seed_path = REPO_ROOT / seed_path
+
     try:
-        result = build_feature_snapshot(REPO_ROOT, args.date, run_mode)
+        result = build_feature_snapshot(
+            REPO_ROOT,
+            args.date,
+            run_mode,
+            precanonical_seed_path=seed_path,
+        )
     except MissingSourceInputsError as exc:
         print(str(exc))
         return 2

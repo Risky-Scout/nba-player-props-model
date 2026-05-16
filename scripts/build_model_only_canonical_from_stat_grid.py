@@ -471,10 +471,23 @@ def main(argv: list[str] | None = None) -> int:
     stat_grid_path = stat_grid_path.resolve()
 
     posix_path = stat_grid_path.as_posix()
+    # Canonical MODEL_ONLY is the authoritative model surface and must
+    # only ever be built from the validated 12-stat stat-grid. Refuse to
+    # build it from either the sparse raw predictions/all_props_*.parquet
+    # snapshot OR the identity-only pre-canonical slate universe seed —
+    # both are pre-stat-grid and would silently downgrade the canonical
+    # source contract.
     if "predictions/all_props_" in posix_path:
         print(
             "FATAL: CANONICAL_SOURCE_CONTRACT_VIOLATION "
             "all_props_is_sparse_not_stat_grid",
+            file=sys.stderr,
+        )
+        return 1
+    if "precanonical_slate_universe_" in posix_path:
+        print(
+            "FATAL: CANONICAL_SOURCE_CONTRACT_VIOLATION "
+            "precanonical_seed_is_identity_only_not_stat_grid",
             file=sys.stderr,
         )
         return 1

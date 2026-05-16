@@ -44,7 +44,33 @@ def _now_utc() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
-def _load_base_universe(repo_root: Path, date: str) -> pd.DataFrame:
+def _load_base_universe(
+    repo_root: Path,
+    date: str,
+    *,
+    precanonical_seed_path: Path | None = None,
+) -> pd.DataFrame:
+    """Resolve the base universe for the feature snapshot.
+
+    Precedence is strict:
+
+      1. Canonical MODEL_ONLY parquet/csv under
+         ``deliveries/<date>/canonical_source/`` — the production
+         source. Always preferred when present.
+      2. Pre-canonical slate universe seed, when supplied explicitly
+         by the caller AND canonical MODEL_ONLY is not yet on disk.
+         The seed only carries identity columns (player_id / game_id /
+         slate_date / team / opponent / is_home / game_start_*); it is
+         deliberately devoid of PMFs, model probabilities, market
+         edges, and any downstream model surface — so it can never
+         leak into Derek's evaluation feed or canonical delivery.
+      3. Empty DataFrame fallthrough — :func:`build_feature_snapshot`
+         maps that to ``SAME_DAY_SOURCE_INPUTS_MISSING``.
+
+    The seed is intentionally NOT a general fallback. Callers must
+    pass the path explicitly (i.e. the orchestrator's pre-canonical
+    step) — generic callers will never accidentally pick it up.
+    """
     root = repo_root / "deliveries" / date / "canonical_source"
     pq = root / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
     csv = root / "player_prop_pmfs_tonight_MODEL_ONLY.csv"
@@ -52,6 +78,8 @@ def _load_base_universe(repo_root: Path, date: str) -> pd.DataFrame:
         return pd.read_parquet(pq)
     if csv.is_file():
         return pd.read_csv(csv)
+    if precanonical_seed_path is not None and precanonical_seed_path.is_file():
+        return pd.read_parquet(precanonical_seed_path)
     return pd.DataFrame()
 
 
@@ -445,10 +473,27 @@ def assert_availability_confidence_is_numeric(snapshot: pd.DataFrame) -> None:
     )
 
 
-def build_feature_snapshot(repo_root: Path, date: str, run_mode: RunMode) -> SnapshotResult:
+def build_feature_snapshot(
+    repo_root: Path,
+    date: str,
+    run_mode: RunMode,
+    *,
+    precanonical_seed_path: Path | None = None,
+) -> SnapshotResult:
+    """Build the as-of-safe feature snapshot for ``date`` / ``run_mode``.
+
+    ``precanonical_seed_path`` is an opt-in identity-only seed used
+    only to break the early-pipeline ordering problem (the canonical
+    MODEL_ONLY parquet is downstream of stat_grid which itself needs
+    the feature snapshot). When canonical MODEL_ONLY exists on disk
+    it is always preferred; the seed is consulted only as a fallback,
+    and only when the caller explicitly opts in by passing the path.
+    """
     generated_at = _now_utc()
     run_id = f"{date}_{run_mode.value}_{uuid.uuid4().hex[:10]}"
-    base = _load_base_universe(repo_root, date)
+    base = _load_base_universe(
+        repo_root, date, precanonical_seed_path=precanonical_seed_path
+    )
     if base.empty:
         raise MissingSourceInputsError(
             f"SAME_DAY_SOURCE_INPUTS_MISSING: missing canonical_source/player_prop_pmfs_tonight_MODEL_ONLY for {date}"

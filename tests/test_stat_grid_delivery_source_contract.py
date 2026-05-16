@@ -66,6 +66,39 @@ def test_canonical_rejects_all_props_path_via_cli(tmp_path):
     assert rc == 1
 
 
+def test_canonical_rejects_precanonical_seed_path_via_cli(tmp_path, capsys):
+    """2b) precanonical seed path → CANONICAL_SOURCE_CONTRACT_VIOLATION.
+
+    The seed is identity-only and pre-stat-grid; the canonical
+    MODEL_ONLY parquet must NEVER be built from it.
+    """
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    import build_model_only_canonical_from_stat_grid as canon
+
+    bad = (
+        tmp_path
+        / "data"
+        / "features"
+        / "precanonical_slate_universe_2026-01-01_morning_expected.parquet"
+    )
+    bad.parent.mkdir(parents=True, exist_ok=True)
+    bad.write_bytes(b"")
+
+    rc = canon.main(
+        [
+            "--date",
+            "2026-01-01",
+            "--stat-grid-path",
+            str(bad),
+        ]
+    )
+    err = capsys.readouterr().err
+    assert rc == 1
+    assert "CANONICAL_SOURCE_CONTRACT_VIOLATION" in err
+    assert "precanonical_seed_is_identity_only_not_stat_grid" in err
+
+
 def test_build_stat_grid_writes_parquet_with_fixture_features(tmp_path, monkeypatch):
     """3–4) Feature snapshot rows → stat_grid parquet includes all 12 mission stats."""
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
