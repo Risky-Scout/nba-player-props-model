@@ -18,10 +18,60 @@ REQUIRED_DIRS = (
 )
 
 
+def _delivery_manifest_confirmed_no_games_slate(date: str) -> bool:
+    """Strict 4-flag no-games gate for the morning completeness verifier.
+
+    Returns True if and only if the dated delivery manifest declares
+    ALL of:
+
+      * ``no_games_slate == True``
+      * ``confirmed_no_games_slate == True``
+      * ``reason == "no_games_slate"``
+      * ``market_superiority_evaluated == False``
+      * ``derek_forward_feed_expected == False``
+
+    These four fields are stamped together only by the orchestrator's
+    ``_emit_no_games_delivery_package`` after BOTH the predict
+    no-games signal AND an independent BDL ``/games`` schedule lookup
+    have confirmed zero games for the date. Any partial / missing /
+    corrupt manifest returns False so a games-bearing slate with
+    missing subdirs (pmf_model_review_package, derek_forward_feed,
+    after_game_scoring) still hard-fails — that's a real regression,
+    not a no-games soft-skip.
+    """
+    manifest_path = REPO_ROOT / "deliveries" / date / "manifest.json"
+    if not manifest_path.is_file():
+        return False
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    return (
+        payload.get("no_games_slate") is True
+        and payload.get("confirmed_no_games_slate") is True
+        and payload.get("reason") == "no_games_slate"
+        and payload.get("market_superiority_evaluated") is False
+        and payload.get("derek_forward_feed_expected") is False
+    )
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
     args = ap.parse_args()
+
+    if _delivery_manifest_confirmed_no_games_slate(args.date):
+        print(
+            f"VERIFY_MORNING_DELIVERY_COMPLETENESS_SOFT_SKIP_NO_GAMES "
+            f"date={args.date} "
+            f"manifest=deliveries/{args.date}/manifest.json "
+            f"gate=no_games_slate+confirmed_no_games_slate+"
+            f"market_superiority_evaluated=false+derek_forward_feed_expected=false "
+            f"reason=no_eligible_player_game_rows_expected"
+        )
+        return 0
 
     root = REPO_ROOT / "deliveries" / args.date
     fails: list[str] = []

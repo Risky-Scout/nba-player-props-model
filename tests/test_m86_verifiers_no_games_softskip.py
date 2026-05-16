@@ -1,21 +1,19 @@
 """M8.6 post-delivery verifiers — strict no-games soft-skip tests.
 
-Two M8.6 post-delivery verifiers must soft-skip cleanly on a confirmed
-no-games slate (delivery manifest carries ``no_games_slate: true`` AND
-``reason: no_games_slate``):
+Three M8.6 verifiers must soft-skip cleanly on a confirmed no-games
+slate (delivery manifest carries the full strict 4-flag gate:
+``no_games_slate: true`` + ``confirmed_no_games_slate: true`` +
+``market_superiority_evaluated: false`` +
+``derek_forward_feed_expected: false``):
 
-  * verify_daily_delivery_folder_contract: the pmf_model_review_package
-    subdir is not produced on a no-games short-circuit; the strict
-    folder contract must allow that ONLY when the manifest confirms
-    the no-games slate.
+  * verify_daily_delivery_folder_contract: pmf_model_review_package
+    not produced on a no-games short-circuit.
+  * verify_availability_freshness: refresh step skipped by design.
+  * verify_morning_delivery_completeness: same missing-subdir set.
 
-  * verify_availability_freshness: the refresh step is skipped by
-    design on a no-games slate, so the close_lock 6h age gate cannot
-    be met — soft-skip rather than false-red.
-
-Both gates must keep their hard-fail behavior intact on any other
-manifest shape (missing flag, false flag, missing manifest, corrupt
-manifest, mismatched reason).
+All three gates must keep hard-fail behavior on any other manifest
+shape (missing flag, false flag, missing manifest, corrupt manifest,
+mismatched reason, partial 4-flag).
 """
 from __future__ import annotations
 
@@ -254,6 +252,112 @@ def test_availability_main_hard_fails_without_signal(tmp_path, monkeypatch, caps
     err = capsys.readouterr().err
     assert "AVAILABILITY_FRESHNESS_FAIL" in err
     assert "missing_file" in err
+
+
+def test_availability_main_hard_fails_when_market_superiority_true(
+    tmp_path, monkeypatch, capsys
+):
+    """Even with all other no-games flags set, market_superiority_
+    evaluated=true means soft-skip is forbidden — the slate claims a
+    real market-superiority evaluation, which cannot be true on a
+    legit no-games slate."""
+    mod = _make_avail_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16", market_superiority_evaluated=True)
+    monkeypatch.setattr(sys, "argv",
+                        ["verify_availability_freshness.py",
+                         "--date", "2026-05-16",
+                         "--mode", "close_lock"], raising=True)
+    rc = mod.main()
+    assert rc == 1
+
+
+# ---- verify_morning_delivery_completeness.py -----------------------------
+
+
+def _make_morning_completeness_module(monkeypatch, repo_root: Path):
+    mod = _load_module(monkeypatch, "verify_morning_delivery_completeness.py",
+                       "_morning_completeness_under_test")
+    monkeypatch.setattr(mod, "REPO_ROOT", repo_root, raising=True)
+    return mod
+
+
+def test_morning_completeness_helper_true_when_full_4_flag_manifest(tmp_path, monkeypatch):
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16")
+    assert mod._delivery_manifest_confirmed_no_games_slate("2026-05-16") is True
+
+
+def test_morning_completeness_helper_false_without_manifest(tmp_path, monkeypatch):
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    assert mod._delivery_manifest_confirmed_no_games_slate("2026-05-16") is False
+
+
+def test_morning_completeness_helper_false_when_confirmed_flag_false(tmp_path, monkeypatch):
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16", confirmed_no_games_slate=False)
+    assert mod._delivery_manifest_confirmed_no_games_slate("2026-05-16") is False
+
+
+def test_morning_completeness_helper_false_when_market_superiority_true(tmp_path, monkeypatch):
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16", market_superiority_evaluated=True)
+    assert mod._delivery_manifest_confirmed_no_games_slate("2026-05-16") is False
+
+
+def test_morning_completeness_helper_false_when_derek_feed_expected_true(tmp_path, monkeypatch):
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16", derek_forward_feed_expected=True)
+    assert mod._delivery_manifest_confirmed_no_games_slate("2026-05-16") is False
+
+
+def test_morning_completeness_main_soft_skips_with_required_marker(
+    tmp_path, monkeypatch, capsys
+):
+    """End-to-end: main() short-circuits BEFORE checking required
+    subdirs and prints the required marker
+    VERIFY_MORNING_DELIVERY_COMPLETENESS_SOFT_SKIP_NO_GAMES."""
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16")
+    monkeypatch.setattr(sys, "argv",
+                        ["verify_morning_delivery_completeness.py",
+                         "--date", "2026-05-16"], raising=True)
+    rc = mod.main()
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "VERIFY_MORNING_DELIVERY_COMPLETENESS_SOFT_SKIP_NO_GAMES" in out
+    assert "date=2026-05-16" in out
+    assert "gate=no_games_slate+confirmed_no_games_slate" in out
+
+
+def test_morning_completeness_main_hard_fails_on_missing_subdirs_without_signal(
+    tmp_path, monkeypatch, capsys
+):
+    """Games-bearing slate (no manifest no-games flag) with missing
+    required subdirs must still hard-fail with MORNING_DELIVERY_
+    COMPLETENESS_FAIL."""
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    (tmp_path / "deliveries" / "2026-05-16").mkdir(parents=True)
+    monkeypatch.setattr(sys, "argv",
+                        ["verify_morning_delivery_completeness.py",
+                         "--date", "2026-05-16"], raising=True)
+    rc = mod.main()
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "MORNING_DELIVERY_COMPLETENESS_FAIL" in out
+
+
+def test_morning_completeness_main_hard_fails_on_partial_4_flag_manifest(
+    tmp_path, monkeypatch
+):
+    """Partial 4-flag manifest must NOT trigger soft-skip."""
+    mod = _make_morning_completeness_module(monkeypatch, tmp_path)
+    _write_manifest(tmp_path, "2026-05-16", confirmed_no_games_slate=False)
+    (tmp_path / "deliveries" / "2026-05-16").mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(sys, "argv",
+                        ["verify_morning_delivery_completeness.py",
+                         "--date", "2026-05-16"], raising=True)
+    rc = mod.main()
+    assert rc == 1
 
 
 def test_availability_main_hard_fails_on_partial_4_flag_manifest(
