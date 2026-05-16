@@ -1,0 +1,61 @@
+{
+  "calibrated_through_date": "2099-12-31",
+  "champion_model_id": "sim-2099-12-31",
+  "champion_pointer_hash": "84fa52ae275c6f0e792a8c95efee7f31",
+  "delivery_date": "2026-05-17",
+  "fields_written": [
+    "model_source",
+    "champion_model_id",
+    "champion_artifact_dir",
+    "trained_through_date",
+    "calibrated_through_date",
+    "training_run_id",
+    "calibration_run_id",
+    "validation_run_id",
+    "promotion_decision_id",
+    "champion_pointer_path",
+    "champion_pointer_hash",
+    "output_generated_at_utc",
+    "metadata_stamped_at_utc",
+    "no_challenger_artifacts_used",
+    "stamp_code_commit"
+  ],
+  "files_missing": [],
+  "files_stamped": [
+    "deliveries/2026-05-17/wizard_of_odds/run_manifest.json",
+    "deliveries/2026-05-17/derek_forward_feed/feed_manifest.json"
+  ],
+  "no_prediction_values_modified": true,
+  "results": [
+    {
+      "path": "deliveries/2026-05-17/wizard_of_odds/run_manifest.json",
+      "sidecar": "deliveries/2026-05-17/wizard_of_odds/run_manifest.champion_stamp.json",
+      "stamped": true
+    },
+    {
+      "path": "deliveries/2026-05-17/derek_forward_feed/feed_manifest.json",
+      "sidecar": "deliveries/2026-05-17/derek_forward_feed/feed_manifest.champion_stamp.json",
+      "stamped": true
+    }
+  ],
+  "schema_version": "1.0",
+  "stamp": {
+    "calibrated_through_date": "2099-12-31",
+    "calibration_run_id": "nightly-20991231",
+    "champion_artifact_dir": "artifacts/models",
+    "champion_model_id": "sim-2099-12-31",
+    "champion_pointer_hash": "84fa52ae275c6f0e792a8c95efee7f31",
+    "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+    "metadata_stamped_at_utc": "2026-05-16T20:14:36+00:00",
+    "model_source": "champion_pointer",
+    "no_challenger_artifacts_used": true,
+    "output_generated_at_utc": "2026-05-16T20:14:36+00:00",
+    "promotion_decision_id": "promotion-2099-12-31-20260516T194239",
+    "stamp_code_commit": "e15111fd6b06facfbb7c84fcdde46b3a2f49b488",
+    "trained_through_date": "2099-12-31",
+    "training_run_id": "nightly-20991231",
+    "validation_run_id": "nightly-20991231"
+  },
+  "status": "ok",
+  "trained_through_date": "2099-12-31"
+}
