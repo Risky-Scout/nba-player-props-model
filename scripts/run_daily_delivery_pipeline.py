@@ -111,6 +111,7 @@ VERIFY_DEREK_CONTRACT = REPO_ROOT / "scripts" / "verify_derek_forward_feed_contr
 AUDIT_INJURY_LINEUP = REPO_ROOT / "scripts" / "audit_injury_lineup_run_modes.py"
 AUDIT_GITHUB_AUTOMATION = REPO_ROOT / "scripts" / "audit_github_delivery_automation.py"
 BUILD_FEATURE_SNAPSHOT = REPO_ROOT / "scripts" / "build_player_prop_feature_snapshot.py"
+VALIDATE_DELIVERY = REPO_ROOT / "scripts" / "validate_daily_pmf_delivery.py"
 
 
 def _run(cmd: list[str], *, allow_fail: bool = False, label: str = "") -> int:
@@ -592,6 +593,23 @@ LEGACY_MODE_TO_RUN_STAMP: dict[str, str] = {
     "full_day": "unspecified",
 }
 
+_MANIFEST_SNAPSHOT_BY_INTERNAL_MODE: dict[str, str] = {
+    "woo_morning_monetization": "morning",
+    "woo_afternoon_refresh": "pre_close",
+    "derek_near_lineup": "pre_close",
+    "pre_close": "pre_close",
+    "close_lock": "close_lock",
+    "morning": "morning",
+    "after_game": "after_game",
+    "full_day": "full_day",
+}
+
+
+def _train_through_calendar_prev(date_str: str) -> str:
+    return (
+        datetime.strptime(date_str, "%Y-%m-%d").date() - timedelta(days=1)
+    ).isoformat()
+
 
 def _predictions_or_stat_grid_exists(date: str) -> bool:
     p1 = REPO_ROOT / "predictions" / f"all_props_{date}.parquet"
@@ -632,12 +650,42 @@ def _verify_m88_delivery_bundle(
     run_stamp: str,
     *,
     fail_on_missing: bool,
+    pipeline_internal_mode: str,
 ) -> int:
     """Run delivery completeness + Derek contract + injury-lineup + GitHub audits."""
 
     outd = REPO_ROOT / "artifacts" / "model_diagnostics" / "daily_delivery_completeness_last_run"
     prev = (datetime.strptime(date, "%Y-%m-%d").date() - timedelta(days=1)).isoformat()
+    train_through = _train_through_calendar_prev(date)
+    snapshot_label = _MANIFEST_SNAPSHOT_BY_INTERNAL_MODE.get(pipeline_internal_mode, "morning")
+
+    injury_cmd = [
+        PYTHON,
+        str(AUDIT_INJURY_LINEUP),
+        "--date",
+        date,
+        "--latest-completed-date",
+        prev,
+    ]
+    if pipeline_internal_mode == "woo_morning_monetization":
+        injury_cmd.extend(["--delivery-pipeline-mode", "woo_morning_monetization"])
+
     steps: list[tuple[str, list[str]]] = [
+        (
+            "validate_daily_pmf_delivery",
+            [
+                PYTHON,
+                str(VALIDATE_DELIVERY),
+                "--date",
+                date,
+                "--train-through-date",
+                train_through,
+                "--pipeline-mode",
+                pipeline_internal_mode,
+                "--snapshot",
+                snapshot_label,
+            ],
+        ),
         (
             "audit_daily_delivery_completeness",
             [
@@ -671,17 +719,7 @@ def _verify_m88_delivery_bundle(
                 str(REPO_ROOT / "artifacts" / "model_diagnostics" / "delivery_cleanliness_hard_last_run"),
             ],
         ),
-        (
-            "audit_injury_lineup_run_modes",
-            [
-                PYTHON,
-                str(AUDIT_INJURY_LINEUP),
-                "--date",
-                date,
-                "--latest-completed-date",
-                prev,
-            ],
-        ),
+        ("audit_injury_lineup_run_modes", injury_cmd),
         ("audit_github_delivery_automation", [PYTHON, str(AUDIT_GITHUB_AUTOMATION)]),
     ]
     worst = 0
@@ -1013,6 +1051,7 @@ def main() -> int:
             args.date,
             stamp,
             fail_on_missing=bool(args.fail_on_missing_delivery),
+            pipeline_internal_mode=internal,
         )
         rc = max(rc, vrc)
     return rc

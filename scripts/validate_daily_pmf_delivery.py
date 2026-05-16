@@ -56,6 +56,33 @@ REQUIRED_CANONICAL_COLUMNS = [
 ]
 
 
+def enrich_delivery_manifest_for_pipeline(
+    manifest: dict[str, Any],
+    *,
+    delivery_date: str,
+    pipeline_mode: str | None,
+    snapshot: str | None,
+) -> None:
+    """Augment ``manifest.json`` with pipeline routing + canonical paths."""
+
+    manifest["date"] = delivery_date
+    if pipeline_mode is not None:
+        manifest["run_mode"] = pipeline_mode
+    if snapshot is not None:
+        manifest["snapshot"] = snapshot
+    manifest["canonical_model_only_path"] = (
+        f"deliveries/{delivery_date}/canonical_source/"
+        "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+    manifest["all_props_model_only_path"] = (
+        f"deliveries/{delivery_date}/canonical_source/all_props_model_only.parquet"
+    )
+    manifest["market_comparison_path"] = (
+        f"deliveries/{delivery_date}/wizard_of_odds/market_comparison.parquet"
+    )
+    manifest.setdefault("warnings", [])
+
+
 def _now_utc_iso() -> str:
     return (
         datetime.now(timezone.utc)
@@ -475,11 +502,27 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--date", required=True, help="YYYY-MM-DD slate date")
     ap.add_argument("--train-through-date", required=True, help="YYYY-MM-DD")
+    ap.add_argument(
+        "--pipeline-mode",
+        default=None,
+        help="Internal pipeline mode label stored on deliveries/{date}/manifest.json.",
+    )
+    ap.add_argument(
+        "--snapshot",
+        default=None,
+        help="Delivery snapshot label (e.g. morning, pre_close) for manifest.json.",
+    )
     args = ap.parse_args(argv)
 
     manifest = validate(args.date, args.train_through_date)
     merge_manifest_injury_fields(manifest, args.date, REPO_ROOT)
     merge_delivery_manifest_market_signal_fields(manifest, REPO_ROOT, args.date)
+    enrich_delivery_manifest_for_pipeline(
+        manifest,
+        delivery_date=args.date,
+        pipeline_mode=args.pipeline_mode,
+        snapshot=args.snapshot,
+    )
     out_path = REPO_ROOT / "deliveries" / args.date / "manifest.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(manifest, indent=2) + "\n")

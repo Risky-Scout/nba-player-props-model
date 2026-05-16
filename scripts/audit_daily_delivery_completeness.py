@@ -25,6 +25,10 @@ from nba_props_model.delivery.delivery_contract import (  # noqa: E402
     infer_run_mode_for_delivery_date,
 )
 
+OPTIONAL_AFTER_GAME_PLACEHOLDER_REL = (
+    "after_game_scoring/after_game_scoring_placeholder_manifest.json"
+)
+
 
 def _read_json(p: Path) -> dict[str, Any]:
     if not p.is_file():
@@ -269,7 +273,15 @@ def audit_date(
             phits = _scan_placeholders_parquet(path)
         row_base["placeholder_value_count"] = len(phits)
         if phits:
-            row_base["failure_reason"] = "placeholder_or_banned_token"
+            if (
+                rel == OPTIONAL_AFTER_GAME_PLACEHOLDER_REL
+                and mode_eff == RunMode.MORNING_EXPECTED
+                and pres == FilePresence.OPTIONAL
+            ):
+                row_base["optional_after_game_placeholder_warn"] = True
+                row_base["failure_reason"] = ""
+            else:
+                row_base["failure_reason"] = "placeholder_or_banned_token"
         if "derek_forward_feed" in rel and rel.endswith(".parquet"):
             miss = row_base["missing_required_columns"]
             row_base["derek_feed_ready"] = path.is_file() and not miss
@@ -328,7 +340,9 @@ def _passes(rows: list[dict[str, Any]]) -> bool:
             return False
         if r.get("required_columns_present") is False:
             return False
-        if r.get("placeholder_value_count", 0) > 0:
+        if int(r.get("placeholder_value_count") or 0) > 0:
+            if r.get("optional_after_game_placeholder_warn"):
+                continue
             return False
     return True
 
@@ -432,6 +446,8 @@ def main() -> int:
     ]
     (out_dir / "summary.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
+    if any(bool(r.get("optional_after_game_placeholder_warn")) for r in all_rows):
+        print("DAILY_DELIVERY_COMPLETENESS_OPTIONAL_PLACEHOLDER_WARN")
     if ok:
         print("DAILY_DELIVERY_COMPLETENESS_AUDIT_PASS")
     else:

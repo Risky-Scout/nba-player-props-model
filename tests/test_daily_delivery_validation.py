@@ -105,7 +105,9 @@ def _setup_paths(tmp_path, monkeypatch):
 
     return {
         "minutes": artifacts / "minutes_predictions.parquet",
+        "minutes_eligible": artifacts / "minutes_predictions_eligible.parquet",
         "canonical": canonical_dir / "all_props_model_only.parquet",
+        "model_only_legacy": canonical_dir / "player_prop_pmfs_tonight_MODEL_ONLY.parquet",
         "review": review_dir / "model_only.parquet",
         "market_pq": woo_dir / "market_comparison.parquet",
         "derek": derek_dir / "derek_forward_feed.parquet",
@@ -185,17 +187,54 @@ def test_validator_fail_when_review_keys_mismatch_canonical(tmp_path, monkeypatc
     assert "review_keys_mismatch_canonical" in codes
 
 
+def _eligible_row(**overrides):
+    row = _canonical_row(eligibility_reason="starter_probability", **overrides)
+    return row
+
+
+def _stage_clean_delivery(paths):
+    _good_minutes_df().to_parquet(paths["minutes"], index=False)
+    pd.DataFrame([_eligible_row()]).to_parquet(paths["minutes_eligible"], index=False)
+    pd.DataFrame([_canonical_row()]).to_parquet(paths["canonical"], index=False)
+    pd.DataFrame([_canonical_row()]).to_parquet(paths["model_only_legacy"], index=False)
+    pd.DataFrame([_canonical_row()]).to_parquet(paths["review"], index=False)
+    pd.DataFrame(
+        [
+            {"line": 24.5 + i, "game_id": 9001, "player_id": 101, "stat": "points"}
+            for i in range(5)
+        ]
+    ).to_parquet(paths["market_pq"], index=False)
+    pd.DataFrame([_canonical_row()]).to_parquet(paths["derek"], index=False)
+
+
 def test_validator_clean_delivery_passes(tmp_path, monkeypatch):
     paths = _setup_paths(tmp_path, monkeypatch)
-    _good_minutes_df().to_parquet(paths["minutes"], index=False)
-    pd.DataFrame([_canonical_row()]).to_parquet(paths["canonical"], index=False)
-    pd.DataFrame([_canonical_row()]).to_parquet(paths["review"], index=False)
-    # Market must be at least ~5% of canonical and >= 5 rows; canonical=1
-    # so any non-empty market suffices.
-    pd.DataFrame([{
-        "line": 24.5, "game_id": 9001, "player_id": 101, "stat": "points",
-    }]).to_parquet(paths["market_pq"], index=False)
-    pd.DataFrame([_canonical_row()]).to_parquet(paths["derek"], index=False)
+    _stage_clean_delivery(paths)
     result = validator.validate(SLATE_DATE, TRAIN_THROUGH)
     assert result["status"] == "passed", result
     assert result["failures"] == []
+
+
+def test_enrich_manifest_adds_pipeline_contract_paths(tmp_path, monkeypatch):
+    paths = _setup_paths(tmp_path, monkeypatch)
+    _stage_clean_delivery(paths)
+    manifest = validator.validate(SLATE_DATE, TRAIN_THROUGH)
+    validator.enrich_delivery_manifest_for_pipeline(
+        manifest,
+        delivery_date=SLATE_DATE,
+        pipeline_mode="woo_morning_monetization",
+        snapshot="morning",
+    )
+    assert manifest["date"] == SLATE_DATE
+    assert manifest["run_mode"] == "woo_morning_monetization"
+    assert manifest["snapshot"] == "morning"
+    assert manifest["canonical_model_only_path"] == (
+        "deliveries/2026-05-15/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    )
+    assert manifest["all_props_model_only_path"] == (
+        "deliveries/2026-05-15/canonical_source/all_props_model_only.parquet"
+    )
+    assert manifest["market_comparison_path"] == (
+        "deliveries/2026-05-15/wizard_of_odds/market_comparison.parquet"
+    )
+    assert isinstance(manifest.get("warnings"), list)
