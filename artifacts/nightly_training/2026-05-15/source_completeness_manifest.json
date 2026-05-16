@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "detail": "status=skipped_already_fresh finished_at=2026-05-16T10:49:13+00:00",
+      "detail": "status=skipped_already_fresh finished_at=2026-05-16T14:06:56+00:00",
       "name": "source_refresh_manifest_present",
       "passed": true
     },
@@ -31,9 +31,9 @@
       "passed": true
     }
   ],
-  "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
+  "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
   "fail_code": null,
-  "generated_at_utc": "2026-05-16T10:49:14+00:00",
+  "generated_at_utc": "2026-05-16T14:06:56+00:00",
   "metrics": {
     "max_game_date": "2026-05-15",
     "rolling_7day_dates": [
@@ -49,18 +49,18 @@
     "row_count_total": 84196,
     "rows_after_target_date": 0,
     "rows_on_target_date": 54,
-    "source_sha256_prefix": "85607cd0fe8c379d"
+    "source_sha256_prefix": "aa7a6cfdd2ef2bd4"
   },
   "no_override_allowed": false,
   "passed": true,
   "schema_version": "1.0",
   "source_refresh_seen": {
-    "finished_at_utc": "2026-05-16T10:49:13+00:00",
+    "finished_at_utc": "2026-05-16T14:06:56+00:00",
     "halted_reason": null,
     "post_refresh": {
       "exists": true,
       "max_game_date": "2026-05-15",
-      "mtime_utc": "2026-05-16T10:49:05.462400+00:00",
+      "mtime_utc": "2026-05-16T14:06:48.332822+00:00",
       "path": "data/player_game_stats.parquet",
       "recent_date_row_counts": {
         "2026-05-10": 46,
@@ -72,7 +72,7 @@
       "row_count": 84196,
       "rows_after_target_date": 0,
       "rows_on_target_date": 54,
-      "sha256_prefix": "85607cd0fe8c379d",
+      "sha256_prefix": "aa7a6cfdd2ef2bd4",
       "size_bytes": 1293653
     },
     "provider": "balldontlie.io",

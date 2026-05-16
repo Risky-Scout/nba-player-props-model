@@ -2,10 +2,10 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-16T10:51:16+00:00 |
+| Generated (UTC) | 2026-05-16T14:08:07+00:00 |
 | Promote | no |
 | Reason | gate_failed:m6_3_stat_role_matrix_valid |
-| Champion model_version | challenger-2026-05-13 |
+| Champion model_version | sim-2099-12-31 |
 | Challenger dry_run | False |
 | PMF validity issues | 0 |
 | Gates passed | 16 |

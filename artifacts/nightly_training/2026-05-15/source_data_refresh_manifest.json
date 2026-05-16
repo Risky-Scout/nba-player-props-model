@@ -1,12 +1,12 @@
 {
-  "code_commit": "59aa9d74d4b9844f82a2924e475ee6020af49671",
+  "code_commit": "647eaf0faccdd6dc060d81d174714804c81f4773",
   "fetcher": "scripts/refresh_bdl_player_game_stats.py",
-  "finished_at_utc": "2026-05-16T10:49:13+00:00",
+  "finished_at_utc": "2026-05-16T14:06:56+00:00",
   "halted_reason": null,
   "post_refresh": {
     "exists": true,
     "max_game_date": "2026-05-15",
-    "mtime_utc": "2026-05-16T10:49:05.462400+00:00",
+    "mtime_utc": "2026-05-16T14:06:48.332822+00:00",
     "path": "data/player_game_stats.parquet",
     "recent_date_row_counts": {
       "2026-05-10": 46,
@@ -18,13 +18,13 @@
     "row_count": 84196,
     "rows_after_target_date": 0,
     "rows_on_target_date": 54,
-    "sha256_prefix": "85607cd0fe8c379d",
+    "sha256_prefix": "aa7a6cfdd2ef2bd4",
     "size_bytes": 1293653
   },
   "pre_refresh": {
     "exists": true,
     "max_game_date": "2026-05-15",
-    "mtime_utc": "2026-05-16T10:49:05.462400+00:00",
+    "mtime_utc": "2026-05-16T14:06:48.332822+00:00",
     "path": "data/player_game_stats.parquet",
     "recent_date_row_counts": {
       "2026-05-10": 46,
@@ -36,12 +36,12 @@
     "row_count": 84196,
     "rows_after_target_date": 0,
     "rows_on_target_date": 54,
-    "sha256_prefix": "85607cd0fe8c379d",
+    "sha256_prefix": "aa7a6cfdd2ef2bd4",
     "size_bytes": 1293653
   },
   "provider": "balldontlie.io",
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-16T10:49:13+00:00",
+  "started_at_utc": "2026-05-16T14:06:56+00:00",
   "status": "skipped_already_fresh",
   "subprocess": null,
   "target_date": "2026-05-15",
