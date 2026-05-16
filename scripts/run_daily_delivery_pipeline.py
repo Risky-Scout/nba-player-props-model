@@ -261,6 +261,132 @@ def _canonical_model_only_path_for_seed_gate(date: str) -> Path:
 
 
 _NO_GAMES_SLATE_MARKER = "PIPELINE_SOFT_SKIP_NO_GAMES_SLATE"
+_NO_GAMES_SOFT_SKIP_REJECTED_MARKER = "PIPELINE_NO_GAMES_SOFT_SKIP_REJECTED"
+
+# Cache so the BDL /games schedule lookup happens at most once per
+# orchestrator process (the same `date` is queried by
+# :func:`_short_circuit_if_no_games` at the start of a run-mode and
+# again by :func:`_verify_m88_delivery_bundle` at the end). The cache
+# stores the raw game count; exceptions are NOT cached so a transient
+# failure can be retried by the next caller if it ever arises.
+_SCHEDULE_RESOLVER_CACHE: dict[str, int] = {}
+
+
+class ScheduleResolverError(RuntimeError):
+    """The BDL schedule lookup itself could not be completed.
+
+    A failed lookup is NEVER treated as a no-games soft-skip — that
+    would silently hide BDL outages / auth failures / schema drifts.
+    Callers convert this to a hard failure (exit non-zero with the
+    structured ``PIPELINE_NO_GAMES_SOFT_SKIP_REJECTED`` marker).
+    """
+
+
+class NoGamesContractViolation(RuntimeError):
+    """Predict said no-games but the schedule resolver disagrees.
+
+    Two cases:
+
+    * BDL confirmed games exist for this date (predict was wrong) —
+      hard fail; downstream data is inconsistent and a fabricated
+      no-games package would mask the real issue.
+    * BDL lookup failed — hard fail; we cannot confirm no-games, so
+      we must not soft-skip on infrastructure problems.
+    """
+
+
+def _resolve_schedule_game_count(date: str) -> int:
+    """Return the number of NBA games on the BDL schedule for ``date``.
+
+    Returns 0 only on a positive "schedule returned an empty list"
+    response. Raises :class:`ScheduleResolverError` on any
+    network / auth / schema / non-list-response failure mode so the
+    caller can hard-fail rather than silently soft-skip.
+
+    Results are cached per process under ``date`` to avoid double-
+    calling BDL during a single orchestrator run.
+    """
+    cached = _SCHEDULE_RESOLVER_CACHE.get(date)
+    if cached is not None:
+        return cached
+    try:
+        from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
+    except Exception as exc:
+        raise ScheduleResolverError(
+            f"SCHEDULE_RESOLVER_IMPORT_FAILED date={date} "
+            f"error={exc.__class__.__name__}: {exc}"
+        ) from exc
+    try:
+        games = get_games(start_date=date, end_date=date)
+    except Exception as exc:
+        raise ScheduleResolverError(
+            f"SCHEDULE_RESOLVER_LOOKUP_FAILED date={date} "
+            f"error={exc.__class__.__name__}: {exc}"
+        ) from exc
+    if games is None:
+        raise ScheduleResolverError(
+            f"SCHEDULE_RESOLVER_LOOKUP_FAILED date={date} reason=null_response"
+        )
+    if not isinstance(games, list):
+        raise ScheduleResolverError(
+            f"SCHEDULE_RESOLVER_LOOKUP_FAILED date={date} "
+            f"reason=non_list_response type={type(games).__name__}"
+        )
+    count = len(games)
+    _SCHEDULE_RESOLVER_CACHE[date] = count
+    return count
+
+
+def _confirmed_no_games_slate(date: str) -> tuple[bool, str]:
+    """Strict no-games confirmation. Soft-skip is allowed only when
+    BOTH independent signals agree:
+
+      * ``predict.py`` wrote its no-games placeholder (``reason ==
+        "no_games_slate"`` in ``predictions/singles_<date>.json``), AND
+      * an independent BDL ``/games`` schedule lookup returns zero
+        games for the same date.
+
+    Returns ``(False, "")`` when there is NO predict no-games signal
+    (i.e. the normal games-bearing slate path). The BDL lookup is
+    only attempted when predict has already declared no-games, so we
+    do not hit the API on every games-bearing run.
+
+    Raises :class:`NoGamesContractViolation` when predict signaled
+    no-games but:
+
+      * BDL confirmed games exist (count > 0), OR
+      * the BDL lookup itself failed.
+
+    Missing BDL data, failed OddsAPI calls, missing feature snapshots,
+    missing market inventory, or missing lineup files are NEVER
+    treated as no-games here — they must surface in their own
+    downstream contracts as the genuine failure modes they are.
+    """
+    predict_signal = _predict_signaled_no_games_slate(date)
+    if predict_signal is None:
+        return False, ""
+    try:
+        n_games = _resolve_schedule_game_count(date)
+    except ScheduleResolverError as exc:
+        raise NoGamesContractViolation(
+            f"{_NO_GAMES_SOFT_SKIP_REJECTED_MARKER} date={date} "
+            f"reason=schedule_lookup_failed "
+            f"upstream_signal={predict_signal} "
+            f"resolver_error={exc}"
+        ) from exc
+    if n_games > 0:
+        raise NoGamesContractViolation(
+            f"{_NO_GAMES_SOFT_SKIP_REJECTED_MARKER} date={date} "
+            f"reason=schedule_confirms_games_exist games={n_games} "
+            f"upstream_signal={predict_signal} "
+            f"detail=predict_wrote_no_games_placeholder_but_bdl_schedule_has_games"
+        )
+    marker_line = (
+        f"{_NO_GAMES_SLATE_MARKER} date={date} "
+        f"upstream_signal={predict_signal} "
+        f"schedule_resolver=BDL_ZERO_GAMES"
+    )
+    return True, marker_line
 
 
 def _predict_signaled_no_games_slate(date: str) -> str | None:
@@ -347,6 +473,14 @@ def _emit_no_games_delivery_package(date: str) -> None:
         "reason": "no_games_slate",
         "no_games_slate": True,
         "marker": _NO_GAMES_SLATE_MARKER,
+        "confirmation": {
+            "predict_signal": f"predictions/singles_{date}.json reason=no_games_slate",
+            "schedule_resolver": "bdl_games_returned_zero_for_delivery_date",
+            "rule": "soft_skip_requires_both_predict_signal_and_bdl_zero_games",
+        },
+        "eligible_player_game_rows": 0,
+        "market_superiority_evaluated": False,
+        "derek_forward_feed_expected": False,
         "canonical_source": {
             "player_prop_pmfs_tonight_MODEL_ONLY": "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
             "all_props_model_only": "canonical_source/all_props_model_only.parquet",
@@ -361,12 +495,15 @@ def _emit_no_games_delivery_package(date: str) -> None:
         },
         "notes": (
             "predict.py wrote a no-games slate placeholder for this date "
-            "(reason=no_games_slate in predictions/singles_<date>.json). "
-            "The orchestrator emitted this no-games delivery package "
-            "instead of attempting to materialize a feature snapshot / "
-            "stat grid / canonical PMF surface from an empty universe. "
-            "No PMFs, projections, market edges, or Derek-feed outputs "
-            "are fabricated."
+            "(reason=no_games_slate in predictions/singles_<date>.json) AND "
+            "the independent BDL /games schedule lookup returned zero games. "
+            "The orchestrator emitted this no-games delivery package instead "
+            "of attempting to materialize a feature snapshot / stat grid / "
+            "canonical PMF surface from an empty universe. There are zero "
+            "eligible player-game rows; no market-superiority evaluation was "
+            "performed; no Derek forward-feed rows are expected because no "
+            "games exist. No PMFs, projections, market edges, or Derek-feed "
+            "outputs are fabricated."
         ),
     }
     (base / "manifest.json").write_text(
@@ -375,25 +512,39 @@ def _emit_no_games_delivery_package(date: str) -> None:
 
 
 def _short_circuit_if_no_games(date: str) -> bool:
-    """Return True (and write the no-games delivery package) when the
-    upstream predict step signaled no-games.
+    """Return True (and write the no-games delivery package) when both
+    independent no-games signals confirm a real no-games slate.
 
     Same-day callers in this module check this immediately after
-    ``_predict`` + ``_assert_predict_date_contract``. When True,
-    callers short-circuit their own pipeline and return 0; the
-    workflow's forced-manual delivery assertion still finds the
-    expected files under ``deliveries/<date>/`` because
-    :func:`_emit_no_games_delivery_package` wrote them.
+    ``_predict`` + ``_assert_predict_date_contract``. The strict
+    contract enforced by :func:`_confirmed_no_games_slate` requires
+    that BOTH predict and an independent BDL ``/games`` schedule
+    lookup agree the slate has zero games before we soft-skip.
+
+    On a confirmed no-games slate this function:
+
+      * writes a properly-flagged no-games delivery package via
+        :func:`_emit_no_games_delivery_package` (so the workflow's
+        forced-manual delivery assertion can pass legitimately), and
+      * prints the ``PIPELINE_SOFT_SKIP_NO_GAMES_SLATE`` marker with
+        both signal sources stamped.
+
+    When predict signaled no-games but BDL contradicts (games exist
+    or lookup failed), this function prints
+    ``PIPELINE_NO_GAMES_SOFT_SKIP_REJECTED`` and hard-exits with
+    code 2 — silently soft-skipping on infrastructure outages would
+    mask real failure modes.
     """
-    signal = _predict_signaled_no_games_slate(date)
-    if signal is None:
+    try:
+        confirmed, marker_line = _confirmed_no_games_slate(date)
+    except NoGamesContractViolation as exc:
+        print(str(exc), file=sys.stderr)
+        print(str(exc))
+        sys.exit(2)
+    if not confirmed:
         return False
     _emit_no_games_delivery_package(date)
-    print(
-        f"{_NO_GAMES_SLATE_MARKER} date={date} "
-        f"upstream_signal={signal} "
-        f"package=deliveries/{date}/manifest.json"
-    )
+    print(f"{marker_line} package=deliveries/{date}/manifest.json")
     return True
 
 
@@ -994,19 +1145,27 @@ def _verify_m88_delivery_bundle(
 ) -> int:
     """Run delivery completeness + Derek contract + injury-lineup + GitHub audits.
 
-    Short-circuits when ``predict.py`` signaled a real no-games slate
-    (``reason == "no_games_slate"`` in ``predictions/singles_<date>.json``).
+    Short-circuits ONLY when :func:`_confirmed_no_games_slate` agrees
+    (predict signal AND BDL ``/games`` schedule both say zero games).
     The completeness / Derek-contract / injury-lineup auditors all
     require a real model PMF surface + lineup + Derek feed, none of
     which exist on a legitimate no-games slate. Running them anyway
     produces a hard-fail "false red" that masks the genuine soft-skip
     the orchestrator already emitted in :func:`_short_circuit_if_no_games`.
+
+    If predict signaled no-games but BDL contradicts (games exist or
+    lookup failed) the verify suite hard-fails with the
+    ``PIPELINE_NO_GAMES_SOFT_SKIP_REJECTED`` marker — never silently
+    skip on infrastructure problems.
     """
-    if _predict_signaled_no_games_slate(date) is not None:
-        print(
-            f"VERIFY_SUITE_SOFT_SKIP_NO_GAMES_SLATE date={date} "
-            f"upstream_signal=predictions/singles_{date}.json"
-        )
+    try:
+        confirmed, marker_line = _confirmed_no_games_slate(date)
+    except NoGamesContractViolation as exc:
+        print(str(exc), file=sys.stderr)
+        print(str(exc))
+        return 2
+    if confirmed:
+        print(f"VERIFY_SUITE_SOFT_SKIP_NO_GAMES_SLATE {marker_line[len(_NO_GAMES_SLATE_MARKER) + 1 :]}")
         return 0
 
     outd = REPO_ROOT / "artifacts" / "model_diagnostics" / "daily_delivery_completeness_last_run"
