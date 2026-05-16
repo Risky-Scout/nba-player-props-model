@@ -152,12 +152,45 @@ def _stat_support_points(obj):
     return []
 
 
+def _delivery_manifest_no_games_slate(repo: Path, date: str) -> bool:
+    """Return True iff the dated delivery manifest carries the strict
+    no-games-slate flag.
+
+    The orchestrator's ``_short_circuit_if_no_games`` writes
+    ``deliveries/<date>/manifest.json`` with ``no_games_slate: true``
+    only after BOTH the predict no-games signal AND an independent
+    BDL ``/games`` schedule lookup confirm zero games for the date.
+    Any other manifest shape (missing flag, false flag, missing
+    manifest, unparseable manifest, mismatched reason) returns False
+    so a games-bearing slate still hard-fails on a zero-rows dashboard.
+    """
+    manifest_path = repo / "deliveries" / date / "manifest.json"
+    if not manifest_path.is_file():
+        return False
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    return bool(payload.get("no_games_slate")) and payload.get("reason") == "no_games_slate"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
     args = ap.parse_args()
 
     repo = Path(__file__).resolve().parent.parent
+    if _delivery_manifest_no_games_slate(repo, args.date):
+        print(
+            f"WOO_DASHBOARD_RENDER_CONTRACT_SOFT_SKIP_NO_GAMES_SLATE "
+            f"date={args.date} "
+            f"upstream_signal=deliveries/{args.date}/manifest.json:no_games_slate=true "
+            f"reason=no_eligible_player_game_rows_expected"
+        )
+        return 0
+
     props_html = repo / "predictions" / "nba-props.html"
     pmf_html = repo / "predictions" / "nba-pmf-research.html"
     aff_json = repo / "public_export" / "wizard_of_odds" / args.date / "affiliate_dashboard.json"
