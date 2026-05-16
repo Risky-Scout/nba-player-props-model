@@ -791,6 +791,34 @@ def _m8_6o_infer_delivery_date_for_pmf_research():
             return dates[-1]
     return None
 
+def _m8_6o_delivery_manifest_no_games_slate(date) -> bool:
+    """Return True when the dated delivery manifest carries the strict
+    no-games-slate flag.
+
+    The orchestrator's :func:`_short_circuit_if_no_games` writes
+    ``deliveries/<date>/manifest.json`` with ``no_games_slate: true``
+    only after BOTH the predict no-games signal AND an independent
+    BDL ``/games`` schedule lookup confirm zero games for the date.
+    Any other manifest shape (missing flag, false flag, missing
+    manifest, unparseable manifest) returns False so the normal
+    games-bearing path still hard-fails on real outages.
+    """
+    import json as _json
+    from pathlib import Path as _Path
+    if not date:
+        return False
+    p = _Path("deliveries") / str(date) / "manifest.json"
+    if not p.is_file():
+        return False
+    try:
+        payload = _json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    if not isinstance(payload, dict):
+        return False
+    return bool(payload.get("no_games_slate")) and payload.get("reason") == "no_games_slate"
+
+
 def _m8_6o_run_canonical_pmf_research_builder():
     import subprocess
     import sys
@@ -799,6 +827,13 @@ def _m8_6o_run_canonical_pmf_research_builder():
     if not builder.exists():
         raise SystemExit("M8_6O_BUILD_PMF_RESEARCH_BUILDER_MISSING")
     date = _m8_6o_infer_delivery_date_for_pmf_research()
+    if _m8_6o_delivery_manifest_no_games_slate(date):
+        print(
+            f"M8_6O_CANONICAL_PMF_RESEARCH_BUILDER_SOFT_SKIP_NO_GAMES_SLATE "
+            f"date={date} "
+            f"upstream_signal=deliveries/{date}/manifest.json:no_games_slate=true"
+        )
+        return
     cmd = [sys.executable, str(builder)]
     if date:
         cmd += ["--date", date]
