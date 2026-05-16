@@ -1,7 +1,5 @@
 {
   "changed_files": [
-    "artifacts/automation_health/derek_live_api_readiness.json",
-    "artifacts/automation_health/derek_live_api_readiness.md",
     "artifacts/automation_health/derek_live_champion_ready_2026-05-16.json",
     "artifacts/automation_health/derek_live_champion_ready_2026-05-16.md",
     "artifacts/automation_health/derek_live_snapshots_2026-05-16.json",

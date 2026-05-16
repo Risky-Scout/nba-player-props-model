@@ -1,0 +1,120 @@
+{
+  "after_game_scoring": {
+    "blocker": "no after-game scoring summary found for as_of_date=2099-12-31",
+    "outcome": "pending"
+  },
+  "as_of_date": "2099-12-31",
+  "calibration_metrics_pending": {
+    "blocker": "PMF NLL / RPS / ECE / p0 calibration / mean bias / tail calibration are reported once nightly post-game scoring produces realized outcomes. The Phase 13S/13T after-game scoring writes DEREK_LIVE_SNAPSHOT_SCORING_PENDING when outcomes are not yet available."
+  },
+  "champion": {
+    "calibrated_through_date": "2099-12-31",
+    "calibration_manifest_path": "artifacts/models/challengers/2099-12-31/calibration_manifest.json",
+    "champion_model_id": "sim-2099-12-31",
+    "contextual_pmf_engine": null,
+    "direct_lineup_pmf_driver": null,
+    "feature_set_id": null,
+    "no_leakage_manifest_path": null,
+    "promotion_decision_id": "promotion-2099-12-31-20260516T163247",
+    "promotion_decision_path": "artifacts/models/challengers/2099-12-31/promotion_decision.json",
+    "train_manifest_path": "artifacts/models/challengers/2099-12-31/train_manifest.json",
+    "trained_through_date": "2099-12-31",
+    "training_run_id": "nightly-20991231",
+    "validation_report_path": "artifacts/models/challengers/2099-12-31/validation_report.json"
+  },
+  "generated_at_utc": "2026-05-16T17:04:42+00:00Z",
+  "metrics_per_target": {},
+  "no_leakage": {
+    "no_leakage_manifest": null,
+    "phase13s_no_leakage_report": {
+      "checked_dirs": [
+        "artifacts/models/challengers/2026-04-30_direct_lineup_contextual"
+      ],
+      "facts": {
+        "2026-04-30_direct_lineup_contextual/calibrated_through_date": "2026-04-30",
+        "2026-04-30_direct_lineup_contextual/feature_files_checked": 8,
+        "2026-04-30_direct_lineup_contextual/leakage_columns_seen": [],
+        "2026-04-30_direct_lineup_contextual/starter_proxy_safe_for_training": true,
+        "2026-04-30_direct_lineup_contextual/starter_proxy_used": true,
+        "2026-04-30_direct_lineup_contextual/trained_through_date": "2026-04-30"
+      },
+      "issues": [],
+      "schema_version": "1.0"
+    }
+  },
+  "promotion_status": {
+    "active_champion_model_id": "sim-2099-12-31",
+    "champion_pointer_swapped_to_today": false,
+    "decision_promote_field": null,
+    "expected_today_challenger_id": "challenger-2099-12-31",
+    "manifest_promoted_field": null,
+    "promoted": false,
+    "promotion_decision": null,
+    "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2099-12-31/promotion_decision.json",
+    "promotion_manifest": null,
+    "promotion_manifest_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2099-12-31/promotion_manifest.json",
+    "promotion_reason": "promotion_decision_missing_or_unparseable"
+  },
+  "rolling_benchmark": {
+    "blocker": "no rolling Derek benchmark found for as_of_date=2099-12-31",
+    "outcome": "pending"
+  },
+  "schema_version": "1.0",
+  "sensitivity": {
+    "case_results": {
+      "case_1_direct_lineup": {
+        "abs_diff_minutes_delta": 2.8569507698959917,
+        "feature_vector_hash_post": "c6ef2fe8edb7777a",
+        "feature_vector_hash_pre": "9c834bc334605ad9",
+        "feature_vectors_changed": true,
+        "minutes_delta_post": 3.9246101550977954,
+        "minutes_delta_pre": 1.0676593852018037,
+        "pmf_mean_post": 33.924610155097795,
+        "pmf_mean_pre": 31.067659385201804,
+        "pmf_mean_shift": 2.8569507698959917
+      },
+      "case_2_lineup_composition": {
+        "abs_diff_minutes_delta": 2.4511298398661854,
+        "minutes_delta_a": 3.969769591266317,
+        "minutes_delta_b": 1.5186397514001317,
+        "team_lineup_num_high_usage_players_a": 1.0,
+        "team_lineup_num_high_usage_players_b": 3.0
+      },
+      "case_3_actionability": {
+        "injury_lineup_conflict": true,
+        "is_actionable": false,
+        "is_confirmed_out": true
+      },
+      "case_4_teammate_out": {
+        "abs_diff_minutes_delta": 0.00010795232668137089,
+        "minutes_delta_loaded": 3.9696616389396358,
+        "minutes_delta_quiet": 3.969769591266317
+      },
+      "case_5_market_only": {
+        "delta_hash_m1": "3297fe279984ab68",
+        "delta_hash_m2": "3297fe279984ab68",
+        "feature_vectors_equal": true
+      },
+      "case_6_no_change": {
+        "delta_hash_a": "3297fe279984ab68",
+        "delta_hash_b": "3297fe279984ab68",
+        "feature_vectors_equal": true
+      }
+    },
+    "issues_per_case": {
+      "case_1_direct_lineup": [],
+      "case_2_lineup_composition": [],
+      "case_3_actionability": [],
+      "case_4_teammate_out": [],
+      "case_5_market_only": [],
+      "case_6_no_change": []
+    }
+  },
+  "validation_gates": {
+    "any_positive_improvement": null,
+    "issues": null,
+    "minutes_min_rel_improvement": null,
+    "report": null,
+    "safe_noninferiority_threshold": null
+  }
+}
