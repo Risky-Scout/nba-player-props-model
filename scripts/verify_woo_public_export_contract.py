@@ -355,16 +355,18 @@ def _payload_date(payload: Any) -> Optional[str]:
     return None
 
 
-def _delivery_manifest_no_games_slate(date: str) -> bool:
-    """Return True iff the dated delivery manifest carries the strict
-    no-games-slate flag.
+def _delivery_manifest_confirmed_no_games_slate(date: str) -> bool:
+    """Strict 4-flag no-games gate for the WoO public export contract.
 
-    The orchestrator's ``_short_circuit_if_no_games`` writes
-    ``deliveries/<date>/manifest.json`` with ``no_games_slate: true``
-    AND ``reason: no_games_slate`` only after BOTH the predict
+    Returns True if and only if the dated delivery manifest declares
+    ALL of: ``no_games_slate == True``, ``confirmed_no_games_slate
+    == True``, ``reason == "no_games_slate"``,
+    ``market_superiority_evaluated == False``, and
+    ``derek_forward_feed_expected == False``. These fields are stamped
+    together only by the orchestrator's
+    ``_emit_no_games_delivery_package`` after BOTH the predict
     no-games signal AND an independent BDL ``/games`` schedule lookup
-    confirm zero games for the date. Any other manifest shape returns
-    False so a games-bearing slate still hard-fails on empty exports.
+    have confirmed zero games for the date.
     """
     manifest_path = REPO_ROOT / "deliveries" / date / "manifest.json"
     if not manifest_path.is_file():
@@ -375,7 +377,13 @@ def _delivery_manifest_no_games_slate(date: str) -> bool:
         return False
     if not isinstance(payload, dict):
         return False
-    return bool(payload.get("no_games_slate")) and payload.get("reason") == "no_games_slate"
+    return (
+        payload.get("no_games_slate") is True
+        and payload.get("confirmed_no_games_slate") is True
+        and payload.get("reason") == "no_games_slate"
+        and payload.get("market_superiority_evaluated") is False
+        and payload.get("derek_forward_feed_expected") is False
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -389,11 +397,13 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     date = args.date
 
-    if _delivery_manifest_no_games_slate(date):
+    if _delivery_manifest_confirmed_no_games_slate(date):
         print(
             f"WOO_PUBLIC_EXPORT_CONTRACT_SOFT_SKIP_NO_GAMES_SLATE "
             f"date={date} "
-            f"upstream_signal=deliveries/{date}/manifest.json:no_games_slate=true "
+            f"manifest=deliveries/{date}/manifest.json "
+            f"gate=no_games_slate+confirmed_no_games_slate+"
+            f"market_superiority_evaluated=false+derek_forward_feed_expected=false "
             f"reason=no_eligible_player_game_rows_expected"
         )
         return 0

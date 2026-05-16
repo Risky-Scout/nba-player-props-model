@@ -472,6 +472,7 @@ def _emit_no_games_delivery_package(date: str) -> None:
         "delivery_date": date,
         "reason": "no_games_slate",
         "no_games_slate": True,
+        "confirmed_no_games_slate": True,
         "marker": _NO_GAMES_SLATE_MARKER,
         "confirmation": {
             "predict_signal": f"predictions/singles_{date}.json reason=no_games_slate",

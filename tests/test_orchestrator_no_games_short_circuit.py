@@ -112,6 +112,10 @@ def test_emit_no_games_delivery_package_writes_all_assertion_files(tmp_path, mon
     manifest = json.loads((base / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["reason"] == "no_games_slate"
     assert manifest["no_games_slate"] is True
+    # Strict 4-flag gate fields required by downstream verifier soft-skips.
+    assert manifest["confirmed_no_games_slate"] is True
+    assert manifest["market_superiority_evaluated"] is False
+    assert manifest["derek_forward_feed_expected"] is False
     assert manifest["marker"] == "PIPELINE_SOFT_SKIP_NO_GAMES_SLATE"
     # The Derek forward feed must NOT be fabricated on a no-games slate.
     assert manifest["derek_forward_feed"] is None
@@ -161,6 +165,9 @@ def test_short_circuit_emits_marker_and_package_when_confirmed_no_games(
 
     manifest = json.loads((tmp_path / "deliveries" / date / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["confirmation"]["rule"] == "soft_skip_requires_both_predict_signal_and_bdl_zero_games"
+    assert manifest["no_games_slate"] is True
+    assert manifest["confirmed_no_games_slate"] is True
+    assert manifest["reason"] == "no_games_slate"
     assert manifest["eligible_player_game_rows"] == 0
     assert manifest["market_superiority_evaluated"] is False
     assert manifest["derek_forward_feed_expected"] is False
