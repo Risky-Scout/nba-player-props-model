@@ -416,6 +416,138 @@ def _predict_signaled_no_games_slate(date: str) -> str | None:
     return None
 
 
+def _emit_games_exist_delivery_manifest(date: str) -> None:
+    """Write ``deliveries/<date>/manifest.json`` at the end of a
+    successful games-exist run.
+
+    The no-games soft-skip path (``_emit_no_games_delivery_package``)
+    already writes this file; the games-exist path must write its
+    own copy so the workflow's forced-manual assertion (which checks
+    ``test -f deliveries/<D>/manifest.json``) holds on both paths.
+
+    The manifest is the dual of the no-games manifest:
+
+      * ``no_games_slate=false`` and ``confirmed_no_games_slate=false``
+      * ``reason="games_exist"``
+      * ``eligible_player_game_rows`` is filled from the canonical
+        MODEL_ONLY rectangle (rows of the produced
+        ``player_prop_pmfs_tonight_MODEL_ONLY.parquet``)
+      * ``market_superiority_evaluated`` is True when
+        ``wizard_of_odds/run_manifest.json`` exists (i.e. the WoO
+        export ran) and False otherwise
+      * ``derek_forward_feed_expected=True`` (a games-exist slate is
+        the only path on which a Derek feed should be produced)
+      * ``derek_forward_feed`` records the parquet path if produced
+      * subdirs/files actually present are enumerated for downstream
+        inspection.
+
+    Crucially this manifest CANNOT trigger the strict 4-flag
+    no-games soft-skip in any verifier: those gates require BOTH
+    ``no_games_slate=true`` AND ``confirmed_no_games_slate=true``
+    AND ``market_superiority_evaluated=false`` AND
+    ``derek_forward_feed_expected=false``; this manifest stamps the
+    opposite values on every flag.
+    """
+    import pandas as pd
+
+    base = REPO_ROOT / "deliveries" / date
+    base.mkdir(parents=True, exist_ok=True)
+    cs = base / "canonical_source"
+    woo = base / "wizard_of_odds"
+    dfd = base / "derek_forward_feed"
+
+    pmfs_path = cs / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    all_props_path = cs / "all_props_model_only.parquet"
+    market_path = woo / "market_comparison.parquet"
+    woo_run_manifest = woo / "run_manifest.json"
+    derek_parquet = dfd / "derek_forward_feed.parquet"
+    derek_csv = dfd / "derek_forward_feed.csv"
+    derek_feed_manifest = dfd / "feed_manifest.json"
+
+    def _safe_rows(p: Path) -> int | None:
+        if not p.is_file():
+            return None
+        try:
+            return int(len(pd.read_parquet(p)))
+        except Exception:
+            return None
+
+    rows_pmfs = _safe_rows(pmfs_path)
+    rows_all_props = _safe_rows(all_props_path)
+    rows_market = _safe_rows(market_path)
+    rows_derek = _safe_rows(derek_parquet)
+
+    eligible_player_game_rows = rows_pmfs if rows_pmfs is not None else (
+        rows_all_props if rows_all_props is not None else 0
+    )
+
+    # market_superiority is "evaluated" iff the WoO run_manifest is
+    # present AND market_comparison has > 0 rows. The actual claim
+    # (allowed=true vs blocker=...) is left to the WoO run_manifest;
+    # this top-level manifest only records whether evaluation
+    # happened at all.
+    market_superiority_evaluated = bool(
+        woo_run_manifest.is_file() and (rows_market or 0) > 0
+    )
+    derek_forward_feed_expected = True
+    manifest = {
+        "delivery_date": date,
+        "reason": "games_exist",
+        "no_games_slate": False,
+        "confirmed_no_games_slate": False,
+        "marker": "PIPELINE_GAMES_EXIST_DELIVERY",
+        "eligible_player_game_rows": eligible_player_game_rows,
+        "market_superiority_evaluated": market_superiority_evaluated,
+        "derek_forward_feed_expected": derek_forward_feed_expected,
+        "canonical_source": {
+            "player_prop_pmfs_tonight_MODEL_ONLY": (
+                str(pmfs_path.relative_to(REPO_ROOT)) if pmfs_path.is_file() else None
+            ),
+            "all_props_model_only": (
+                str(all_props_path.relative_to(REPO_ROOT)) if all_props_path.is_file() else None
+            ),
+            "rows": rows_pmfs,
+        },
+        "wizard_of_odds": {
+            "market_comparison": (
+                str(market_path.relative_to(REPO_ROOT)) if market_path.is_file() else None
+            ),
+            "run_manifest": (
+                str(woo_run_manifest.relative_to(REPO_ROOT))
+                if woo_run_manifest.is_file() else None
+            ),
+            "rows": rows_market,
+        },
+        "derek_forward_feed": (
+            {
+                "parquet": (
+                    str(derek_parquet.relative_to(REPO_ROOT))
+                    if derek_parquet.is_file() else None
+                ),
+                "csv": (
+                    str(derek_csv.relative_to(REPO_ROOT))
+                    if derek_csv.is_file() else None
+                ),
+                "feed_manifest": (
+                    str(derek_feed_manifest.relative_to(REPO_ROOT))
+                    if derek_feed_manifest.is_file() else None
+                ),
+                "rows": rows_derek,
+            } if dfd.is_dir() else None
+        ),
+    }
+    (base / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, default=str), encoding="utf-8"
+    )
+    print(
+        f"PIPELINE_GAMES_EXIST_DELIVERY_MANIFEST_WRITTEN date={date} "
+        f"path=deliveries/{date}/manifest.json "
+        f"eligible_player_game_rows={eligible_player_game_rows} "
+        f"market_superiority_evaluated={market_superiority_evaluated} "
+        f"derek_forward_feed_expected={derek_forward_feed_expected}"
+    )
+
+
 def _emit_no_games_delivery_package(date: str) -> None:
     """Produce a properly-flagged no-games delivery package.
 
@@ -1283,6 +1415,7 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
+    _emit_games_exist_delivery_manifest(date)
     return 0
 
 
@@ -1322,6 +1455,7 @@ def run_woo_morning_monetization(
     )
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
+    _emit_games_exist_delivery_manifest(date)
     return 0
 
 
@@ -1355,6 +1489,7 @@ def run_woo_afternoon_refresh(
     )
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
+    _emit_games_exist_delivery_manifest(date)
     return 0
 
 
@@ -1398,6 +1533,7 @@ def run_derek_pre_tipoff_refresh(
     _m86_event_market_validation_bundle(date)
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
+    _emit_games_exist_delivery_manifest(date)
     return 0
 
 
@@ -1435,6 +1571,7 @@ def run_close_lock(date: str, *, regions: list[str],
     _m86_event_market_validation_bundle(date)
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
+    _emit_games_exist_delivery_manifest(date)
     return 0
 
 
