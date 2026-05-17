@@ -155,3 +155,104 @@ def test_m86_repair_market_prob_falls_back_to_odds(tmp_path, monkeypatch):
         assert "market_prob" in r
         assert r["market_prob"] is not None
         assert 0.0 < r["market_prob"] < 1.0
+
+
+# ── M8_6_O: affiliate_dashboard count-key contract (run 26005809860 fix) ──
+#
+# Two writers stamp ``affiliate_dashboard.json`` in sequence:
+#   1. ``publish_woo_public_export.py::_write_export``  (legacy, top-level ``count``)
+#   2. ``publish_woo_public_export.py::_m86_repair_woo_monetization_contract_after_publish``
+#      (M8.6 repair, OVERWRITES the file)
+#
+# The M8.6 repair pass had been emitting only ``total_rows`` and dropping
+# the legacy ``count`` key. The downstream gate in
+# ``scripts/verify_corrected_pmf_delivery.py`` reads ``aff.get("count")``
+# and so misread 4342 rows as count=0, raising
+# ``FATAL: <date> affiliate_dashboard count must be > 0`` and halting the
+# workflow before ``Stage and commit`` could publish the corrected Derek
+# unique props summary to ``main`` (run 26005809860).
+#
+# The two regression tests below pin the writer/verifier contract:
+#   * writer: M8.6 repair output includes ``count`` matching ``len(rows)``
+#     (alongside ``total_rows`` for backwards compatibility).
+#   * verifier: ``_affiliate_row_count`` resolves a positive count from
+#     any of the three historical payload shapes (``count`` /
+#     ``total_rows`` / ``rows`` length) and never silently misreads a
+#     populated dashboard as empty.
+
+
+def test_m86_repair_emits_top_level_count_key_matching_rows_and_total_rows(tmp_path, monkeypatch):
+    """Writer-side regression for run 26005809860.
+
+    The M8.6 monetization-repair pass must emit ``count`` (legacy key
+    consumed by ``verify_corrected_pmf_delivery.py``) alongside
+    ``total_rows`` so the corrected-PMF delivery gate sees the same
+    row count the file actually carries.
+    """
+    import json
+
+    _build_one_row_market_comparison(tmp_path)
+    monkeypatch.chdir(tmp_path)
+    mod._m86_repair_woo_monetization_contract_after_publish("2026-05-15")
+
+    out = tmp_path / "public_export" / "wizard_of_odds" / "2026-05-15" / "affiliate_dashboard.json"
+    payload = json.loads(out.read_text())
+
+    rows = payload["rows"]
+    assert len(rows) > 0, "fixture must produce at least one affiliate row"
+    assert "count" in payload, (
+        "M8.6 repair must emit top-level 'count' (verify_corrected_pmf_delivery.py "
+        "reads aff.get('count'); dropping it re-triggers run 26005809860 fatal)"
+    )
+    assert "total_rows" in payload
+    assert payload["count"] == len(rows) == payload["total_rows"]
+    assert payload["count"] > 0
+
+    for mirror in (
+        tmp_path / "public_export" / "wizard_of_odds" / "latest" / "affiliate_dashboard.json",
+        tmp_path / "public_export" / "wizard_of_odds" / "affiliate_dashboard.json",
+    ):
+        mirror_payload = json.loads(mirror.read_text())
+        assert mirror_payload.get("count") == len(rows) == mirror_payload.get("total_rows")
+
+
+def test_verify_corrected_pmf_delivery_affiliate_row_count_helper():
+    """Verifier-side regression for run 26005809860.
+
+    ``_affiliate_row_count`` must resolve a positive row count from
+    every historical ``affiliate_dashboard.json`` shape so writer-schema
+    drift cannot silently re-break the gate.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "verify_corrected_pmf_delivery",
+        REPO / "scripts" / "verify_corrected_pmf_delivery.py",
+    )
+    vmod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(vmod)
+
+    legacy = {"rows": [{"x": 1}, {"x": 2}, {"x": 3}], "count": 3}
+    assert vmod._affiliate_row_count(legacy) == 3
+
+    m86 = {"rows": [{"x": i} for i in range(4342)], "items": [{"x": i} for i in range(4342)],
+           "total_rows": 4342}
+    assert vmod._affiliate_row_count(m86) == 4342, (
+        "missing top-level 'count' must NOT cause the gate to read 0 — this is the "
+        "exact run 26005809860 regression"
+    )
+
+    drifted = {"rows": [{"x": i} for i in range(7)]}
+    assert vmod._affiliate_row_count(drifted) == 7
+
+    items_only = {"items": [{"x": i} for i in range(5)]}
+    assert vmod._affiliate_row_count(items_only) == 5
+
+    empty_stub = {"rows": [], "count": 0}
+    assert vmod._affiliate_row_count(empty_stub) == 0
+
+    missing_entirely = {"schema_version": "1.0", "date": "2026-05-17"}
+    assert vmod._affiliate_row_count(missing_entirely) == 0
+
+    malformed = {"rows": "not_a_list", "count": "not_an_int"}
+    assert vmod._affiliate_row_count(malformed) == 0

@@ -32,6 +32,38 @@ def fail(msg: str) -> None:
     raise SystemExit(f"FATAL: {msg}")
 
 
+def _affiliate_row_count(aff: dict) -> int:
+    """Return the affiliate-dashboard row count from a payload dict.
+
+    Reads, in priority order:
+      1. Top-level ``count`` (legacy ``_write_export`` schema).
+      2. Top-level ``total_rows`` (M8.6 monetization-repair schema).
+      3. ``len(rows)`` / ``len(items)`` (final fallback so future writer
+         schema drift cannot silently re-trigger ``FATAL: <date>
+         affiliate_dashboard count must be > 0`` despite the file
+         carrying thousands of valid rows; root cause of run
+         26005809860 where the M8.6 repair dropped the ``count`` key).
+
+    Defensive against non-numeric / non-list payload values; returns 0
+    when nothing resolves to a numeric row count.
+    """
+    rows_payload = aff.get("rows")
+    if not isinstance(rows_payload, list):
+        items_payload = aff.get("items")
+        rows_payload = items_payload if isinstance(items_payload, list) else []
+    rows_len = len(rows_payload)
+
+    declared_raw = aff.get("count")
+    if declared_raw is None:
+        declared_raw = aff.get("total_rows")
+    try:
+        declared = int(declared_raw) if declared_raw is not None else 0
+    except (TypeError, ValueError):
+        declared = 0
+
+    return max(declared, rows_len)
+
+
 def _apply_context_defaults(df: pd.DataFrame) -> pd.DataFrame:
     """Backfill required context columns for legacy rows before strict checks."""
     out = df.copy()
@@ -121,7 +153,7 @@ def verify_date(
         if public_stats != CORE_STATS:
             fail(f"{date} bad public PMF stats: {sorted(public_stats)}")
 
-        aff_count = int(aff.get("count") or 0)
+        aff_count = _affiliate_row_count(aff)
         if aff_count <= 0:
             fail(f"{date} affiliate_dashboard count must be > 0")
 
