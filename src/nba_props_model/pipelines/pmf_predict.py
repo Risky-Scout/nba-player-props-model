@@ -197,6 +197,80 @@ def _apply_pmf_calibrators(
         )
 
 
+def _normalize_1d_pmf_for_combo(pmf: np.ndarray) -> np.ndarray:
+    """Return a clean 1D PMF suitable for combo convolution."""
+    arr = np.asarray(pmf, dtype=float).ravel()
+    if arr.size == 0:
+        out = np.zeros(1, dtype=float)
+        out[0] = 1.0
+        return out
+    arr = np.clip(arr, 0.0, None)
+    s = float(arr.sum())
+    if not np.isfinite(s) or s <= 0.0:
+        out = np.zeros(1, dtype=float)
+        out[0] = 1.0
+        return out
+    return arr / s
+
+
+def _convolve_component_pmfs(component_pmfs: list[np.ndarray]) -> np.ndarray:
+    """Independent convolution of final component PMFs.
+
+    This is the short-term coherence-preserving combo surface:
+    it guarantees E(sum components) = sum(E(component)) for final emitted PMFs.
+    """
+    if not component_pmfs:
+        out = np.zeros(1, dtype=float)
+        out[0] = 1.0
+        return out
+
+    acc = _normalize_1d_pmf_for_combo(component_pmfs[0])
+    for pmf in component_pmfs[1:]:
+        acc = np.convolve(acc, _normalize_1d_pmf_for_combo(pmf))
+        acc = _normalize_1d_pmf_for_combo(acc)
+    return acc
+
+
+def _rebuild_mission_combo_pmfs_from_final_components(out: dict[str, PropPMF]) -> None:
+    """Rebuild mission combo PMFs from the final emitted component PMFs.
+
+    The previous path built combo PMFs from joint samples, then independently
+    calibrated base stats and combo stats. That can break the hard identity
+    E(combo) = sum(E(components)). This finalization step restores the
+    mathematical contract by rebuilding combo PMFs from the final component PMFs.
+
+    This intentionally prioritizes mean/probability coherence over covariance
+    preservation. A future calibrated-marginal joint sampler can replace this
+    while keeping the same invariance tests.
+    """
+    combo_components = {
+        "pr": ("pts", "reb"),
+        "pa": ("pts", "ast"),
+        "ra": ("reb", "ast"),
+        "pra": ("pts", "reb", "ast"),
+        "stocks": ("stl", "blk"),
+    }
+
+    for combo_key, parts in combo_components.items():
+        if not all(part in out and out[part].pmf is not None for part in parts):
+            continue
+
+        combo_pmf = _convolve_component_pmfs([out[part].pmf for part in parts])
+        component_versions = ",".join(f"{part}:{out[part].model_version}" for part in parts)
+        prior_version = out[combo_key].model_version if combo_key in out else "missing_prior_combo"
+
+        out[combo_key] = PropPMF(
+            stat=combo_key,
+            pmf=combo_pmf,
+            calibrated=True,
+            model_version=(
+                f"component_convolution_mean_coherent_v1"
+                f"+components[{component_versions}]"
+                f"+prior_combo[{prior_version}]"
+            ),
+        )
+
+
 def ensure_mission_combos_present(
     pack: dict[str, PropPMF],
     *,
@@ -260,6 +334,7 @@ def ensure_mission_combos_present(
             model_version=combo_model_version,
         )
     _apply_pmf_calibrators(pack, minutes_dist, only_stats=missing)
+    _rebuild_mission_combo_pmfs_from_final_components(pack)
 
 
 # ── Per-player PMF build ─────────────────────────────────────────────────────
@@ -397,6 +472,7 @@ def build_prop_pmfs(
         )
 
     _apply_pmf_calibrators(out, minutes_dist)
+    _rebuild_mission_combo_pmfs_from_final_components(out)
     return out
 
 
