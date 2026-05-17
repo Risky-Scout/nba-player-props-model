@@ -1,15 +1,15 @@
 # PMF Model Review Package — 2026-05-17
 
-## Run status — 2026-05-17 — snapshot `morning`
+## Run status — 2026-05-17 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **168**
-- books: **12**
+- books: **13**
 - market coverage: **full**
 - injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 168
-- model: `4afff0aa#phase10c`
+- model: `d21436fe#phase10c`
 
 ### Caveats
 
