@@ -7,15 +7,14 @@
 - props: **168**
 - books: **13**
 - market coverage: **full**
-- injury freshness: **unknown**
+- injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 168
-- model: `7f7bdf77#phase10c`
+- model: `a93eb046#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/168; dominant_status='unknown' (count=168); sample_injury_report_fetched_at_utc='2026-05-17T03:34:57Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 
 ---
@@ -36,7 +35,7 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['injury_very_stale', 'lineup_unconfirmed']`
+- **finality_blockers**: `['lineup_unconfirmed']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
 - **books_seen**: `13`
@@ -44,8 +43,8 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 168}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=2131, publishable_edges=1599
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 513, 'fair_under_odds_null_count': 513, 'zero_or_one_prob_count': 280}`
+- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=2144, publishable_edges=1623
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 512, 'fair_under_odds_null_count': 512, 'zero_or_one_prob_count': 280}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
