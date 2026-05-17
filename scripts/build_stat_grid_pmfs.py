@@ -1105,6 +1105,7 @@ def main(argv: list[str] | None = None) -> int:
             "requirement."
         )
 
+    df = _finalize_combo_coherence_after_source_recalibration(df)
     df.to_parquet(out_path, index=False)
     print(f"\nwrote {_display_path(out_path)}  ({_now_utc_iso()})")
     return 0
