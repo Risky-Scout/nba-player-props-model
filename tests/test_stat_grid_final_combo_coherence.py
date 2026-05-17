@@ -29,14 +29,14 @@ def test_final_stat_grid_combo_pass_rebuilds_after_source_recalibration():
     mod = _load_build_stat_grid_module()
 
     rows = [
-        {"player_id": 1, "game_id": 10, "stat": "pts", "pmf": '{"2": 1.0}', "model_version": "pts_final", "calibrated": True},
-        {"player_id": 1, "game_id": 10, "stat": "reb", "pmf": '{"1": 1.0}', "model_version": "reb_final", "calibrated": True},
-        {"player_id": 1, "game_id": 10, "stat": "ast", "pmf": '{"0": 0.5, "1": 0.5}', "model_version": "ast_final", "calibrated": True},
+        {"player_id": 1, "game_id": 10, "stat": "pts", "pmf": '{"2": 1.0}', "model_version": "pts_final", "calibrated": True, "pmf_active": '{"2": 1.0}'},
+        {"player_id": 1, "game_id": 10, "stat": "reb", "pmf": '{"1": 1.0}', "model_version": "reb_final", "calibrated": True, "pmf_active": '{"1": 1.0}'},
+        {"player_id": 1, "game_id": 10, "stat": "ast", "pmf": '{"0": 0.5, "1": 0.5}', "model_version": "ast_final", "calibrated": True, "pmf_active": '{"0": 0.5, "1": 0.5}'},
 
-        {"player_id": 1, "game_id": 10, "stat": "pr", "pmf": '{"0": 1.0}', "model_version": "bad_pr", "calibrated": False},
-        {"player_id": 1, "game_id": 10, "stat": "pa", "pmf": '{"0": 1.0}', "model_version": "bad_pa", "calibrated": False},
-        {"player_id": 1, "game_id": 10, "stat": "ra", "pmf": '{"0": 1.0}', "model_version": "bad_ra", "calibrated": False},
-        {"player_id": 1, "game_id": 10, "stat": "pra", "pmf": '{"0": 1.0}', "model_version": "bad_pra", "calibrated": False},
+        {"player_id": 1, "game_id": 10, "stat": "pr", "pmf": '{"0": 1.0}', "model_version": "bad_pr", "calibrated": False, "pmf_active": '{"0": 1.0}'},
+        {"player_id": 1, "game_id": 10, "stat": "pa", "pmf": '{"0": 1.0}', "model_version": "bad_pa", "calibrated": False, "pmf_active": '{"0": 1.0}'},
+        {"player_id": 1, "game_id": 10, "stat": "ra", "pmf": '{"0": 1.0}', "model_version": "bad_ra", "calibrated": False, "pmf_active": '{"0": 1.0}'},
+        {"player_id": 1, "game_id": 10, "stat": "pra", "pmf": '{"0": 1.0}', "model_version": "bad_pra", "calibrated": False, "pmf_active": '{"0": 1.0}'},
     ]
 
     df = pd.DataFrame(rows)
@@ -55,6 +55,17 @@ def test_final_stat_grid_combo_pass_rebuilds_after_source_recalibration():
     assert means["pa"] == means["pts"] + means["ast"]
     assert means["ra"] == means["reb"] + means["ast"]
     assert means["pra"] == means["pts"] + means["reb"] + means["ast"]
+
+    active_means = {}
+    for _, row in out.iterrows():
+        active_means[row["stat"]] = _mean_from_dict_pmf(
+            mod._pmf_to_dict(mod._stat_grid_finalizer_pmf_array(row["pmf_active"]))
+        )
+
+    assert active_means["pr"] == active_means["pts"] + active_means["reb"]
+    assert active_means["pa"] == active_means["pts"] + active_means["ast"]
+    assert active_means["ra"] == active_means["reb"] + active_means["ast"]
+    assert active_means["pra"] == active_means["pts"] + active_means["reb"] + active_means["ast"]
 
     for stat in ["pr", "pa", "ra", "pra"]:
         row = out[out["stat"] == stat].iloc[0]

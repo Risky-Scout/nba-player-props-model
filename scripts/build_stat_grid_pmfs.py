@@ -872,6 +872,26 @@ def _finalize_combo_coherence_after_source_recalibration(df: pd.DataFrame) -> pd
             row_idx = stat_to_idx[combo]
 
             out.at[row_idx, "pmf"] = json.dumps(_pmf_to_dict(combo_pmf))
+
+            # Keep active-conditioned PMFs coherent too when the stat-grid
+            # surface carries pmf_active. Downstream diagnostics and delivery
+            # consumers often prefer pmf_active, so combo active PMFs must obey
+            # the same additivity contract as pmf.
+            if "pmf_active" in out.columns:
+                active_component_pmfs = []
+                active_ok = True
+                for part in parts:
+                    active_arr = _stat_grid_finalizer_pmf_array(
+                        out.at[stat_to_idx[part], "pmf_active"]
+                    )
+                    if active_arr is None:
+                        active_ok = False
+                        break
+                    active_component_pmfs.append(active_arr)
+                if active_ok:
+                    combo_active_pmf = _stat_grid_finalizer_convolve(active_component_pmfs)
+                    out.at[row_idx, "pmf_active"] = json.dumps(_pmf_to_dict(combo_active_pmf))
+
             for col, key in [
                 ("pmf_summary_mean", "mean"),
                 ("pmf_summary_median", "median"),
