@@ -257,3 +257,216 @@ def test_summary_handles_empty_feed_gracefully(tmp_path: Path) -> None:
     )
     assert manifest is None
     assert (out_dir / "derek_forward_feed_unified_skip.json").is_file()
+
+
+# ── 4-decimal rounding contract ────────────────────────────────────────
+#
+# The public ``derek_unique_props_summary.csv`` must round
+# ``projected_minutes``, ``pmf_mean``, ``market_line`` and ``p_over``
+# to 4 decimals so the file is eyeball-friendly and doesn't leak
+# float64 trailing digits like ``34.69707113974163``. Internal PMF
+# math stays full-precision; the rounding is applied at the public
+# output boundary inside ``_build_derek_bdl_main_line_summary``.
+
+
+def _load_module_for_rounding():
+    """Same module loader as above, parameterised separately so the
+    rounding tests can stand alone if the rest of the file is rearranged."""
+    return _load_build_derek_forward_feed_module()
+
+
+def test_summary_rounds_public_numeric_columns_to_4_decimals(monkeypatch) -> None:
+    """Direct-call unit test asserting the rounding contract.
+
+    Constructs a base dataframe whose PMF math produces full-precision
+    floats (E[X] = 17.7 exactly, but ``projected_minutes`` and the
+    BDL line are set to noisy values), then verifies the returned
+    summary DataFrame carries 4-decimal-rounded values across the
+    four public numeric columns.
+    """
+    import json as _json
+
+    module = _load_module_for_rounding()
+    monkeypatch.setenv("BDL_API_KEY", "x-fake-test-key")
+
+    # Stub BDL fetch with a deterministic over_under line that has
+    # more than 4 decimal places (it shouldn't — BDL ships .5/.0 lines
+    # — but the rounding pass must still normalise to <=4 decimals
+    # regardless of upstream noise).
+    def _fake_fetch(*, game_id: int, prop_type: str, api_key: str):
+        if (int(game_id), prop_type) == (9001, "points"):
+            return [
+                {
+                    "game_id": 9001,
+                    "player_id": 1,
+                    "vendor": "draftkings",
+                    "updated_at": "2099-01-15T11:00:00Z",
+                    # Deliberately noisy line — rounding must clip to 4dp.
+                    "line_value": 17.5000123456,
+                    "market": {"type": "over_under"},
+                }
+            ]
+        return []
+
+    monkeypatch.setattr(
+        module,
+        "_fetch_bdl_player_props_for_game_prop_type",
+        _fake_fetch,
+    )
+
+    pmf_payload = _json.dumps({"16": 0.1, "17": 0.3, "18": 0.4, "19": 0.2})
+    base = pd.DataFrame(
+        [
+            {
+                "game_id": 9001,
+                "player_id": 1,
+                "player_name": "Alice Tester",
+                "stat": "pts",
+                "line": 17.5,
+                "pmf_json": pmf_payload,
+                # Noisy projected_minutes (the exact 34.69707113974163
+                # value seen in the 2026-05-17 production file
+                # screenshot) — must be rounded to 34.6971.
+                "projected_minutes": 34.69707113974163,
+            }
+        ]
+    )
+    summary = module._build_derek_bdl_main_line_summary(base)
+
+    assert list(summary.columns) == [
+        "player_name",
+        "projected_minutes",
+        "stat",
+        "pmf_mean",
+        "market_line",
+        "p_over",
+    ]
+    row = summary.iloc[0]
+
+    # projected_minutes: 34.69707113974163 → 34.6971
+    assert float(row["projected_minutes"]) == 34.6971
+
+    # pmf_mean: direct E[X] = 17.7 exactly, but the rounding pass
+    # must still emit at most 4 decimals (no float64 trailing digits).
+    assert float(row["pmf_mean"]) == 17.7
+
+    # market_line: BDL line 17.5000123456 → 17.5
+    assert float(row["market_line"]) == 17.5
+
+    # p_over: 0.6 (direct PMF tail) → must be rounded to 4dp
+    # (0.6 round 4 == 0.6 — pinned to confirm trailing-digit
+    # float64 noise is gone).
+    assert float(row["p_over"]) == 0.6
+
+
+def test_summary_csv_persists_rounded_values(tmp_path: Path, monkeypatch) -> None:
+    """End-to-end CSV-level assertion: every public numeric column on
+    the persisted ``derek_unique_props_summary.csv`` has at most 4
+    decimal places after the writer runs.
+
+    This is the test the on-call eye would actually catch if rounding
+    regressed in the future: read the CSV as plain text and assert no
+    cell in the rounded columns has more than 4 digits after the dot.
+    """
+    import json as _json
+    import re as _re
+
+    module = _load_module_for_rounding()
+    monkeypatch.setenv("BDL_API_KEY", "x-fake-test-key")
+
+    def _fake_fetch(*, game_id: int, prop_type: str, api_key: str):
+        bdl = {
+            (9001, "points"): [
+                {
+                    "game_id": 9001,
+                    "player_id": 1,
+                    "vendor": "draftkings",
+                    "updated_at": "2099-01-15T11:00:00Z",
+                    "line_value": 17.5,
+                    "market": {"type": "over_under"},
+                }
+            ],
+            (9002, "assists"): [
+                {
+                    "game_id": 9002,
+                    "player_id": 2,
+                    "vendor": "draftkings",
+                    "updated_at": "2099-01-15T11:00:00Z",
+                    "line_value": 4.5,
+                    "market": {"type": "over_under"},
+                }
+            ],
+        }
+        return list(bdl.get((int(game_id), prop_type), []))
+
+    monkeypatch.setattr(
+        module,
+        "_fetch_bdl_player_props_for_game_prop_type",
+        _fake_fetch,
+    )
+
+    pts_pmf = _json.dumps({"16": 0.1, "17": 0.3, "18": 0.4, "19": 0.2})
+    ast_pmf = _json.dumps({"3": 0.2, "4": 0.4, "5": 0.3, "6": 0.1})
+    df = pd.DataFrame(
+        [
+            {
+                "game_id": 9001,
+                "player_id": 1,
+                "player_name": "Alice Tester",
+                "stat": "pts",
+                "line": 17.5,
+                "minutes_mean": 34.69707113974163,
+                "pmf_active": pts_pmf,
+                "delivery_date": "2099-01-15",
+            },
+            {
+                "game_id": 9002,
+                "player_id": 2,
+                "player_name": "Bob Tester",
+                "stat": "ast",
+                "line": 4.5,
+                "minutes_mean": 28.123456789,
+                "pmf_active": ast_pmf,
+                "delivery_date": "2099-01-15",
+            },
+        ]
+    )
+    out_dir = tmp_path / "deliveries" / "2099-01-15" / "derek_forward_feed"
+    out_dir.mkdir(parents=True)
+    manifest = module.write_m88_unified_feed(
+        date="2099-01-15",
+        out_dir=out_dir,
+        df=df,
+        run_mode="morning_expected",
+        lineup_status={"status": "test"},
+    )
+    assert manifest is not None
+
+    summary_path = out_dir / "derek_unique_props_summary.csv"
+    assert summary_path.is_file()
+
+    with summary_path.open() as f:
+        reader = csv.DictReader(f)
+        rounded_columns = ("projected_minutes", "pmf_mean", "market_line", "p_over")
+        rows = list(reader)
+
+    decimal_pattern = _re.compile(r"^-?\d+(?:\.\d{1,4})?$")
+    for row in rows:
+        for col in rounded_columns:
+            cell = row.get(col, "")
+            # ``cell`` may be the canonical pandas empty string or a
+            # 4dp-rounded numeric string. Both must satisfy the
+            # at-most-4-decimals contract; the empty case is allowed
+            # only if the value was actually NaN upstream.
+            if cell == "":
+                continue
+            assert decimal_pattern.match(cell), (
+                f"column {col!r} on row {row!r} has more than 4 decimals: {cell!r}"
+            )
+
+    # Spot-check Alice's row carries the canonical rounded values.
+    alice_pts = next(r for r in rows if r["player_name"] == "Alice Tester")
+    assert alice_pts["projected_minutes"] == "34.6971"
+    assert alice_pts["pmf_mean"] == "17.7"
+    assert alice_pts["market_line"] == "17.5"
+    assert alice_pts["p_over"] == "0.6"

@@ -829,6 +829,16 @@ def _build_derek_bdl_main_line_summary(out_df: pd.DataFrame) -> pd.DataFrame:
             + dupes.to_string(index=False)
         )
 
+    # Public CSV rounding contract: ``projected_minutes``, ``pmf_mean``,
+    # ``market_line`` and ``p_over`` are rounded to 4 decimals on the
+    # persisted ``derek_unique_props_summary.csv``. Internal math
+    # (E[X], tail probability) stays full-precision; the rounding is
+    # applied only at the public output boundary so the summary stays
+    # eyeball-friendly without leaking float64 trailing digits.
+    for col in ("projected_minutes", "pmf_mean", "market_line", "p_over"):
+        if col in summary.columns:
+            summary[col] = pd.to_numeric(summary[col], errors="coerce").round(4)
+
     return summary.sort_values(["player_name", "stat"], kind="mergesort").reset_index(drop=True)
 
 
