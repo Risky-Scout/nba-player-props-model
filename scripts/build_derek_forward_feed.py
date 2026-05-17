@@ -24,12 +24,17 @@ import argparse
 import csv
 import json
 import math
+import os
 import subprocess
 import sys
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 import pandas as pd
 
@@ -53,7 +58,7 @@ IDENTITY_COLS = [
     "stat",
 ]
 PMF_COLS = (
-    ["pmf_json", "mean", "median", "mode", "p0"]
+    ["pmf_json", "pmf_mean", "mean", "median", "mode", "p0"]
     + P_GE_KEYS
     + [
         "model_version",
@@ -93,11 +98,12 @@ MARKET_COLS = [
     "book",
     "market_key",
     "line",
+    "market_line",
+    "p_over",
     "over_price_american",
     "under_price_american",
     "market_no_vig_over_prob",
     "market_no_vig_under_prob",
-    "model_p_over",
     "model_p_under",
     "fair_over_odds_american",
     "fair_under_odds_american",
@@ -336,6 +342,403 @@ def _validate_pmf(pmf_json: Any) -> tuple[str, float]:
     return ("ok", err)
 
 
+
+BDL_PLAYER_PROPS_URL = "https://api.balldontlie.io/v2/odds/player_props"
+
+# Authoritative BDL prop_type → internal stat key map.
+#
+# Source: https://docs.balldontlie.io/nba/api-reference/odds-player-props
+# (Supported Prop Types table — over_under markets only).
+#
+# Notes per BDL docs (verified 2026-05-17):
+#   • BDL does NOT publish a turnovers ("tov") prop_type — production
+#     Derek summary therefore cannot expose a market_line for tov.
+#   • BDL does NOT publish a stocks / blocks_steals / steals_blocks
+#     combo prop_type — production Derek summary therefore cannot expose
+#     a market_line for stocks. Stocks remains an internal model stat.
+#   • First-quarter (``points_1q`` / ``rebounds_1q`` / ``assists_1q``),
+#     first-3-minute, ``double_double``, ``triple_double`` and milestone
+#     markets are intentionally excluded from this mapping per the
+#     user contract (only main over_under lines for the 10 single+combo
+#     stats below are eligible for the Derek summary).
+BDL_PROP_TYPE_TO_STAT = {
+    "points": "pts",
+    "rebounds": "reb",
+    "assists": "ast",
+    "threes": "fg3m",
+    "blocks": "blk",
+    "steals": "stl",
+    "points_rebounds": "pr",
+    "points_assists": "pa",
+    "rebounds_assists": "ra",
+    "points_rebounds_assists": "pra",
+}
+
+# Stats that exist in the internal PMF surface but are NOT exposed by
+# BDL as over_under prop_types — included here for documentation /
+# guard tests so accidental future additions of "turnovers"/"stocks"
+# trigger a verifier failure rather than silently fabricating lines.
+BDL_UNSUPPORTED_INTERNAL_STATS = ("tov", "stocks")
+
+# Quarantined public column names — must not appear in any persisted
+# public delivery output (CSV / Parquet / JSONL / JSON / HTML embed).
+QUARANTINED_PUBLIC_COLUMNS: tuple[str, ...] = (
+    "model_projected_mean",
+    "model_probability_over_market_line",
+    "model_prob_over_raw",
+    "model_prob_over_active",
+    "model_p_over",
+)
+
+
+def _drop_quarantined_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy of ``df`` with the quarantined public columns removed.
+
+    Public delivery writers MUST call this before persisting any CSV /
+    Parquet / JSONL Derek output. Quarantined fields stay available on
+    internal intermediate frames (so verifiers and audit scripts can
+    still cross-check); they are only stripped at the writer boundary.
+    """
+    if df is None:
+        return df
+    cols = [c for c in QUARANTINED_PUBLIC_COLUMNS if c in df.columns]
+    if not cols:
+        return df
+    return df.drop(columns=cols)
+
+
+def _populate_pmf_native_fields(rows: list[dict]) -> None:
+    """In-place: stamp ``pmf_mean`` + ``market_line`` + ``p_over`` on each
+    public feed row.
+
+    Computes ``p_over`` directly as ``sum_{outcome > line} PMF[outcome]``
+    against the row's own PMF surface. Does NOT copy or rename
+    ``model_p_over`` / ``model_prob_over_*`` — those are quarantined.
+
+    Rules:
+      • ``pmf_mean`` = direct expectation from row PMF when a parseable
+        PMF exists, else fall back to the upstream ``mean`` / existing
+        ``pmf_mean`` value.
+      • ``market_line`` = explicit ``market_line`` when present, else
+        the row's existing ``line``.
+      • ``p_over`` populated only when both a numeric line and a valid
+        PMF exist; otherwise left as ``None``.
+    """
+    for row in rows:
+        pmf_arr = _pmf_array_from_jsonish(row.get("pmf_json"))
+        if pmf_arr is not None:
+            row["pmf_mean"] = _pmf_direct_mean(pmf_arr)
+        elif row.get("pmf_mean") is None:
+            existing_mean = row.get("mean")
+            row["pmf_mean"] = (
+                float(existing_mean)
+                if isinstance(existing_mean, (int, float))
+                and existing_mean is not None
+                and math.isfinite(float(existing_mean))
+                else None
+            )
+
+        market_line = row.get("market_line")
+        if market_line is None:
+            market_line = row.get("line")
+        row["market_line"] = (
+            float(market_line)
+            if isinstance(market_line, (int, float))
+            and market_line is not None
+            and math.isfinite(float(market_line))
+            else None
+        )
+
+        if pmf_arr is not None and row["market_line"] is not None:
+            row["p_over"] = _pmf_direct_p_over(pmf_arr, row["market_line"])
+        else:
+            row["p_over"] = None
+
+BDL_STAT_TO_PROP_TYPE = {v: k for k, v in BDL_PROP_TYPE_TO_STAT.items()}
+
+DEREK_UNIQUE_SUMMARY_COLS = [
+    "player_name",
+    "projected_minutes",
+    "stat",
+    "pmf_mean",
+    "market_line",
+    "p_over",
+]
+
+
+def _pmf_array_from_jsonish(x: Any) -> list[float] | None:
+    if x is None:
+        return None
+    try:
+        d = json.loads(x) if isinstance(x, str) else dict(x)
+    except Exception:
+        return None
+
+    vals: dict[int, float] = {}
+    for k, v in d.items():
+        try:
+            kk = int(float(k))
+            vv = float(v)
+        except Exception:
+            continue
+        if kk < 0 or not math.isfinite(vv):
+            continue
+        vals[kk] = max(0.0, vv)
+
+    if not vals:
+        return None
+
+    arr = [0.0] * (max(vals) + 1)
+    for k, v in vals.items():
+        arr[k] = v
+
+    s = sum(arr)
+    if not math.isfinite(s) or s <= 0:
+        return None
+
+    return [v / s for v in arr]
+
+
+def _pmf_direct_mean(pmf_arr: list[float]) -> float:
+    return float(sum(i * p for i, p in enumerate(pmf_arr)))
+
+
+def _pmf_direct_p_over(pmf_arr: list[float], line: Any) -> float | None:
+    try:
+        line_f = float(line)
+    except Exception:
+        return None
+    return float(sum(p for i, p in enumerate(pmf_arr) if i > line_f))
+
+
+def _float_or_none(v: Any) -> float | None:
+    try:
+        if v is None:
+            return None
+        f = float(v)
+        if not math.isfinite(f):
+            return None
+        return f
+    except Exception:
+        return None
+
+
+def _fetch_bdl_player_props_for_game_prop_type(
+    *,
+    game_id: int,
+    prop_type: str,
+    api_key: str,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    cursor: Any = None
+    page: Any = None
+    seen_tokens: set[tuple[Any, Any]] = set()
+
+    while True:
+        params: dict[str, Any] = {
+            "game_id": int(game_id),
+            "prop_type": prop_type,
+            "per_page": 100,
+        }
+        if cursor is not None:
+            params["cursor"] = cursor
+        if page is not None:
+            params["page"] = page
+
+        url = f"{BDL_PLAYER_PROPS_URL}?{urlencode(params)}"
+        req = Request(url, headers={"Authorization": api_key})
+
+        try:
+            with urlopen(req, timeout=30) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+        except HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(
+                "BDL_PLAYER_PROPS_REQUEST_FAILED "
+                f"game_id={game_id} prop_type={prop_type} "
+                f"status={exc.code} body={body[:500]}"
+            ) from exc
+
+        data = payload.get("data", payload if isinstance(payload, list) else [])
+        if isinstance(data, list):
+            rows.extend(r for r in data if isinstance(r, dict))
+
+        meta = payload.get("meta") if isinstance(payload, dict) else {}
+        meta = meta or {}
+        next_cursor = meta.get("next_cursor") or meta.get("nextCursor")
+        next_page = meta.get("next_page") or meta.get("nextPage")
+
+        token = (next_cursor, next_page)
+        if token in seen_tokens:
+            break
+        seen_tokens.add(token)
+
+        if next_cursor:
+            cursor = next_cursor
+            page = None
+            time.sleep(0.05)
+            continue
+        if next_page:
+            page = next_page
+            cursor = None
+            time.sleep(0.05)
+            continue
+        break
+
+    return rows
+
+
+def _build_derek_bdl_main_line_summary(out_df: pd.DataFrame) -> pd.DataFrame:
+    """Build Derek's one-row-per-player/stat BDL main-line summary.
+
+    This intentionally does not use WoO alternate-line rows and does not use
+    model_prob_over_* fields. p_over is computed directly from the PMF.
+    """
+    if out_df.empty:
+        return pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    api_key = os.environ.get("BDL_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("BDL_API_KEY not set; cannot build Derek BDL main-line summary")
+
+    required = {"game_id", "player_id", "player_name", "stat"}
+    missing = sorted(c for c in required if c not in out_df.columns)
+    if missing:
+        raise RuntimeError(f"DEREK_BDL_SUMMARY_MISSING_REQUIRED_COLUMNS: {missing}")
+
+    pmf_value_col = next(
+        (c for c in ("pmf_json", "pmf_active", "pmf") if c in out_df.columns),
+        None,
+    )
+    if pmf_value_col is None:
+        raise RuntimeError(
+            "DEREK_BDL_SUMMARY_MISSING_REQUIRED_COLUMNS: "
+            "one of pmf_json, pmf_active, pmf is required"
+        )
+
+    base = out_df.copy()
+    base["stat"] = base["stat"].astype(str).str.lower()
+    base = base[base["stat"].isin(BDL_STAT_TO_PROP_TYPE)].copy()
+
+    if base.empty:
+        return pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    base = (
+        base.sort_values(["player_name", "stat"], kind="mergesort")
+            .drop_duplicates(["game_id", "player_id", "stat"], keep="first")
+            .copy()
+    )
+
+    game_ids = sorted(int(x) for x in base["game_id"].dropna().unique())
+
+    bdl_records: list[dict[str, Any]] = []
+    for gid in game_ids:
+        for prop_type, stat in BDL_PROP_TYPE_TO_STAT.items():
+            recs = _fetch_bdl_player_props_for_game_prop_type(
+                game_id=gid,
+                prop_type=prop_type,
+                api_key=api_key,
+            )
+            print(
+                "BDL_PLAYER_PROPS_FETCH "
+                f"game_id={gid} prop_type={prop_type} rows={len(recs)}"
+            )
+            for rec in recs:
+                market = rec.get("market") or {}
+                if isinstance(market, str):
+                    try:
+                        market = json.loads(market)
+                    except Exception:
+                        market = {}
+
+                if str(market.get("type") or "").lower() != "over_under":
+                    continue
+
+                line = _float_or_none(rec.get("line_value"))
+                if line is None:
+                    continue
+
+                bdl_records.append(
+                    {
+                        "game_id": rec.get("game_id"),
+                        "player_id": rec.get("player_id"),
+                        "stat": stat,
+                        "market_line": line,
+                        "vendor": rec.get("vendor"),
+                        "updated_at": rec.get("updated_at"),
+                    }
+                )
+
+    bdl = pd.DataFrame(bdl_records)
+    if bdl.empty:
+        raise RuntimeError("BDL_PLAYER_PROPS_EMPTY: no over_under player props returned")
+
+    line_counts = (
+        bdl.groupby(["game_id", "player_id", "stat", "market_line"])
+           .agg(vendor_count=("vendor", "nunique"), row_count=("market_line", "size"))
+           .reset_index()
+    )
+
+    selected = (
+        line_counts.sort_values(
+            ["game_id", "player_id", "stat", "vendor_count", "row_count", "market_line"],
+            ascending=[True, True, True, False, False, True],
+        )
+        .groupby(["game_id", "player_id", "stat"], as_index=False)
+        .head(1)
+        .reset_index(drop=True)
+    )
+
+    joined = base.merge(
+        selected[["game_id", "player_id", "stat", "market_line"]],
+        on=["game_id", "player_id", "stat"],
+        how="inner",
+    )
+
+    rows: list[dict[str, Any]] = []
+    for _, r in joined.iterrows():
+        pmf_arr = _pmf_array_from_jsonish(r.get(pmf_value_col))
+        if pmf_arr is None:
+            continue
+
+        p_over = _pmf_direct_p_over(pmf_arr, r.get("market_line"))
+        if p_over is None:
+            continue
+
+        projected_minutes = (
+            _float_or_none(r.get("projected_minutes"))
+            or _float_or_none(r.get("minutes_mean"))
+            or _float_or_none(r.get("minutes_q50"))
+            or _float_or_none(r.get("minutes_p50"))
+        )
+
+        rows.append(
+            {
+                "player_name": r.get("player_name"),
+                "projected_minutes": projected_minutes,
+                "stat": r.get("stat"),
+                "pmf_mean": _pmf_direct_mean(pmf_arr),
+                "market_line": float(r.get("market_line")),
+                "p_over": p_over,
+            }
+        )
+
+    summary = pd.DataFrame(rows, columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    if summary.empty:
+        raise RuntimeError("DEREK_BDL_SUMMARY_EMPTY_AFTER_JOIN")
+
+    dupes = summary.groupby(["player_name", "stat"]).size().reset_index(name="n")
+    dupes = dupes[dupes["n"] > 1]
+    if not dupes.empty:
+        raise RuntimeError(
+            "DEREK_BDL_SUMMARY_DUPLICATE_PLAYER_STAT_ROWS:\n"
+            + dupes.to_string(index=False)
+        )
+
+    return summary.sort_values(["player_name", "stat"], kind="mergesort").reset_index(drop=True)
+
+
 def _market_key_for_stat(stat: str) -> str:
     return f"player_{stat}_over_under"
 
@@ -394,6 +797,19 @@ def _populate_identity_pmf_quality(
 
     role_freshness = _none_if_nan(mo_row.get("role_freshness_status"))
 
+    # Public-facing PMF expectation: compute directly from the row PMF
+    # whenever a parseable PMF exists; otherwise fall back to the
+    # upstream ``mean`` summary stat. Never reference
+    # ``model_projected_mean`` (quarantined).
+    pmf_arr_for_mean = _pmf_array_from_jsonish(pmf_json)
+    if pmf_arr_for_mean is not None:
+        pmf_mean_value: float | None = _pmf_direct_mean(pmf_arr_for_mean)
+    else:
+        upstream_mean = _none_if_nan(mo_row.get("mean"))
+        pmf_mean_value = (
+            float(upstream_mean) if isinstance(upstream_mean, (int, float)) else None
+        )
+
     row.update(
         {
             "snapshot_type": snapshot_type,
@@ -408,6 +824,7 @@ def _populate_identity_pmf_quality(
             "is_home": _none_if_nan(mo_row.get("is_home")),
             "stat": _none_if_nan(mo_row.get("stat")),
             "pmf_json": pmf_json,
+            "pmf_mean": pmf_mean_value,
             "mean": _none_if_nan(mo_row.get("mean")),
             "median": _none_if_nan(mo_row.get("median")),
             "mode": _none_if_nan(mo_row.get("mode")),
@@ -494,8 +911,13 @@ def _populate_market(
         # Model-only row — leave market fields blank but stamp coverage.
         row["market_key"] = _market_key_for_stat(str(row["stat"]))
         row["market_coverage_status"] = "no_market"
-        # model_p_over/under remain None for model-only rows: there's no
-        # line to evaluate against. Do not impute.
+        row["market_line"] = None
+        row["p_over"] = None
+        # No line on a model-only row -> no p_over to compute. Do not
+        # impute. ``model_p_over`` and ``model_p_under`` are not
+        # exposed on public outputs (model_p_over is quarantined and
+        # model_p_under is left at its template default so as not to
+        # imply a real probability without a market line).
         return
 
     line = _none_if_nan(mc_row.get("line"))
@@ -506,9 +928,24 @@ def _populate_market(
     no_vig_under = (
         None if no_vig_over is None else max(0.0, min(1.0, 1.0 - float(no_vig_over)))
     )
-    model_p_over = _none_if_nan(mc_row.get("model_p_over"))
+    # Direct PMF tail probability against the offered market line.
+    # Prefer the canonical/stat-grid PMF carried on the row (set by
+    # ``_populate_identity_pmf_quality`` from ``mo_row.pmf_json``)
+    # because market_comparison strips ``pmf_json`` to keep the
+    # comparison frame slim. We NEVER reuse ``model_p_over`` —
+    # that field is conditional (renormalised against the at-line
+    # atom) and is quarantined from public outputs.
+    pmf_arr_for_market = _pmf_array_from_jsonish(row.get("pmf_json"))
+    if pmf_arr_for_market is None:
+        pmf_arr_for_market = _pmf_array_from_jsonish(mc_row.get("pmf_json"))
+    if pmf_arr_for_market is not None and line is not None:
+        p_over_direct = _pmf_direct_p_over(pmf_arr_for_market, line)
+    else:
+        p_over_direct = None
     model_p_under = (
-        None if model_p_over is None else max(0.0, min(1.0, 1.0 - float(model_p_over)))
+        None
+        if p_over_direct is None
+        else max(0.0, min(1.0, 1.0 - float(p_over_direct)))
     )
     edge_over = _none_if_nan(mc_row.get("edge"))
     edge_under = None if edge_over is None else -float(edge_over)
@@ -519,11 +956,12 @@ def _populate_market(
             "book": book,
             "market_key": _market_key_for_stat(str(row["stat"])),
             "line": line,
+            "market_line": line,
+            "p_over": p_over_direct,
             "over_price_american": over_price,
             "under_price_american": under_price,
             "market_no_vig_over_prob": no_vig_over,
             "market_no_vig_under_prob": no_vig_under,
-            "model_p_over": model_p_over,
             "model_p_under": model_p_under,
             "fair_over_odds_american": _none_if_nan(mc_row.get("fair_over_odds_american")),
             "fair_under_odds_american": _none_if_nan(mc_row.get("fair_under_odds_american")),
@@ -633,6 +1071,7 @@ def write_feed_files(
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows, columns=FEED_COLS)
+    df = _drop_quarantined_columns(df)
 
     csv_path = out_dir / f"{basename}.csv"
     parquet_path = out_dir / f"{basename}.parquet"
@@ -647,10 +1086,11 @@ def write_feed_files(
         jsonl_path = out_dir / f"{basename}.jsonl"
         with jsonl_path.open("w") as f:
             for r in rows:
-                # Ensure JSON-safe (no NaN / inf).
+                # Ensure JSON-safe (no NaN / inf) and strip quarantined keys.
                 clean = {
                     k: (None if isinstance(v, float) and not math.isfinite(v) else v)
                     for k, v in r.items()
+                    if k not in QUARANTINED_PUBLIC_COLUMNS
                 }
                 f.write(json.dumps(clean, default=str) + "\n")
         written["jsonl"] = str(jsonl_path.relative_to(REPO_ROOT))
@@ -665,6 +1105,7 @@ def write_latest_available(
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows, columns=FEED_COLS)
+    df = _drop_quarantined_columns(df)
     csv_path = out_dir / "latest_available_snapshot.csv"
     parquet_path = out_dir / "latest_available_snapshot.parquet"
     df.to_csv(csv_path, index=False, quoting=csv.QUOTE_MINIMAL)
@@ -870,8 +1311,28 @@ def write_m88_unified_feed(
     for _, r in df.iterrows():
         pmf_json = r.get("pmf_json")
         pmean, pvar, p10, p50, p90 = _discrete_pmf_stats(pmf_json)
-        m_over = r.get("model_p_over")
-        m_over_f = float(m_over) if m_over is not None and not (isinstance(m_over, float) and math.isnan(m_over)) else None
+
+        # Direct PMF tail probability for the unified Derek feed.
+        # Computed straight from the row PMF against the row's offered
+        # line; never reuses the quarantined ``model_p_over`` /
+        # ``model_prob_over_*`` fields.
+        line_value = r.get("line")
+        try:
+            line_for_p_over = (
+                float(line_value)
+                if line_value is not None
+                and not (isinstance(line_value, float) and math.isnan(line_value))
+                else None
+            )
+        except (TypeError, ValueError):
+            line_for_p_over = None
+        pmf_arr_row = _pmf_array_from_jsonish(pmf_json)
+        if pmf_arr_row is not None and line_for_p_over is not None:
+            p_over_value: float | None = _pmf_direct_p_over(
+                pmf_arr_row, line_for_p_over
+            )
+        else:
+            p_over_value = None
         # M8.8 — use the real predict_minutes-derived p_inactive_used when
         # present (a continuous probability in [0, 1]). Fall back to the
         # legacy role-string binary when minutes_model output is missing.
@@ -974,8 +1435,15 @@ def write_m88_unified_feed(
             ),
             "stale_injury_flag": stale_inj,
             "stale_lineup_flag": stale_lin,
-            "model_prob_over_raw": m_over_f,
-            "model_prob_over_active": m_over_f,
+            "market_line": line_for_p_over,
+            "p_over": p_over_value,
+            # In-memory only: ``pmf_json`` is propagated onto the row so
+            # the BDL main-line summary builder can compute
+            # ``pmf_mean`` and ``p_over`` directly from the row PMF.
+            # It is stripped from the persisted derek_forward_feed.*
+            # public files below (preserves the historical Derek feed
+            # schema where ``pmf_json`` is NOT a public column).
+            "pmf_json": pmf_json,
             "model_prob_under_active": mu_f,
             "fair_over_odds": fair_o,
             "fair_under_odds": fair_u,
@@ -1080,62 +1548,37 @@ def write_m88_unified_feed(
     pq_out = out_dir / "derek_forward_feed.parquet"
     csv_out = out_dir / "derek_forward_feed.csv"
     jl_out = out_dir / "derek_forward_feed.jsonl"
-    out_df.to_parquet(pq_out, index=False)
-    out_df.to_csv(csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
+    # Public Derek feed schema historically did NOT include the raw
+    # ``pmf_json`` column. We carry it on the in-memory ``out_df``
+    # purely so the summary builder below can compute ``pmf_mean``
+    # / ``p_over`` directly from the row PMF; strip it (along with
+    # any quarantined column) before persisting.
+    _DEREK_FEED_PRIVATE_COLUMNS = ("pmf_json",)
+    out_df_public = _drop_quarantined_columns(out_df).drop(
+        columns=[c for c in _DEREK_FEED_PRIVATE_COLUMNS if c in out_df.columns],
+        errors="ignore",
+    )
+    out_df_public.to_parquet(pq_out, index=False)
+    out_df_public.to_csv(csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
     with jl_out.open("w", encoding="utf-8") as f:
         for rec in rows_out:
-            f.write(json.dumps(rec, default=str) + "\n")
-
-    # Unique props summary — Derek's at-a-glance view of every
-    # unique (player, stat, market_line) combination produced by
-    # the model. Exact column contract:
-    #
-    #   player_name | projected_minutes | stat | market_line
-    #   | model_projected_mean (← pmf_mean)
-    #   | model_probability_over_market_line (← model_prob_over_active)
-    #
-    # The full feed contains one row per (player, stat, line, book)
-    # combination. Derek's downstream tooling reads the summary
-    # without needing to dedupe per-book rows itself.
-    summary_csv_out = out_dir / "derek_unique_props_summary.csv"
-    if out_df.empty:
-        summary_df = pd.DataFrame(
-            columns=[
-                "player_name",
-                "projected_minutes",
-                "stat",
-                "market_line",
-                "model_projected_mean",
-                "model_probability_over_market_line",
-            ]
-        )
-    else:
-        dedupe_keys = [
-            c for c in ("player_id", "stat", "line") if c in out_df.columns
-        ]
-        if dedupe_keys:
-            unique_df = out_df.drop_duplicates(
-                subset=dedupe_keys, keep="first"
-            ).copy()
-        else:
-            unique_df = out_df.copy()
-        summary_df = pd.DataFrame(
-            {
-                "player_name": unique_df["player_name"],
-                "projected_minutes": unique_df["projected_minutes"],
-                "stat": unique_df["stat"],
-                "market_line": unique_df["line"],
-                "model_projected_mean": unique_df["pmf_mean"],
-                "model_probability_over_market_line": (
-                    unique_df["model_prob_over_active"]
-                ),
+            clean = {
+                k: v for k, v in rec.items()
+                if k not in QUARANTINED_PUBLIC_COLUMNS
+                and k not in _DEREK_FEED_PRIVATE_COLUMNS
             }
-        )
-        summary_df = summary_df.sort_values(
-            ["player_name", "stat", "market_line"],
-            na_position="last",
-            kind="mergesort",
-        ).reset_index(drop=True)
+            f.write(json.dumps(clean, default=str) + "\n")
+
+    # Unique props summary — Derek's boss-facing at-a-glance view.
+    #
+    # Contract:
+    #   one row per player/stat using BDL's normal over_under main prop line.
+    #
+    # This summary intentionally does NOT use WoO alternate-line rows and does
+    # NOT expose or copy model_prob_over_* fields. p_over is computed directly
+    # from the row PMF against the selected BDL market_line.
+    summary_csv_out = out_dir / "derek_unique_props_summary.csv"
+    summary_df = _build_derek_bdl_main_line_summary(out_df)
     summary_df.to_csv(summary_csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
     try:
         _summary_rel = str(summary_csv_out.relative_to(REPO_ROOT))
@@ -1177,21 +1620,14 @@ def write_m88_unified_feed(
         "unique_props_summary": {
             "path": _maybe_rel(summary_csv_out, REPO_ROOT),
             "row_count": int(len(summary_df)),
-            "columns": [
-                "player_name",
-                "projected_minutes",
-                "stat",
-                "market_line",
-                "model_projected_mean",
-                "model_probability_over_market_line",
-            ],
+            "columns": DEREK_UNIQUE_SUMMARY_COLS,
             "column_lineage": {
-                "model_projected_mean": "pmf_mean",
-                "model_probability_over_market_line": (
-                    "model_prob_over_active"
-                ),
+                "pmf_mean": "direct_expectation_from_pmf_json",
+                "p_over": "direct_pmf_tail_probability_gt_market_line",
+                "market_line": "bdl_player_props_line_value_over_under_consensus",
             },
-            "dedupe_keys": ["player_id", "stat", "line"],
+            "dedupe_keys": ["player_name", "stat"],
+            "market_line_source": "bdl_player_props_over_under",
         },
     }
     (out_dir / "manifest.json").write_text(json.dumps(man, indent=2, default=str) + "\n", encoding="utf-8")

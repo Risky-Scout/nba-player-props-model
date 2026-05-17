@@ -1,15 +1,24 @@
 """Tests for ``deliveries/<DATE>/derek_forward_feed/derek_unique_props_summary.csv``.
 
 The summary is written by ``scripts/build_derek_forward_feed.py``
-inside ``write_m88_unified_feed``. It is a thin column-mapping +
-dedupe view on top of the full feed, exposing only what Derek's
-downstream consumers need.
+inside ``write_m88_unified_feed``. It is built from the BDL
+``/v2/odds/player_props`` ``over_under`` lines joined to the
+canonical PMF surface — one row per (player, stat).
 
 Schema contract (exact column list + order):
 
-  player_name | projected_minutes | stat | market_line
-  | model_projected_mean (← pmf_mean)
-  | model_probability_over_market_line (← model_prob_over_active)
+  player_name | projected_minutes | stat | pmf_mean | market_line
+  | p_over
+
+  • ``pmf_mean`` is the direct PMF expectation from the row PMF.
+  • ``market_line`` is the BDL ``line_value`` for the player/stat
+    ``over_under`` market.
+  • ``p_over`` is the direct PMF tail probability
+    ``P(stat > market_line)``.
+
+Quarantined columns (``model_projected_mean``,
+``model_probability_over_market_line``, ``model_prob_over_*``,
+``model_p_over``) MUST be absent from this file.
 """
 from __future__ import annotations
 
@@ -28,9 +37,9 @@ SUMMARY_EXPECTED_COLUMNS = [
     "player_name",
     "projected_minutes",
     "stat",
+    "pmf_mean",
     "market_line",
-    "model_projected_mean",
-    "model_probability_over_market_line",
+    "p_over",
 ]
 
 
@@ -57,7 +66,7 @@ def _make_unified_df() -> pd.DataFrame:
       * ``mean``               → feed's ``pmf_mean`` when there is
                                  no ``pmf_json``
       * ``model_p_over``       → feed's
-                                 ``model_prob_over_active``
+                                 ``direct_pmf_tail_probability_gt_market_line``
     """
     rows = [
         {
@@ -111,15 +120,32 @@ def _make_unified_df() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_summary_exact_schema_and_column_mapping(tmp_path: Path) -> None:
-    """Verify that the file has the exact 6-column contract and
-    that ``model_projected_mean`` maps from ``pmf_mean`` and
-    ``model_probability_over_market_line`` maps from
-    ``model_prob_over_active``."""
+def test_summary_exact_schema_and_column_mapping(tmp_path: Path, monkeypatch) -> None:
+    """Verify the persisted file has the exact 6-column contract.
+
+    The BDL fetcher is stubbed (no live network), so the test pins
+    only the schema + column ordering of the file the writer emits.
+    """
     module = _load_build_derek_forward_feed_module()
 
     out_dir = tmp_path / "deliveries" / "2099-01-15" / "derek_forward_feed"
     out_dir.mkdir(parents=True)
+
+    expected_summary = pd.DataFrame(
+        {
+            "player_name": ["Alpha Player", "Beta Player"],
+            "projected_minutes": [31.5, 28.0],
+            "stat": ["pts", "pra"],
+            "pmf_mean": [18.25, 29.75],
+            "market_line": [17.5, 30.5],
+            "p_over": [0.584, 0.462],
+        }
+    )
+    monkeypatch.setattr(
+        module,
+        "_build_derek_bdl_main_line_summary",
+        lambda out_df: expected_summary.copy(),
+    )
 
     df = _make_unified_df()
     manifest = module.write_m88_unified_feed(
@@ -139,25 +165,44 @@ def test_summary_exact_schema_and_column_mapping(tmp_path: Path) -> None:
         assert reader.fieldnames == SUMMARY_EXPECTED_COLUMNS
         records = list(reader)
 
-    # Dedupe: Alice/pts/18.5 had two book-level rows; summary
-    # collapses to one. Alice has pts + reb (2 rows). Bob has ast
-    # at 4.5 and 5.5 (2 rows). Total = 4 unique props.
-    assert len(records) == 4
+    # New Derek summary is produced by the BDL-main-line summary builder:
+    # one row per player/stat from the summary builder contract.
+    assert len(records) == len(expected_summary)
 
-    by_key = {(r["player_name"], r["stat"], r["market_line"]): r for r in records}
-    alice_pts = by_key[("Alice", "pts", "18.5")]
-    assert alice_pts["projected_minutes"] == "32.0"
-    assert alice_pts["model_projected_mean"] == "19.4"
-    assert alice_pts["model_probability_over_market_line"] == "0.61"
+    # Quarantined public columns MUST NOT appear in the persisted file.
+    for c in (
+        "model_projected_mean",
+        "model_probability_over_market_line",
+        "model_prob_over_raw",
+        "model_prob_over_active",
+        "model_p_over",
+    ):
+        assert c not in reader.fieldnames
 
-    bob_5_5 = by_key[("Bob", "ast", "5.5")]
-    assert bob_5_5["model_probability_over_market_line"] == "0.34"
+    expected_records = expected_summary.astype(str).to_dict("records")
+    assert records == expected_records
 
 
-def test_summary_manifest_records_column_lineage(tmp_path: Path) -> None:
+def test_summary_manifest_records_column_lineage(tmp_path: Path, monkeypatch) -> None:
     module = _load_build_derek_forward_feed_module()
     out_dir = tmp_path / "deliveries" / "2099-01-16" / "derek_forward_feed"
     out_dir.mkdir(parents=True)
+
+    expected_summary = pd.DataFrame(
+        {
+            "player_name": ["Alpha Player", "Beta Player"],
+            "projected_minutes": [31.5, 28.0],
+            "stat": ["pts", "pra"],
+            "pmf_mean": [18.25, 29.75],
+            "market_line": [17.5, 30.5],
+            "p_over": [0.584, 0.462],
+        }
+    )
+    monkeypatch.setattr(
+        module,
+        "_build_derek_bdl_main_line_summary",
+        lambda out_df: expected_summary.copy(),
+    )
 
     df = _make_unified_df()
     manifest = module.write_m88_unified_feed(
@@ -172,10 +217,24 @@ def test_summary_manifest_records_column_lineage(tmp_path: Path) -> None:
     summary_block = manifest.get("unique_props_summary")
     assert summary_block is not None
     assert summary_block["columns"] == SUMMARY_EXPECTED_COLUMNS
-    assert summary_block["column_lineage"] == {
-        "model_projected_mean": "pmf_mean",
-        "model_probability_over_market_line": "model_prob_over_active",
+    expected_lineage = {
+        "pmf_mean": "direct_expectation_from_pmf_json",
+        "p_over": "direct_pmf_tail_probability_gt_market_line",
+        "market_line": "bdl_player_props_line_value_over_under_consensus",
     }
+    assert summary_block["column_lineage"] == expected_lineage
+    # The lineage must NEVER name any of the quarantined source
+    # columns — public ``pmf_mean`` / ``p_over`` come from the PMF
+    # surface, not from ``model_p_over`` / ``model_prob_over_*``.
+    lineage_values = set(summary_block["column_lineage"].values())
+    for c in (
+        "model_projected_mean",
+        "model_probability_over_market_line",
+        "model_prob_over_raw",
+        "model_prob_over_active",
+        "model_p_over",
+    ):
+        assert c not in lineage_values
     assert "files" in manifest
     assert manifest["files"]["unique_props_summary_csv"].endswith(
         "derek_unique_props_summary.csv"

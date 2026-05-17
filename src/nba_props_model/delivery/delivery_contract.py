@@ -78,6 +78,13 @@ _CANONICAL_MODEL_ONLY_MIN = (
     "pmf_source",
 )
 # WoO / review wide tables share the Phase-10C delivery row shape.
+#
+# ``pmf_mean`` (direct PMF expectation) and ``p_over`` (direct PMF tail
+# probability ``P(stat > line)``) are the PMF-native public column
+# names. The legacy ``model_p_over`` field is QUARANTINED from public
+# delivery outputs because it is the conditional / renormalised
+# probability — kept out of the writer contract on purpose so the
+# public CSV / parquet artifacts cannot reintroduce it.
 _WOO_ROW_CORE = (
     "player_name",
     "player_id",
@@ -87,7 +94,8 @@ _WOO_ROW_CORE = (
     "stat",
     "pmf_valid",
     "mean",
-    "model_p_over",
+    "pmf_mean",
+    "p_over",
     "role_bucket",
     "snapshot_type",
     "snapshot_time_utc",
@@ -151,8 +159,14 @@ DEREK_UNIFIED_REQUIRED_COLUMNS: tuple[str, ...] = (
     "lineup_last_updated_utc",
     "stale_injury_flag",
     "stale_lineup_flag",
-    "model_prob_over_raw",
-    "model_prob_over_active",
+    # Public PMF-native fields. ``market_line`` mirrors the row's
+    # offered ``line`` (or BDL ``line_value``) so downstream consumers
+    # never have to choose between the two names. ``p_over`` is the
+    # DIRECT tail probability ``P(stat > market_line)`` computed from
+    # the row PMF — never a rename of the quarantined
+    # ``model_prob_over_*`` family.
+    "market_line",
+    "p_over",
     "model_prob_under_active",
     "fair_over_odds",
     "fair_under_odds",

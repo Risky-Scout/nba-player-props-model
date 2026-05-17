@@ -424,6 +424,95 @@ M8_6O_KELLY_CAP = 0.05
 M8_6O_ATOM_PMF_COLS = ("pmf", "pmf_json", "pmf_active", "model_full_pmf")
 
 
+# Quarantined column names removed from every persisted public WoO
+# export the affiliate dashboard / pmf_research feed produces. The
+# in-memory ``market_df`` may still expose the legacy columns (they
+# remain a valid INPUT signal); we just refuse to surface them in
+# any public JSON / CSV / HTML embed.
+QUARANTINED_PUBLIC_KEYS: tuple[str, ...] = (
+    "model_projected_mean",
+    "model_probability_over_market_line",
+    "model_prob_over_raw",
+    "model_prob_over_active",
+    "model_p_over",
+)
+
+
+def _strip_quarantined_keys(rec: dict) -> dict:
+    if not isinstance(rec, dict):
+        return rec
+    return {k: v for k, v in rec.items() if k not in QUARANTINED_PUBLIC_KEYS}
+
+
+def _pmf_array_from_pmf_obj(v) -> list[float] | None:
+    """Return a normalised dense list-of-floats PMF.
+
+    Accepts dicts keyed by integer outcomes, list/ndarray distributions,
+    or JSON-encoded strings. Returns ``None`` when the value cannot
+    be coerced into a positive-mass PMF.
+    """
+    if v is None:
+        return None
+    try:
+        if isinstance(v, float) and v != v:
+            return None
+    except Exception:
+        pass
+    try:
+        import numpy as _np
+        if isinstance(v, _np.ndarray):
+            v = v.tolist()
+    except Exception:
+        pass
+    if isinstance(v, str):
+        s = v.strip()
+        if not s or s in {"None", "nan", "{}", "[]"}:
+            return None
+        try:
+            v = json.loads(s)
+        except Exception:
+            try:
+                v = json.loads(s.replace("'", '"'))
+            except Exception:
+                return None
+    if isinstance(v, list):
+        try:
+            arr = [max(0.0, float(p)) for p in v]
+        except Exception:
+            return None
+    elif isinstance(v, dict):
+        try:
+            pairs = [(int(float(k)), max(0.0, float(p))) for k, p in v.items()]
+        except Exception:
+            return None
+        if not pairs:
+            return None
+        K = max(k for k, _ in pairs) + 1
+        arr = [0.0] * K
+        for k, p in pairs:
+            arr[k] = p
+    else:
+        return None
+    s = sum(arr)
+    if not (s > 0 and math.isfinite(s)):
+        return None
+    return [p / s for p in arr]
+
+
+def _pmf_direct_mean(arr: list[float]) -> float:
+    return float(sum(i * p for i, p in enumerate(arr)))
+
+
+def _pmf_direct_p_over(arr: list[float], line) -> float | None:
+    try:
+        line_f = float(line)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(line_f):
+        return None
+    return float(sum(p for i, p in enumerate(arr) if i > line_f))
+
+
 def _m8_6o_resolve_atom_pmf_column(market_df) -> "str | None":
     for c in M8_6O_ATOM_PMF_COLS:
         if c in market_df.columns: return c
@@ -575,6 +664,31 @@ def _build_affiliate_rows_from_delivery(market_df: pd.DataFrame) -> tuple[list[d
                 fair_odds_model = None
             book_key = str(row.get("book") or "").lower()
             affiliate_url = M8_6O_AFFILIATE_URLS.get(book_key)
+            # Direct PMF expectation + tail probability for the
+            # public affiliate dashboard. ``p_over`` is the raw
+            # ``P(stat > line)`` computed from the row PMF; it is
+            # NEVER copied from ``model_p_over`` / ``model_prob_over_*``
+            # (those legacy probabilities are conditional and
+            # quarantined). ``pmf_mean`` is the direct expectation.
+            line_for_pmf = row.get("line")
+            pmf_arr_pub = (
+                _pmf_array_from_pmf_obj(atom_pmf_for_row)
+                if atom_pmf_for_row is not None
+                else None
+            )
+            if pmf_arr_pub is None and atom_col is not None:
+                pmf_arr_pub = _pmf_array_from_pmf_obj(row.get(atom_col))
+            pmf_mean_value = (
+                _pmf_direct_mean(pmf_arr_pub) if pmf_arr_pub is not None else None
+            )
+            try:
+                line_f_pub = float(line_for_pmf) if line_for_pmf is not None else None
+            except (TypeError, ValueError):
+                line_f_pub = None
+            if pmf_arr_pub is not None and line_f_pub is not None and math.isfinite(line_f_pub):
+                p_over_value = _pmf_direct_p_over(pmf_arr_pub, line_f_pub)
+            else:
+                p_over_value = None
             rows.append({
                 "player_id": row.get("player_id"),
                 "player_name": row.get("player_name"),
@@ -582,7 +696,11 @@ def _build_affiliate_rows_from_delivery(market_df: pd.DataFrame) -> tuple[list[d
                 "team": row.get("team"), "team_id": row.get("team_id"),
                 "opponent": row.get("opponent"),
                 "game_id": row.get("game_id"), "game": row.get("game"),
-                "stat": row.get("stat"), "line": row.get("line"),
+                "stat": row.get("stat"),
+                "line": row.get("line"),
+                "market_line": line_f_pub,
+                "pmf_mean": pmf_mean_value,
+                "p_over": p_over_value,
                 "book": row.get("book"), "side": side, "is_alternate": is_alt,
                 "model_prob_over": model_prob_over,
                 "model_prob_under": model_prob_under,
@@ -622,6 +740,11 @@ def _build_affiliate_rows_from_delivery(market_df: pd.DataFrame) -> tuple[list[d
             })
     counters["pmf_rows_available"] = (
         int(market_df["player_id"].nunique()) if "player_id" in market_df.columns else 0)
+    # Defense-in-depth: strip any accidentally-attached quarantined
+    # public column names from each emitted row before returning so
+    # the affiliate_dashboard.json / pmf_research.json mirror is
+    # guaranteed clean even if upstream code paths regress.
+    rows = [_strip_quarantined_keys(r) for r in rows]
     return rows, {**counters, "omission_reasons": reason_counts,
                   "reasonability_flag_counts": flag_counts}, omitted
 

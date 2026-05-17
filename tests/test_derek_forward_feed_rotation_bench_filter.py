@@ -96,7 +96,12 @@ class DefensiveFilterPresenceTest(unittest.TestCase):
 
     def test_filter_runs_before_writing_output_files(self) -> None:
         filter_idx = self.text.find("rotation_filter_dropped_rows = 0")
-        parquet_write_idx = self.text.find('out_df.to_parquet(pq_out')
+        # The persisted public feed is written from ``out_df_public``
+        # (a sanitised copy of ``out_df``) — search for either variant
+        # so the test survives the quarantine-aware rename.
+        parquet_write_idx = self.text.find('out_df_public.to_parquet(pq_out')
+        if parquet_write_idx < 0:
+            parquet_write_idx = self.text.find('out_df.to_parquet(pq_out')
         self.assertGreater(filter_idx, 0, "Filter block not found.")
         self.assertGreater(parquet_write_idx, 0, "Parquet write not found.")
         self.assertLess(

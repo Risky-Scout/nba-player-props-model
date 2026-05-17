@@ -137,13 +137,20 @@ TOV_STATUS_REASON = ("Phase 10D/10D.2 overlay failed independent validation; "
 CANONICAL_COLUMNS_BASE = [
     "player_name", "player_id", "team", "opponent", "is_home",
     "game_id", "game_start_time", "stat",
-    "line", "book",
+    "line", "market_line", "book",
     "market_over_odds", "market_under_odds", "market_no_vig_over_prob",
     "pmf_source", "calibration_source", "cal_source", "role_bucket",
     "role_source", "minutes_mean", "minutes_q50", "p_inactive_used",
-    "mean", "median", "mode", "p0",
+    "mean", "pmf_mean", "median", "mode", "p0",
     *[f"p_ge_{k}" for k in P_GE_LADDER],
-    "model_p_over", "fair_over_odds_american", "fair_under_odds_american",
+    # ``model_p_over`` is the legacy conditional probability retained
+    # for internal canonical_source forensics. It is QUARANTINED from
+    # public WoO outputs (the public writer strips it via
+    # ``_sanitize_public_columns`` before persisting). ``p_over``
+    # holds the PMF-native direct tail probability
+    # ``P(stat > line)`` and IS the public-facing column.
+    "model_p_over", "p_over",
+    "fair_over_odds_american", "fair_under_odds_american",
     "edge",
     "snapshot_type", "snapshot_time_utc",
     "model_version", "pipeline_run_id",
@@ -288,6 +295,69 @@ def _model_p_over_line(pmf_arr: np.ndarray, line: float | None) -> float | None:
     if denom <= 0:
         return None
     return float(min(1.0, max(0.0, p_over / denom)))
+
+
+# ── Direct PMF expectation + tail probability (public-output names) ──
+#
+# These helpers compute the PMF-native ``pmf_mean`` and ``p_over``
+# fields that public delivery outputs must expose. They are
+# intentionally distinct from ``_model_p_over_line`` above:
+#
+#   * ``_pmf_direct_mean``: ``E[X] = sum_k k * P[k]`` after
+#     normalising the PMF so its mass sums to 1.
+#   * ``_pmf_direct_p_over``: RAW tail probability
+#     ``P(stat > line) = sum_{k > line} P[k]`` (NOT the conditional
+#     renormalisation used by ``_model_p_over_line``).
+#
+# The public column rule is: ``p_over`` ALWAYS means
+# ``P(stat > line)`` computed directly from the final stat-grid PMF
+# surface. Never alias ``model_p_over`` or ``model_prob_over_*`` into
+# ``p_over``.
+def _pmf_direct_mean(pmf_arr: np.ndarray) -> float | None:
+    arr = np.clip(np.asarray(pmf_arr, dtype=float), 0.0, None)
+    s = arr.sum()
+    if s <= 0 or not np.isfinite(s):
+        return None
+    arr = arr / s
+    return float((arr * np.arange(len(arr), dtype=float)).sum())
+
+
+def _pmf_direct_p_over(
+    pmf_arr: np.ndarray, line: float | None
+) -> float | None:
+    if line is None or not np.isfinite(line):
+        return None
+    arr = np.clip(np.asarray(pmf_arr, dtype=float), 0.0, None)
+    s = arr.sum()
+    if s <= 0 or not np.isfinite(s):
+        return None
+    arr = arr / s
+    ks = np.arange(len(arr), dtype=float)
+    return float(arr[ks > float(line)].sum())
+
+
+# Quarantined public column names — the public WoO writer strips
+# these from every persisted CSV / Parquet / JSONL artifact it owns.
+# Internal canonical_source files keep the diagnostic names so
+# downstream forensics + verifiers still see the legacy probabilities;
+# the strip happens only at the public writer boundary.
+QUARANTINED_PUBLIC_COLUMNS: tuple[str, ...] = (
+    "model_projected_mean",
+    "model_probability_over_market_line",
+    "model_prob_over_raw",
+    "model_prob_over_active",
+    "model_p_over",
+)
+
+
+def _sanitize_public_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Drop quarantined public columns from a WoO-bound frame."""
+    if df is None or df.empty:
+        return df
+    cols = [c for c in QUARANTINED_PUBLIC_COLUMNS if c in df.columns]
+    if not cols:
+        return df
+    return df.drop(columns=cols)
 
 
 # Fair American odds are written to Parquet; reject magnitudes that overflow
@@ -1298,8 +1368,22 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
             "cal_source": cal_source,
             "mean": smry["mean"], "median": smry["median"],
             "mode": smry["mode"], "p0": smry["p0"],
+            # ``pmf_mean`` is the PMF-native public expectation field
+            # for downstream WoO/Derek consumers. ``_pmf_summary``
+            # already computes ``mean`` from the normalised PMF (i.e.
+            # the direct expectation) so we duplicate the value
+            # under the public name. This is the same number — the
+            # rename exists so consumers can rely on a single public
+            # contract column.
+            "pmf_mean": smry["mean"],
             **{f"p_ge_{k}": smry[f"p_ge_{k}"] for k in P_GE_LADDER},
             "model_p_over": None,
+            # Pre-line row: no offered line yet, so the direct PMF
+            # tail probability is undefined. Populated downstream by
+            # ``build_fair_odds_board`` (per grid line) and
+            # ``build_market_comparison`` (per offered book line).
+            "p_over": None,
+            "market_line": None,
             "fair_over_odds_american": None, "fair_under_odds_american": None,
             "edge": None,
             "snapshot_type": snapshot_type,
@@ -1402,11 +1486,16 @@ def build_fair_odds_board(canonical: pd.DataFrame) -> tuple[pd.DataFrame, dict[s
 
             row = {c: r[c] for c in CANONICAL_COLUMNS_BASE if c in r.index}
             row["line"] = float(line)
+            row["market_line"] = float(line)
             row["book"] = None
             row["market_over_odds"] = None
             row["market_under_odds"] = None
             row["market_no_vig_over_prob"] = None
             row["model_p_over"] = p_over
+            # Direct PMF tail probability for this grid line.
+            # Computed from the row's pmf_arr — NEVER a rename of
+            # the conditional ``model_p_over``.
+            row["p_over"] = _pmf_direct_p_over(pmf, line)
             row["fair_over_odds_american"] = fo
             row["fair_under_odds_american"] = fu
             row["edge"] = None
@@ -1460,8 +1549,10 @@ def build_market_comparison(canonical: pd.DataFrame, odds: pd.DataFrame
             no_vig = (float(m["no_vig_over_prob"])
                        if pd.notna(m["no_vig_over_prob"]) else None)
             p_over = _model_p_over_line(c["_pmf_arr"], line)
+            p_over_direct = _pmf_direct_p_over(c["_pmf_arr"], line)
             row = {col: c[col] for col in CANONICAL_COLUMNS_BASE if col in c.index}
             row["line"] = line
+            row["market_line"] = line
             row["book"] = book
             row["market_over_odds"] = (int(m["over_odds_american"])
                                          if pd.notna(m["over_odds_american"]) else None)
@@ -1469,6 +1560,10 @@ def build_market_comparison(canonical: pd.DataFrame, odds: pd.DataFrame
                                           if pd.notna(m["under_odds_american"]) else None)
             row["market_no_vig_over_prob"] = no_vig
             row["model_p_over"] = p_over
+            # Direct PMF tail probability against the offered market line.
+            # NEVER reuse ``model_p_over`` here — that field is
+            # conditional and is quarantined from public outputs.
+            row["p_over"] = p_over_direct
             row["fair_over_odds_american"] = _prob_to_american(p_over)
             pu = None
             if p_over is not None:
@@ -1973,23 +2068,46 @@ def write_woo_package(canonical: pd.DataFrame, fair_board: pd.DataFrame,
                        run_status_md: str = "") -> None:
     pkg_dir.mkdir(parents=True, exist_ok=True)
 
-    _write_csv_parquet(fair_board, pkg_dir / "fair_odds_board")
-    _write_jsonl(fair_board, pkg_dir / "fair_odds_board")
+    # Sanitize all WoO public outputs by stripping the quarantined
+    # public column names (the conditional / legacy probability
+    # fields). The internal ``canonical_source`` copies of these
+    # frames keep the legacy columns for forensics; only the public
+    # ``deliveries/<date>/wizard_of_odds/`` artifacts are stripped.
+    _write_csv_parquet(_sanitize_public_columns(fair_board),
+                        pkg_dir / "fair_odds_board")
+    _write_jsonl(_sanitize_public_columns(fair_board),
+                  pkg_dir / "fair_odds_board")
 
-    canon_clean = _drop_pmf_arr(canonical)
+    canon_clean = _sanitize_public_columns(_drop_pmf_arr(canonical))
     _write_csv_parquet(canon_clean, pkg_dir / "full_pmfs_wide")
+    # ``full_pmfs_outcome_level`` is long-form (k, p_k) and has no
+    # row-level offered line — ``p_over`` does not apply. Keep the
+    # outcome distribution columns intact per the public sanitation
+    # contract.
     _write_csv_parquet(outcome_long, pkg_dir / "full_pmfs_outcome_level")
 
     if not market_comp.empty:
-        _write_csv_parquet(market_comp, pkg_dir / "market_comparison")
-    else:
-        _write_csv_parquet(pd.DataFrame(columns=CANONICAL_COLUMNS_BASE),
+        _write_csv_parquet(_sanitize_public_columns(market_comp),
                             pkg_dir / "market_comparison")
-    if not edges.empty:
-        _write_csv_parquet(edges, pkg_dir / "publishable_edges")
     else:
-        _write_csv_parquet(pd.DataFrame(columns=CANONICAL_COLUMNS_BASE),
+        _write_csv_parquet(
+            pd.DataFrame(columns=[
+                c for c in CANONICAL_COLUMNS_BASE
+                if c not in QUARANTINED_PUBLIC_COLUMNS
+            ]),
+            pkg_dir / "market_comparison",
+        )
+    if not edges.empty:
+        _write_csv_parquet(_sanitize_public_columns(edges),
                             pkg_dir / "publishable_edges")
+    else:
+        _write_csv_parquet(
+            pd.DataFrame(columns=[
+                c for c in CANONICAL_COLUMNS_BASE
+                if c not in QUARANTINED_PUBLIC_COLUMNS
+            ]),
+            pkg_dir / "publishable_edges",
+        )
 
     (pkg_dir / "run_manifest.json").write_text(
         json.dumps(manifest, indent=2, default=str))
