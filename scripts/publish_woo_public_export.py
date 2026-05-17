@@ -1184,12 +1184,24 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             f"sample={json.dumps(sample, default=str)}"
         )
 
+    # M8_6_O CONTRACT: the M8.6 monetization-repair pass runs AFTER
+    # ``_write_export`` and overwrites ``affiliate_dashboard.json``. The
+    # legacy ``_write_export`` payload carries a top-level ``count`` key
+    # which downstream verifiers (``verify_corrected_pmf_delivery.py``
+    # reads ``aff.get("count")``; the deploy workflow + remote contract
+    # verifiers do too). When the repair pass writes only ``total_rows``
+    # the ``count`` key is silently dropped and the corrected-PMF
+    # delivery verifier raises ``FATAL: <date> affiliate_dashboard count
+    # must be > 0`` despite ``rows`` having thousands of entries. Emit
+    # BOTH keys (kept in sync from the same row list) so every consumer
+    # — legacy, verifier, and HTML render — sees a consistent count.
     payload = {
         "schema_version": "1.0",
         "date": date,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "rows": rows,
         "items": rows,
+        "count": len(rows),
         "total_rows": len(rows),
     }
 
