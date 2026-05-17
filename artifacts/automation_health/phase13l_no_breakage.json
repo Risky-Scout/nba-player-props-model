@@ -421,7 +421,7 @@
       "passed": true
     }
   ],
-  "code_commit": "fd958a61a40b729d9456cdaf4ddaf7091ff9dc80",
+  "code_commit": "d7c95563c15a640b0ca82fb8ad299b527947697a",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "sim-2099-12-31",
@@ -429,7 +429,7 @@
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-17T22:36:52+00:00",
+  "generated_at_utc": "2026-05-17T22:49:25+00:00",
   "passed": false,
   "schema_version": "1.0"
 }
