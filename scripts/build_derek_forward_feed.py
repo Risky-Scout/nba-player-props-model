@@ -24,12 +24,17 @@ import argparse
 import csv
 import json
 import math
+import os
 import subprocess
 import sys
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.error import HTTPError
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 import pandas as pd
 
@@ -334,6 +339,307 @@ def _validate_pmf(pmf_json: Any) -> tuple[str, float]:
     if err > 1e-6:
         return ("invalid_sum", err)
     return ("ok", err)
+
+
+
+BDL_PLAYER_PROPS_URL = "https://api.balldontlie.io/v2/odds/player_props"
+
+BDL_PROP_TYPE_TO_STAT = {
+    "points": "pts",
+    "rebounds": "reb",
+    "assists": "ast",
+    "threes": "fg3m",
+    "blocks": "blk",
+    "steals": "stl",
+    "points_rebounds": "pr",
+    "points_assists": "pa",
+    "rebounds_assists": "ra",
+    "points_rebounds_assists": "pra",
+}
+
+BDL_STAT_TO_PROP_TYPE = {v: k for k, v in BDL_PROP_TYPE_TO_STAT.items()}
+
+DEREK_UNIQUE_SUMMARY_COLS = [
+    "player_name",
+    "projected_minutes",
+    "stat",
+    "pmf_mean",
+    "market_line",
+    "p_over",
+]
+
+
+def _pmf_array_from_jsonish(x: Any) -> list[float] | None:
+    if x is None:
+        return None
+    try:
+        d = json.loads(x) if isinstance(x, str) else dict(x)
+    except Exception:
+        return None
+
+    vals: dict[int, float] = {}
+    for k, v in d.items():
+        try:
+            kk = int(float(k))
+            vv = float(v)
+        except Exception:
+            continue
+        if kk < 0 or not math.isfinite(vv):
+            continue
+        vals[kk] = max(0.0, vv)
+
+    if not vals:
+        return None
+
+    arr = [0.0] * (max(vals) + 1)
+    for k, v in vals.items():
+        arr[k] = v
+
+    s = sum(arr)
+    if not math.isfinite(s) or s <= 0:
+        return None
+
+    return [v / s for v in arr]
+
+
+def _pmf_direct_mean(pmf_arr: list[float]) -> float:
+    return float(sum(i * p for i, p in enumerate(pmf_arr)))
+
+
+def _pmf_direct_p_over(pmf_arr: list[float], line: Any) -> float | None:
+    try:
+        line_f = float(line)
+    except Exception:
+        return None
+    return float(sum(p for i, p in enumerate(pmf_arr) if i > line_f))
+
+
+def _float_or_none(v: Any) -> float | None:
+    try:
+        if v is None:
+            return None
+        f = float(v)
+        if not math.isfinite(f):
+            return None
+        return f
+    except Exception:
+        return None
+
+
+def _fetch_bdl_player_props_for_game_prop_type(
+    *,
+    game_id: int,
+    prop_type: str,
+    api_key: str,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    cursor: Any = None
+    page: Any = None
+    seen_tokens: set[tuple[Any, Any]] = set()
+
+    while True:
+        params: dict[str, Any] = {
+            "game_id": int(game_id),
+            "prop_type": prop_type,
+            "per_page": 100,
+        }
+        if cursor is not None:
+            params["cursor"] = cursor
+        if page is not None:
+            params["page"] = page
+
+        url = f"{BDL_PLAYER_PROPS_URL}?{urlencode(params)}"
+        req = Request(url, headers={"Authorization": api_key})
+
+        try:
+            with urlopen(req, timeout=30) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+        except HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(
+                "BDL_PLAYER_PROPS_REQUEST_FAILED "
+                f"game_id={game_id} prop_type={prop_type} "
+                f"status={exc.code} body={body[:500]}"
+            ) from exc
+
+        data = payload.get("data", payload if isinstance(payload, list) else [])
+        if isinstance(data, list):
+            rows.extend(r for r in data if isinstance(r, dict))
+
+        meta = payload.get("meta") if isinstance(payload, dict) else {}
+        meta = meta or {}
+        next_cursor = meta.get("next_cursor") or meta.get("nextCursor")
+        next_page = meta.get("next_page") or meta.get("nextPage")
+
+        token = (next_cursor, next_page)
+        if token in seen_tokens:
+            break
+        seen_tokens.add(token)
+
+        if next_cursor:
+            cursor = next_cursor
+            page = None
+            time.sleep(0.05)
+            continue
+        if next_page:
+            page = next_page
+            cursor = None
+            time.sleep(0.05)
+            continue
+        break
+
+    return rows
+
+
+def _build_derek_bdl_main_line_summary(out_df: pd.DataFrame) -> pd.DataFrame:
+    """Build Derek's one-row-per-player/stat BDL main-line summary.
+
+    This intentionally does not use WoO alternate-line rows and does not use
+    model_prob_over_* fields. p_over is computed directly from the PMF.
+    """
+    if out_df.empty:
+        return pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    api_key = os.environ.get("BDL_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError("BDL_API_KEY not set; cannot build Derek BDL main-line summary")
+
+    required = {"game_id", "player_id", "player_name", "stat"}
+    missing = sorted(c for c in required if c not in out_df.columns)
+    if missing:
+        raise RuntimeError(f"DEREK_BDL_SUMMARY_MISSING_REQUIRED_COLUMNS: {missing}")
+
+    pmf_value_col = next(
+        (c for c in ("pmf_json", "pmf_active", "pmf") if c in out_df.columns),
+        None,
+    )
+    if pmf_value_col is None:
+        raise RuntimeError(
+            "DEREK_BDL_SUMMARY_MISSING_REQUIRED_COLUMNS: "
+            "one of pmf_json, pmf_active, pmf is required"
+        )
+
+    base = out_df.copy()
+    base["stat"] = base["stat"].astype(str).str.lower()
+    base = base[base["stat"].isin(BDL_STAT_TO_PROP_TYPE)].copy()
+
+    if base.empty:
+        return pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    base = (
+        base.sort_values(["player_name", "stat"], kind="mergesort")
+            .drop_duplicates(["game_id", "player_id", "stat"], keep="first")
+            .copy()
+    )
+
+    game_ids = sorted(int(x) for x in base["game_id"].dropna().unique())
+
+    bdl_records: list[dict[str, Any]] = []
+    for gid in game_ids:
+        for prop_type, stat in BDL_PROP_TYPE_TO_STAT.items():
+            recs = _fetch_bdl_player_props_for_game_prop_type(
+                game_id=gid,
+                prop_type=prop_type,
+                api_key=api_key,
+            )
+            print(
+                "BDL_PLAYER_PROPS_FETCH "
+                f"game_id={gid} prop_type={prop_type} rows={len(recs)}"
+            )
+            for rec in recs:
+                market = rec.get("market") or {}
+                if isinstance(market, str):
+                    try:
+                        market = json.loads(market)
+                    except Exception:
+                        market = {}
+
+                if str(market.get("type") or "").lower() != "over_under":
+                    continue
+
+                line = _float_or_none(rec.get("line_value"))
+                if line is None:
+                    continue
+
+                bdl_records.append(
+                    {
+                        "game_id": rec.get("game_id"),
+                        "player_id": rec.get("player_id"),
+                        "stat": stat,
+                        "market_line": line,
+                        "vendor": rec.get("vendor"),
+                        "updated_at": rec.get("updated_at"),
+                    }
+                )
+
+    bdl = pd.DataFrame(bdl_records)
+    if bdl.empty:
+        raise RuntimeError("BDL_PLAYER_PROPS_EMPTY: no over_under player props returned")
+
+    line_counts = (
+        bdl.groupby(["game_id", "player_id", "stat", "market_line"])
+           .agg(vendor_count=("vendor", "nunique"), row_count=("market_line", "size"))
+           .reset_index()
+    )
+
+    selected = (
+        line_counts.sort_values(
+            ["game_id", "player_id", "stat", "vendor_count", "row_count", "market_line"],
+            ascending=[True, True, True, False, False, True],
+        )
+        .groupby(["game_id", "player_id", "stat"], as_index=False)
+        .head(1)
+        .reset_index(drop=True)
+    )
+
+    joined = base.merge(
+        selected[["game_id", "player_id", "stat", "market_line"]],
+        on=["game_id", "player_id", "stat"],
+        how="inner",
+    )
+
+    rows: list[dict[str, Any]] = []
+    for _, r in joined.iterrows():
+        pmf_arr = _pmf_array_from_jsonish(r.get(pmf_value_col))
+        if pmf_arr is None:
+            continue
+
+        p_over = _pmf_direct_p_over(pmf_arr, r.get("market_line"))
+        if p_over is None:
+            continue
+
+        projected_minutes = (
+            _float_or_none(r.get("projected_minutes"))
+            or _float_or_none(r.get("minutes_mean"))
+            or _float_or_none(r.get("minutes_q50"))
+            or _float_or_none(r.get("minutes_p50"))
+        )
+
+        rows.append(
+            {
+                "player_name": r.get("player_name"),
+                "projected_minutes": projected_minutes,
+                "stat": r.get("stat"),
+                "pmf_mean": _pmf_direct_mean(pmf_arr),
+                "market_line": float(r.get("market_line")),
+                "p_over": p_over,
+            }
+        )
+
+    summary = pd.DataFrame(rows, columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    if summary.empty:
+        raise RuntimeError("DEREK_BDL_SUMMARY_EMPTY_AFTER_JOIN")
+
+    dupes = summary.groupby(["player_name", "stat"]).size().reset_index(name="n")
+    dupes = dupes[dupes["n"] > 1]
+    if not dupes.empty:
+        raise RuntimeError(
+            "DEREK_BDL_SUMMARY_DUPLICATE_PLAYER_STAT_ROWS:\n"
+            + dupes.to_string(index=False)
+        )
+
+    return summary.sort_values(["player_name", "stat"], kind="mergesort").reset_index(drop=True)
 
 
 def _market_key_for_stat(stat: str) -> str:
@@ -1086,56 +1392,16 @@ def write_m88_unified_feed(
         for rec in rows_out:
             f.write(json.dumps(rec, default=str) + "\n")
 
-    # Unique props summary — Derek's at-a-glance view of every
-    # unique (player, stat, market_line) combination produced by
-    # the model. Exact column contract:
+    # Unique props summary — Derek's boss-facing at-a-glance view.
     #
-    #   player_name | projected_minutes | stat | market_line
-    #   | model_projected_mean (← pmf_mean)
-    #   | model_probability_over_market_line (← model_prob_over_active)
+    # Contract:
+    #   one row per player/stat using BDL's normal over_under main prop line.
     #
-    # The full feed contains one row per (player, stat, line, book)
-    # combination. Derek's downstream tooling reads the summary
-    # without needing to dedupe per-book rows itself.
+    # This summary intentionally does NOT use WoO alternate-line rows and does
+    # NOT expose or copy model_prob_over_* fields. p_over is computed directly
+    # from the row PMF against the selected BDL market_line.
     summary_csv_out = out_dir / "derek_unique_props_summary.csv"
-    if out_df.empty:
-        summary_df = pd.DataFrame(
-            columns=[
-                "player_name",
-                "projected_minutes",
-                "stat",
-                "market_line",
-                "model_projected_mean",
-                "model_probability_over_market_line",
-            ]
-        )
-    else:
-        dedupe_keys = [
-            c for c in ("player_id", "stat", "line") if c in out_df.columns
-        ]
-        if dedupe_keys:
-            unique_df = out_df.drop_duplicates(
-                subset=dedupe_keys, keep="first"
-            ).copy()
-        else:
-            unique_df = out_df.copy()
-        summary_df = pd.DataFrame(
-            {
-                "player_name": unique_df["player_name"],
-                "projected_minutes": unique_df["projected_minutes"],
-                "stat": unique_df["stat"],
-                "market_line": unique_df["line"],
-                "model_projected_mean": unique_df["pmf_mean"],
-                "model_probability_over_market_line": (
-                    unique_df["model_prob_over_active"]
-                ),
-            }
-        )
-        summary_df = summary_df.sort_values(
-            ["player_name", "stat", "market_line"],
-            na_position="last",
-            kind="mergesort",
-        ).reset_index(drop=True)
+    summary_df = _build_derek_bdl_main_line_summary(out_df)
     summary_df.to_csv(summary_csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
     try:
         _summary_rel = str(summary_csv_out.relative_to(REPO_ROOT))
@@ -1177,21 +1443,14 @@ def write_m88_unified_feed(
         "unique_props_summary": {
             "path": _maybe_rel(summary_csv_out, REPO_ROOT),
             "row_count": int(len(summary_df)),
-            "columns": [
-                "player_name",
-                "projected_minutes",
-                "stat",
-                "market_line",
-                "model_projected_mean",
-                "model_probability_over_market_line",
-            ],
+            "columns": DEREK_UNIQUE_SUMMARY_COLS,
             "column_lineage": {
-                "model_projected_mean": "pmf_mean",
-                "model_probability_over_market_line": (
-                    "model_prob_over_active"
-                ),
+                "pmf_mean": "direct_expectation_from_pmf_json",
+                "p_over": "direct_pmf_tail_probability_gt_market_line",
+                "market_line": "bdl_player_props_line_value_over_under_consensus",
             },
-            "dedupe_keys": ["player_id", "stat", "line"],
+            "dedupe_keys": ["player_name", "stat"],
+            "market_line_source": "bdl_player_props_over_under",
         },
     }
     (out_dir / "manifest.json").write_text(json.dumps(man, indent=2, default=str) + "\n", encoding="utf-8")
