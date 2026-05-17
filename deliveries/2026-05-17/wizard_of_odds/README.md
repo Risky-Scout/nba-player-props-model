@@ -5,11 +5,11 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **168**
-- books: **13**
+- books: **12**
 - market coverage: **full**
 - injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 168
-- model: `a93eb046#phase10c`
+- model: `4afff0aa#phase10c`
 
 ### Caveats
 
@@ -38,13 +38,13 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **finality_blockers**: `['lineup_unconfirmed']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
-- **books_seen**: `13`
+- **books_seen**: `12`
 - **freshness.overall_status**: `ready`
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 168}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=2144, publishable_edges=1623
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 512, 'fair_under_odds_null_count': 512, 'zero_or_one_prob_count': 280}`
+- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=2029, publishable_edges=1547
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 473, 'fair_under_odds_null_count': 473, 'zero_or_one_prob_count': 280}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
