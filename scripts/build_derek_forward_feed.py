@@ -58,7 +58,7 @@ IDENTITY_COLS = [
     "stat",
 ]
 PMF_COLS = (
-    ["pmf_json", "mean", "median", "mode", "p0"]
+    ["pmf_json", "pmf_mean", "mean", "median", "mode", "p0"]
     + P_GE_KEYS
     + [
         "model_version",
@@ -98,11 +98,12 @@ MARKET_COLS = [
     "book",
     "market_key",
     "line",
+    "market_line",
+    "p_over",
     "over_price_american",
     "under_price_american",
     "market_no_vig_over_prob",
     "market_no_vig_under_prob",
-    "model_p_over",
     "model_p_under",
     "fair_over_odds_american",
     "fair_under_odds_american",
@@ -344,6 +345,22 @@ def _validate_pmf(pmf_json: Any) -> tuple[str, float]:
 
 BDL_PLAYER_PROPS_URL = "https://api.balldontlie.io/v2/odds/player_props"
 
+# Authoritative BDL prop_type → internal stat key map.
+#
+# Source: https://docs.balldontlie.io/nba/api-reference/odds-player-props
+# (Supported Prop Types table — over_under markets only).
+#
+# Notes per BDL docs (verified 2026-05-17):
+#   • BDL does NOT publish a turnovers ("tov") prop_type — production
+#     Derek summary therefore cannot expose a market_line for tov.
+#   • BDL does NOT publish a stocks / blocks_steals / steals_blocks
+#     combo prop_type — production Derek summary therefore cannot expose
+#     a market_line for stocks. Stocks remains an internal model stat.
+#   • First-quarter (``points_1q`` / ``rebounds_1q`` / ``assists_1q``),
+#     first-3-minute, ``double_double``, ``triple_double`` and milestone
+#     markets are intentionally excluded from this mapping per the
+#     user contract (only main over_under lines for the 10 single+combo
+#     stats below are eligible for the Derek summary).
 BDL_PROP_TYPE_TO_STAT = {
     "points": "pts",
     "rebounds": "reb",
@@ -356,6 +373,86 @@ BDL_PROP_TYPE_TO_STAT = {
     "rebounds_assists": "ra",
     "points_rebounds_assists": "pra",
 }
+
+# Stats that exist in the internal PMF surface but are NOT exposed by
+# BDL as over_under prop_types — included here for documentation /
+# guard tests so accidental future additions of "turnovers"/"stocks"
+# trigger a verifier failure rather than silently fabricating lines.
+BDL_UNSUPPORTED_INTERNAL_STATS = ("tov", "stocks")
+
+# Quarantined public column names — must not appear in any persisted
+# public delivery output (CSV / Parquet / JSONL / JSON / HTML embed).
+QUARANTINED_PUBLIC_COLUMNS: tuple[str, ...] = (
+    "model_projected_mean",
+    "model_probability_over_market_line",
+    "model_prob_over_raw",
+    "model_prob_over_active",
+    "model_p_over",
+)
+
+
+def _drop_quarantined_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Return a copy of ``df`` with the quarantined public columns removed.
+
+    Public delivery writers MUST call this before persisting any CSV /
+    Parquet / JSONL Derek output. Quarantined fields stay available on
+    internal intermediate frames (so verifiers and audit scripts can
+    still cross-check); they are only stripped at the writer boundary.
+    """
+    if df is None:
+        return df
+    cols = [c for c in QUARANTINED_PUBLIC_COLUMNS if c in df.columns]
+    if not cols:
+        return df
+    return df.drop(columns=cols)
+
+
+def _populate_pmf_native_fields(rows: list[dict]) -> None:
+    """In-place: stamp ``pmf_mean`` + ``market_line`` + ``p_over`` on each
+    public feed row.
+
+    Computes ``p_over`` directly as ``sum_{outcome > line} PMF[outcome]``
+    against the row's own PMF surface. Does NOT copy or rename
+    ``model_p_over`` / ``model_prob_over_*`` — those are quarantined.
+
+    Rules:
+      • ``pmf_mean`` = direct expectation from row PMF when a parseable
+        PMF exists, else fall back to the upstream ``mean`` / existing
+        ``pmf_mean`` value.
+      • ``market_line`` = explicit ``market_line`` when present, else
+        the row's existing ``line``.
+      • ``p_over`` populated only when both a numeric line and a valid
+        PMF exist; otherwise left as ``None``.
+    """
+    for row in rows:
+        pmf_arr = _pmf_array_from_jsonish(row.get("pmf_json"))
+        if pmf_arr is not None:
+            row["pmf_mean"] = _pmf_direct_mean(pmf_arr)
+        elif row.get("pmf_mean") is None:
+            existing_mean = row.get("mean")
+            row["pmf_mean"] = (
+                float(existing_mean)
+                if isinstance(existing_mean, (int, float))
+                and existing_mean is not None
+                and math.isfinite(float(existing_mean))
+                else None
+            )
+
+        market_line = row.get("market_line")
+        if market_line is None:
+            market_line = row.get("line")
+        row["market_line"] = (
+            float(market_line)
+            if isinstance(market_line, (int, float))
+            and market_line is not None
+            and math.isfinite(float(market_line))
+            else None
+        )
+
+        if pmf_arr is not None and row["market_line"] is not None:
+            row["p_over"] = _pmf_direct_p_over(pmf_arr, row["market_line"])
+        else:
+            row["p_over"] = None
 
 BDL_STAT_TO_PROP_TYPE = {v: k for k, v in BDL_PROP_TYPE_TO_STAT.items()}
 
@@ -700,6 +797,19 @@ def _populate_identity_pmf_quality(
 
     role_freshness = _none_if_nan(mo_row.get("role_freshness_status"))
 
+    # Public-facing PMF expectation: compute directly from the row PMF
+    # whenever a parseable PMF exists; otherwise fall back to the
+    # upstream ``mean`` summary stat. Never reference
+    # ``model_projected_mean`` (quarantined).
+    pmf_arr_for_mean = _pmf_array_from_jsonish(pmf_json)
+    if pmf_arr_for_mean is not None:
+        pmf_mean_value: float | None = _pmf_direct_mean(pmf_arr_for_mean)
+    else:
+        upstream_mean = _none_if_nan(mo_row.get("mean"))
+        pmf_mean_value = (
+            float(upstream_mean) if isinstance(upstream_mean, (int, float)) else None
+        )
+
     row.update(
         {
             "snapshot_type": snapshot_type,
@@ -714,6 +824,7 @@ def _populate_identity_pmf_quality(
             "is_home": _none_if_nan(mo_row.get("is_home")),
             "stat": _none_if_nan(mo_row.get("stat")),
             "pmf_json": pmf_json,
+            "pmf_mean": pmf_mean_value,
             "mean": _none_if_nan(mo_row.get("mean")),
             "median": _none_if_nan(mo_row.get("median")),
             "mode": _none_if_nan(mo_row.get("mode")),
@@ -800,8 +911,13 @@ def _populate_market(
         # Model-only row — leave market fields blank but stamp coverage.
         row["market_key"] = _market_key_for_stat(str(row["stat"]))
         row["market_coverage_status"] = "no_market"
-        # model_p_over/under remain None for model-only rows: there's no
-        # line to evaluate against. Do not impute.
+        row["market_line"] = None
+        row["p_over"] = None
+        # No line on a model-only row -> no p_over to compute. Do not
+        # impute. ``model_p_over`` and ``model_p_under`` are not
+        # exposed on public outputs (model_p_over is quarantined and
+        # model_p_under is left at its template default so as not to
+        # imply a real probability without a market line).
         return
 
     line = _none_if_nan(mc_row.get("line"))
@@ -812,9 +928,24 @@ def _populate_market(
     no_vig_under = (
         None if no_vig_over is None else max(0.0, min(1.0, 1.0 - float(no_vig_over)))
     )
-    model_p_over = _none_if_nan(mc_row.get("model_p_over"))
+    # Direct PMF tail probability against the offered market line.
+    # Prefer the canonical/stat-grid PMF carried on the row (set by
+    # ``_populate_identity_pmf_quality`` from ``mo_row.pmf_json``)
+    # because market_comparison strips ``pmf_json`` to keep the
+    # comparison frame slim. We NEVER reuse ``model_p_over`` —
+    # that field is conditional (renormalised against the at-line
+    # atom) and is quarantined from public outputs.
+    pmf_arr_for_market = _pmf_array_from_jsonish(row.get("pmf_json"))
+    if pmf_arr_for_market is None:
+        pmf_arr_for_market = _pmf_array_from_jsonish(mc_row.get("pmf_json"))
+    if pmf_arr_for_market is not None and line is not None:
+        p_over_direct = _pmf_direct_p_over(pmf_arr_for_market, line)
+    else:
+        p_over_direct = None
     model_p_under = (
-        None if model_p_over is None else max(0.0, min(1.0, 1.0 - float(model_p_over)))
+        None
+        if p_over_direct is None
+        else max(0.0, min(1.0, 1.0 - float(p_over_direct)))
     )
     edge_over = _none_if_nan(mc_row.get("edge"))
     edge_under = None if edge_over is None else -float(edge_over)
@@ -825,11 +956,12 @@ def _populate_market(
             "book": book,
             "market_key": _market_key_for_stat(str(row["stat"])),
             "line": line,
+            "market_line": line,
+            "p_over": p_over_direct,
             "over_price_american": over_price,
             "under_price_american": under_price,
             "market_no_vig_over_prob": no_vig_over,
             "market_no_vig_under_prob": no_vig_under,
-            "model_p_over": model_p_over,
             "model_p_under": model_p_under,
             "fair_over_odds_american": _none_if_nan(mc_row.get("fair_over_odds_american")),
             "fair_under_odds_american": _none_if_nan(mc_row.get("fair_under_odds_american")),
@@ -939,6 +1071,7 @@ def write_feed_files(
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows, columns=FEED_COLS)
+    df = _drop_quarantined_columns(df)
 
     csv_path = out_dir / f"{basename}.csv"
     parquet_path = out_dir / f"{basename}.parquet"
@@ -953,10 +1086,11 @@ def write_feed_files(
         jsonl_path = out_dir / f"{basename}.jsonl"
         with jsonl_path.open("w") as f:
             for r in rows:
-                # Ensure JSON-safe (no NaN / inf).
+                # Ensure JSON-safe (no NaN / inf) and strip quarantined keys.
                 clean = {
                     k: (None if isinstance(v, float) and not math.isfinite(v) else v)
                     for k, v in r.items()
+                    if k not in QUARANTINED_PUBLIC_COLUMNS
                 }
                 f.write(json.dumps(clean, default=str) + "\n")
         written["jsonl"] = str(jsonl_path.relative_to(REPO_ROOT))
@@ -971,6 +1105,7 @@ def write_latest_available(
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows, columns=FEED_COLS)
+    df = _drop_quarantined_columns(df)
     csv_path = out_dir / "latest_available_snapshot.csv"
     parquet_path = out_dir / "latest_available_snapshot.parquet"
     df.to_csv(csv_path, index=False, quoting=csv.QUOTE_MINIMAL)
@@ -1176,8 +1311,28 @@ def write_m88_unified_feed(
     for _, r in df.iterrows():
         pmf_json = r.get("pmf_json")
         pmean, pvar, p10, p50, p90 = _discrete_pmf_stats(pmf_json)
-        m_over = r.get("model_p_over")
-        m_over_f = float(m_over) if m_over is not None and not (isinstance(m_over, float) and math.isnan(m_over)) else None
+
+        # Direct PMF tail probability for the unified Derek feed.
+        # Computed straight from the row PMF against the row's offered
+        # line; never reuses the quarantined ``model_p_over`` /
+        # ``model_prob_over_*`` fields.
+        line_value = r.get("line")
+        try:
+            line_for_p_over = (
+                float(line_value)
+                if line_value is not None
+                and not (isinstance(line_value, float) and math.isnan(line_value))
+                else None
+            )
+        except (TypeError, ValueError):
+            line_for_p_over = None
+        pmf_arr_row = _pmf_array_from_jsonish(pmf_json)
+        if pmf_arr_row is not None and line_for_p_over is not None:
+            p_over_value: float | None = _pmf_direct_p_over(
+                pmf_arr_row, line_for_p_over
+            )
+        else:
+            p_over_value = None
         # M8.8 — use the real predict_minutes-derived p_inactive_used when
         # present (a continuous probability in [0, 1]). Fall back to the
         # legacy role-string binary when minutes_model output is missing.
@@ -1280,8 +1435,15 @@ def write_m88_unified_feed(
             ),
             "stale_injury_flag": stale_inj,
             "stale_lineup_flag": stale_lin,
-            "model_prob_over_raw": m_over_f,
-            "model_prob_over_active": m_over_f,
+            "market_line": line_for_p_over,
+            "p_over": p_over_value,
+            # In-memory only: ``pmf_json`` is propagated onto the row so
+            # the BDL main-line summary builder can compute
+            # ``pmf_mean`` and ``p_over`` directly from the row PMF.
+            # It is stripped from the persisted derek_forward_feed.*
+            # public files below (preserves the historical Derek feed
+            # schema where ``pmf_json`` is NOT a public column).
+            "pmf_json": pmf_json,
             "model_prob_under_active": mu_f,
             "fair_over_odds": fair_o,
             "fair_under_odds": fair_u,
@@ -1386,11 +1548,26 @@ def write_m88_unified_feed(
     pq_out = out_dir / "derek_forward_feed.parquet"
     csv_out = out_dir / "derek_forward_feed.csv"
     jl_out = out_dir / "derek_forward_feed.jsonl"
-    out_df.to_parquet(pq_out, index=False)
-    out_df.to_csv(csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
+    # Public Derek feed schema historically did NOT include the raw
+    # ``pmf_json`` column. We carry it on the in-memory ``out_df``
+    # purely so the summary builder below can compute ``pmf_mean``
+    # / ``p_over`` directly from the row PMF; strip it (along with
+    # any quarantined column) before persisting.
+    _DEREK_FEED_PRIVATE_COLUMNS = ("pmf_json",)
+    out_df_public = _drop_quarantined_columns(out_df).drop(
+        columns=[c for c in _DEREK_FEED_PRIVATE_COLUMNS if c in out_df.columns],
+        errors="ignore",
+    )
+    out_df_public.to_parquet(pq_out, index=False)
+    out_df_public.to_csv(csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
     with jl_out.open("w", encoding="utf-8") as f:
         for rec in rows_out:
-            f.write(json.dumps(rec, default=str) + "\n")
+            clean = {
+                k: v for k, v in rec.items()
+                if k not in QUARANTINED_PUBLIC_COLUMNS
+                and k not in _DEREK_FEED_PRIVATE_COLUMNS
+            }
+            f.write(json.dumps(clean, default=str) + "\n")
 
     # Unique props summary — Derek's boss-facing at-a-glance view.
     #

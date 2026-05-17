@@ -333,6 +333,26 @@ def _record(row: pd.Series, pmf: Dict[int, float], source_path: Path, pmf_col: s
     mean = sum(k * pmf[k] for k in support)
     variance = sum(((k - mean) ** 2) * pmf[k] for k in support)
 
+    # Compute the direct PMF tail probability ``P(stat > line)`` when
+    # this canonical row carries an offered line. ``p_over`` is the
+    # PMF-native public field; it is computed straight from the PMF
+    # distribution above (NEVER aliased from ``model_p_over`` /
+    # ``model_prob_over_*``, which are conditional and quarantined).
+    p_over_value: float | None = None
+    line_for_p_over: float | None = None
+    line_raw = row.get("line") if "line" in row.index else None
+    if line_raw is not None:
+        try:
+            line_for_p_over = float(line_raw)
+            if not math.isfinite(line_for_p_over):
+                line_for_p_over = None
+        except (TypeError, ValueError):
+            line_for_p_over = None
+    if line_for_p_over is not None:
+        p_over_value = float(
+            sum(pmf[k] for k in support if k > line_for_p_over)
+        )
+
     rec: Dict[str, Any] = {
         "player": player,
         "stat": stat,
@@ -351,6 +371,14 @@ def _record(row: pd.Series, pmf: Dict[int, float], source_path: Path, pmf_col: s
         "support_max": int(max(support)),
         "support_size": int(len(support)),
         "mean": float(mean),
+        # ``pmf_mean`` is the PMF-native public name for the direct
+        # expectation; ``mean`` is kept for backward compatibility.
+        "pmf_mean": float(mean),
+        # ``p_over`` is the direct PMF tail probability against the
+        # row's offered line. ``None`` when no line is on the row —
+        # NEVER fabricated from a model probability.
+        "market_line": line_for_p_over,
+        "p_over": p_over_value,
         "variance": float(variance),
         "atom_probability_sum": float(sum(probs)),
     }
@@ -455,7 +483,10 @@ def _group_players(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "opponent": rec.get("opponent", ""),
             "role_bucket": rec.get("role_bucket", ""),
             "line": rec.get("line", None),
+            "market_line": rec.get("market_line", None),
             "mean": rec.get("mean", None),
+            "pmf_mean": rec.get("pmf_mean", None),
+            "p_over": rec.get("p_over", None),
             "variance": rec.get("variance", None),
             "support": rec.get("support", []),
             "probs": rec.get("probs", []),

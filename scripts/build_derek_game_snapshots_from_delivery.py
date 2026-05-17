@@ -87,15 +87,121 @@ def _validate_wide(df: pd.DataFrame, path: Path) -> None:
         raise SystemExit(f"FATAL: missing role_bucket rows: {int(role_missing.sum())}/{len(df)}")
 
 
+QUARANTINED_PUBLIC_COLUMNS: tuple[str, ...] = (
+    "model_projected_mean",
+    "model_probability_over_market_line",
+    "model_prob_over_raw",
+    "model_prob_over_active",
+    "model_p_over",
+)
+
+
+def _drop_quarantined_columns(df: pd.DataFrame) -> pd.DataFrame:
+    if df is None or df.empty:
+        return df
+    cols = [c for c in QUARANTINED_PUBLIC_COLUMNS if c in df.columns]
+    if not cols:
+        return df
+    return df.drop(columns=cols)
+
+
+def _pmf_array_from_jsonish(x: Any) -> list[float] | None:
+    d = _parse_pmf(x)
+    if not d:
+        return None
+    arr = [0.0] * (max(d) + 1)
+    for k, v in d.items():
+        arr[k] = v
+    s = sum(arr)
+    if s <= 0:
+        return None
+    return [v / s for v in arr]
+
+
+def _pmf_direct_mean(pmf_arr: list[float]) -> float:
+    return float(sum(i * p for i, p in enumerate(pmf_arr)))
+
+
+def _pmf_direct_p_over(pmf_arr: list[float], line: Any) -> float | None:
+    try:
+        line_f = float(line)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(line_f):
+        return None
+    return float(sum(p for i, p in enumerate(pmf_arr) if i > line_f))
+
+
+def _stamp_pmf_native_public_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Ensure ``pmf_mean`` and ``p_over`` are present on public rows.
+
+    Recomputes both directly from the row PMF surface so the public
+    columns never inherit values from a renamed legacy field. ``p_over``
+    is populated only when both a parseable PMF and a numeric
+    ``line`` / ``market_line`` are present on the row.
+    """
+    if df is None or df.empty:
+        return df
+    df = df.copy()
+    if "pmf_json" in df.columns:
+        pmf_col = "pmf_json"
+    elif "pmf" in df.columns:
+        pmf_col = "pmf"
+    else:
+        pmf_col = None
+
+    pmf_means: list[float | None] = []
+    p_overs: list[float | None] = []
+    market_lines: list[float | None] = []
+    line_series = df.get("line")
+    market_line_series = df.get("market_line")
+    pmf_series = df.get(pmf_col) if pmf_col else None
+    for idx in range(len(df)):
+        arr = _pmf_array_from_jsonish(
+            pmf_series.iloc[idx] if pmf_series is not None else None
+        )
+        pmf_means.append(_pmf_direct_mean(arr) if arr is not None else None)
+        ml = None
+        if market_line_series is not None:
+            v = market_line_series.iloc[idx]
+            if pd.notna(v):
+                ml = float(v)
+        if ml is None and line_series is not None:
+            v = line_series.iloc[idx]
+            if pd.notna(v):
+                ml = float(v)
+        market_lines.append(ml)
+        if arr is not None and ml is not None:
+            p_overs.append(_pmf_direct_p_over(arr, ml))
+        else:
+            p_overs.append(None)
+
+    df["pmf_mean"] = pmf_means
+    df["market_line"] = market_lines
+    df["p_over"] = p_overs
+    return df
+
+
 def _write_outputs(out_dir: Path, wide_game: pd.DataFrame, market_game: pd.DataFrame) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     outputs: dict[str, int] = {}
 
+    # Stamp PMF-native public fields (pmf_mean, market_line, p_over)
+    # directly from the row PMF surface and strip quarantined public
+    # column names from the persisted Derek game-snapshot artifacts.
+    wide_game = _drop_quarantined_columns(
+        _stamp_pmf_native_public_columns(wide_game)
+    )
+    market_game = _drop_quarantined_columns(
+        _stamp_pmf_native_public_columns(market_game)
+    )
+
     summary_cols = [
         c for c in [
             "player_id", "player_name", "team", "opponent", "team_id", "game_id", "game",
-            "is_home", "stat", "side", "line", "book", "market_over_odds",
-            "market_under_odds", "market_no_vig_over_prob", "model_p_over",
+            "is_home", "stat", "side", "line", "market_line", "book", "market_over_odds",
+            "market_under_odds", "market_no_vig_over_prob",
+            "pmf_mean", "p_over",
             "fair_over_odds", "fair_under_odds", "edge", "abs_edge", "role_bucket",
             "injury_freshness_status", "lineup_freshness_status", "market_coverage_status",
         ]
