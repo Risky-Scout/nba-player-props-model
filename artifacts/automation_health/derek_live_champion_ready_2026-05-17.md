@@ -1,6 +1,6 @@
 # Derek Live Champion Model Readiness — 2026-05-17
 
-- generated_at_utc: 2026-05-17T20:32:18+00:00
+- generated_at_utc: 2026-05-17T21:33:32+00:00
 - passed: **False**
 
 ## Checks
