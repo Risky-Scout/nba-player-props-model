@@ -1,5 +1,5 @@
 {
-  "built_at_utc": "2026-05-17T15:55:56Z",
+  "built_at_utc": "2026-05-17T22:12:45Z",
   "calibrated_through_date": "2099-12-31",
   "calibration_run_id": "nightly-20991231",
   "canonical_source": "deliveries/2026-05-17/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
@@ -12,13 +12,13 @@
     "files": {
       "csv": "deliveries/2026-05-17/derek_forward_feed/latest_available_snapshot.csv",
       "parquet": "deliveries/2026-05-17/derek_forward_feed/latest_available_snapshot.parquet",
-      "rows": 2005
+      "rows": 2225
     },
     "points_to": "morning"
   },
   "lineup": null,
   "lineup_status": {
-    "checked_at_utc": "2026-05-17T15:55:56Z",
+    "checked_at_utc": "2026-05-17T22:12:45Z",
     "lineup_phase_executed_today": false,
     "reason": "Morning-only forward-feed run for 2026-05-17. BDL confirmed lineups are not yet available; the lineup snapshot will be produced by the later derek_pre_tipoff_refresh / close_lock runs. Re-check after the pre-tipoff window.",
     "schema_version": "lineup_snapshot_status.v2",
@@ -26,7 +26,7 @@
     "status": "pending_pre_tipoff_run"
   },
   "market_comparison_source": "deliveries/2026-05-17/wizard_of_odds/market_comparison.parquet",
-  "metadata_stamped_at_utc": "2026-05-17T20:51:20+00:00",
+  "metadata_stamped_at_utc": "2026-05-17T22:13:12+00:00",
   "model_source": "champion_pointer",
   "model_source_contract": "stat_grid_canonical_market_comparison",
   "morning": {
@@ -34,23 +34,23 @@
       "csv": "deliveries/2026-05-17/derek_forward_feed/morning_snapshot.csv",
       "jsonl": "deliveries/2026-05-17/derek_forward_feed/morning_snapshot.jsonl",
       "parquet": "deliveries/2026-05-17/derek_forward_feed/morning_snapshot.parquet",
-      "rows": 2005
+      "rows": 2225
     },
     "freshness_manifest_source": "data/freshness_manifest/2026-05-17.json",
     "market_comparison_source": "deliveries/2026-05-17/wizard_of_odds/market_comparison.parquet",
-    "market_rows_referenced": 2029,
+    "market_rows_referenced": 2260,
     "model_only_rows_used": 168,
     "model_only_source": "deliveries/2026-05-17/pmf_model_review_package/machine_readable/model_only.parquet",
-    "rows": 2005,
-    "rows_model_only": 46,
-    "rows_with_market": 1959,
+    "rows": 2225,
+    "rows_model_only": 36,
+    "rows_with_market": 2189,
     "run_manifest_source": "deliveries/2026-05-17/wizard_of_odds/run_manifest.json",
-    "snapshot_time_utc": "2026-05-17T15:55:52Z",
+    "snapshot_time_utc": "2026-05-17T22:12:42Z",
     "snapshot_type": "morning",
     "tov_rows": 14
   },
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-05-17T20:51:20+00:00",
+  "output_generated_at_utc": "2026-05-17T22:13:12+00:00",
   "promotion_decision_id": "promotion-2099-12-31-20260516T222858",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
@@ -72,6 +72,7 @@
       "is_home",
       "stat",
       "pmf_json",
+      "pmf_mean",
       "mean",
       "median",
       "mode",
@@ -121,11 +122,12 @@
       "book",
       "market_key",
       "line",
+      "market_line",
+      "p_over",
       "over_price_american",
       "under_price_american",
       "market_no_vig_over_prob",
       "market_no_vig_under_prob",
-      "model_p_over",
       "model_p_under",
       "fair_over_odds_american",
       "fair_under_odds_american",
@@ -170,11 +172,12 @@
       "book",
       "market_key",
       "line",
+      "market_line",
+      "p_over",
       "over_price_american",
       "under_price_american",
       "market_no_vig_over_prob",
       "market_no_vig_under_prob",
-      "model_p_over",
       "model_p_under",
       "fair_over_odds_american",
       "fair_under_odds_american",
@@ -186,6 +189,7 @@
     ],
     "pmf": [
       "pmf_json",
+      "pmf_mean",
       "mean",
       "median",
       "mode",
@@ -253,7 +257,7 @@
     ]
   },
   "snapshot": "morning",
-  "stamp_code_commit": "99710255a7f6a9c7ff2038205b58aa2916acc3a7",
+  "stamp_code_commit": "0a0911085b7a54955614ab4e08dc2b1a5d2f872e",
   "stat_grid_source": "predictions/stat_grid_2026-05-17.parquet",
   "trained_through_date": "2099-12-31",
   "training_run_id": "nightly-20991231",

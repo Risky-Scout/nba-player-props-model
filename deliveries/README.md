@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-17T20:51:05Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-17T22:12:53Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -26,7 +26,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-14** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 0 | 0 | 0 | 0 | `none` | `very_stale` | `missing_from_prediction_source` | `morning_present` | 0 | `pending_lineup_snapshot` | 0 | `pending_outcomes` | `8611c657#phase10c` |
 | **2026-05-15** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 792 | 16962 | 3178 | 2473 | `full` | `fresh` | `present` | `morning_present` | 3623 | `pending_pre_tipoff_run` | 3623 | `pending_outcomes` | `80401630#phase10c` |
 | **2026-05-16** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
-| **2026-05-17** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 2192 | 1745 | `full` | `fresh` | `present` | `morning_present` | 2005 | `pending_pre_tipoff_run` | 2005 | `n/a` | `99710255#phase10c` |
+| **2026-05-17** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 2260 | 1833 | `full` | `fresh` | `present` | `morning_present` | 2225 | `pending_pre_tipoff_run` | 2225 | `n/a` | `0a091108#phase10c` |
 
 ## Per-date links
 
@@ -793,7 +793,7 @@ _lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-17/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-17/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — morning rows=2005 · lineup=pending_pre_tipoff_run · latest→morning
+**Derek forward feed (PMF snapshots)** — morning rows=2225 · lineup=pending_pre_tipoff_run · latest→morning
 
 - [FEED_README.md](2026-05-17/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-17/derek_forward_feed/feed_manifest.json)
