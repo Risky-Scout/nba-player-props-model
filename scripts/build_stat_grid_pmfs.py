@@ -777,6 +777,122 @@ def _row_for_player_game(player_id: int, gid: int, *, target_date: str,
     return out_rows
 
 
+def _stat_grid_finalizer_pmf_array(value) -> np.ndarray | None:
+    """Parse a stat-grid PMF cell into a normalized 1D numpy array."""
+    if value is None:
+        return None
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except Exception:
+            return None
+    if isinstance(value, dict):
+        vals = {}
+        for k, v in value.items():
+            try:
+                vals[int(float(k))] = float(v)
+            except Exception:
+                continue
+        if not vals:
+            return None
+        arr = np.zeros(max(vals) + 1, dtype=float)
+        for k, v in vals.items():
+            arr[k] = v
+    else:
+        arr = np.asarray(value, dtype=float).ravel()
+
+    if arr.size == 0:
+        return None
+    arr = np.clip(arr, 0.0, None)
+    s = float(arr.sum())
+    if not np.isfinite(s) or s <= 0.0:
+        return None
+    return arr / s
+
+
+def _stat_grid_finalizer_convolve(pmfs: list[np.ndarray]) -> np.ndarray:
+    """Convolve already-finalized component PMFs."""
+    acc = _stat_grid_finalizer_pmf_array(pmfs[0])
+    if acc is None:
+        raise ValueError("first component PMF invalid")
+    for pmf in pmfs[1:]:
+        nxt = _stat_grid_finalizer_pmf_array(pmf)
+        if nxt is None:
+            raise ValueError("component PMF invalid")
+        acc = np.convolve(acc, nxt)
+        acc = _stat_grid_finalizer_pmf_array(acc)
+        if acc is None:
+            raise ValueError("convolved PMF invalid")
+    return acc
+
+
+def _finalize_combo_coherence_after_source_recalibration(df: pd.DataFrame) -> pd.DataFrame:
+    """Repair combo rows after final stat-grid source recalibration.
+
+    Source recalibration is applied row-by-row after pmf_predict builds the
+    initial PMF pack. That can move base stat PMFs without moving combo PMFs
+    consistently. This final pass rebuilds mission combo PMFs from the final
+    emitted component PMFs immediately before the stat grid is written.
+    """
+    required = {"player_id", "game_id", "stat", "pmf"}
+    if df.empty or not required.issubset(df.columns):
+        return df
+
+    out = df.copy()
+    combo_components = {
+        "pr": ("pts", "reb"),
+        "pa": ("pts", "ast"),
+        "ra": ("reb", "ast"),
+        "pra": ("pts", "reb", "ast"),
+        "stocks": ("stl", "blk"),
+    }
+
+    for _, g in out.groupby(["player_id", "game_id"], sort=False):
+        stat_to_idx = {}
+        for idx, row in g.iterrows():
+            stat_to_idx[str(row.get("stat", "")).lower()] = idx
+
+        for combo, parts in combo_components.items():
+            if combo not in stat_to_idx or not all(part in stat_to_idx for part in parts):
+                continue
+
+            component_pmfs = []
+            ok = True
+            for part in parts:
+                arr = _stat_grid_finalizer_pmf_array(out.at[stat_to_idx[part], "pmf"])
+                if arr is None:
+                    ok = False
+                    break
+                component_pmfs.append(arr)
+            if not ok:
+                continue
+
+            combo_pmf = _stat_grid_finalizer_convolve(component_pmfs)
+            summary = _pmf_summary(combo_pmf)
+            row_idx = stat_to_idx[combo]
+
+            out.at[row_idx, "pmf"] = json.dumps(_pmf_to_dict(combo_pmf))
+            for col, key in [
+                ("pmf_summary_mean", "mean"),
+                ("pmf_summary_median", "median"),
+                ("pmf_summary_mode", "mode"),
+                ("support_max", "support_max"),
+            ]:
+                if col in out.columns:
+                    out.at[row_idx, col] = summary[key]
+            if "pmf_sum_error" in out.columns:
+                out.at[row_idx, "pmf_sum_error"] = float(abs(summary["pmf_sum"] - 1.0))
+            if "calibrated" in out.columns:
+                out.at[row_idx, "calibrated"] = True
+            if "model_version" in out.columns:
+                mv = str(out.at[row_idx, "model_version"])
+                tag = "stat_grid_final_component_convolution_mean_coherent_v1"
+                if tag not in mv:
+                    out.at[row_idx, "model_version"] = f"{mv}+{tag}"
+
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--date", required=True,
@@ -925,6 +1041,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     df = pd.DataFrame(rows)
+    df = _finalize_combo_coherence_after_source_recalibration(df)
     assert_no_ineligible_pmfs(df, label="stat_grid_pmfs")
     merge_snap = args.feature_snapshot or (
         str(resolved_feature_slate)
