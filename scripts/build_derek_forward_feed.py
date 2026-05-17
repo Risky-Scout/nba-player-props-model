@@ -380,6 +380,86 @@ BDL_PROP_TYPE_TO_STAT = {
 # trigger a verifier failure rather than silently fabricating lines.
 BDL_UNSUPPORTED_INTERNAL_STATS = ("tov", "stocks")
 
+# Canonical PMF column priority for the Derek BDL main-line summary.
+#
+# Upstream snapshots have shipped the final per-row PMF payload under
+# different names across the M8.x line: ``pmf_json`` is the historical
+# name on canonical MODEL_ONLY, ``pmf_active`` is what the M8.9 active-
+# PMF promotion writes, and ``pmf`` is the legacy fallback used in some
+# pre-M8.9 calibration outputs. The Derek forward-feed writer must be
+# tolerant of all three so the BDL main-line summary builder always
+# sees a real PMF column, regardless of which upstream produced the
+# snapshot. The writer normalises whichever column it finds into
+# ``pmf_json`` before calling ``_build_derek_bdl_main_line_summary``;
+# the public ``derek_forward_feed.*`` files still drop ``pmf_json``
+# (it is a private feed column) — only the in-memory ``out_df`` and
+# the summary builder ever see it.
+PMF_VALUE_COLUMN_PRIORITY: tuple[str, ...] = ("pmf_json", "pmf_active", "pmf")
+
+
+def _pick_row_pmf_value(row_like: Any) -> Any:
+    """Return the first non-empty PMF payload from a row-like object.
+
+    Iterates :data:`PMF_VALUE_COLUMN_PRIORITY` in order and returns the
+    first value that is neither ``None`` nor ``NaN``. ``row_like`` may
+    be a ``pd.Series`` (as yielded by ``DataFrame.iterrows()``) or any
+    mapping that supports ``.get(key)``. Returns ``None`` if no PMF
+    payload is available.
+
+    This is the single source of truth for "which upstream column
+    carries the final PMF for this row" inside
+    ``scripts/build_derek_forward_feed.py``.
+    """
+    try:
+        getter = row_like.get
+    except AttributeError:
+        return None
+    for col in PMF_VALUE_COLUMN_PRIORITY:
+        try:
+            v = getter(col)
+        except Exception:
+            continue
+        if v is None:
+            continue
+        if isinstance(v, float) and math.isnan(v):
+            continue
+        return v
+    return None
+
+
+def _ensure_pmf_json_column(df: pd.DataFrame) -> pd.DataFrame:
+    """Return ``df`` with a guaranteed ``pmf_json`` column.
+
+    If ``pmf_json`` is missing entirely but a fallback PMF column
+    (``pmf_active`` / ``pmf``) is present, this materialises ``pmf_json``
+    from the first available fallback. If no PMF column is present at
+    all, ``df`` is returned unchanged so the downstream builder still
+    raises its explicit ``DEREK_BDL_SUMMARY_MISSING_REQUIRED_COLUMNS``
+    error (better signal than silently writing an empty summary).
+
+    Belt-and-suspenders alongside the per-row helper above: a future
+    refactor that removes the ``pmf_json`` key from the row dict would
+    otherwise re-introduce the production failure mode where the BDL
+    summary builder sees no PMF column at all.
+    """
+    if df is None or df.empty:
+        return df
+    if "pmf_json" in df.columns:
+        return df
+    fallback = next(
+        (c for c in PMF_VALUE_COLUMN_PRIORITY[1:] if c in df.columns),
+        None,
+    )
+    if fallback is None:
+        return df
+    out = df.copy()
+    out["pmf_json"] = out[fallback]
+    print(
+        "DEREK_BDL_SUMMARY_PMF_NORMALIZED "
+        f"source_column={fallback} target_column=pmf_json"
+    )
+    return out
+
 # Quarantined public column names — must not appear in any persisted
 # public delivery output (CSV / Parquet / JSONL / JSON / HTML embed).
 QUARANTINED_PUBLIC_COLUMNS: tuple[str, ...] = (
@@ -622,6 +702,19 @@ def _build_derek_bdl_main_line_summary(out_df: pd.DataFrame) -> pd.DataFrame:
 
     if base.empty:
         return pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+
+    # The Derek public feed schema added ``market_line`` (and ``p_over``)
+    # to ``out_df`` as PMF-native public columns. Those collide with the
+    # ``market_line`` column produced by the BDL consensus join below
+    # (pandas would suffix them to ``market_line_x`` / ``market_line_y``,
+    # silently dropping the row-level BDL line and yielding an empty
+    # summary). Drop the pre-existing public ``market_line`` /
+    # ``p_over`` from ``base`` so the BDL-derived ``market_line`` survives
+    # the merge unambiguously and the loop below can read it back as
+    # ``r.get("market_line")`` to compute the direct PMF tail probability.
+    for collision_col in ("market_line", "p_over"):
+        if collision_col in base.columns:
+            base = base.drop(columns=[collision_col])
 
     base = (
         base.sort_values(["player_name", "stat"], kind="mergesort")
@@ -1309,7 +1402,14 @@ def write_m88_unified_feed(
 
     rows_out: list[dict[str, Any]] = []
     for _, r in df.iterrows():
-        pmf_json = r.get("pmf_json")
+        # Resolve the row's final PMF payload from the canonical priority
+        # ``pmf_json`` → ``pmf_active`` → ``pmf`` so the downstream BDL
+        # main-line summary builder always sees a real PMF column on
+        # ``out_df``, regardless of which upstream snapshot produced the
+        # row. The normalised value is stamped into the row dict under
+        # ``pmf_json`` below — public ``derek_forward_feed.*`` writers
+        # still strip ``pmf_json`` from the persisted files.
+        pmf_json = _pick_row_pmf_value(r)
         pmean, pvar, p10, p50, p90 = _discrete_pmf_stats(pmf_json)
 
         # Direct PMF tail probability for the unified Derek feed.
@@ -1577,8 +1677,18 @@ def write_m88_unified_feed(
     # This summary intentionally does NOT use WoO alternate-line rows and does
     # NOT expose or copy model_prob_over_* fields. p_over is computed directly
     # from the row PMF against the selected BDL market_line.
+    #
+    # Defensive normalisation: although the row builder above stamps
+    # ``pmf_json`` onto every row dict from the canonical
+    # ``pmf_json`` → ``pmf_active`` → ``pmf`` priority, we re-assert at
+    # the dataframe boundary so a future refactor that drops the key
+    # from the row literal still produces a usable summary (instead of
+    # silently writing an empty file or surfacing
+    # ``DEREK_BDL_SUMMARY_MISSING_REQUIRED_COLUMNS`` during the morning
+    # delivery window).
+    out_df_for_summary = _ensure_pmf_json_column(out_df)
     summary_csv_out = out_dir / "derek_unique_props_summary.csv"
-    summary_df = _build_derek_bdl_main_line_summary(out_df)
+    summary_df = _build_derek_bdl_main_line_summary(out_df_for_summary)
     summary_df.to_csv(summary_csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
     try:
         _summary_rel = str(summary_csv_out.relative_to(REPO_ROOT))
