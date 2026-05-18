@@ -273,9 +273,35 @@ def audit_date(
             phits = _scan_placeholders_parquet(path)
         row_base["placeholder_value_count"] = len(phits)
         if phits:
+            # The ``after_game_scoring_placeholder_manifest.json`` file
+            # is an intentional pre-game stub whose content literally
+            # contains the word "placeholder" (e.g. the ``reason``
+            # field reads "...placeholder until scripts/score_daily_
+            # pmf_delivery_after_game.py runs."). The audit's
+            # banned-token scan otherwise reads that legitimate
+            # content as ``placeholder_or_banned_token`` and fails
+            # the run (run 26012478679 — daily_pmf_delivery on
+            # delivery_date=2026-05-18 failed at
+            # DAILY_DELIVERY_COMPLETENESS_AUDIT_FAIL because the
+            # exemption below only fired in ``morning_expected`` mode,
+            # not in ``t25`` / ``t5`` / pre-tipoff runs where the same
+            # legitimate placeholder file is also present).
+            #
+            # Exempt the placeholder manifest from the banned-token
+            # scan in EVERY pre-game mode. In ``FINAL_AFTER_GAME`` the
+            # placeholder manifest is genuinely stale (the real
+            # ``after_game_scoring.parquet`` should have replaced it),
+            # so the scan keeps biting there and surfaces a real
+            # post-game pipeline regression.
+            pregame_modes = (
+                RunMode.MORNING_EXPECTED,
+                RunMode.T25,
+                RunMode.T5,
+                RunMode.BACKTEST,
+            )
             if (
                 rel == OPTIONAL_AFTER_GAME_PLACEHOLDER_REL
-                and mode_eff == RunMode.MORNING_EXPECTED
+                and mode_eff in pregame_modes
                 and pres == FilePresence.OPTIONAL
             ):
                 row_base["optional_after_game_placeholder_warn"] = True
