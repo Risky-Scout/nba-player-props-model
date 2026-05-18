@@ -1,15 +1,15 @@
 {
   "delivery_date": "2026-05-18",
   "run_mode": "morning_expected",
-  "generated_at_utc": "2026-05-18T17:51:27Z",
-  "row_count": 2441,
+  "generated_at_utc": "2026-05-18T20:21:08Z",
+  "row_count": 2475,
   "schema": "m88_derek_unified_v1",
   "lineup_status": {
     "status": "pending_pre_tipoff_run",
     "reason": "Morning-only forward-feed run for 2026-05-18. BDL confirmed lineups are not yet available; the lineup snapshot will be produced by the later derek_pre_tipoff_refresh / close_lock runs. Re-check after the pre-tipoff window.",
     "snapshot_mode_running": "morning",
     "lineup_phase_executed_today": false,
-    "checked_at_utc": "2026-05-18T17:51:27Z",
+    "checked_at_utc": "2026-05-18T20:21:07Z",
     "schema_version": "lineup_snapshot_status.v2"
   },
   "rotation_bench_filter": {
