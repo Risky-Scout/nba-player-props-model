@@ -1037,6 +1037,49 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         mpo = min(max(mpo, 1e-9), 1.0 - 1e-9)
         mpu = 1.0 - mpo
 
+        # PMF-native public aliases — ``pmf_mean`` is the direct
+        # expectation and ``p_over`` is the direct tail probability
+        # P(stat > line) from the row PMF. They surface on every
+        # affiliate row alongside the legacy ``model_prob*`` fields
+        # so the public WoO feed (affiliate_dashboard.json + the
+        # nba-props.html template that reads it) can render model
+        # probability under a stable, PMF-native name without
+        # depending on the quarantined ``model_p_over`` /
+        # ``model_probability_over_market_line`` family. Sourced
+        # directly from the corrected ``market_comparison.parquet``
+        # which already holds the direct-PMF values (verified in run
+        # 2026-05-17: 0/2260 nulls for both columns), never copied
+        # from ``model_p_over`` or invented from market odds.
+        pmf_mean_alias = None
+        try:
+            v = get(r, "pmf_mean", default=None)
+            if v is not None and pd.notna(v):
+                fv = float(v)
+                if math.isfinite(fv):
+                    pmf_mean_alias = fv
+        except Exception:
+            pmf_mean_alias = None
+
+        p_over_alias = None
+        try:
+            v = get(r, "p_over", default=None)
+            if v is not None and pd.notna(v):
+                fv = float(v)
+                if math.isfinite(fv) and 0.0 <= fv <= 1.0:
+                    p_over_alias = fv
+        except Exception:
+            p_over_alias = None
+
+        market_line_alias = None
+        try:
+            v = get(r, "market_line", "line", default=None)
+            if v is not None and pd.notna(v):
+                fv = float(v)
+                if math.isfinite(fv):
+                    market_line_alias = fv
+        except Exception:
+            market_line_alias = None
+
         base = {
             "date": date,
             "player_id": get(r, "player_id", default=None),
@@ -1046,6 +1089,9 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             "opponent": str(get(r, "opponent", default="")),
             "stat": str(get(r, "stat", "stat_key", "market", default="")).lower(),
             "line": get(r, "line", default=None),
+            "market_line": market_line_alias,
+            "pmf_mean": pmf_mean_alias,
+            "p_over": p_over_alias,
             "book": str(get(r, "book", "sportsbook", "bookmaker", default="")),
             "affiliate_url": str(get(r, "affiliate_url", "affiliate_link", "book_url", "url", default="")),
             # FW3 — status flag gated on market_superiority_claim_allowed.
