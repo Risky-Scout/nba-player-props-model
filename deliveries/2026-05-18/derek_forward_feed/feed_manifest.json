@@ -1,24 +1,24 @@
 {
-  "built_at_utc": "2026-05-18T17:31:22Z",
+  "built_at_utc": "2026-05-18T17:51:27Z",
   "calibrated_through_date": "2099-12-31",
   "calibration_run_id": "nightly-20991231",
   "canonical_source": "deliveries/2026-05-18/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
   "champion_artifact_dir": "artifacts/models",
   "champion_model_id": "sim-2099-12-31",
-  "champion_pointer_hash": "454db4d988a111f62a0f9eeeeea44b06",
+  "champion_pointer_hash": "f93205c27f0a7721756b7590a7e974e4",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "delivery_date": "2026-05-18",
   "latest_available_snapshot": {
     "files": {
       "csv": "deliveries/2026-05-18/derek_forward_feed/latest_available_snapshot.csv",
       "parquet": "deliveries/2026-05-18/derek_forward_feed/latest_available_snapshot.parquet",
-      "rows": 2427
+      "rows": 2441
     },
     "points_to": "morning"
   },
   "lineup": null,
   "lineup_status": {
-    "checked_at_utc": "2026-05-18T17:31:22Z",
+    "checked_at_utc": "2026-05-18T17:51:27Z",
     "lineup_phase_executed_today": false,
     "reason": "Morning-only forward-feed run for 2026-05-18. BDL confirmed lineups are not yet available; the lineup snapshot will be produced by the later derek_pre_tipoff_refresh / close_lock runs. Re-check after the pre-tipoff window.",
     "schema_version": "lineup_snapshot_status.v2",
@@ -26,7 +26,7 @@
     "status": "pending_pre_tipoff_run"
   },
   "market_comparison_source": "deliveries/2026-05-18/wizard_of_odds/market_comparison.parquet",
-  "metadata_stamped_at_utc": "2026-05-18T17:31:56+00:00",
+  "metadata_stamped_at_utc": "2026-05-18T17:52:02+00:00",
   "model_source": "champion_pointer",
   "model_source_contract": "stat_grid_canonical_market_comparison",
   "morning": {
@@ -34,24 +34,24 @@
       "csv": "deliveries/2026-05-18/derek_forward_feed/morning_snapshot.csv",
       "jsonl": "deliveries/2026-05-18/derek_forward_feed/morning_snapshot.jsonl",
       "parquet": "deliveries/2026-05-18/derek_forward_feed/morning_snapshot.parquet",
-      "rows": 2427
+      "rows": 2441
     },
     "freshness_manifest_source": "data/freshness_manifest/2026-05-18.json",
     "market_comparison_source": "deliveries/2026-05-18/wizard_of_odds/market_comparison.parquet",
-    "market_rows_referenced": 2477,
+    "market_rows_referenced": 2491,
     "model_only_rows_used": 180,
     "model_only_source": "deliveries/2026-05-18/pmf_model_review_package/machine_readable/model_only.parquet",
-    "rows": 2427,
+    "rows": 2441,
     "rows_model_only": 24,
-    "rows_with_market": 2403,
+    "rows_with_market": 2417,
     "run_manifest_source": "deliveries/2026-05-18/wizard_of_odds/run_manifest.json",
-    "snapshot_time_utc": "2026-05-18T17:31:17Z",
+    "snapshot_time_utc": "2026-05-18T17:51:21Z",
     "snapshot_type": "morning",
     "tov_rows": 15
   },
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-05-18T17:31:56+00:00",
-  "promotion_decision_id": "promotion-2099-12-31-20260518T160547",
+  "output_generated_at_utc": "2026-05-18T17:52:02+00:00",
+  "promotion_decision_id": "promotion-2099-12-31-20260518T174343",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
     "no_market_anchoring": true,
@@ -257,7 +257,7 @@
     ]
   },
   "snapshot": "morning",
-  "stamp_code_commit": "63b495a20bd2ca371bf546782830de02954da5e8",
+  "stamp_code_commit": "7093c7012fd9dd1a2404d6d829bef94fda395f77",
   "stat_grid_source": "predictions/stat_grid_2026-05-18.parquet",
   "trained_through_date": "2099-12-31",
   "training_run_id": "nightly-20991231",
