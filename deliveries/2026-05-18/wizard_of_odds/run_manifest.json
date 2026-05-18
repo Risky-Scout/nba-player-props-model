@@ -3,12 +3,12 @@
   "calibration_run_id": "nightly-20991231",
   "champion_artifact_dir": "artifacts/models",
   "champion_model_id": "sim-2099-12-31",
-  "champion_pointer_hash": "07776c209802680b9355d4a694cb55b3",
+  "champion_pointer_hash": "dfd4615c99bf495666b0dbd3c4c12f32",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "count_diagnostics": {
     "fair_odds_board": {
-      "fair_over_odds_null_count": 560,
-      "fair_under_odds_null_count": 560,
+      "fair_over_odds_null_count": 524,
+      "fair_under_odds_null_count": 524,
       "zero_or_one_prob_count": 300
     }
   },
@@ -41,12 +41,12 @@
       "hardrockbet_fl",
       "williamhill_us"
     ],
-    "built_at_utc": "2026-05-18T21:13:06Z",
+    "built_at_utc": "2026-05-18T22:46:50Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "ready",
     "path": "data/freshness_manifest/2026-05-18.json",
-    "predictions_mtime_utc": "2026-05-18T21:12:47.515451Z",
+    "predictions_mtime_utc": "2026-05-18T22:46:33.012637Z",
     "regions_requested": [
       "us",
       "us2"
@@ -56,16 +56,16 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-18T21:14:41+00:00",
+  "metadata_stamped_at_utc": "2026-05-18T22:48:38+00:00",
   "model_source": "champion_pointer",
-  "model_version": "57b8bf4d#phase10c",
+  "model_version": "c931b24d#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-18T21:14:41+00:00",
+  "output_generated_at_utc": "2026-05-18T22:48:38+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "pipeline_run_id": "f4bf1ad6-041b-4884-beb7-ec6694d6a9c5",
-  "promotion_decision_id": "promotion-2099-12-31-20260518T201344",
+  "pipeline_run_id": "f85ca6ba-d540-4a64-a571-faa1c5974cd8",
+  "promotion_decision_id": "promotion-2099-12-31-20260518T224027",
   "quality_rollup": {
     "calibration_confidence": {
       "high": 180
@@ -88,22 +88,22 @@
   "row_counts": {
     "fair_odds_board": 3855,
     "full_pmfs_wide": 180,
-    "market_comparison": 2550,
-    "publishable_edges": 2056
+    "market_comparison": 2544,
+    "publishable_edges": 2064
   },
-  "snapshot_time_utc": "2026-05-18T21:14:15Z",
-  "snapshot_type": "pre_close",
+  "snapshot_time_utc": "2026-05-18T22:47:57Z",
+  "snapshot_type": "morning",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-18T21:11:42.898797Z",
+      "mtime_utc": "2026-05-18T22:44:45.866143Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-18T21:14:14.399186Z",
+      "mtime_utc": "2026-05-18T22:47:56.865511Z",
       "path": "deliveries/2026-05-18/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "59699bcdb49109edef2da3a1f93689e31cce395913533a885061373d634f3021"
+      "sha256": "6a512f6e320f8c45d8047ca8d580e4efc601a970a623bcb2fa17033015743446"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -123,15 +123,15 @@
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-18T21:13:06.497630Z",
-      "path": "data/odds_api/processed/2026-05-18/odds_pairs_live_slate_close_or_lock_2026-05-18T211302Z.parquet"
+      "mtime_utc": "2026-05-18T22:46:49.811016Z",
+      "path": "data/odds_api/processed/2026-05-18/odds_pairs_live_slate_morning_7am_2026-05-18T224645Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-18T21:12:47.515451Z",
+      "mtime_utc": "2026-05-18T22:46:33.012637Z",
       "path": "predictions/all_props_2026-05-18.parquet"
     }
   },
-  "stamp_code_commit": "57b8bf4df447f5a4a26600563376178940690fe0",
+  "stamp_code_commit": "c931b24d7d03f69782c3eeefa9f045ed0fc98f19",
   "target_stats": {
     "expected": [
       "pts",

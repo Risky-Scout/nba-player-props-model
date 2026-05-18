@@ -14,10 +14,10 @@
 - `training_run_id` = `nightly-20991231`
 - `calibration_run_id` = `nightly-20991231`
 - `validation_run_id` = `nightly-20991231`
-- `promotion_decision_id` = `promotion-2099-12-31-20260518T201344`
+- `promotion_decision_id` = `promotion-2099-12-31-20260518T224027`
 - `champion_pointer_path` = `artifacts/models/registry/champion_pointer.json`
-- `champion_pointer_hash` = `07776c209802680b9355d4a694cb55b3`
-- `metadata_stamped_at_utc` = `2026-05-18T21:14:41+00:00`
+- `champion_pointer_hash` = `dfd4615c99bf495666b0dbd3c4c12f32`
+- `metadata_stamped_at_utc` = `2026-05-18T22:48:38+00:00`
 
 - `no_prediction_values_modified` = `True`
 
