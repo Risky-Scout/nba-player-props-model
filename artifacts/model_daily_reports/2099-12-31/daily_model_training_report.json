@@ -22,7 +22,7 @@
     "training_run_id": "nightly-20991231",
     "validation_report_path": "artifacts/models/challengers/2099-12-31/validation_report.json"
   },
-  "generated_at_utc": "2026-05-18T05:59:22+00:00Z",
+  "generated_at_utc": "2026-05-18T07:07:19+00:00Z",
   "metrics_per_target": {},
   "no_leakage": {
     "no_leakage_manifest": null,
