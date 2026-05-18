@@ -62,6 +62,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
@@ -69,6 +70,19 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from nba_props_model.data.bdl_client import get_games  # noqa: E402
 
 PREDICTIONS_DIR = REPO_ROOT / "predictions"
+
+# Phase 13AM C2: NBA slates are denominated in America/New_York wall
+# clock, not UTC. The Phase 13AM C1 fix compared ``slate_date`` against
+# the raw UTC date and so misclassified every same-NBA-slate firing
+# between 00:00 UTC and ~04:00 UTC as ``past_slate`` (run 26005809860
+# and friends — a manual replay invoked at 19:59 ET / 00:08 UTC was
+# rejected even though tipoff was still hours in the future and the
+# operator had explicitly set ``force_run=true``). The fix preserves
+# the C1 intent (refuse to silently fake-green a real past-slate run)
+# but uses ET semantics for the slate comparison and lets
+# ``--force-run-predict`` (already plumbed from ``force_run=true``)
+# bypass past_slate for explicit manual replays.
+NBA_SLATE_TZ = ZoneInfo("America/New_York")
 
 
 def _emit_github_output(key: str, value: str) -> None:
@@ -100,6 +114,19 @@ def _now_utc_hour() -> int:
 def _now_utc() -> _dt.datetime:
     """Current UTC time as a timezone-aware datetime (date + hour)."""
     return _dt.datetime.now(_dt.timezone.utc)
+
+
+def _today_local(now_utc: _dt.datetime | None = None) -> str:
+    """Return today's date in America/New_York (the NBA slate timezone).
+
+    Tests inject ``now_utc`` to pin the wall clock; production callers
+    pass ``None`` and the function reads the current UTC time and
+    converts it.
+    """
+    src = now_utc if now_utc is not None else _now_utc()
+    if src.tzinfo is None:
+        src = src.replace(tzinfo=_dt.timezone.utc)
+    return src.astimezone(NBA_SLATE_TZ).date().isoformat()
 
 
 def _emit(line: str) -> None:
@@ -287,38 +314,66 @@ def main() -> int:
     now_utc = _now_utc()
     now_hour = now_utc.hour
     today_utc = now_utc.date().isoformat()
+    today_local = _today_local(now_utc)
     slate_date = date  # caller resolves this in America/New_York
     _emit(
         f"[gate] now_utc={now_utc.isoformat()} today_utc={today_utc} "
-        f"slate_date={slate_date} predict_cron_hour_utc={args.predict_cron_hour_utc}"
+        f"today_local={today_local} slate_date={slate_date} "
+        f"predict_cron_hour_utc={args.predict_cron_hour_utc} "
+        f"force_run_predict={args.force_run_predict}"
     )
 
-    # C1 fix: compare slate_date against today_utc to know whether the
-    # predict cron has had a chance to fire FOR THIS SPECIFIC SLATE.
-    # The previous logic compared only now_hour against predict_cron_hour_utc,
-    # which silently fake-greened every cron firing between 00:00-13:00 UTC
-    # for a past slate (slate_date < today_utc) because now_hour < 13 was
-    # always true in that window.
+    # C1 fix: compare slate_date against today's date to know whether
+    # the predict cron has had a chance to fire FOR THIS SPECIFIC SLATE.
+    # The previous logic compared only now_hour against
+    # predict_cron_hour_utc, which silently fake-greened every cron
+    # firing between 00:00-13:00 UTC for a past slate because
+    # now_hour < 13 was always true in that window.
+    #
+    # C2 fix: compare against today_local (America/New_York), not
+    # today_utc. NBA slates are denominated in ET; comparing against UTC
+    # rejected valid manual replays performed between 00:00 UTC and
+    # ~04:00 UTC of the same ET slate (run 26006502952 — operator
+    # explicitly set force_run=true at 19:59 ET / 00:08 UTC and the
+    # gate still emitted past_slate today_utc=2026-05-18 despite tipoff
+    # for slate 2026-05-17 still being hours away in ET).
 
     # Future slate: caller asked about a date we have not reached yet.
-    if slate_date > today_utc:
+    if slate_date > today_local:
         return _valid_skip(
             date,
             mode,
-            reason=f"future_slate today_utc={today_utc}",
+            reason=(
+                f"future_slate today_local={today_local} "
+                f"today_utc={today_utc}"
+            ),
         )
 
     # Past slate: predict cron has already fired (or should have) for
     # this date. Forward-looking workflows must NOT try to regenerate
-    # yesterday's predictions. Valid-skip with an honest reason.
-    if slate_date < today_utc:
-        return _valid_skip(
-            date,
-            mode,
-            reason=f"past_slate today_utc={today_utc}",
+    # yesterday's predictions. Valid-skip with an honest reason —
+    # UNLESS the operator explicitly requested a manual replay via
+    # ``--force-run-predict`` (the workflow plumbs this flag through
+    # whenever ``force_run=true`` is set on a workflow_dispatch run).
+    # The manual-replay override lets a verifier-fix backfill rerun
+    # last night's slate without forcing a workflow file change.
+    if slate_date < today_local:
+        if not args.force_run_predict:
+            return _valid_skip(
+                date,
+                mode,
+                reason=(
+                    f"past_slate today_local={today_local} "
+                    f"today_utc={today_utc}"
+                ),
+            )
+        _emit(
+            f"[gate] past_slate manual replay override: "
+            f"slate_date={slate_date} today_local={today_local} "
+            f"force_run_predict=True — proceeding to predict.py"
         )
 
-    # slate_date == today_utc from here on.
+    # slate_date == today_local (or past_slate manual replay) from here on.
 
     # Still BEFORE today's predict cron has had a chance to fire — this
     # is normally an expected pre-tip firing; valid-skip green unless
