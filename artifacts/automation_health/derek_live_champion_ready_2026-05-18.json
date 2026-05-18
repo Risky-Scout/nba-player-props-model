@@ -36,21 +36,21 @@
       "passed": true
     },
     {
-      "detail": "promotion_decision_id='promotion-2099-12-31-20260518T201344'",
+      "detail": "promotion_decision_id='promotion-2099-12-31-20260518T224027'",
       "name": "champion_not_dry_run_or_synthetic",
       "passed": true
     }
   ],
-  "code_commit": "22f58113d4b5c775d7a1878f2e183f90a8520692",
+  "code_commit": "36995dcece640d469d60ab39f13d1bf0dc379c43",
   "delivery_date": "2026-05-18",
   "facts": {
     "calibrated_through_date": "2099-12-31",
     "champion_model_id": "sim-2099-12-31",
-    "champion_pointer_hash": "07776c209802680b9355d4a694cb55b3",
+    "champion_pointer_hash": "dfd4615c99bf495666b0dbd3c4c12f32",
     "delivery_date_minus_one_utc": "2026-05-17",
     "trained_through_date": "2099-12-31"
   },
-  "generated_at_utc": "2026-05-18T22:35:43+00:00",
+  "generated_at_utc": "2026-05-18T23:37:49+00:00",
   "passed": false,
   "schema_version": "1.0"
 }
