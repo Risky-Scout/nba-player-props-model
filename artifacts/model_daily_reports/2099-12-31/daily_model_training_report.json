@@ -15,14 +15,14 @@
     "direct_lineup_pmf_driver": null,
     "feature_set_id": null,
     "no_leakage_manifest_path": null,
-    "promotion_decision_id": "promotion-2099-12-31-20260518T174343",
+    "promotion_decision_id": "promotion-2099-12-31-20260518T201344",
     "promotion_decision_path": "artifacts/models/challengers/2099-12-31/promotion_decision.json",
     "train_manifest_path": "artifacts/models/challengers/2099-12-31/train_manifest.json",
     "trained_through_date": "2099-12-31",
     "training_run_id": "nightly-20991231",
     "validation_report_path": "artifacts/models/challengers/2099-12-31/validation_report.json"
   },
-  "generated_at_utc": "2026-05-18T20:02:18+00:00Z",
+  "generated_at_utc": "2026-05-18T21:25:04+00:00Z",
   "metrics_per_target": {},
   "no_leakage": {
     "no_leakage_manifest": null,
