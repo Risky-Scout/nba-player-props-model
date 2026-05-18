@@ -338,15 +338,34 @@ def main() -> int:
     # gate still emitted past_slate today_utc=2026-05-18 despite tipoff
     # for slate 2026-05-17 still being hours away in ET).
 
-    # Future slate: caller asked about a date we have not reached yet.
+    # Future slate: caller asked about a date we have not reached yet
+    # in America/New_York. Normal cron firings for a future slate are
+    # valid-skip — the predict cron will fire on the right slate when
+    # the local date rolls over. BUT a manual ``workflow_dispatch``
+    # with ``force_run=true`` (plumbed through as
+    # ``--force-run-predict``) is an explicit operator request to
+    # generate predictions for tomorrow's slate right now — typically
+    # because BDL lines for the next slate were just published a few
+    # hours before ET midnight (e.g. run 26012031036 — operator
+    # triggered slate=2026-05-18 at 23:33 ET on 2026-05-17 because the
+    # 05/18 odds shop was already live). Honor the manual replay
+    # bypass symmetrically with the past_slate case so operators
+    # never have to round-trip through a workflow file change to
+    # generate a forward slate.
     if slate_date > today_local:
-        return _valid_skip(
-            date,
-            mode,
-            reason=(
-                f"future_slate today_local={today_local} "
-                f"today_utc={today_utc}"
-            ),
+        if not args.force_run_predict:
+            return _valid_skip(
+                date,
+                mode,
+                reason=(
+                    f"future_slate today_local={today_local} "
+                    f"today_utc={today_utc}"
+                ),
+            )
+        _emit(
+            f"[gate] future_slate manual replay override: "
+            f"slate_date={slate_date} today_local={today_local} "
+            f"force_run_predict=True — proceeding to predict.py"
         )
 
     # Past slate: predict cron has already fired (or should have) for

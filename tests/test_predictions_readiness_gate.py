@@ -239,6 +239,36 @@ def test_future_slate_uses_et_today_for_comparison(monkeypatch):
     assert "today_local=2026-05-17" in joined
 
 
+def test_future_slate_manual_replay_override_proceeds_to_predict(monkeypatch):
+    """Manual-replay override for tomorrow's slate (run 26012031036
+    fix): when an operator triggers ``workflow_dispatch`` with
+    ``force_run=true`` and an explicit ``delivery_date`` for the NEXT
+    ET slate, the future_slate skip must yield to predict.py
+    invocation so the daily pipeline can build tomorrow's outputs as
+    soon as BDL lines are published. Symmetric with the past_slate
+    manual replay override."""
+    # 03:33 UTC on 2026-05-18 = 23:33 ET on 2026-05-17.
+    # slate_date=2026-05-18 is the NEXT ET slate.
+    args = _build_args(date="2026-05-18", force_run_predict=True)
+    fake_utc = _dt.datetime(2026, 5, 18, 3, 33, tzinfo=_dt.timezone.utc)
+
+    rc, emissions, predict_invocations = _make_gate_main_for_clock(
+        monkeypatch, args, fake_utc=fake_utc, missing_files=True
+    )
+
+    assert rc == 0
+    joined = "\n".join(emissions)
+    assert "future_slate manual replay override" in joined
+    assert "force_run_predict=True" in joined
+    # The future_slate VALID_SKIP must NOT fire before predict.py runs.
+    pre_proceed = joined.split("PREDICTIONS_READY")[0]
+    assert "WAITING_FOR_PREDICTIONS_VALID_SKIP" not in pre_proceed
+    assert predict_invocations == ["2026-05-18"], (
+        "force_run_predict must invoke predict.py for the future slate"
+    )
+    assert "PREDICTIONS_READY date=2026-05-18" in joined
+
+
 def test_same_day_et_proceeds_when_predictions_present(monkeypatch):
     """When predictions already exist for the slate (e.g. predict cron
     has already fired), the gate proceeds regardless of UTC overnight
