@@ -1,15 +1,15 @@
 {
   "delivery_date": "2026-05-18",
   "run_mode": "t25",
-  "generated_at_utc": "2026-05-18T23:39:32Z",
-  "row_count": 1882,
+  "generated_at_utc": "2026-05-18T23:49:18Z",
+  "row_count": 2172,
   "schema": "m88_derek_unified_v1",
   "lineup_status": {
     "status": "near_tip_projected_lineup_snapshot",
     "snapshot_type_emitted": "near_tip",
     "lineup_freshness_rollup": "projected=180",
     "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
-    "checked_at_utc": "2026-05-18T23:39:32Z"
+    "checked_at_utc": "2026-05-18T23:49:17Z"
   },
   "rotation_bench_filter": {
     "policy": "defensive_publication_guard_only",
