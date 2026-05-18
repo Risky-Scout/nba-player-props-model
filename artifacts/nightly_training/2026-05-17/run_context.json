@@ -1,6 +1,6 @@
 {
   "as_of_date": "2026-05-17",
-  "code_commit": "5855c31c4033f82135a5746f4749ddb03b1e84b2",
+  "code_commit": "a44846d9b0427ca4f644a037b55437a100ac97c8",
   "dry_run": false,
   "no_promote": false,
   "phase13g": {
@@ -10,9 +10,9 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-17",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260518T201138"
+    "training_run_id": "nightly-20260518T223820"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-18T20:11:38+00:00",
-  "training_run_id": "nightly-20260518T201138"
+  "started_at_utc": "2026-05-18T22:38:20+00:00",
+  "training_run_id": "nightly-20260518T223820"
 }
