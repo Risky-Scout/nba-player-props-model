@@ -2,7 +2,8 @@
   "delivery_date": "2026-05-18",
   "derek_game_folders": {
     "21713528": [
-      "lineup"
+      "lineup",
+      "morning"
     ]
   },
   "eligible_close_lock": [],
@@ -15,7 +16,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-18T07:11:07Z",
+  "now_utc": "2026-05-18T18:06:05Z",
   "predictions_parquet_present": false,
   "schema_version": "1.0",
   "telemetry": {

@@ -1,6 +1,6 @@
 # Daily model training / recalibration report — 2099-12-31
 
-- generated_at_utc: 2026-05-18T07:11:27+00:00Z
+- generated_at_utc: 2026-05-18T18:06:21+00:00Z
 
 ## Headline
 
@@ -30,7 +30,7 @@
 - validation_report_path: `artifacts/models/challengers/2099-12-31/validation_report.json`
 - promotion_decision_path: `artifacts/models/challengers/2099-12-31/promotion_decision.json`
 - no_leakage_manifest_path: `None`
-- promotion_decision_id: `promotion-2099-12-31-20260516T222858`
+- promotion_decision_id: `promotion-2099-12-31-20260518T174343`
 
 ## Promotion status
 
