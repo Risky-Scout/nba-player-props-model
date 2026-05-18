@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-18T20:11:30+00:00",
+  "generated_at_utc": "2026-05-18T22:38:13+00:00",
   "from_date": "2026-05-11",
   "to_date": "2026-05-17",
   "status": "PASS",
@@ -25,5 +25,5 @@
       "min": 0
     }
   },
-  "refresh_stdout_tail": "  existing parquet: 84222 rows, latest game_date=2026-05-17\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-11 \u2192 2026-05-17\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-11 \u2192 2026-05-17\n    got 173 raw records in 0.6s\n    173 rows after schema map / min>=1 filter\n\n  incoming rows: 173\n    distinct game_dates: ['2026-05-11', '2026-05-12', '2026-05-13', '2026-05-15', '2026-05-17']\n    distinct game_ids:   7\n    distinct players:    78\n\n  merge summary:\n    rows kept (no key conflict):     84049\n    rows replaced (key conflict):    173\n    rows added (new keys):           0\n    final row count:                 84222\n\nwrote data/player_game_stats.parquet  (2026-05-18T20:11:30Z)\n"
+  "refresh_stdout_tail": "  existing parquet: 84222 rows, latest game_date=2026-05-17\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-11 \u2192 2026-05-17\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-11 \u2192 2026-05-17\n    got 173 raw records in 1.0s\n    173 rows after schema map / min>=1 filter\n\n  incoming rows: 173\n    distinct game_dates: ['2026-05-11', '2026-05-12', '2026-05-13', '2026-05-15', '2026-05-17']\n    distinct game_ids:   7\n    distinct players:    78\n\n  merge summary:\n    rows kept (no key conflict):     84049\n    rows replaced (key conflict):    173\n    rows added (new keys):           0\n    final row count:                 84222\n\nwrote data/player_game_stats.parquet  (2026-05-18T22:38:13Z)\n"
 }
