@@ -1,0 +1,95 @@
+{
+  "advisory_inputs": {
+    "data/advanced_stats.parquet": {
+      "path": "data/advanced_stats.parquet",
+      "sha256_prefix": "45fda28f384096b0",
+      "size_bytes": 6636752
+    },
+    "data/player_availability_asof.parquet": {
+      "path": "data/player_availability_asof.parquet",
+      "sha256_prefix": "51bb57d476f2acda",
+      "size_bytes": 761331
+    },
+    "data/training_table.parquet": {
+      "path": "data/training_table.parquet",
+      "present": false
+    }
+  },
+  "all_required_present": true,
+  "as_of_date": "2026-05-17",
+  "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+  "generated_at_utc": "2026-05-18T12:54:09+00:00",
+  "missing_advisory": [
+    "data/training_table.parquet"
+  ],
+  "missing_required": [],
+  "no_future_leakage_precheck": true,
+  "outcome_coverage": {
+    "max_date": "2026-05-17",
+    "present": true,
+    "rows_after_as_of": 0,
+    "rows_on_or_before_as_of": 84222
+  },
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-17",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-17",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260518T125405"
+  },
+  "required_inputs": {
+    "champion_pmf_cal_role_ast": {
+      "path": "artifacts/models/pmf_cal_role_ast.pkl",
+      "sha256_prefix": "95739abbefc7e55b",
+      "size_bytes": 354429
+    },
+    "champion_pmf_cal_role_blk": {
+      "path": "artifacts/models/pmf_cal_role_blk.pkl",
+      "sha256_prefix": "34f3b048d3e97119",
+      "size_bytes": 341189
+    },
+    "champion_pmf_cal_role_fg3m": {
+      "path": "artifacts/models/pmf_cal_role_fg3m.pkl",
+      "sha256_prefix": "57edf14dad60a827",
+      "size_bytes": 337405
+    },
+    "champion_pmf_cal_role_pts": {
+      "path": "artifacts/models/pmf_cal_role_pts.pkl",
+      "sha256_prefix": "4133ebd730cec6bf",
+      "size_bytes": 354357
+    },
+    "champion_pmf_cal_role_reb": {
+      "path": "artifacts/models/pmf_cal_role_reb.pkl",
+      "sha256_prefix": "ef761e201f32102e",
+      "size_bytes": 354493
+    },
+    "champion_pmf_cal_role_stl": {
+      "path": "artifacts/models/pmf_cal_role_stl.pkl",
+      "sha256_prefix": "69a0f01a30bf81f5",
+      "size_bytes": 335661
+    },
+    "champion_pmf_cal_role_tov": {
+      "path": "artifacts/models/pmf_cal_role_tov.pkl",
+      "sha256_prefix": "deedd3f0ed6faedd",
+      "size_bytes": 354541
+    },
+    "champion_pointer": {
+      "path": "artifacts/models/registry/champion_pointer.json",
+      "sha256_prefix": "13d849c990a945f6",
+      "size_bytes": 3174
+    },
+    "data/oof_pmfs.parquet": {
+      "path": "data/oof_pmfs.parquet",
+      "sha256_prefix": "56df983bb0bedf2e",
+      "size_bytes": 29748435
+    },
+    "data/player_game_stats.parquet": {
+      "path": "data/player_game_stats.parquet",
+      "sha256_prefix": "260dffe1c4e1f669",
+      "size_bytes": 1294002
+    }
+  },
+  "schema_version": "1.0"
+}

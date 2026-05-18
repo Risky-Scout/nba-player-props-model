@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "detail": "status=skipped_already_fresh finished_at=2026-05-18T12:54:06+00:00",
+      "name": "source_refresh_manifest_present",
+      "passed": true
+    },
+    {
+      "detail": "data/player_game_stats.parquet",
+      "name": "source_parquet_exists",
+      "passed": true
+    },
+    {
+      "detail": "max_game_date=2026-05-17 target=2026-05-17",
+      "name": "max_game_date_covers_target",
+      "passed": true
+    },
+    {
+      "detail": "rows_after_target=0",
+      "name": "no_rows_after_target_date",
+      "passed": true
+    },
+    {
+      "detail": "rows_on_target_date=26 >= floor=1",
+      "name": "rows_on_target_date_above_floor",
+      "passed": true
+    },
+    {
+      "detail": "rows=26 median7=45",
+      "name": "rows_within_rolling_7day_baseline",
+      "passed": true
+    }
+  ],
+  "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+  "fail_code": null,
+  "generated_at_utc": "2026-05-18T12:54:07+00:00",
+  "metrics": {
+    "max_game_date": "2026-05-17",
+    "rolling_7day_dates": [
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-11",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-15"
+    ],
+    "rolling_7day_median_rows": 45,
+    "row_count_total": 84222,
+    "rows_after_target_date": 0,
+    "rows_on_target_date": 26,
+    "source_sha256_prefix": "260dffe1c4e1f669"
+  },
+  "no_override_allowed": false,
+  "passed": true,
+  "schema_version": "1.0",
+  "source_refresh_seen": {
+    "finished_at_utc": "2026-05-18T12:54:06+00:00",
+    "halted_reason": null,
+    "post_refresh": {
+      "exists": true,
+      "max_game_date": "2026-05-17",
+      "mtime_utc": "2026-05-18T12:53:58.282719+00:00",
+      "path": "data/player_game_stats.parquet",
+      "recent_date_row_counts": {
+        "2026-05-11": 47,
+        "2026-05-12": 27,
+        "2026-05-13": 19,
+        "2026-05-15": 54,
+        "2026-05-17": 26
+      },
+      "row_count": 84222,
+      "rows_after_target_date": 0,
+      "rows_on_target_date": 26,
+      "sha256_prefix": "260dffe1c4e1f669",
+      "size_bytes": 1294002
+    },
+    "provider": "balldontlie.io",
+    "status": "skipped_already_fresh"
+  },
+  "target_date": "2026-05-17",
+  "target_matches_yesterday_et": true,
+  "yesterday_in_et": "2026-05-17"
+}

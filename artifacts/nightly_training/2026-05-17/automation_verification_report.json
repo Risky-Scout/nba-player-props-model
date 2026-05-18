@@ -1,0 +1,192 @@
+{
+  "as_of_date": "2026-05-17",
+  "checks": [
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/training_readiness/2026-05-17/readiness_report.json",
+      "name": "readiness_report_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-17",
+      "name": "challenger_dir_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-17/train_manifest.json",
+      "name": "train_manifest_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-17/calibration_manifest.json",
+      "name": "calibration_manifest_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-17/validation_report.json",
+      "name": "validation_report_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-17/promotion_decision.json",
+      "name": "promotion_decision_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/champion_pointer.json",
+      "name": "champion_pointer_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/model_registry.json",
+      "name": "model_registry_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/registry/promotion_log.csv",
+      "name": "promotion_log_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-17/run_manifest.json",
+      "name": "nightly_run_manifest_exists",
+      "passed": true
+    },
+    {
+      "detail": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-17/smoke_test_report.json",
+      "name": "smoke_test_report_exists",
+      "passed": true
+    },
+    {
+      "detail": "pointer model_version present and unchanged (promote was false)",
+      "name": "champion_pointer_unchanged_when_promote_false",
+      "passed": true
+    },
+    {
+      "detail": "issues=[]",
+      "name": "pmf_validity_passed",
+      "passed": true
+    },
+    {
+      "detail": "{\"build_derek_forward_feed.py_present\": true, \"challenger_dir_referenced\": false, \"champion_pointer_used_only\": true}",
+      "name": "derek_compat_smoke_passed",
+      "passed": true
+    },
+    {
+      "detail": "{\"build_wizard_of_odds_public_export.py_present\": true, \"challenger_dir_referenced\": false, \"champion_pointer_used_only\": true}",
+      "name": "woo_compat_smoke_passed",
+      "passed": true
+    },
+    {
+      "detail": "hits=[]",
+      "name": "no_secrets_in_manifests",
+      "passed": true
+    },
+    {
+      "detail": "hits=[]",
+      "name": "no_phase10d_overlays_in_manifests",
+      "passed": true
+    },
+    {
+      "detail": "manifests do not name artifacts/raw/",
+      "name": "no_raw_dir_referenced_in_manifests",
+      "passed": true
+    },
+    {
+      "detail": "missing_train=set() missing_cal=set()",
+      "name": "training_run_reproducible",
+      "passed": true
+    },
+    {
+      "detail": ".github/workflows/nightly_training_calibration.yml",
+      "name": "workflow_file_exists",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_calls_orchestrator",
+      "passed": true
+    },
+    {
+      "detail": "expected cron '30 9 * * *' present",
+      "name": "workflow_has_safe_cron",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_has_timeout_protection",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_uses_required_secrets",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "workflow_uses_correct_authorship",
+      "passed": true
+    },
+    {
+      "detail": "hits=[]",
+      "name": "workflow_no_phase10d_overlays",
+      "passed": true
+    },
+    {
+      "detail": "violations=[]",
+      "name": "no_delivery_references_challenger_dir",
+      "passed": true
+    },
+    {
+      "detail": "",
+      "name": "promotion_uses_atomic_pointer_update",
+      "passed": true
+    },
+    {
+      "detail": "pre=fe5f8f1db44e post=f5ab19b3999c",
+      "name": "failure_mode_keeps_champion_unchanged",
+      "passed": false
+    },
+    {
+      "detail": "staged_violations=[]",
+      "name": "no_forbidden_files_staged",
+      "passed": true
+    },
+    {
+      "detail": "challenger_pickles=8 (must be > 0 when dry_run=false)",
+      "name": "real_training_challenger_pickles_present",
+      "passed": true
+    },
+    {
+      "detail": "validation_report.challenger.dry_run=False",
+      "name": "real_training_validation_scored_real_artifacts",
+      "passed": true
+    },
+    {
+      "detail": "challenger_has_metric=True champion_has_metric=True",
+      "name": "real_training_metrics_computed",
+      "passed": true
+    }
+  ],
+  "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+  "failure_simulation": {
+    "pointer_unchanged": false,
+    "post_pointer_sha256": "f5ab19b3999cccbd0264f35d9dcdba5662a04bfd8c21bee61781740cd4ae7c0d",
+    "pre_pointer_sha256": "fe5f8f1db44e71d791b6cca8d99537cb893029acad9d6e92ef0bc92e446c853f",
+    "promote_script_exit_code": 0,
+    "promotion_marker_promoted_field": true
+  },
+  "generated_at_utc": "2026-05-18T12:56:11+00:00",
+  "mode": "real_training",
+  "mode_details": {
+    "calibration_manifest_dry_run": false,
+    "challenger_pickle_count": 8,
+    "manifest_recorded_pickle_count": 8,
+    "pickles_source": "on_disk",
+    "run_manifest_final_status": "ok",
+    "run_manifest_halted_reason": null,
+    "train_manifest_dry_run": false,
+    "train_manifest_status": "ok"
+  },
+  "overall_pass": false,
+  "schema_version": "1.0"
+}

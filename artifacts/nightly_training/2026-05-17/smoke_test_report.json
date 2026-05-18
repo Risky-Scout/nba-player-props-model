@@ -1,0 +1,34 @@
+{
+  "champion_pointer_smoke": {
+    "issues": [],
+    "passed": true,
+    "pointer_summary": {
+      "calibrator_version": "phase8-role-bucket",
+      "model_dir": "artifacts/models",
+      "model_version": "challenger-2026-05-17"
+    },
+    "sample_artifacts": [
+      "calibration_ast.pkl",
+      "calibration_blk.pkl",
+      "calibration_fg3m.pkl",
+      "calibration_pts.pkl",
+      "calibration_reb.pkl"
+    ]
+  },
+  "derek_compat_smoke": {
+    "checks": {
+      "build_derek_forward_feed.py_present": true,
+      "challenger_dir_referenced": false,
+      "champion_pointer_used_only": true
+    },
+    "passed": true
+  },
+  "woo_compat_smoke": {
+    "checks": {
+      "build_wizard_of_odds_public_export.py_present": true,
+      "challenger_dir_referenced": false,
+      "champion_pointer_used_only": true
+    },
+    "passed": true
+  }
+}
