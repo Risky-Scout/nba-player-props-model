@@ -3,12 +3,12 @@
   "calibration_run_id": "nightly-20991231",
   "champion_artifact_dir": "artifacts/models",
   "champion_model_id": "sim-2099-12-31",
-  "champion_pointer_hash": "f5ab19b3999cccbd0264f35d9dcdba56",
+  "champion_pointer_hash": "454db4d988a111f62a0f9eeeeea44b06",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "count_diagnostics": {
     "fair_odds_board": {
-      "fair_over_odds_null_count": 578,
-      "fair_under_odds_null_count": 578,
+      "fair_over_odds_null_count": 550,
+      "fair_under_odds_null_count": 550,
       "zero_or_one_prob_count": 300
     }
   },
@@ -38,14 +38,15 @@
       "fliff",
       "hardrockbet",
       "hardrockbet_az",
-      "hardrockbet_fl"
+      "hardrockbet_fl",
+      "williamhill_us"
     ],
-    "built_at_utc": "2026-05-18T13:02:00Z",
+    "built_at_utc": "2026-05-18T16:13:28Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "ready",
     "path": "data/freshness_manifest/2026-05-18.json",
-    "predictions_mtime_utc": "2026-05-18T13:01:44.583790Z",
+    "predictions_mtime_utc": "2026-05-18T16:13:12.340151Z",
     "regions_requested": [
       "us",
       "us2"
@@ -55,16 +56,16 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-18T13:03:49+00:00",
+  "metadata_stamped_at_utc": "2026-05-18T16:15:14+00:00",
   "model_source": "champion_pointer",
-  "model_version": "0d33fffc#phase10c",
+  "model_version": "f02a69a0#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-18T13:03:49+00:00",
+  "output_generated_at_utc": "2026-05-18T16:15:14+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "pipeline_run_id": "b6067ebc-fd27-4ce5-ab30-0e5c6b59eaec",
-  "promotion_decision_id": "promotion-2099-12-31-20260518T125612",
+  "pipeline_run_id": "1289d98c-6a6e-4c70-8627-daf2486088f8",
+  "promotion_decision_id": "promotion-2099-12-31-20260518T160547",
   "quality_rollup": {
     "calibration_confidence": {
       "high": 180
@@ -87,22 +88,22 @@
   "row_counts": {
     "fair_odds_board": 3855,
     "full_pmfs_wide": 180,
-    "market_comparison": 2518,
-    "publishable_edges": 2103
+    "market_comparison": 2521,
+    "publishable_edges": 2112
   },
-  "snapshot_time_utc": "2026-05-18T13:03:09Z",
+  "snapshot_time_utc": "2026-05-18T16:14:35Z",
   "snapshot_type": "morning",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-18T13:00:03.995952Z",
+      "mtime_utc": "2026-05-18T16:11:30.612081Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-18T13:03:08.035630Z",
+      "mtime_utc": "2026-05-18T16:14:34.169150Z",
       "path": "deliveries/2026-05-18/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "77353618fe8f8a4aa1947f512ca1d0fd35aaca6a7aa4f844e3f16e57a3383c38"
+      "sha256": "34d2a61862e1d7e6254b96e165aef0df1e8e3a2de3d0938df2430fdd0011b4ae"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -117,19 +118,20 @@
         "fliff",
         "hardrockbet",
         "hardrockbet_az",
-        "hardrockbet_fl"
+        "hardrockbet_fl",
+        "williamhill_us"
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-18T13:02:00.543755Z",
-      "path": "data/odds_api/processed/2026-05-18/odds_pairs_live_slate_morning_7am_2026-05-18T130157Z.parquet"
+      "mtime_utc": "2026-05-18T16:13:28.748163Z",
+      "path": "data/odds_api/processed/2026-05-18/odds_pairs_live_slate_morning_7am_2026-05-18T161324Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-18T13:01:44.583790Z",
+      "mtime_utc": "2026-05-18T16:13:12.340151Z",
       "path": "predictions/all_props_2026-05-18.parquet"
     }
   },
-  "stamp_code_commit": "0d33fffc7e80907285f5d1a64c97a67fd0b5fa69",
+  "stamp_code_commit": "f02a69a093e3554da7329504e1d83dbe19371091",
   "target_stats": {
     "expected": [
       "pts",
