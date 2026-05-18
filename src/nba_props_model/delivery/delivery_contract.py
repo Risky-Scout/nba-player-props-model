@@ -104,9 +104,20 @@ _WOO_ROW_CORE = (
 )
 _WOO_EDGE_CORE = _WOO_ROW_CORE + (
     "line",
+    # ``market_line`` mirrors ``line`` on the edge tables (the offered
+    # book line). Required so the WoO ``market_comparison`` /
+    # ``publishable_edges`` outputs always expose a stable PMF-aligned
+    # line column for downstream public consumers (the affiliate
+    # dashboard and the nba-props.html template both depend on it).
+    "market_line",
     "book",
     "fair_over_odds_american",
     "fair_under_odds_american",
+    # ``market_no_vig_over_prob`` is the canonical market probability
+    # on the edge tables — required so the public WoO feed always has
+    # a market-prob column to render alongside ``p_over`` (the direct
+    # PMF tail probability) and the legacy ``model_prob*`` aliases.
+    "market_no_vig_over_prob",
     "edge",
 )
 _OUTCOME_LEVEL_LONG = (

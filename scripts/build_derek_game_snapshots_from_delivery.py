@@ -182,18 +182,325 @@ def _stamp_pmf_native_public_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+# Snapshot prop_summary main-line consensus contract — mirror of the
+# BDL consensus in scripts/build_derek_forward_feed.py
+# (``_build_derek_bdl_main_line_summary``) but sourced from the local
+# ``market_comparison.parquet`` so the snapshot writer is self-
+# contained and never re-calls BDL. Selection priority per
+# (game_id, player_id, stat):
+#   1. highest distinct-book count at a given market_line
+#   2. ties broken by row count (more vendor entries = stronger
+#      consensus)
+#   3. ties broken by smallest market_line (deterministic)
+# The chosen row's book / odds / no_vig prob are carried verbatim
+# into prop_summary — never fabricated.
+
+
+def _select_consensus_main_line(group: pd.DataFrame) -> pd.Series | None:
+    """Pick the consensus main-line ``market_comparison`` row for a
+    single (game_id, player_id, stat) group. Returns ``None`` when no
+    candidate row carries a non-null ``market_line``.
+    """
+    if group is None or group.empty:
+        return None
+    candidates = group[group["market_line"].notna()].copy()
+    if candidates.empty:
+        return None
+    candidates["market_line"] = pd.to_numeric(
+        candidates["market_line"], errors="coerce"
+    )
+    candidates = candidates[candidates["market_line"].notna()].copy()
+    if candidates.empty:
+        return None
+
+    line_counts = (
+        candidates.groupby("market_line")
+        .agg(
+            book_count=(
+                "book",
+                lambda s: s.dropna().astype(str).str.lower().nunique(),
+            ),
+            row_count=("market_line", "size"),
+        )
+        .reset_index()
+        .sort_values(
+            ["book_count", "row_count", "market_line"],
+            ascending=[False, False, True],
+            kind="mergesort",
+        )
+    )
+    chosen_line = float(line_counts.iloc[0]["market_line"])
+    on_chosen = candidates[
+        candidates["market_line"].astype(float) == chosen_line
+    ].copy()
+    if "book" in on_chosen.columns:
+        on_chosen["__book_sort"] = on_chosen["book"].fillna("").astype(str).str.lower()
+        on_chosen = on_chosen.sort_values("__book_sort", kind="mergesort")
+        on_chosen = on_chosen.drop(columns=["__book_sort"])
+    return on_chosen.iloc[0]
+
+
+def _build_prop_summary_with_market_line(
+    wide_game: pd.DataFrame,
+    market_game: pd.DataFrame,
+) -> pd.DataFrame:
+    """Build the per-game ``prop_summary.csv`` body.
+
+    Contract:
+      * one row per (player_id, stat) — matches the wide PMF source
+      * when ``market_comparison`` carries a market line for the pair,
+        populate ``line`` / ``market_line`` / ``book`` /
+        ``market_over_odds`` / ``market_under_odds`` /
+        ``market_no_vig_over_prob`` from the consensus selection;
+      * ``pmf_mean`` is always the direct PMF expectation;
+      * ``p_over`` is the direct PMF tail probability against the
+        selected ``market_line`` (never inherited from a legacy
+        ``model_*`` field);
+      * when no market line exists for the pair, leave market fields
+        blank and downgrade ``market_coverage_status`` on the
+        snapshot row to ``no_market_line`` so the persisted summary
+        is self-consistent (run 26005809860 prop_summary regression —
+        a row tagged ``market_coverage_status=full`` with a blank
+        ``market_line`` and blank ``p_over`` is incoherent and the
+        snapshot writer must not propagate that contradiction).
+      * book / odds are never fabricated.
+    """
+    if wide_game is None or wide_game.empty:
+        return wide_game
+
+    base = wide_game.copy()
+    if "stat" in base.columns:
+        base["stat"] = base["stat"].astype(str).str.lower()
+
+    # Drop pre-existing market fields from the wide source — they are
+    # almost always null on full_pmfs_wide (the wide table carries
+    # PMF, not market data); keeping them would re-introduce the
+    # blank-market-line bug. We rebuild them deterministically from
+    # market_game.
+    consensus_cols = [
+        "line",
+        "market_line",
+        "book",
+        "market_over_odds",
+        "market_under_odds",
+        "market_no_vig_over_prob",
+    ]
+    for col in consensus_cols:
+        if col in base.columns:
+            base = base.drop(columns=[col])
+
+    pmf_col = None
+    for candidate in ("pmf_json", "pmf"):
+        if candidate in base.columns:
+            pmf_col = candidate
+            break
+
+    # Pre-index market_game by (game_id, player_id, stat) for O(N) lookup.
+    market_lookup: dict[tuple, pd.DataFrame] = {}
+    if (
+        market_game is not None
+        and not market_game.empty
+        and {"game_id", "player_id", "stat", "market_line"}.issubset(market_game.columns)
+    ):
+        mg = market_game.copy()
+        mg["stat"] = mg["stat"].astype(str).str.lower()
+        for keys, grp in mg.groupby(
+            ["game_id", "player_id", "stat"], dropna=False, sort=False
+        ):
+            market_lookup[
+                (
+                    str(keys[0]),
+                    keys[1] if pd.notna(keys[1]) else None,
+                    str(keys[2]),
+                )
+            ] = grp
+
+    line_vals: list[float | None] = []
+    market_line_vals: list[float | None] = []
+    book_vals: list[str | None] = []
+    over_odds: list[float | None] = []
+    under_odds: list[float | None] = []
+    no_vig_over: list[float | None] = []
+    pmf_means: list[float | None] = []
+    p_overs: list[float | None] = []
+    coverage_overrides: list[str | None] = []
+
+    for _, row in base.iterrows():
+        pmf_arr = (
+            _pmf_array_from_jsonish(row.get(pmf_col)) if pmf_col else None
+        )
+        pmf_mean = _pmf_direct_mean(pmf_arr) if pmf_arr is not None else None
+
+        gid = str(row.get("game_id")) if pd.notna(row.get("game_id")) else None
+        pid = row.get("player_id") if pd.notna(row.get("player_id")) else None
+        stat = str(row.get("stat")) if pd.notna(row.get("stat")) else None
+        key = (gid, pid, stat)
+        chosen = _select_consensus_main_line(market_lookup.get(key, pd.DataFrame()))
+
+        if chosen is None:
+            line_vals.append(None)
+            market_line_vals.append(None)
+            book_vals.append(None)
+            over_odds.append(None)
+            under_odds.append(None)
+            no_vig_over.append(None)
+            pmf_means.append(pmf_mean)
+            p_overs.append(None)
+            coverage_overrides.append("no_market_line")
+            continue
+
+        ml = float(chosen["market_line"])
+        line_vals.append(ml)
+        market_line_vals.append(ml)
+        book_vals.append(chosen.get("book") if pd.notna(chosen.get("book")) else None)
+        over_odds.append(
+            float(chosen.get("market_over_odds"))
+            if pd.notna(chosen.get("market_over_odds"))
+            else None
+        )
+        under_odds.append(
+            float(chosen.get("market_under_odds"))
+            if pd.notna(chosen.get("market_under_odds"))
+            else None
+        )
+        no_vig_over.append(
+            float(chosen.get("market_no_vig_over_prob"))
+            if pd.notna(chosen.get("market_no_vig_over_prob"))
+            else None
+        )
+        pmf_means.append(pmf_mean)
+        p_overs.append(
+            _pmf_direct_p_over(pmf_arr, ml) if pmf_arr is not None else None
+        )
+        coverage_overrides.append(None)  # keep upstream coverage status
+
+    base["line"] = line_vals
+    base["market_line"] = market_line_vals
+    base["book"] = book_vals
+    base["market_over_odds"] = over_odds
+    base["market_under_odds"] = under_odds
+    base["market_no_vig_over_prob"] = no_vig_over
+    base["pmf_mean"] = pmf_means
+    base["p_over"] = p_overs
+
+    if "market_coverage_status" in base.columns:
+        coverage = base["market_coverage_status"].astype(object).copy()
+        for i, override in enumerate(coverage_overrides):
+            if override is not None:
+                coverage.iloc[i] = override
+        base["market_coverage_status"] = coverage
+    else:
+        base["market_coverage_status"] = pd.Series(
+            ["no_market_line" if o == "no_market_line" else "full" for o in coverage_overrides],
+            index=base.index,
+        )
+
+    return base
+
+
+def _stamp_p_over_on_market_comparison(
+    market_game: pd.DataFrame,
+    wide_game: pd.DataFrame,
+) -> pd.DataFrame:
+    """Populate ``p_over`` on every market_comparison row that carries
+    a non-null ``market_line`` by joining the PMF from ``wide_game``
+    on (game_id, player_id, stat) and computing the direct tail
+    probability.
+
+    The Derek snapshot market_comparison was previously emitting
+    ``p_over=null`` on every row (run 26005809860 inspection: 2260/2260
+    rows had market_line non-null AND p_over null) because
+    ``market_comparison.parquet`` carries the dense cumulative
+    ``p_ge_*`` columns but not the underlying ``pmf_json`` blob, and
+    the writer's PMF-native stamper had nothing to read.
+    """
+    if market_game is None or market_game.empty:
+        return market_game
+
+    out = market_game.copy()
+    if "stat" in out.columns:
+        out["stat"] = out["stat"].astype(str).str.lower()
+
+    # Build a (game_id, player_id, stat) -> pmf_arr lookup from wide.
+    pmf_lookup: dict[tuple, list[float]] = {}
+    if wide_game is not None and not wide_game.empty:
+        wpmf_col = None
+        for candidate in ("pmf_json", "pmf"):
+            if candidate in wide_game.columns:
+                wpmf_col = candidate
+                break
+        if wpmf_col is not None and {"game_id", "player_id", "stat"}.issubset(
+            wide_game.columns
+        ):
+            wg = wide_game.copy()
+            wg["stat"] = wg["stat"].astype(str).str.lower()
+            for _, r in wg.iterrows():
+                arr = _pmf_array_from_jsonish(r.get(wpmf_col))
+                if arr is None:
+                    continue
+                key = (
+                    str(r.get("game_id")) if pd.notna(r.get("game_id")) else None,
+                    r.get("player_id") if pd.notna(r.get("player_id")) else None,
+                    str(r.get("stat")) if pd.notna(r.get("stat")) else None,
+                )
+                pmf_lookup[key] = arr
+
+    p_overs: list[float | None] = []
+    pmf_means: list[float | None] = []
+    for _, row in out.iterrows():
+        key = (
+            str(row.get("game_id")) if pd.notna(row.get("game_id")) else None,
+            row.get("player_id") if pd.notna(row.get("player_id")) else None,
+            str(row.get("stat")) if pd.notna(row.get("stat")) else None,
+        )
+        pmf_arr = pmf_lookup.get(key)
+        ml = row.get("market_line")
+        if pmf_arr is not None and pd.notna(ml):
+            p_overs.append(_pmf_direct_p_over(pmf_arr, ml))
+            pmf_means.append(_pmf_direct_mean(pmf_arr))
+        else:
+            p_overs.append(None)
+            pmf_means.append(
+                _pmf_direct_mean(pmf_arr) if pmf_arr is not None else None
+            )
+
+    out["p_over"] = p_overs
+    if "pmf_mean" not in out.columns or out["pmf_mean"].isna().all():
+        out["pmf_mean"] = pmf_means
+    return out
+
+
 def _write_outputs(out_dir: Path, wide_game: pd.DataFrame, market_game: pd.DataFrame) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     outputs: dict[str, int] = {}
 
-    # Stamp PMF-native public fields (pmf_mean, market_line, p_over)
-    # directly from the row PMF surface and strip quarantined public
-    # column names from the persisted Derek game-snapshot artifacts.
+    # PMF-native public fields on the full PMF table — pmf_mean is
+    # always populated; market_line / p_over here are mostly null
+    # because full_pmfs_wide carries the PMF, not market data. The
+    # canonical market-line / p_over for the snapshot lives on
+    # prop_summary (built below from market_game consensus) and on
+    # market_comparison (joined PMF below).
     wide_game = _drop_quarantined_columns(
         _stamp_pmf_native_public_columns(wide_game)
     )
+
+    # Market-comparison rows must carry a non-null p_over wherever
+    # market_line is non-null (run 26005809860 inspection regression:
+    # all 2260 snapshot market_comparison rows had p_over=null even
+    # though market_line was non-null on every row). The dense
+    # cumulative ``p_ge_*`` columns are not enough — we explicitly
+    # compute the tail probability from the joined wide PMF.
     market_game = _drop_quarantined_columns(
-        _stamp_pmf_native_public_columns(market_game)
+        _stamp_p_over_on_market_comparison(market_game, wide_game)
+    )
+
+    # Build prop_summary from the wide PMF + market_game consensus
+    # main-line join. The previous writer copied wide_game directly
+    # which left line/market_line/book/odds/p_over blank for every
+    # row tagged market_coverage_status=full (the wide source carries
+    # only PMF rows; market data lives on market_game).
+    prop_summary_full = _drop_quarantined_columns(
+        _build_prop_summary_with_market_line(wide_game, market_game)
     )
 
     summary_cols = [
@@ -205,10 +512,12 @@ def _write_outputs(out_dir: Path, wide_game: pd.DataFrame, market_game: pd.DataF
             "fair_over_odds", "fair_under_odds", "edge", "abs_edge", "role_bucket",
             "injury_freshness_status", "lineup_freshness_status", "market_coverage_status",
         ]
-        if c in wide_game.columns
+        if c in prop_summary_full.columns
     ]
 
-    prop_summary = wide_game[summary_cols].copy() if summary_cols else wide_game.copy()
+    prop_summary = (
+        prop_summary_full[summary_cols].copy() if summary_cols else prop_summary_full.copy()
+    )
     prop_summary.to_csv(out_dir / "prop_summary.csv", index=False)
     prop_summary.to_parquet(out_dir / "prop_summary.parquet", index=False)
     outputs["prop_summary"] = int(len(prop_summary))
