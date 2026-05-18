@@ -5,11 +5,11 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **180**
-- books: **13**
+- books: **12**
 - market coverage: **full**
 - injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 180
-- model: `992f1ee6#phase10c`
+- model: `63b495a2#phase10c`
 
 ### Caveats
 
