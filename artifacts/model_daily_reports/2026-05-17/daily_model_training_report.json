@@ -15,14 +15,14 @@
     "direct_lineup_pmf_driver": null,
     "feature_set_id": null,
     "no_leakage_manifest_path": null,
-    "promotion_decision_id": "promotion-2099-12-31-20260518T125612",
+    "promotion_decision_id": "promotion-2099-12-31-20260518T160547",
     "promotion_decision_path": "artifacts/models/challengers/2099-12-31/promotion_decision.json",
     "train_manifest_path": "artifacts/models/challengers/2099-12-31/train_manifest.json",
     "trained_through_date": "2099-12-31",
     "training_run_id": "nightly-20991231",
     "validation_report_path": "artifacts/models/challengers/2099-12-31/validation_report.json"
   },
-  "generated_at_utc": "2026-05-18T12:57:33+00:00Z",
+  "generated_at_utc": "2026-05-18T16:06:55+00:00Z",
   "metrics_per_target": {},
   "no_leakage": {
     "no_leakage_manifest": null,
@@ -68,7 +68,7 @@
           },
           "fringe": {
             "n": 1267,
-            "nll": 2.0630399779610564,
+            "nll": 2.063039977961056,
             "p0_err": 0.34569578369027953
           },
           "inactive_risk": {
@@ -106,7 +106,7 @@
           },
           "fg3m": {
             "calibrator_present": true,
-            "mean_bias": -0.030314272879967363,
+            "mean_bias": -0.030314272879967356,
             "nll": 2.646614698414948,
             "p0_err": 0.3162697033943827,
             "rows_scored": 1719,
@@ -114,7 +114,7 @@
           },
           "pts": {
             "calibrator_present": true,
-            "mean_bias": -0.9464832003382182,
+            "mean_bias": -0.9464832003382181,
             "nll": 2.99149203598365,
             "p0_err": 0.2045404085777178,
             "rows_scored": 1719,
@@ -130,7 +130,7 @@
           },
           "stl": {
             "calibrator_present": true,
-            "mean_bias": -0.5361393766652781,
+            "mean_bias": -0.5361393766652782,
             "nll": 9.785255794322078,
             "p0_err": 0.43883194159432604,
             "rows_scored": 1719,
@@ -185,7 +185,7 @@
           },
           "fringe": {
             "n": 1267,
-            "nll": 2.0630399779610564,
+            "nll": 2.063039977961056,
             "p0_err": 0.34569578369027953
           },
           "inactive_risk": {
@@ -223,7 +223,7 @@
           },
           "fg3m": {
             "calibrator_present": true,
-            "mean_bias": -0.030314272879967363,
+            "mean_bias": -0.030314272879967356,
             "nll": 2.646614698414948,
             "p0_err": 0.3162697033943827,
             "rows_scored": 1719,
@@ -231,7 +231,7 @@
           },
           "pts": {
             "calibrator_present": true,
-            "mean_bias": -0.9464832003382182,
+            "mean_bias": -0.9464832003382181,
             "nll": 2.99149203598365,
             "p0_err": 0.2045404085777178,
             "rows_scored": 1719,
@@ -247,7 +247,7 @@
           },
           "stl": {
             "calibrator_present": true,
-            "mean_bias": -0.5361393766652781,
+            "mean_bias": -0.5361393766652782,
             "nll": 9.785255794322078,
             "p0_err": 0.43883194159432604,
             "rows_scored": 1719,
@@ -286,7 +286,7 @@
           "rps": 0.5798870725669074
         }
       },
-      "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+      "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
       "gates_failed": [
         "m6_3_stat_role_matrix_valid",
         "m6_3_review_cells_guarded",
@@ -312,7 +312,7 @@
         "no_phase10d_overlays_referenced",
         "market_benchmark_available"
       ],
-      "generated_at_utc": "2026-05-18T12:56:07+00:00",
+      "generated_at_utc": "2026-05-18T16:05:43+00:00",
       "m6_3_matrix_summary": {
         "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
         "expected_role_buckets": [
@@ -633,7 +633,7 @@
             "stat": "reb"
           }
         ],
-        "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+        "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
         "dates_included": [
           "2026-05-12",
           "2026-05-08",
@@ -668,7 +668,7 @@
         ],
         "delta_brier": 0.012077780653008373,
         "delta_logloss": 0.036980768653124906,
-        "generated_at_utc": "2026-05-18T12:55:51+00:00",
+        "generated_at_utc": "2026-05-18T16:05:30+00:00",
         "market_brier": 0.23386606711450633,
         "market_logloss": 0.6591127199592747,
         "min_bucket_rows": 50,
@@ -818,7 +818,7 @@
         "stale_fallback_used": false,
         "target_date_et": "2026-05-17",
         "target_policy": "manual_override",
-        "training_run_id": "nightly-20260518T125405"
+        "training_run_id": "nightly-20260518T160400"
       },
       "promote": false,
       "reason": "gate_failed:m6_3_stat_role_matrix_valid",
@@ -1391,13 +1391,13 @@
     "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-17/promotion_decision.json",
     "promotion_manifest": {
       "as_of_date": "2026-05-17",
-      "backup_dir": "artifacts/models/champion/v_20260518T125608p0000",
+      "backup_dir": "artifacts/models/champion/v_20260518T160544p0000",
       "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-      "champion_pointer_sha256_after_swap": "fe5f8f1db44e71d791b6cca8d99537cb893029acad9d6e92ef0bc92e446c853f",
-      "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+      "champion_pointer_sha256_after_swap": "00e7174fdc457f66f2aaae61176d45f03a146836bb49506528989cb2aa924a3b",
+      "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
       "from_version": "sim-2099-12-31",
       "promoted": true,
-      "promoted_at_utc": "2026-05-18T12:56:08+00:00",
+      "promoted_at_utc": "2026-05-18T16:05:44+00:00",
       "schema_version": "1.0",
       "soft_gate_failures_ignored": [
         "m6_3_review_cells_guarded",

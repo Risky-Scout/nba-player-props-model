@@ -142,7 +142,7 @@
       "passed": true
     },
     {
-      "detail": "pre=fe5f8f1db44e post=f5ab19b3999c",
+      "detail": "pre=00e7174fdc45 post=454db4d988a1",
       "name": "failure_mode_keeps_champion_unchanged",
       "passed": false
     },
@@ -167,15 +167,15 @@
       "passed": true
     }
   ],
-  "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+  "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
   "failure_simulation": {
     "pointer_unchanged": false,
-    "post_pointer_sha256": "f5ab19b3999cccbd0264f35d9dcdba5662a04bfd8c21bee61781740cd4ae7c0d",
-    "pre_pointer_sha256": "fe5f8f1db44e71d791b6cca8d99537cb893029acad9d6e92ef0bc92e446c853f",
+    "post_pointer_sha256": "454db4d988a111f62a0f9eeeeea44b06e944806ed7bb51a72805c71ac5cc7968",
+    "pre_pointer_sha256": "00e7174fdc457f66f2aaae61176d45f03a146836bb49506528989cb2aa924a3b",
     "promote_script_exit_code": 0,
     "promotion_marker_promoted_field": true
   },
-  "generated_at_utc": "2026-05-18T12:56:11+00:00",
+  "generated_at_utc": "2026-05-18T16:05:46+00:00",
   "mode": "real_training",
   "mode_details": {
     "calibration_manifest_dry_run": false,

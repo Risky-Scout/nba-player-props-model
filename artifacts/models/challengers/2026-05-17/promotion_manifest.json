@@ -1,9 +1,9 @@
 {
   "as_of_date": "2026-05-17",
-  "backup_dir": "artifacts/models/champion/v_20260518T125608p0000",
+  "backup_dir": "artifacts/models/champion/v_20260518T160544p0000",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-  "champion_pointer_sha256_after_swap": "fe5f8f1db44e71d791b6cca8d99537cb893029acad9d6e92ef0bc92e446c853f",
-  "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+  "champion_pointer_sha256_after_swap": "00e7174fdc457f66f2aaae61176d45f03a146836bb49506528989cb2aa924a3b",
+  "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
   "from_version": "sim-2099-12-31",
   "phase13g": {
     "data_complete_for_target_date": null,
@@ -12,10 +12,10 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-17",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260518T125405"
+    "training_run_id": "nightly-20260518T160400"
   },
   "promoted": true,
-  "promoted_at_utc": "2026-05-18T12:56:08+00:00",
+  "promoted_at_utc": "2026-05-18T16:05:44+00:00",
   "schema_version": "1.0",
   "soft_gate_failures_ignored": [
     "m6_3_review_cells_guarded",
