@@ -1,15 +1,15 @@
 # Wizard of Odds — 2026-05-18
 
-## Run status — 2026-05-18 — snapshot `morning`
+## Run status — 2026-05-18 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **180**
-- books: **12**
+- books: **13**
 - market coverage: **full**
 - injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 180
-- model: `7093c701#phase10c`
+- model: `3eb5e4db#phase10c`
 
 ### Caveats
 
@@ -38,13 +38,13 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **finality_blockers**: `['lineup_unconfirmed']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
-- **books_seen**: `12`
+- **books_seen**: `13`
 - **freshness.overall_status**: `ready`
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 180}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=2491, publishable_edges=2046
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 528, 'fair_under_odds_null_count': 528, 'zero_or_one_prob_count': 300}`
+- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=2545, publishable_edges=2102
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 530, 'fair_under_odds_null_count': 530, 'zero_or_one_prob_count': 300}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
