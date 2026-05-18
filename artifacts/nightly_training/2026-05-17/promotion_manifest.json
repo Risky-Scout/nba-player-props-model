@@ -1,12 +1,12 @@
 {
   "as_of_date": "2026-05-17",
-  "backup_dir": "artifacts/models/champion/v_20260518T160544p0000",
+  "backup_dir": "artifacts/models/champion/v_20260518T174340p0000",
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
-  "champion_pointer_sha256_after_swap": "00e7174fdc457f66f2aaae61176d45f03a146836bb49506528989cb2aa924a3b",
-  "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
+  "champion_pointer_sha256_after_swap": "f2ac46f8dbb4efda32a057b9fd47f87fecebf53427113f39cddf9f7ba61f24ed",
+  "code_commit": "bbb32cd9bee1d079d57238f6f873bd11d2a28091",
   "from_version": "sim-2099-12-31",
   "promoted": true,
-  "promoted_at_utc": "2026-05-18T16:05:44+00:00",
+  "promoted_at_utc": "2026-05-18T17:43:40+00:00",
   "schema_version": "1.0",
   "soft_gate_failures_ignored": [
     "m6_3_review_cells_guarded",

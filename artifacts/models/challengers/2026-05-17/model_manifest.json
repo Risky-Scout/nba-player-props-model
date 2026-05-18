@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-05-17",
   "calibrator_version": "to-be-fitted",
-  "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
+  "code_commit": "bbb32cd9bee1d079d57238f6f873bd11d2a28091",
   "dry_run": false,
   "model_dir_reference": "artifacts/models/challengers/2026-05-17",
   "model_version": "challenger-2026-05-17",
@@ -12,7 +12,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-17",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260518T160400"
+    "training_run_id": "nightly-20260518T174205"
   },
   "schema_version": "1.0",
   "stats": [

@@ -3,7 +3,7 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
+    "code_commit": "bbb32cd9bee1d079d57238f6f873bd11d2a28091",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -21,7 +21,7 @@
         },
         "fringe": {
           "n": 1267,
-          "nll": 2.063039977961056,
+          "nll": 2.0630399779610564,
           "p0_err": 0.34569578369027953
         },
         "inactive_risk": {
@@ -59,7 +59,7 @@
         },
         "fg3m": {
           "calibrator_present": true,
-          "mean_bias": -0.030314272879967356,
+          "mean_bias": -0.030314272879967363,
           "nll": 2.646614698414948,
           "p0_err": 0.3162697033943827,
           "rows_scored": 1719,
@@ -67,7 +67,7 @@
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": -0.9464832003382181,
+          "mean_bias": -0.9464832003382182,
           "nll": 2.99149203598365,
           "p0_err": 0.2045404085777178,
           "rows_scored": 1719,
@@ -83,7 +83,7 @@
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": -0.5361393766652782,
+          "mean_bias": -0.5361393766652781,
           "nll": 9.785255794322078,
           "p0_err": 0.43883194159432604,
           "rows_scored": 1719,
@@ -126,7 +126,7 @@
   },
   "champion": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "3b7aa0928eec6019cbe7243d514279566715deea",
+    "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
     "metrics": {
       "brier_logloss_at_market": null,
       "by_line_bucket": {},
@@ -143,7 +143,7 @@
         },
         "fringe": {
           "n": 1267,
-          "nll": 2.063039977961056,
+          "nll": 2.0630399779610564,
           "p0_err": 0.34569578369027953
         },
         "inactive_risk": {
@@ -181,7 +181,7 @@
         },
         "fg3m": {
           "calibrator_present": true,
-          "mean_bias": -0.030314272879967356,
+          "mean_bias": -0.030314272879967363,
           "nll": 2.646614698414948,
           "p0_err": 0.3162697033943827,
           "rows_scored": 1719,
@@ -189,7 +189,7 @@
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": -0.9464832003382181,
+          "mean_bias": -0.9464832003382182,
           "nll": 2.99149203598365,
           "p0_err": 0.2045404085777178,
           "rows_scored": 1719,
@@ -205,7 +205,7 @@
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": -0.5361393766652782,
+          "mean_bias": -0.5361393766652781,
           "nll": 9.785255794322078,
           "p0_err": 0.43883194159432604,
           "rows_scored": 1719,
@@ -246,7 +246,7 @@
     },
     "model_version": "sim-2099-12-31"
   },
-  "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
+  "code_commit": "bbb32cd9bee1d079d57238f6f873bd11d2a28091",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -341,7 +341,7 @@
       "name": "market_benchmark_available"
     }
   ],
-  "generated_at_utc": "2026-05-18T16:05:43+00:00",
+  "generated_at_utc": "2026-05-18T17:43:39+00:00",
   "m6_3_matrix_summary": {
     "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
     "expected_role_buckets": [
@@ -664,7 +664,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "259d0180ffb594260ea831e1ba75fbdaccf184bb",
+    "code_commit": "bbb32cd9bee1d079d57238f6f873bd11d2a28091",
     "dates_included": [
       "2026-05-12",
       "2026-05-08",
@@ -699,7 +699,7 @@
     ],
     "delta_brier": 0.012077780653008373,
     "delta_logloss": 0.036980768653124906,
-    "generated_at_utc": "2026-05-18T16:05:30+00:00",
+    "generated_at_utc": "2026-05-18T17:43:27+00:00",
     "market_brier": 0.23386606711450633,
     "market_logloss": 0.6591127199592747,
     "min_bucket_rows": 50,
@@ -850,7 +850,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-17",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260518T160400"
+    "training_run_id": "nightly-20260518T174205"
   },
   "pmf_validity": {
     "checked_files": 1,
