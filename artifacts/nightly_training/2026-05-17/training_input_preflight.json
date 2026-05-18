@@ -17,8 +17,8 @@
   },
   "all_required_present": true,
   "as_of_date": "2026-05-17",
-  "code_commit": "bbb32cd9bee1d079d57238f6f873bd11d2a28091",
-  "generated_at_utc": "2026-05-18T17:42:09+00:00",
+  "code_commit": "5855c31c4033f82135a5746f4749ddb03b1e84b2",
+  "generated_at_utc": "2026-05-18T20:11:42+00:00",
   "missing_advisory": [
     "data/training_table.parquet"
   ],
@@ -37,7 +37,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-17",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260518T174205"
+    "training_run_id": "nightly-20260518T201138"
   },
   "required_inputs": {
     "champion_pmf_cal_role_ast": {
@@ -77,7 +77,7 @@
     },
     "champion_pointer": {
       "path": "artifacts/models/registry/champion_pointer.json",
-      "sha256_prefix": "454db4d988a111f6",
+      "sha256_prefix": "f93205c27f0a7721",
       "size_bytes": 3174
     },
     "data/oof_pmfs.parquet": {

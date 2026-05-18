@@ -1,6 +1,6 @@
 # Training Automation Verification — 2026-05-17
 
-- generated_at_utc: 2026-05-18T17:43:42+00:00
+- generated_at_utc: 2026-05-18T20:13:43+00:00
 - mode: **real_training**
 - overall_pass: **False**
 
@@ -36,7 +36,7 @@
 | workflow_no_phase10d_overlays | yes | hits=[] |
 | no_delivery_references_challenger_dir | yes | violations=[] |
 | promotion_uses_atomic_pointer_update | yes |  |
-| failure_mode_keeps_champion_unchanged | NO | pre=f2ac46f8dbb4 post=f93205c27f0a |
+| failure_mode_keeps_champion_unchanged | NO | pre=65f1b9439e33 post=07776c209802 |
 | no_forbidden_files_staged | yes | staged_violations=[] |
 | real_training_challenger_pickles_present | yes | challenger_pickles=8 (must be > 0 when dry_run=false) |
 | real_training_validation_scored_real_artifacts | yes | validation_report.challenger.dry_run=False |
@@ -61,8 +61,8 @@
 
 ```
 {
-  "pre_pointer_sha256": "f2ac46f8dbb4efda32a057b9fd47f87fecebf53427113f39cddf9f7ba61f24ed",
-  "post_pointer_sha256": "f93205c27f0a7721756b7590a7e974e439eecd8cda618da982a169957d63ae17",
+  "pre_pointer_sha256": "65f1b9439e33d0c0b4738775b8e8eb6b18c9bf62b0532cca60207d269e861764",
+  "post_pointer_sha256": "07776c209802680b9355d4a694cb55b39603165dd83215488d29910f3d79dada",
   "pointer_unchanged": false,
   "promotion_marker_promoted_field": true,
   "promote_script_exit_code": 0
