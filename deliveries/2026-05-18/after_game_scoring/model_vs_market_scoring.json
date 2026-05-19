@@ -1,0 +1,15 @@
+{
+  "by_book": [],
+  "by_edge_bucket": [],
+  "by_role_bucket": [],
+  "by_stat": [],
+  "delivery_date": "2026-05-18",
+  "generated_at_utc": "2026-05-19T19:17:01Z",
+  "minimum_bucket_rows_threshold": 30,
+  "minimum_paired_rows_threshold": 20,
+  "minimum_sample_passed": false,
+  "overall": null,
+  "rows_paired": 0,
+  "rows_total": 2185,
+  "schema_version": "1.0"
+}

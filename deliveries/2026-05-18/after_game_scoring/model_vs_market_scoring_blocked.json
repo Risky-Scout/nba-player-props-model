@@ -1,0 +1,8 @@
+{
+  "date": "2026-05-18",
+  "status": "documented_blocked",
+  "component": "model_vs_market_scoring",
+  "reason": "no paired model+market rows could be computed",
+  "pmf_actual_scoring_status": "EXPECTED_TARGET_STATS_SCORED_PASS",
+  "scorer_returncode": 4
+}

@@ -1,20 +1,32 @@
 {
-  "generated_at_utc": "2026-05-19T19:13:22Z",
+  "generated_at_utc": "2026-05-19T19:17:17Z",
   "reports": [
     {
       "date": "2026-05-18",
       "delivery_dir": "deliveries/2026-05-18",
-      "write": false,
-      "generated_at_utc": "2026-05-19T19:13:20Z",
-      "files_checked": 52,
-      "files_changed": 0,
-      "columns_removed_total": 0,
-      "changes": [],
+      "write": true,
+      "generated_at_utc": "2026-05-19T19:17:12Z",
+      "files_checked": 65,
+      "files_changed": 1,
+      "columns_removed_total": 2,
+      "changes": [
+        {
+          "file": "deliveries/2026-05-18/after_game_scoring/model_vs_market_scoring.csv",
+          "rows": 2185,
+          "cols_before": 12,
+          "cols_after": 10,
+          "preserved_columns": [],
+          "removed_columns": [
+            "model_logloss",
+            "model_brier"
+          ]
+        }
+      ],
       "errors": []
     }
   ],
-  "files_checked": 52,
-  "files_changed": 0,
-  "columns_removed_total": 0,
+  "files_checked": 65,
+  "files_changed": 1,
+  "columns_removed_total": 2,
   "errors": []
 }

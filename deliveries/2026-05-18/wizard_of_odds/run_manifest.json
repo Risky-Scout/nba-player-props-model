@@ -1,4 +1,14 @@
 {
+  "after_game": {
+    "abs_mean_error": 4.40002039950922,
+    "n_clv_rows": 0,
+    "n_scored_market_rows": 2185,
+    "n_scored_pmf_rows": 168,
+    "nll_mean": 3.53640947314543,
+    "rps_mean": 0.07717650616403342,
+    "scored_at_utc": "2026-05-19T19:17:01Z",
+    "status": "scored"
+  },
   "calibrated_through_date": "2099-12-31",
   "calibration_run_id": "nightly-20991231",
   "champion_artifact_dir": "artifacts/models",
@@ -56,12 +66,12 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-18T23:49:54+00:00",
+  "metadata_stamped_at_utc": "2026-05-19T19:17:11+00:00",
   "model_source": "champion_pointer",
   "model_version": "ae210a4f#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-18T23:49:54+00:00",
+  "output_generated_at_utc": "2026-05-19T19:17:11+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
   "pipeline_run_id": "091e8088-f118-4043-80da-b0d72c31b806",
@@ -131,7 +141,7 @@
       "path": "predictions/all_props_2026-05-18.parquet"
     }
   },
-  "stamp_code_commit": "ae210a4f3ae7770d3366fdab57ae040d3c62b5f8",
+  "stamp_code_commit": "44575846aede0ab32c636d2df440d779958e1491",
   "target_stats": {
     "expected": [
       "pts",
