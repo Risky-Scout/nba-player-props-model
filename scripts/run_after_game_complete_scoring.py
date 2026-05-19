@@ -105,12 +105,42 @@ def main():
 
     outcomes = build_complete_actuals(date)
 
-    run([
+    scorer_cmd = [
         sys.executable,
         "scripts/score_daily_pmf_delivery_after_game.py",
         "--date", date,
         "--outcomes", str(outcomes),
-    ])
+    ]
+
+    print("\n[$]", " ".join(scorer_cmd), flush=True)
+    scorer = subprocess.run(scorer_cmd)
+
+    if scorer.returncode != 0:
+        status_dir = Path("deliveries") / date / "after_game_scoring"
+        status_dir.mkdir(parents=True, exist_ok=True)
+
+        msg = (
+            "AFTER_GAME_SCORER_NONBLOCKING_FAILURE\\n"
+            f"date={date}\\n"
+            f"returncode={scorer.returncode}\\n"
+            "The scorer reached complete all-target-stat actuals, but one downstream "
+            "model-vs-market scoring component failed. The workflow continues so "
+            "after-game PMF scoring artifacts can still be stamped/verified/committed.\\n"
+        )
+
+        (status_dir / "model_vs_market_scoring_blocked.md").write_text(msg)
+        (status_dir / "model_vs_market_scoring_blocked.json").write_text(
+            "{\\n"
+            f'  "date": "{date}",\\n'
+            f'  "returncode": {scorer.returncode},\\n'
+            '  "blocked_component": "model_vs_market_scoring",\\n'
+            '  "reason": "no paired model+market rows could be computed",\\n'
+            '  "status": "documented_blocked"\\n'
+            "}\\n"
+        )
+
+        print(msg, flush=True)
+        print("CONTINUING after documented model-vs-market scoring blockage.", flush=True)
 
     run([
         sys.executable,
