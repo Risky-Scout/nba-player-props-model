@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-19T16:57:25Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-19T19:58:10Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -27,8 +27,8 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-15** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 792 | 16962 | 3178 | 2473 | `full` | `fresh` | `present` | `morning_present` | 3623 | `pending_pre_tipoff_run` | 3623 | `pending_outcomes` | `80401630#phase10c` |
 | **2026-05-16** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-05-17** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 2260 | 1833 | `full` | `fresh` | `present` | `morning_present` | 2225 | `pending_pre_tipoff_run` | 2225 | `n/a` | `0a091108#phase10c` |
-| **2026-05-18** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2207 | 1766 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 2172 | `n/a` | `ae210a4f#phase10c` |
-| **2026-05-19** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 156 | 3341 | 2254 | 1803 | `full` | `fresh` | `present` | `morning_present` | 2219 | `pending_pre_tipoff_run` | 2219 | `n/a` | `5e6b9650#phase10c` |
+| **2026-05-18** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2207 | 1766 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 2172 | `scored` | `ae210a4f#phase10c` |
+| **2026-05-19** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 156 | 3341 | 2317 | 1802 | `full` | `fresh` | `present` | `morning_present` | 2219 | `pending_pre_tipoff_run` | 2219 | `n/a` | `0af2fce0#phase10c` |
 
 ## Per-date links
 
@@ -864,15 +864,15 @@ _lineup_unconfirmed_
 - [publishable_edges.csv](2026-05-18/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-05-18/wizard_of_odds/run_manifest.json)
 
-**After-game scoring** (`n/a`)
+**After-game scoring** (`scored`)
 
-- ~~after_game_summary.md~~
-- ~~after_game_scoring.csv~~
-- ~~calibration_by_stat.csv~~
-- ~~calibration_by_role_bucket.csv~~
+- [after_game_summary.md](2026-05-18/after_game_scoring/after_game_summary.md)
+- [after_game_scoring.csv](2026-05-18/after_game_scoring/after_game_scoring.csv)
+- [calibration_by_stat.csv](2026-05-18/after_game_scoring/calibration_by_stat.csv)
+- [calibration_by_role_bucket.csv](2026-05-18/after_game_scoring/calibration_by_role_bucket.csv)
 - ~~clv_by_stat.csv~~
 - ~~clv_by_book.csv~~
-- ~~after_game_status.json~~
+- [after_game_status.json](2026-05-18/after_game_scoring/after_game_status.json)
 
 ### 2026-05-19 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
 
