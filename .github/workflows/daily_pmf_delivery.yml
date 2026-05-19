@@ -1095,27 +1095,15 @@ jobs:
             echo "run_after_game=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Run delivery pipeline (after_game)
+      - name: Run complete after-game scoring
         if: steps.after_game_flags.outputs.run_after_game == 'true'
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python scripts/run_daily_delivery_pipeline.py \
-            --date ${{ steps.d.outputs.date }} \
-            --mode after_game \
-            --verify --fail-on-missing-delivery
+          python scripts/run_after_game_complete_scoring.py --date ${{ steps.d.outputs.date }}
+
       - name: Phase 13K — re-run scorer for canonical artifacts
-        if: steps.after_game_flags.outputs.run_after_game == 'true'
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-        run: |
-          # The pipeline above invokes score_daily_pmf_delivery_after_game.py
-          # already, but re-running the scorer directly guarantees the
-          # Phase 13K artifacts (pmf_model_review_package/run_manifest.json,
-          # expected_target_stats_coverage.{json,md}, model_vs_market_scoring.*)
-          # are produced even on machines where the wrapper short-circuits.
-          python scripts/score_daily_pmf_delivery_after_game.py \
-            --date ${{ steps.d.outputs.date }}
+        if: ${{ false }}
+        run: echo "Skipped; complete after-game scorer already ran."
+
       - name: Phase 13K — stamp Derek/WoO/PMF-review manifests
         if: steps.after_game_flags.outputs.run_after_game == 'true'
         # Stamp BEFORE consistency verification so the verifier sees a
@@ -1233,7 +1221,7 @@ jobs:
       - name: Classify after_game outcome
         if: always()
         run: |
-          if [ "${{ steps.predict_gate.outputs.should_proceed }}" != "true" ]; then
+          if [ "${{ steps.after_game_flags.outputs.run_after_game }}" != "true" ]; then
             echo "::notice::AFTER_GAME_VALID_SKIP date=${{ steps.d.outputs.date }} reason=gate_skipped"
           else
             echo "::notice::AFTER_GAME_RAN date=${{ steps.d.outputs.date }}"
