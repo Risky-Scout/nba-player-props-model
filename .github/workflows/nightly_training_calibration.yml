@@ -63,7 +63,12 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
+  DUNKS_AND_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DUNKS_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DNT_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
 
+  DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  REQUIRE_DUNKS_AND_THREES: "1"
 jobs:
 
   nightly_training:

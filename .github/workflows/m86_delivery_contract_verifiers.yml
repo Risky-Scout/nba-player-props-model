@@ -17,7 +17,12 @@ env:
   PYTHON_VERSION: "3.11"
   PYTHONPATH: src
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  DUNKS_AND_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DUNKS_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DNT_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
 
+  DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  REQUIRE_DUNKS_AND_THREES: "1"
 jobs:
   static_contracts:
     runs-on: ubuntu-latest

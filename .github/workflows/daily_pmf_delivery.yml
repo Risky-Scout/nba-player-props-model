@@ -118,7 +118,12 @@ env:
   # Phase 13AN-G: opt actions into Node 24.
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
+  DUNKS_AND_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DUNKS_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DNT_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
 
+  DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  REQUIRE_DUNKS_AND_THREES: "1"
 jobs:
 
   # ── Morning (manual-only since Phase 12D) ────────────────────────────────
@@ -143,6 +148,10 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           python3 scripts/verify_secrets_preflight.py --mode daily
+      - name: Verify critical delivery sources
+        run: |
+          python scripts/verify_critical_delivery_sources.py
+
       - name: Resolve delivery date (America/New_York)
         id: d
         # Phase 13AM: ET-anchored slate-date resolution so cron firings
@@ -187,6 +196,10 @@ jobs:
             --rebuild-canonical \
             --verify --fail-on-missing-delivery \
             $PREDICT_FLAG $FORCE_FLAG
+      - name: Write GitHub-reviewable delivery previews
+        run: |
+          python scripts/write_delivery_review_previews.py --date ${{ steps.d.outputs.date }}
+
       - name: Stage and commit approved files
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -449,6 +462,10 @@ jobs:
           path: |
             artifacts/automation_health
             artifacts/model_diagnostics
+      - name: Write GitHub-reviewable delivery previews
+        run: |
+          python scripts/write_delivery_review_previews.py --date ${{ steps.d.outputs.date }}
+
       - name: Stage and commit approved files
         if: steps.delivery_flags.outputs.run_delivery == 'true'
         run: |
@@ -597,6 +614,10 @@ jobs:
             --allow-missing after_game_scoring derek_forward_feed
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
+      - name: Write GitHub-reviewable delivery previews
+        run: |
+          python scripts/write_delivery_review_previews.py --date ${{ steps.d.outputs.date }}
+
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -793,6 +814,10 @@ jobs:
           python3 scripts/verify_derek_near_lineup_contract.py \
             --date ${{ steps.d.outputs.date }} || { \
             echo "::error::near-lineup contract verifier FAILED - see step log"; exit 1; }
+      - name: Write GitHub-reviewable delivery previews
+        run: |
+          python scripts/write_delivery_review_previews.py --date ${{ steps.d.outputs.date }}
+
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -955,6 +980,10 @@ jobs:
           PREV=$(python3 -c "import datetime as d; print((d.date.fromisoformat('${{ steps.d.outputs.date }}')-d.timedelta(days=1)).isoformat())")
           python3 scripts/audit_injury_lineup_run_modes.py --date "$D" --latest-completed-date "$PREV"
           python3 scripts/audit_github_delivery_automation.py
+      - name: Write GitHub-reviewable delivery previews
+        run: |
+          python scripts/write_delivery_review_previews.py --date ${{ steps.d.outputs.date }}
+
       - name: Stage and commit
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -1152,6 +1181,10 @@ jobs:
           python scripts/verify_pmf_variance_experience_study.py \
             --as-of-date ${{ steps.d.outputs.date }} || \
             echo "::notice::pmf variance experience verifier WARN/FAILED — see step log"
+      - name: Write GitHub-reviewable delivery previews
+        run: |
+          python scripts/write_delivery_review_previews.py --date ${{ steps.d.outputs.date }}
+
       - name: Stage and commit
         if: steps.after_game_flags.outputs.run_after_game == 'true'
         run: |

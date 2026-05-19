@@ -47,7 +47,12 @@ env:
   PYTHONPATH: src
   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+  DUNKS_AND_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DUNKS_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DNT_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
 
+  DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  REQUIRE_DUNKS_AND_THREES: "1"
 jobs:
   derek_live_snapshots:
     runs-on: ubuntu-latest
