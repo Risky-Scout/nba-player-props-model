@@ -1,0 +1,26 @@
+{
+  "delivery_date": "2026-05-19",
+  "reason": "games_exist",
+  "no_games_slate": false,
+  "confirmed_no_games_slate": false,
+  "marker": "PIPELINE_GAMES_EXIST_DELIVERY",
+  "eligible_player_game_rows": 156,
+  "market_superiority_evaluated": true,
+  "derek_forward_feed_expected": true,
+  "canonical_source": {
+    "player_prop_pmfs_tonight_MODEL_ONLY": "deliveries/2026-05-19/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+    "all_props_model_only": "deliveries/2026-05-19/canonical_source/all_props_model_only.parquet",
+    "rows": 156
+  },
+  "wizard_of_odds": {
+    "market_comparison": "deliveries/2026-05-19/wizard_of_odds/market_comparison.parquet",
+    "run_manifest": "deliveries/2026-05-19/wizard_of_odds/run_manifest.json",
+    "rows": 2254
+  },
+  "derek_forward_feed": {
+    "parquet": "deliveries/2026-05-19/derek_forward_feed/derek_forward_feed.parquet",
+    "csv": "deliveries/2026-05-19/derek_forward_feed/derek_forward_feed.csv",
+    "feed_manifest": "deliveries/2026-05-19/derek_forward_feed/feed_manifest.json",
+    "rows": 2219
+  }
+}
