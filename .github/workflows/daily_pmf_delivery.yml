@@ -9,11 +9,10 @@ name: NBA PMF Delivery — Daily Pipeline
 #                                  not yet confirmed.
 #   18:00 UTC = 2:00 PM ET         woo_afternoon_refresh
 #   20:00 UTC = 4:00 PM ET         woo_afternoon_refresh
-#   22:25 UTC = 6:25 PM ET         derek_pre_tipoff_refresh (earliest tipoff
-#                                  − 35 min default during NBA playoffs); also
-#                                  refreshes the WoO public export.
-#                                  (legacy alias: derek_near_lineup)
-#   22:40 UTC ... 03:10 UTC every 15 min  derek_pre_tipoff_refresh
+#   22:25 UTC = 6:25 PM ET         derek_near_lineup (earliest tipoff − 35 min
+#                                  default during NBA playoffs); also refreshes
+#                                  the WoO public export.
+#   22:40 UTC ... 03:10 UTC every 15 min  derek_near_lineup
 #   03:25 UTC = 11:25 PM ET        close_lock (final lineup/market lock)
 #   06:30 UTC = 2:30 AM ET         after_game (post-final scoring)
 #
@@ -26,10 +25,10 @@ name: NBA PMF Delivery — Daily Pipeline
 #   6. scripts/predict.py                   (woo_morning_monetization /
 #                                            morning / full_day, --predict only)
 #   7. scripts/build_daily_pmf_delivery.py  (snapshot=mode-specific)
-#   8. scripts/build_derek_forward_feed.py  (derek_pre_tipoff_refresh,
-#                                            close_lock, after_game)
+#   8. scripts/build_derek_forward_feed.py  (derek_near_lineup, close_lock,
+#                                            after_game)
 #   9. scripts/build_wizard_of_odds_public_export.py
-#                                           (woo_*, derek_pre_tipoff_refresh,
+#                                           (woo_*, derek_near_lineup,
 #                                            close_lock; with monetization
 #                                            labels for woo_* runs)
 #  10. scripts/score_daily_pmf_delivery_after_game.py  (after_game)
@@ -77,14 +76,13 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Wrapper mode (derek_near_lineup is a legacy alias for derek_pre_tipoff_refresh)"
+        description: "Wrapper mode"
         required: true
-        default: derek_pre_tipoff_refresh
+        default: derek_near_lineup
         type: choice
         options:
           - woo_morning_monetization
           - woo_afternoon_refresh
-          - derek_pre_tipoff_refresh
           - derek_near_lineup
           - close_lock
           - after_game
@@ -164,15 +162,10 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "morning" \
-            $FORCE_PREDICT_ARG
+            --mode "morning"
       - name: Run delivery pipeline (morning, manual)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -235,121 +228,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
-          # the derek_pre_tipoff_refresh job, or a future verifier we
-          # forgot to enumerate) so `git pull --rebase` can proceed.
-          DIRTY_REMAINING=$(git diff --name-only)
-          if [ -n "$DIRTY_REMAINING" ]; then
-            echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
-            echo "$DIRTY_REMAINING"
-            git checkout -- $DIRTY_REMAINING 2>/dev/null || true
-          fi
-          PUSH_SUCCESS=0
-          for i in 1 2 3; do
-            if git pull --rebase origin main && git push origin main; then
-              PUSH_SUCCESS=1
-              break
-            fi
-            sleep 5
-          done
-          if [ "$PUSH_SUCCESS" != "1" ]; then
-            echo "::error::git push failed after 3 attempts"
-            exit 1
-          fi
-
-  # ── Full day pipeline (manual dispatch: predict + refresh + Derek + WoO)
-  full_day:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    if: |
-      github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'full_day'
-    steps:
-      - uses: actions/checkout@v5
-        with: { fetch-depth: 0 }
-      - uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: 'pip'
-      - name: Install python deps
-        run: pip install -r requirements.txt
-      - name: Secrets preflight (Phase 13AL)
-        env:
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-        run: |
-          python3 scripts/verify_secrets_preflight.py --mode daily
-      - name: Resolve delivery date (America/New_York)
-        id: d
-        run: |
-          if [ -n "${{ github.event.inputs.delivery_date }}" ]; then
-            echo "date=${{ github.event.inputs.delivery_date }}" >> "$GITHUB_OUTPUT"
-          else
-            ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
-            echo "Resolved delivery_date=$ET_DATE via America/New_York"
-            echo "date=$ET_DATE" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Predictions readiness gate (Phase 13AM)
-        id: predict_gate
-        env:
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-        run: |
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
-          python3 scripts/predictions_readiness_gate.py \
-            --date "${{ steps.d.outputs.date }}" \
-            --predict-cron-hour-utc 13 \
-            --mode "full_day" \
-            $FORCE_PREDICT_ARG
-      - name: Run delivery pipeline (full_day, manual)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
-        env:
-          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
-        run: |
-          PREDICT_FLAG=""
-          if [ "${{ github.event.inputs.run_predict }}" = "true" ]; then
-            PREDICT_FLAG="--predict"
-          fi
-          FORCE_FLAG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_FLAG="--force-run"
-          fi
-          python scripts/run_daily_delivery_pipeline.py \
-            --date ${{ steps.d.outputs.date }} \
-            --mode full_day \
-            --regions us us2 \
-            --rebuild-canonical \
-            --verify --fail-on-missing-delivery \
-            $PREDICT_FLAG $FORCE_FLAG
-      - name: Stage and commit approved files
-        if: steps.predict_gate.outputs.should_proceed == 'true'
-        run: |
-          python scripts/stamp_delivery_champion_metadata.py \
-            --delivery-date ${{ steps.d.outputs.date }}
-          python scripts/verify_derek_woo_champion_dependency.py \
-            --delivery-date ${{ steps.d.outputs.date }} \
-            --require-both-sides false
-          git config user.name "Joseph Shackelford"
-          git config user.email "josephshack@gmail.com"
-          if ! git add deliveries/${{ steps.d.outputs.date }} \
-                       artifacts/delivery_metadata/${{ steps.d.outputs.date }} \
-                       deliveries/README.md \
-                       deliveries/index.html \
-                       public_export/wizard_of_odds; then
-            echo "::error::git add failed for one or more paths"
-            exit 1
-          fi
-          git diff --staged --quiet && echo "Nothing to commit" || \
-            git commit \
-              --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (full_day)"
-          git checkout -- data/player_game_stats.parquet \
-                          artifacts/automation_health/derek_woo_champion_dependency.json \
-                          artifacts/automation_health/derek_woo_champion_dependency.md \
-                          2>/dev/null || true
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -407,15 +288,10 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "woo_morning_monetization" \
-            $FORCE_PREDICT_ARG
+            --mode "woo_morning_monetization"
       - name: Delivery pipeline gate flags (forced manual bypass)
         id: delivery_flags
         if: always()
@@ -615,9 +491,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
-          # the derek_pre_tipoff_refresh job, or a future verifier we
-          # forgot to enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -678,15 +554,10 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "woo_afternoon_refresh" \
-            $FORCE_PREDICT_ARG
+            --mode "woo_afternoon_refresh"
       - name: Run delivery pipeline (woo_afternoon_refresh)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -767,9 +638,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
-          # the derek_pre_tipoff_refresh job, or a future verifier we
-          # forgot to enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -789,14 +660,12 @@ jobs:
             exit 1
           fi
 
-  # ── Derek pre-tipoff refresh (first publishable Derek snapshot + every-15 refresh) ──
-  # Renamed from derek_near_lineup. The job ID below is the new canonical
-  # name; mode='derek_near_lineup' is still accepted as a legacy alias.
-  derek_pre_tipoff_refresh:
+  # ── Derek near-lineup (first publishable Derek snapshot + every-15 refresh) ──
+  derek_near_lineup:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     if: |
-      (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_pre_tipoff_refresh' || github.event.inputs.mode == 'derek_near_lineup')) ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'derek_near_lineup') ||
       github.event.schedule == '25 22 * * *' ||
       github.event.schedule == '40,55 22 * * *' ||
       github.event.schedule == '10,25,40,55 23,0,1,2 * * *' ||
@@ -848,17 +717,12 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "derek_pre_tipoff_refresh" \
-            $FORCE_PREDICT_ARG
+            --mode "derek_near_lineup"
 
-      - name: Run delivery pipeline (derek_pre_tipoff_refresh)
+      - name: Run delivery pipeline (derek_near_lineup)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -871,7 +735,7 @@ jobs:
           fi
           python scripts/run_daily_delivery_pipeline.py \
             --date $DATE \
-            --mode derek_pre_tipoff_refresh \
+            --mode derek_near_lineup \
             --regions us us2 \
             --rebuild-canonical \
             --verify --fail-on-missing-delivery \
@@ -951,7 +815,7 @@ jobs:
           git diff --staged --quiet && echo "Nothing to commit" || \
             git commit \
               --author="Joseph Shackelford <josephshack@gmail.com>" \
-              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (derek_pre_tipoff_refresh)"
+              -m "daily delivery champion metadata ${{ steps.d.outputs.date }} (derek_near_lineup)"
           # Phase 13I: BDL refresh and other steps mutate tracked files
           # (e.g. data/player_game_stats.parquet) we explicitly do NOT commit.
           # Discard those working-tree changes so `git pull --rebase` can proceed.
@@ -967,9 +831,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
-          # the derek_pre_tipoff_refresh job, or a future verifier we
-          # forgot to enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -1031,15 +895,10 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
-            --mode "close_lock" \
-            $FORCE_PREDICT_ARG
+            --mode "close_lock"
       - name: Run delivery pipeline (close_lock)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -1135,9 +994,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
-          # the derek_pre_tipoff_refresh job, or a future verifier we
-          # forgot to enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -1204,16 +1063,11 @@ jobs:
           # past slate, so the gate is configured with --no-run-predict
           # (still emits WAITING_FOR_PREDICTIONS_VALID_SKIP if the prior
           # day's predictions never landed, instead of red-failing).
-          FORCE_PREDICT_ARG=""
-          if [ "${{ github.event.inputs.force_run }}" = "true" ]; then
-            FORCE_PREDICT_ARG="--force-run-predict"
-          fi
           python3 scripts/predictions_readiness_gate.py \
             --date "${{ steps.d.outputs.date }}" \
             --predict-cron-hour-utc 13 \
             --mode "after_game" \
-            --no-run-predict \
-            $FORCE_PREDICT_ARG
+            --no-run-predict
       - name: Run delivery pipeline (after_game)
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -1323,9 +1177,9 @@ jobs:
                           artifacts/automation_health/derek_woo_champion_dependency.md \
                           2>/dev/null || true
           # Bug E defensive secondary reset: catch any tracked file still
-          # dirty (e.g. derek_pre_tipoff_refresh_contract_<date>.json on
-          # the derek_pre_tipoff_refresh job, or a future verifier we
-          # forgot to enumerate) so `git pull --rebase` can proceed.
+          # dirty (e.g. derek_near_lineup_contract_<date>.json on the
+          # derek_near_lineup job, or a future verifier we forgot to
+          # enumerate) so `git pull --rebase` can proceed.
           DIRTY_REMAINING=$(git diff --name-only)
           if [ -n "$DIRTY_REMAINING" ]; then
             echo "::notice::Bug E defensive reset — unexpected dirty tracked files:"
@@ -1359,7 +1213,7 @@ jobs:
 
   derek_schedule_bridge:
     name: Derek schedule bridge from PMF delivery cron
-    if: ${{ (github.event_name == 'schedule' && (github.event.schedule == '25 22 * * *' || github.event.schedule == '40,55 22 * * *' || github.event.schedule == '10,25,40,55 23,0,1,2 * * *' || github.event.schedule == '10 3 * * *' || github.event.schedule == '25 3 * * *')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_pre_tipoff_refresh' || github.event.inputs.mode == 'derek_near_lineup' || github.event.inputs.mode == 'close_lock')) }}
+    if: ${{ (github.event_name == 'schedule' && (github.event.schedule == '25 22 * * *' || github.event.schedule == '40,55 22 * * *' || github.event.schedule == '10,25,40,55 23,0,1,2 * * *' || github.event.schedule == '10 3 * * *' || github.event.schedule == '25 3 * * *')) || (github.event_name == 'workflow_dispatch' && (github.event.inputs.mode == 'derek_near_lineup' || github.event.inputs.mode == 'close_lock')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

@@ -47,7 +47,6 @@ env:
   PYTHONPATH: src
   STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
   SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   derek_live_snapshots:
@@ -191,14 +190,22 @@ jobs:
         run: |
           PMF_PATH="deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet"
           if [ -s "$PMF_PATH" ]; then
-            ROWS=$(python3 -c "import pandas as pd; from pathlib import Path; p=Path('deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet'); print(len(pd.read_parquet(p)))" 2>/dev/null || echo -1)
+            ROWS=$(python3 - <<'PY'
+import pandas as pd
+from pathlib import Path
+p = Path("deliveries/${{ steps.d.outputs.date }}/wizard_of_odds/full_pmfs_wide.parquet")
+try:
+    print(len(pd.read_parquet(p)))
+except Exception:
+    print(-1)
+PY
+)
             if [ "$ROWS" = "0" ]; then
               echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=${{ steps.d.outputs.date }} reason=no_games_empty_full_pmfs_wide"
             else
               python scripts/verify_corrected_pmf_delivery.py \
                 --date ${{ steps.d.outputs.date }} \
-                --skip-derek-snapshots \
-                --skip-public-export
+                --skip-derek-snapshots
             fi
           else
             echo "CORRECTED_PMF_DELIVERY_VERIFY_PENDING date=${{ steps.d.outputs.date }} reason=missing_full_pmfs_wide"
@@ -532,15 +539,15 @@ jobs:
 
           should_fail=0
 
-          if [ "$verify_derek" = "failure" ]; then should_fail=1; fi
-          if [ "$verify_e2e" = "failure" ]; then
+          if [ "$verify_derek" != "success" ]; then should_fail=1; fi
+          if [ "$verify_e2e" != "success" ]; then
             if [ "$allow_backfill_test" = "true" ]; then
               echo "::notice::verify_e2e failed during manual allow_backfill_test; scheduled production runs still enforce E2E"
             else
               should_fail=1
             fi
           fi
-          if [ "$verify_no_break" = "failure" ]; then should_fail=1; fi
+          if [ "$verify_no_break" != "success" ]; then should_fail=1; fi
           if [ "$dispatch_current_live" = "failure" ]; then should_fail=1; fi
           if [ "$dispatch_t25" = "failure" ]; then should_fail=1; fi
           if [ "$dispatch_cl" = "failure" ]; then should_fail=1; fi
