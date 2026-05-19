@@ -1073,8 +1073,30 @@ jobs:
             --predict-cron-hour-utc 13 \
             --mode "after_game" \
             --no-run-predict
+      - name: After-game force-run gate flags
+        id: after_game_flags
+        if: always()
+        run: |
+          GATE="${{ steps.predict_gate.outputs.should_proceed }}"
+          FORCE_MANUAL=false
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ "${{ github.event.inputs.mode }}" = "after_game" ] && \
+             [ "${{ github.event.inputs.force_run }}" = "true" ]; then
+            FORCE_MANUAL=true
+          fi
+
+          echo "predict_gate_should_proceed=$GATE"
+          echo "force_manual=$FORCE_MANUAL"
+
+          if [ "$GATE" = "true" ] || [ "$FORCE_MANUAL" = "true" ]; then
+            echo "run_after_game=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_after_game=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run delivery pipeline (after_game)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
@@ -1083,7 +1105,7 @@ jobs:
             --mode after_game \
             --verify --fail-on-missing-delivery
       - name: Phase 13K — re-run scorer for canonical artifacts
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
@@ -1095,7 +1117,7 @@ jobs:
           python scripts/score_daily_pmf_delivery_after_game.py \
             --date ${{ steps.d.outputs.date }}
       - name: Phase 13K — stamp Derek/WoO/PMF-review manifests
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         # Stamp BEFORE consistency verification so the verifier sees a
         # consistent state. The Stage-and-commit step below still re-runs
         # stamping + Derek/WoO dependency check idempotently, which is fine.
@@ -1103,12 +1125,12 @@ jobs:
           python scripts/stamp_delivery_champion_metadata.py \
             --delivery-date ${{ steps.d.outputs.date }}
       - name: Phase 13K — after-game package consistency
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         run: |
           python scripts/verify_after_game_scoring_package_consistency.py \
             --delivery-date ${{ steps.d.outputs.date }}
       - name: M8.6 after-game delivery contract verifiers
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         env:
           PYTHONPATH: src
         run: |
@@ -1119,13 +1141,13 @@ jobs:
           python3 scripts/verify_availability_freshness.py --date "$D" --mode close_lock
           python3 scripts/verify_woo_public_artifacts_target_allowlist.py --date "$D"
       - name: Phase 13K — rolling market benchmark
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         run: |
           python scripts/build_rolling_market_benchmark.py \
             --as-of-date ${{ steps.d.outputs.date }} \
             --window-days 28 || echo "::notice::rolling market benchmark insufficient_sample"
       - name: Phase 13AA — PMF variance experience study (non-blocking)
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         # Runs after after-game scoring so settled outcomes are joined.
         # Honest insufficient-sample reports are written to disk; this step
         # never fails the workflow because thin samples are expected during
@@ -1141,7 +1163,7 @@ jobs:
             --as-of-date ${{ steps.d.outputs.date }} || \
             echo "::notice::pmf variance experience verifier WARN/FAILED — see step log"
       - name: Stage and commit
-        if: steps.predict_gate.outputs.should_proceed == 'true'
+        if: steps.after_game_flags.outputs.run_after_game == 'true'
         run: |
           # Phase 13I: stamp Derek/WoO manifests with active champion metadata
           # and verify the persisted stamp against artifacts/models/registry/champion_pointer.json.
