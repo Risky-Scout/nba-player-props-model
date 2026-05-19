@@ -75,7 +75,20 @@ def main() -> int:
             if df.empty or len(df.columns) == 0:
                 continue
 
-            empty_cols = [c for c in df.columns if is_empty_col(df[c])]
+            preserve_cols = set()
+        if "derek_forward_feed" in path.as_posix():
+            preserve_cols.update({
+                "model_artifact_hash",
+                "event_id",
+                "role_mixture_weights_json",
+                "role_entropy",
+                "role_bucket_confidence",
+                "minutes_q10",
+                "minutes_q90",
+                "unavailable_reason",
+            })
+
+        empty_cols = [c for c in df.columns if c not in preserve_cols and is_empty_col(df[c])]
             if not empty_cols:
                 continue
 
