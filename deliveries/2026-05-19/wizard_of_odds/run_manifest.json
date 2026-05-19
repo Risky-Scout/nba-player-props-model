@@ -7,8 +7,8 @@
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "count_diagnostics": {
     "fair_odds_board": {
-      "fair_over_odds_null_count": 446,
-      "fair_under_odds_null_count": 447,
+      "fair_over_odds_null_count": 502,
+      "fair_under_odds_null_count": 502,
       "zero_or_one_prob_count": 260
     }
   },
@@ -38,15 +38,14 @@
       "fliff",
       "hardrockbet",
       "hardrockbet_az",
-      "hardrockbet_fl",
-      "williamhill_us"
+      "hardrockbet_fl"
     ],
-    "built_at_utc": "2026-05-19T21:21:14Z",
+    "built_at_utc": "2026-05-19T23:41:12Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "ready",
     "path": "data/freshness_manifest/2026-05-19.json",
-    "predictions_mtime_utc": "2026-05-19T21:20:54.620632Z",
+    "predictions_mtime_utc": "2026-05-19T23:40:54.853839Z",
     "regions_requested": [
       "us",
       "us2"
@@ -56,15 +55,15 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-19T21:22:40+00:00",
+  "metadata_stamped_at_utc": "2026-05-19T23:42:34+00:00",
   "model_source": "champion_pointer",
-  "model_version": "878ebca7#phase10c",
+  "model_version": "56950def#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-19T21:22:40+00:00",
+  "output_generated_at_utc": "2026-05-19T23:42:34+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "pipeline_run_id": "6200d562-7997-4fb7-a4c9-92563bf5730d",
+  "pipeline_run_id": "0de28582-82d3-49bf-96b2-7c939335b066",
   "promotion_decision_id": "promotion-2099-12-31-20260518T224027",
   "quality_rollup": {
     "calibration_confidence": {
@@ -72,7 +71,7 @@
       "medium": 12
     },
     "injury_freshness_status": {
-      "fallback_used": 156
+      "latest_valid_report_selected": 156
     },
     "lineup_freshness_status": {
       "projected": 156
@@ -89,22 +88,22 @@
   "row_counts": {
     "fair_odds_board": 3341,
     "full_pmfs_wide": 156,
-    "market_comparison": 2306,
-    "publishable_edges": 1811
+    "market_comparison": 2253,
+    "publishable_edges": 1767
   },
-  "snapshot_time_utc": "2026-05-19T21:22:16Z",
+  "snapshot_time_utc": "2026-05-19T23:42:00Z",
   "snapshot_type": "pre_close",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-19T21:19:55.665484Z",
+      "mtime_utc": "2026-05-19T23:39:47.159984Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-19T21:22:15.320229Z",
+      "mtime_utc": "2026-05-19T23:42:00.164586Z",
       "path": "deliveries/2026-05-19/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "e93583cf428319a4a09fee25546b3552aa8f124afd5147cec3cdd9df15d6f9fd"
+      "sha256": "390ed919d6d29d30a34e5e71263757ff8f20cbd1e0f7c1d60be56bcf18f84fb6"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -119,20 +118,19 @@
         "fliff",
         "hardrockbet",
         "hardrockbet_az",
-        "hardrockbet_fl",
-        "williamhill_us"
+        "hardrockbet_fl"
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-19T21:21:14.605032Z",
-      "path": "data/odds_api/processed/2026-05-19/odds_pairs_live_slate_close_or_lock_2026-05-19T212110Z.parquet"
+      "mtime_utc": "2026-05-19T23:41:12.161052Z",
+      "path": "data/odds_api/processed/2026-05-19/odds_pairs_live_slate_close_or_lock_2026-05-19T234108Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-19T21:20:54.620632Z",
+      "mtime_utc": "2026-05-19T23:40:54.853839Z",
       "path": "predictions/all_props_2026-05-19.parquet"
     }
   },
-  "stamp_code_commit": "878ebca7766e516215649ffe227f1cfe7fb16700",
+  "stamp_code_commit": "56950def0aa6e36622a567a02c9d682d2677d11e",
   "target_stats": {
     "expected": [
       "pts",
