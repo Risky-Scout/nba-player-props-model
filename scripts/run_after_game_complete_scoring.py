@@ -168,9 +168,28 @@ def main():
         if not is_model_market_only:
             raise SystemExit(scorer.returncode)
 
-        model_market_blocked = True
-        write_model_market_block(date, scorer.returncode)
-        print("CONTINUING so after_game_scoring package can be committed.", flush=True)
+        rebuilder_cmd = [
+            sys.executable,
+            "scripts/rebuild_model_vs_market_scoring_from_delivery.py",
+            "--date", date,
+        ]
+
+        print("\n[$]", " ".join(rebuilder_cmd), flush=True)
+        rebuild = subprocess.run(
+            rebuilder_cmd,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        print(rebuild.stdout, flush=True)
+
+        if rebuild.returncode != 0:
+            model_market_blocked = True
+            write_model_market_block(date, scorer.returncode)
+            print("CONTINUING so after_game_scoring package can be committed.", flush=True)
+        else:
+            model_market_blocked = False
+            print("MODEL_VS_MARKET_SCORING_REBUILT_PASS", flush=True)
 
     run([
         sys.executable,
