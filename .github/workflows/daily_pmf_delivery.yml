@@ -199,6 +199,7 @@ jobs:
           python scripts/verify_derek_woo_champion_dependency.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
+          python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -460,6 +461,7 @@ jobs:
           python scripts/verify_derek_woo_champion_dependency.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
+          python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -607,6 +609,7 @@ jobs:
           python scripts/verify_derek_woo_champion_dependency.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
+          python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -802,6 +805,7 @@ jobs:
           python scripts/verify_derek_woo_champion_dependency.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
+          python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -963,6 +967,7 @@ jobs:
           python scripts/verify_derek_woo_champion_dependency.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
+          python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -1147,6 +1152,7 @@ jobs:
           python scripts/verify_derek_woo_champion_dependency.py \
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
+          python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           # Phase 13K: also commit the new after-game scoring artifacts +
