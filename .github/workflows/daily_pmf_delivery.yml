@@ -1097,6 +1097,8 @@ jobs:
 
       - name: Run complete after-game scoring
         if: steps.after_game_flags.outputs.run_after_game == 'true'
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
           python scripts/run_after_game_complete_scoring.py --date ${{ steps.d.outputs.date }}
 
