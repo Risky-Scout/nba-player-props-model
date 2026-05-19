@@ -6,7 +6,7 @@
       "passed": true
     }
   ],
-  "code_commit": "ae210a4f3ae7770d3366fdab57ae040d3c62b5f8",
+  "code_commit": "f9fa8d36047e69dffef9a517003692d96c9e85f5",
   "delivery_date": "2026-05-18",
   "facts": {
     "game_count": 1,
@@ -21,7 +21,7 @@
     "slate_games": 0,
     "snapshot_count": 0
   },
-  "generated_at_utc": "2026-05-18T23:45:38+00:00",
+  "generated_at_utc": "2026-05-19T00:19:21+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
