@@ -1,0 +1,89 @@
+---
+description: Mathematical calibration and market-superiority contract
+alwaysApply: true
+---
+
+The model must be optimized and promoted only through proper scoring, calibration, and market-superiority gates.
+
+Stats requiring coverage:
+pts, reb, ast, stl, blk, tov, pr, pa, ra, pra, stocks
+
+Role buckets requiring coverage where sample size allows:
+bench, rotation, core, starter
+
+Core definitions:
+
+For each settled prop/event i:
+- y_i = realized outcome
+- PMF p_i(k) = model probability of outcome k
+- line_i = market line
+- model over probability q_i = sum_{k > line_i} p_i(k)
+- no-vig market over probability m_i = consensus market implied probability after removing vig
+
+Proper scoring:
+- PMF negative log loss: NLL_model = mean(-log(max(p_i(y_i), eps)))
+- binary over/under log loss: LL_model = mean(-[z_i log(q_i) + (1-z_i) log(1-q_i)])
+- Brier_model = mean((q_i - z_i)^2)
+- calibration ECE = sum_b (n_b/N) * abs(mean(q_i in bin b) - mean(z_i in bin b))
+- use CRPS/RPS if the repo already implements it
+
+Market baseline:
+- LL_market and Brier_market computed from no-vig market probabilities m_i
+- use existing repo market benchmark scripts if present
+
+Promotion/superiority gates:
+1. Global market gate:
+   LL_model <= LL_market - delta_ll
+   and Brier_model <= Brier_market - delta_brier
+   where thresholds must come from existing repo config if present.
+   If no existing threshold exists, start with delta_ll=0.0000 and delta_brier=0.0000 and require non-worse performance, then report effect size.
+
+2. Bootstrap/uncertainty gate where infrastructure exists:
+   upper_95_ci(LL_model - LL_market) < 0
+   for a true market-superiority claim.
+   If CI infrastructure does not exist, do not claim proven superiority; report "not statistically certified".
+
+3. Calibration gate:
+   global_ECE <= threshold_global
+   stat_ECE <= threshold_stat for each stat with sufficient N
+   role_ECE <= threshold_role for each role bucket with sufficient N
+   stat_role_ECE <= threshold_stat_role where sample size permits
+
+   Prefer existing repo thresholds. If missing, create configurable defaults:
+   threshold_global = 0.030
+   threshold_stat = 0.050
+   threshold_role = 0.060
+   threshold_stat_role = 0.080
+   min_n_global = 500
+   min_n_stat = 75
+   min_n_role = 75
+   min_n_stat_role = 40
+
+4. Reliability gate:
+   For each calibration bin with n >= min_bin_n:
+   abs(mean_pred - observed_rate) <= max(bin_abs_tolerance, 1.96 * sqrt(p_hat*(1-p_hat)/n) + 0.01)
+   Prefer existing thresholds; otherwise:
+   min_bin_n = 30
+   bin_abs_tolerance = 0.075
+
+5. No hidden regression gate:
+   No high-volume stat may be materially worse than market:
+   LL_model_stat <= LL_market_stat + tolerated_stat_regression
+   Prefer existing tolerance; otherwise tolerated_stat_regression=0.003.
+
+6. PMF validity gate:
+   each PMF probability >= 0
+   sum probabilities within [0.999, 1.001]
+   finite mean/variance
+   no missing role_bucket for required delivery rows
+
+If any gate fails:
+- block champion promotion
+- mark delivery as diagnostics-only if appropriate
+- write failure reasons to artifacts/automation_health
+- do not claim market superiority
+- do not fake calibration
+
+Optimization instruction:
+If gates fail, Cursor may add workflow calls to existing calibration optimization scripts, retraining scripts, or feature-generation scripts already present in the repo, but must not invent new model math in the workflow consolidation patch.
+If a feature engineering overhaul is needed, create a separate explicit plan and gate it behind tests.

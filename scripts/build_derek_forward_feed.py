@@ -764,7 +764,27 @@ def _build_derek_bdl_main_line_summary(out_df: pd.DataFrame) -> pd.DataFrame:
 
     bdl = pd.DataFrame(bdl_records)
     if bdl.empty:
-        raise RuntimeError("BDL_PLAYER_PROPS_EMPTY: no over_under player props returned")
+        # Valid-skip path: BDL returned no over_under player props for
+        # this slate (typical for slates already in/after their close-
+        # lock window, days with no BDL coverage, or the period after
+        # final scores have settled and the books pull their lines).
+        #
+        # Brief contract (CURSOR_TASK_NBA_PMF_PRODUCTION_PIPELINE.md
+        # Phase 11): do NOT raise, do NOT fabricate lines, return an
+        # empty DataFrame with the stable public column schema, and
+        # carry a structured status indicator on ``df.attrs`` so the
+        # caller can write ``derek_bdl_main_line_summary_status.json``
+        # alongside the empty CSV. The empty CSV preserves the schema
+        # so downstream verifiers (verify_derek_forward_feed,
+        # validate_daily_pmf_delivery) keep reading the same six
+        # public columns and don't crash with "missing column" errors.
+        empty = pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+        empty.attrs["bdl_valid_skip_status"] = "valid_skip_empty_bdl_player_props"
+        empty.attrs["bdl_valid_skip_detail"] = (
+            "BDL returned no over_under player_props rows across all "
+            "fetched game_id/prop_type combinations for this slate."
+        )
+        return empty
 
     line_counts = (
         bdl.groupby(["game_id", "player_id", "stat", "market_line"])
@@ -819,7 +839,21 @@ def _build_derek_bdl_main_line_summary(out_df: pd.DataFrame) -> pd.DataFrame:
     summary = pd.DataFrame(rows, columns=DEREK_UNIQUE_SUMMARY_COLS)
 
     if summary.empty:
-        raise RuntimeError("DEREK_BDL_SUMMARY_EMPTY_AFTER_JOIN")
+        # Valid-skip: BDL rows existed but none joined to a modeled
+        # player/stat row (typical when BDL coverage is partial — e.g.
+        # only milestones / first-quarter / DD-TD markets returned, or
+        # players in BDL aren't in the model universe). Per the brief
+        # Phase 11 contract, do NOT raise and do NOT fabricate lines;
+        # the caller writes a structured status JSON next to the empty
+        # CSV so audits can distinguish "no BDL data" from "BDL data
+        # but no overlap with the model universe".
+        empty = pd.DataFrame(columns=DEREK_UNIQUE_SUMMARY_COLS)
+        empty.attrs["bdl_valid_skip_status"] = "valid_skip_empty_after_join"
+        empty.attrs["bdl_valid_skip_detail"] = (
+            f"BDL returned {len(bdl)} over_under row(s) but none joined "
+            "to a modeled player/stat row for this slate."
+        )
+        return empty
 
     dupes = summary.groupby(["player_name", "stat"]).size().reset_index(name="n")
     dupes = dupes[dupes["n"] > 1]
@@ -1699,6 +1733,22 @@ def write_m88_unified_feed(
     out_df_for_summary = _ensure_pmf_json_column(out_df)
     summary_csv_out = out_dir / "derek_unique_props_summary.csv"
     summary_df = _build_derek_bdl_main_line_summary(out_df_for_summary)
+
+    # BDL valid-skip handling (Phase 11 of the consolidated pipeline
+    # brief). When the builder returned an empty DataFrame carrying a
+    # ``bdl_valid_skip_status`` attribute, it means the BDL feed had
+    # either zero over_under rows or zero overlapping with the modeled
+    # player/stat universe. We persist the stable empty public schema
+    # and an explanatory ``derek_bdl_main_line_summary_status.json``
+    # alongside it so the entire delivery does not get killed by a
+    # missing BDL feed. No fabricated lines are ever written.
+    bdl_valid_skip_status = (
+        summary_df.attrs.get("bdl_valid_skip_status") if summary_df is not None else None
+    )
+    bdl_valid_skip_detail = (
+        summary_df.attrs.get("bdl_valid_skip_detail") if summary_df is not None else None
+    )
+
     summary_df.to_csv(summary_csv_out, index=False, quoting=csv.QUOTE_MINIMAL)
     try:
         _summary_rel = str(summary_csv_out.relative_to(REPO_ROOT))
@@ -1710,6 +1760,27 @@ def write_m88_unified_feed(
         f"rows={len(summary_df)} "
         f"columns={list(summary_df.columns)}"
     )
+
+    if bdl_valid_skip_status:
+        status_path = out_dir / "derek_bdl_main_line_summary_status.json"
+        status_payload = {
+            "status": bdl_valid_skip_status,
+            "detail": bdl_valid_skip_detail or "",
+            "delivery_date": date,
+            "run_mode": run_mode,
+            "generated_at_utc": gen_at,
+            "summary_csv": _summary_rel,
+            "row_count": int(len(summary_df)),
+        }
+        status_path.write_text(
+            json.dumps(status_payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        print(
+            "BDL_PLAYER_PROPS_EMPTY_VALID_SKIP "
+            f"status={bdl_valid_skip_status} "
+            f"rows={len(summary_df)}"
+        )
     man = {
         "delivery_date": date,
         "run_mode": run_mode,

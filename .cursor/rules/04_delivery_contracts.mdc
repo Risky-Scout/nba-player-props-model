@@ -1,0 +1,44 @@
+---
+description: Delivery folder and output contracts
+alwaysApply: true
+---
+
+Every successful delivery must populate:
+
+deliveries/YYYY-MM-DD/
+
+Expected folders/concepts:
+- canonical_source
+- wizard_of_odds
+- derek_forward_feed
+- derek_game_snapshots
+- pmf_model_review_package
+- after_game_scoring when outcomes are available
+
+Canonical model-only source:
+deliveries/YYYY-MM-DD/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet
+
+This file must be model-only.
+Do not market-anchor it.
+
+Before committing deliveries:
+- stamp champion metadata
+- strip empty delivery columns
+- write review previews
+- enforce CSV size contract
+- verify delivery folder contract
+- validate PMF math
+- validate daily PMF delivery
+- verify Derek forward feed
+
+CSV contract:
+- user-facing CSVs must be <= 524288 bytes
+- full large data should remain parquet
+- oversized CSVs should be previewed/split
+- never modify derek_unique_props_summary.csv as part of size enforcement
+
+If BDL player props are empty for an old/completed slate:
+- valid-skip BDL-only Derek main-line summary
+- do not fabricate lines
+- write structured status
+- do not kill model-only delivery if PMFs and delivery contracts otherwise pass

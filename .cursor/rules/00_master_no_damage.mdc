@@ -1,0 +1,43 @@
+---
+description: Master no-damage rules for NBA PMF production repair
+alwaysApply: true
+---
+
+You are working only in:
+
+/Users/josephshackelford/repos/nba-player-props-model-pmf-fix
+
+Never modify:
+
+deliveries/*/derek_forward_feed/derek_unique_props_summary.csv
+
+Do not:
+- rebuild the model from scratch
+- remove existing calibration gates
+- remove existing market benchmark gates
+- remove injury freshness checks
+- remove lineup freshness checks
+- remove leakage checks
+- remove role_bucket logic
+- fabricate data
+- fabricate PMFs
+- fabricate odds
+- fabricate BDL props
+- fabricate outcomes
+- market-anchor MODEL_ONLY PMFs
+- delete old workflows
+- disable old workflows before the new workflow passes a full day
+- publish market-superiority claims unless mathematical gates explicitly pass
+
+If a source is missing:
+- valid-skip when appropriate
+- write structured diagnostics/status
+- do not invent data
+- fail closed if the missing source is mathematically required
+
+Before commit:
+- inspect git diff --stat
+- inspect exact files changed
+- run focused tests
+- run py_compile on changed Python
+- parse changed YAML

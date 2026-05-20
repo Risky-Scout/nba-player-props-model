@@ -1,0 +1,55 @@
+---
+description: Phase 13 strict order and integrity rules
+alwaysApply: true
+---
+
+Phase 13 must run in strict order:
+
+13O:
+- build live-context training dataset
+- verify live-context features
+- verify PMF sensitivity
+- no-leakage checks
+- Derek readiness recording
+
+13P:
+- train live-context challenger
+- verify phase13p feature set
+- sensitivity checks
+- no-leakage checks
+- validation gates
+- no-breakage checks
+
+13Q:
+- train contextual challenger
+- verify contextual feature set
+- sensitivity checks
+- no-leakage checks
+- validation gates
+- no-breakage checks
+
+13R:
+- deployment verification
+- contextual feature-list checks
+- contextual predict-path checks
+- contextual PMF sensitivity checks
+- no-leakage checks
+- promote only if allow_promote=true and no_promote=false and all gates pass
+
+13S:
+- direct-lineup contextual PMF
+- direct-lineup training dataset
+- direct-lineup challenger
+- direct-lineup feature-list checks
+- direct-lineup sensitivity checks
+- validation gates
+- no-leakage checks
+- promote only if allow_promote=true and no_promote=false and all gates pass
+
+Never remove:
+- injury features
+- lineup features
+- live-context features
+- direct-lineup features
+- leakage checks
+- role_bucket logic
