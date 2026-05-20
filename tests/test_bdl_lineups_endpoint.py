@@ -100,8 +100,11 @@ def bdl_client(monkeypatch):
     """Import bdl_client with a fake BDL_API_KEY so module-level imports work."""
     monkeypatch.setenv("BDL_API_KEY", "test-key-for-tests")
     # Drop any cached import so the fixture is hermetic, then load the
-    # module directly from disk to bypass the package init.
-    sys.modules.pop("nba_props_model.data.bdl_client", None)
+    # module directly from disk to bypass the package init.  ``monkeypatch``
+    # is used so the ``sys.modules`` entry is restored to its prior value
+    # at fixture teardown (otherwise the fresh standalone-loaded module
+    # would leak into later tests).
+    monkeypatch.delitem(sys.modules, "nba_props_model.data.bdl_client", raising=False)
     return _load_bdl_client_standalone()
 
 
@@ -238,9 +241,18 @@ def fetcher(monkeypatch, tmp_path):
     pandas exercise the real path.
     """
     monkeypatch.setenv("BDL_API_KEY", "test-key-for-tests")
-    sys.modules.pop("nba_props_model.data.bdl_client", None)
-    sys.modules.pop("fetch_bdl_game_lineups", None)
-    sys.modules["pandas"] = None  # type: ignore[assignment]
+    # All ``sys.modules`` mutations go through ``monkeypatch`` so the
+    # state is restored at fixture teardown.  This is critical for the
+    # ``pandas`` entry below: without monkeypatch, the ``None`` sentinel
+    # we install to make ``import pandas`` raise ``ImportError`` would
+    # persist for the rest of the pytest process and any later test
+    # that tried to import pandas (directly or via a module that
+    # top-level imports pandas, e.g. ``audit_injury_lineup_run_modes``
+    # loaded by ``test_demote_injury_lineup_failures``) would crash with
+    # ``ModuleNotFoundError: import of pandas halted; None in sys.modules``.
+    monkeypatch.delitem(sys.modules, "nba_props_model.data.bdl_client", raising=False)
+    monkeypatch.delitem(sys.modules, "fetch_bdl_game_lineups", raising=False)
+    monkeypatch.setitem(sys.modules, "pandas", None)  # type: ignore[arg-type]
     _load_bdl_client_standalone()
 
     import fetch_bdl_game_lineups as fetcher_module  # noqa: WPS433
