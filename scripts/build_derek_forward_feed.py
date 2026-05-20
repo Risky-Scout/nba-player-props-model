@@ -1609,6 +1609,35 @@ def write_m88_unified_feed(
 
     out_df = pd.DataFrame(rows_out)
 
+    # DEREK_UNIFIED_REQUIRED_COLUMNS contract guard.
+    #
+    # Every row dict above stamps ``lineup_last_updated_utc`` explicitly
+    # (coalesced to ``None`` when upstream is null/missing — we never
+    # fabricate a timestamp). Pandas normally preserves the key as a
+    # nullable object column even when every row's value is ``None``,
+    # so this guard rarely fires under healthy upstreams.
+    #
+    # It exists for two real production failure modes observed on
+    # GitHub Actions runs (e.g. run 26186630356 on 2026-05-20):
+    #   1. The BDL lineup freshness manifest is absent for the date,
+    #      so canonical MODEL_ONLY (and therefore the
+    #      pmf_model_review_package/machine_readable/model_only.parquet
+    #      consumed by build_snapshot above) ships without the column,
+    #      and a stale on-disk morning_snapshot.parquet from a prior
+    #      run gets re-read here.
+    #   2. A future refactor that drops the literal key from the row
+    #      dict above would silently re-introduce
+    #      ``DEREK_FORWARD_FEED_CONTRACT_FAIL
+    #      missing_columns=['lineup_last_updated_utc']``.
+    #
+    # This guard ensures the persisted public files
+    # (``derek_forward_feed.{parquet,csv,jsonl}``) always satisfy
+    # ``DEREK_UNIFIED_REQUIRED_COLUMNS`` even when upstream is sparse.
+    # Null/blank values are allowed in projected/morning mode; we never
+    # fabricate ``pd.Timestamp.utcnow()`` or any other placeholder.
+    if "lineup_last_updated_utc" not in out_df.columns:
+        out_df["lineup_last_updated_utc"] = pd.NA
+
     # M8.9 — defensive publication guard.
     #
     # The PRIMARY player-universe gate is upstream projected
