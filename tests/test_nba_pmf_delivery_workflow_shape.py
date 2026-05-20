@@ -400,3 +400,41 @@ def test_selectable_jobs_gate_on_valid_skip_reason_empty(workflow, job_name):
 
     cond = workflow["jobs"][job_name].get("if", "")
     assert "needs.resolve_context.outputs.valid_skip_reason == ''" in cond
+
+
+# ── Commit/push retry-loop autostash regression guard ───────────────
+#
+# Regression context: predict smoke run 26159233882 (post PR #16 merge) failed
+# at the "Commit prediction artifacts + automation health" step with
+#   error: cannot pull with rebase: You have unstaged changes.
+# The retry loop "git pull --rebase origin main && git push origin HEAD:main"
+# was unable to fetch remote main because upstream steps in the same job
+# (refresh_daily_inputs.py, BDL settled-stat refresh, and verifiers like
+# verify_derek_woo_champion_dependency.py) mutate tracked files that the
+# explicit `git add` allow-list intentionally does NOT commit. The fix is to
+# use `git pull --rebase --autostash` in every commit/push retry loop so
+# leftover unstaged mutations get stashed and restored automatically.
+# The old `daily_pmf_delivery.yml` documents this as "Bug E" at e.g. lines
+# 230-238, 498-506, 650-658, 850, 1016 and solves it with an explicit
+# working-tree reset before the rebase loop.
+
+
+def test_commit_retry_loops_use_autostash(workflow_text):
+    """Every `git pull --rebase ... && git push` retry loop must use --autostash.
+
+    The failure-prone pattern was `git pull --rebase origin main && git push`.
+    The fixed pattern is `git pull --rebase --autostash origin main && git push`.
+    Asserting on the raw `&& git push` shape lets the post-checkout standalone
+    `git pull --rebase origin main || true` lines (which run against a clean
+    working tree right after checkout) keep their original shape.
+    """
+
+    failing = "git pull --rebase origin main && git push"
+    fixed = "git pull --rebase --autostash origin main && git push"
+    assert failing not in workflow_text, (
+        "commit/push retry loop missing --autostash; "
+        "this is the Bug-E regression from predict run 26159233882"
+    )
+    assert workflow_text.count(fixed) >= 1, (
+        "expected at least one autostashed commit/push retry loop"
+    )

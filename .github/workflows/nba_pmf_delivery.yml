@@ -308,7 +308,7 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "Refresh settled player stats (NBA PMF Delivery model chain)"
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 5
           done
           exit 1
@@ -352,7 +352,7 @@ jobs:
             -m "NBA PMF Delivery: model chain ${{ needs.resolve_context.outputs.as_of_date }}"
 
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 10
           done
 
@@ -471,7 +471,7 @@ jobs:
             -m "NBA PMF Delivery: phase8 calibration diagnostics ${{ needs.resolve_context.outputs.delivery_date }}"
 
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 10
           done
 
@@ -621,7 +621,7 @@ jobs:
             -m "NBA PMF Delivery: phase13 context chain ${{ needs.resolve_context.outputs.as_of_date }}"
 
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 10
           done
 
@@ -708,7 +708,7 @@ jobs:
             -m "NBA PMF Delivery: predict daily $D"
 
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 10
           done
 
@@ -886,7 +886,7 @@ jobs:
             -m "NBA PMF Delivery: delivery $D ${{ needs.resolve_context.outputs.mode }}"
 
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 10
           done
 
@@ -986,7 +986,7 @@ jobs:
             -m "NBA PMF Delivery: after-game scoring $D"
 
           for i in 1 2 3 4 5; do
-            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
             sleep 10
           done
 
