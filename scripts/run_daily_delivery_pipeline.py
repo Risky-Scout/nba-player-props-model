@@ -214,14 +214,58 @@ def _assert_predict_date_contract(date: str) -> None:
     print(f"PREDICT_DATE_CONTRACT_PASS date={date}")
 
 
-def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
+def _preflight_before_stat_grid(
+    date: str,
+    *,
+    availability_mode: str,
+    pipeline_mode: str | None = None,
+    force_run: bool = False,
+) -> int:
     """M8.6: rebuild today's availability slice, verify Odds API registry,
-    then enforce availability freshness before PMF stat grid."""
-    if FETCH_BDL_LINEUPS.exists():
-        _run(
-            [PYTHON, str(FETCH_BDL_LINEUPS), "--delivery-date", date],
-            label=f"fetch_bdl_game_lineups --delivery-date {date}",
+    then enforce availability freshness before PMF stat grid.
+
+    When ``pipeline_mode`` is provided, the BDL confirmed-lineup fetch is
+    gated by :func:`_lineup_policy_for_mode`. Morning / WoO modes skip
+    the confirmed fetch entirely (projected lineups are authoritative
+    for those modes). Derek near-lineup / close-lock run the fetch and
+    let downstream consumers + the manifest stamper record whether
+    confirmed lineups were actually available.
+
+    When ``pipeline_mode`` is ``None`` (legacy/back-compat callers and
+    tests), behavior is identical to the previous implementation —
+    the fetch always runs.
+    """
+
+    # Resolve and announce the lineup policy first so the runner log
+    # makes the decision explicit before any subprocess is invoked.
+    policy: dict | None = None
+    if pipeline_mode is not None:
+        policy = _lineup_policy_for_mode(pipeline_mode, force_run=force_run)
+
+    if policy is not None and not policy["fetch_confirmed_bdl_lineups"]:
+        print(
+            f"LINEUP_POLICY_PROJECTED_SKIP_CONFIRMED_FETCH "
+            f"mode={pipeline_mode} "
+            f"lineup_source_policy={policy['lineup_source_policy']} "
+            f"run_mode_stamp={policy['run_mode_stamp']}"
         )
+    else:
+        if FETCH_BDL_LINEUPS.exists():
+            if policy is not None:
+                marker = (
+                    "LINEUP_POLICY_CONFIRMED_FETCH_REQUIRED"
+                    if policy["confirmed_lineup_required"]
+                    else "LINEUP_POLICY_CONFIRMED_FETCH_PREFERRED"
+                )
+                print(
+                    f"{marker} mode={pipeline_mode} "
+                    f"lineup_source_policy={policy['lineup_source_policy']} "
+                    f"run_mode_stamp={policy['run_mode_stamp']}"
+                )
+            _run(
+                [PYTHON, str(FETCH_BDL_LINEUPS), "--delivery-date", date],
+                label=f"fetch_bdl_game_lineups --delivery-date {date}",
+            )
     if BUILD_AVAILABILITY.exists():
         _run(
             [PYTHON, str(BUILD_AVAILABILITY), "--slate-date", date],
@@ -241,6 +285,43 @@ def _preflight_before_stat_grid(date: str, *, availability_mode: str) -> int:
             ],
             label=f"verify_availability_freshness ({availability_mode})",
         )
+    # Emit the post-fetch lineup status payload so operators can grep a
+    # single line for "what did this run decide about lineups". The
+    # manifest stamper re-computes from the same artifact dir.
+    if policy is not None:
+        payload = _compute_lineup_status_payload(date, policy)
+        print(
+            "LINEUP_POLICY_PASS "
+            f"mode={pipeline_mode} "
+            f"lineup_source_policy={payload['lineup_source_policy']} "
+            f"run_mode_stamp={payload['run_mode_stamp']} "
+            f"lineup_confirmed={payload['lineup_confirmed']} "
+            f"lineup_status={payload['lineup_status']} "
+            f"confirmed_lineup_required={payload['confirmed_lineup_required']} "
+            f"projected_lineup_fallback_used={payload['projected_lineup_fallback_used']} "
+            f"force_run={force_run}"
+        )
+        if payload["projected_lineup_fallback_used"] and policy["fetch_confirmed_bdl_lineups"]:
+            print(
+                "LINEUP_POLICY_PROJECTED_FALLBACK_USED "
+                f"mode={pipeline_mode} "
+                f"lineup_status={payload['lineup_status']}"
+            )
+        # Close-lock without force_run: confirmed lineups are required.
+        # If the BDL artifact aggregate has zero confirmed games, this
+        # is a hard skip — never silently proceed with projected lineups
+        # for the close-lock contract.
+        if (
+            policy["confirmed_lineup_required"]
+            and not payload["lineup_confirmed"]
+        ):
+            print(
+                "::error::LINEUP_POLICY_CONFIRMED_LINEUP_MISSING "
+                f"mode={pipeline_mode} lineup_status={payload['lineup_status']}: "
+                "close-lock requires confirmed BDL lineups. Re-run with "
+                "force_run=true to override with a projected fallback."
+            )
+            sys.exit(1)
     return 0
 
 
@@ -416,7 +497,12 @@ def _predict_signaled_no_games_slate(date: str) -> str | None:
     return None
 
 
-def _emit_games_exist_delivery_manifest(date: str) -> None:
+def _emit_games_exist_delivery_manifest(
+    date: str,
+    *,
+    pipeline_mode: str | None = None,
+    force_run: bool = False,
+) -> None:
     """Write ``deliveries/<date>/manifest.json`` at the end of a
     successful games-exist run.
 
@@ -490,6 +576,10 @@ def _emit_games_exist_delivery_manifest(date: str) -> None:
         woo_run_manifest.is_file() and (rows_market or 0) > 0
     )
     derek_forward_feed_expected = True
+    lineup_policy_payload: dict | None = None
+    if pipeline_mode is not None:
+        policy = _lineup_policy_for_mode(pipeline_mode, force_run=force_run)
+        lineup_policy_payload = _compute_lineup_status_payload(date, policy)
     manifest = {
         "delivery_date": date,
         "reason": "games_exist",
@@ -499,6 +589,43 @@ def _emit_games_exist_delivery_manifest(date: str) -> None:
         "eligible_player_game_rows": eligible_player_game_rows,
         "market_superiority_evaluated": market_superiority_evaluated,
         "derek_forward_feed_expected": derek_forward_feed_expected,
+        "pipeline_mode": pipeline_mode,
+        "force_run": bool(force_run),
+        "lineup_source_policy": (
+            lineup_policy_payload["lineup_source_policy"]
+            if lineup_policy_payload is not None
+            else None
+        ),
+        "run_mode_stamp": (
+            lineup_policy_payload["run_mode_stamp"]
+            if lineup_policy_payload is not None
+            else None
+        ),
+        "lineup_confirmed": (
+            lineup_policy_payload["lineup_confirmed"]
+            if lineup_policy_payload is not None
+            else None
+        ),
+        "lineup_status": (
+            lineup_policy_payload["lineup_status"]
+            if lineup_policy_payload is not None
+            else None
+        ),
+        "confirmed_lineup_required": (
+            lineup_policy_payload["confirmed_lineup_required"]
+            if lineup_policy_payload is not None
+            else None
+        ),
+        "projected_lineup_fallback_used": (
+            lineup_policy_payload["projected_lineup_fallback_used"]
+            if lineup_policy_payload is not None
+            else None
+        ),
+        "bdl_lineup_artifact_aggregate": (
+            lineup_policy_payload["bdl_lineup_artifact_aggregate"]
+            if lineup_policy_payload is not None
+            else None
+        ),
         "canonical_source": {
             "player_prop_pmfs_tonight_MODEL_ONLY": (
                 str(pmfs_path.relative_to(REPO_ROOT)) if pmfs_path.is_file() else None
@@ -1236,6 +1363,251 @@ LEGACY_MODE_TO_RUN_STAMP: dict[str, str] = {
 }
 
 
+# ── Mode-aware lineup-source policy ────────────────────────────────────────
+#
+# Lineup policy rule (Phase 12D-amend, May 2026):
+#   * Morning / WoO morning runs use PROJECTED lineups. They MUST NOT
+#     require the BDL confirmed-lineup endpoint, because confirmed
+#     lineups generally do not populate until ~30 minutes before tip.
+#   * Afternoon WoO refresh uses projected lineups by default and may
+#     opportunistically pick up confirmed lineups if any are already
+#     posted. It does not gate on confirmed lineups.
+#   * Derek near-lineup (T-25) prefers confirmed BDL lineups; if not
+#     available it falls back to projected (or, under force_run, marks
+#     the delivery PROVISIONAL).
+#   * Close-lock (T-5) requires confirmed BDL lineups. Under force_run
+#     it may valid-skip with a clearly stamped projected fallback;
+#     otherwise unavailable confirmed lineups are a hard skip.
+#   * After-game and unspecified modes do not call the pre-stat-grid
+#     lineup preflight at all (the after-game path doesn't run it).
+#
+# This helper is the single source of truth. Tests target it directly.
+
+
+# Public lineup-source-policy enum values written into manifests and logs.
+LINEUP_SOURCE_POLICY_PROJECTED = "projected"
+LINEUP_SOURCE_POLICY_PROJECTED_PLUS_OPTIONAL_CONFIRMED = (
+    "projected_plus_optional_confirmed"
+)
+LINEUP_SOURCE_POLICY_CONFIRMED_BDL_PREFERRED = "confirmed_bdl_preferred"
+LINEUP_SOURCE_POLICY_CONFIRMED_BDL_REQUIRED = "confirmed_bdl_required"
+LINEUP_SOURCE_POLICY_NOT_APPLICABLE = "not_applicable"
+
+
+def _lineup_policy_for_mode(
+    mode: str,
+    *,
+    force_run: bool = False,
+) -> dict:
+    """Return the lineup-source policy for an internal pipeline mode.
+
+    Output keys:
+        lineup_source_policy:           one of LINEUP_SOURCE_POLICY_* constants
+        run_mode_stamp:                 RunMode-equivalent stamp
+        fetch_confirmed_bdl_lineups:    bool — whether to call fetch_bdl_game_lineups
+        confirmed_lineup_required:      bool — whether unavailable confirmed
+                                        lineups should fail the run
+        allow_projected_lineup_fallback: bool
+
+    ``force_run=True`` relaxes the ``confirmed_lineup_required`` gate for
+    close_lock so manual smoke tests can complete and stamp the delivery
+    as PROVISIONAL rather than fail outright.
+    """
+
+    m = (mode or "").strip()
+    morning_modes = {"morning", "woo_morning_monetization"}
+    afternoon_modes = {"woo_afternoon_refresh", "full_day"}
+    derek_modes = {"derek_pre_tipoff_refresh", "derek_near_lineup", "pre_close"}
+    close_lock_modes = {"close_lock"}
+    after_game_modes = {"after_game"}
+
+    if m in morning_modes:
+        return {
+            "mode": m,
+            "lineup_source_policy": LINEUP_SOURCE_POLICY_PROJECTED,
+            "run_mode_stamp": "morning_expected",
+            "fetch_confirmed_bdl_lineups": False,
+            "confirmed_lineup_required": False,
+            "allow_projected_lineup_fallback": True,
+        }
+    if m in afternoon_modes:
+        return {
+            "mode": m,
+            "lineup_source_policy": LINEUP_SOURCE_POLICY_PROJECTED_PLUS_OPTIONAL_CONFIRMED,
+            "run_mode_stamp": "morning_expected",
+            "fetch_confirmed_bdl_lineups": False,
+            "confirmed_lineup_required": False,
+            "allow_projected_lineup_fallback": True,
+        }
+    if m in derek_modes:
+        return {
+            "mode": m,
+            "lineup_source_policy": LINEUP_SOURCE_POLICY_CONFIRMED_BDL_PREFERRED,
+            "run_mode_stamp": "t25",
+            "fetch_confirmed_bdl_lineups": True,
+            # Derek T-25 prefers confirmed lineups but never hard-fails on
+            # their absence — falling back to projected with status logging
+            # is the documented contract; force_run does not change this.
+            "confirmed_lineup_required": False,
+            "allow_projected_lineup_fallback": True,
+        }
+    if m in close_lock_modes:
+        return {
+            "mode": m,
+            "lineup_source_policy": LINEUP_SOURCE_POLICY_CONFIRMED_BDL_REQUIRED,
+            "run_mode_stamp": "t5",
+            "fetch_confirmed_bdl_lineups": True,
+            # Under force_run (manual smoke / explicit override) close-lock
+            # may proceed with a projected fallback so the operator can
+            # complete an end-to-end smoke. The status payload still
+            # stamps the delivery as PROVISIONAL in that case.
+            "confirmed_lineup_required": not bool(force_run),
+            "allow_projected_lineup_fallback": bool(force_run),
+        }
+    if m in after_game_modes:
+        return {
+            "mode": m,
+            "lineup_source_policy": LINEUP_SOURCE_POLICY_NOT_APPLICABLE,
+            "run_mode_stamp": "final_after_game",
+            "fetch_confirmed_bdl_lineups": False,
+            "confirmed_lineup_required": False,
+            "allow_projected_lineup_fallback": False,
+        }
+    # Unknown / unspecified mode: behave as projected morning to avoid
+    # accidentally requiring the BDL confirmed endpoint.
+    return {
+        "mode": m,
+        "lineup_source_policy": LINEUP_SOURCE_POLICY_PROJECTED,
+        "run_mode_stamp": LEGACY_MODE_TO_RUN_STAMP.get(m, "unspecified"),
+        "fetch_confirmed_bdl_lineups": False,
+        "confirmed_lineup_required": False,
+        "allow_projected_lineup_fallback": True,
+    }
+
+
+def _aggregate_lineup_status_from_artifacts(date: str) -> dict:
+    """Aggregate per-game ``artifacts/live_lineups/<date>/<gid>/lineup_status.json``
+    payloads (written by ``scripts/fetch_bdl_game_lineups.py``) into a
+    single summary.
+
+    Returns a dict with:
+        any_confirmed:           bool — at least one game has lineup_confirmed=true
+        all_confirmed:           bool — every game in the artifact dir is confirmed
+        game_count:              int
+        unavailable_yet_count:   int
+        confirmed_count:         int
+        per_game_statuses:       list[str]
+        worst_status:            str (best-effort summary)
+        artifact_dir_exists:     bool
+
+    Missing/empty artifact dir is reported, not raised.
+    """
+
+    live = REPO_ROOT / "artifacts" / "live_lineups" / date
+    if not live.is_dir():
+        return {
+            "artifact_dir_exists": False,
+            "game_count": 0,
+            "confirmed_count": 0,
+            "unavailable_yet_count": 0,
+            "any_confirmed": False,
+            "all_confirmed": False,
+            "per_game_statuses": [],
+            "worst_status": "no_artifact",
+        }
+    statuses: list[str] = []
+    confirmed = 0
+    unavailable_yet = 0
+    game_count = 0
+    for gid_dir in sorted(live.iterdir()):
+        if not gid_dir.is_dir():
+            continue
+        f = gid_dir / "lineup_status.json"
+        if not f.is_file():
+            continue
+        try:
+            payload = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        game_count += 1
+        s = str(payload.get("lineup_status") or payload.get("status") or "unknown")
+        if bool(payload.get("lineup_confirmed", False)):
+            confirmed += 1
+            statuses.append("confirmed")
+        else:
+            blocker = str(payload.get("lineup_blocker") or "")
+            if "not_available_yet" in blocker or "not_available_yet" in s:
+                unavailable_yet += 1
+                statuses.append("confirmed_lineups_not_available_yet")
+            else:
+                statuses.append(s or "unknown")
+    any_conf = confirmed > 0
+    all_conf = game_count > 0 and confirmed == game_count
+    if all_conf:
+        worst = "confirmed"
+    elif unavailable_yet > 0 and unavailable_yet == game_count:
+        worst = "confirmed_lineups_not_available_yet"
+    elif game_count == 0:
+        worst = "no_artifact"
+    else:
+        worst = "mixed"
+    return {
+        "artifact_dir_exists": True,
+        "game_count": game_count,
+        "confirmed_count": confirmed,
+        "unavailable_yet_count": unavailable_yet,
+        "any_confirmed": any_conf,
+        "all_confirmed": all_conf,
+        "per_game_statuses": statuses,
+        "worst_status": worst,
+    }
+
+
+def _compute_lineup_status_payload(
+    date: str,
+    policy: dict,
+) -> dict:
+    """Combine the mode policy and the BDL lineup artifact aggregation
+    into the manifest-stampable lineup-source payload.
+
+    Used by both the in-pipeline logging in ``_preflight_before_stat_grid``
+    and by ``_emit_games_exist_delivery_manifest``.
+    """
+
+    agg = _aggregate_lineup_status_from_artifacts(date)
+    confirmed = bool(agg["all_confirmed"])
+    if confirmed:
+        lineup_status = "confirmed"
+        fallback_used = False
+    elif policy.get("fetch_confirmed_bdl_lineups"):
+        # Fetched but confirmed lineups not (yet) populated.
+        lineup_status = (
+            "confirmed_lineups_not_available_yet"
+            if agg["worst_status"] in {
+                "confirmed_lineups_not_available_yet",
+                "no_artifact",
+            }
+            else agg["worst_status"]
+        )
+        fallback_used = bool(policy.get("allow_projected_lineup_fallback"))
+    else:
+        # Morning / afternoon — projected by design, no fetch performed.
+        lineup_status = "projected_pre_game"
+        fallback_used = True
+    return {
+        "lineup_source_policy": policy["lineup_source_policy"],
+        "run_mode_stamp": policy["run_mode_stamp"],
+        "lineup_confirmed": confirmed,
+        "lineup_status": lineup_status,
+        "confirmed_lineup_required": bool(policy["confirmed_lineup_required"]),
+        "projected_lineup_fallback_used": fallback_used,
+        "fetch_confirmed_bdl_lineups_invoked": bool(
+            policy.get("fetch_confirmed_bdl_lineups")
+        ),
+        "bdl_lineup_artifact_aggregate": agg,
+    }
+
+
 def _predictions_or_stat_grid_exists(date: str) -> bool:
     p1 = REPO_ROOT / "predictions" / f"all_props_{date}.parquet"
     p2 = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
@@ -1389,7 +1761,7 @@ def _verify_m88_delivery_bundle(
 
 
 def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
-                  do_predict: bool) -> int:
+                  do_predict: bool, force_run: bool = False) -> int:
     """Manual-only legacy backfill (Phase 12D retired the morning cron).
     Builds the canonical morning delivery and Derek's morning snapshot,
     but **does not** publish a WoO public export — the WoO monetization
@@ -1401,7 +1773,12 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
         return 0
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
-    _preflight_before_stat_grid(date, availability_mode="close_lock")
+    _preflight_before_stat_grid(
+        date,
+        availability_mode="close_lock",
+        pipeline_mode="morning",
+        force_run=force_run,
+    )
     seed = _materialize_precanonical_seed(date, run_mode_stamp="morning_expected")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
@@ -1415,13 +1792,18 @@ def run_morning(date: str, *, regions: list[str], rebuild_canonical: bool,
     _derek_game_snapshots_from_delivery(date, snapshot_type="morning")
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
-    _emit_games_exist_delivery_manifest(date)
+    _emit_games_exist_delivery_manifest(
+        date,
+        pipeline_mode="morning",
+        force_run=force_run,
+    )
     return 0
 
 
 def run_woo_morning_monetization(
     date: str, *, regions: list[str], rebuild_canonical: bool,
     do_predict: bool,
+    force_run: bool = False,
 ) -> int:
     """Phase 12D-amend mode 1 — first WoO public run of the day.
 
@@ -1436,7 +1818,12 @@ def run_woo_morning_monetization(
         return 0
     _refresh(date, snapshot_type="morning_7am", no_odds_fetch=False,
               regions=regions)
-    _preflight_before_stat_grid(date, availability_mode="close_lock")
+    _preflight_before_stat_grid(
+        date,
+        availability_mode="close_lock",
+        pipeline_mode="woo_morning_monetization",
+        force_run=force_run,
+    )
     seed = _materialize_precanonical_seed(date, run_mode_stamp="morning_expected")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
@@ -1455,12 +1842,17 @@ def run_woo_morning_monetization(
     )
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
-    _emit_games_exist_delivery_manifest(date)
+    _emit_games_exist_delivery_manifest(
+        date,
+        pipeline_mode="woo_morning_monetization",
+        force_run=force_run,
+    )
     return 0
 
 
 def run_woo_afternoon_refresh(
     date: str, *, regions: list[str], rebuild_canonical: bool,
+    force_run: bool = False,
 ) -> int:
     """Phase 12D-amend mode 2 — mid-afternoon WoO public refresh.
 
@@ -1472,7 +1864,12 @@ def run_woo_afternoon_refresh(
         return 0
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
-    _preflight_before_stat_grid(date, availability_mode="close_lock")
+    _preflight_before_stat_grid(
+        date,
+        availability_mode="close_lock",
+        pipeline_mode="woo_afternoon_refresh",
+        force_run=force_run,
+    )
     seed = _materialize_precanonical_seed(date, run_mode_stamp="morning_expected")
     fs = _feature_snapshot(date, run_mode_stamp="morning_expected", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="morning_expected", path=fs)
@@ -1489,12 +1886,17 @@ def run_woo_afternoon_refresh(
     )
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
-    _emit_games_exist_delivery_manifest(date)
+    _emit_games_exist_delivery_manifest(
+        date,
+        pipeline_mode="woo_afternoon_refresh",
+        force_run=force_run,
+    )
     return 0
 
 
 def run_derek_pre_tipoff_refresh(
     date: str, *, regions: list[str], rebuild_canonical: bool,
+    force_run: bool = False,
 ) -> int:
     """Phase 12D-amend mode 3 — Derek's first evaluation-grade snapshot.
 
@@ -1512,7 +1914,12 @@ def run_derek_pre_tipoff_refresh(
         return 0
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
-    _preflight_before_stat_grid(date, availability_mode="close_lock")
+    _preflight_before_stat_grid(
+        date,
+        availability_mode="close_lock",
+        pipeline_mode="derek_pre_tipoff_refresh",
+        force_run=force_run,
+    )
     seed = _materialize_precanonical_seed(date, run_mode_stamp="t25")
     fs = _feature_snapshot(date, run_mode_stamp="t25", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="t25", path=fs)
@@ -1533,7 +1940,11 @@ def run_derek_pre_tipoff_refresh(
     _m86_event_market_validation_bundle(date)
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
-    _emit_games_exist_delivery_manifest(date)
+    _emit_games_exist_delivery_manifest(
+        date,
+        pipeline_mode="derek_pre_tipoff_refresh",
+        force_run=force_run,
+    )
     return 0
 
 
@@ -1545,12 +1956,18 @@ def run_derek_near_lineup(*args, **kwargs):
 
 
 def run_close_lock(date: str, *, regions: list[str],
-                     rebuild_canonical: bool) -> int:
+                     rebuild_canonical: bool,
+                     force_run: bool = False) -> int:
     if _short_circuit_if_no_games(date):
         return 0
     _refresh(date, snapshot_type="close_or_lock", no_odds_fetch=False,
               regions=regions)
-    _preflight_before_stat_grid(date, availability_mode="close_lock")
+    _preflight_before_stat_grid(
+        date,
+        availability_mode="close_lock",
+        pipeline_mode="close_lock",
+        force_run=force_run,
+    )
     seed = _materialize_precanonical_seed(date, run_mode_stamp="t5")
     fs = _feature_snapshot(date, run_mode_stamp="t5", precanonical_seed_path=seed)
     fs = _require_feature_snapshot(date=date, run_mode_stamp="t5", path=fs)
@@ -1571,7 +1988,11 @@ def run_close_lock(date: str, *, regions: list[str],
     _m86_event_market_validation_bundle(date)
     _ensure_after_game_scoring_pending_placeholder(date)
     _refresh_index()
-    _emit_games_exist_delivery_manifest(date)
+    _emit_games_exist_delivery_manifest(
+        date,
+        pipeline_mode="close_lock",
+        force_run=force_run,
+    )
     return 0
 
 
@@ -1718,18 +2139,23 @@ def run_after_game(date: str) -> tuple[int, bool]:
 
 
 def run_full_day(date: str, *, regions: list[str],
-                   rebuild_canonical: bool, do_predict: bool) -> int:
+                   rebuild_canonical: bool, do_predict: bool,
+                   force_run: bool = False) -> int:
     run_woo_morning_monetization(
         date, regions=regions, rebuild_canonical=rebuild_canonical,
         do_predict=do_predict,
+        force_run=force_run,
     )
     run_woo_afternoon_refresh(
         date, regions=regions, rebuild_canonical=False,
+        force_run=force_run,
     )
     run_derek_near_lineup(
         date, regions=regions, rebuild_canonical=False,
+        force_run=force_run,
     )
-    run_close_lock(date, regions=regions, rebuild_canonical=False)
+    run_close_lock(date, regions=regions, rebuild_canonical=False,
+                     force_run=force_run)
     run_after_game(date)  # tuple return — full_day ignores skip_verify
     return 0
 
@@ -1831,6 +2257,7 @@ def main() -> int:
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
             do_predict=args.predict,
+            force_run=bool(args.force_run),
         )
     elif internal == "woo_morning_monetization":
         rc = run_woo_morning_monetization(
@@ -1838,24 +2265,28 @@ def main() -> int:
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
             do_predict=args.predict,
+            force_run=bool(args.force_run),
         )
     elif internal == "woo_afternoon_refresh":
         rc = run_woo_afternoon_refresh(
             args.date,
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
+            force_run=bool(args.force_run),
         )
     elif internal in {"derek_pre_tipoff_refresh", "derek_near_lineup", "pre_close"}:
         rc = run_derek_pre_tipoff_refresh(
             args.date,
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
+            force_run=bool(args.force_run),
         )
     elif internal == "close_lock":
         rc = run_close_lock(
             args.date,
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
+            force_run=bool(args.force_run),
         )
     elif internal == "after_game":
         rc, skip_verify = run_after_game(args.date)
@@ -1868,6 +2299,7 @@ def main() -> int:
             regions=args.regions,
             rebuild_canonical=args.rebuild_canonical,
             do_predict=args.predict,
+            force_run=bool(args.force_run),
         )
     else:
         return 1
