@@ -740,15 +740,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Preserve Derek unique summary hash before delivery
+      - name: Note existing Derek unique summary hash before delivery
         id: unique_before
+        # Informational only. The delivery pipeline is allowed to (and is
+        # often required to) regenerate the current-date
+        # `derek_unique_props_summary.csv` (e.g. derek_near_lineup,
+        # close_lock, woo_morning_monetization on the first run of the
+        # day). The post-processing guard further down compares the
+        # hash *after* the pipeline to the hash *after* post-processing,
+        # so it is the post-processing tooling (strip / previews / CSV
+        # size contract) that is forbidden from mutating the file.
         run: |
+          set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
           P="deliveries/$D/derek_forward_feed/derek_unique_props_summary.csv"
           if [ -f "$P" ]; then
             echo "hash=$(shasum -a 256 "$P" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "hash=missing" >> "$GITHUB_OUTPUT"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Predictions readiness gate (force-run if requested)
@@ -799,6 +810,53 @@ jobs:
 
           python3 scripts/run_daily_delivery_pipeline.py "${ARGS[@]}"
 
+      - name: Capture Derek unique summary hash after pipeline generation
+        id: derek_unique_after_pipeline
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        # The delivery pipeline (run_daily_delivery_pipeline.py +
+        # build_derek_forward_feed.py) is the authoritative writer of
+        # `deliveries/<date>/derek_forward_feed/derek_unique_props_summary.csv`.
+        # Capture its hash here so the later post-processing guard can
+        # verify that strip_empty_delivery_columns / write_delivery_review_previews
+        # / enforce_delivery_csv_size_contract do not mutate this file.
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          P="deliveries/$D/derek_forward_feed/derek_unique_props_summary.csv"
+
+          if [ ! -f "$P" ]; then
+            echo "::error::Missing $P after delivery pipeline"
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+          import sys
+
+          p = Path("deliveries/${{ needs.resolve_context.outputs.delivery_date }}/derek_forward_feed/derek_unique_props_summary.csv")
+          expected = [
+              "player_name",
+              "projected_minutes",
+              "stat",
+              "pmf_mean",
+              "market_line",
+              "p_over",
+          ]
+          df = pd.read_csv(p)
+          cols = list(df.columns)
+          if cols != expected:
+              print(f"::error::Unexpected derek_unique_props_summary.csv columns: {cols}; expected {expected}")
+              sys.exit(1)
+          print(f"DEREK_UNIQUE_SUMMARY_SCHEMA_PASS rows={len(df)} columns={cols}")
+          PY
+
+          AFTER_PIPELINE_HASH="$(shasum -a 256 "$P" | awk '{print $1}')"
+          ROWS="$(python3 -c 'import pandas as pd, sys; print(len(pd.read_csv(sys.argv[1])))' "$P")"
+          echo "hash=$AFTER_PIPELINE_HASH" >> "$GITHUB_OUTPUT"
+          echo "rows=$ROWS" >> "$GITHUB_OUTPUT"
+          echo "DEREK_UNIQUE_SUMMARY_AFTER_PIPELINE hash=$AFTER_PIPELINE_HASH rows=$ROWS"
+
       - name: Delivery hygiene, previews, champion stamps, and CSV size contract
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -815,27 +873,62 @@ jobs:
             --preserve derek_forward_feed/derek_unique_props_summary.csv \
             --write
 
-      - name: Assert Derek unique summary was not changed
+      - name: Assert Derek unique summary was not changed by post-processing
         if: steps.predict_gate.outputs.should_proceed == 'true'
+        # The delivery pipeline is the authoritative writer of
+        # derek_unique_props_summary.csv for the current slate. The
+        # *post-processing* tooling (strip_empty_delivery_columns,
+        # write_delivery_review_previews, enforce_delivery_csv_size_contract)
+        # must NOT mutate this file. This step compares the post-pipeline
+        # hash to the post-postprocessing hash and re-asserts the strict
+        # six-column public contract.
         run: |
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
           P="deliveries/$D/derek_forward_feed/derek_unique_props_summary.csv"
 
-          BEFORE="${{ steps.unique_before.outputs.hash }}"
-          if [ "$BEFORE" = "missing" ]; then
-            echo "No existing derek_unique_props_summary.csv to preserve."
-            exit 0
-          fi
-
-          AFTER="$(shasum -a 256 "$P" | awk '{print $1}')"
-          echo "before=$BEFORE"
-          echo "after =$AFTER"
-
-          if [ "$BEFORE" != "$AFTER" ]; then
-            echo "::error::derek_unique_props_summary.csv changed during this run. This is not allowed."
+          if [ ! -f "$P" ]; then
+            echo "::error::Missing $P after delivery post-processing"
             exit 1
           fi
+
+          AFTER_PIPELINE="${{ steps.derek_unique_after_pipeline.outputs.hash }}"
+          AFTER_POSTPROCESS="$(shasum -a 256 "$P" | awk '{print $1}')"
+
+          echo "after_pipeline =$AFTER_PIPELINE"
+          echo "after_postproc=$AFTER_POSTPROCESS"
+
+          if [ -z "$AFTER_PIPELINE" ]; then
+            echo "::error::after-pipeline hash is empty; capture step must run before post-processing"
+            exit 1
+          fi
+
+          if [ "$AFTER_PIPELINE" != "$AFTER_POSTPROCESS" ]; then
+            echo "::error::derek_unique_props_summary.csv was changed by post-processing. This is not allowed."
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+          import sys
+
+          p = Path("deliveries/${{ needs.resolve_context.outputs.delivery_date }}/derek_forward_feed/derek_unique_props_summary.csv")
+          expected = [
+              "player_name",
+              "projected_minutes",
+              "stat",
+              "pmf_mean",
+              "market_line",
+              "p_over",
+          ]
+          df = pd.read_csv(p)
+          cols = list(df.columns)
+          if cols != expected:
+              print(f"::error::Unexpected final derek_unique_props_summary.csv columns: {cols}; expected {expected}")
+              sys.exit(1)
+          print(f"DEREK_UNIQUE_SUMMARY_POSTPROCESS_GUARD_PASS rows={len(df)}")
+          PY
 
       - name: Delivery verifiers
         if: steps.predict_gate.outputs.should_proceed == 'true'

@@ -263,12 +263,23 @@ def test_delivery_preserves_derek_unique_summary(workflow_text):
 
 
 def test_delivery_hash_protects_derek_unique_summary(workflow):
-    """The hash-before / hash-after / fail-on-change guard is wired in delivery."""
+    """The hash-after-pipeline / hash-after-postprocess / fail-on-change guard
+    is wired in delivery. The pre-pipeline note step is informational only and
+    must NOT block current-date generation by the delivery pipeline; the
+    failure semantics live in the post-processing guard.
+    """
 
     steps = workflow["jobs"]["delivery_build"]["steps"]
     names = [s.get("name", "") for s in steps if isinstance(s, dict)]
-    assert any("Preserve Derek unique summary hash" in n for n in names)
-    assert any("Assert Derek unique summary was not changed" in n for n in names)
+    assert any("Note existing Derek unique summary hash" in n for n in names)
+    assert any(
+        "Capture Derek unique summary hash after pipeline generation" in n
+        for n in names
+    )
+    assert any(
+        "Assert Derek unique summary was not changed by post-processing" in n
+        for n in names
+    )
 
 
 def test_delivery_depends_only_on_resolve_context_and_readiness(workflow):
@@ -437,4 +448,68 @@ def test_commit_retry_loops_use_autostash(workflow_text):
     )
     assert workflow_text.count(fixed) >= 1, (
         "expected at least one autostashed commit/push retry loop"
+    )
+
+
+# ── Derek unique summary post-processing guard regression guard ─────
+#
+# Regression context: Derek near-lineup smoke run 26164363728 (post PR #17
+# merge) failed at the "Assert Derek unique summary was not changed" step
+# because the previous guard compared the *pre-pipeline* hash to the
+# *post-pipeline+post-processing* hash. The delivery pipeline is the
+# authoritative writer of the current-slate
+# `deliveries/<date>/derek_forward_feed/derek_unique_props_summary.csv`,
+# so the previous shape effectively forbade any same-day refresh by
+# Derek modes (derek_near_lineup, close_lock) once WoO morning had built
+# the first version.
+#
+# Correct shape:
+#   pre-pipeline hash    -> informational only, never used to fail
+#   pipeline runs        -> may regenerate the current-date summary
+#   after-pipeline hash  -> captured by `derek_unique_after_pipeline`
+#   post-processing runs -> strip / previews / CSV size contract
+#   after-postproc hash  -> compared to after-pipeline hash
+#   FAIL only if post-processing changed the file
+#
+# Additionally, both the after-pipeline capture step and the post-process
+# guard step re-assert the strict six-column public contract:
+#   player_name, projected_minutes, stat, pmf_mean, market_line, p_over
+
+
+def test_derek_unique_summary_guard_allows_pipeline_generation_but_blocks_postprocessing_mutation(
+    workflow_text,
+):
+    """The Derek guard must allow same-day pipeline regeneration but block
+    any post-processing mutation, with the strict 6-column contract enforced
+    at both the after-pipeline capture step and the post-process guard step.
+    """
+
+    # Required new step names and pass markers.
+    assert (
+        "Capture Derek unique summary hash after pipeline generation"
+        in workflow_text
+    )
+    assert (
+        "Assert Derek unique summary was not changed by post-processing"
+        in workflow_text
+    )
+    assert "DEREK_UNIQUE_SUMMARY_SCHEMA_PASS" in workflow_text
+    assert "DEREK_UNIQUE_SUMMARY_POSTPROCESS_GUARD_PASS" in workflow_text
+    assert "was changed by post-processing" in workflow_text
+
+    # The post-processing guard must reference the after-pipeline hash, not
+    # the informational pre-pipeline hash.
+    assert (
+        "steps.derek_unique_after_pipeline.outputs.hash" in workflow_text
+    )
+
+    # The old failure semantics must not return: the pre-pipeline hash must
+    # never be used to fail the run.
+    forbidden = (
+        "derek_unique_props_summary.csv changed during this run. "
+        "This is not allowed."
+    )
+    assert forbidden not in workflow_text, (
+        "The pre-pipeline hash must NOT be used to fail current-date "
+        "delivery regeneration; only post-processing mutation may fail."
     )
