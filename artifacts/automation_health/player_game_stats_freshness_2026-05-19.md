@@ -1,6 +1,6 @@
 # Player game stats freshness — 2026-05-19
 
-_Generated 2026-05-20T12:11:11+00:00._
+_Generated 2026-05-20T16:07:36+00:00._
 
 - backfill window: **2026-05-13 → 2026-05-19**
 - status: **PASS**
@@ -8,4 +8,4 @@ _Generated 2026-05-20T12:11:11+00:00._
 - min game_date: `2023-10-24`
 - max game_date: `2026-05-19`
 - duplicate (game_id, player_id) rows: `0`
-- rows added by this run: **19**
+- rows added by this run: **0**
