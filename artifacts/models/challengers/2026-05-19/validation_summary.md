@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-20T17:29:18+00:00 |
+| Generated (UTC) | 2026-05-20T22:56:21+00:00 |
 | Promote | no |
 | Reason | gate_failed:nll_improves_or_non_worse |
 | Champion model_version | challenger-2026-04-30 |
