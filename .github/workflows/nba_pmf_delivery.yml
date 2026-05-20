@@ -865,6 +865,11 @@ jobs:
 
           python3 scripts/stamp_delivery_champion_metadata.py --delivery-date "$D" || true
           python3 scripts/strip_empty_delivery_columns.py --date "$D" --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date "$D" \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           python3 scripts/write_delivery_review_previews.py --date "$D"
 
           python3 scripts/enforce_delivery_csv_size_contract.py \
