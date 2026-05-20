@@ -319,6 +319,9 @@ def main() -> int:
     print(f"  base-component rows: {len(oof_base):,}")
     print(f"  base stats present: {sorted(oof_base['stat'].astype(str).unique())}")
 
+    # Build per-player-game record dict. Records carry whatever base stats
+    # are available (no global "all 5 base stats" filter — combo eligibility
+    # is decided per-combo below using COMBO_DEFS).
     print("  building per-player-game record dict...")
     records: dict[tuple[int, int], dict] = {}
     for (pid, gid), grp in oof_base.groupby(["player_id", "game_id"], sort=False):
@@ -332,85 +335,214 @@ def main() -> int:
             s = str(r["stat"])
             rec["pmf"][s] = np.asarray(r["pmf"], dtype=np.float64)
             rec["outcome"][s] = int(r["outcome"])
-        if set(rec["pmf"].keys()) >= set(BASE_COMPONENT_STATS):
-            records[(int(pid), int(gid))] = rec
+        records[(int(pid), int(gid))] = rec
 
-    print(f"  player-game records (with all 5 base stats): {len(records):,}")
+    print(f"  player-game records: {len(records):,}")
 
     if args.limit is not None and args.limit > 0:
         keys = list(records.keys())[: args.limit]
         records = {k: records[k] for k in keys}
         print(f"  --limit applied: processing {len(records):,} records")
 
-    print("  computing per-date prior correlation matrices...")
-    keys_by_date: dict[str, list[tuple[int, int]]] = {}
-    for k, rec in records.items():
-        keys_by_date.setdefault(rec["game_date"], []).append(k)
-    unique_dates = sorted(keys_by_date.keys())
-    print(f"  unique game_dates: {len(unique_dates)} (range {unique_dates[0]} -> {unique_dates[-1]})")
+    available_base_stats = sorted({s for rec in records.values() for s in rec["pmf"].keys()})
+    print(f"  available base stats across records: {available_base_stats}")
 
-    # Staleness flagging (M5C-amend Phase 2)
+    # Per-combo eligibility: each record contributes only to combos whose
+    # required components are all present in the record's pmf keys.
+    records_by_combo: dict[str, dict[tuple[int, int], dict]] = {}
+    keys_by_date_combo: dict[str, dict[str, list[tuple[int, int]]]] = {}
+    for canonical, (_, components) in COMBO_DEFS.items():
+        comp_set = set(components)
+        eligible = {
+            k: rec for k, rec in records.items() if comp_set.issubset(rec["pmf"].keys())
+        }
+        records_by_combo[canonical] = eligible
+        kbd: dict[str, list[tuple[int, int]]] = {}
+        for k, rec in eligible.items():
+            kbd.setdefault(rec["game_date"], []).append(k)
+        keys_by_date_combo[canonical] = kbd
+
+    combos_attempted = list(COMBO_DEFS.keys())
+    combos_built_records: list[dict] = []
+    combos_skipped: list[dict] = []
+    skip_reasons: dict[str, str] = {}
+    for canonical, (_, components) in COMBO_DEFS.items():
+        n_eligible = len(records_by_combo[canonical])
+        print(
+            f"  COMBO_OOF_ELIGIBILITY combo={canonical} "
+            f"eligible_records={n_eligible} "
+            f"required_components={list(components)}"
+        )
+        if n_eligible == 0:
+            missing = [c for c in components if c not in available_base_stats]
+            if missing:
+                reason = f"missing components: {', '.join(missing)}"
+            else:
+                reason = "no eligible records (records missing at least one required component)"
+            combos_skipped.append({"combo": canonical, "reason": reason})
+            skip_reasons[canonical] = reason
+
+    total_eligible = sum(len(r) for r in records_by_combo.values())
+
+    # Global date window for staleness flagging. Falls back to as-of-date
+    # when no records are available so the manifest can still be written.
     from datetime import date as _date_cls
-    oof_window_start = str(unique_dates[0])
-    oof_window_end = str(unique_dates[-1])
-    training_cutoff_date = oof_window_end
     if args.as_of_date:
         as_of_date_obj = _date_cls.fromisoformat(args.as_of_date)
     else:
         as_of_date_obj = datetime.now(timezone.utc).date()
     as_of_date_str = as_of_date_obj.isoformat()
-    _end_d = _date_cls.fromisoformat(oof_window_end)
-    days_since_oof_window_end = (as_of_date_obj - _end_d).days
-    if days_since_oof_window_end > STALENESS_WARN_DAYS:
-        dataset_status = DATASET_STATUS_STALE
-        path_building_warning = (
-            f"Source OOF window ends {oof_window_end}; as-of date {as_of_date_str} "
-            f"is {days_since_oof_window_end} days later (>{STALENESS_WARN_DAYS}-day threshold). "
-            f"Combo OOF rows are derived from stale base OOF and MUST NOT be used for "
-            f"production-elite calibrator fitting until base OOF is refreshed."
-        )
+
+    all_record_dates = sorted({rec["game_date"] for rec in records.values()})
+    if all_record_dates:
+        oof_window_start = str(all_record_dates[0])
+        oof_window_end = str(all_record_dates[-1])
+        training_cutoff_date = oof_window_end
+        _end_d = _date_cls.fromisoformat(oof_window_end)
+        days_since_oof_window_end = (as_of_date_obj - _end_d).days
+        if days_since_oof_window_end > STALENESS_WARN_DAYS:
+            dataset_status = DATASET_STATUS_STALE
+            path_building_warning = (
+                f"Source OOF window ends {oof_window_end}; as-of date {as_of_date_str} "
+                f"is {days_since_oof_window_end} days later (>{STALENESS_WARN_DAYS}-day threshold). "
+                f"Combo OOF rows are derived from stale base OOF and MUST NOT be used for "
+                f"production-elite calibrator fitting until base OOF is refreshed."
+            )
+        else:
+            dataset_status = DATASET_STATUS_FRESH
+            path_building_warning = ""
     else:
-        dataset_status = DATASET_STATUS_FRESH
-        path_building_warning = ""
+        oof_window_start = ""
+        oof_window_end = ""
+        training_cutoff_date = ""
+        days_since_oof_window_end = -1
+        dataset_status = DATASET_STATUS_STALE
+        path_building_warning = "No player-game records found in source OOF."
     production_promoted = False
     final_calibration_ready = False
-    print(f"  staleness: dataset_status={dataset_status} "
-          f"oof_window={oof_window_start}..{oof_window_end} "
-          f"as_of={as_of_date_str} days_since_end={days_since_oof_window_end}")
+    print(
+        f"  staleness: dataset_status={dataset_status} "
+        f"oof_window={oof_window_start}..{oof_window_end} "
+        f"as_of={as_of_date_str} days_since_end={days_since_oof_window_end}"
+    )
 
-    record_outcomes = {
-        k: np.array([rec["outcome"][s] for s in BASE_COMPONENT_STATS], dtype=np.float64)
-        for k, rec in records.items()
+    combo_requirements = {
+        canonical: list(components)
+        for canonical, (_, components) in COMBO_DEFS.items()
     }
 
-    correlation_by_date: dict[str, np.ndarray | None] = {}
+    # Empty-data guard. NEVER access unique_dates[0]/[-1] (or any equivalent)
+    # on an empty container. When no combo has any eligible records, write a
+    # structured no-eligible-records manifest and exit with a clear marker so
+    # the workflow fails closed rather than crashing with an IndexError.
+    if total_eligible == 0:
+        manifest = {
+            "schema_version": "1.0",
+            "input": str(in_path),
+            "output": str(out_path),
+            "source_oof_path": SOURCE_OOF_PATH,
+            "rows": 0,
+            "player_games": len(records),
+            "combos_canonical": list(COMBO_DEFS.keys()),
+            "combos_mission": [v[0] for v in COMBO_DEFS.values()],
+            "combo_pmf_version": COMBO_PMF_VERSION,
+            "dataset_status": dataset_status,
+            "oof_window_start": oof_window_start,
+            "oof_window_end": oof_window_end,
+            "training_cutoff_date": training_cutoff_date,
+            "as_of_date": as_of_date_str,
+            "days_since_oof_window_end": days_since_oof_window_end,
+            "path_building_warning": path_building_warning,
+            "production_promoted": production_promoted,
+            "final_calibration_ready": final_calibration_ready,
+            "staleness_warn_days": STALENESS_WARN_DAYS,
+            "method_counts": {},
+            "n_draws_default": int(args.n_draws),
+            "min_prior_rows_for_copula": int(args.min_prior_rows),
+            "n_copula_dates": 0,
+            "n_cold_start_dates": 0,
+            "calibrated": False,
+            "calibration_status": CALIBRATION_STATUS_PENDING_M6,
+            "pmf_validity_rate": 0.0,
+            "pmf_sum_error_max": 0.0,
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "available_base_stats": available_base_stats,
+            "combo_requirements": combo_requirements,
+            "combos_attempted": combos_attempted,
+            "combos_built": [],
+            "combos_skipped": combos_skipped,
+            "skip_reasons": skip_reasons,
+            "n_rows_written": 0,
+            "status": "no_eligible_records",
+            "note": (
+                "Combo OOF builder found no eligible records for any combo. "
+                "Each combo requires its own subset of base components "
+                "(see combo_requirements). Source OOF likely lacks one or "
+                "more required base stats."
+            ),
+        }
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(manifest_path, "w") as f:
+            json.dump(manifest, f, indent=2)
+        print(f"  wrote manifest: {manifest_path}")
+        print("COMBO_OOF_NO_ELIGIBLE_RECORDS")
+        return 4
+
+    # Per-combo, per-date prior correlation matrices. Each combo uses only
+    # its own components (2x2 for pr/pa/ra/stocks, 3x3 for pra) and only
+    # prior records that contain ALL of those components. Falls through to
+    # the existing independence/cold-start fallback when prior rows are
+    # insufficient.
+    print("  computing per-combo per-date prior correlation matrices...")
+    correlation_by_date_combo: dict[str, dict[str, np.ndarray | None]] = {}
     n_copula_dates = 0
     n_cold_start_dates = 0
-    for d in unique_dates:
-        prior_keys: list[tuple[int, int]] = []
-        for prior_d, ks in keys_by_date.items():
-            if prior_d < d:
-                prior_keys.extend(ks)
-        if len(prior_keys) >= args.min_prior_rows:
-            outcomes_arr = np.stack([record_outcomes[k] for k in prior_keys], axis=0)
-            corr = np.corrcoef(outcomes_arr, rowvar=False)
-            corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
-            np.fill_diagonal(corr, 1.0)
-            correlation_by_date[d] = corr
-            n_copula_dates += 1
-        else:
-            correlation_by_date[d] = None
-            n_cold_start_dates += 1
-    print(f"  dates with copula: {n_copula_dates}; cold-start dates: {n_cold_start_dates}")
+    for canonical, (_, components) in COMBO_DEFS.items():
+        per_date: dict[str, np.ndarray | None] = {}
+        combo_keys_by_date = keys_by_date_combo[canonical]
+        if not combo_keys_by_date:
+            correlation_by_date_combo[canonical] = per_date
+            continue
+        combo_outcomes_arr: dict[tuple[int, int], np.ndarray] = {
+            k: np.array([records[k]["outcome"][c] for c in components], dtype=np.float64)
+            for k in records_by_combo[canonical]
+        }
+        for d in sorted(combo_keys_by_date.keys()):
+            prior_keys: list[tuple[int, int]] = []
+            for prior_d, ks in combo_keys_by_date.items():
+                if prior_d < d:
+                    prior_keys.extend(ks)
+            if len(prior_keys) >= args.min_prior_rows and len(components) >= 2:
+                arr = np.stack([combo_outcomes_arr[k] for k in prior_keys], axis=0)
+                corr = np.corrcoef(arr, rowvar=False)
+                corr = np.atleast_2d(np.asarray(corr, dtype=np.float64))
+                corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
+                np.fill_diagonal(corr, 1.0)
+                per_date[d] = corr
+                n_copula_dates += 1
+            else:
+                per_date[d] = None
+                n_cold_start_dates += 1
+        correlation_by_date_combo[canonical] = per_date
+    print(f"  combo-date copula counts: {n_copula_dates}; cold-start: {n_cold_start_dates}")
 
-    print(f"  generating combo OOF rows: {len(records):,} player-games x {len(COMBO_DEFS)} combos...")
+    print(
+        f"  generating combo OOF rows: per-combo eligible records "
+        f"(total={total_eligible:,}, attempted combos={len(combos_attempted)})..."
+    )
     out_rows: list[dict] = []
-    n_processed = 0
-    n_total = len(records)
-    for (pid, gid), rec in records.items():
-        d = rec["game_date"]
-        date_corr = correlation_by_date[d]
-        for canonical, (mission, components) in COMBO_DEFS.items():
+    combos_built_counts: dict[str, int] = {}
+    for canonical, (mission, components) in COMBO_DEFS.items():
+        eligible = records_by_combo[canonical]
+        if not eligible:
+            combos_built_counts[canonical] = 0
+            continue
+        per_date_corr = correlation_by_date_combo.get(canonical, {})
+        n_combo_rows = 0
+        for (pid, gid), rec in eligible.items():
+            d = rec["game_date"]
+            date_corr = per_date_corr.get(d)
+
             comp_pmfs = [rec["pmf"][c] for c in components]
             comp_outcomes = [rec["outcome"][c] for c in components]
             combo_outcome = int(sum(comp_outcomes))
@@ -418,9 +550,7 @@ def main() -> int:
             seed = _deterministic_seed(d, pid, gid, canonical)
 
             if date_corr is not None:
-                comp_indices = [BASE_COMPONENT_STATS.index(c) for c in components]
-                sub_corr = date_corr[np.ix_(comp_indices, comp_indices)]
-                sub_corr = _psd_project(sub_corr)
+                sub_corr = _psd_project(date_corr)
                 np.fill_diagonal(sub_corr, 1.0)
                 pmf, support_max, method, n_draws_used = _derive_combo_pmf(
                     comp_pmfs, sub_corr, seed, n_draws=args.n_draws,
@@ -467,9 +597,10 @@ def main() -> int:
                 "calibration_status": CALIBRATION_STATUS_PENDING_M6,
                 "source_oof_path": SOURCE_OOF_PATH,
             })
-        n_processed += 1
-        if n_processed % 1000 == 0 or n_processed == n_total:
-            print(f"    processed {n_processed:,}/{n_total:,} player-games")
+            n_combo_rows += 1
+        combos_built_counts[canonical] = n_combo_rows
+        combos_built_records.append({"combo": canonical, "rows": n_combo_rows})
+        print(f"    built combo={canonical} rows={n_combo_rows:,}")
 
     print(f"  total output rows: {len(out_rows):,}")
 
@@ -479,9 +610,17 @@ def main() -> int:
     out_df.to_parquet(out_path, index=False)
     print(f"  wrote: {out_path}  ({out_path.stat().st_size:,} bytes)")
 
-    method_counts = out_df["combo_oof_method"].value_counts().to_dict()
-    pmf_validity_rate = float(out_df["pmf_valid"].mean())
-    pmf_sum_error_max = float(out_df["pmf_sum_error"].max())
+    method_counts = out_df["combo_oof_method"].value_counts().to_dict() if not out_df.empty else {}
+    pmf_validity_rate = float(out_df["pmf_valid"].mean()) if not out_df.empty else 0.0
+    pmf_sum_error_max = float(out_df["pmf_sum_error"].max()) if not out_df.empty else 0.0
+
+    n_built = sum(1 for c in combos_attempted if combos_built_counts.get(c, 0) > 0)
+    if n_built == len(combos_attempted):
+        status = "ok"
+    elif n_built > 0:
+        status = "partial"
+    else:
+        status = "no_eligible_records"
 
     manifest = {
         "schema_version": "1.0",
@@ -513,6 +652,14 @@ def main() -> int:
         "pmf_validity_rate": pmf_validity_rate,
         "pmf_sum_error_max": pmf_sum_error_max,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "available_base_stats": available_base_stats,
+        "combo_requirements": combo_requirements,
+        "combos_attempted": combos_attempted,
+        "combos_built": combos_built_records,
+        "combos_skipped": combos_skipped,
+        "skip_reasons": skip_reasons,
+        "n_rows_written": len(out_rows),
+        "status": status,
         "note": (
             "M5C foundation. Combo OOF dataset for downstream M6 role-aware "
             "calibrator fitting. Combo rows are calibrated=False / "
