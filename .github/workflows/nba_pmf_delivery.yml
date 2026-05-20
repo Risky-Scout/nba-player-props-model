@@ -1,0 +1,856 @@
+name: NBA PMF Delivery
+
+on:
+  schedule:
+    # After-game scoring.
+    - cron: "30 6 * * *"
+
+    # Nightly training / calibration deferred retries.
+    - cron: "30 9 * * *"
+    - cron: "30 12 * * *"
+    - cron: "30 15 * * *"
+    - cron: "30 18 * * *"
+    - cron: "30 21 * * *"
+
+    # WoO / delivery refresh windows.
+    - cron: "0 15 * * *"
+    - cron: "0 18 * * *"
+    - cron: "0 20 * * *"
+
+    # Derek near-lineup / close-lock windows.
+    - cron: "25 22 * * *"
+    - cron: "40,55 22 * * *"
+    - cron: "10,25,40,55 23,0,1,2 * * *"
+    - cron: "10 3 * * *"
+    - cron: "25 3 * * *"
+
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Pipeline stage"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - full_cycle
+          - training
+          - phase8
+          - phase13_context
+          - delivery
+          - after_game
+          - verifiers
+      mode:
+        description: "Delivery mode"
+        required: false
+        default: "derek_near_lineup"
+        type: choice
+        options:
+          - morning
+          - woo_morning_monetization
+          - woo_afternoon_refresh
+          - derek_near_lineup
+          - close_lock
+          - after_game
+          - full_day
+      delivery_date:
+        description: "YYYY-MM-DD. Blank = America/New_York today."
+        required: false
+        default: ""
+      as_of_date:
+        description: "YYYY-MM-DD. Blank = America/New_York yesterday."
+        required: false
+        default: ""
+      no_promote:
+        description: "Block champion promotion during manual testing"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      run_predict:
+        description: "Run prediction inside delivery stage"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+
+concurrency:
+  group: nba-pmf-delivery-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  PYTHONPATH: src
+  STAT_GRID_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+  SOURCE_RECALIBRATION_MODEL_DIR: _stat_grid_delivery_calibration_optimizer/artifacts/models
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  REQUIRE_DUNKS_AND_THREES: "1"
+  DUNKS_AND_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DUNKS_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DNT_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+
+jobs:
+  resolve_context:
+    runs-on: ubuntu-latest
+    outputs:
+      delivery_date: ${{ steps.resolve.outputs.delivery_date }}
+      as_of_date: ${{ steps.resolve.outputs.as_of_date }}
+      stage: ${{ steps.resolve.outputs.stage }}
+      mode: ${{ steps.resolve.outputs.mode }}
+      run_training: ${{ steps.route.outputs.run_training }}
+      run_phase8: ${{ steps.route.outputs.run_phase8 }}
+      run_phase13: ${{ steps.route.outputs.run_phase13 }}
+      run_delivery: ${{ steps.route.outputs.run_delivery }}
+      run_after_game: ${{ steps.route.outputs.run_after_game }}
+      run_verifiers: ${{ steps.route.outputs.run_verifiers }}
+    steps:
+      - id: resolve
+        name: Resolve schedule/date/mode
+        run: |
+          set -euo pipefail
+
+          STAGE="${{ github.event.inputs.stage || 'auto' }}"
+          MODE="${{ github.event.inputs.mode || 'derek_near_lineup' }}"
+          SCHEDULE="${{ github.event.schedule }}"
+
+          if [ -n "${{ github.event.inputs.delivery_date || '' }}" ]; then
+            DELIVERY_DATE="${{ github.event.inputs.delivery_date }}"
+          else
+            DELIVERY_DATE="$(TZ=America/New_York date +%Y-%m-%d)"
+          fi
+
+          if [ -n "${{ github.event.inputs.as_of_date || '' }}" ]; then
+            AS_OF_DATE="${{ github.event.inputs.as_of_date }}"
+          else
+            AS_OF_DATE="$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d)"
+          fi
+
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            case "$SCHEDULE" in
+              "30 6 * * *")
+                STAGE="after_game"
+                MODE="after_game"
+                ;;
+              "30 9 * * *"|"30 12 * * *"|"30 15 * * *"|"30 18 * * *"|"30 21 * * *")
+                STAGE="training"
+                ;;
+              "0 15 * * *")
+                STAGE="delivery"
+                MODE="woo_morning_monetization"
+                ;;
+              "0 18 * * *"|"0 20 * * *")
+                STAGE="delivery"
+                MODE="woo_afternoon_refresh"
+                ;;
+              "25 22 * * *"|"40,55 22 * * *"|"10,25,40,55 23,0,1,2 * * *"|"10 3 * * *")
+                STAGE="delivery"
+                MODE="derek_near_lineup"
+                ;;
+              "25 3 * * *")
+                STAGE="delivery"
+                MODE="close_lock"
+                ;;
+            esac
+          fi
+
+          echo "delivery_date=$DELIVERY_DATE" >> "$GITHUB_OUTPUT"
+          echo "as_of_date=$AS_OF_DATE" >> "$GITHUB_OUTPUT"
+          echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+
+          echo "Resolved stage=$STAGE mode=$MODE delivery_date=$DELIVERY_DATE as_of_date=$AS_OF_DATE"
+
+      - id: route
+        name: Route consolidated workflow stages
+        run: |
+          set -euo pipefail
+          STAGE="${{ steps.resolve.outputs.stage }}"
+
+          run_training=false
+          run_phase8=false
+          run_phase13=false
+          run_delivery=false
+          run_after_game=false
+          run_verifiers=false
+
+          case "$STAGE" in
+            full_cycle)
+              run_training=true
+              run_phase8=true
+              run_phase13=true
+              run_delivery=true
+              run_after_game=true
+              run_verifiers=true
+              ;;
+            training)
+              run_training=true
+              run_phase8=true
+              run_phase13=true
+              run_verifiers=true
+              ;;
+            phase8)
+              run_phase8=true
+              run_verifiers=true
+              ;;
+            phase13_context)
+              run_phase13=true
+              run_verifiers=true
+              ;;
+            delivery)
+              run_delivery=true
+              run_verifiers=true
+              ;;
+            after_game)
+              run_after_game=true
+              run_verifiers=true
+              ;;
+            verifiers)
+              run_verifiers=true
+              ;;
+            auto)
+              run_delivery=true
+              run_verifiers=true
+              ;;
+            *)
+              echo "::error::Unknown stage=$STAGE"
+              exit 1
+              ;;
+          esac
+
+          echo "run_training=$run_training" >> "$GITHUB_OUTPUT"
+          echo "run_phase8=$run_phase8" >> "$GITHUB_OUTPUT"
+          echo "run_phase13=$run_phase13" >> "$GITHUB_OUTPUT"
+          echo "run_delivery=$run_delivery" >> "$GITHUB_OUTPUT"
+          echo "run_after_game=$run_after_game" >> "$GITHUB_OUTPUT"
+          echo "run_verifiers=$run_verifiers" >> "$GITHUB_OUTPUT"
+
+  readiness:
+    runs-on: ubuntu-latest
+    needs: resolve_context
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Required secret checks
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ "${{ needs.resolve_context.outputs.run_after_game }}" = "true" ] && [ -z "${BDL_API_KEY:-}" ]; then
+            echo "::error::BDL_API_KEY is required for after-game scoring."
+            exit 1
+          fi
+
+          if [ "${{ needs.resolve_context.outputs.run_training }}" = "true" ] && [ -z "${BDL_API_KEY:-}" ]; then
+            echo "::error::BDL_API_KEY is required for training/stat refresh."
+            exit 1
+          fi
+
+          if [ "${{ needs.resolve_context.outputs.run_delivery }}" = "true" ] && [ -z "${ODDS_API_KEY:-}" ]; then
+            echo "::warning::ODDS_API_KEY is empty; delivery may valid-skip or lack market coverage."
+          fi
+
+          python3 scripts/verify_real_champion_pointer.py
+
+  training_role_stat_calibration:
+    runs-on: ubuntu-latest
+    needs: [resolve_context, readiness]
+    if: needs.resolve_context.outputs.run_training == 'true'
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Refresh settled player-game stats
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          python3 scripts/refresh_bdl_player_game_stats.py \
+            --start-date "${{ needs.resolve_context.outputs.as_of_date }}" \
+            --end-date "${{ needs.resolve_context.outputs.as_of_date }}" \
+            --force-rewrite
+      - name: Run nightly training and role/stat calibration
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          ARGS="--as-of-date ${{ needs.resolve_context.outputs.as_of_date }}"
+
+          if [ "${{ github.event.inputs.no_promote || 'false' }}" = "true" ]; then
+            ARGS="$ARGS --no-promote"
+          fi
+
+          python3 scripts/run_nightly_training_and_calibration.py $ARGS
+      - name: Commit training/calibration artifacts
+        run: |
+          set -euo pipefail
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+
+          git add \
+            artifacts/models \
+            artifacts/model_diagnostics \
+            artifacts/docs \
+            artifacts/automation_health \
+            data/oof_pmfs.parquet \
+            data/oof_combo_pmfs.parquet \
+            data/oof_combo_pmfs.manifest.json \
+            2>/dev/null || true
+
+          git diff --staged --quiet && exit 0
+
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "NBA PMF Delivery: training calibration ${{ needs.resolve_context.outputs.as_of_date }}"
+
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 10
+          done
+
+          exit 1
+
+  phase8_pmf_calibration_diagnostics_market_eval:
+    runs-on: ubuntu-latest
+    needs: [resolve_context, readiness, training_role_stat_calibration]
+    if: always() && needs.resolve_context.outputs.run_phase8 == 'true'
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build training table if absent
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ ! -s data/training_table.parquet ]; then
+            python3 scripts/train.py --build-table-only
+          fi
+      - name: Run Phase 8 PMF calibration folds sequentially
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/folds
+
+          MAX_FOLDS=4
+          for FOLD in $(seq 1 "$MAX_FOLDS"); do
+            python3 scripts/calibrate_pmf.py \
+              --fold-index "$FOLD" \
+              --max-folds "$MAX_FOLDS" \
+              --emit-fold-oof "artifacts/folds/fold_${FOLD}.parquet" \
+              --skip-final-fit \
+              --core-props-only
+          done
+
+          python3 scripts/calibrate_pmf.py \
+            --aggregate-mode \
+            --aggregate-oofs artifacts/folds/
+
+          python3 scripts/build_combo_oof_pmfs_from_base_oof.py \
+            --in data/oof_pmfs.parquet \
+            --out data/oof_combo_pmfs.parquet \
+            --manifest data/oof_combo_pmfs.manifest.json \
+            --as-of-date "${{ needs.resolve_context.outputs.as_of_date }}" \
+            --n-draws 20000
+
+          PYTHONPATH=src python3 scripts/fit_combo_pmf_calibrators.py \
+            --oof data/oof_combo_pmfs.parquet
+      - name: Run diagnostics and market-eval gates
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+
+          python3 scripts/run_diagnostics.py \
+            --run-date "$D" \
+            --require-market-eval \
+            --allow-provisional-block \
+            --start-date 2026-04-01 \
+            --end-date "$D" \
+            --snapshot-substr close_or_lock
+
+          python3 scripts/verify_no_unexplained_calibration_nans.py \
+            --meta "artifacts/docs/diagnostics_${D}.meta.json"
+
+          python3 scripts/verify_role_bucket_contract.py
+          python3 scripts/verify_combo_role_calibration_contract.py || true
+      - name: Commit Phase 8 artifacts
+        run: |
+          set -euo pipefail
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+
+          git add \
+            artifacts/models/pmf_cal_*.pkl \
+            artifacts/models/pmf_cal_role_*.pkl \
+            artifacts/models/pmf_cal_meta.json \
+            artifacts/docs \
+            artifacts/model_diagnostics \
+            artifacts/automation_health \
+            data/oof_pmfs.parquet \
+            data/oof_combo_pmfs.parquet \
+            data/oof_combo_pmfs.manifest.json \
+            2>/dev/null || true
+
+          git diff --staged --quiet && exit 0
+
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "NBA PMF Delivery: phase8 calibration diagnostics ${{ needs.resolve_context.outputs.delivery_date }}"
+
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 10
+          done
+
+          exit 1
+
+  phase13_live_context_contextual_lineup:
+    runs-on: ubuntu-latest
+    needs: [resolve_context, readiness, phase8_pmf_calibration_diagnostics_market_eval]
+    if: always() && needs.resolve_context.outputs.run_phase13 == 'true'
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Phase 13O/P/Q — live-context and contextual challenger
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          python3 scripts/build_live_context_training_dataset.py \
+            --as-of-date "$ASOF" \
+            --start-date 2023-10-24
+
+          python3 scripts/verify_live_context_feature_training.py
+          python3 scripts/verify_live_context_pmf_sensitivity.py
+          python3 scripts/_phase13o_check_no_leakage.py
+          python3 scripts/_phase13o_record_derek_readiness.py
+
+          DRY=""
+          if [ "${{ github.event.inputs.no_promote || 'false' }}" = "true" ]; then
+            DRY=""
+          fi
+
+          python3 scripts/train_live_context_challenger.py \
+            --as-of-date "$ASOF" \
+            $DRY
+
+          python3 scripts/verify_live_context_feature_training.py \
+            --feature-set-id phase13p_lineup_injury_driver_v1
+
+          python3 scripts/verify_live_context_pmf_sensitivity.py
+          python3 scripts/verify_phase13p_no_leakage.py
+          python3 scripts/verify_phase13p_validation_gates.py
+          python3 scripts/verify_phase13l_no_breakage.py
+
+          python3 scripts/train_contextual_challenger.py \
+            --as-of-date "$ASOF" \
+            $DRY
+
+          python3 scripts/verify_live_context_feature_training.py \
+            --feature-set-id phase13q_contextual_pmf_engine_v1
+
+          python3 scripts/verify_live_context_pmf_sensitivity.py
+          python3 scripts/verify_phase13p_no_leakage.py
+          python3 scripts/verify_phase13p_validation_gates.py
+          python3 scripts/verify_phase13l_no_breakage.py
+
+      - name: Phase 13R — contextual deployment verification
+        run: |
+          set -euo pipefail
+
+          python3 scripts/_phase13r_write_state_audit.py
+          python3 scripts/verify_contextual_feature_lists.py
+          python3 scripts/verify_contextual_predict_path.py
+          python3 scripts/verify_contextual_pmf_sensitivity.py
+          python3 scripts/verify_phase13q_no_leakage.py
+          python3 scripts/verify_phase13l_no_breakage.py
+
+          if [ "${{ github.event.inputs.no_promote || 'false' }}" != "true" ]; then
+            python3 scripts/promote_contextual_challenger.py
+            python3 scripts/verify_phase13r_deployment.py
+          else
+            echo "Manual no_promote=true: skipping promote_contextual_challenger.py"
+          fi
+
+      - name: Phase 13S — direct-lineup contextual PMF
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          python3 scripts/_phase13s_write_baseline_audit.py
+
+          python3 scripts/build_direct_lineup_training_dataset.py \
+            --as-of-date "$ASOF"
+
+          python3 scripts/train_direct_lineup_contextual_challenger.py \
+            --as-of-date "$ASOF"
+
+          python3 scripts/verify_direct_lineup_feature_lists.py
+          python3 scripts/verify_direct_lineup_pmf_sensitivity.py
+          python3 scripts/verify_phase13s_validation_gates.py
+          python3 scripts/verify_phase13s_no_leakage.py
+          python3 scripts/verify_phase13l_no_breakage.py
+
+          if [ "${{ github.event.inputs.no_promote || 'false' }}" != "true" ]; then
+            python3 scripts/promote_direct_lineup_challenger.py
+            python3 scripts/verify_phase13s_deployment.py
+          else
+            echo "Manual no_promote=true: skipping promote_direct_lineup_challenger.py"
+          fi
+
+          python3 scripts/verify_contextual_feature_lists.py
+          python3 scripts/verify_contextual_predict_path.py
+          python3 scripts/verify_contextual_pmf_sensitivity.py
+          python3 scripts/verify_phase13q_no_leakage.py
+
+          python3 scripts/run_phase13s_after_game_scoring.py \
+            --delivery-date "$ASOF" || true
+
+      - name: Commit Phase 13 artifacts
+        run: |
+          set -euo pipefail
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+
+          git add \
+            data/live_context_features.parquet \
+            artifacts/phase13o \
+            artifacts/phase13p \
+            artifacts/phase13q \
+            artifacts/phase13r \
+            artifacts/phase13s \
+            artifacts/models/challengers \
+            artifacts/models/champion/v_phase13r_* \
+            artifacts/models/champion/v_phase13s_* \
+            artifacts/models/registry/champion_pointer.json \
+            artifacts/models/registry/promotion_log.csv \
+            2>/dev/null || true
+
+          git diff --staged --quiet && exit 0
+
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "NBA PMF Delivery: phase13 context chain ${{ needs.resolve_context.outputs.as_of_date }}"
+
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 10
+          done
+
+          exit 1
+
+  delivery_build:
+    runs-on: ubuntu-latest
+    needs: [resolve_context, readiness]
+    if: needs.resolve_context.outputs.run_delivery == 'true'
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Preserve Derek unique summary hash before delivery
+        id: unique_before
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          P="deliveries/$D/derek_forward_feed/derek_unique_props_summary.csv"
+          if [ -f "$P" ]; then
+            echo "hash=$(shasum -a 256 "$P" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+          else
+            echo "hash=missing" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run daily PMF delivery pipeline
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          MODE="${{ needs.resolve_context.outputs.mode }}"
+
+          ARGS=(
+            --date "$D"
+            --mode "$MODE"
+            --regions us us2
+            --rebuild-canonical
+            --verify
+            --fail-on-missing-delivery
+          )
+
+          if [ "${{ github.event.inputs.run_predict || 'false' }}" = "true" ]; then
+            ARGS+=(--predict)
+          fi
+
+          python3 scripts/run_daily_delivery_pipeline.py "${ARGS[@]}"
+
+      - name: Delivery hygiene, previews, champion stamps, and CSV size contract
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+
+          python3 scripts/stamp_delivery_champion_metadata.py --delivery-date "$D" || true
+          python3 scripts/strip_empty_delivery_columns.py --date "$D" --write
+          python3 scripts/write_delivery_review_previews.py --date "$D"
+
+          python3 scripts/enforce_delivery_csv_size_contract.py \
+            --date "$D" \
+            --max-bytes 524288 \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv \
+            --write
+
+      - name: Assert Derek unique summary was not changed
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          P="deliveries/$D/derek_forward_feed/derek_unique_props_summary.csv"
+
+          BEFORE="${{ steps.unique_before.outputs.hash }}"
+          if [ "$BEFORE" = "missing" ]; then
+            echo "No existing derek_unique_props_summary.csv to preserve."
+            exit 0
+          fi
+
+          AFTER="$(shasum -a 256 "$P" | awk '{print $1}')"
+
+          echo "before=$BEFORE"
+          echo "after =$AFTER"
+
+          if [ "$BEFORE" != "$AFTER" ]; then
+            echo "::error::derek_unique_props_summary.csv changed. This is not allowed."
+            exit 1
+          fi
+
+      - name: Delivery verifiers
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          TRAIN_THROUGH="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D"
+          python3 scripts/verify_model_only_parquet_selection.py --date "$D" || true
+          python3 scripts/validate_production_pmf_math.py || true
+
+          python3 scripts/validate_daily_pmf_delivery.py \
+            --date "$D" \
+            --train-through-date "$TRAIN_THROUGH" \
+            --pipeline-mode "${{ needs.resolve_context.outputs.mode }}" || true
+
+          python3 scripts/verify_derek_forward_feed.py \
+            --delivery-date "$D" \
+            --mode production \
+            --allow-pending-lineup || true
+
+      - name: Build delivery index and commit delivery outputs
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+
+          python3 scripts/build_deliveries_index.py || true
+
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+
+          git add \
+            deliveries/"$D" \
+            deliveries/README.md \
+            deliveries/index.html \
+            public_export/wizard_of_odds \
+            artifacts/automation_health \
+            2>/dev/null || true
+
+          git diff --staged --quiet && exit 0
+
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "NBA PMF Delivery: delivery $D ${{ needs.resolve_context.outputs.mode }}"
+
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 10
+          done
+
+          exit 1
+
+  after_game_scoring:
+    runs-on: ubuntu-latest
+    needs: [resolve_context, readiness]
+    if: needs.resolve_context.outputs.run_after_game == 'true'
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run complete after-game scoring
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          python3 scripts/run_after_game_complete_scoring.py \
+            --date "${{ needs.resolve_context.outputs.delivery_date }}"
+
+      - name: Verify, preview, enforce CSV size
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+
+          python3 scripts/verify_after_game_scoring_package_consistency.py \
+            --delivery-date "$D"
+
+          python3 scripts/strip_empty_delivery_columns.py --date "$D" --write
+          python3 scripts/write_delivery_review_previews.py --date "$D"
+
+          python3 scripts/enforce_delivery_csv_size_contract.py \
+            --date "$D" \
+            --max-bytes 524288 \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv \
+            --write
+
+      - name: Build delivery index and commit after-game outputs
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+
+          python3 scripts/build_deliveries_index.py || true
+
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+
+          git add \
+            deliveries/"$D" \
+            deliveries/README.md \
+            deliveries/index.html \
+            artifacts/automation_health \
+            2>/dev/null || true
+
+          git diff --staged --quiet && exit 0
+
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "NBA PMF Delivery: after-game scoring $D"
+
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 10
+          done
+
+          exit 1
+
+  final_contract_verifiers:
+    runs-on: ubuntu-latest
+    needs:
+      - resolve_context
+      - readiness
+      - delivery_build
+      - after_game_scoring
+    if: always() && needs.resolve_context.outputs.run_verifiers == 'true'
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run final delivery contract verifiers
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          TRAIN_THROUGH="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          python3 scripts/verify_real_champion_pointer.py
+          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D" || true
+          python3 scripts/verify_morning_delivery_completeness.py --date "$D" || true
+          python3 scripts/verify_model_only_parquet_selection.py --date "$D" || true
+          python3 scripts/validate_production_pmf_math.py || true
+
+          python3 scripts/validate_daily_pmf_delivery.py \
+            --date "$D" \
+            --train-through-date "$TRAIN_THROUGH" \
+            --pipeline-mode "${{ needs.resolve_context.outputs.mode }}" || true
+
+          python3 scripts/verify_derek_forward_feed.py \
+            --delivery-date "$D" \
+            --mode production \
+            --allow-pending-lineup || true
+
+          if [ -d "deliveries/$D/after_game_scoring" ]; then
+            python3 scripts/verify_after_game_scoring_package_consistency.py \
+              --delivery-date "$D" || true
+          fi
+
+          python3 scripts/enforce_delivery_csv_size_contract.py \
+            --date "$D" \
+            --max-bytes 524288 \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
