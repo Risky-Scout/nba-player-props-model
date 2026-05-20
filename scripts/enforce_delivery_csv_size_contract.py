@@ -16,6 +16,7 @@ import hashlib
 import json
 import math
 import shutil
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,28 @@ import pandas as pd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+PART_DIR_SUFFIX = "_csv_parts"
+
+
+def _is_generated_csv_part(path: Path) -> bool:
+    """Generated split parts live under any directory whose name ends in
+    ``_csv_parts``. They are produced/regenerated from a source CSV
+    elsewhere in the delivery tree, so the top-level source scan must
+    NOT treat them as independent source CSVs (doing so re-processes
+    files that get removed mid-run during a re-split, which crashes
+    with FileNotFoundError)."""
+    return any(part.endswith(PART_DIR_SUFFIX) for part in path.parts)
+
+
+def _csv_header_column_count(path: Path) -> int:
+    """Return number of columns in the CSV header. Zero if the file is
+    truly empty or pandas raises EmptyDataError. Zero rows WITH columns
+    returns the header count."""
+    try:
+        df = pd.read_csv(path, nrows=0)
+    except pd.errors.EmptyDataError:
+        return 0
+    return int(len(df.columns))
 
 
 def sha256_path(path: Path) -> str:
@@ -159,17 +182,44 @@ def main() -> int:
         default=[],
         help="Path relative to deliveries/<date> that must never be modified.",
     )
+    ap.add_argument(
+        "--delivery-root",
+        default=None,
+        help="Override the delivery root for tests. Defaults to "
+        "<repo>/deliveries/<date>.",
+    )
+    ap.add_argument(
+        "--artifacts-dir",
+        default=None,
+        help="Override the artifacts/automation_health output dir for tests. "
+        "Defaults to <repo>/artifacts/automation_health.",
+    )
     args = ap.parse_args()
 
-    delivery_root = REPO_ROOT / "deliveries" / args.date
+    if args.delivery_root:
+        delivery_root = Path(args.delivery_root).resolve()
+    else:
+        delivery_root = (REPO_ROOT / "deliveries" / args.date).resolve()
     if not delivery_root.exists():
         raise SystemExit(f"delivery root not found: {delivery_root}")
+
+    if args.artifacts_dir:
+        artifacts_dir = Path(args.artifacts_dir).resolve()
+    elif args.delivery_root:
+        artifacts_dir = (delivery_root.parent.parent / "artifacts" / "automation_health").resolve()
+    else:
+        artifacts_dir = REPO_ROOT / "artifacts" / "automation_health"
 
     preserve = {str(p).strip("/") for p in args.preserve}
     records: list[dict[str, Any]] = []
     failures: list[str] = []
 
-    for csv_path in sorted(delivery_root.rglob("*.csv")):
+    csv_paths = sorted(
+        p for p in delivery_root.rglob("*.csv")
+        if not _is_generated_csv_part(p)
+    )
+
+    for csv_path in csv_paths:
         rel = csv_path.relative_to(delivery_root).as_posix()
         size = csv_path.stat().st_size
 
@@ -181,12 +231,23 @@ def main() -> int:
         }
 
         if size <= args.max_bytes:
+            cols = _csv_header_column_count(csv_path)
+            if cols <= 0:
+                rec["action"] = "zero_columns_fail"
+                marker = f"DELIVERY_CSV_SCHEMA_ZERO_COLUMNS_FAIL path={rel}"
+                failures.append(marker)
+                records.append(rec)
+                continue
+            rec["columns"] = int(cols)
             records.append(rec)
             continue
 
         if rel in preserve:
             rec["action"] = "preserve_oversized_fail"
-            failures.append(f"preserved CSV exceeds limit: {rel} ({size} bytes)")
+            failures.append(
+                f"DELIVERY_CSV_SIZE_CONTRACT_PROTECTED_FILE_OVERSIZED "
+                f"path={rel} bytes={size} max_bytes={args.max_bytes}"
+            )
             records.append(rec)
             continue
 
@@ -217,7 +278,13 @@ def main() -> int:
                 records.append(rec)
                 continue
 
-        part_dir = csv_path.with_name(f"{csv_path.stem}_csv_parts")
+        if len(df.columns) <= 0:
+            rec["action"] = "zero_columns_fail"
+            failures.append(f"DELIVERY_CSV_SCHEMA_ZERO_COLUMNS_FAIL path={rel}")
+            records.append(rec)
+            continue
+
+        part_dir = csv_path.with_name(f"{csv_path.stem}{PART_DIR_SUFFIX}")
         try:
             parts = write_shards(df, part_dir, csv_path.stem, args.max_bytes)
         except Exception as exc:
@@ -225,6 +292,32 @@ def main() -> int:
             failures.append(f"could not shard {rel}: {exc!r}")
             records.append(rec)
             continue
+
+        on_disk_parts = sorted(part_dir.glob("*.csv"))
+        on_disk_part_names = [p.name for p in on_disk_parts]
+        if len(df) > 0 and not on_disk_parts:
+            failures.append(
+                f"DELIVERY_CSV_SPLIT_NO_PARTS_GENERATED source={rel}"
+            )
+            records.append(rec)
+            continue
+        for part in on_disk_parts:
+            if not part.is_file():
+                failures.append(
+                    f"DELIVERY_CSV_SPLIT_NO_PARTS_GENERATED source={rel} "
+                    f"missing={part.name}"
+                )
+                continue
+            part_cols = _csv_header_column_count(part)
+            if part_cols <= 0:
+                failures.append(
+                    f"DELIVERY_CSV_SCHEMA_ZERO_COLUMNS_FAIL "
+                    f"path={part.relative_to(delivery_root).as_posix()}"
+                )
+        print(
+            f"DELIVERY_CSV_SPLIT_PARTS_VALIDATED source={rel} "
+            f"parts={len(on_disk_parts)}"
+        )
 
         preview_rows = largest_preview_rows(df, args.max_bytes)
         preview = df.head(preview_rows).copy()
@@ -257,17 +350,27 @@ def main() -> int:
             "sha256_after": sha256_path(csv_path),
             "parquet": parquet_path.relative_to(delivery_root).as_posix(),
             "parts_dir": part_dir.relative_to(delivery_root).as_posix(),
-            "parts_count": len(parts),
+            "parts_count": len(on_disk_part_names),
+            "parts": [
+                (part_dir.relative_to(delivery_root) / name).as_posix()
+                for name in on_disk_part_names
+            ],
         })
         records.append(rec)
 
-    # Final hard scan.
     oversized_after = []
     for p in sorted(delivery_root.rglob("*.csv")):
+        if _is_generated_csv_part(p):
+            continue
+        if not p.exists():
+            continue
         s = p.stat().st_size
+        rel_after = p.relative_to(delivery_root).as_posix()
+        if rel_after in preserve:
+            continue
         if s > args.max_bytes:
             oversized_after.append({
-                "path": p.relative_to(delivery_root).as_posix(),
+                "path": rel_after,
                 "bytes": int(s),
             })
 
@@ -277,7 +380,7 @@ def main() -> int:
             for x in oversized_after
         )
 
-    out_dir = REPO_ROOT / "artifacts" / "automation_health"
+    out_dir = artifacts_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
     payload = {
@@ -318,13 +421,17 @@ def main() -> int:
 
     md_path.write_text("\n".join(md) + "\n", encoding="utf-8")
 
-    print(f"WROTE {json_path.relative_to(REPO_ROOT)}")
-    print(f"WROTE {md_path.relative_to(REPO_ROOT)}")
+    try:
+        print(f"WROTE {json_path.relative_to(REPO_ROOT)}")
+        print(f"WROTE {md_path.relative_to(REPO_ROOT)}")
+    except ValueError:
+        print(f"WROTE {json_path}")
+        print(f"WROTE {md_path}")
 
     if failures:
         print("DELIVERY_CSV_SIZE_CONTRACT_FAIL")
         for f in failures:
-            print(f"  - {f}")
+            print(f"  - {f}", file=sys.stderr)
         return 1
 
     print("DELIVERY_CSV_SIZE_CONTRACT_PASS")
