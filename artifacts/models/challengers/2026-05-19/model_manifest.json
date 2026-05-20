@@ -1,0 +1,28 @@
+{
+  "as_of_date": "2026-05-19",
+  "calibrator_version": "to-be-fitted",
+  "code_commit": "cc2dc1071e41a2881ea73fe57615ac39def695a0",
+  "dry_run": true,
+  "model_dir_reference": "artifacts/models",
+  "model_version": "challenger-2026-05-19-dryrun",
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-19",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-19",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260520T172911"
+  },
+  "schema_version": "1.0",
+  "stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ],
+  "warnings": []
+}

@@ -1,0 +1,60 @@
+{
+  "as_of_date": "2026-05-19",
+  "challenger_artifacts": {
+    "challenger_kind": "dry-run-champion-snapshot",
+    "files": [],
+    "hashes": {
+      "calibration_manifest.json": "fe86a4a7843a3f433e473c34bc54410821f7fd77d714345afd9bee74127d3f79",
+      "calibration_meta.json": "163530783cefd3c392636c89ad1fa3f9b22a1e056a46e4805efa1f521a8fd135",
+      "pmf_cal_meta.json": "911a74944e9e1fb13df229c4da031a21c38baac1f7ec1ebd5590d6c249d475e8",
+      "training_meta.json": "e56013057c1bafe94ecf782798a606f555795bc856bd7b5bfe5a463f6b1de348"
+    },
+    "model_dir_reference": "artifacts/models"
+  },
+  "code_commit": "cc2dc1071e41a2881ea73fe57615ac39def695a0",
+  "dry_run": true,
+  "finished_at_utc": "2026-05-20T17:29:15+00:00",
+  "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-19",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-19",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260520T172911"
+  },
+  "pointer_seen": {
+    "calibrator_version": "phase8-role-bucket",
+    "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+    "model_version": "challenger-2026-04-30"
+  },
+  "schema_version": "1.0",
+  "started_at_utc": "2026-05-20T17:29:15+00:00",
+  "stats_trained": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ],
+  "status": "ok",
+  "training_summary": {
+    "future_rows_excluded": 0,
+    "max_date": "2026-05-19",
+    "min_date": "2023-10-24",
+    "stats_with_columns": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "stl",
+      "blk"
+    ],
+    "training_row_count": 84262
+  },
+  "warnings": []
+}
