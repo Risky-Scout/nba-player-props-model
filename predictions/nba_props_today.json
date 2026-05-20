@@ -1,6 +1,6 @@
 {
   "date": "2026-05-20",
-  "generated_at": "2026-05-20T15:36:59",
+  "generated_at": "2026-05-20T17:25:53",
   "count": 34,
   "games": 1,
   "props": [
@@ -14,10 +14,10 @@
       "line": 14.5,
       "commence_time": null,
       "over_odds": 102.0,
-      "under_odds": -115.0,
-      "model_prob_over": 0.6567,
-      "model_prob_under": 0.34330000000000005,
-      "ev_over": 0.3266,
+      "under_odds": -110.0,
+      "model_prob_over": 0.6599,
+      "model_prob_under": 0.34009999999999996,
+      "ev_over": 0.3329,
       "ev_under": null,
       "projection": 18.0,
       "q_preds": {
@@ -34,7 +34,7 @@
         "0.9": 29.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.4807
+      "market_prob_over": 0.4859
     },
     {
       "player_id": 161,
@@ -77,11 +77,11 @@
       "side": "OVER",
       "line": 0.5,
       "commence_time": null,
-      "over_odds": -200.0,
-      "under_odds": 160.0,
+      "over_odds": -195.0,
+      "under_odds": 159.0,
       "model_prob_over": 0.7114,
       "model_prob_under": 0.28859999999999997,
-      "ev_over": 0.0671,
+      "ev_over": 0.0762,
       "ev_under": null,
       "projection": 1.0,
       "q_preds": {
@@ -98,7 +98,7 @@
         "0.9": 3.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.6341
+      "market_prob_over": 0.6313
     },
     {
       "player_id": 1028037477,
@@ -107,21 +107,21 @@
       "game": "San Antonio Spurs @ Oklahoma City Thunder",
       "stat": "pts",
       "side": "OVER",
-      "line": 10.5,
+      "line": 9.5,
       "commence_time": null,
-      "over_odds": 107.0,
-      "under_odds": -115.0,
-      "model_prob_over": 0.5966,
-      "model_prob_under": 0.4034,
-      "ev_over": 0.2349,
+      "over_odds": -130.0,
+      "under_odds": 106.0,
+      "model_prob_over": 0.6526,
+      "model_prob_under": 0.34740000000000004,
+      "ev_over": 0.1546,
       "ev_under": null,
       "projection": 12.0,
       "q_preds": {
         "0.1": 4.0,
         "0.2": 6.0,
-        "0.25": 7.0,
+        "0.25": 8.0,
         "0.33": 9.0,
-        "0.4": 10.0,
+        "0.4": 11.0,
         "0.5": 12.0,
         "0.6": 15.0,
         "0.67": 16.0,
@@ -129,8 +129,8 @@
         "0.8": 20.0,
         "0.9": 24.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.4746
+      "book_key": "betmgm",
+      "market_prob_over": 0.538
     },
     {
       "player_id": 1028037477,
@@ -142,7 +142,7 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": -200.0,
-      "under_odds": 180.0,
+      "under_odds": 178.0,
       "model_prob_over": 0.7691,
       "model_prob_under": 0.2309,
       "ev_over": 0.1537,
@@ -162,7 +162,7 @@
         "0.9": 3.0
       },
       "book_key": "betway",
-      "market_prob_over": 0.6512
+      "market_prob_over": 0.6495
     },
     {
       "player_id": 1028037477,
@@ -174,7 +174,7 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": -175.0,
-      "under_odds": 134.0,
+      "under_odds": 138.0,
       "model_prob_over": 0.7614,
       "model_prob_under": 0.23860000000000003,
       "ev_over": 0.1965,
@@ -194,7 +194,7 @@
         "0.9": 3.0
       },
       "book_key": "betway",
-      "market_prob_over": 0.5982
+      "market_prob_over": 0.6023
     },
     {
       "player_id": 38017703,
@@ -205,12 +205,12 @@
       "side": "UNDER",
       "line": 17.5,
       "commence_time": null,
-      "over_odds": -106.0,
-      "under_odds": -105.0,
-      "model_prob_over": 0.4245,
-      "model_prob_under": 0.5755,
+      "over_odds": -108.0,
+      "under_odds": 100.0,
+      "model_prob_over": 0.42969999999999997,
+      "model_prob_under": 0.5703,
       "ev_over": null,
-      "ev_under": 0.1236,
+      "ev_under": 0.1406,
       "projection": 16.0,
       "q_preds": {
         "0.1": 6.0,
@@ -225,8 +225,8 @@
         "0.8": 23.0,
         "0.9": 28.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5012
+      "book_key": "betparx",
+      "market_prob_over": 0.5094000000000001
     },
     {
       "player_id": 38017703,
@@ -238,11 +238,11 @@
       "line": 4.5,
       "commence_time": null,
       "over_odds": -126.0,
-      "under_odds": 110.0,
-      "model_prob_over": 0.40680000000000005,
-      "model_prob_under": 0.5932,
+      "under_odds": 112.0,
+      "model_prob_over": 0.4094,
+      "model_prob_under": 0.5906,
       "ev_over": null,
-      "ev_under": 0.2458,
+      "ev_under": 0.252,
       "projection": 4.0,
       "q_preds": {
         "0.1": 1.0,
@@ -258,7 +258,7 @@
         "0.9": 8.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.5393
+      "market_prob_over": 0.5417000000000001
     },
     {
       "player_id": 38017703,
@@ -271,10 +271,10 @@
       "commence_time": null,
       "over_odds": -108.0,
       "under_odds": -111.0,
-      "model_prob_over": 0.42410000000000003,
-      "model_prob_under": 0.5759,
+      "model_prob_over": 0.41500000000000004,
+      "model_prob_under": 0.585,
       "ev_over": null,
-      "ev_under": 0.0947,
+      "ev_under": 0.112,
       "projection": 4.0,
       "q_preds": {
         "0.1": 1.0,
@@ -334,10 +334,10 @@
       "line": 4.5,
       "commence_time": null,
       "over_odds": 108.0,
-      "under_odds": -110.0,
-      "model_prob_over": 0.7313,
-      "model_prob_under": 0.26870000000000005,
-      "ev_over": 0.5211,
+      "under_odds": -134.0,
+      "model_prob_over": 0.7253,
+      "model_prob_under": 0.27470000000000006,
+      "ev_over": 0.5087,
       "ev_under": null,
       "projection": 7.0,
       "q_preds": {
@@ -354,7 +354,7 @@
         "0.9": 12.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.4786
+      "market_prob_over": 0.4564
     },
     {
       "player_id": 666541,
@@ -367,10 +367,10 @@
       "commence_time": null,
       "over_odds": -110.0,
       "under_odds": -105.0,
-      "model_prob_over": 0.4518,
-      "model_prob_under": 0.5482,
+      "model_prob_over": 0.44899999999999995,
+      "model_prob_under": 0.551,
       "ev_over": null,
-      "ev_under": 0.0702,
+      "ev_under": 0.0758,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -429,11 +429,11 @@
       "side": "OVER",
       "line": 0.5,
       "commence_time": null,
-      "over_odds": -127.0,
+      "over_odds": -125.0,
       "under_odds": 112.0,
       "model_prob_over": 0.6019,
       "model_prob_under": 0.3981,
-      "ev_over": 0.0759,
+      "ev_over": 0.0835,
       "ev_under": null,
       "projection": 1.0,
       "q_preds": {
@@ -450,7 +450,7 @@
         "0.9": 3.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5426
+      "market_prob_over": 0.5408
     },
     {
       "player_id": 3547246,
@@ -463,9 +463,9 @@
       "commence_time": null,
       "over_odds": -105.0,
       "under_odds": 100.0,
-      "model_prob_over": 0.5762,
-      "model_prob_under": 0.42379999999999995,
-      "ev_over": 0.125,
+      "model_prob_over": 0.5778,
+      "model_prob_under": 0.4222,
+      "ev_over": 0.128,
       "ev_under": null,
       "projection": 13.0,
       "q_preds": {
@@ -494,11 +494,11 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": 128.0,
-      "under_odds": -160.0,
+      "under_odds": -156.0,
       "model_prob_over": 0.2865,
       "model_prob_under": 0.7135,
       "ev_over": null,
-      "ev_under": 0.1594,
+      "ev_under": 0.1709,
       "projection": 0.0,
       "q_preds": {
         "0.1": 0.0,
@@ -514,7 +514,7 @@
         "0.9": 1.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.4161
+      "market_prob_over": 0.4185
     },
     {
       "player_id": 175,
@@ -527,10 +527,10 @@
       "commence_time": null,
       "over_odds": -102.0,
       "under_odds": -110.0,
-      "model_prob_over": 0.3863,
-      "model_prob_under": 0.6137,
+      "model_prob_over": 0.3872,
+      "model_prob_under": 0.6128,
       "ev_over": null,
-      "ev_under": 0.1716,
+      "ev_under": 0.1699,
       "projection": 26.0,
       "q_preds": {
         "0.1": 12.0,
@@ -557,12 +557,12 @@
       "side": "UNDER",
       "line": 4.5,
       "commence_time": null,
-      "over_odds": 125.0,
-      "under_odds": -151.0,
-      "model_prob_over": 0.28580000000000005,
-      "model_prob_under": 0.7142,
+      "over_odds": 122.0,
+      "under_odds": -159.0,
+      "model_prob_over": 0.2801,
+      "model_prob_under": 0.7199,
       "ev_over": null,
-      "ev_under": 0.1872,
+      "ev_under": 0.1727,
       "projection": 3.0,
       "q_preds": {
         "0.1": 1.0,
@@ -577,8 +577,8 @@
         "0.8": 5.0,
         "0.9": 6.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.42490000000000006
+      "book_key": "fanduel",
+      "market_prob_over": 0.4232
     },
     {
       "player_id": 175,
@@ -590,11 +590,11 @@
       "line": 7.5,
       "commence_time": null,
       "over_odds": 115.0,
-      "under_odds": -132.0,
-      "model_prob_over": 0.35029999999999994,
-      "model_prob_under": 0.6497,
+      "under_odds": -134.0,
+      "model_prob_over": 0.3409,
+      "model_prob_under": 0.6591,
       "ev_over": null,
-      "ev_under": 0.142,
+      "ev_under": 0.151,
       "projection": 6.0,
       "q_preds": {
         "0.1": 2.0,
@@ -605,12 +605,12 @@
         "0.5": 6.0,
         "0.6": 7.0,
         "0.67": 8.0,
-        "0.75": 9.0,
+        "0.75": 8.0,
         "0.8": 9.0,
         "0.9": 10.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.4498
+      "market_prob_over": 0.44820000000000004
     },
     {
       "player_id": 1028025261,
@@ -623,9 +623,9 @@
       "commence_time": null,
       "over_odds": -105.0,
       "under_odds": -115.0,
-      "model_prob_over": 0.5902,
-      "model_prob_under": 0.40980000000000005,
-      "ev_over": 0.1524,
+      "model_prob_over": 0.5928,
+      "model_prob_under": 0.4072,
+      "ev_over": 0.1573,
       "ev_under": null,
       "projection": 19.0,
       "q_preds": {
@@ -653,12 +653,12 @@
       "side": "UNDER",
       "line": 6.5,
       "commence_time": null,
-      "over_odds": -104.0,
+      "over_odds": -107.0,
       "under_odds": -105.0,
-      "model_prob_over": 0.45189999999999997,
-      "model_prob_under": 0.5481,
+      "model_prob_over": 0.44210000000000005,
+      "model_prob_under": 0.5579,
       "ev_over": null,
-      "ev_under": 0.0701,
+      "ev_under": 0.0893,
       "projection": 6.0,
       "q_preds": {
         "0.1": 2.0,
@@ -668,13 +668,13 @@
         "0.4": 5.0,
         "0.5": 6.0,
         "0.6": 7.0,
-        "0.67": 8.0,
+        "0.67": 7.0,
         "0.75": 8.0,
         "0.8": 9.0,
         "0.9": 10.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.4988
+      "market_prob_over": 0.5023
     },
     {
       "player_id": 1028025261,
@@ -686,7 +686,7 @@
       "line": 1.5,
       "commence_time": null,
       "over_odds": 100.0,
-      "under_odds": -118.0,
+      "under_odds": -113.0,
       "model_prob_over": 0.5474,
       "model_prob_under": 0.4526,
       "ev_over": 0.0948,
@@ -706,7 +706,7 @@
         "0.9": 4.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.4802
+      "market_prob_over": 0.4852
     },
     {
       "player_id": 1028025261,
@@ -718,7 +718,7 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": -170.0,
-      "under_odds": 170.0,
+      "under_odds": 164.0,
       "model_prob_over": 0.689,
       "model_prob_under": 0.31100000000000005,
       "ev_over": 0.0943,
@@ -738,7 +738,7 @@
         "0.9": 3.0
       },
       "book_key": "betway",
-      "market_prob_over": 0.6296
+      "market_prob_over": 0.6244
     },
     {
       "player_id": 38017685,
@@ -750,11 +750,11 @@
       "line": 8.5,
       "commence_time": null,
       "over_odds": -135.0,
-      "under_odds": 112.0,
-      "model_prob_over": 0.3879,
-      "model_prob_under": 0.6121,
+      "under_odds": 111.0,
+      "model_prob_over": 0.3832,
+      "model_prob_under": 0.6168,
       "ev_over": null,
-      "ev_under": 0.2976,
+      "ev_under": 0.3014,
       "projection": 7.0,
       "q_preds": {
         "0.1": 3.0,
@@ -770,7 +770,7 @@
         "0.9": 13.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.5490999999999999
+      "market_prob_over": 0.5479
     },
     {
       "player_id": 1057262518,
@@ -781,11 +781,11 @@
       "side": "OVER",
       "line": 11.5,
       "commence_time": null,
-      "over_odds": -115.0,
-      "under_odds": -102.0,
-      "model_prob_over": 0.578,
-      "model_prob_under": 0.42200000000000004,
-      "ev_over": 0.0806,
+      "over_odds": -120.0,
+      "under_odds": 105.0,
+      "model_prob_over": 0.5853,
+      "model_prob_under": 0.41469999999999996,
+      "ev_over": 0.0731,
       "ev_under": null,
       "projection": 13.0,
       "q_preds": {
@@ -796,13 +796,13 @@
         "0.4": 11.0,
         "0.5": 13.0,
         "0.6": 15.0,
-        "0.67": 16.0,
+        "0.67": 17.0,
         "0.75": 19.0,
         "0.8": 20.0,
         "0.9": 24.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.5144
+      "market_prob_over": 0.5279
     },
     {
       "player_id": 1057262518,
@@ -813,11 +813,11 @@
       "side": "OVER",
       "line": 4.5,
       "commence_time": null,
-      "over_odds": 116.0,
+      "over_odds": 125.0,
       "under_odds": -135.0,
-      "model_prob_over": 0.5603,
-      "model_prob_under": 0.4397,
-      "ev_over": 0.2103,
+      "model_prob_over": 0.5575,
+      "model_prob_under": 0.4425,
+      "ev_over": 0.2544,
       "ev_under": null,
       "projection": 5.0,
       "q_preds": {
@@ -833,8 +833,8 @@
         "0.8": 8.0,
         "0.9": 9.0
       },
-      "book_key": "draftkings",
-      "market_prob_over": 0.4463
+      "book_key": "fanatics",
+      "market_prob_over": 0.4362
     },
     {
       "player_id": 1057262518,
@@ -845,12 +845,12 @@
       "side": "UNDER",
       "line": 3.5,
       "commence_time": null,
-      "over_odds": 134.0,
+      "over_odds": 130.0,
       "under_odds": -165.0,
-      "model_prob_over": 0.31999999999999995,
-      "model_prob_under": 0.68,
+      "model_prob_over": 0.3127,
+      "model_prob_under": 0.6873,
       "ev_over": null,
-      "ev_under": 0.0921,
+      "ev_under": 0.1039,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -865,8 +865,8 @@
         "0.8": 4.0,
         "0.9": 6.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.40700000000000003
+      "book_key": "betmgm",
+      "market_prob_over": 0.4112
     },
     {
       "player_id": 89,
@@ -877,12 +877,12 @@
       "side": "UNDER",
       "line": 10.5,
       "commence_time": null,
-      "over_odds": 104.0,
-      "under_odds": 100.0,
-      "model_prob_over": 0.28580000000000005,
-      "model_prob_under": 0.7142,
+      "over_odds": -104.0,
+      "under_odds": -110.0,
+      "model_prob_over": 0.28859999999999997,
+      "model_prob_under": 0.7114,
       "ev_over": null,
-      "ev_under": 0.4284,
+      "ev_under": 0.3581,
       "projection": 7.0,
       "q_preds": {
         "0.1": 1.0,
@@ -897,8 +897,8 @@
         "0.8": 12.0,
         "0.9": 15.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.495
+      "book_key": "fanduel",
+      "market_prob_over": 0.49319999999999997
     },
     {
       "player_id": 89,
@@ -911,10 +911,10 @@
       "commence_time": null,
       "over_odds": 105.0,
       "under_odds": -128.0,
-      "model_prob_over": 0.39159999999999995,
-      "model_prob_under": 0.6084,
+      "model_prob_over": 0.38260000000000005,
+      "model_prob_under": 0.6174,
       "ev_over": null,
-      "ev_under": 0.0837,
+      "ev_under": 0.0998,
       "projection": 3.0,
       "q_preds": {
         "0.1": 0.0,
@@ -975,10 +975,10 @@
       "commence_time": null,
       "over_odds": -115.0,
       "under_odds": 115.0,
-      "model_prob_over": 0.40369999999999995,
-      "model_prob_under": 0.5963,
+      "model_prob_over": 0.39349999999999996,
+      "model_prob_under": 0.6065,
       "ev_over": null,
-      "ev_under": 0.2819,
+      "ev_under": 0.3039,
       "projection": 3.0,
       "q_preds": {
         "0.1": 0.0,
@@ -987,7 +987,7 @@
         "0.33": 2.0,
         "0.4": 2.0,
         "0.5": 3.0,
-        "0.6": 4.0,
+        "0.6": 3.0,
         "0.67": 4.0,
         "0.75": 5.0,
         "0.8": 5.0,
@@ -1005,15 +1005,15 @@
       "side": "UNDER",
       "line": 24.5,
       "commence_time": null,
-      "over_odds": -110.0,
-      "under_odds": -109.0,
-      "model_prob_over": 0.3953,
-      "model_prob_under": 0.6047,
+      "over_odds": -108.0,
+      "under_odds": -103.0,
+      "model_prob_over": 0.39490000000000003,
+      "model_prob_under": 0.6051,
       "ev_over": null,
-      "ev_under": 0.1595,
+      "ev_under": 0.1925,
       "projection": 22.0,
       "q_preds": {
-        "0.1": 9.0,
+        "0.1": 10.0,
         "0.2": 14.0,
         "0.25": 15.0,
         "0.33": 18.0,
@@ -1025,8 +1025,8 @@
         "0.8": 31.0,
         "0.9": 36.0
       },
-      "book_key": "fanatics",
-      "market_prob_over": 0.5011
+      "book_key": "betparx",
+      "market_prob_over": 0.5058
     },
     {
       "player_id": 56677822,
@@ -1039,10 +1039,10 @@
       "commence_time": null,
       "over_odds": -110.0,
       "under_odds": 106.0,
-      "model_prob_over": 0.27070000000000005,
-      "model_prob_under": 0.7293,
+      "model_prob_over": 0.26959999999999995,
+      "model_prob_under": 0.7304,
       "ev_over": null,
-      "ev_under": 0.5024,
+      "ev_under": 0.5047,
       "projection": 11.0,
       "q_preds": {
         "0.1": 5.0,
@@ -1069,12 +1069,12 @@
       "side": "UNDER",
       "line": 2.5,
       "commence_time": null,
-      "over_odds": -130.0,
+      "over_odds": -145.0,
       "under_odds": 120.0,
-      "model_prob_over": 0.40280000000000005,
-      "model_prob_under": 0.5972,
+      "model_prob_over": 0.3929,
+      "model_prob_under": 0.6071,
       "ev_over": null,
-      "ev_under": 0.3139,
+      "ev_under": 0.3357,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -1083,14 +1083,14 @@
         "0.33": 1.0,
         "0.4": 1.0,
         "0.5": 2.0,
-        "0.6": 3.0,
+        "0.6": 2.0,
         "0.67": 3.0,
         "0.75": 3.0,
         "0.8": 4.0,
         "0.9": 5.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.5543
+      "market_prob_over": 0.5656
     }
   ],
   "upstream_statuses": {
