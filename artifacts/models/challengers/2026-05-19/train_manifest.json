@@ -11,9 +11,9 @@
     },
     "model_dir_reference": "artifacts/models"
   },
-  "code_commit": "7a76a9752cf0c25bca98049edcc159409025ade8",
+  "code_commit": "68e26bdde92c85b771c95bbbb8ef4489633eded1",
   "dry_run": true,
-  "finished_at_utc": "2026-05-20T22:56:18+00:00",
+  "finished_at_utc": "2026-05-20T23:46:02+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -23,7 +23,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-19",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260520T225614"
+    "training_run_id": "nightly-20260520T234559"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
@@ -31,7 +31,7 @@
     "model_version": "challenger-2026-04-30"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-20T22:56:18+00:00",
+  "started_at_utc": "2026-05-20T23:46:02+00:00",
   "stats_trained": [
     "pts",
     "reb",
