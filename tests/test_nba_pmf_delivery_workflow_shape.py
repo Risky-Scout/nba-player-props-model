@@ -538,3 +538,139 @@ def test_derek_unique_summary_guard_allows_pipeline_generation_but_blocks_postpr
         "The pre-pipeline hash must NOT be used to fail current-date "
         "delivery regeneration; only post-processing mutation may fail."
     )
+
+
+# ── Stale rebase-state cleanup regression guard ─────────────────────
+#
+# Regression context: run 26188323723 failed in
+# ``model_chain_training_calibration → Commit training/calibration
+# artifacts`` with
+#   fatal: It seems that there is already a rebase-merge directory
+# The retry loop ``git pull --rebase --autostash origin main && git push``
+# did not clear stale ``.git/rebase-merge`` / ``.git/rebase-apply`` state,
+# so once a rebase failed mid-way every subsequent retry tripped the same
+# fatal. Every self-committing step in the workflow must now use the
+# ``cleanup_rebase_state`` / ``sync_and_push`` helper pattern, which
+# scrubs the partial-rebase directories before AND after every attempt.
+
+
+def test_self_commit_blocks_clean_stale_rebase_state(workflow_text):
+    """Every self-commit step uses the cleanup_rebase_state + sync_and_push helpers.
+
+    The helpers MUST be defined inside the same shell block (each step
+    runs in its own subshell), and the autostashed rebase pull MUST be
+    inside the ``sync_and_push`` body — not a bare retry loop.
+    """
+
+    text = workflow_text
+
+    # Helpers are defined at least once.
+    assert "cleanup_rebase_state" in text
+    assert "git rebase --abort" in text
+    assert "rm -rf .git/rebase-merge .git/rebase-apply" in text
+    assert "git pull --rebase --autostash origin main" in text
+
+    # The pattern is used by every self-commit step we patched. The
+    # step name appears verbatim in the YAML and the helpers + invocation
+    # must live in the same step body (well within 4000 chars).
+    expected_blocks = [
+        "Commit refreshed player stats",
+        "Commit training/calibration artifacts",
+        "Commit Phase 8 artifacts",
+        "Commit Phase 13 artifacts",
+        "Commit prediction artifacts + automation health",
+        "Build delivery index and commit delivery outputs",
+        "Build delivery index and commit after-game outputs",
+    ]
+    for block_name in expected_blocks:
+        idx = text.index(block_name)
+        window = text[idx : idx + 4000]
+        assert "cleanup_rebase_state" in window, (
+            f"{block_name!r} missing cleanup_rebase_state"
+        )
+        assert "sync_and_push" in window, (
+            f"{block_name!r} missing sync_and_push invocation"
+        )
+        assert "git pull --rebase --autostash origin main" in window, (
+            f"{block_name!r} missing --autostash --rebase pull"
+        )
+        assert "rm -rf .git/rebase-merge .git/rebase-apply" in window, (
+            f"{block_name!r} missing rebase-merge/rebase-apply cleanup"
+        )
+
+    # No bare un-cleaned rebase pulls remain inside any self-commit
+    # retry loop. (The standalone post-checkout
+    # ``- run: git pull --rebase origin main || true`` lines run against
+    # a clean working tree right after checkout and intentionally keep
+    # their original shape, so the forbidden substring is the exact
+    # newline-terminated bare pull.)
+    forbidden = [
+        "git pull --rebase origin main\n",
+    ]
+    for s in forbidden:
+        assert s not in text, f"forbidden pattern still present: {s!r}"
+
+    # No force-push refspec anywhere in the workflow. We check for the
+    # specific git-push force shapes rather than the bare substring
+    # ``--force`` (which would also match unrelated flags like
+    # ``--force-run`` / ``--force-run-predict`` that gate manual
+    # delivery / predict invocations).
+    assert "git push --force" not in text, (
+        "force-push must not appear in this workflow"
+    )
+    assert "--force-with-lease" not in text, (
+        "force-with-lease push must not appear in this workflow"
+    )
+    assert "push -f" not in text, "short-form force push must not appear"
+    assert "HEAD:+main" not in text, (
+        "force-overwrite push refspec (HEAD:+main) must not appear"
+    )
+    assert ":+main" not in text, (
+        "force-overwrite push refspec (+main) must not appear"
+    )
+
+
+def test_self_commit_no_swallowed_push_failure(workflow_text):
+    """``sync_and_push`` must be allowed to fail loudly.
+
+    Wrapping the helper invocation in ``|| true`` would swallow a real
+    push failure and silently green-light a step whose changes never
+    landed on main. Forbid the obvious shapes.
+    """
+
+    text = workflow_text
+    assert "sync_and_push 5 || true" not in text
+    assert "sync_and_push 3 || true" not in text
+    assert "sync_and_push || true" not in text
+
+
+def test_cleanup_rebase_state_defined_in_every_patched_step(workflow_text):
+    """The helper definitions must appear once per patched step body.
+
+    Each step runs in its own subshell, so the helpers must be redefined
+    inside each affected ``run:`` block. We expect exactly as many helper
+    definitions as patched self-commit steps.
+    """
+
+    text = workflow_text
+    expected_blocks = [
+        "Commit refreshed player stats",
+        "Commit training/calibration artifacts",
+        "Commit Phase 8 artifacts",
+        "Commit Phase 13 artifacts",
+        "Commit prediction artifacts + automation health",
+        "Build delivery index and commit delivery outputs",
+        "Build delivery index and commit after-game outputs",
+    ]
+    n = len(expected_blocks)
+
+    cleanup_defs = text.count("cleanup_rebase_state() {")
+    sync_defs = text.count("sync_and_push() {")
+    assert cleanup_defs == n, (
+        f"expected {n} cleanup_rebase_state definitions (one per patched "
+        f"step); found {cleanup_defs}"
+    )
+    assert sync_defs == n, (
+        f"expected {n} sync_and_push definitions (one per patched step); "
+        f"found {sync_defs}"
+    )

@@ -307,11 +307,30 @@ jobs:
           git diff --staged --quiet && echo "No parquet changes to commit" && exit 0
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "Refresh settled player stats (NBA PMF Delivery model chain)"
-          for i in 1 2 3; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 5
-          done
-          exit 1
+
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
+
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 3
 
       - name: Run nightly training and role/stat calibration
         env:
@@ -351,12 +370,29 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: model chain ${{ needs.resolve_context.outputs.as_of_date }}"
 
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 10
-          done
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
 
-          exit 1
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 5
 
   # ────────────────────────────────────────────────────────────────
   # Phase 8 — PMF calibration, diagnostics, market evaluation.
@@ -470,12 +506,29 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: phase8 calibration diagnostics ${{ needs.resolve_context.outputs.delivery_date }}"
 
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 10
-          done
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
 
-          exit 1
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 5
 
   # ────────────────────────────────────────────────────────────────
   # Phase 13 O/P/Q/R/S — live-context + contextual lineup chain.
@@ -620,12 +673,29 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: phase13 context chain ${{ needs.resolve_context.outputs.as_of_date }}"
 
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 10
-          done
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
 
-          exit 1
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 5
 
   # ────────────────────────────────────────────────────────────────
   # Predict daily — 14:00 UTC cron + manual stage=predict.
@@ -707,12 +777,29 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: predict daily $D"
 
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 10
-          done
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
 
-          exit 1
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 5
 
   # ────────────────────────────────────────────────────────────────
   # Delivery build — Derek + WoO + delivery hygiene + verifiers.
@@ -983,12 +1070,29 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: delivery $D ${{ needs.resolve_context.outputs.mode }}"
 
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 10
-          done
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
 
-          exit 1
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 5
 
   # ────────────────────────────────────────────────────────────────
   # After-game scoring — 06:30 UTC cron + manual stage=after_game.
@@ -1083,12 +1187,29 @@ jobs:
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: after-game scoring $D"
 
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push origin HEAD:main && exit 0
-            sleep 10
-          done
+          cleanup_rebase_state() {
+            git rebase --abort || true
+            rm -rf .git/rebase-merge .git/rebase-apply
+          }
 
-          exit 1
+          sync_and_push() {
+            local attempts="${1:-5}"
+            for i in $(seq 1 "$attempts"); do
+              cleanup_rebase_state
+              git status --short || true
+
+              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+                cleanup_rebase_state
+                return 0
+              fi
+
+              cleanup_rebase_state
+              sleep 10
+            done
+            return 1
+          }
+
+          sync_and_push 5
 
   # ────────────────────────────────────────────────────────────────
   # final_contract_verifiers — STRICT upstream gating.
