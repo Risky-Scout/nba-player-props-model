@@ -17,7 +17,7 @@
 - `promotion_decision_id` = `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T134927`
 - `champion_pointer_path` = `artifacts/models/registry/champion_pointer.json`
 - `champion_pointer_hash` = `f1b07b5b90d474a4a6527c4a9252cba5`
-- `metadata_stamped_at_utc` = `2026-05-20T23:50:59+00:00`
+- `metadata_stamped_at_utc` = `2026-05-20T23:58:12+00:00`
 
 - `no_prediction_values_modified` = `True`
 

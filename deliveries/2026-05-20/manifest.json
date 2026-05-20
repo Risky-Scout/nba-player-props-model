@@ -35,12 +35,12 @@
   "wizard_of_odds": {
     "market_comparison": "deliveries/2026-05-20/wizard_of_odds/market_comparison.parquet",
     "run_manifest": "deliveries/2026-05-20/wizard_of_odds/run_manifest.json",
-    "rows": 2028
+    "rows": 2042
   },
   "derek_forward_feed": {
     "parquet": "deliveries/2026-05-20/derek_forward_feed/derek_forward_feed.parquet",
     "csv": "deliveries/2026-05-20/derek_forward_feed/derek_forward_feed.csv",
     "feed_manifest": "deliveries/2026-05-20/derek_forward_feed/feed_manifest.json",
-    "rows": 1981
+    "rows": 1995
   }
 }
