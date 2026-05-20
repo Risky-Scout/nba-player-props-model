@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-20T18:04:13Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-20T23:35:53Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -29,7 +29,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-17** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 2260 | 1833 | `full` | `fresh` | `present` | `morning_present` | 2225 | `pending_pre_tipoff_run` | 2225 | `n/a` | `0a091108#phase10c` |
 | **2026-05-18** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2207 | 1766 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 2172 | `scored` | `ae210a4f#phase10c` |
 | **2026-05-19** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 156 | 3341 | 2314 | 1794 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 2268 | `n/a` | `5dfafc1f#phase10c` |
-| **2026-05-20** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 156 | 3341 | 2375 | 1917 | `full` | `fresh` | `present` | `morning_present` | 2324 | `pending_pre_tipoff_run` | 2324 | `n/a` | `f3b2974b#phase10c` |
+| **2026-05-20** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 156 | 3341 | 2147 | 1694 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 2121 | `n/a` | `8beabad5#phase10c` |
 
 ## Per-date links
 
@@ -937,7 +937,7 @@ _lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-20/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-20/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — morning rows=2324 · lineup=pending_pre_tipoff_run · latest→morning
+**Derek forward feed (PMF snapshots)** — lineup=present · latest→lineup
 
 - [FEED_README.md](2026-05-20/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-20/derek_forward_feed/feed_manifest.json)

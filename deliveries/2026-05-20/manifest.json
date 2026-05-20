@@ -8,40 +8,27 @@
     "minutes_eligible_rows": 13,
     "canonical_rows": 156,
     "review_rows": 156,
-    "market_rows": 2375,
-    "derek_rows": 2324,
+    "market_rows": 2147,
+    "derek_rows": 2121,
     "proof_gates": {
       "minutes_universe": "schema+uniqueness+null/range checks (NO deep-bench gate)",
       "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
     }
   },
-  "checked_at_utc": "2026-05-20T18:04:12Z",
-  "selected_injury_report": "Injury-Report_2026-05-20_02_00PM",
-  "selected_injury_report_time": "2026-05-20T14:00:00-04:00",
-  "injury_report_fallback_used": true,
-  "failed_injury_report_candidates": [
-    {
-      "report": "Injury-Report_2026-05-20_07_00PM",
-      "reason": "future_report_time_or_not_yet_available"
-    },
-    {
-      "report": "Injury-Report_2026-05-20_05_00PM",
-      "reason": "future_report_time_or_not_yet_available"
-    },
-    {
-      "report": "Injury-Report_2026-05-20_03_00PM",
-      "reason": "future_report_time_or_not_yet_available"
-    }
-  ],
-  "injury_freshness_status": "fallback_used",
-  "fetched_at_utc": "2026-05-20T18:02:39Z",
+  "checked_at_utc": "2026-05-20T23:35:52Z",
+  "selected_injury_report": "Injury-Report_2026-05-20_07_00PM",
+  "selected_injury_report_time": "2026-05-20T19:00:00-04:00",
+  "injury_report_fallback_used": false,
+  "failed_injury_report_candidates": [],
+  "injury_freshness_status": "latest_valid_report_selected",
+  "fetched_at_utc": "2026-05-20T23:34:13Z",
   "market_eval_available": false,
   "market_rows_keyed": true,
   "market_rows_fresh": false,
   "market_superiority_claim_allowed": false,
   "market_eval_blocker": "missing_snapshot_timestamp",
   "date": "2026-05-20",
-  "run_mode": "woo_morning_monetization",
+  "run_mode": "derek_near_lineup",
   "canonical_model_only_path": "deliveries/2026-05-20/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
   "all_props_model_only_path": "deliveries/2026-05-20/canonical_source/all_props_model_only.parquet",
   "market_comparison_path": "deliveries/2026-05-20/wizard_of_odds/market_comparison.parquet",

@@ -16,8 +16,8 @@ Open these in order. Archive the entire `derek_forward_feed/` folder per date.
 
 ## Snapshot summary
 
-- **morning** rows: 2324  snapshot_time_utc: `2026-05-20T18:03:28Z`
-- **lineup**: not available — status `pending_pre_tipoff_run`
+- **morning**: not produced
+- **lineup**  rows: 2121  snapshot_time_utc: `2026-05-20T23:35:03Z`
 
 ## Schema (per row)
 
