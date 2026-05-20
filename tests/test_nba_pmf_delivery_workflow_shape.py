@@ -262,6 +262,31 @@ def test_delivery_preserves_derek_unique_summary(workflow_text):
     )
 
 
+def test_delivery_csv_rounding_runs_in_correct_post_processing_order(
+    workflow_text,
+):
+    """The new display-rounding step must run after ``strip_empty_delivery_columns``
+    and before ``write_delivery_review_previews`` / ``enforce_delivery_csv_size_contract``,
+    and must pass ``--places 4`` plus the Derek unique summary preserve flag.
+    """
+
+    text = workflow_text
+
+    assert "scripts/round_delivery_csv_numeric_display.py" in text
+    assert "--places 4" in text
+    assert "--preserve derek_forward_feed/derek_unique_props_summary.csv" in text
+
+    strip_idx = text.index("scripts/strip_empty_delivery_columns.py")
+    round_idx = text.index("scripts/round_delivery_csv_numeric_display.py")
+    previews_idx = text.index("scripts/write_delivery_review_previews.py")
+    size_idx = text.index("scripts/enforce_delivery_csv_size_contract.py")
+
+    assert strip_idx < round_idx < previews_idx < size_idx, (
+        f"rounding step out of order: strip={strip_idx} round={round_idx} "
+        f"previews={previews_idx} size={size_idx}"
+    )
+
+
 def test_delivery_hash_protects_derek_unique_summary(workflow):
     """The hash-after-pipeline / hash-after-postprocess / fail-on-change guard
     is wired in delivery. The pre-pipeline note step is informational only and
