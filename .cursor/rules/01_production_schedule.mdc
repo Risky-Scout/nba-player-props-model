@@ -1,0 +1,62 @@
+---
+description: Production schedule and stage ordering
+alwaysApply: true
+---
+
+All scheduling must use America/New_York slate logic.
+
+Implement this UTC schedule in .github/workflows/nba_pmf_delivery.yml:
+
+06:30 UTC:
+- after_game
+- scores previous ET slate
+
+09:30 UTC:
+- model_chain
+- settled-stat refresh
+- nightly training/calibration
+- Phase 8
+- Phase 13O/P/Q/R/S
+- promotion allowed only if gates pass
+
+12:30 UTC:
+- model_chain retry
+- promotion allowed only if gates pass
+
+14:00 UTC:
+- predict current ET slate
+
+14:30 UTC:
+- promotion cutoff
+- after this, same-day promotion is forbidden
+
+15:00 UTC:
+- WoO morning delivery
+
+15:30 UTC:
+- model_chain_no_promote
+
+18:00 UTC:
+- WoO afternoon refresh
+
+18:30 UTC:
+- model_chain_no_promote
+
+20:00 UTC:
+- WoO late refresh
+
+21:30 UTC:
+- model_chain_no_promote
+
+22:25 UTC through 03:25 UTC:
+- Derek candidate windows
+- slate-aware valid-skip outside useful pre-tip windows
+
+For an 8:30 PM ET game:
+- 23:55 UTC same day => derek_near_lineup
+- 00:10 UTC next day => derek_near_lineup
+- 00:25 UTC next day => close_lock
+- 06:30 UTC next day => after_game for that slate
+
+Training/Phase jobs must never block WoO/Derek delivery.
+Remove workflow-level concurrency. Use job-level concurrency.
