@@ -1,23 +1,56 @@
 name: NBA PMF Delivery
 
+# Consolidated production workflow. Replaces the inline schedule
+# routing that lived in this file's `resolve_context` job with a single
+# Python source of truth: `scripts/resolve_nba_pmf_schedule.py`. That
+# script owns every (delivery_date, as_of_date, stage, mode,
+# allow_promote, force_run, valid_skip_reason) decision the workflow
+# needs, including the Derek tipoff-window gate.
+#
+# Brief contract: CURSOR_TASK_NBA_PMF_PRODUCTION_PIPELINE.md
+# Rules:         .cursor/rules/01_production_schedule.mdc,
+#                .cursor/rules/02_calibration_market_superiority.mdc,
+#                .cursor/rules/04_delivery_contracts.mdc
+#
+# Hard rules:
+# - No top-level workflow concurrency. Long training/Phase 13 runs
+#   must not block WoO/Derek delivery. Each job carries its own
+#   `concurrency.group` scoped to (stage, slate-date).
+# - `deliveries/<date>/derek_forward_feed/derek_unique_props_summary.csv`
+#   is hash-protected through the delivery job; any in-pipeline mutation
+#   is a hard failure.
+# - No market-superiority claim or champion promotion happens unless the
+#   repo's existing calibration/market gates explicitly say it does.
+# - Old workflows are NOT disabled here. They remain in place until this
+#   consolidated workflow has passed a full production day.
+
 on:
   schedule:
-    # After-game scoring.
+    # 06:30 UTC — after-game scoring of the PREVIOUS ET slate.
     - cron: "30 6 * * *"
 
-    # Nightly training / calibration deferred retries.
+    # Model-chain (training → Phase 8 → Phase 13 O/P/Q/R/S). 09:30 and
+    # 12:30 UTC may promote when gates pass; 15:30, 18:30, 21:30 UTC are
+    # post-cutoff retries that MUST run with `--no-promote`.
     - cron: "30 9 * * *"
     - cron: "30 12 * * *"
     - cron: "30 15 * * *"
     - cron: "30 18 * * *"
     - cron: "30 21 * * *"
 
-    # WoO / delivery refresh windows.
+    # 14:00 UTC — daily prediction (scripts/predict.py via
+    # predictions_readiness_gate.py).
+    - cron: "0 14 * * *"
+
+    # WoO delivery windows.
     - cron: "0 15 * * *"
     - cron: "0 18 * * *"
     - cron: "0 20 * * *"
 
-    # Derek near-lineup / close-lock windows.
+    # Derek near-lineup / close-lock candidate windows. Each fire runs
+    # the resolver, which valid-skips unless the slate tip time is
+    # within (35→11 min) [derek_near_lineup] or (10→0 min) [close_lock]
+    # of the scheduled run.
     - cron: "25 22 * * *"
     - cron: "40,55 22 * * *"
     - cron: "10,25,40,55 23,0,1,2 * * *"
@@ -35,8 +68,11 @@ on:
           - auto
           - full_cycle
           - training
+          - model_chain
+          - model_chain_no_promote
           - phase8
           - phase13_context
+          - predict
           - delivery
           - after_game
           - verifiers
@@ -53,6 +89,9 @@ on:
           - close_lock
           - after_game
           - full_day
+          - predict
+          - model_chain
+          - model_chain_no_promote
       delivery_date:
         description: "YYYY-MM-DD. Blank = America/New_York today."
         required: false
@@ -68,15 +107,17 @@ on:
         type: choice
         options: ["true", "false"]
       run_predict:
-        description: "Run prediction inside delivery stage"
+        description: "Run scripts/predict.py inside delivery stage"
         required: false
         default: "false"
         type: choice
         options: ["false", "true"]
-
-concurrency:
-  group: nba-pmf-delivery-${{ github.ref }}
-  cancel-in-progress: false
+      force_run:
+        description: "Bypass delivery time-window gates for manual smoke tests/backfills"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 permissions:
   contents: write
@@ -95,6 +136,9 @@ env:
   DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
 
 jobs:
+  # ────────────────────────────────────────────────────────────────
+  # resolve_context — single source of truth for every gate flag.
+  # ────────────────────────────────────────────────────────────────
   resolve_context:
     runs-on: ubuntu-latest
     outputs:
@@ -102,133 +146,41 @@ jobs:
       as_of_date: ${{ steps.resolve.outputs.as_of_date }}
       stage: ${{ steps.resolve.outputs.stage }}
       mode: ${{ steps.resolve.outputs.mode }}
-      run_training: ${{ steps.route.outputs.run_training }}
-      run_phase8: ${{ steps.route.outputs.run_phase8 }}
-      run_phase13: ${{ steps.route.outputs.run_phase13 }}
-      run_delivery: ${{ steps.route.outputs.run_delivery }}
-      run_after_game: ${{ steps.route.outputs.run_after_game }}
-      run_verifiers: ${{ steps.route.outputs.run_verifiers }}
+      run_predict: ${{ steps.resolve.outputs.run_predict }}
+      run_training: ${{ steps.resolve.outputs.run_training }}
+      run_phase8: ${{ steps.resolve.outputs.run_phase8 }}
+      run_phase13: ${{ steps.resolve.outputs.run_phase13 }}
+      run_delivery: ${{ steps.resolve.outputs.run_delivery }}
+      run_after_game: ${{ steps.resolve.outputs.run_after_game }}
+      run_verifiers: ${{ steps.resolve.outputs.run_verifiers }}
+      allow_promote: ${{ steps.resolve.outputs.allow_promote }}
+      force_run: ${{ steps.resolve.outputs.force_run }}
+      valid_skip_reason: ${{ steps.resolve.outputs.valid_skip_reason }}
     steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
       - id: resolve
-        name: Resolve schedule/date/mode
+        name: Resolve schedule/date/mode/gates (Python source of truth)
         run: |
           set -euo pipefail
+          python3 scripts/resolve_nba_pmf_schedule.py \
+            --event-name "${{ github.event_name }}" \
+            --schedule "${{ github.event.schedule }}" \
+            --manual-stage "${{ github.event.inputs.stage || '' }}" \
+            --manual-mode "${{ github.event.inputs.mode || '' }}" \
+            --manual-delivery-date "${{ github.event.inputs.delivery_date || '' }}" \
+            --manual-as-of-date "${{ github.event.inputs.as_of_date || '' }}" \
+            --manual-force-run "${{ github.event.inputs.force_run || 'false' }}" \
+            --manual-no-promote "${{ github.event.inputs.no_promote || 'true' }}" \
+            --github-output "$GITHUB_OUTPUT"
 
-          STAGE="${{ github.event.inputs.stage || 'auto' }}"
-          MODE="${{ github.event.inputs.mode || 'derek_near_lineup' }}"
-          SCHEDULE="${{ github.event.schedule }}"
-
-          if [ -n "${{ github.event.inputs.delivery_date || '' }}" ]; then
-            DELIVERY_DATE="${{ github.event.inputs.delivery_date }}"
-          else
-            DELIVERY_DATE="$(TZ=America/New_York date +%Y-%m-%d)"
-          fi
-
-          if [ -n "${{ github.event.inputs.as_of_date || '' }}" ]; then
-            AS_OF_DATE="${{ github.event.inputs.as_of_date }}"
-          else
-            AS_OF_DATE="$(TZ=America/New_York date -d 'yesterday' +%Y-%m-%d)"
-          fi
-
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            case "$SCHEDULE" in
-              "30 6 * * *")
-                STAGE="after_game"
-                MODE="after_game"
-                ;;
-              "30 9 * * *"|"30 12 * * *"|"30 15 * * *"|"30 18 * * *"|"30 21 * * *")
-                STAGE="training"
-                ;;
-              "0 15 * * *")
-                STAGE="delivery"
-                MODE="woo_morning_monetization"
-                ;;
-              "0 18 * * *"|"0 20 * * *")
-                STAGE="delivery"
-                MODE="woo_afternoon_refresh"
-                ;;
-              "25 22 * * *"|"40,55 22 * * *"|"10,25,40,55 23,0,1,2 * * *"|"10 3 * * *")
-                STAGE="delivery"
-                MODE="derek_near_lineup"
-                ;;
-              "25 3 * * *")
-                STAGE="delivery"
-                MODE="close_lock"
-                ;;
-            esac
-          fi
-
-          echo "delivery_date=$DELIVERY_DATE" >> "$GITHUB_OUTPUT"
-          echo "as_of_date=$AS_OF_DATE" >> "$GITHUB_OUTPUT"
-          echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
-          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
-
-          echo "Resolved stage=$STAGE mode=$MODE delivery_date=$DELIVERY_DATE as_of_date=$AS_OF_DATE"
-
-      - id: route
-        name: Route consolidated workflow stages
-        run: |
-          set -euo pipefail
-          STAGE="${{ steps.resolve.outputs.stage }}"
-
-          run_training=false
-          run_phase8=false
-          run_phase13=false
-          run_delivery=false
-          run_after_game=false
-          run_verifiers=false
-
-          case "$STAGE" in
-            full_cycle)
-              run_training=true
-              run_phase8=true
-              run_phase13=true
-              run_delivery=true
-              run_after_game=true
-              run_verifiers=true
-              ;;
-            training)
-              run_training=true
-              run_phase8=true
-              run_phase13=true
-              run_verifiers=true
-              ;;
-            phase8)
-              run_phase8=true
-              run_verifiers=true
-              ;;
-            phase13_context)
-              run_phase13=true
-              run_verifiers=true
-              ;;
-            delivery)
-              run_delivery=true
-              run_verifiers=true
-              ;;
-            after_game)
-              run_after_game=true
-              run_verifiers=true
-              ;;
-            verifiers)
-              run_verifiers=true
-              ;;
-            auto)
-              run_delivery=true
-              run_verifiers=true
-              ;;
-            *)
-              echo "::error::Unknown stage=$STAGE"
-              exit 1
-              ;;
-          esac
-
-          echo "run_training=$run_training" >> "$GITHUB_OUTPUT"
-          echo "run_phase8=$run_phase8" >> "$GITHUB_OUTPUT"
-          echo "run_phase13=$run_phase13" >> "$GITHUB_OUTPUT"
-          echo "run_delivery=$run_delivery" >> "$GITHUB_OUTPUT"
-          echo "run_after_game=$run_after_game" >> "$GITHUB_OUTPUT"
-          echo "run_verifiers=$run_verifiers" >> "$GITHUB_OUTPUT"
-
+  # ────────────────────────────────────────────────────────────────
+  # readiness — secrets preflight + champion-pointer verification.
+  # ────────────────────────────────────────────────────────────────
   readiness:
     runs-on: ubuntu-latest
     needs: resolve_context
@@ -243,7 +195,14 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Required secret checks
+
+      - name: Valid-skip short-circuit
+        if: needs.resolve_context.outputs.valid_skip_reason != ''
+        run: |
+          echo "::notice::valid_skip_reason=${{ needs.resolve_context.outputs.valid_skip_reason }} — downstream jobs gate on this and exit cleanly."
+
+      - name: Required secrets preflight
+        if: needs.resolve_context.outputs.valid_skip_reason == ''
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -264,13 +223,42 @@ jobs:
             echo "::warning::ODDS_API_KEY is empty; delivery may valid-skip or lack market coverage."
           fi
 
+          if [ "${{ needs.resolve_context.outputs.run_predict }}" = "true" ] && [ -z "${ODDS_API_KEY:-}" ]; then
+            echo "::warning::ODDS_API_KEY is empty; predict may valid-skip on no slate or partial market data."
+          fi
+
+      - name: Mode-specific secrets preflight (verify_secrets_preflight.py)
+        if: needs.resolve_context.outputs.valid_skip_reason == ''
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ "${{ needs.resolve_context.outputs.run_training }}" = "true" ] || \
+             [ "${{ needs.resolve_context.outputs.run_after_game }}" = "true" ]; then
+            python3 scripts/verify_secrets_preflight.py --mode training
+          fi
+          if [ "${{ needs.resolve_context.outputs.run_predict }}" = "true" ] || \
+             [ "${{ needs.resolve_context.outputs.run_delivery }}" = "true" ]; then
+            python3 scripts/verify_secrets_preflight.py --mode daily --require-lineup-source
+          fi
+
+      - name: Verify champion pointer
+        if: needs.resolve_context.outputs.valid_skip_reason == ''
+        run: |
           python3 scripts/verify_real_champion_pointer.py
 
-  training_role_stat_calibration:
+  # ────────────────────────────────────────────────────────────────
+  # Model chain: training + role/stat calibration.
+  # ────────────────────────────────────────────────────────────────
+  model_chain_training_calibration:
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_training == 'true'
+    if: needs.resolve_context.outputs.run_training == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
     timeout-minutes: 360
+    concurrency:
+      group: nba-pmf-model-chain-${{ needs.resolve_context.outputs.as_of_date }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -282,27 +270,66 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Refresh settled player-game stats
+
+      # 7-day BDL backfill pattern transplanted from
+      # `nightly_training_calibration.yml`. Walks back up to 7 days so a
+      # multi-day BDL lag is still caught. `continue-on-error` lets the
+      # resolver still halt cleanly on stale data downstream.
+      - name: Pre-resolver settled player stats refresh (7-day BDL backfill)
+        continue-on-error: true
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
         run: |
-          python3 scripts/refresh_bdl_player_game_stats.py \
-            --start-date "${{ needs.resolve_context.outputs.as_of_date }}" \
-            --end-date "${{ needs.resolve_context.outputs.as_of_date }}" \
-            --force-rewrite
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+          FROM_DATE=$(TZ=America/New_York date -d "$ASOF -6 days" +%Y-%m-%d 2>/dev/null \
+                       || TZ=America/New_York date -v-7d -j -f %Y-%m-%d "$ASOF" +%Y-%m-%d)
+          echo "Refreshing player box scores from=$FROM_DATE to=$ASOF"
+          python3 scripts/backfill_player_game_stats_from_bdl.py \
+            --from-date "$FROM_DATE" \
+            --to-date "$ASOF" \
+            || echo "::notice::BDL backfill exited non-zero; resolver will halt if data still stale"
+          python3 scripts/verify_player_game_stats_freshness.py \
+            --required-through-date "$ASOF" \
+            || echo "::notice::player_game_stats freshness verifier failed; resolver will halt cleanly"
+
+      - name: Commit refreshed player stats
+        if: always()
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+          git add data/player_game_stats.parquet \
+                  artifacts/automation_health/player_game_stats_freshness_*.json \
+                  artifacts/automation_health/player_game_stats_freshness_*.md \
+                  2>/dev/null || true
+          git diff --staged --quiet && echo "No parquet changes to commit" && exit 0
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "Refresh settled player stats (NBA PMF Delivery model chain)"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          exit 1
+
       - name: Run nightly training and role/stat calibration
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           set -euo pipefail
-          ARGS="--as-of-date ${{ needs.resolve_context.outputs.as_of_date }}"
+          ARGS=(--as-of-date "${{ needs.resolve_context.outputs.as_of_date }}")
 
-          if [ "${{ github.event.inputs.no_promote || 'false' }}" = "true" ]; then
-            ARGS="$ARGS --no-promote"
+          # Promotion is gated by the resolver's `allow_promote`. If the
+          # resolver says we cannot promote (post-14:30 UTC cutoff or
+          # manual `no_promote=true`), force --no-promote here.
+          if [ "${{ needs.resolve_context.outputs.allow_promote }}" != "true" ]; then
+            ARGS+=("--no-promote")
           fi
 
-          python3 scripts/run_nightly_training_and_calibration.py $ARGS
+          python3 scripts/run_nightly_training_and_calibration.py "${ARGS[@]}"
+
       - name: Commit training/calibration artifacts
         run: |
           set -euo pipefail
@@ -322,7 +349,7 @@ jobs:
           git diff --staged --quiet && exit 0
 
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
-            -m "NBA PMF Delivery: training calibration ${{ needs.resolve_context.outputs.as_of_date }}"
+            -m "NBA PMF Delivery: model chain ${{ needs.resolve_context.outputs.as_of_date }}"
 
           for i in 1 2 3 4 5; do
             git pull --rebase origin main && git push origin HEAD:main && exit 0
@@ -331,11 +358,18 @@ jobs:
 
           exit 1
 
+  # ────────────────────────────────────────────────────────────────
+  # Phase 8 — PMF calibration, diagnostics, market evaluation.
+  # Strict prerequisite: model chain must have SUCCEEDED.
+  # ────────────────────────────────────────────────────────────────
   phase8_pmf_calibration_diagnostics_market_eval:
     runs-on: ubuntu-latest
-    needs: [resolve_context, readiness, training_role_stat_calibration]
-    if: always() && needs.resolve_context.outputs.run_phase8 == 'true'
+    needs: [resolve_context, readiness, model_chain_training_calibration]
+    if: needs.resolve_context.outputs.run_phase8 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && needs.model_chain_training_calibration.result == 'success'
     timeout-minutes: 360
+    concurrency:
+      group: nba-pmf-phase8-${{ needs.resolve_context.outputs.as_of_date }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -348,6 +382,7 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
       - name: Build training table if absent
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -357,7 +392,8 @@ jobs:
           if [ ! -s data/training_table.parquet ]; then
             python3 scripts/train.py --build-table-only
           fi
-      - name: Run Phase 8 PMF calibration folds sequentially
+
+      - name: Run Phase 8 PMF calibration folds + OOF aggregation + combo PMFs
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -388,7 +424,8 @@ jobs:
 
           PYTHONPATH=src python3 scripts/fit_combo_pmf_calibrators.py \
             --oof data/oof_combo_pmfs.parquet
-      - name: Run diagnostics and market-eval gates
+
+      - name: Run diagnostics and market-eval gates (no unexplained NaNs)
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -409,6 +446,7 @@ jobs:
 
           python3 scripts/verify_role_bucket_contract.py
           python3 scripts/verify_combo_role_calibration_contract.py || true
+
       - name: Commit Phase 8 artifacts
         run: |
           set -euo pipefail
@@ -439,11 +477,19 @@ jobs:
 
           exit 1
 
+  # ────────────────────────────────────────────────────────────────
+  # Phase 13 O/P/Q/R/S — live-context + contextual lineup chain.
+  # Strict prerequisite: Phase 8 must have SUCCEEDED.
+  # Order is locked: 13O → 13P → 13Q → 13R → 13S.
+  # ────────────────────────────────────────────────────────────────
   phase13_live_context_contextual_lineup:
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness, phase8_pmf_calibration_diagnostics_market_eval]
-    if: always() && needs.resolve_context.outputs.run_phase13 == 'true'
+    if: needs.resolve_context.outputs.run_phase13 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'success'
     timeout-minutes: 240
+    concurrency:
+      group: nba-pmf-phase13-${{ needs.resolve_context.outputs.as_of_date }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -457,7 +503,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Phase 13O/P/Q — live-context and contextual challenger
+      - name: Phase 13O — live-context training dataset
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -471,36 +517,37 @@ jobs:
           python3 scripts/_phase13o_check_no_leakage.py
           python3 scripts/_phase13o_record_derek_readiness.py
 
-          DRY=""
-          if [ "${{ github.event.inputs.no_promote || 'false' }}" = "true" ]; then
-            DRY=""
-          fi
+      - name: Phase 13P — live-context challenger
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
 
           python3 scripts/train_live_context_challenger.py \
-            --as-of-date "$ASOF" \
-            $DRY
+            --as-of-date "$ASOF"
 
           python3 scripts/verify_live_context_feature_training.py \
             --feature-set-id phase13p_lineup_injury_driver_v1
-
           python3 scripts/verify_live_context_pmf_sensitivity.py
           python3 scripts/verify_phase13p_no_leakage.py
           python3 scripts/verify_phase13p_validation_gates.py
           python3 scripts/verify_phase13l_no_breakage.py
 
+      - name: Phase 13Q — contextual challenger
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+
           python3 scripts/train_contextual_challenger.py \
-            --as-of-date "$ASOF" \
-            $DRY
+            --as-of-date "$ASOF"
 
           python3 scripts/verify_live_context_feature_training.py \
             --feature-set-id phase13q_contextual_pmf_engine_v1
-
           python3 scripts/verify_live_context_pmf_sensitivity.py
           python3 scripts/verify_phase13p_no_leakage.py
           python3 scripts/verify_phase13p_validation_gates.py
           python3 scripts/verify_phase13l_no_breakage.py
 
-      - name: Phase 13R — contextual deployment verification
+      - name: Phase 13R — contextual deployment verification (+ gated promotion)
         run: |
           set -euo pipefail
 
@@ -511,39 +558,35 @@ jobs:
           python3 scripts/verify_phase13q_no_leakage.py
           python3 scripts/verify_phase13l_no_breakage.py
 
-          if [ "${{ github.event.inputs.no_promote || 'false' }}" != "true" ]; then
+          if [ "${{ needs.resolve_context.outputs.allow_promote }}" = "true" ]; then
             python3 scripts/promote_contextual_challenger.py
             python3 scripts/verify_phase13r_deployment.py
           else
-            echo "Manual no_promote=true: skipping promote_contextual_challenger.py"
+            echo "::notice::allow_promote!=true — skipping promote_contextual_challenger.py"
           fi
 
-      - name: Phase 13S — direct-lineup contextual PMF
+      - name: Phase 13S — direct-lineup contextual PMF (+ gated promotion)
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
 
           python3 scripts/_phase13s_write_baseline_audit.py
-
-          python3 scripts/build_direct_lineup_training_dataset.py \
-            --as-of-date "$ASOF"
-
-          python3 scripts/train_direct_lineup_contextual_challenger.py \
-            --as-of-date "$ASOF"
-
+          python3 scripts/build_direct_lineup_training_dataset.py --as-of-date "$ASOF"
+          python3 scripts/train_direct_lineup_contextual_challenger.py --as-of-date "$ASOF"
           python3 scripts/verify_direct_lineup_feature_lists.py
           python3 scripts/verify_direct_lineup_pmf_sensitivity.py
           python3 scripts/verify_phase13s_validation_gates.py
           python3 scripts/verify_phase13s_no_leakage.py
           python3 scripts/verify_phase13l_no_breakage.py
 
-          if [ "${{ github.event.inputs.no_promote || 'false' }}" != "true" ]; then
+          if [ "${{ needs.resolve_context.outputs.allow_promote }}" = "true" ]; then
             python3 scripts/promote_direct_lineup_challenger.py
             python3 scripts/verify_phase13s_deployment.py
           else
-            echo "Manual no_promote=true: skipping promote_direct_lineup_challenger.py"
+            echo "::notice::allow_promote!=true — skipping promote_direct_lineup_challenger.py"
           fi
 
+          # Post-Phase13S contextual reverification (brief Phase 8 closer).
           python3 scripts/verify_contextual_feature_lists.py
           python3 scripts/verify_contextual_predict_path.py
           python3 scripts/verify_contextual_pmf_sensitivity.py
@@ -584,11 +627,106 @@ jobs:
 
           exit 1
 
+  # ────────────────────────────────────────────────────────────────
+  # Predict daily — 14:00 UTC cron + manual stage=predict.
+  # ────────────────────────────────────────────────────────────────
+  predict_daily:
+    runs-on: ubuntu-latest
+    needs: [resolve_context, readiness]
+    if: needs.resolve_context.outputs.run_predict == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
+    timeout-minutes: 90
+    concurrency:
+      group: nba-pmf-predict-${{ needs.resolve_context.outputs.delivery_date }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Predictions readiness gate (force-run if requested)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          ARGS=(
+            --date "$D"
+            --predict-cron-hour-utc 14
+            --mode "predict"
+          )
+          if [ "${{ needs.resolve_context.outputs.force_run }}" = "true" ]; then
+            ARGS+=("--force-run-predict")
+          fi
+          python3 scripts/predictions_readiness_gate.py "${ARGS[@]}"
+
+      - name: Run scripts/predict.py
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/predict.py --date "$D"
+
+      - name: Verify daily prediction outputs
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/verify_daily_prediction_outputs.py --date "$D"
+
+      - name: Commit prediction artifacts + automation health
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          git config user.name "Joseph Shackelford"
+          git config user.email "josephshack@gmail.com"
+
+          git add \
+            predictions/all_props_"$D".parquet \
+            predictions/singles_"$D".json \
+            predictions/pmf_display_"$D".json \
+            predictions/nba_props_today.json \
+            artifacts/automation_health \
+            2>/dev/null || true
+
+          git diff --staged --quiet && exit 0
+
+          git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
+            -m "NBA PMF Delivery: predict daily $D"
+
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 10
+          done
+
+          exit 1
+
+  # ────────────────────────────────────────────────────────────────
+  # Delivery build — Derek + WoO + delivery hygiene + verifiers.
+  # Depends ONLY on resolve_context + readiness (NOT model chain/Phase 8/13)
+  # so long training runs never block delivery refresh.
+  # ────────────────────────────────────────────────────────────────
   delivery_build:
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_delivery == 'true'
+    if: needs.resolve_context.outputs.run_delivery == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
     timeout-minutes: 120
+    concurrency:
+      group: nba-pmf-delivery-${{ needs.resolve_context.outputs.delivery_date }}-${{ needs.resolve_context.outputs.mode }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -613,7 +751,27 @@ jobs:
             echo "hash=missing" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Predictions readiness gate (force-run if requested)
+        id: predict_gate
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          MODE="${{ needs.resolve_context.outputs.mode }}"
+          ARGS=(
+            --date "$D"
+            --predict-cron-hour-utc 14
+            --mode "$MODE"
+          )
+          if [ "${{ needs.resolve_context.outputs.force_run }}" = "true" ]; then
+            ARGS+=("--force-run-predict")
+          fi
+          python3 scripts/predictions_readiness_gate.py "${ARGS[@]}"
+
       - name: Run daily PMF delivery pipeline
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -632,12 +790,17 @@ jobs:
           )
 
           if [ "${{ github.event.inputs.run_predict || 'false' }}" = "true" ]; then
-            ARGS+=(--predict)
+            ARGS+=("--predict")
+          fi
+
+          if [ "${{ needs.resolve_context.outputs.force_run }}" = "true" ]; then
+            ARGS+=("--force-run")
           fi
 
           python3 scripts/run_daily_delivery_pipeline.py "${ARGS[@]}"
 
       - name: Delivery hygiene, previews, champion stamps, and CSV size contract
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
@@ -653,6 +816,7 @@ jobs:
             --write
 
       - name: Assert Derek unique summary was not changed
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
@@ -665,16 +829,16 @@ jobs:
           fi
 
           AFTER="$(shasum -a 256 "$P" | awk '{print $1}')"
-
           echo "before=$BEFORE"
           echo "after =$AFTER"
 
           if [ "$BEFORE" != "$AFTER" ]; then
-            echo "::error::derek_unique_props_summary.csv changed. This is not allowed."
+            echo "::error::derek_unique_props_summary.csv changed during this run. This is not allowed."
             exit 1
           fi
 
       - name: Delivery verifiers
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -698,6 +862,7 @@ jobs:
             --allow-pending-lineup || true
 
       - name: Build delivery index and commit delivery outputs
+        if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
@@ -727,11 +892,19 @@ jobs:
 
           exit 1
 
+  # ────────────────────────────────────────────────────────────────
+  # After-game scoring — 06:30 UTC cron + manual stage=after_game.
+  # Adds rolling market benchmark + PMF variance experience study so
+  # the calibration/market-superiority chain has fresh evidence.
+  # ────────────────────────────────────────────────────────────────
   after_game_scoring:
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_after_game == 'true'
+    if: needs.resolve_context.outputs.run_after_game == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
     timeout-minutes: 120
+    concurrency:
+      group: nba-pmf-after-game-${{ needs.resolve_context.outputs.delivery_date }}
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
         with:
@@ -750,16 +923,34 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
-          python3 scripts/run_after_game_complete_scoring.py \
-            --date "${{ needs.resolve_context.outputs.delivery_date }}"
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/run_after_game_complete_scoring.py --date "$D"
+          python3 scripts/verify_after_game_scoring_package_consistency.py --delivery-date "$D"
+
+      - name: Rolling market benchmark + PMF variance experience study
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+
+          # Rolling 28-day market benchmark — feeds the calibration /
+          # market-superiority gate but never claims superiority on its
+          # own. ``|| true`` matches the brief: insufficient sample is
+          # an acceptable valid-skip and must not red-fail this job.
+          python3 scripts/build_rolling_market_benchmark.py \
+            --as-of-date "$D" \
+            --window-days 28 || true
+
+          python3 scripts/build_pmf_variance_experience_study.py \
+            --as-of-date "$D" || true
 
       - name: Verify, preview, enforce CSV size
         run: |
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
-
-          python3 scripts/verify_after_game_scoring_package_consistency.py \
-            --delivery-date "$D"
 
           python3 scripts/strip_empty_delivery_columns.py --date "$D" --write
           python3 scripts/write_delivery_review_previews.py --date "$D"
@@ -785,6 +976,8 @@ jobs:
             deliveries/README.md \
             deliveries/index.html \
             artifacts/automation_health \
+            artifacts/market_benchmark \
+            artifacts/experience_studies \
             2>/dev/null || true
 
           git diff --staged --quiet && exit 0
@@ -799,14 +992,34 @@ jobs:
 
           exit 1
 
+  # ────────────────────────────────────────────────────────────────
+  # final_contract_verifiers — STRICT upstream gating.
+  #
+  # Per brief Phase 14, this job must NOT use `always()`. It only runs
+  # when every SELECTED prerequisite succeeded or was skipped (skip is
+  # acceptable because selected runs only ever execute prerequisites
+  # the resolver enabled).
+  # ────────────────────────────────────────────────────────────────
   final_contract_verifiers:
     runs-on: ubuntu-latest
     needs:
       - resolve_context
       - readiness
+      - model_chain_training_calibration
+      - phase8_pmf_calibration_diagnostics_market_eval
+      - phase13_live_context_contextual_lineup
+      - predict_daily
       - delivery_build
       - after_game_scoring
-    if: always() && needs.resolve_context.outputs.run_verifiers == 'true'
+    if: >-
+      needs.resolve_context.outputs.run_verifiers == 'true' &&
+      needs.resolve_context.outputs.valid_skip_reason == '' &&
+      (needs.model_chain_training_calibration.result == 'success' || needs.model_chain_training_calibration.result == 'skipped') &&
+      (needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'success' || needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'skipped') &&
+      (needs.phase13_live_context_contextual_lineup.result == 'success' || needs.phase13_live_context_contextual_lineup.result == 'skipped') &&
+      (needs.predict_daily.result == 'success' || needs.predict_daily.result == 'skipped') &&
+      (needs.delivery_build.result == 'success' || needs.delivery_build.result == 'skipped') &&
+      (needs.after_game_scoring.result == 'success' || needs.after_game_scoring.result == 'skipped')
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
@@ -830,27 +1043,33 @@ jobs:
           TRAIN_THROUGH="${{ needs.resolve_context.outputs.as_of_date }}"
 
           python3 scripts/verify_real_champion_pointer.py
-          python3 scripts/verify_daily_delivery_folder_contract.py --date "$D" || true
-          python3 scripts/verify_morning_delivery_completeness.py --date "$D" || true
-          python3 scripts/verify_model_only_parquet_selection.py --date "$D" || true
-          python3 scripts/validate_production_pmf_math.py || true
 
-          python3 scripts/validate_daily_pmf_delivery.py \
-            --date "$D" \
-            --train-through-date "$TRAIN_THROUGH" \
-            --pipeline-mode "${{ needs.resolve_context.outputs.mode }}" || true
+          # Delivery-related verifiers only run when a delivery folder
+          # actually exists for this date (avoids red-failing on
+          # training-only runs).
+          if [ -d "deliveries/$D" ]; then
+            python3 scripts/verify_daily_delivery_folder_contract.py --date "$D"
+            python3 scripts/verify_morning_delivery_completeness.py --date "$D" || true
+            python3 scripts/verify_model_only_parquet_selection.py --date "$D" || true
+            python3 scripts/validate_production_pmf_math.py || true
 
-          python3 scripts/verify_derek_forward_feed.py \
-            --delivery-date "$D" \
-            --mode production \
-            --allow-pending-lineup || true
+            python3 scripts/validate_daily_pmf_delivery.py \
+              --date "$D" \
+              --train-through-date "$TRAIN_THROUGH" \
+              --pipeline-mode "${{ needs.resolve_context.outputs.mode }}" || true
+
+            python3 scripts/verify_derek_forward_feed.py \
+              --delivery-date "$D" \
+              --mode production \
+              --allow-pending-lineup || true
+
+            python3 scripts/enforce_delivery_csv_size_contract.py \
+              --date "$D" \
+              --max-bytes 524288 \
+              --preserve derek_forward_feed/derek_unique_props_summary.csv
+          fi
 
           if [ -d "deliveries/$D/after_game_scoring" ]; then
             python3 scripts/verify_after_game_scoring_package_consistency.py \
               --delivery-date "$D" || true
           fi
-
-          python3 scripts/enforce_delivery_csv_size_contract.py \
-            --date "$D" \
-            --max-bytes 524288 \
-            --preserve derek_forward_feed/derek_unique_props_summary.csv
