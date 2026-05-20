@@ -286,6 +286,39 @@ def main() -> int:
     (out / "summary.md").write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
     (debug_out / "latest_run_mode_summary.md").write_text("\n".join(summary_lines) + "\n", encoding="utf-8")
 
+    # Emit explicit per-mode lineup-policy markers so the workflow log
+    # makes the morning-vs-near-tip-vs-close-lock contract auditable.
+    # Morning passes whenever it does not require confirmed lineups
+    # (the historical false-failure mode); t25/t5 pass when their named
+    # blocker contract is honored. These markers do not change the exit
+    # status — that remains driven by hard `fail` rows above.
+    failure_codes_by_mode: dict[str, set[str]] = {}
+    for f in failures:
+        rm = str(f.get("run_mode", ""))
+        if f.get("severity") != "fail":
+            continue
+        failure_codes_by_mode.setdefault(rm, set()).add(str(f.get("blocker_code", "")))
+
+    mode_policy_lines = [
+        ("morning_expected", "projected", False),
+        ("t25", "confirmed_bdl_preferred", False),
+        ("t5", "confirmed_bdl_required", True),
+    ]
+    for run_mode, source_policy, official_required in mode_policy_lines:
+        if failure_codes_by_mode.get(run_mode):
+            codes = ",".join(sorted(failure_codes_by_mode[run_mode]))
+            print(
+                f"LINEUP_POLICY_AUDIT_FAIL run_mode={run_mode} "
+                f"lineup_source_policy={source_policy} "
+                f"official_lineup_required={official_required} blocker_codes={codes}"
+            )
+        else:
+            print(
+                f"LINEUP_POLICY_PASS run_mode={run_mode} "
+                f"lineup_source_policy={source_policy} "
+                f"official_lineup_required={official_required}"
+            )
+
     if pass_all:
         print("INJURY_LINEUP_RUN_MODE_AUDIT_PASS")
     else:
