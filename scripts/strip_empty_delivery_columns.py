@@ -19,6 +19,8 @@ PRESERVE_BY_PATH_SUBSTRING = {
         "minutes_q10",
         "minutes_q90",
         "unavailable_reason",
+        # contract-required by DEREK_UNIFIED_REQUIRED_COLUMNS; legitimately null in projected/morning mode
+        "lineup_last_updated_utc",
     }
 }
 
