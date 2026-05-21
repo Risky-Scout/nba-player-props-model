@@ -763,11 +763,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Preflight slate-date availability table
-        run: |
-          D="${{ needs.resolve_context.outputs.delivery_date }}"
-          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
-
       - name: Predictions readiness gate (force-run if requested)
         id: predict_gate
         env:
@@ -785,6 +780,11 @@ jobs:
             ARGS+=("--force-run-predict")
           fi
           python3 scripts/predictions_readiness_gate.py "${ARGS[@]}"
+
+      - name: Preflight slate-date availability table
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
 
       - name: Run scripts/predict.py
         if: steps.predict_gate.outputs.should_proceed == 'true'
@@ -874,11 +874,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Preflight slate-date availability table
-        run: |
-          D="${{ needs.resolve_context.outputs.delivery_date }}"
-          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
-
       - name: Note existing Derek unique summary hash before delivery
         id: unique_before
         # Informational only. The delivery pipeline is allowed to (and is
@@ -919,6 +914,11 @@ jobs:
             ARGS+=("--force-run-predict")
           fi
           python3 scripts/predictions_readiness_gate.py "${ARGS[@]}"
+
+      - name: Preflight slate-date availability table
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
 
       - name: Run daily PMF delivery pipeline
         if: steps.predict_gate.outputs.should_proceed == 'true'

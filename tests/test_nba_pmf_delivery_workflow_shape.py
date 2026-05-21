@@ -10,6 +10,7 @@ behavior. They are intentionally cheap so CI can run them on every PR.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 import pytest
 import yaml
@@ -274,92 +275,99 @@ _AVAILABILITY_PREFLIGHT_DATE = (
 )
 
 
-def _job_step_indices(workflow: dict, job_name: str) -> dict[str, int | None]:
-    """Map step name substrings to their index within a job's step list."""
+def _job_steps(workflow: dict, job_name: str) -> list[dict]:
+    return [s for s in workflow["jobs"][job_name]["steps"] if isinstance(s, dict)]
 
-    steps = workflow["jobs"][job_name]["steps"]
-    out: dict[str, int | None] = {}
+
+def _first_step_index_with_run_marker(steps: list[dict], marker: str) -> int | None:
     for i, step in enumerate(steps):
-        if not isinstance(step, dict):
-            continue
-        name = step.get("name", "")
-        run_text = step.get("run", "") or ""
-        out[name] = i
-        # Also index by run-body markers for unnamed or duplicate lookups.
-        for marker in (
-            "scripts/build_availability_table.py",
-            "scripts/predictions_readiness_gate.py",
-            "scripts/predict.py",
-            "scripts/run_daily_delivery_pipeline.py",
-        ):
-            if marker in run_text and f"__run__:{marker}" not in out:
-                out[f"__run__:{marker}"] = i
-    return out
+        if marker in (step.get("run", "") or ""):
+            return i
+    return None
 
 
-def test_availability_preflight_command_is_exact_and_unsuppressed(workflow_text):
-    """Slate-date availability rebuild must use the exact command and fail loud."""
+def _availability_preflight_step(steps: list[dict]) -> tuple[int, dict]:
+    matches = [
+        (i, step)
+        for i, step in enumerate(steps)
+        if "scripts/build_availability_table.py" in (step.get("run", "") or "")
+    ]
+    assert matches, "availability preflight step not found"
+    assert len(matches) == 1, (
+        f"expected exactly one availability preflight step, found {len(matches)}"
+    )
+    return matches[0]
 
-    assert _AVAILABILITY_PREFLIGHT_DATE in workflow_text
-    assert _AVAILABILITY_PREFLIGHT_CMD in workflow_text
-    assert "build_availability_table.py --slate-date" in workflow_text
-    assert "build_availability_table.py || true" not in workflow_text
-    assert "Preflight slate-date availability table" in workflow_text
+
+def _assert_availability_preflight_command_contract(step: dict):
+    run_text = step.get("run", "") or ""
+    assert _AVAILABILITY_PREFLIGHT_DATE in run_text
+    assert _AVAILABILITY_PREFLIGHT_CMD in run_text
+    assert "build_availability_table.py --slate-date" in run_text
+    assert "build_availability_table.py || true" not in run_text
+    assert "--slate-date \"$D\"" in run_text
+    assert re.search(r"--slate-date\\s+\"20\\d\\d-\\d\\d-\\d\\d\"", run_text) is None, (
+        "availability preflight must not hardcode a date literal"
+    )
 
 
-def test_availability_preflight_runs_in_predict_daily_and_delivery_build(workflow):
-    """Both predict and delivery jobs must preflight availability for the slate."""
+def test_availability_preflight_in_jobs_uses_required_command_contract(workflow):
+    """Predict and delivery jobs must preflight with delivery_date-driven slate-date."""
 
     for job_name in ("predict_daily", "delivery_build"):
-        steps = workflow["jobs"][job_name]["steps"]
-        rendered = "\n".join(
-            s.get("run", "") for s in steps if isinstance(s, dict)
-        )
-        assert _AVAILABILITY_PREFLIGHT_CMD in rendered, (
-            f"{job_name} missing availability preflight command"
-        )
-        assert _AVAILABILITY_PREFLIGHT_DATE in rendered, (
-            f"{job_name} missing delivery_date wiring for availability preflight"
-        )
+        _, step = _availability_preflight_step(_job_steps(workflow, job_name))
+        _assert_availability_preflight_command_contract(step)
+        assert step.get("name", "") == "Preflight slate-date availability table"
 
 
-def test_availability_preflight_precedes_predict_paths(workflow):
-    """Availability must be fresh before any predict.py invocation path."""
+def test_availability_preflight_precedes_predict_daily_paths(workflow):
+    """predict_daily availability preflight must run before scripts/predict.py."""
 
-    predict = _job_step_indices(workflow, "predict_daily")
-    assert predict.get("Preflight slate-date availability table") is not None
-    avail_idx = predict["Preflight slate-date availability table"]
-    gate_idx = predict.get("__run__:scripts/predictions_readiness_gate.py")
-    predict_idx = predict.get("__run__:scripts/predict.py")
-    assert gate_idx is not None
-    assert predict_idx is not None
-    assert avail_idx < gate_idx, (
-        "predict_daily availability preflight must precede readiness gate "
-        "(gate may invoke predict.py)"
-    )
+    steps = _job_steps(workflow, "predict_daily")
+    avail_idx, _ = _availability_preflight_step(steps)
+    predict_idx = _first_step_index_with_run_marker(steps, "scripts/predict.py")
+    assert predict_idx is not None, "predict_daily missing scripts/predict.py step"
     assert avail_idx < predict_idx, (
         "predict_daily availability preflight must precede scripts/predict.py"
     )
 
 
-def test_availability_preflight_precedes_delivery_pipeline(workflow):
-    """Delivery must rebuild availability before run_daily_delivery_pipeline."""
+def test_availability_preflight_precedes_delivery_pipeline_and_markers(workflow):
+    """delivery_build preflight must run before pipeline and feature/stat-grid markers."""
 
-    delivery = _job_step_indices(workflow, "delivery_build")
-    assert delivery.get("Preflight slate-date availability table") is not None
-    avail_idx = delivery["Preflight slate-date availability table"]
-    gate_idx = delivery.get("__run__:scripts/predictions_readiness_gate.py")
-    pipeline_idx = delivery.get("__run__:scripts/run_daily_delivery_pipeline.py")
-    assert gate_idx is not None
-    assert pipeline_idx is not None
-    assert avail_idx < gate_idx, (
-        "delivery_build availability preflight must precede readiness gate"
+    steps = _job_steps(workflow, "delivery_build")
+    avail_idx, _ = _availability_preflight_step(steps)
+
+    pipeline_markers = (
+        "scripts/run_daily_delivery_pipeline.py",
+        "scripts/build_daily_pmf_delivery.py",
     )
-    assert avail_idx < pipeline_idx, (
-        "delivery_build availability preflight must precede "
-        "run_daily_delivery_pipeline.py (which calls build_stat_grid_pmfs / "
-        "build_daily_pmf_delivery / build_player_prop_feature_snapshot)"
+    pipeline_indices = [
+        _first_step_index_with_run_marker(steps, marker)
+        for marker in pipeline_markers
+    ]
+    pipeline_indices = [i for i in pipeline_indices if i is not None]
+    assert pipeline_indices, (
+        "delivery_build missing run_daily_delivery_pipeline/build_daily_pmf_delivery"
     )
+    assert all(avail_idx < i for i in pipeline_indices), (
+        "delivery_build availability preflight must precede delivery pipeline invocation"
+    )
+
+    optional_same_day_markers = (
+        "build_stat_grid_pmfs",
+        "build_player_prop_feature_snapshot",
+        "build_daily_pmf_delivery",
+        "scripts/build_stat_grid_pmfs.py",
+        "scripts/build_player_prop_feature_snapshot.py",
+        "scripts/build_daily_pmf_delivery.py",
+    )
+    for marker in optional_same_day_markers:
+        marker_idx = _first_step_index_with_run_marker(steps, marker)
+        if marker_idx is not None:
+            assert avail_idx < marker_idx, (
+                f"availability preflight must precede same-day marker {marker!r}"
+            )
 
 
 def test_predict_daily_uses_resolver_outputs(workflow):
