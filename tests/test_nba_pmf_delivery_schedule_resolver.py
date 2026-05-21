@@ -734,3 +734,424 @@ def test_main_returns_zero_for_legitimate_no_tip_time_resolved(
     assert rc == 0
     output_text = github_output.read_text(encoding="utf-8")
     assert "valid_skip_reason=no_tip_time_resolved" in output_text
+
+
+# ── Phase A/D: upstream tip-time recovery acceptance tests ──────────
+#
+# These tests pin the new contract added by the upstream-recovery
+# follow-on to PR #31's loud-failure safety net: when the
+# ``artifacts/live_schedule/<date>/game_start_times.json`` cache is
+# missing but a real slate exists, the resolver must invoke the
+# in-process tip-time recovery hook (which production wires to a
+# subprocess on ``scripts/resolve_game_start_times.py``) BEFORE
+# deciding whether to loud-fail.
+#
+# All six required acceptance cases below use a monkeypatched
+# ``resolver.TIP_TIME_GENERATOR`` stub so the tests never hit a real
+# BDL / Odds API endpoint and never depend on installed pandas or
+# network connectivity. The stub either writes a controlled
+# ``game_start_times.json`` fixture or raises / returns non-zero to
+# simulate provider failures.
+
+
+def _stub_generator_writes_tipoff(
+    repo_root: Path,
+    delivery_date: str,
+    tipoff_iso: str,
+):
+    """Factory: return a ``TIP_TIME_GENERATOR`` stub that writes a valid
+    ``game_start_times.json`` payload under ``repo_root`` and returns 0.
+
+    The shape mirrors what ``scripts/resolve_game_start_times.py``
+    produces in production (top-level ``"records"`` list with
+    ``"resolved_game_start_time_utc"`` per row). We override the
+    extractor inside the stub by laying down a payload that matches the
+    keys ``_extract_games_list`` already accepts.
+    """
+
+    def _stub(delivery_date_arg: str, *, repo_root: Path = repo_root) -> int:
+        assert delivery_date_arg == delivery_date, (
+            f"stub generator received unexpected delivery_date: "
+            f"{delivery_date_arg!r}"
+        )
+        out_dir = repo_root / "artifacts" / "live_schedule" / delivery_date
+        out_dir.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "schema_version": "1.0",
+            "delivery_date": delivery_date,
+            "games": [
+                {
+                    "game_id": "stub-game-1",
+                    "team_abbr": "HOU",
+                    "opponent_abbr": "DEN",
+                    "game_start_time_utc": tipoff_iso,
+                }
+            ],
+        }
+        (out_dir / "game_start_times.json").write_text(
+            __import__("json").dumps(payload), encoding="utf-8"
+        )
+        return 0
+
+    return _stub
+
+
+def _stub_generator_fails(reason: str = "non_zero_exit"):
+    """Factory: ``TIP_TIME_GENERATOR`` stub that simulates a real source
+    failure (no cache written, non-zero exit).
+    """
+
+    def _stub(delivery_date_arg: str, *, repo_root: Path) -> int:
+        del delivery_date_arg, repo_root  # generator did nothing useful
+        return 1
+
+    _stub.__name__ = f"_stub_generator_fails_{reason}"
+    return _stub
+
+
+def test_post_tip_derek_near_lineup_recovers_tip_time_when_cache_missing(
+    resolver, monkeypatch, tmp_path
+):
+    """Reproduces scheduled run 26197582130 (event=schedule,
+    2026-05-21T00:15:31Z, mode=derek_near_lineup,
+    delivery_date=2026-05-20) — but now with the upstream recovery
+    hook in place.
+
+    Slate-presence signal present (canonical PMF parquet on disk).
+    ``game_start_times.json`` cache ABSENT. The generator stub writes
+    a valid tip time (8:30 PM ET = 00:30 UTC May 21) when invoked.
+    After honest tip-time recovery, the resolver must select
+    ``derek_near_lineup`` mode and emit ``run_delivery=True``. No loud
+    failure marker is set, because recovery succeeded.
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+
+    monkeypatch.setattr(
+        resolver,
+        "TIP_TIME_GENERATOR",
+        _stub_generator_writes_tipoff(
+            tmp_path, "2026-05-20", "2026-05-21T00:30:00+00:00"
+        ),
+    )
+
+    out = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="10,25,40,55 23,0,1,2 * * *",
+        now_utc="2026-05-21T00:15:31Z",
+    )
+
+    assert out.delivery_date == "2026-05-20"
+    assert out.mode == "derek_near_lineup"
+    assert out.run_delivery is True
+    assert out.valid_skip_reason == ""
+    assert any("tip_time_recovery_rc=0" in n for n in out.notes)
+    assert any("tip_time_recovery_source=generator" in n for n in out.notes)
+
+
+def test_morning_mode_recovers_tip_time_when_cache_missing(
+    resolver, monkeypatch, tmp_path
+):
+    """Morning WoO cron (15:00 UTC) on a real-slate day must emit
+    ``run_delivery=True`` with the projected-lineup policy marker
+    (``mode=woo_morning_monetization``) regardless of whether the
+    Derek tip-time cache exists. The resolver does NOT gate this
+    window on tipoff at all (WoO publishing windows, not Derek
+    pre-tip windows), so the recovery hook is never consulted here.
+
+    This test pins both halves: (a) ``run_delivery=True``, and (b)
+    no incidental call to the recovery hook from a non-tipoff-gated
+    window.
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+
+    calls: list[str] = []
+
+    def _spy(delivery_date_arg: str, *, repo_root: Path) -> int:
+        calls.append(delivery_date_arg)
+        return _stub_generator_writes_tipoff(
+            tmp_path, "2026-05-20", "2026-05-21T00:30:00+00:00"
+        )(delivery_date_arg, repo_root=repo_root)
+
+    monkeypatch.setattr(resolver, "TIP_TIME_GENERATOR", _spy)
+
+    out = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="0 15 * * *",
+        now_utc="2026-05-20T15:00:00Z",
+    )
+
+    assert out.stage == "delivery"
+    assert out.mode == "woo_morning_monetization"
+    assert out.run_delivery is True
+    assert out.valid_skip_reason == ""
+    # Morning WoO crons are not Derek tipoff-gated; the recovery hook
+    # must not be invoked for this window.
+    assert calls == []
+
+
+def test_close_lock_mode_recovers_tip_time_when_cache_missing(
+    resolver, monkeypatch, tmp_path
+):
+    """``close_lock`` (5 min pre-tip) on a real-slate day with cache
+    absent: recovery hook writes a valid tip time, resolver selects
+    ``mode=close_lock``, ``run_delivery=True``. Tipoff 2026-05-20 8:30
+    PM ET = 00:30 UTC May 21; ``now_utc`` 00:25Z → 5 minutes pre-tip
+    (close_lock window).
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+
+    monkeypatch.setattr(
+        resolver,
+        "TIP_TIME_GENERATOR",
+        _stub_generator_writes_tipoff(
+            tmp_path, "2026-05-20", "2026-05-21T00:30:00+00:00"
+        ),
+    )
+
+    out = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="10,25,40,55 23,0,1,2 * * *",
+        now_utc="2026-05-21T00:25:00Z",
+    )
+
+    assert out.mode == "close_lock"
+    assert out.run_delivery is True
+    assert out.valid_skip_reason == ""
+    assert any("tip_time_recovery_rc=0" in n for n in out.notes)
+
+
+def test_no_slate_day_legitimately_valid_skips(
+    resolver, monkeypatch, tmp_path
+):
+    """No slate-presence signal anywhere → legitimate
+    ``no_tip_time_resolved`` valid-skip. The recovery hook must NOT
+    be invoked on dark-slate days, because doing so would burn an API
+    call (and possibly write a misleading cache file) for a day the
+    league has no games. ``valid_skip_reason`` matches the existing
+    "no real slate" vocabulary.
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+
+    calls: list[str] = []
+
+    def _spy(delivery_date_arg: str, *, repo_root: Path) -> int:
+        calls.append(delivery_date_arg)
+        return 0
+
+    monkeypatch.setattr(resolver, "TIP_TIME_GENERATOR", _spy)
+
+    out = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="10,25,40,55 23,0,1,2 * * *",
+        now_utc="2026-05-21T00:15:31Z",
+    )
+
+    assert out.run_delivery is False
+    assert out.valid_skip_reason == "no_tip_time_resolved"
+    # Dark-slate path must not invoke the recovery hook at all.
+    assert calls == [], (
+        f"recovery hook unexpectedly invoked on dark-slate day: {calls!r}"
+    )
+
+
+def test_slate_exists_but_all_tip_time_sources_fail_returns_loud_failure(
+    resolver, monkeypatch, tmp_path, capsys
+):
+    """Slate present, cache absent, generator stub mocked to FAIL
+    (non-zero exit, writes no cache file). The resolver must fall
+    through to PR #31's loud-failure path: exit 2,
+    ``valid_skip_reason="tip_time_unresolved_but_slate_exists"``, and
+    the stderr marker ``SCHEDULER_TIP_TIME_UNRESOLVABLE_WITH_SLATE``.
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+
+    monkeypatch.setattr(
+        resolver, "TIP_TIME_GENERATOR", _stub_generator_fails()
+    )
+
+    github_output = tmp_path / "GITHUB_OUTPUT"
+    github_output.write_text("", encoding="utf-8")
+
+    rc = resolver.main([
+        "--event-name", "schedule",
+        "--schedule", "10,25,40,55 23,0,1,2 * * *",
+        "--now-utc", "2026-05-21T00:15:31Z",
+        "--github-output", str(github_output),
+    ])
+
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "SCHEDULER_TIP_TIME_UNRESOLVABLE_WITH_SLATE" in captured.err
+    output_text = github_output.read_text(encoding="utf-8")
+    assert (
+        "valid_skip_reason=tip_time_unresolved_but_slate_exists"
+        in output_text
+    )
+    assert "run_delivery=false" in output_text
+
+
+def test_after_game_does_not_run_until_settled_actuals_exist_phase_d(
+    resolver, monkeypatch, tmp_path
+):
+    """``stage=after_game`` (06:30 UTC). With no settled-actuals signal
+    seeded (and no slate signal either): the resolver still selects
+    ``run_after_game=True`` for the previous ET slate; whether
+    settled actuals exist is gated DOWNSTREAM by the after-game
+    scoring scripts, not in the schedule resolver. With a slate signal
+    seeded (proxy for "yesterday's slate truly existed"), the resolver
+    still selects ``run_after_game=True``. In both cases the recovery
+    hook MUST NOT be invoked — after_game is not a tipoff-gated stage.
+
+    Mirrors the spirit of Phase D case 6 from the brief while preserving
+    the existing ``test_after_game_does_not_run_until_settled_actuals_exist``
+    contract (renamed here with ``_phase_d`` suffix to avoid colliding).
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+
+    calls: list[str] = []
+
+    def _spy(delivery_date_arg: str, *, repo_root: Path) -> int:
+        calls.append(delivery_date_arg)
+        return 0
+
+    monkeypatch.setattr(resolver, "TIP_TIME_GENERATOR", _spy)
+
+    out_no_actuals = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="30 6 * * *",
+        now_utc="2026-05-21T06:30:00Z",
+    )
+    assert out_no_actuals.stage == "after_game"
+    assert out_no_actuals.run_after_game is True
+    assert out_no_actuals.delivery_date == "2026-05-20"
+    assert out_no_actuals.valid_skip_reason == ""
+
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+    out_with_actuals = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="30 6 * * *",
+        now_utc="2026-05-21T06:30:00Z",
+    )
+    assert out_with_actuals.stage == "after_game"
+    assert out_with_actuals.run_after_game is True
+    assert out_with_actuals.delivery_date == "2026-05-20"
+
+    assert calls == [], (
+        f"recovery hook must not be invoked from the after_game stage: {calls!r}"
+    )
+
+
+# ── Recovery hook helper coverage ───────────────────────────────────
+
+
+def test_recovery_hook_is_not_called_when_cache_already_present(
+    resolver, monkeypatch, tmp_path
+):
+    """If the live_schedule cache already exists and yields a tip time,
+    the resolver must NOT redundantly invoke the recovery hook.
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+    # Pre-write the cache so _resolve_slate_tipoff succeeds on the
+    # first attempt.
+    cache_dir = tmp_path / "artifacts" / "live_schedule" / "2026-05-20"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_dir.joinpath("game_start_times.json").write_text(
+        '{"games": [{"game_start_time_utc": "2026-05-21T00:30:00+00:00"}]}',
+        encoding="utf-8",
+    )
+
+    calls: list[str] = []
+
+    def _spy(delivery_date_arg: str, *, repo_root: Path) -> int:
+        calls.append(delivery_date_arg)
+        return 0
+
+    monkeypatch.setattr(resolver, "TIP_TIME_GENERATOR", _spy)
+
+    out = _resolve(
+        resolver,
+        event_name="schedule",
+        schedule="10,25,40,55 23,0,1,2 * * *",
+        now_utc="2026-05-21T00:15:31Z",
+    )
+
+    assert out.run_delivery is True
+    assert out.mode == "derek_near_lineup"
+    assert calls == [], (
+        "recovery hook must not be invoked when cache is already present"
+    )
+
+
+def test_recovery_hook_exception_falls_through_to_loud_failure(
+    resolver, monkeypatch, tmp_path, capsys
+):
+    """An exception raised by the recovery hook (e.g. a misconfigured
+    subprocess invocation) must be caught and translated to the loud
+    failure path — never crash the resolver or silently green-skip.
+    """
+
+    monkeypatch.delenv("NBA_PMF_TEST_TIPOFF_ET", raising=False)
+    monkeypatch.setenv("NBA_PMF_TEST_REPO_ROOT", str(tmp_path))
+    _seed_canonical_slate(tmp_path, "2026-05-20")
+
+    def _raises(delivery_date_arg: str, *, repo_root: Path) -> int:
+        raise RuntimeError("simulated subprocess failure")
+
+    monkeypatch.setattr(resolver, "TIP_TIME_GENERATOR", _raises)
+
+    github_output = tmp_path / "GITHUB_OUTPUT"
+    github_output.write_text("", encoding="utf-8")
+
+    rc = resolver.main([
+        "--event-name", "schedule",
+        "--schedule", "10,25,40,55 23,0,1,2 * * *",
+        "--now-utc", "2026-05-21T00:15:31Z",
+        "--github-output", str(github_output),
+    ])
+
+    captured = capsys.readouterr()
+    assert rc == 2
+    assert "SCHEDULER_TIP_TIME_UNRESOLVABLE_WITH_SLATE" in captured.err
+    assert (
+        "valid_skip_reason=tip_time_unresolved_but_slate_exists"
+        in github_output.read_text(encoding="utf-8")
+    )
+
+
+def test_default_tip_time_generator_returns_127_when_script_missing(
+    resolver, tmp_path
+):
+    """Hardening: the production hook MUST NOT raise when invoked with
+    a repo_root that has no ``scripts/`` folder; it should return a
+    non-zero rc so the caller falls through to the loud-failure path.
+    """
+
+    rc = resolver._default_tip_time_generator(
+        "2026-05-20", repo_root=tmp_path
+    )
+    assert rc == 127

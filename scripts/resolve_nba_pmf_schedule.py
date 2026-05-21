@@ -50,12 +50,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import date as date_cls
 from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 from zoneinfo import ZoneInfo
 
 ET = ZoneInfo("America/New_York")
@@ -328,6 +329,50 @@ def _extract_games_list(payload) -> list:
     return []
 
 
+def _default_tip_time_generator(
+    delivery_date: str,
+    *,
+    repo_root: Path,
+) -> int:
+    """Invoke ``scripts/resolve_game_start_times.py`` as a subprocess.
+
+    Used as the production implementation of the in-resolver tip-time
+    recovery hook. Returns the subprocess exit code (0 == success).
+    Inherits the parent process environment so ``BDL_API_KEY`` /
+    ``ODDS_API_KEY`` reach the generator when the workflow exposes them.
+
+    A non-zero exit, a generator that exits 0 but writes no usable
+    file, or any failure to spawn the subprocess (``FileNotFoundError``,
+    ``PermissionError``) all collapse to "recovery did not produce a
+    usable tip time" — the caller re-attempts :func:`_resolve_slate_tipoff`
+    and falls back to PR #31's loud-failure path when that re-attempt
+    still returns ``None``.
+    """
+
+    script = repo_root / "scripts" / "resolve_game_start_times.py"
+    if not script.is_file():
+        return 127
+    try:
+        result = subprocess.run(
+            [sys.executable, str(script), "--delivery-date", delivery_date],
+            cwd=str(repo_root),
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return 1
+    return int(result.returncode or 0)
+
+
+# Module-level seam so tests can monkeypatch the recovery hook without
+# touching ``subprocess``. Production code calls ``TIP_TIME_GENERATOR``;
+# tests replace it with a fake that writes a controlled fixture or
+# raises to simulate provider failures.
+TIP_TIME_GENERATOR: Callable[..., int] = _default_tip_time_generator
+
+
 def _slate_exists_for_date(
     delivery_date: str,
     *,
@@ -458,25 +503,69 @@ def _resolve_scheduled(args, now_utc: datetime) -> ResolverOutputs:
 def _gate_on_tipoff(out: ResolverOutputs, now_utc: datetime) -> None:
     """Mutate ``out`` based on minutes-before-tipoff for the slate.
 
-    When tipoff cannot be resolved we deliberately split two cases:
+    Resolution order for tipoff (newly extended for upstream recovery):
 
-    - If on-disk signals (``_slate_exists_for_date``) prove a real slate
-      exists for ``delivery_date``, we emit
-      ``valid_skip_reason="tip_time_unresolved_but_slate_exists"`` and
-      annotate a loud note. ``main()`` translates that marker into a
-      stderr ``SCHEDULER_TIP_TIME_UNRESOLVABLE_WITH_SLATE`` line and a
-      non-zero exit code so the workflow run shows RED instead of
-      silently green-skipping a real slate.
-    - If no slate-presence signal exists, we preserve the legitimate
-      ``valid_skip_reason="no_tip_time_resolved"`` green-skip used for
-      truly empty slate days.
+    1. Read the on-disk cache
+       ``artifacts/live_schedule/<date>/game_start_times.json`` via
+       :func:`_resolve_slate_tipoff`. This is the fast path used when
+       the Derek live-snapshots workflow's generator already wrote a
+       fresh cache for this slate.
+    2. If the cache is missing AND :func:`_slate_exists_for_date`
+       confirms a real slate exists for ``delivery_date``, invoke the
+       :data:`TIP_TIME_GENERATOR` recovery hook
+       (production: subprocess-out to
+       ``scripts/resolve_game_start_times.py``). The hook is responsible
+       for writing the cache file from real upstream sources
+       (Odds API events / BDL ``/v1/games``); we then re-attempt step 1.
+       This is the new automation path that prevents scheduled
+       ``morning`` / ``derek_near_lineup`` / ``close_lock`` windows from
+       silently green-skipping when the upstream Derek live-snapshots
+       commit chain has not landed yet. The hook is never invoked when
+       no slate-presence signal exists, so dark-slate days still skip
+       legitimately.
+    3. After step 2's attempted recovery, if tipoff is still ``None``:
+       - If a slate clearly exists →
+         ``valid_skip_reason="tip_time_unresolved_but_slate_exists"`` and
+         ``main()`` exits non-zero (PR #31's loud-failure safety net for
+         genuine provider failure / missing secrets / API outage).
+       - If no slate-presence signal exists → legitimate
+         ``valid_skip_reason="no_tip_time_resolved"`` green-skip
+         preserved for empty slate days.
+
+    No tip time is ever fabricated. The recovery hook only invokes a
+    real-source generator; if every honest source returns nothing, the
+    loud failure path takes over.
     """
 
     tipoff_utc = _resolve_slate_tipoff(out.delivery_date)
+    slate_present = _slate_exists_for_date(out.delivery_date)
+
+    if tipoff_utc is None and slate_present:
+        # Upstream tip-time recovery: cache is missing but a real slate
+        # exists. Invoke the recovery hook (subprocess-out to the
+        # generator in production, monkeypatched stub in tests) and
+        # re-attempt cache resolution exactly once.
+        try:
+            recovery_rc = TIP_TIME_GENERATOR(
+                out.delivery_date,
+                repo_root=_resolve_repo_root(),
+            )
+        except Exception as exc:  # noqa: BLE001
+            recovery_rc = 1
+            out.notes.append(
+                f"tip_time_recovery_raised={type(exc).__name__}:{exc}"
+            )
+        else:
+            out.notes.append(f"tip_time_recovery_rc={recovery_rc}")
+        if recovery_rc == 0:
+            tipoff_utc = _resolve_slate_tipoff(out.delivery_date)
+            if tipoff_utc is not None:
+                out.notes.append("tip_time_recovery_source=generator")
+
     if tipoff_utc is None:
         out.run_delivery = False
         out.mode = "derek_near_lineup"  # placeholder so logs are stable
-        if _slate_exists_for_date(out.delivery_date):
+        if slate_present:
             out.valid_skip_reason = "tip_time_unresolved_but_slate_exists"
             out.notes.append(
                 "loud_failure=tip_time_unresolved_but_slate_exists "
