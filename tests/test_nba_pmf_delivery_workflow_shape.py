@@ -1243,7 +1243,9 @@ def test_availability_preflight_blocks_execute_with_builder_stub():
     import re
     import subprocess
 
-    workflow = _load_workflow()
+    workflow = yaml.safe_load(WORKFLOW_PATH.read_text(encoding="utf-8"))
+    on = workflow.get("on") or workflow.get(True)
+    assert on is not None, "workflow has no 'on:' trigger block"
     jobs = workflow["jobs"]
 
     for job_name in [
