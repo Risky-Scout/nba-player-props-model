@@ -358,37 +358,7 @@ jobs:
           D="${{ needs.resolve_context.outputs.delivery_date }}"
           OUT="data/player_availability_asof.parquet"
 
-          START_DATE="$(
-            python3 - <<'PY'
-            from pathlib import Path
-            from datetime import date, timedelta
-            import pandas as pd
-
-            d = "${{ needs.resolve_context.outputs.delivery_date }}"
-            out = Path("data/player_availability_asof.parquet")
-
-            if not out.exists():
-                print(d)
-                raise SystemExit(0)
-
-            df = pd.read_parquet(out, columns=["game_date"])
-            if df.empty:
-                print(d)
-                raise SystemExit(0)
-
-            norm = pd.to_datetime(df["game_date"], errors="coerce").dropna()
-            if norm.empty:
-                print(d)
-                raise SystemExit(0)
-
-            max_date = norm.max().date()
-            target = date.fromisoformat(d)
-            if max_date >= target:
-                print("")
-            else:
-                print((max_date + timedelta(days=1)).isoformat())
-            PY
-          )"
+          START_DATE="$(python3 scripts/availability_preflight_start_date.py --date "$D" --out "$OUT")"
 
           if [ -n "$START_DATE" ]; then
             python3 scripts/build_availability_table.py \
@@ -505,37 +475,7 @@ jobs:
           D="${{ needs.resolve_context.outputs.delivery_date }}"
           OUT="data/player_availability_asof.parquet"
 
-          START_DATE="$(
-            python3 - <<'PY'
-            from pathlib import Path
-            from datetime import date, timedelta
-            import pandas as pd
-
-            d = "${{ needs.resolve_context.outputs.delivery_date }}"
-            out = Path("data/player_availability_asof.parquet")
-
-            if not out.exists():
-                print(d)
-                raise SystemExit(0)
-
-            df = pd.read_parquet(out, columns=["game_date"])
-            if df.empty:
-                print(d)
-                raise SystemExit(0)
-
-            norm = pd.to_datetime(df["game_date"], errors="coerce").dropna()
-            if norm.empty:
-                print(d)
-                raise SystemExit(0)
-
-            max_date = norm.max().date()
-            target = date.fromisoformat(d)
-            if max_date >= target:
-                print("")
-            else:
-                print((max_date + timedelta(days=1)).isoformat())
-            PY
-          )"
+          START_DATE="$(python3 scripts/availability_preflight_start_date.py --date "$D" --out "$OUT")"
 
           if [ -n "$START_DATE" ]; then
             python3 scripts/build_availability_table.py \
