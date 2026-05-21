@@ -311,12 +311,22 @@ def _assert_availability_preflight_command_contract(step: dict):
     )
 
 
+def _assert_availability_preflight_not_suppressed(step: dict):
+    run_text = step.get("run", "") or ""
+    for line in run_text.splitlines():
+        if "build_availability_table.py" in line:
+            assert "|| true" not in line, (
+                "availability preflight build command must not be suppressed"
+            )
+
+
 def test_availability_preflight_in_jobs_uses_required_command_contract(workflow):
     """Predict and delivery jobs must preflight with delivery_date-driven slate-date."""
 
     for job_name in ("predict_daily", "delivery_build"):
         _, step = _availability_preflight_step(_job_steps(workflow, job_name))
         _assert_availability_preflight_command_contract(step)
+        _assert_availability_preflight_not_suppressed(step)
         assert step.get("name", "") == "Preflight slate-date availability table"
 
 
@@ -368,6 +378,53 @@ def test_availability_preflight_precedes_delivery_pipeline_and_markers(workflow)
             assert avail_idx < marker_idx, (
                 f"availability preflight must precede same-day marker {marker!r}"
             )
+
+
+def test_model_chain_preflight_refreshes_availability_before_training_table_paths(workflow):
+    """model_chain must preflight availability before training-table-producing paths."""
+
+    steps = _job_steps(workflow, "model_chain_training_calibration")
+    avail_idx, step = _availability_preflight_step(steps)
+    _assert_availability_preflight_command_contract(step)
+    _assert_availability_preflight_not_suppressed(step)
+
+    nightly_idx = _first_step_index_with_run_marker(
+        steps, "scripts/run_nightly_training_and_calibration.py"
+    )
+    assert nightly_idx is not None, (
+        "model_chain missing run_nightly_training_and_calibration.py step"
+    )
+    assert avail_idx < nightly_idx, (
+        "model_chain availability preflight must precede nightly training/calibration run"
+    )
+
+    # If model-chain ever gains a direct train/build-table call, preflight
+    # must still run first.
+    for marker in ("scripts/train.py", "--build-table-only", "data/training_table.parquet"):
+        marker_idx = _first_step_index_with_run_marker(steps, marker)
+        if marker_idx is not None:
+            assert avail_idx < marker_idx, (
+                f"model_chain availability preflight must precede {marker!r}"
+            )
+
+
+def test_phase8_preflight_refreshes_availability_before_build_training_table(workflow):
+    """phase8 must preflight availability before 'Build training table if absent'."""
+
+    steps = _job_steps(workflow, "phase8_pmf_calibration_diagnostics_market_eval")
+    avail_idx, step = _availability_preflight_step(steps)
+    _assert_availability_preflight_command_contract(step)
+    _assert_availability_preflight_not_suppressed(step)
+
+    build_table_idx = _first_step_index_with_run_marker(
+        steps, "python3 scripts/train.py --build-table-only"
+    )
+    assert build_table_idx is not None, (
+        "phase8 missing build-training-table command"
+    )
+    assert avail_idx < build_table_idx, (
+        "phase8 availability preflight must precede build-table-only command"
+    )
 
 
 def test_predict_daily_uses_resolver_outputs(workflow):
