@@ -1,0 +1,72 @@
+{
+  "as_of_date": "2026-05-20",
+  "calibrator_type": "phase8-role-bucket",
+  "code_commit": "acb8ff7dc77dfa74ac6f1a584f0b66951fbcfc66",
+  "details": {
+    "calibration_window": {
+      "fold_days": 28,
+      "min_train_days": 365,
+      "scheme": "rolling-walk-forward",
+      "training_window_end": "2026-04-22",
+      "training_window_start": "2025-04-22",
+      "validation_window_end": "2026-05-20",
+      "validation_window_start": "2026-04-23"
+    },
+    "calibrator_kind": "dry-run-champion-reference",
+    "champion_calibration_manifest_sha256": "fe86a4a7843a3f433e473c34bc54410821f7fd77d714345afd9bee74127d3f79",
+    "champion_pmf_cal_meta_sha256": "911a74944e9e1fb13df229c4da031a21c38baac1f7ec1ebd5590d6c249d475e8",
+    "samples_by_role_bucket": {
+      "ast": {},
+      "blk": {},
+      "fg3m": {},
+      "pts": {},
+      "reb": {},
+      "stl": {},
+      "tov": {}
+    },
+    "samples_by_stat": {
+      "ast": 29540,
+      "blk": 29540,
+      "fg3m": 29540,
+      "pts": 29540,
+      "reb": 29540,
+      "stl": 29540,
+      "tov": 0
+    },
+    "shrinkage_applied": {
+      "ast": false,
+      "blk": false,
+      "fg3m": false,
+      "pts": false,
+      "reb": false,
+      "stl": false,
+      "tov": true
+    },
+    "shrinkage_floor_samples": 50,
+    "tov_diagnostics": {
+      "mean_bias": null,
+      "nll": null,
+      "notes": "Diagnostics computed by validate_champion_vs_challenger.py.",
+      "p0_error": null,
+      "role_bucket_calibration": null,
+      "rps": null
+    }
+  },
+  "dry_run": true,
+  "finished_at_utc": "2026-05-21T19:48:31+00:00",
+  "notes": "Phase 13A dry-run inherits champion calibrators by reference. The rolling validation window is reported but no recompute is performed. Walk-forward only \u2014 no future leakage.",
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-20",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-20",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260521T194826"
+  },
+  "schema_version": "1.0",
+  "started_at_utc": "2026-05-21T19:48:31+00:00",
+  "status": "ok",
+  "warnings": []
+}
