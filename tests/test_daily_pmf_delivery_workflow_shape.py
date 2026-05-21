@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
 
 WORKFLOW = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "daily_pmf_delivery.yml"
 
@@ -91,4 +92,101 @@ def test_core_upload_is_ordered_before_woo_dashboard_step(workflow_text):
     assert core_idx < woo_idx, (
         "core upload must precede WoO dashboard step so it captures the bundle "
         "before any render-contract failure"
+    )
+
+
+def test_daily_pmf_delivery_workflow_is_manual_only(workflow_text):
+    """Legacy daily pipeline must be manual-only.
+
+    The canonical ``nba_pmf_delivery.yml`` is the only AUTOMATIC writer
+    of ``deliveries/``, ``public_export/``, and related artifacts. The
+    legacy ``daily_pmf_delivery.yml`` retains ``workflow_dispatch`` for
+    manual backfills via the Actions UI, but neither ``schedule:`` nor
+    ``workflow_run:`` may fire it automatically — both would silently
+    recreate the duplicate-writer regression the parent audit
+    (TWO_SCHEDULED_WRITERS_DETECTED, 2026-05-20) just fixed.
+    """
+
+    wf = yaml.safe_load(workflow_text)
+    # PyYAML 1.1 parses the bare YAML key ``on:`` as the Python boolean
+    # ``True`` because YAML 1.1 treats ``on`` as a truthy alias. Reach
+    # under either key so the test stays robust if pyyaml is later
+    # bumped to a 1.2-compliant loader.
+    triggers = wf.get("on") if "on" in wf else wf.get(True)
+    if isinstance(triggers, list):
+        trigger_keys = set(triggers)
+    elif isinstance(triggers, dict):
+        trigger_keys = set(triggers.keys())
+    else:
+        trigger_keys = {triggers}
+    assert "schedule" not in trigger_keys, (
+        "daily_pmf_delivery.yml has a `schedule:` trigger; only the "
+        "canonical nba_pmf_delivery.yml may be an automatic writer. "
+        f"Found triggers: {sorted(map(str, trigger_keys))}"
+    )
+    assert "workflow_run" not in trigger_keys, (
+        "daily_pmf_delivery.yml has a `workflow_run:` trigger; the "
+        "workflow must be manual-only. workflow_run would silently "
+        "recreate the duplicate-writer regression every time the "
+        "upstream chain workflow completes on main. "
+        f"Found triggers: {sorted(map(str, trigger_keys))}"
+    )
+    assert "workflow_dispatch" in trigger_keys, (
+        "workflow_dispatch must remain available for manual backfills; "
+        f"found triggers: {sorted(map(str, trigger_keys))}"
+    )
+    assert trigger_keys == {"workflow_dispatch"}, (
+        "daily_pmf_delivery.yml `on:` must contain EXACTLY one key, "
+        "`workflow_dispatch`. Any additional trigger key would either "
+        "reintroduce automatic firing (schedule, workflow_run) or "
+        "fire on push/PR/etc. and re-create the duplicate-writer "
+        f"regression. Found: {sorted(map(str, trigger_keys))}"
+    )
+
+
+def test_daily_pmf_delivery_workflow_dispatch_inputs_preserved(workflow_text):
+    """Manual-only workflow MUST retain its workflow_dispatch inputs.
+
+    Operators rely on manual backfills via the GitHub Actions UI for
+    all delivery modes (morning, woo_morning_monetization, ...,
+    after_game). Removing or renaming any input would silently
+    regress operator workflows. This test pins the exact input
+    schema captured at the time of the manual-only migration.
+    """
+
+    wf = yaml.safe_load(workflow_text)
+    triggers = wf.get("on") if "on" in wf else wf.get(True)
+    assert isinstance(triggers, dict), (
+        f"unexpected on: shape {type(triggers).__name__}"
+    )
+    dispatch = triggers.get("workflow_dispatch")
+    assert isinstance(dispatch, dict), (
+        f"workflow_dispatch missing or malformed: {dispatch!r}"
+    )
+    inputs = dispatch.get("inputs") or {}
+    expected_input_names = {"mode", "delivery_date", "run_predict", "force_run"}
+    assert set(inputs.keys()) == expected_input_names, (
+        f"workflow_dispatch inputs changed; expected "
+        f"{sorted(expected_input_names)}, got {sorted(inputs.keys())}"
+    )
+    # ``mode`` must remain a choice covering all delivery modes
+    # operators dispatch by hand from the Actions UI.
+    mode = inputs["mode"]
+    assert mode.get("type") == "choice", (
+        f"`mode` input must be type=choice; got {mode.get('type')!r}"
+    )
+    mode_options = set(mode.get("options") or [])
+    required_mode_options = {
+        "morning",
+        "woo_morning_monetization",
+        "woo_afternoon_refresh",
+        "derek_near_lineup",
+        "close_lock",
+        "after_game",
+        "full_day",
+    }
+    missing = required_mode_options - mode_options
+    assert not missing, (
+        f"`mode` input lost required choices: {sorted(missing)}; "
+        f"current options: {sorted(mode_options)}"
     )

@@ -44,35 +44,29 @@ name: NBA PMF Delivery — Daily Pipeline
 #     needs_affiliate_mapping and the URL fields stay blank)
 
 on:
-  # Phase 13AM: prefer workflow_run so PMF delivery fires automatically
-  # after a successful Daily Pipeline (predict.py producing the dated
-  # parquet). Cron schedules below remain for the window-specific
-  # near-tip / monetization / after-game runs that don't depend on a
-  # fresh predict cycle.
+  # TWO_SCHEDULED_WRITERS_DETECTED audit (2026-05-20): the canonical
+  # "NBA PMF Delivery" workflow (.github/workflows/nba_pmf_delivery.yml)
+  # is now the only AUTOMATIC writer of deliveries/, public_export/,
+  # and related artifacts. This legacy workflow is MANUAL-ONLY.
   #
-  # Phase 13AN: workflow_run is ACTIVE. After the Daily Pipeline writes
-  # predictions/all_props_<date>.parquet, woo_morning_monetization runs
-  # automatically so the corrected PMF delivery package is generated
-  # without waiting for the next cron window.
-  workflow_run:
-    workflows: ["NBA Props Model — Daily Pipeline"]
-    types: [completed]
-    branches: [main]
-  schedule:
-    # WoO monetization (early/afternoon).
-    - cron: '0 15 * * *'
-    - cron: '0 18 * * *'
-    - cron: '0 20 * * *'
-    # Derek near-lineup window — first publishable evaluation snapshot
-    # at 22:25 UTC, then every 15 min through 03:10 UTC.
-    - cron: '25 22 * * *'
-    - cron: '40,55 22 * * *'
-    - cron: '10,25,40,55 23,0,1,2 * * *'
-    - cron: '10 3 * * *'
-    # Late close lock.
-    - cron: '25 3 * * *'
-    # After-game scoring (yesterday's slate).
-    - cron: '30 6 * * *'
+  # Both automatic triggers have been removed from this workflow:
+  #   - `schedule:` (9 crons) — removed in the initial PR #29 commit
+  #     to stop dual scheduled writers from overwriting each other's
+  #     outputs on main.
+  #   - `workflow_run:` (chained off "NBA Props Model — Daily
+  #     Pipeline") — removed here because the job bodies write to
+  #     deliveries/<date>/, public_export/wizard_of_odds,
+  #     deliveries/index.html, and artifacts/automation_health
+  #     regardless of which trigger fires the run. Leaving the
+  #     workflow_run trigger active would silently recreate the same
+  #     duplicate-writer regression every time the upstream chain
+  #     workflow completes on main.
+  #
+  # The workflow file itself is retained (rule 00: no premature
+  # disable of old workflows) so operators can still backfill any
+  # delivery mode via the GitHub Actions UI. All workflow_dispatch
+  # inputs (mode choices, delivery_date, run_predict, force_run) are
+  # preserved byte-for-byte.
   workflow_dispatch:
     inputs:
       mode:
