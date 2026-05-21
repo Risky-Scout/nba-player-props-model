@@ -644,6 +644,69 @@ def test_self_commit_no_swallowed_push_failure(workflow_text):
     assert "sync_and_push || true" not in text
 
 
+def test_only_canonical_nba_pmf_delivery_workflow_has_automatic_trigger():
+    """At-most-one AUTOMATIC NBA-PMF delivery writer.
+
+    "Automatic" = ``schedule:`` OR ``workflow_run:``. The canonical
+    ``nba_pmf_delivery.yml`` is the only workflow under
+    ``.github/workflows/`` whose ``name:`` starts with
+    ``NBA PMF Delivery`` and whose triggers include either of those
+    keys. This is the STRONGER cross-workflow regression-lock for
+    the parent audit's TWO_SCHEDULED_WRITERS_DETECTED conclusion
+    (2026-05-20): it prevents not only a reintroduced ``schedule:``
+    but also any ``workflow_run:`` chain that would silently fire
+    a duplicate delivery writer whenever an upstream workflow
+    completes on main.
+    """
+
+    wf_dir = REPO_ROOT / ".github" / "workflows"
+    automatic_keys = {"schedule", "workflow_run"}
+    offenders: list[tuple[str, list[str]]] = []
+    canonical_seen = False
+    for wf_path in sorted(wf_dir.glob("*.yml")):
+        text = wf_path.read_text(encoding="utf-8")
+        # Same pre-screen rationale as the schedule-only sibling test:
+        # only candidate workflows whose ``name:`` line starts with
+        # the "NBA PMF Delivery" prefix participate.
+        if not any(
+            line.startswith('name: NBA PMF Delivery')
+            or line.startswith('name: "NBA PMF Delivery')
+            or line.startswith("name: 'NBA PMF Delivery")
+            for line in text.splitlines()
+        ):
+            continue
+        data = yaml.safe_load(text)
+        assert isinstance(data, dict), (
+            f"{wf_path.name} declares an NBA-PMF-Delivery `name:` but is "
+            "not a parseable mapping"
+        )
+        triggers = data.get("on") if "on" in data else data.get(True)
+        if isinstance(triggers, dict):
+            keys = set(triggers.keys())
+        elif isinstance(triggers, list):
+            keys = set(triggers)
+        else:
+            keys = {triggers}
+        present_automatic = sorted(keys & automatic_keys)
+        if wf_path.name == "nba_pmf_delivery.yml":
+            canonical_seen = True
+            assert present_automatic, (
+                "Canonical nba_pmf_delivery.yml must retain at least one "
+                f"automatic trigger ({sorted(automatic_keys)})."
+            )
+        else:
+            if present_automatic:
+                offenders.append((wf_path.name, present_automatic))
+    assert canonical_seen, (
+        "Canonical nba_pmf_delivery.yml not found in .github/workflows/"
+    )
+    assert offenders == [], (
+        "Multiple automatic NBA PMF delivery writers detected. Only "
+        "nba_pmf_delivery.yml may trigger delivery work automatically "
+        f"(schedule or workflow_run). Offenders: {offenders}"
+    )
+
+
 def test_only_canonical_nba_pmf_delivery_workflow_has_schedule_trigger():
     """At-most-one scheduled NBA-PMF delivery writer.
 
