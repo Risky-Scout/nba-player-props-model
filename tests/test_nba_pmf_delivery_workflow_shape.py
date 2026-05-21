@@ -479,6 +479,25 @@ def test_phase8_preflight_refreshes_availability_before_build_training_table(wor
     )
 
 
+def test_phase8_gates_persisted_training_table_freshness_before_calibration(workflow):
+    """phase8 must gate persisted training_table recency/coverage before folds."""
+
+    steps = _job_steps(workflow, "phase8_pmf_calibration_diagnostics_market_eval")
+    gate_idx = _first_step_index_with_run_marker(
+        steps, "scripts/verify_phase8_training_table_freshness.py"
+    )
+    build_idx = _first_step_index_with_run_marker(
+        steps, "python3 scripts/train.py --build-table-only"
+    )
+    calibrate_idx = _first_step_index_with_run_marker(steps, "scripts/calibrate_pmf.py")
+
+    assert gate_idx is not None, "phase8 missing training-table freshness/coverage gate"
+    assert build_idx is not None, "phase8 missing build-table-only command"
+    assert calibrate_idx is not None, "phase8 missing calibrate_pmf.py step"
+    assert gate_idx < calibrate_idx, "phase8 gate must run before calibrate_pmf.py"
+    assert build_idx < calibrate_idx, "phase8 build-table path must run before calibration"
+
+
 def test_predict_daily_uses_resolver_outputs(workflow):
     predict = workflow["jobs"]["predict_daily"]
     cond = predict["if"]

@@ -486,15 +486,27 @@ jobs:
 
           python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
 
-      - name: Build training table if absent
+      - name: Build or refresh training table for phase8
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           set -euo pipefail
+          A="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          rebuild=0
           if [ ! -s data/training_table.parquet ]; then
+            rebuild=1
+          elif ! python3 scripts/verify_phase8_training_table_freshness.py --as-of-date "$A"; then
+            echo "phase8: persisted training_table failed freshness/coverage gate; rebuilding"
+            rebuild=1
+          fi
+
+          if [ "$rebuild" = "1" ]; then
             python3 scripts/train.py --build-table-only
           fi
+
+          python3 scripts/verify_phase8_training_table_freshness.py --as-of-date "$A"
 
       - name: Run Phase 8 PMF calibration folds + OOF aggregation + combo PMFs
         env:
