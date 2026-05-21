@@ -21,9 +21,11 @@ class InjuryMergeReport:
     matched_initial_last_name: int = 0
     unmatched: int = 0
     ambiguous_dropped: int = 0
+    unmapped_team_initial_last_blocked: int = 0
     alias_map_ambiguous_keys: list[str] = field(default_factory=list)
     unmatched_names: list[str] = field(default_factory=list)
     ambiguous_names: list[str] = field(default_factory=list)
+    unmapped_team_initial_last_names: list[str] = field(default_factory=list)
 
     def to_compact_dict(self) -> dict[str, Any]:
         return {
@@ -32,9 +34,11 @@ class InjuryMergeReport:
             "matched_initial_last_name": self.matched_initial_last_name,
             "unmatched": self.unmatched,
             "ambiguous_dropped": self.ambiguous_dropped,
+            "unmapped_team_initial_last_blocked": self.unmapped_team_initial_last_blocked,
             "alias_map_ambiguous_keys": self.alias_map_ambiguous_keys,
             "unmatched_names": self.unmatched_names,
             "ambiguous_names": self.ambiguous_names,
+            "unmapped_team_initial_last_names": self.unmapped_team_initial_last_names,
         }
 
 
@@ -198,25 +202,17 @@ class InjuryPlayerIdentityIndex:
         if not keys:
             return MatchResult(None, None, "unmatched")
 
-        if team_abbr:
-            for key in keys:
-                scoped = self._initial_by_team.get((key, team_abbr), set())
-                if len(scoped) == 1:
-                    return MatchResult(next(iter(scoped)), "initial_last_name_team", "resolved")
-                if len(scoped) > 1:
-                    return MatchResult(None, None, "ambiguous")
-            for key in keys:
-                if key in self._alias_ambiguous_initial:
-                    return MatchResult(None, None, "ambiguous")
-            return MatchResult(None, None, "unmatched")
+        if not team_abbr:
+            return MatchResult(None, "unmapped_team_initial_last_not_allowed", "unmatched")
 
         for key in keys:
-            if key in self._alias_ambiguous_initial:
-                return MatchResult(None, None, "ambiguous")
-            scoped = self._initial_global.get(key, set())
+            scoped = self._initial_by_team.get((key, team_abbr), set())
             if len(scoped) == 1:
-                return MatchResult(next(iter(scoped)), "initial_last_name", "resolved")
+                return MatchResult(next(iter(scoped)), "initial_last_name_team", "resolved")
             if len(scoped) > 1:
+                return MatchResult(None, None, "ambiguous")
+        for key in keys:
+            if key in self._alias_ambiguous_initial:
                 return MatchResult(None, None, "ambiguous")
         return MatchResult(None, None, "unmatched")
 
@@ -233,6 +229,10 @@ class InjuryPlayerIdentityIndex:
         exact = self._resolve_exact(name_lower, team_abbr)
         if exact is not None:
             return exact
+        if not team_mapped and self._initial_keys(name_lower):
+            return MatchResult(None, "unmapped_team_initial_last_not_allowed", "unmatched")
+        if not team_mapped:
+            return MatchResult(None, None, "unmatched")
         return self._resolve_initial(name_lower, team_abbr, had_suffix=had_suffix)
 
 

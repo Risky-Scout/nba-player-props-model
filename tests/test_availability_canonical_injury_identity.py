@@ -51,17 +51,41 @@ AMBIGUOUS_INITIAL_FIXTURES: dict[str, list[tuple[str, str]]] = {
 
 @pytest.mark.parametrize("injury_key", list(AMBIGUOUS_INITIAL_FIXTURES))
 def test_ambiguous_initial_last_without_team_stays_unresolved(injury_key):
+    """Test B: unmapped team + initial+last with multiple candidates stays unresolved."""
     players = AMBIGUOUS_INITIAL_FIXTURES[injury_key]
     stats = _stats(
         [(100 + i, name, team, "2026-05-18") for i, (name, team) in enumerate(players)]
     )
     nba = {injury_key: {"status": "OUT", "reason": "ankle"}}
     out, report = _merge({}, nba, stats)
-    assert report["ambiguous_dropped"] == 1
+    assert report["ambiguous_dropped"] == 0
+    assert report["unmapped_team_initial_last_blocked"] == 1
+    assert injury_key in report["unmapped_team_initial_last_names"]
     assert not any(v.get("source") == "nba_official" for v in out.values())
 
 
+def test_unmapped_team_unique_initial_last_stays_unresolved():
+    """Test A: unmapped team + globally unique initial+last must not resolve."""
+    stats = _stats([(11, "Jalen Smith", "CHI", "2026-05-18")])
+    nba = {"j. smith": {"status": "OUT", "reason": "hamstring"}}
+    out, report = _merge({}, nba, stats)
+    assert 11 not in out
+    assert report["unmapped_team_initial_last_blocked"] == 1
+    assert report["matched_initial_last_name"] == 0
+    assert report["ambiguous_dropped"] == 0
+
+
+def test_unmapped_team_with_bad_team_label_blocks_initial_last():
+    """Test A variant: unmapped team label + unique initial+last stays unresolved."""
+    stats = _stats([(11, "Jalen Smith", "CHI", "2026-05-18")])
+    nba = {"j. smith": {"status": "OUT", "reason": "hamstring", "team": "Alpha Team"}}
+    out, report = _merge({}, nba, stats)
+    assert 11 not in out
+    assert report["unmapped_team_initial_last_blocked"] == 1
+
+
 def test_j_green_resolves_with_team_context():
+    """Test C: mapped team + initial+last with one team candidate resolves."""
     stats = _stats(
         [
             (101, "Jaylen Green", "HOU", "2026-05-18"),
@@ -90,6 +114,7 @@ def test_j_smith_resolves_with_team_when_unique_on_roster():
 
 
 def test_exact_full_name_unique_resolves_without_team():
+    """Test D: unmapped team + exact full name unique globally resolves."""
     stats = _stats([(1, "LeBron James", "LAL", "2026-05-18")])
     nba = {"lebron james": {"status": "OUT", "reason": "ankle"}}
     out, report = _merge({}, nba, stats)
@@ -98,6 +123,7 @@ def test_exact_full_name_unique_resolves_without_team():
 
 
 def test_exact_full_name_duplicate_without_team_is_ambiguous():
+    """Test E: unmapped team + exact full name duplicated globally is ambiguous."""
     stats = _stats(
         [
             (501, "Chris Smith", "MIA", "2026-05-18"),
@@ -124,6 +150,7 @@ def test_exact_full_name_duplicate_with_team_resolves():
 
 
 def test_suffix_name_never_initial_last_matches():
+    """Test F: suffix names never fall through to initial+last."""
     stats = _stats(
         [
             (301, "Dennis Smith Jr", "DAL", "2026-05-18"),
@@ -145,22 +172,29 @@ def test_unmatched_logs_separate_from_ambiguous(caplog):
     with caplog.at_level(logging.WARNING):
         _, report = _merge({}, nba, stats)
     assert report["unmatched"] == 2
+    assert report["unmapped_team_initial_last_blocked"] == 2
     assert report["ambiguous_dropped"] == 0
     assert any("injury_merge_unmatched" in r.message for r in caplog.records)
     assert not any("injury_merge_ambiguous" in r.message for r in caplog.records)
 
 
 def test_alias_map_ambiguity_logged_separately_from_report_ambiguity(caplog):
+    """Test G: alias-map ambiguity warnings separate from active injury-report ambiguous."""
     stats = _stats(
         [
             (11, "Jalen Smith", "CHI", "2026-05-18"),
-            (12, "Jason Smith", "POR", "2026-05-18"),
+            (12, "Jason Smith", "CHI", "2026-05-18"),
         ]
     )
     with caplog.at_level(logging.WARNING):
-        _, report = _merge({}, {"j. smith": {"status": "OUT", "reason": "x"}}, stats)
+        _, report = _merge(
+            {},
+            {"j. smith": {"status": "OUT", "reason": "x", "team": "Chicago Bulls"}},
+            stats,
+        )
     assert report["alias_map_ambiguous_keys"]
     assert any("injury_merge_alias_ambiguous" in r.message for r in caplog.records)
+    assert report["ambiguous_dropped"] == 1
     assert any("injury_merge_ambiguous" in r.message for r in caplog.records)
 
 
@@ -262,6 +296,15 @@ def test_identity_index_respects_slate_date_roster():
 def test_parse_injury_name_detects_suffix():
     assert parse_injury_name("j. smith jr")[2] is True
     assert parse_injury_name("j. smith")[2] is False
+
+
+def test_resolve_forbids_global_initial_last_without_team():
+    stats = _stats([(101, "Jayson Tatum", "BOS", "2026-05-18")])
+    index = InjuryPlayerIdentityIndex(stats, slate_date="2026-05-20")
+    result = index.resolve("j. tatum")
+    assert result.outcome == "unmatched"
+    assert result.strategy == "unmapped_team_initial_last_not_allowed"
+    assert result.player_id is None
 
 
 def test_resolve_injury_report_name_uses_team_field():

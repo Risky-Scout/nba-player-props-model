@@ -31,18 +31,15 @@ def test_exact_full_name_match_wins_and_tags_nba_official():
     assert out[1]["reason"] == "ankle"
 
 
-def test_unique_initial_last_name_fallback_match():
+def test_unique_initial_last_name_requires_team_context():
     bdl_map = {}
     nba_report = {"j. tatum": {"status": "OUT", "reason": "wrist"}}
     stats_df = _stats([(101, "Jayson Tatum"), (202, "Kevin Durant")])
 
     out = merge_injury_sources(bdl_map, nba_report, stats_df)
 
-    assert 101 in out
-    assert out[101]["source"] == "nba_official"
-    assert out[101]["status"] == "OUT"
-    assert out[101]["reason"] == "wrist"
-    assert 202 not in out
+    assert 101 not in out
+    assert not any(v.get("source") == "nba_official" for v in out.values())
 
 
 def test_ambiguous_initial_last_name_drops_and_preserves_bdl_entries():

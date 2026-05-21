@@ -1093,14 +1093,13 @@ def merge_injury_sources(
     Matching strategy (in order):
       1. Exact lowercase full-name match against stats_df.player_name when
          unique in roster context (optionally scoped by injury-report team).
-      2. Strict first-initial + last-name match only when the key resolves
-         to exactly one player_id in the same context. Ambiguous collisions
+         Without a mapped team label, only a globally unique exact full-name
+         match is allowed.
+      2. Strict first-initial + last-name match only when the injury-report
+         team label maps to a canonical NBA team and the key resolves to
+         exactly one player_id on that team's roster. Ambiguous collisions
          are dropped and warning-logged separately from unmatched rows.
-         Last-name tokens are suffix-stripped (jr/sr/ii/iii/iv) before
-         building keys on BOTH sides. NBA-report names whose original
-         key carried such a suffix never fall through to the fallback
-         path, because the suffix indicates a specific person we cannot
-         safely disambiguate from a first-initial form alone.
+         Initial+last matching is never attempted without mapped team context.
 
     Every entry in the returned dict carries a `source` field:
       - `nba_official` for entries enriched from the NBA official report.
@@ -1155,11 +1154,15 @@ def merge_injury_sources(
         if result.outcome != "resolved" or result.player_id is None:
             report.unmatched += 1
             report.unmatched_names.append(name_lower)
+            if result.strategy == "unmapped_team_initial_last_not_allowed":
+                report.unmapped_team_initial_last_blocked += 1
+                report.unmapped_team_initial_last_names.append(name_lower)
             logger.warning(
-                "injury_merge_unmatched: nba_report_name=%r team=%r last_name=%r",
+                "injury_merge_unmatched: nba_report_name=%r team=%r last_name=%r strategy=%r",
                 name_lower,
                 info.get("team"),
                 last_name or "",
+                result.strategy or "",
             )
             continue
 
@@ -1185,12 +1188,14 @@ def merge_injury_sources(
     logger.info(
         "injury_merge_summary: total_nba_report_names=%s "
         "matched_exact=%s matched_initial_last_name=%s "
-        "unmatched=%s ambiguous_dropped=%s alias_map_ambiguous=%s",
+        "unmatched=%s ambiguous_dropped=%s "
+        "unmapped_team_initial_last_blocked=%s alias_map_ambiguous=%s",
         report.total_nba_report_names,
         report.matched_exact,
         report.matched_initial_last_name,
         report.unmatched,
         report.ambiguous_dropped,
+        report.unmapped_team_initial_last_blocked,
         len(report.alias_map_ambiguous_keys),
     )
     if merge_report_out is not None:
