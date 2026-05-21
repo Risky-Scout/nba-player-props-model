@@ -194,10 +194,32 @@ def _parse_now_utc(now_str: Optional[str]) -> datetime:
     return datetime.fromisoformat(s).astimezone(UTC)
 
 
+def _resolve_repo_root(repo_root: Optional[Path] = None) -> Path:
+    """Return the repo root for on-disk lookups.
+
+    Resolution order:
+
+    1. Explicit ``repo_root`` argument (used by tests that thread a tmp
+       path directly through the resolver helpers).
+    2. ``NBA_PMF_TEST_REPO_ROOT`` env var — test-only override so unit
+       tests can point both ``_resolve_slate_tipoff`` and
+       ``_slate_exists_for_date`` at a controlled fixture directory
+       without touching the real repo workspace.
+    3. Module-level ``REPO_ROOT``.
+    """
+
+    if repo_root is not None:
+        return Path(repo_root)
+    env_override = os.environ.get("NBA_PMF_TEST_REPO_ROOT", "").strip()
+    if env_override:
+        return Path(env_override)
+    return REPO_ROOT
+
+
 def _resolve_slate_tipoff(
     delivery_date: str,
     *,
-    repo_root: Path = REPO_ROOT,
+    repo_root: Optional[Path] = None,
 ) -> Optional[datetime]:
     """Return the earliest scheduled tipoff for ``delivery_date`` as UTC.
 
@@ -213,18 +235,21 @@ def _resolve_slate_tipoff(
        ``start_time_utc``, ``tipoff_utc``, ``scheduled_start_utc``,
        ``commence_time``, or ``game_start_time_et`` (case-insensitive
        lookup). We pick the EARLIEST tip for the slate.
-    3. Return ``None`` so the caller emits
-       ``valid_skip_reason=no_tip_time_resolved``.
+    3. Return ``None`` so the caller decides whether to valid-skip
+       (``no_tip_time_resolved``) or emit a loud failure
+       (``tip_time_unresolved_but_slate_exists``) based on whether
+       slate-presence signals exist on disk for ``delivery_date``.
 
     This function never fabricates a tip time. If the on-disk JSON
     cannot be parsed or contains no recognizable timestamps it returns
-    ``None`` and lets the caller valid-skip.
+    ``None`` and lets the caller decide.
     """
 
     test_env = os.environ.get("NBA_PMF_TEST_TIPOFF_ET", "").strip()
     if test_env:
         return _parse_tip_string(test_env)
 
+    repo_root = _resolve_repo_root(repo_root)
     candidate = repo_root / "artifacts" / "live_schedule" / delivery_date / "game_start_times.json"
     if not candidate.is_file():
         return None
@@ -301,6 +326,43 @@ def _extract_games_list(payload) -> list:
         # Fallback: if it looks like a single game dict, wrap it.
         return [payload]
     return []
+
+
+def _slate_exists_for_date(
+    delivery_date: str,
+    *,
+    repo_root: Optional[Path] = None,
+) -> bool:
+    """Return ``True`` if any on-disk signal proves a real slate exists.
+
+    We treat the existence of any of the following files as unambiguous
+    proof that the workflow's prior runs already concluded a real NBA
+    slate exists for ``delivery_date``:
+
+    - ``deliveries/<delivery_date>/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet``
+      (canonical model-only PMF — only emitted when the daily delivery
+      pipeline's ``games_exist`` branch ran).
+    - ``deliveries/<delivery_date>/canonical_source/all_props_model_only.parquet``
+      (companion canonical artifact, same gate).
+    - ``predictions/all_props_<delivery_date>.parquet``
+      (written by the 14:00 UTC daily prediction cron when the slate is
+      non-empty).
+    - ``predictions/pmf_display_<delivery_date>.json``
+      (written by the same daily prediction step).
+
+    None of these supply a tip-time *value*; they only prove that a
+    slate exists. Callers that need a tip time must still defer to
+    :func:`_resolve_slate_tipoff` and refuse to fabricate.
+    """
+
+    repo_root = _resolve_repo_root(repo_root)
+    candidates = (
+        repo_root / "deliveries" / delivery_date / "canonical_source" / "player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+        repo_root / "deliveries" / delivery_date / "canonical_source" / "all_props_model_only.parquet",
+        repo_root / "predictions" / f"all_props_{delivery_date}.parquet",
+        repo_root / "predictions" / f"pmf_display_{delivery_date}.json",
+    )
+    return any(p.is_file() for p in candidates)
 
 
 # ── Stage resolvers ─────────────────────────────────────────────────
@@ -394,13 +456,34 @@ def _resolve_scheduled(args, now_utc: datetime) -> ResolverOutputs:
 
 
 def _gate_on_tipoff(out: ResolverOutputs, now_utc: datetime) -> None:
-    """Mutate ``out`` based on minutes-before-tipoff for the slate."""
+    """Mutate ``out`` based on minutes-before-tipoff for the slate.
+
+    When tipoff cannot be resolved we deliberately split two cases:
+
+    - If on-disk signals (``_slate_exists_for_date``) prove a real slate
+      exists for ``delivery_date``, we emit
+      ``valid_skip_reason="tip_time_unresolved_but_slate_exists"`` and
+      annotate a loud note. ``main()`` translates that marker into a
+      stderr ``SCHEDULER_TIP_TIME_UNRESOLVABLE_WITH_SLATE`` line and a
+      non-zero exit code so the workflow run shows RED instead of
+      silently green-skipping a real slate.
+    - If no slate-presence signal exists, we preserve the legitimate
+      ``valid_skip_reason="no_tip_time_resolved"`` green-skip used for
+      truly empty slate days.
+    """
 
     tipoff_utc = _resolve_slate_tipoff(out.delivery_date)
     if tipoff_utc is None:
         out.run_delivery = False
-        out.valid_skip_reason = "no_tip_time_resolved"
         out.mode = "derek_near_lineup"  # placeholder so logs are stable
+        if _slate_exists_for_date(out.delivery_date):
+            out.valid_skip_reason = "tip_time_unresolved_but_slate_exists"
+            out.notes.append(
+                "loud_failure=tip_time_unresolved_but_slate_exists "
+                f"delivery_date={out.delivery_date}"
+            )
+        else:
+            out.valid_skip_reason = "no_tip_time_resolved"
         return
 
     delta_min = (tipoff_utc - now_utc).total_seconds() / 60.0
@@ -643,10 +726,28 @@ def emit(outputs: ResolverOutputs, github_output_path: str) -> None:
     print(f"NBA_PMF_SCHEDULE_RESOLVED {summary}{notes}")
 
 
+LOUD_FAILURE_TIP_TIME_WITH_SLATE = "tip_time_unresolved_but_slate_exists"
+
+
 def main(argv: Optional[list[str]] = None) -> int:
     args = parse_args(argv)
     outputs = resolve(args)
     emit(outputs, args.github_output)
+    if outputs.valid_skip_reason == LOUD_FAILURE_TIP_TIME_WITH_SLATE:
+        # Loud, non-zero exit so the resolve_context workflow step
+        # turns the run RED instead of silently green-skipping a slate.
+        # See diagnosis: a slate clearly exists on disk for this
+        # delivery_date but no tip-time source was available, so the
+        # honest outcome is to fail the run rather than fabricate a tip
+        # or pretend no slate existed.
+        print(
+            "SCHEDULER_TIP_TIME_UNRESOLVABLE_WITH_SLATE "
+            f"delivery_date={outputs.delivery_date} "
+            f"as_of_date={outputs.as_of_date} "
+            f"stage={outputs.stage} mode={outputs.mode}",
+            file=sys.stderr,
+        )
+        return 2
     return 0
 
 
