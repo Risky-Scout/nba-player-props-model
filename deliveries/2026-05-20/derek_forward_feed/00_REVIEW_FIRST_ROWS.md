@@ -366,9 +366,9 @@ Devin Vassell,blk,0.4533,0.5,0.2212
 
 ## `derek_forward_feed/latest_available_snapshot.csv`
 
-- bytes: `7,396,751`
+- bytes: `7,324,597`
 - rows: `2,063`
-- columns: `93`
+- columns: `89`
 
 Compact first 30 rows:
 
@@ -411,9 +411,9 @@ Alex Caruso,89,OKC,SAS,21713529,reb,rotation,stat_grid:pmf_sim_v1+role_aware_pmf
 
 ## `derek_forward_feed/latest_available_snapshot.parquet`
 
-- bytes: `358,131`
+- bytes: `355,638`
 - rows: `2,063`
-- columns: `93`
+- columns: `89`
 
 Compact first 30 rows:
 
@@ -1401,9 +1401,9 @@ Dylan Harper,1057262518,SAS,OKC,21713529,pts,core,stat_grid:pmf_sim_v1+role_awar
 
 ## `derek_forward_feed/lineup_snapshot.csv`
 
-- bytes: `7,396,751`
+- bytes: `7,324,597`
 - rows: `2,063`
-- columns: `93`
+- columns: `89`
 
 Compact first 30 rows:
 
@@ -1446,9 +1446,9 @@ Alex Caruso,89,OKC,SAS,21713529,reb,rotation,stat_grid:pmf_sim_v1+role_aware_pmf
 
 ## `derek_forward_feed/lineup_snapshot.jsonl`
 
-- bytes: `10,973,948`
+- bytes: `10,736,367`
 - rows: `2,063`
-- columns: `93`
+- columns: `89`
 
 Compact first 30 rows:
 
@@ -1491,9 +1491,9 @@ Alex Caruso,89,OKC,SAS,21713529,reb,rotation,stat_grid:pmf_sim_v1+role_aware_pmf
 
 ## `derek_forward_feed/lineup_snapshot.parquet`
 
-- bytes: `358,131`
+- bytes: `355,638`
 - rows: `2,063`
-- columns: `93`
+- columns: `89`
 
 Compact first 30 rows:
 

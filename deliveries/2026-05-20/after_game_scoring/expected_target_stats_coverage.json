@@ -1,0 +1,124 @@
+{
+  "all_accounted": true,
+  "all_actually_scored": true,
+  "blockers": [],
+  "delivery_date": "2026-05-20",
+  "documented_blocked_target_stats": [],
+  "expected_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "pra"
+  ],
+  "generated_at_utc": "2026-05-21T10:19:11Z",
+  "missing_target_stats": [],
+  "per_stat": [
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "pts",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "reb",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "ast",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "fg3m",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "tov",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "stl",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "blk",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "stocks",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "pa",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "pr",
+      "status": "scored"
+    },
+    {
+      "canonical_pmf_rows": 12,
+      "outcome_rows": 22,
+      "scored_rows": 12,
+      "stat": "pra",
+      "status": "scored"
+    }
+  ],
+  "schema_version": "1.0",
+  "scored_target_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "pra"
+  ],
+  "source_columns_checked": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "turnover"
+  ],
+  "tov_rows_scored": 12,
+  "tov_source_column": "turnover"
+}
