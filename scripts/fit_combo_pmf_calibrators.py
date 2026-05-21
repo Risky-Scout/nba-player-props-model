@@ -68,6 +68,8 @@ DEFAULT_OOF_PATH = REPO_ROOT / "data" / "oof_combo_pmfs.parquet"
 CAL_META_PATH = MODEL_DIR / "pmf_cal_meta.json"
 CAL_META_BACKUP_PATH = MODEL_DIR / "pmf_cal_meta_base_only.json.bak"
 
+STRUCTURAL_SKIP_MARKER = "missing components"
+
 # Match calibrate_pmf.py's aggregate-mode thresholds so combo cells use
 # the same data-volume gates as base cells.
 MIN_VAL_ROWS_PER_STAT = 500
@@ -103,6 +105,91 @@ def _load_existing_meta() -> dict | None:
         return None
     with open(CAL_META_PATH) as f:
         return json.load(f)
+
+
+def _combo_oof_manifest_path(oof_path: Path) -> Path:
+    """Return the conventional sibling manifest path for the combo OOF.
+
+    `build_combo_oof_pmfs_from_base_oof.py` writes
+    `data/oof_combo_pmfs.parquet` alongside
+    `data/oof_combo_pmfs.manifest.json`. The two paths share the same
+    stem.
+    """
+    return oof_path.parent / f"{oof_path.stem}.manifest.json"
+
+
+def _load_combo_oof_manifest(oof_path: Path) -> dict | None:
+    """Load the combo OOF builder manifest if present and parseable.
+
+    Returns the parsed manifest dict on success, or None if the manifest
+    is absent or malformed. A malformed manifest is logged as a warning
+    and treated identically to "no manifest" so that downstream contract
+    classification falls back to fail-closed for any missing combo.
+    """
+    manifest_path = _combo_oof_manifest_path(oof_path)
+    if not manifest_path.exists():
+        return None
+    try:
+        with open(manifest_path) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning(
+            f"Combo OOF manifest at {manifest_path} could not be "
+            f"parsed ({exc}); proceeding as if no manifest were present."
+        )
+        return None
+
+
+def _classify_missing_combos(
+    missing_combos: set[str],
+    manifest: dict | None,
+) -> tuple[dict[str, str], list[str]]:
+    """Split missing combos into structurally-skipped vs unexplained.
+
+    A missing combo is classified as "structurally skipped" only when
+    the combo OOF builder manifest documents it under either
+    `combos_skipped` or `skip_reasons` with a reason that names a
+    missing required component (matched by ``STRUCTURAL_SKIP_MARKER``).
+    This mirrors the exact reason string produced by
+    `build_combo_oof_pmfs_from_base_oof.py` when a combo's required
+    base components are absent (e.g. `stocks` when `stl/blk` are not in
+    the base OOF).
+
+    Combos missing for any other reason — including absent manifest,
+    malformed manifest, or a manifest that does not list the combo as
+    skipped — are classified as "unexplained" so the caller can keep
+    failing closed.
+    """
+    if not missing_combos:
+        return {}, []
+    if manifest is None:
+        return {}, sorted(missing_combos)
+
+    documented: dict[str, str] = {}
+    skip_reasons = manifest.get("skip_reasons") or {}
+    if isinstance(skip_reasons, dict):
+        for combo, reason in skip_reasons.items():
+            if isinstance(reason, str):
+                documented[str(combo)] = reason
+    combos_skipped = manifest.get("combos_skipped") or []
+    if isinstance(combos_skipped, list):
+        for entry in combos_skipped:
+            if not isinstance(entry, dict):
+                continue
+            combo = entry.get("combo")
+            reason = entry.get("reason", "")
+            if combo and isinstance(reason, str):
+                documented.setdefault(str(combo), reason)
+
+    structural: dict[str, str] = {}
+    unexplained: list[str] = []
+    for combo in sorted(missing_combos):
+        reason = documented.get(combo)
+        if reason and STRUCTURAL_SKIP_MARKER in reason.lower():
+            structural[combo] = reason
+        else:
+            unexplained.append(combo)
+    return structural, unexplained
 
 
 def _validate_columns(df: pd.DataFrame) -> int:
@@ -156,7 +243,10 @@ def _validate_pmfs(pmfs: np.ndarray, stat: str) -> int:
     return 0
 
 
-def _build_per_stat_inputs(df: pd.DataFrame) -> tuple[dict[str, tuple], int]:
+def _build_per_stat_inputs(
+    df: pd.DataFrame,
+    structurally_skipped_combos: dict[str, str] | None = None,
+) -> tuple[dict[str, tuple], int]:
     """Build the fit_all input dict for mission combo stats.
 
     Returns ({combo: (pmfs, outcomes, dates, role_buckets)}, exit_code).
@@ -164,9 +254,18 @@ def _build_per_stat_inputs(df: pd.DataFrame) -> tuple[dict[str, tuple], int]:
     invalid PMFs, or other hard failures. (Insufficient rows are a
     warning, not a hard fail — that combo is skipped and remaining
     combos proceed.)
+
+    Combos in ``structurally_skipped_combos`` are skipped without
+    error: the upstream combo OOF builder manifest already documented
+    why those combos have zero rows (e.g. ``stocks`` when ``stl/blk``
+    were absent from the base OOF), and the caller has already logged
+    that classification.
     """
+    structurally_skipped = structurally_skipped_combos or {}
     per_stat: dict[str, tuple] = {}
     for combo in MISSION_REQUIRED_COMBOS_CANONICAL:
+        if combo in structurally_skipped:
+            continue
         sub = df[df["stat"] == combo]
         if len(sub) == 0:
             logger.error(f"  {combo}: ZERO rows in combo OOF")
@@ -219,7 +318,11 @@ def _build_per_stat_inputs(df: pd.DataFrame) -> tuple[dict[str, tuple], int]:
     return per_stat, 0
 
 
-def _merge_meta(base_meta: dict | None, combo_meta: dict) -> dict:
+def _merge_meta(
+    base_meta: dict | None,
+    combo_meta: dict,
+    structurally_skipped_combos: dict[str, str] | None = None,
+) -> dict:
     """Merge combo meta entries into the base-only meta.
 
     Strategy:
@@ -230,6 +333,11 @@ def _merge_meta(base_meta: dict | None, combo_meta: dict) -> dict:
       - Surface combo-only top-level fields ONLY IF the base did not
         already set them.
       - Tag with combo-calibration provenance fields per M6.2 spec.
+      - When upstream documented certain combos as structural skips
+        (e.g. `stocks` when `stl/blk` are not yet in the base OOF),
+        record the per-combo skip reasons so downstream readers can
+        distinguish "calibrator missing because upstream data was
+        unavailable" from "calibrator missing because of a fit failure".
     """
     if base_meta is None:
         merged = dict(combo_meta)
@@ -252,6 +360,13 @@ def _merge_meta(base_meta: dict | None, combo_meta: dict) -> dict:
     merged["combo_calibration_combos_fitted"] = sorted(
         combo_meta.get("stats", {}).keys()
     )
+    if structurally_skipped_combos:
+        merged["combo_calibration_structural_skips"] = {
+            str(combo): str(reason)
+            for combo, reason in sorted(structurally_skipped_combos.items())
+        }
+    else:
+        merged.pop("combo_calibration_structural_skips", None)
     merged.pop("combo_calibration_gaps", None)
     return merged
 
@@ -299,16 +414,48 @@ def main() -> int:
     if rc != 0:
         return rc
 
-    # M6.2 spec requirement #6: validate each mission combo stat is present.
+    # M6.2 spec requirement #6: validate each mission combo stat is
+    # present. A combo may be cleanly absent ONLY when the upstream combo
+    # OOF builder manifest documents it as a structural skip (i.e. the
+    # combo's required base components were not in the base OOF — e.g.
+    # `stocks` when `stl/blk` are not yet in `allowed_stats`). For any
+    # other absence — no manifest, malformed manifest, or a manifest that
+    # does not document the missing combo as structurally skipped — keep
+    # failing closed with the same exit code so silent data loss is not
+    # masked. (Regression source: model-chain run 26196295263, where the
+    # builder reported `combos_skipped=[{"combo":"stocks","reason":"missing
+    # components: stl, blk"}]` and Phase 8 still aborted at this gate.)
+    combo_oof_manifest = _load_combo_oof_manifest(oof_path)
     missing_combos = set(MISSION_REQUIRED_COMBOS_CANONICAL) - set(df["stat"].astype(str).unique())
-    if missing_combos:
+    structurally_skipped_combos, unexplained_missing_combos = _classify_missing_combos(
+        missing_combos, combo_oof_manifest
+    )
+    if unexplained_missing_combos:
+        manifest_descriptor = (
+            "no upstream combo OOF manifest at "
+            f"{_combo_oof_manifest_path(oof_path)}"
+            if combo_oof_manifest is None
+            else "the upstream combo OOF manifest does not document these "
+            "combos as structurally skipped"
+        )
         logger.error(
-            f"Combo OOF missing mission combos: {sorted(missing_combos)}. "
-            f"Expected all of {tuple(MISSION_REQUIRED_COMBOS_CANONICAL)}."
+            f"Combo OOF missing mission combos: {unexplained_missing_combos}. "
+            f"Expected all of {tuple(MISSION_REQUIRED_COMBOS_CANONICAL)}. "
+            f"Failing closed because {manifest_descriptor}."
         )
         return 4
+    if structurally_skipped_combos:
+        for combo, reason in sorted(structurally_skipped_combos.items()):
+            logger.warning(
+                f"Combo {combo!r} absent from combo OOF; combo OOF "
+                f"manifest documents this as a structural skip "
+                f"(reason: {reason!r}). Proceeding without {combo}; no "
+                f"calibrator pkl will be produced for it this run."
+            )
 
-    per_stat_inputs, build_rc = _build_per_stat_inputs(df)
+    per_stat_inputs, build_rc = _build_per_stat_inputs(
+        df, structurally_skipped_combos=structurally_skipped_combos
+    )
     if build_rc != 0:
         return build_rc
     if not per_stat_inputs:
@@ -357,7 +504,11 @@ def main() -> int:
             )
 
     # Merge base + combo and rewrite pmf_cal_meta.json with all mission stats.
-    merged_meta = _merge_meta(base_meta, combo_meta)
+    merged_meta = _merge_meta(
+        base_meta,
+        combo_meta,
+        structurally_skipped_combos=structurally_skipped_combos,
+    )
     with open(CAL_META_PATH, "w") as f:
         json.dump(merged_meta, f, indent=2, default=str)
     merged_stats = sorted(merged_meta.get("stats", {}).keys())
@@ -387,11 +538,23 @@ def main() -> int:
         set(MISSION_REQUIRED_CANONICAL_ALL) - set(merged_stats)
     )
     if missing_in_merged:
-        logger.warning(
-            f"Merged meta is missing {sorted(missing_in_merged)} from "
-            "the 12-stat mission set. Investigate calibrate_pmf.py "
-            "--aggregate-mode base outputs and combo fit coverage."
+        explained_in_merged = (
+            set(missing_in_merged) & set(structurally_skipped_combos.keys())
         )
+        unexplained_in_merged = sorted(missing_in_merged - explained_in_merged)
+        if explained_in_merged:
+            logger.warning(
+                f"Merged meta is missing {sorted(explained_in_merged)} "
+                "from the 12-stat mission set; upstream combo OOF "
+                "manifest documented these as structural skips "
+                f"({structurally_skipped_combos})."
+            )
+        if unexplained_in_merged:
+            logger.warning(
+                f"Merged meta is missing {unexplained_in_merged} from "
+                "the 12-stat mission set. Investigate calibrate_pmf.py "
+                "--aggregate-mode base outputs and combo fit coverage."
+            )
     else:
         logger.info(
             "Merged meta covers all 12 mission canonical stats: "
