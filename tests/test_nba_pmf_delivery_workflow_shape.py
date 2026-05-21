@@ -644,6 +644,72 @@ def test_self_commit_no_swallowed_push_failure(workflow_text):
     assert "sync_and_push || true" not in text
 
 
+def test_only_canonical_nba_pmf_delivery_workflow_has_schedule_trigger():
+    """At-most-one scheduled NBA-PMF delivery writer.
+
+    The canonical ``nba_pmf_delivery.yml`` is the only workflow under
+    ``.github/workflows/`` whose ``name:`` starts with
+    ``NBA PMF Delivery`` and whose triggers include ``schedule:``.
+    Regression-lock against the parent audit's
+    TWO_SCHEDULED_WRITERS_DETECTED conclusion (2026-05-20). Prevents
+    accidental reintroduction of dual scheduled writers under the
+    ``NBA PMF Delivery`` display-name family.
+    """
+
+    wf_dir = REPO_ROOT / ".github" / "workflows"
+    offenders: list[str] = []
+    canonical_seen = False
+    for wf_path in sorted(wf_dir.glob("*.yml")):
+        text = wf_path.read_text(encoding="utf-8")
+        # Pre-screen by file text: only candidate workflows whose
+        # ``name:`` line starts with the "NBA PMF Delivery" prefix
+        # participate in this cross-workflow check. This keeps the
+        # test robust against unrelated workflows whose YAML bodies
+        # embed inline Python heredocs that PyYAML's strict
+        # ``safe_load`` rejects (see e.g.
+        # ``derek_live_game_snapshots.yml``); GitHub Actions parses
+        # them fine, but they are out of scope here.
+        if not any(
+            line.startswith('name: NBA PMF Delivery')
+            or line.startswith('name: "NBA PMF Delivery')
+            or line.startswith("name: 'NBA PMF Delivery")
+            for line in text.splitlines()
+        ):
+            continue
+        data = yaml.safe_load(text)
+        assert isinstance(data, dict), (
+            f"{wf_path.name} declares an NBA-PMF-Delivery `name:` but is "
+            "not a parseable mapping"
+        )
+        # PyYAML 1.1 parses bare ``on:`` as the boolean True key.
+        triggers = data.get("on") if "on" in data else data.get(True)
+        if isinstance(triggers, dict):
+            keys = set(triggers.keys())
+        elif isinstance(triggers, list):
+            keys = set(triggers)
+        else:
+            keys = {triggers}
+        has_schedule = "schedule" in keys
+        if wf_path.name == "nba_pmf_delivery.yml":
+            canonical_seen = True
+            assert has_schedule, (
+                "Canonical nba_pmf_delivery.yml must retain its "
+                "`schedule:` trigger as the sole scheduled NBA PMF "
+                "delivery writer."
+            )
+        else:
+            if has_schedule:
+                offenders.append(wf_path.name)
+    assert canonical_seen, (
+        "Canonical nba_pmf_delivery.yml not found in .github/workflows/"
+    )
+    assert offenders == [], (
+        "Multiple scheduled NBA PMF delivery writers detected. Only "
+        "nba_pmf_delivery.yml may schedule delivery work. Offenders: "
+        f"{offenders}"
+    )
+
+
 def test_cleanup_rebase_state_defined_in_every_patched_step(workflow_text):
     """The helper definitions must appear once per patched step body.
 

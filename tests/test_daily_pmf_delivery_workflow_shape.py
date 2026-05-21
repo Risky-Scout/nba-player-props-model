@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
 
 WORKFLOW = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "daily_pmf_delivery.yml"
 
@@ -91,4 +92,42 @@ def test_core_upload_is_ordered_before_woo_dashboard_step(workflow_text):
     assert core_idx < woo_idx, (
         "core upload must precede WoO dashboard step so it captures the bundle "
         "before any render-contract failure"
+    )
+
+
+def test_daily_pmf_delivery_workflow_has_no_schedule_trigger(workflow_text):
+    """Legacy daily pipeline must not be a scheduled writer.
+
+    The canonical ``nba_pmf_delivery.yml`` is the only scheduled writer
+    of ``deliveries/``, ``public_export/``, and related artifacts. The
+    legacy ``daily_pmf_delivery.yml`` is retained for manual backfills
+    (``workflow_dispatch``) and as a ``workflow_run`` consumer only.
+    Regression-lock against the parent audit's
+    TWO_SCHEDULED_WRITERS_DETECTED conclusion (2026-05-20).
+    """
+
+    wf = yaml.safe_load(workflow_text)
+    # PyYAML 1.1 parses the bare YAML key ``on:`` as the Python boolean
+    # ``True`` because YAML 1.1 treats ``on`` as a truthy alias. Reach
+    # under either key so the test stays robust if pyyaml is later
+    # bumped to a 1.2-compliant loader.
+    triggers = wf.get("on") if "on" in wf else wf.get(True)
+    if isinstance(triggers, list):
+        trigger_keys = set(triggers)
+    elif isinstance(triggers, dict):
+        trigger_keys = set(triggers.keys())
+    else:
+        trigger_keys = {triggers}
+    assert "schedule" not in trigger_keys, (
+        "daily_pmf_delivery.yml has a `schedule:` trigger; only the "
+        "canonical nba_pmf_delivery.yml may be a scheduled writer. "
+        f"Found triggers: {sorted(map(str, trigger_keys))}"
+    )
+    assert "workflow_dispatch" in trigger_keys, (
+        "workflow_dispatch must remain available for manual backfills; "
+        f"found triggers: {sorted(map(str, trigger_keys))}"
+    )
+    assert "workflow_run" in trigger_keys, (
+        "workflow_run chain must remain available; "
+        f"found triggers: {sorted(map(str, trigger_keys))}"
     )

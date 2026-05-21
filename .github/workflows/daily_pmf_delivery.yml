@@ -58,21 +58,14 @@ on:
     workflows: ["NBA Props Model — Daily Pipeline"]
     types: [completed]
     branches: [main]
-  schedule:
-    # WoO monetization (early/afternoon).
-    - cron: '0 15 * * *'
-    - cron: '0 18 * * *'
-    - cron: '0 20 * * *'
-    # Derek near-lineup window — first publishable evaluation snapshot
-    # at 22:25 UTC, then every 15 min through 03:10 UTC.
-    - cron: '25 22 * * *'
-    - cron: '40,55 22 * * *'
-    - cron: '10,25,40,55 23,0,1,2 * * *'
-    - cron: '10 3 * * *'
-    # Late close lock.
-    - cron: '25 3 * * *'
-    # After-game scoring (yesterday's slate).
-    - cron: '30 6 * * *'
+  # TWO_SCHEDULED_WRITERS_DETECTED audit (2026-05-20): the canonical
+  # "NBA PMF Delivery" workflow (.github/workflows/nba_pmf_delivery.yml)
+  # is now the only scheduled writer of deliveries/, public_export/,
+  # and related artifacts. The legacy `schedule:` block was removed
+  # from this workflow to stop dual scheduled writers from overwriting
+  # each other's outputs on main. This workflow is retained for manual
+  # backfills via workflow_dispatch and as a workflow_run consumer of
+  # "NBA Props Model — Daily Pipeline".
   workflow_dispatch:
     inputs:
       mode:
