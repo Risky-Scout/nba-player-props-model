@@ -197,7 +197,7 @@ def _no_eligible_dates_payload(
             "promotion_status": "MARKET_SUPERIORITY_CONTRACT_BLOCKED",
         }
         soft_marker = (
-            "PHASE8_MARKET_EVAL_NOT_WIRED_PROVISIONAL_BLOCK "
+            "PHASE8_MARKET_SUPERIORITY_NOT_PROVEN_NO_ELIGIBLE_DATES "
             "reason=no_eligible_event_market_backtest_dates "
             "claim_allowed=false market_superiority_status=not_proven "
             "market_eval_status=not_proven_no_eligible_dates "

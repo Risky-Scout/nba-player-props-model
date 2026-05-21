@@ -104,7 +104,7 @@ def test_soft_payload_with_provisional_block(run_diagnostics_module):
     assert fields["strict_contract_result"] == "blocked_provisional"
     assert fields["promotion_status"] == "MARKET_SUPERIORITY_CONTRACT_BLOCKED"
 
-    assert "PHASE8_MARKET_EVAL_NOT_WIRED_PROVISIONAL_BLOCK" in marker
+    assert "PHASE8_MARKET_SUPERIORITY_NOT_PROVEN_NO_ELIGIBLE_DATES" in marker
     assert "reason=no_eligible_event_market_backtest_dates" in marker
     assert "claim_allowed=false" in marker
     assert "market_superiority_status=not_proven" in marker
@@ -196,22 +196,71 @@ def test_strict_marker_is_not_drifted(run_diagnostics_module):
     )
 
 
+def _collect_run_warnings_critical_patterns() -> list[tuple[str, str]]:
+    """Dynamically extract the CRITICAL_PATTERNS list from
+    ``scripts/collect_run_warnings.py`` so the regression check covers
+    *every* pattern the collector uses, not just the narrow
+    ``_FAIL`` one.
+    """
+    import ast
+
+    src = COLLECTOR_PATH.read_text(encoding="utf-8")
+    tree = ast.parse(src)
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "CRITICAL_PATTERNS":
+                    if not isinstance(node.value, ast.List):
+                        raise AssertionError(
+                            "CRITICAL_PATTERNS shape changed; static extractor must "
+                            "be updated"
+                        )
+                    out: list[tuple[str, str]] = []
+                    for elt in node.value.elts:
+                        if not isinstance(elt, ast.Tuple) or len(elt.elts) != 2:
+                            raise AssertionError(
+                                "CRITICAL_PATTERNS entry shape changed; "
+                                "static extractor must be updated"
+                            )
+                        pat_node, name_node = elt.elts
+                        if not (isinstance(pat_node, ast.Constant)
+                                and isinstance(name_node, ast.Constant)):
+                            raise AssertionError(
+                                "CRITICAL_PATTERNS entry must be (str, str) literals"
+                            )
+                        out.append((str(pat_node.value), str(name_node.value)))
+                    return out
+    raise AssertionError("CRITICAL_PATTERNS not found in collect_run_warnings.py")
+
+
 def test_soft_marker_is_not_flagged_as_critical(run_diagnostics_module):
-    """The soft marker must not match
-    ``collect_run_warnings.py``'s ``PHASE8_MARKET_EVAL_NOT_WIRED_FAIL``
-    critical pattern. Otherwise the warning collector would
-    erroneously flag a not-proven verdict as a critical failure.
+    """The soft marker must not match ANY pattern in
+    ``collect_run_warnings.py``'s ``CRITICAL_PATTERNS`` (matched with
+    ``re.I`` per line 35 of the collector). Otherwise the warning
+    collector would erroneously flag a not-proven verdict as a
+    critical failure — partially defeating the soft-pass semantics.
+
+    Bugbot regression: the prior version of this test only checked the
+    narrow ``PHASE8_MARKET_EVAL_NOT_WIRED_FAIL`` pattern and missed
+    the broader case-insensitive ``market_eval_not_wired`` pattern at
+    line 14 of the collector.
     """
     _fields, soft_marker, soft_pass = run_diagnostics_module._no_eligible_dates_payload(
         allow_provisional_block=True
     )
     assert soft_pass is True
 
-    pattern = re.compile(r"PHASE8_MARKET_EVAL_NOT_WIRED_FAIL\b")
-    assert not pattern.search(soft_marker), (
-        "soft marker would be flagged as critical by collect_run_warnings.py: "
-        f"{soft_marker!r}"
-    )
+    patterns = _collect_run_warnings_critical_patterns()
+    assert patterns, "CRITICAL_PATTERNS unexpectedly empty"
+
+    for pat, name in patterns:
+        compiled = re.compile(pat, re.I)
+        match = compiled.search(soft_marker)
+        assert match is None, (
+            f"soft marker collides with collect_run_warnings.py critical "
+            f"pattern {name!r} (regex {pat!r}, re.I): "
+            f"matched substring {match.group(0)!r} in {soft_marker!r}"
+        )
 
 
 def test_eligible_dates_path_still_runs_market_eval():
