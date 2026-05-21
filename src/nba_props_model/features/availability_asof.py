@@ -245,26 +245,28 @@ class AvailabilityBuilder:
     def _resolve_injury_player_ids(self, cutoff_date: str) -> pd.DataFrame:
         """Add player_id to injury reports with report_date <= cutoff_date.
 
-        Resolution is by normalized name; tie-breaks prefer the player
-        whose most recent game (strictly before cutoff_date) is latest.
-        Unresolved rows get player_id = -1.
+        Resolution uses normalized name plus injury-report team context.
+        Ambiguous or unmatched rows get player_id = -1.
         """
         mask = self.injury_reports["report_date"] <= cutoff_date
         ir = self.injury_reports.loc[mask].copy()
 
-        # Build a name -> (most-recent-pid, last-game-date) index restricted
-        # to games strictly before cutoff_date.
         gs = self.game_stats[self.game_stats["game_date"] < cutoff_date]
         if gs.empty:
             ir["player_id"] = -1
             return ir
-        recent = (
-            gs.sort_values("game_date", kind="mergesort")
-              .groupby("name_norm", as_index=False)
-              .agg(player_id=("player_id", "last"), last_date=("game_date", "last"))
-        )
-        name_to_pid = dict(zip(recent["name_norm"], recent["player_id"]))
-        ir["player_id"] = ir["name_norm"].map(name_to_pid).fillna(-1).astype(int)
+
+        from nba_props_model.data.injury_player_identity import InjuryPlayerIdentityIndex
+
+        index = InjuryPlayerIdentityIndex(gs, slate_date=cutoff_date, name_column="name_norm")
+        resolved: list[int] = []
+        for _, row in ir.iterrows():
+            result = index.resolve(
+                str(row.get("name_norm", "")).lower().strip(),
+                team=str(row.get("team") or ""),
+            )
+            resolved.append(int(result.player_id) if result.outcome == "resolved" and result.player_id is not None else -1)
+        ir["player_id"] = resolved
         return ir
 
     # ── core feature build ─────────────────────────────────────────────
@@ -336,13 +338,17 @@ class AvailabilityBuilder:
         if gs.empty:
             ir["player_id"] = -1
             return ir
-        recent = (
-            gs.sort_values("game_date", kind="mergesort")
-              .groupby("name_norm", as_index=False)
-              .agg(player_id=("player_id", "last"))
-        )
-        name_to_pid = dict(zip(recent["name_norm"], recent["player_id"]))
-        ir["player_id"] = ir["name_norm"].map(name_to_pid).fillna(-1).astype(int)
+        from nba_props_model.data.injury_player_identity import InjuryPlayerIdentityIndex
+
+        index = InjuryPlayerIdentityIndex(gs, slate_date=game_date, name_column="name_norm")
+        resolved: list[int] = []
+        for _, row in ir.iterrows():
+            result = index.resolve(
+                str(row.get("name_norm", "")).lower().strip(),
+                team=str(row.get("team") or ""),
+            )
+            resolved.append(int(result.player_id) if result.outcome == "resolved" and result.player_id is not None else -1)
+        ir["player_id"] = resolved
         return ir
 
     def _lookup_status(

@@ -397,7 +397,7 @@ def _build_pipeline_state(target_date: str) -> dict:
         "bdl_plus_nba_official" if nba_report
         else ("bdl_injuries_only" if injury_raw else "none")
     )
-    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
+    injury_map = merge_injury_sources(injury_map, nba_report, stats_df, slate_date=target_date)
     inactive_ids = {
         int(pid) for pid, info in injury_map.items()
         if str(info.get("status", "")).lower().strip() in _INACTIVE_STATUSES

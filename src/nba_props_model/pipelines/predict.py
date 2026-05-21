@@ -1111,7 +1111,7 @@ def main(argv=None):
         repo_root=REPO_ROOT,
     )
     # Merge with NBA official injury report (more current, covers game-time decisions)
-    injury_map = merge_injury_sources(injury_map, nba_report, stats_df)
+    injury_map = merge_injury_sources(injury_map, nba_report, stats_df, slate_date=target_date)
     INACTIVE_STATUSES = {"out", "out for season", "injured", "inactive", "doubtful"}
     inactive_player_ids = {
         pid for pid, info in injury_map.items()

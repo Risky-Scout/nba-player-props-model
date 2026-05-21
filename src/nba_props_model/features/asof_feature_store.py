@@ -279,12 +279,14 @@ def _populate_availability(snapshot: pd.DataFrame, avail: pd.DataFrame) -> pd.Da
     if "availability_confidence" in defaulted:
         print(
             "AVAILABILITY_CONFIDENCE_DEFAULTED "
-            f"rows={len(out)} reason=column_missing_after_merge"
+            f"rows={len(out)} defaulted_rows={len(out)} "
+            f"reason=column_missing_or_all_null_after_merge"
         )
     if defaulted:
         print(
             "AVAILABILITY_FEATURE_SCHEMA_MISSING "
-            f"missing={defaulted} present={[c for c in _AVAILABILITY_COLUMN_DEFAULTS if c not in defaulted]}"
+            f"rows={len(out)} missing={defaulted} "
+            f"present={[c for c in _AVAILABILITY_COLUMN_DEFAULTS if c not in defaulted]}"
         )
 
     out["injury_status_current"] = out["availability_status"].fillna("source_unavailable")
