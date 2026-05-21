@@ -513,7 +513,7 @@ jobs:
           python3 scripts/verify_no_unexplained_calibration_nans.py \
             --meta "artifacts/docs/diagnostics_${D}.meta.json"
 
-          python3 scripts/verify_role_bucket_contract.py
+          python3 scripts/verify_role_bucket_contract.py --date "$D"
           python3 scripts/verify_combo_role_calibration_contract.py || true
 
       - name: Commit Phase 8 artifacts
