@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+import subprocess
+import tempfile
 
 import pytest
 import yaml
@@ -320,6 +322,52 @@ def _assert_availability_preflight_not_suppressed(step: dict):
             )
 
 
+def _assert_bash_parseable(run_text: str):
+    with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as f:
+        f.write("set -euo pipefail\n")
+        f.write(run_text)
+        tmp = f.name
+    try:
+        proc = subprocess.run(
+            ["bash", "-n", tmp],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert proc.returncode == 0, (
+            f"bash -n failed for availability preflight block:\n"
+            f"stdout:\n{proc.stdout}\n"
+            f"stderr:\n{proc.stderr}"
+        )
+    finally:
+        Path(tmp).unlink(missing_ok=True)
+
+
+def _assert_no_indented_heredoc_terminator(run_text: str):
+    """If heredocs are used, terminators must be unindented shell tokens."""
+
+    for idx, line in enumerate(run_text.splitlines()):
+        if "<<'PY'" in line or "<<PY" in line:
+            terminator_lines = run_text.splitlines()[idx + 1 :]
+            assert any(l == "PY" for l in terminator_lines), (
+                "heredoc opener found but no exact unindented PY terminator"
+            )
+            assert not any(l.startswith("  PY") or l.startswith("\tPY") for l in terminator_lines), (
+                "heredoc PY terminator must not be indented"
+            )
+
+
+def test_heredoc_guard_rejects_indented_or_missing_terminator():
+    with pytest.raises(AssertionError):
+        _assert_no_indented_heredoc_terminator(
+            "python3 - <<'PY'\nprint('x')\n  PY\n"
+        )
+    with pytest.raises(AssertionError):
+        _assert_no_indented_heredoc_terminator(
+            "python3 - <<'PY'\nprint('x')\n"
+        )
+
+
 def test_availability_preflight_in_jobs_uses_required_command_contract(workflow):
     """Predict and delivery jobs must preflight with delivery_date-driven slate-date."""
 
@@ -387,6 +435,8 @@ def test_model_chain_preflight_refreshes_availability_before_training_table_path
     avail_idx, step = _availability_preflight_step(steps)
     _assert_availability_preflight_command_contract(step)
     _assert_availability_preflight_not_suppressed(step)
+    _assert_no_indented_heredoc_terminator(step.get("run", "") or "")
+    _assert_bash_parseable(step.get("run", "") or "")
 
     nightly_idx = _first_step_index_with_run_marker(
         steps, "scripts/run_nightly_training_and_calibration.py"
@@ -415,6 +465,8 @@ def test_phase8_preflight_refreshes_availability_before_build_training_table(wor
     avail_idx, step = _availability_preflight_step(steps)
     _assert_availability_preflight_command_contract(step)
     _assert_availability_preflight_not_suppressed(step)
+    _assert_no_indented_heredoc_terminator(step.get("run", "") or "")
+    _assert_bash_parseable(step.get("run", "") or "")
 
     build_table_idx = _first_step_index_with_run_marker(
         steps, "python3 scripts/train.py --build-table-only"
