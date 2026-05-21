@@ -1,6 +1,6 @@
 {
   "schema_version": "m8_6m_v1",
-  "created_at_utc": "2026-05-20T23:57:28.286260+00:00",
+  "created_at_utc": "2026-05-21T00:19:35.738309+00:00",
   "date": "2026-05-20",
   "canonical_source_type": "MODEL_ONLY_TRUE_ATOM_PMF",
   "atom_pmf_policy": "atom_source_only_no_ladder_fallback",
@@ -14,7 +14,7 @@
     "pmf_active"
   ],
   "canonical_outputs": {
-    "rows": 156,
+    "rows": 144,
     "columns": [
       "player_id",
       "player_name",
@@ -73,7 +73,7 @@
     "model_only_parquet": "deliveries/2026-05-20/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "model_only_parquet_path": "deliveries/2026-05-20/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "parquet_path": "deliveries/2026-05-20/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-    "parquet_sha256": "33d500e30fa172f8e5e3190d0d8e37f9ad146df701fdb9d2c9b145b0e61c9b5f",
+    "parquet_sha256": "ed6ebb5898d03132fb1d510b403dce9ba9feb4b91ed73dd067de674dcdada3ac",
     "atom_pmf_present": true,
     "atom_pmf_column": "pmf_active",
     "atom_pmf_columns": [
@@ -93,7 +93,7 @@
       "stocks",
       "tov"
     ],
-    "players": 13
+    "players": 12
   },
   "forbidden_pmf_sources": [
     "ladder",

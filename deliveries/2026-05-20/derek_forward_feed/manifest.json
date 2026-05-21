@@ -1,24 +1,22 @@
 {
   "delivery_date": "2026-05-20",
   "run_mode": "t25",
-  "generated_at_utc": "2026-05-20T23:57:33Z",
-  "row_count": 1995,
+  "generated_at_utc": "2026-05-21T00:19:39Z",
+  "row_count": 2063,
   "schema": "m88_derek_unified_v1",
   "lineup_status": {
     "status": "near_tip_projected_lineup_snapshot",
     "snapshot_type_emitted": "near_tip",
-    "lineup_freshness_rollup": "projected=156",
+    "lineup_freshness_rollup": "projected=144",
     "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
-    "checked_at_utc": "2026-05-20T23:57:33Z"
+    "checked_at_utc": "2026-05-21T00:19:39Z"
   },
   "rotation_bench_filter": {
     "policy": "defensive_publication_guard_only",
     "strategy": "legacy_market_quoted_player_fallback",
-    "rows_dropped": 12,
-    "players_dropped_count": 1,
-    "players_dropped": [
-      "De'Aaron Fox"
-    ],
+    "rows_dropped": 0,
+    "players_dropped_count": 0,
+    "players_dropped": [],
     "rationale": "Primary player-universe gate is upstream projected rotation/minutes eligibility (M8.9). This filter is a defensive publication guard only. If it drops many rows, scripts/validate_daily_pmf_delivery.py upstream should have failed first."
   },
   "files": {
