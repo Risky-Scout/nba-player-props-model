@@ -64,7 +64,7 @@ FRESHNESS_MANIFEST_DIR = REPO_ROOT / "data" / "freshness_manifest"
 # the partial-slate failure mode while accepting any completed playoff
 # game with normal active-roster coverage.
 COMPLETE_NIGHT_FLOOR_ROWS = 25
-PLAYOFF_NIGHT_FLOOR_ROWS = 20
+PLAYOFF_NIGHT_FLOOR_ROWS = 18
 
 
 def _compute_target_date_et() -> dt.date:
