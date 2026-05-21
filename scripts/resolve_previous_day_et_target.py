@@ -64,6 +64,7 @@ FRESHNESS_MANIFEST_DIR = REPO_ROOT / "data" / "freshness_manifest"
 # the partial-slate failure mode while accepting any completed playoff
 # game with normal active-roster coverage.
 COMPLETE_NIGHT_FLOOR_ROWS = 25
+PLAYOFF_NIGHT_FLOOR_ROWS = 20
 
 
 def _compute_target_date_et() -> dt.date:
@@ -79,12 +80,26 @@ def _compute_target_date_et() -> dt.date:
     return (now_et - dt.timedelta(days=1)).date()
 
 
+def _rows_floor_for_target_date(target: dt.date) -> int:
+    """Return the minimum row floor for a target date.
+
+    Playoff slates (Apr-Jun) can legitimately have one-game nights with tight
+    rotations that land below the regular-season floor. Keep a lower playoff
+    floor to avoid false halts while still fail-closing on clearly partial data.
+    """
+    if target.month in (4, 5, 6):
+        return PLAYOFF_NIGHT_FLOOR_ROWS
+    return COMPLETE_NIGHT_FLOOR_ROWS
+
+
 def _check_completeness(target: dt.date) -> dict:
+    rows_floor = _rows_floor_for_target_date(target)
     findings: dict = {
         "target_date_et": target.isoformat(),
         "input_path": str(PLAYER_GAME_STATS.relative_to(REPO_ROOT)),
         "input_present": PLAYER_GAME_STATS.exists(),
         "rows_for_target": 0,
+        "rows_floor_for_target": rows_floor,
         "rows_for_target_meets_floor": False,
         "max_outcome_date_in_file": None,
         "max_outcome_meets_target": False,
@@ -104,7 +119,7 @@ def _check_completeness(target: dt.date) -> dict:
     findings["max_outcome_date_in_file"] = str(ds.max())
     rows_target = int((ds == target).sum())
     findings["rows_for_target"] = rows_target
-    findings["rows_for_target_meets_floor"] = rows_target >= COMPLETE_NIGHT_FLOOR_ROWS
+    findings["rows_for_target_meets_floor"] = rows_target >= rows_floor
     findings["max_outcome_meets_target"] = ds.max() >= target
 
     # Optional: check the per-date freshness manifest if present.
@@ -142,7 +157,7 @@ def _latest_safe_fallback() -> str | None:
         d = dt.date.fromisoformat(str(date_str))
         if d >= today:
             continue
-        if int(n) >= COMPLETE_NIGHT_FLOOR_ROWS:
+        if int(n) >= _rows_floor_for_target_date(d):
             return str(date_str)
     return None
 
