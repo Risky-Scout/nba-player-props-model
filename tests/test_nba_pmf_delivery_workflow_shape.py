@@ -1237,3 +1237,45 @@ def test_cleanup_rebase_state_defined_in_every_patched_step(workflow_text):
         f"expected {n} sync_and_push definitions (one per patched step); "
         f"found {sync_defs}"
     )
+
+def test_availability_preflight_blocks_execute_with_builder_stub():
+    """Availability preflight blocks must execute, not merely pass bash -n."""
+    import re
+    import subprocess
+
+    workflow = _load_workflow()
+    jobs = workflow["jobs"]
+
+    for job_name in [
+        "model_chain_training_calibration",
+        "phase8_pmf_calibration_diagnostics_market_eval",
+    ]:
+        steps = jobs[job_name]["steps"]
+        matches = [
+            step
+            for step in steps
+            if step.get("name") == "Preflight availability as-of table through delivery date"
+        ]
+        assert len(matches) == 1, f"{job_name} should have exactly one availability preflight"
+
+        run = matches[0].get("run", "")
+        run = run.replace("${{ needs.resolve_context.outputs.delivery_date }}", "2026-05-20")
+
+        # Do not run network/API/data builder in this test; verify shell + helper execution.
+        run = re.sub(
+            r"python3 scripts/build_availability_table\.py",
+            "echo python3 scripts/build_availability_table.py",
+            run,
+        )
+
+        bash_n = subprocess.run(["bash", "-n"], input=run, text=True, capture_output=True)
+        assert bash_n.returncode == 0, bash_n.stderr
+
+        executed = subprocess.run(
+            ["bash", "-euo", "pipefail", "-c", run],
+            text=True,
+            capture_output=True,
+        )
+        assert executed.returncode == 0, executed.stderr + executed.stdout
+        assert "scripts/build_availability_table.py" in executed.stdout
+        assert "|| true" not in run
