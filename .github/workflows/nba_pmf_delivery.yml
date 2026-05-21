@@ -322,6 +322,7 @@ jobs:
           git add data/player_game_stats.parquet \
                   artifacts/automation_health/player_game_stats_freshness_*.json \
                   artifacts/automation_health/player_game_stats_freshness_*.md \
+                  artifacts/automation_health/player_game_stats_freshness_check_*.json \
                   2>/dev/null || true
           git diff --staged --quiet && echo "No parquet changes to commit" && exit 0
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
@@ -378,11 +379,24 @@ jobs:
             artifacts/models \
             artifacts/model_diagnostics \
             artifacts/docs \
-            artifacts/automation_health \
             data/oof_pmfs.parquet \
             data/oof_combo_pmfs.parquet \
             data/oof_combo_pmfs.manifest.json \
             2>/dev/null || true
+
+          # player_game_stats_freshness_* paths are owned exclusively by
+          # "Commit refreshed player stats" above. Staging the whole
+          # automation_health tree here caused add/add rebase conflicts
+          # when concurrent scheduled runs both committed the same
+          # per-date freshness files (run 26226082429).
+          if [ -d artifacts/automation_health ]; then
+            git add artifacts/automation_health/
+            git reset HEAD -- \
+              artifacts/automation_health/player_game_stats_freshness_*.json \
+              artifacts/automation_health/player_game_stats_freshness_*.md \
+              artifacts/automation_health/player_game_stats_freshness_check_*.json \
+              2>/dev/null || true
+          fi
 
           git diff --staged --quiet && exit 0
 
@@ -514,11 +528,20 @@ jobs:
             artifacts/models/pmf_cal_meta.json \
             artifacts/docs \
             artifacts/model_diagnostics \
-            artifacts/automation_health \
             data/oof_pmfs.parquet \
             data/oof_combo_pmfs.parquet \
             data/oof_combo_pmfs.manifest.json \
             2>/dev/null || true
+
+          # Same freshness ownership rule as model-chain commit above.
+          if [ -d artifacts/automation_health ]; then
+            git add artifacts/automation_health/
+            git reset HEAD -- \
+              artifacts/automation_health/player_game_stats_freshness_*.json \
+              artifacts/automation_health/player_game_stats_freshness_*.md \
+              artifacts/automation_health/player_game_stats_freshness_check_*.json \
+              2>/dev/null || true
+          fi
 
           git diff --staged --quiet && exit 0
 

@@ -722,6 +722,67 @@ def test_self_commit_no_swallowed_push_failure(workflow_text):
     assert "sync_and_push || true" not in text
 
 
+def _step_body_after(workflow_text: str, step_name: str) -> str:
+    idx = workflow_text.index(step_name)
+    return workflow_text[idx : idx + 5000]
+
+
+def test_refresh_player_stats_commit_owns_freshness_automation_health(workflow_text):
+    """``player_game_stats_freshness_*`` paths are owned only by the
+    settled-stats refresh self-commit step.
+
+    Regression: run 26226082429 hit add/add rebase conflicts when
+    ``Commit training/calibration artifacts`` also staged the same
+    per-date freshness files via a broad ``artifacts/automation_health``
+    add.
+    """
+
+    body = _step_body_after(workflow_text, "Commit refreshed player stats")
+    for pattern in (
+        "player_game_stats_freshness_*.json",
+        "player_game_stats_freshness_*.md",
+        "player_game_stats_freshness_check_*.json",
+    ):
+        assert pattern in body, (
+            f"Commit refreshed player stats must stage {pattern!r}"
+        )
+
+
+def test_training_commit_excludes_freshness_from_automation_health(workflow_text):
+    """Training/calibration self-commit must not stage overlapping
+    ``player_game_stats_freshness_*`` automation_health files."""
+
+    body = _step_body_after(workflow_text, "Commit training/calibration artifacts")
+    assert "player_game_stats_freshness_* paths are owned exclusively" in body
+    assert "git reset HEAD --" in body
+    for pattern in (
+        "player_game_stats_freshness_*.json",
+        "player_game_stats_freshness_*.md",
+        "player_game_stats_freshness_check_*.json",
+    ):
+        assert pattern in body, (
+            f"training commit must unstage {pattern!r} after broad add"
+        )
+    # Must not use the old broad-only add line without the reset guard.
+    assert (
+        "artifacts/automation_health \\\n" not in body
+        and "\n            artifacts/automation_health \\" not in body
+    ), (
+        "training commit still uses bare artifacts/automation_health add"
+    )
+
+
+def test_phase8_commit_excludes_freshness_from_automation_health(workflow_text):
+    """Phase 8 self-commit uses the same freshness ownership guard."""
+
+    body = _step_body_after(workflow_text, "Commit Phase 8 artifacts")
+    assert "git reset HEAD --" in body
+    assert "player_game_stats_freshness_*.json" in body
+    assert (
+        "\n            artifacts/automation_health \\" not in body
+    ), "phase8 commit still uses bare artifacts/automation_health add"
+
+
 def test_only_canonical_nba_pmf_delivery_workflow_has_automatic_trigger():
     """At-most-one AUTOMATIC NBA-PMF delivery writer.
 
