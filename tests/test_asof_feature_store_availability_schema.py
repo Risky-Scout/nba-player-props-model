@@ -61,7 +61,7 @@ def test_populate_availability_defaults_confidence_when_missing(capsys):
     text = capsys.readouterr().out
     assert "AVAILABILITY_CONFIDENCE_DEFAULTED" in text
     assert "rows=3" in text
-    assert "reason=column_missing_after_merge" in text
+    assert "reason=column_missing_or_all_null_after_merge" in text
 
 
 def test_populate_availability_maps_confidence_alias():

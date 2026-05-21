@@ -1078,21 +1078,28 @@ def get_nba_injury_report(
     return res.injury_dict
 
 
-def merge_injury_sources(bdl_map: dict, nba_report: dict, stats_df) -> dict:
+def merge_injury_sources(
+    bdl_map: dict,
+    nba_report: dict,
+    stats_df,
+    *,
+    slate_date: Optional[str] = None,
+    merge_report_out: Optional[dict] = None,
+) -> dict:
     """
     Merge BDL injury map with NBA official report.
     NBA report takes priority — it's more current and comprehensive.
 
     Matching strategy (in order):
-      1. Exact lowercase full-name match against stats_df.player_name.
-      2. Strict first-initial + last-name match. The (initial, last_name)
-         key must resolve to exactly one player_id in stats_df. Ambiguous
-         (initial, last_name) collisions are dropped and warning-logged.
-         Last-name tokens are suffix-stripped (jr/sr/ii/iii/iv) before
-         building keys on BOTH sides. NBA-report names whose original
-         key carried such a suffix never fall through to the fallback
-         path, because the suffix indicates a specific person we cannot
-         safely disambiguate from a first-initial form alone.
+      1. Exact lowercase full-name match against stats_df.player_name when
+         unique in roster context (optionally scoped by injury-report team).
+         Without a mapped team label, only a globally unique exact full-name
+         match is allowed.
+      2. Strict first-initial + last-name match only when the injury-report
+         team label maps to a canonical NBA team and the key resolves to
+         exactly one player_id on that team's roster. Ambiguous collisions
+         are dropped and warning-logged separately from unmatched rows.
+         Initial+last matching is never attempted without mapped team context.
 
     Every entry in the returned dict carries a `source` field:
       - `nba_official` for entries enriched from the NBA official report.
@@ -1101,28 +1108,12 @@ def merge_injury_sources(bdl_map: dict, nba_report: dict, stats_df) -> dict:
 
     Returns enhanced injury_map {player_id: {status, reason, source, ...}}.
     """
-    SUFFIXES = {"jr", "sr", "ii", "iii", "iv"}
-
-    def _parse_name(name_lower: str):
-        """Return (first_initial, last_name, had_suffix).
-
-        (None, None, *) signals "cannot build a fallback key".
-        """
-        tokens = [t for t in name_lower.split() if t]
-        had_suffix = False
-        if len(tokens) >= 2 and tokens[-1] in SUFFIXES:
-            tokens = tokens[:-1]
-            had_suffix = True
-        if len(tokens) < 2:
-            return None, None, had_suffix
-        first_token = tokens[0]
-        if not first_token:
-            return None, None, had_suffix
-        first_initial = first_token[0]
-        last_name = " ".join(tokens[1:]).strip()
-        if not first_initial or not last_name:
-            return None, None, had_suffix
-        return first_initial, last_name, had_suffix
+    from nba_props_model.data.injury_player_identity import (
+        InjuryMergeReport,
+        InjuryPlayerIdentityIndex,
+        parse_injury_name,
+        resolve_injury_report_name,
+    )
 
     enhanced: dict = {}
     for pid, info in bdl_map.items():
@@ -1133,92 +1124,80 @@ def merge_injury_sources(bdl_map: dict, nba_report: dict, stats_df) -> dict:
         merged.setdefault("source", "bdl_injuries_api")
         enhanced[pid] = merged
 
+    report = InjuryMergeReport()
     if not nba_report:
+        if merge_report_out is not None:
+            merge_report_out.update(report.to_compact_dict())
         return enhanced
 
-    name_to_id: dict[str, int] = {}
-    name_to_id_initial: dict[str, int] = {}
-    ambiguous_initial_keys: set[str] = set()
-
-    if stats_df is not None and not stats_df.empty and 'player_name' in stats_df.columns:
-        for _, row in stats_df[['player_id', 'player_name']].drop_duplicates().iterrows():
-            raw_name = str(row['player_name']).lower().strip()
-            if not raw_name:
-                continue
-            try:
-                pid_val = int(row['player_id'])
-            except (TypeError, ValueError):
-                continue
-            name_to_id[raw_name] = pid_val
-            first_initial, last_name, _ = _parse_name(raw_name)
-            if first_initial is None or last_name is None:
-                continue
-            for key in (f"{first_initial}. {last_name}", f"{first_initial} {last_name}"):
-                if key in ambiguous_initial_keys:
-                    continue
-                existing = name_to_id_initial.get(key)
-                if existing is None:
-                    name_to_id_initial[key] = pid_val
-                elif existing != pid_val:
-                    logger.warning(
-                        f"injury_merge_ambiguous: key='{key}' candidate_pids=[{existing}, {pid_val}]"
-                    )
-                    ambiguous_initial_keys.add(key)
-                    del name_to_id_initial[key]
-
-    matched_exact = 0
-    matched_initial = 0
-    unmatched = 0
-    ambiguous_dropped = 0
+    index = InjuryPlayerIdentityIndex(stats_df, slate_date=slate_date)
+    report.alias_map_ambiguous_keys = index.alias_ambiguous_keys
+    report.total_nba_report_names = len(nba_report)
 
     for name_lower, info in nba_report.items():
-        pid = name_to_id.get(name_lower)
-        match_strategy: Optional[str] = None
-        fell_on_ambiguous = False
-        parsed_last_name = ""
+        if not isinstance(info, dict):
+            continue
+        result = resolve_injury_report_name(index, name_lower, info)
+        _, last_name, _ = parse_injury_name(name_lower)
 
-        if pid is not None:
-            match_strategy = "exact_full_name"
-            matched_exact += 1
+        if result.outcome == "ambiguous":
+            report.ambiguous_dropped += 1
+            report.ambiguous_names.append(name_lower)
+            logger.warning(
+                "injury_merge_ambiguous: nba_report_name=%r team=%r last_name=%r",
+                name_lower,
+                info.get("team"),
+                last_name or "",
+            )
+            continue
+
+        if result.outcome != "resolved" or result.player_id is None:
+            report.unmatched += 1
+            report.unmatched_names.append(name_lower)
+            if result.strategy == "unmapped_team_initial_last_not_allowed":
+                report.unmapped_team_initial_last_blocked += 1
+                report.unmapped_team_initial_last_names.append(name_lower)
+            logger.warning(
+                "injury_merge_unmatched: nba_report_name=%r team=%r last_name=%r strategy=%r",
+                name_lower,
+                info.get("team"),
+                last_name or "",
+                result.strategy or "",
+            )
+            continue
+
+        pid = int(result.player_id)
+        if result.strategy and result.strategy.startswith("exact"):
+            report.matched_exact += 1
         else:
-            first_initial, last_name, had_suffix = _parse_name(name_lower)
-            parsed_last_name = last_name or ""
-            if (not had_suffix) and first_initial and last_name:
-                for key in (f"{first_initial}. {last_name}", f"{first_initial} {last_name}"):
-                    if key in ambiguous_initial_keys:
-                        fell_on_ambiguous = True
-                        continue
-                    pid_candidate = name_to_id_initial.get(key)
-                    if pid_candidate is not None:
-                        pid = pid_candidate
-                        match_strategy = "initial_last_name"
-                        matched_initial += 1
-                        fell_on_ambiguous = False
-                        break
-
-            if pid is None:
-                if fell_on_ambiguous:
-                    ambiguous_dropped += 1
-                else:
-                    unmatched += 1
-                    logger.warning(
-                        f"injury_merge_unmatched: nba_report_name='{name_lower}' "
-                        f"last_name='{parsed_last_name}'"
-                    )
-                continue
+            report.matched_initial_last_name += 1
 
         enhanced[pid] = {
-            'status':  info['status'],
-            'reason':  info['reason'],
-            'source':  'nba_official',
+            "status": info.get("status", ""),
+            "reason": info.get("reason", ""),
+            "source": "nba_official",
         }
         logger.debug(
-            f"injury_merge_enriched: pid={pid} name='{name_lower}' strategy={match_strategy}"
+            "injury_merge_enriched: pid=%s name=%r strategy=%s team=%r",
+            pid,
+            name_lower,
+            result.strategy,
+            info.get("team"),
         )
 
     logger.info(
-        f"injury_merge_summary: total_nba_report_names={len(nba_report)} "
-        f"matched_exact={matched_exact} matched_initial_last_name={matched_initial} "
-        f"unmatched={unmatched} ambiguous_dropped={ambiguous_dropped}"
+        "injury_merge_summary: total_nba_report_names=%s "
+        "matched_exact=%s matched_initial_last_name=%s "
+        "unmatched=%s ambiguous_dropped=%s "
+        "unmapped_team_initial_last_blocked=%s alias_map_ambiguous=%s",
+        report.total_nba_report_names,
+        report.matched_exact,
+        report.matched_initial_last_name,
+        report.unmatched,
+        report.ambiguous_dropped,
+        report.unmapped_team_initial_last_blocked,
+        len(report.alias_map_ambiguous_keys),
     )
+    if merge_report_out is not None:
+        merge_report_out.update(report.to_compact_dict())
     return enhanced

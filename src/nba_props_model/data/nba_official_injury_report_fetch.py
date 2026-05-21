@@ -72,6 +72,7 @@ def _df_to_injury_dict(df: Any) -> dict[str, dict[str, str]]:
         name = str(row.get("Player Name", "")).strip()
         status = str(row.get("Current Status", "")).strip()
         reason = str(row.get("Reason", "")).strip()
+        team = str(row.get("Team", "")).strip()
         if not name or name == "nan":
             continue
         parts = name.split(",")
@@ -79,7 +80,10 @@ def _df_to_injury_dict(df: Any) -> dict[str, dict[str, str]]:
             name_lower = f"{parts[1].strip()} {parts[0].strip()}".lower()
         else:
             name_lower = name.lower()
-        injury_dict[name_lower] = {"status": status, "reason": reason}
+        payload: dict[str, str] = {"status": status, "reason": reason}
+        if team and team != "nan":
+            payload["team"] = team
+        injury_dict[name_lower] = payload
     return injury_dict
 
 
