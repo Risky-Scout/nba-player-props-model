@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-21T06:32:29+00:00",
+  "generated_at_utc": "2026-05-21T13:32:01+00:00",
   "required_through_date": "2026-05-19",
-  "max_game_date": "2026-05-19",
+  "max_game_date": "2026-05-20",
   "min_game_date": "2023-10-24",
-  "rows_total": 84262,
+  "rows_total": 84284,
   "rows_for_required_date": 19,
   "duplicate_key_rows": 0,
   "null_core_stats_on_required_date": {
