@@ -10,6 +10,7 @@ behavior. They are intentionally cheap so CI can run them on every PR.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 import pytest
 import yaml
@@ -263,6 +264,110 @@ def test_workflow_has_predict_daily_job(workflow):
     """Brief Phase 9: a dedicated ``predict_daily`` job exists."""
 
     assert "predict_daily" in workflow["jobs"]
+
+
+_AVAILABILITY_PREFLIGHT_CMD = (
+    'python3 scripts/build_availability_table.py --slate-date "$D" '
+    "--out data/player_availability_asof.parquet"
+)
+_AVAILABILITY_PREFLIGHT_DATE = (
+    'D="${{ needs.resolve_context.outputs.delivery_date }}"'
+)
+
+
+def _job_steps(workflow: dict, job_name: str) -> list[dict]:
+    return [s for s in workflow["jobs"][job_name]["steps"] if isinstance(s, dict)]
+
+
+def _first_step_index_with_run_marker(steps: list[dict], marker: str) -> int | None:
+    for i, step in enumerate(steps):
+        if marker in (step.get("run", "") or ""):
+            return i
+    return None
+
+
+def _availability_preflight_step(steps: list[dict]) -> tuple[int, dict]:
+    matches = [
+        (i, step)
+        for i, step in enumerate(steps)
+        if "scripts/build_availability_table.py" in (step.get("run", "") or "")
+    ]
+    assert matches, "availability preflight step not found"
+    assert len(matches) == 1, (
+        f"expected exactly one availability preflight step, found {len(matches)}"
+    )
+    return matches[0]
+
+
+def _assert_availability_preflight_command_contract(step: dict):
+    run_text = step.get("run", "") or ""
+    assert _AVAILABILITY_PREFLIGHT_DATE in run_text
+    assert _AVAILABILITY_PREFLIGHT_CMD in run_text
+    assert "build_availability_table.py --slate-date" in run_text
+    assert "build_availability_table.py || true" not in run_text
+    assert "--slate-date \"$D\"" in run_text
+    assert re.search(r"--slate-date\\s+\"20\\d\\d-\\d\\d-\\d\\d\"", run_text) is None, (
+        "availability preflight must not hardcode a date literal"
+    )
+
+
+def test_availability_preflight_in_jobs_uses_required_command_contract(workflow):
+    """Predict and delivery jobs must preflight with delivery_date-driven slate-date."""
+
+    for job_name in ("predict_daily", "delivery_build"):
+        _, step = _availability_preflight_step(_job_steps(workflow, job_name))
+        _assert_availability_preflight_command_contract(step)
+        assert step.get("name", "") == "Preflight slate-date availability table"
+
+
+def test_availability_preflight_precedes_predict_daily_paths(workflow):
+    """predict_daily availability preflight must run before scripts/predict.py."""
+
+    steps = _job_steps(workflow, "predict_daily")
+    avail_idx, _ = _availability_preflight_step(steps)
+    predict_idx = _first_step_index_with_run_marker(steps, "scripts/predict.py")
+    assert predict_idx is not None, "predict_daily missing scripts/predict.py step"
+    assert avail_idx < predict_idx, (
+        "predict_daily availability preflight must precede scripts/predict.py"
+    )
+
+
+def test_availability_preflight_precedes_delivery_pipeline_and_markers(workflow):
+    """delivery_build preflight must run before pipeline and feature/stat-grid markers."""
+
+    steps = _job_steps(workflow, "delivery_build")
+    avail_idx, _ = _availability_preflight_step(steps)
+
+    pipeline_markers = (
+        "scripts/run_daily_delivery_pipeline.py",
+        "scripts/build_daily_pmf_delivery.py",
+    )
+    pipeline_indices = [
+        _first_step_index_with_run_marker(steps, marker)
+        for marker in pipeline_markers
+    ]
+    pipeline_indices = [i for i in pipeline_indices if i is not None]
+    assert pipeline_indices, (
+        "delivery_build missing run_daily_delivery_pipeline/build_daily_pmf_delivery"
+    )
+    assert all(avail_idx < i for i in pipeline_indices), (
+        "delivery_build availability preflight must precede delivery pipeline invocation"
+    )
+
+    optional_same_day_markers = (
+        "build_stat_grid_pmfs",
+        "build_player_prop_feature_snapshot",
+        "build_daily_pmf_delivery",
+        "scripts/build_stat_grid_pmfs.py",
+        "scripts/build_player_prop_feature_snapshot.py",
+        "scripts/build_daily_pmf_delivery.py",
+    )
+    for marker in optional_same_day_markers:
+        marker_idx = _first_step_index_with_run_marker(steps, marker)
+        if marker_idx is not None:
+            assert avail_idx < marker_idx, (
+                f"availability preflight must precede same-day marker {marker!r}"
+            )
 
 
 def test_predict_daily_uses_resolver_outputs(workflow):

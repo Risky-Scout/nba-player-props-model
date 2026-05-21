@@ -781,6 +781,11 @@ jobs:
           fi
           python3 scripts/predictions_readiness_gate.py "${ARGS[@]}"
 
+      - name: Preflight slate-date availability table
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
+
       - name: Run scripts/predict.py
         if: steps.predict_gate.outputs.should_proceed == 'true'
         env:
@@ -909,6 +914,11 @@ jobs:
             ARGS+=("--force-run-predict")
           fi
           python3 scripts/predictions_readiness_gate.py "${ARGS[@]}"
+
+      - name: Preflight slate-date availability table
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
 
       - name: Run daily PMF delivery pipeline
         if: steps.predict_gate.outputs.should_proceed == 'true'
