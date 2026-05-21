@@ -213,6 +213,11 @@ jobs:
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
           python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date ${{ steps.d.outputs.date }} \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -479,6 +484,11 @@ jobs:
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
           python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date ${{ steps.d.outputs.date }} \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -631,6 +641,11 @@ jobs:
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
           python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date ${{ steps.d.outputs.date }} \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -831,6 +846,11 @@ jobs:
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
           python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date ${{ steps.d.outputs.date }} \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -997,6 +1017,11 @@ jobs:
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
           python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date ${{ steps.d.outputs.date }} \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           if ! git add deliveries/${{ steps.d.outputs.date }} \
@@ -1198,6 +1223,11 @@ jobs:
             --delivery-date ${{ steps.d.outputs.date }} \
             --require-both-sides false
           python3 scripts/strip_empty_delivery_columns.py --date ${{ steps.d.outputs.date }} --write
+          python3 scripts/round_delivery_csv_numeric_display.py \
+            --date ${{ steps.d.outputs.date }} \
+            --places 4 \
+            --write \
+            --preserve derek_forward_feed/derek_unique_props_summary.csv
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
           # Phase 13K: also commit the new after-game scoring artifacts +
