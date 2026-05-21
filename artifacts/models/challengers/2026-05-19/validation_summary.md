@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-21T06:32:39+00:00 |
+| Generated (UTC) | 2026-05-21T13:32:10+00:00 |
 | Promote | no |
 | Reason | gate_failed:nll_improves_or_non_worse |
 | Champion model_version | challenger-2026-04-30 |
@@ -14,7 +14,7 @@
 ## Gates passed
 
 - pmf_validity: ok
-- no_future_leakage: dry_run future_rows_excluded=0 error=None
+- no_future_leakage: dry_run future_rows_excluded=22 error=None
 - sufficient_calibration_samples: total_samples_in_calibration_window=177324
 - derek_feed_compatibility: ok
 - woo_export_compatibility: ok
