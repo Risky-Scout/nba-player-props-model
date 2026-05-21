@@ -593,6 +593,43 @@ def test_phase8_requires_model_chain_success_not_always(workflow):
     assert "needs.model_chain_training_calibration.result == 'success'" in cond
 
 
+def test_phase8_oof_step_uses_explicit_stl_blk_allowlist(workflow):
+    """Phase 8 OOF folds must include stl/blk so stocks combo can be built."""
+
+    steps = _job_steps(workflow, "phase8_pmf_calibration_diagnostics_market_eval")
+    phase8_idx = _first_step_index_with_run_marker(steps, "scripts/calibrate_pmf.py")
+    assert phase8_idx is not None, "phase8 calibration fold step missing"
+    run_text = steps[phase8_idx].get("run", "") or ""
+
+    assert "--core-props-only" not in run_text
+    assert "--allowed-stats pts,reb,ast,tov,fg3m,stl,blk" in run_text
+    assert "stl" in run_text and "blk" in run_text
+
+
+def test_phase8_combo_pipeline_keeps_stocks_path_unsuppressed(workflow):
+    """stocks coverage must come from real combo build/calibration, not hidden warnings."""
+
+    steps = _job_steps(workflow, "phase8_pmf_calibration_diagnostics_market_eval")
+    phase8_idx = _first_step_index_with_run_marker(steps, "scripts/calibrate_pmf.py")
+    assert phase8_idx is not None, "phase8 calibration fold step missing"
+    run_text = steps[phase8_idx].get("run", "") or ""
+
+    assert "scripts/build_combo_oof_pmfs_from_base_oof.py" in run_text
+    assert "scripts/fit_combo_pmf_calibrators.py" in run_text
+    for line in run_text.splitlines():
+        if "build_combo_oof_pmfs_from_base_oof.py" in line:
+            assert "|| true" not in line
+        if "fit_combo_pmf_calibrators.py" in line:
+            assert "|| true" not in line
+
+
+def test_phase8_verifier_block_keeps_stocks_contract_check_visible(workflow_text):
+    """When stl/blk are modeled, stocks remains an expected combo contract surface."""
+
+    body = _step_body_after(workflow_text, _PHASE8_DIAGNOSTICS_STEP)
+    assert "verify_combo_role_calibration_contract.py" in body
+
+
 def test_phase13_requires_phase8_success_not_always(workflow):
     """Brief Phase 8: Phase 13 chain may not run via ``always()``."""
 

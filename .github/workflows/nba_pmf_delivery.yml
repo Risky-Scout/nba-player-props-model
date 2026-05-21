@@ -571,7 +571,7 @@ jobs:
               --max-folds "$MAX_FOLDS" \
               --emit-fold-oof "artifacts/folds/fold_${FOLD}.parquet" \
               --skip-final-fit \
-              --core-props-only
+              --allowed-stats pts,reb,ast,tov,fg3m,stl,blk
           done
 
           python3 scripts/calibrate_pmf.py \
