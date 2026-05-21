@@ -136,6 +136,84 @@ def test_workflow_resolver_passes_all_required_inputs(workflow_text):
         assert flag in workflow_text, f"resolver call missing flag: {flag}"
 
 
+# ── Resolve-context tip-time recovery plumbing ──────────────────────
+#
+# Phase 13U upstream tip-time recovery (follow-on to PR #31's
+# loud-failure path): `resolve_context` must install `requirements.txt`
+# BEFORE the resolver step (so the resolver's recovery hook can
+# subprocess out to `scripts/resolve_game_start_times.py` and use
+# pandas/pyarrow to read predictions parquet), AND must expose
+# `BDL_API_KEY` / `ODDS_API_KEY` on the resolver step's env so the
+# subprocess inherits them.
+
+
+def test_resolve_context_installs_requirements_before_resolver(workflow):
+    """``resolve_context`` must run ``pip install -r requirements.txt``
+    in a step that precedes the resolver invocation.
+
+    Required so the resolver's tip-time recovery hook can spawn the
+    Phase 13U generator (`scripts/resolve_game_start_times.py`),
+    which lazy-imports pandas for the predictions-parquet cascade.
+    """
+
+    steps = workflow["jobs"]["resolve_context"]["steps"]
+    install_idx = None
+    resolve_idx = None
+    for i, step in enumerate(steps):
+        if not isinstance(step, dict):
+            continue
+        run_text = step.get("run", "") or ""
+        if "pip install -r requirements.txt" in run_text and install_idx is None:
+            install_idx = i
+        if (
+            "scripts/resolve_nba_pmf_schedule.py" in run_text
+            and resolve_idx is None
+        ):
+            resolve_idx = i
+    assert install_idx is not None, (
+        "resolve_context is missing a `pip install -r requirements.txt` "
+        "step required for the tip-time recovery hook"
+    )
+    assert resolve_idx is not None, (
+        "resolve_context is missing the schedule resolver step"
+    )
+    assert install_idx < resolve_idx, (
+        f"requirements install (idx {install_idx}) must precede the "
+        f"resolver invocation (idx {resolve_idx})"
+    )
+
+
+def test_resolve_context_exposes_tip_time_secrets_to_resolver(workflow):
+    """The resolver step's ``env:`` must include both ``BDL_API_KEY``
+    and ``ODDS_API_KEY``, so the recovery hook's subprocess inherits
+    them when hitting the real BDL / Odds API endpoints.
+    """
+
+    steps = workflow["jobs"]["resolve_context"]["steps"]
+    resolver_step = None
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        run_text = step.get("run", "") or ""
+        if "scripts/resolve_nba_pmf_schedule.py" in run_text:
+            resolver_step = step
+            break
+    assert resolver_step is not None, "resolver step not found"
+    env_block = resolver_step.get("env") or {}
+    assert "BDL_API_KEY" in env_block, (
+        "resolver step must expose BDL_API_KEY for tip-time recovery"
+    )
+    assert "ODDS_API_KEY" in env_block, (
+        "resolver step must expose ODDS_API_KEY for tip-time recovery"
+    )
+    # Values must be secret references — never hardcoded.
+    for key in ("BDL_API_KEY", "ODDS_API_KEY"):
+        value = str(env_block[key])
+        assert "secrets." in value, (
+            f"{key} must be sourced from `secrets.` reference, not a literal"
+        )
+
+
 # ── Concurrency posture ─────────────────────────────────────────────
 
 

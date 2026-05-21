@@ -163,8 +163,27 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      # Phase 13U upstream tip-time recovery requires `pandas`/`pyarrow`
+      # so the resolver's recovery hook can subprocess out to
+      # `scripts/resolve_game_start_times.py` and let that script read
+      # `predictions/all_props_<date>.parquet` as part of its cascade.
+      # The resolver itself remains stdlib-only.
+      - name: Install requirements (for tip-time recovery generator)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
       - id: resolve
         name: Resolve schedule/date/mode/gates (Python source of truth)
+        env:
+          # Exposed so the resolver's upstream tip-time recovery hook
+          # (subprocess to scripts/resolve_game_start_times.py) can hit
+          # the real BDL / Odds API endpoints when the cached
+          # artifacts/live_schedule/<date>/game_start_times.json is
+          # absent. The resolver itself does not consume these; only
+          # the generator subprocess it spawns does.
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           set -euo pipefail
           python3 scripts/resolve_nba_pmf_schedule.py \
