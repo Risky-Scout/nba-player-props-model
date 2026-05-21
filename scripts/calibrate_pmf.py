@@ -822,6 +822,15 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--allowed-stats",
+        default=None,
+        help=(
+            "Comma-separated stat allowlist for fold refits/OOF generation "
+            "(for example: pts,reb,ast,tov,fg3m,stl,blk). Cannot be "
+            "combined with --core-props-only."
+        ),
+    )
+    parser.add_argument(
         "--val-rows-limit", type=int, default=None,
         help=(
             "Profiling-only: cap the number of validation rows scored per "
@@ -908,13 +917,26 @@ def main() -> None:
         parser.error("--aggregate-mode requires --aggregate-oofs")
     if args.aggregate_mode and args.fold_index is not None:
         parser.error("--aggregate-mode is incompatible with --fold-index")
+    if args.core_props_only and args.allowed_stats:
+        parser.error("--core-props-only may not be combined with --allowed-stats")
     logger.info(
         "CLI args: fold_index=%s max_folds=%s core_props_only=%s val_rows_limit=%s aggregate_mode=%s",
         args.fold_index, args.max_folds, args.core_props_only,
         args.val_rows_limit, args.aggregate_mode,
     )
     logger.info("CLI args: pmf_draws=%d", args.pmf_draws)
-    core_only_allowed = {"pts", "reb", "ast", "fg3m", "tov"} if args.core_props_only else None
+    if args.allowed_stats:
+        allowed_stats = {
+            s.strip().lower() for s in str(args.allowed_stats).split(",") if s.strip()
+        }
+    elif args.core_props_only:
+        allowed_stats = {"pts", "reb", "ast", "fg3m", "tov"}
+    else:
+        allowed_stats = None
+    logger.info(
+        "CLI args: allowed_stats=%s",
+        sorted(allowed_stats) if allowed_stats else None,
+    )
 
     start = time.time()
     logger.info("=" * 60)
@@ -1131,7 +1153,7 @@ def main() -> None:
                 fold_start=fold_start, stats_df=stats_df,
                 availability_df=availability_df, training_df=training_df,
                 fold_artifact_dir=fold_dir,
-                allowed_stats=core_only_allowed,
+                allowed_stats=allowed_stats,
             )
 
             # Generate OOF PMFs on validation rows.
@@ -1164,7 +1186,7 @@ def main() -> None:
             fold_out = _generate_fold_pmfs(
                 val_rows=val_rows, stats_df=stats_df,
                 availability_df=availability_df, fold_artifact_dir=fold_dir,
-                allowed_stats=core_only_allowed,
+                allowed_stats=allowed_stats,
                 fold_index=i,
                 pmf_draws=args.pmf_draws,
                 fg3m_val_rows=fg3m_val_rows,
