@@ -763,6 +763,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Preflight slate-date availability table
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
+
       - name: Predictions readiness gate (force-run if requested)
         id: predict_gate
         env:
@@ -868,6 +873,11 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Preflight slate-date availability table
+        run: |
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
 
       - name: Note existing Derek unique summary hash before delivery
         id: unique_before
