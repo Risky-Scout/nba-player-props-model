@@ -148,6 +148,76 @@ DOMAIN_FOR_STAT = {
 }
 
 
+def _no_eligible_dates_payload(
+    allow_provisional_block: bool,
+) -> tuple[dict, str, bool]:
+    """Build the em_payload fields and log marker for the empty-eligibility branch.
+
+    When the event-market backtest inventory contains zero
+    ``eligible_for_event_market_backtest`` rows, the caller has two
+    legitimate paths:
+
+    * **Strict** (``allow_provisional_block=False``): preserve the
+      historical ``PHASE8_MARKET_EVAL_NOT_WIRED_FAIL`` hard-exit-2
+      contract. ``collect_run_warnings.py`` continues to match this
+      marker as a critical failure.
+    * **Soft / provisional** (``allow_provisional_block=True``): the
+      labels/outcomes required for an event-market backtest are
+      genuinely unavailable for the requested window. Emit a structured
+      not-proven verdict so the model-chain does not crash, and write
+      the diagnostics sidecar so downstream consumers can see the
+      explicit reason. No superiority claim is allowed on this path.
+
+    Returns
+    -------
+    tuple[dict, str, bool]
+        ``(em_payload_fields, marker, soft_pass)``:
+        - ``em_payload_fields``: dict to merge into the diagnostics
+          meta sidecar (``artifacts/docs/diagnostics_<run_date>.meta.json``).
+        - ``marker``: the verbatim log line the caller emits (warning
+          on the soft path, error on the strict path).
+        - ``soft_pass``: ``True`` when the caller should fall through
+          to the sidecar write and return 0; ``False`` preserves the
+          existing ``sys.exit(2)`` contract.
+    """
+    if allow_provisional_block:
+        soft_fields = {
+            "market_eval_status": "not_proven_no_eligible_dates",
+            "event_market_eval_ran": False,
+            "event_market_eval_attempted": True,
+            "eligible_for_event_market_backtest_dates": 0,
+            "market_superiority_status": "not_proven",
+            "market_superiority_block_reason": "no_eligible_event_market_backtest_dates",
+            "market_superiority_claim_allowed": False,
+            "claim_allowed": False,
+            "global_market_superiority_claim_allowed": False,
+            "eligible_market_subset_superiority_claim_allowed": False,
+            "model_only_calibration_claim_allowed": False,
+            "strict_contract_result": "blocked_provisional",
+            "promotion_status": "MARKET_SUPERIORITY_CONTRACT_BLOCKED",
+        }
+        soft_marker = (
+            "PHASE8_MARKET_SUPERIORITY_NOT_PROVEN_NO_ELIGIBLE_DATES "
+            "reason=no_eligible_event_market_backtest_dates "
+            "claim_allowed=false market_superiority_status=not_proven "
+            "market_eval_status=not_proven_no_eligible_dates "
+            "eligible_for_event_market_backtest_dates=0"
+        )
+        return soft_fields, soft_marker, True
+
+    strict_fields = {
+        "market_eval_status": "blocked_no_eligible_dates",
+        "event_market_eval_ran": False,
+        "event_market_eval_attempted": True,
+        "eligible_for_event_market_backtest_dates": 0,
+    }
+    strict_marker = (
+        "PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: "
+        "no eligible_for_event_market_backtest dates"
+    )
+    return strict_fields, strict_marker, False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -488,70 +558,75 @@ def main() -> None:
         else:
             n_elig = len(inv_df)
         if n_elig == 0:
-            logger.error("PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: no eligible_for_event_market_backtest dates")
-            em_payload["market_eval_status"] = "blocked_no_eligible_dates"
+            soft_fields, marker, soft_pass = _no_eligible_dates_payload(
+                args.allow_provisional_block
+            )
+            em_payload.update(soft_fields)
+            if not soft_pass:
+                logger.error(marker)
+                sys.exit(2)
+            logger.warning(marker)
+        else:
+            stack = emw.run_event_market_stack(
+                REPO_ROOT,
+                sys.executable,
+                dates_file=inv_p,
+                snapshot_substr=args.snapshot_substr,
+                allow_provisional_block=args.allow_provisional_block,
+            )
             em_payload["event_market_eval_ran"] = True
-            sys.exit(2)
-        stack = emw.run_event_market_stack(
-            REPO_ROOT,
-            sys.executable,
-            dates_file=inv_p,
-            snapshot_substr=args.snapshot_substr,
-            allow_provisional_block=args.allow_provisional_block,
-        )
-        em_payload["event_market_eval_ran"] = True
-        if not stack.get("ok"):
-            logger.error(
-                "PHASE8_MARKET_EVAL_NOT_WIRED_FAIL event_market_stack_failed script=%s",
-                stack.get("failed_script"),
+            if not stack.get("ok"):
+                logger.error(
+                    "PHASE8_MARKET_EVAL_NOT_WIRED_FAIL event_market_stack_failed script=%s",
+                    stack.get("failed_script"),
+                )
+                sys.exit(2)
+            em_payload["n_event_market_rows"] = stack.get("n_event_market_rows")
+            em_payload["n_matched_rows"] = stack.get("n_matched_rows")
+            em_payload["n_scored_rows"] = stack.get("n_scored_rows")
+            em_payload["dates_used"] = stack.get("dates_used")
+            summ = stack.get("superiority_summary") or {}
+            em_payload["required_stats_missing_in_event_rows"] = summ.get("required_stats_missing_in_event_rows")
+            em_payload["eligible_market_subset_superiority_claim_allowed"] = summ.get(
+                "eligible_market_subset_superiority_claim_allowed", False
             )
-            sys.exit(2)
-        em_payload["n_event_market_rows"] = stack.get("n_event_market_rows")
-        em_payload["n_matched_rows"] = stack.get("n_matched_rows")
-        em_payload["n_scored_rows"] = stack.get("n_scored_rows")
-        em_payload["dates_used"] = stack.get("dates_used")
-        summ = stack.get("superiority_summary") or {}
-        em_payload["required_stats_missing_in_event_rows"] = summ.get("required_stats_missing_in_event_rows")
-        em_payload["eligible_market_subset_superiority_claim_allowed"] = summ.get(
-            "eligible_market_subset_superiority_claim_allowed", False
-        )
-        em_payload["model_only_calibration_claim_allowed"] = summ.get(
-            "model_only_calibration_claim_allowed", False
-        )
-        n_scored = int(stack.get("n_scored_rows") or 0)
-        if n_scored <= 0:
-            em_payload["market_eval_status"] = "blocked_insufficient_scored_rows"
-            logger.error("PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: n_scored_rows==0")
-            sys.exit(2)
-        em_payload["market_eval_status"] = "event_market_scored"
-        strict_rc = int(stack.get("strict_verifier_exit_code") or 1)
-        prov_rc = stack.get("provisional_verifier_exit_code")
-        if strict_rc == 0:
-            em_payload["strict_contract_result"] = "pass"
-        elif prov_rc is not None and int(prov_rc) == 0:
-            em_payload["strict_contract_result"] = "blocked_provisional"
-        else:
-            em_payload["strict_contract_result"] = "fail"
+            em_payload["model_only_calibration_claim_allowed"] = summ.get(
+                "model_only_calibration_claim_allowed", False
+            )
+            n_scored = int(stack.get("n_scored_rows") or 0)
+            if n_scored <= 0:
+                em_payload["market_eval_status"] = "blocked_insufficient_scored_rows"
+                logger.error("PHASE8_MARKET_EVAL_NOT_WIRED_FAIL: n_scored_rows==0")
+                sys.exit(2)
+            em_payload["market_eval_status"] = "event_market_scored"
+            strict_rc = int(stack.get("strict_verifier_exit_code") or 1)
+            prov_rc = stack.get("provisional_verifier_exit_code")
+            if strict_rc == 0:
+                em_payload["strict_contract_result"] = "pass"
+            elif prov_rc is not None and int(prov_rc) == 0:
+                em_payload["strict_contract_result"] = "blocked_provisional"
+            else:
+                em_payload["strict_contract_result"] = "fail"
 
-        summ_global_raw = bool(summ.get("global_market_superiority_claim_allowed", False))
-        eligible_raw = bool(summ.get("eligible_market_subset_superiority_claim_allowed", False))
-        strict_pass = em_payload["strict_contract_result"] == "pass"
-        em_payload["global_market_superiority_claim_allowed"] = summ_global_raw and strict_pass
-        em_payload["eligible_market_subset_superiority_claim_allowed"] = eligible_raw
-        em_payload["market_superiority_claim_allowed"] = bool(
-            em_payload["global_market_superiority_claim_allowed"]
-        )
-        scr = em_payload["strict_contract_result"]
-        if scr == "pass":
-            em_payload["promotion_status"] = (
-                "market_superiority_verified"
-                if em_payload["global_market_superiority_claim_allowed"]
-                else "no_market_superiority_claim"
+            summ_global_raw = bool(summ.get("global_market_superiority_claim_allowed", False))
+            eligible_raw = bool(summ.get("eligible_market_subset_superiority_claim_allowed", False))
+            strict_pass = em_payload["strict_contract_result"] == "pass"
+            em_payload["global_market_superiority_claim_allowed"] = summ_global_raw and strict_pass
+            em_payload["eligible_market_subset_superiority_claim_allowed"] = eligible_raw
+            em_payload["market_superiority_claim_allowed"] = bool(
+                em_payload["global_market_superiority_claim_allowed"]
             )
-        elif scr == "blocked_provisional":
-            em_payload["promotion_status"] = "MARKET_SUPERIORITY_CONTRACT_BLOCKED"
-        else:
-            em_payload["promotion_status"] = "no_market_superiority_claim"
+            scr = em_payload["strict_contract_result"]
+            if scr == "pass":
+                em_payload["promotion_status"] = (
+                    "market_superiority_verified"
+                    if em_payload["global_market_superiority_claim_allowed"]
+                    else "no_market_superiority_claim"
+                )
+            elif scr == "blocked_provisional":
+                em_payload["promotion_status"] = "MARKET_SUPERIORITY_CONTRACT_BLOCKED"
+            else:
+                em_payload["promotion_status"] = "no_market_superiority_claim"
 
     elif args.allow_baseline_only:
         em_payload["market_eval_status"] = "baseline_only"
