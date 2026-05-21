@@ -782,6 +782,50 @@ def test_phase8_commit_excludes_freshness_from_automation_health(workflow_text):
         "\n            artifacts/automation_health \\" not in body
     ), "phase8 commit still uses bare artifacts/automation_health add"
 
+_PHASE8_DIAGNOSTICS_STEP = (
+    "Run diagnostics and market-eval gates (no unexplained NaNs)"
+)
+_DAILY_PMF_DELIVERY_WORKFLOW = (
+    REPO_ROOT / ".github" / "workflows" / "daily_pmf_delivery.yml"
+)
+
+
+@pytest.mark.parametrize(
+    "required_fragment",
+    [
+        'D="${{ needs.resolve_context.outputs.delivery_date }}"',
+        'python3 scripts/verify_role_bucket_contract.py --date "$D"',
+        'python3 scripts/verify_combo_role_calibration_contract.py || true',
+        'python3 scripts/run_diagnostics.py \\',
+        '--run-date "$D"',
+        "--allow-provisional-block",
+        '--end-date "$D"',
+    ],
+)
+def test_phase8_diagnostics_step_wires_delivery_date_and_verifiers(
+    workflow_text, required_fragment
+):
+    """Phase 8 diagnostics must pass ``$D`` into role-bucket verifier and
+    keep the existing run_diagnostics / combo-verifier contracts.
+    """
+
+    body = _step_body_after(workflow_text, _PHASE8_DIAGNOSTICS_STEP)
+    assert required_fragment in body
+
+
+def test_phase8_role_bucket_verifier_is_not_suppressed(workflow_text):
+    """The role-bucket contract verifier must fail the step on violation."""
+
+    body = _step_body_after(workflow_text, _PHASE8_DIAGNOSTICS_STEP)
+    assert "verify_role_bucket_contract.py || true" not in body
+
+
+def test_legacy_daily_pmf_delivery_workflow_unchanged_by_phase8_verifier_wiring():
+    """The legacy manual workflow must not pick up Phase 8 verifier wiring."""
+
+    text = _DAILY_PMF_DELIVERY_WORKFLOW.read_text(encoding="utf-8")
+    assert "verify_role_bucket_contract.py" not in text
+
 
 def test_only_canonical_nba_pmf_delivery_workflow_has_automatic_trigger():
     """At-most-one AUTOMATIC NBA-PMF delivery writer.
