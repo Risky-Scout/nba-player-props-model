@@ -2,19 +2,28 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-21T23:54:12+00:00 |
+| Generated (UTC) | 2026-05-22T02:46:12+00:00 |
 | Promote | no |
-| Reason | gate_failed:nll_improves_or_non_worse |
+| Reason | gate_failed:m6_3_stat_role_matrix_valid |
 | Champion model_version | challenger-2026-04-30 |
-| Challenger dry_run | True |
+| Challenger dry_run | False |
 | PMF validity issues | 0 |
-| Gates passed | 7 |
-| Gates failed | 14 |
+| Gates passed | 16 |
+| Gates failed | 5 |
 
 ## Gates passed
 
+- nll_improves_or_non_worse: challenger=3.93992 champion=3.93992 delta=+0 (tol=0.03939923563146953)
+- rps_improves_or_non_worse: challenger=1.1109 champion=1.1109 delta=+0 (tol=0.01110896424181148)
+- calibration_error_improves: challenger=0.322082 champion=0.322082 delta=+0 (tol=0.0)
+- p0_error_improves_or_non_worse: challenger=0.322082 champion=0.322082 delta=+0 (tol=0.005)
+- mean_bias_does_not_worsen: challenger=0.369801 champion=0.369801 delta=+0 (tol=0.05)
+- tov_does_not_regress: challenger=1.34761 champion=1.34761 delta=+0 (tol=0.026952124611520557)
+- starter_core_role_buckets_do_not_regress: worst_core_nll_delta=0.0
+- bench_fringe_role_buckets_do_not_regress_materially: worst_bench_nll_delta=0.0
+- no_severe_stat_bucket_regression: worst_stat=pts delta=0.0
 - pmf_validity: ok
-- no_future_leakage: dry_run future_rows_excluded=0 error=None
+- no_future_leakage: real_train train_manifest.status='ok'; pg_stats_summary.error=None (OOF fold_aggregate cutoff is leakage authority)
 - sufficient_calibration_samples: total_samples_in_calibration_window=177240
 - derek_feed_compatibility: ok
 - woo_export_compatibility: ok
@@ -23,15 +32,6 @@
 
 ## Gates failed
 
-- nll_improves_or_non_worse: dry_run challenger == champion; no improvement to demonstrate
-- rps_improves_or_non_worse: dry_run challenger == champion; no improvement to demonstrate
-- calibration_error_improves: dry_run challenger == champion; no improvement to demonstrate
-- p0_error_improves_or_non_worse: dry_run challenger == champion; no improvement to demonstrate
-- mean_bias_does_not_worsen: dry_run challenger == champion; no improvement to demonstrate
-- tov_does_not_regress: dry_run challenger == champion; no improvement to demonstrate
-- starter_core_role_buckets_do_not_regress: dry_run challenger == champion; no improvement to demonstrate
-- bench_fringe_role_buckets_do_not_regress_materially: dry_run challenger == champion; no improvement to demonstrate
-- no_severe_stat_bucket_regression: dry_run challenger == champion; no improvement to demonstrate
 - m6_3_stat_role_matrix_valid: expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']
 - m6_3_review_cells_guarded: review_cells=18 guarded_cells=18
 - market_logloss_non_inferior_or_better: delta_logloss=0.036980768653124906 tolerance=0.005 (negative favors model)
