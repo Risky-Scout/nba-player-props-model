@@ -7,8 +7,8 @@
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "count_diagnostics": {
     "fair_odds_board": {
-      "fair_over_odds_null_count": 560,
-      "fair_under_odds_null_count": 560,
+      "fair_over_odds_null_count": 555,
+      "fair_under_odds_null_count": 555,
       "zero_or_one_prob_count": 300
     }
   },
@@ -21,7 +21,7 @@
   "finality_blockers": [
     {
       "code": "injury_very_stale",
-      "detail": "No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T11:35:42Z'; reason=injury_report_not_yet_published_or_unavailable",
+      "detail": "No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T12:06:49Z'; reason=injury_report_not_yet_published_or_unavailable",
       "required_to_resolve": "Wait for the NBA official injury report to be published for the slate, or regenerate stat-grid PMFs in the Python 3.11 environment with nbainjuries available. File mtime alone is no longer accepted; canonical rows must carry a row-level injury_freshness_status of latest_valid_report_selected/fallback_used/fresh."
     },
     {
@@ -54,12 +54,12 @@
       "hardrockbet_fl",
       "williamhill_us"
     ],
-    "built_at_utc": "2026-05-22T11:35:20Z",
+    "built_at_utc": "2026-05-22T12:06:28Z",
     "finals_finality_status": "finals_present",
     "odds_status": "ok",
     "overall_status": "ready",
     "path": "data/freshness_manifest/2026-05-21.json",
-    "predictions_mtime_utc": "2026-05-22T11:34:25.013555Z",
+    "predictions_mtime_utc": "2026-05-22T12:05:38.682400Z",
     "regions_requested": [
       "us",
       "us2"
@@ -69,15 +69,15 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-05-22T11:36:54+00:00",
+  "metadata_stamped_at_utc": "2026-05-22T12:08:00+00:00",
   "model_source": "champion_pointer",
-  "model_version": "24dddfd7#phase10c",
+  "model_version": "ca3b8e02#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-05-22T11:36:54+00:00",
+  "output_generated_at_utc": "2026-05-22T12:08:00+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "pipeline_run_id": "ace5975d-e7d0-44db-a2bc-3f64f51aa9c3",
+  "pipeline_run_id": "398cd6c5-1700-4aee-9375-1ecd7a3be0d5",
   "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T134927",
   "quality_rollup": {
     "calibration_confidence": {
@@ -102,27 +102,29 @@
   "row_counts": {
     "fair_odds_board": 3855,
     "full_pmfs_wide": 180,
-    "market_comparison": 1146,
-    "publishable_edges": 872
+    "market_comparison": 1251,
+    "publishable_edges": 973
   },
-  "snapshot_time_utc": "2026-05-22T11:36:28Z",
+  "snapshot_time_utc": "2026-05-22T12:07:34Z",
   "snapshot_type": "pre_close",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-05-22T11:35:27.012165Z",
+      "mtime_utc": "2026-05-22T12:06:35.484343Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-05-22T11:36:27.239805Z",
+      "mtime_utc": "2026-05-22T12:07:33.267307Z",
       "path": "deliveries/2026-05-21/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "15a54f09800d725c3cd45120e211c5e42c44afdf337067cfe95bbd4af5f9acce"
+      "sha256": "c878e505bd5e0bf0303bf4da611b0971d394ad83a4d72292a5c52906ef167351"
     },
     "odds_snapshot": {
       "books_seen": [
         "betmgm",
         "betonlineag",
+        "betparx",
+        "betrivers",
         "bovada",
         "draftkings",
         "espnbet",
@@ -136,15 +138,15 @@
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-05-22T11:35:20.420208Z",
-      "path": "data/odds_api/processed/2026-05-21/odds_pairs_live_slate_close_or_lock_2026-05-22T113516Z.parquet"
+      "mtime_utc": "2026-05-22T12:06:28.756350Z",
+      "path": "data/odds_api/processed/2026-05-21/odds_pairs_live_slate_close_or_lock_2026-05-22T120625Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-05-22T11:34:25.013555Z",
+      "mtime_utc": "2026-05-22T12:05:38.682400Z",
       "path": "predictions/all_props_2026-05-21.parquet"
     }
   },
-  "stamp_code_commit": "24dddfd7835eafa2349e7d51613f77109691d87a",
+  "stamp_code_commit": "ca3b8e02ad1bafe572d4f3ac074bf38671add353",
   "target_stats": {
     "expected": [
       "pts",

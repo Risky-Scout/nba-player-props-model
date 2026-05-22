@@ -5,17 +5,17 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **180**
-- books: **12**
+- books: **14**
 - market coverage: **full**
 - injury freshness: **unknown**
 - role provenance: `missing`: 180
-- model: `24dddfd7#phase10c`
+- model: `ca3b8e02#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T11:35:42Z'; reason=injury_report_not_yet_published_or_unavailable
+- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T12:06:49Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 - `role_bucket_missing` — 180 rows have missing role_bucket.
 
@@ -40,13 +40,13 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **finality_blockers**: `['injury_very_stale', 'lineup_unconfirmed', 'role_bucket_missing']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
-- **books_seen**: `12`
+- **books_seen**: `14`
 - **freshness.overall_status**: `ready`
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'missing': 180}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=1146, publishable_edges=872
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 560, 'fair_under_odds_null_count': 560, 'zero_or_one_prob_count': 300}`
+- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=1251, publishable_edges=973
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 555, 'fair_under_odds_null_count': 555, 'zero_or_one_prob_count': 300}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

@@ -8,14 +8,14 @@
     "minutes_eligible_rows": 15,
     "canonical_rows": 180,
     "review_rows": 180,
-    "market_rows": 1146,
-    "derek_rows": 1208,
+    "market_rows": 1251,
+    "derek_rows": 1313,
     "proof_gates": {
       "minutes_universe": "schema+uniqueness+null/range checks (NO deep-bench gate)",
       "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
     }
   },
-  "checked_at_utc": "2026-05-22T11:37:13Z",
+  "checked_at_utc": "2026-05-22T12:08:17Z",
   "selected_injury_report": null,
   "selected_injury_report_time": null,
   "injury_report_fallback_used": false,
@@ -41,12 +41,12 @@
       "reason": "no_matching_slate_teams"
     },
     {
-      "report": "Injury-Report_2026-05-21_07_00AM",
+      "report": "Injury-Report_2026-05-21_08_00AM",
       "reason": "no_matching_slate_teams"
     }
   ],
   "injury_freshness_status": "parser_failure_needs_attention",
-  "fetched_at_utc": "2026-05-22T11:35:38Z",
+  "fetched_at_utc": "2026-05-22T12:06:47Z",
   "market_eval_available": false,
   "market_rows_keyed": true,
   "market_rows_fresh": false,

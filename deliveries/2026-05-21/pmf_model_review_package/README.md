@@ -5,17 +5,17 @@
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **180**
-- books: **12**
+- books: **14**
 - market coverage: **full**
 - injury freshness: **unknown**
 - role provenance: `missing`: 180
-- model: `24dddfd7#phase10c`
+- model: `ca3b8e02#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T11:35:42Z'; reason=injury_report_not_yet_published_or_unavailable
+- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T12:06:49Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 - `role_bucket_missing` — 180 rows have missing role_bucket.
 
