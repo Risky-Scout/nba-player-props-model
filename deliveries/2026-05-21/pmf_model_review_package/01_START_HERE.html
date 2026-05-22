@@ -18,15 +18,16 @@ th{background:#f0f0f0}
 <p><b>Delivery date:</b> 2026-05-21 &nbsp;&nbsp;
 <b>Rows:</b> 180</p>
 
-<div class="callout"><b>Run status — 2026-05-21 — snapshot morning</b><br>
+<div class="callout"><b>Run status — 2026-05-21 — snapshot pre_close</b><br>
 status: <b>PROVISIONAL</b> &middot; safe to use, with the caveats below<br>
-props: <b>180</b> &middot; books: <b>14</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>unknown</b><br>
-role provenance: derived_from_projected_minutes: 180<br>
-model: <code>8ee6dd7e#phase10c</code>
+props: <b>180</b> &middot; books: <b>12</b> &middot; market coverage: <b>full</b> &middot; injury freshness: <b>unknown</b><br>
+role provenance: missing: 180<br>
+model: <code>24dddfd7#phase10c</code>
 <br><br>
 <b>Caveats</b> (full detail in <code>wizard_of_odds/run_manifest.json</code>):<br>
-- <code>injury_very_stale</code> — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-21T17:40:02Z'; reason=injury_report_not_yet_published_or_unavailable
+- <code>injury_very_stale</code> — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T11:35:42Z'; reason=injury_report_not_yet_published_or_unavailable
 - <code>lineup_unconfirmed</code> — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
+- <code>role_bucket_missing</code> — 180 rows have missing role_bucket.
 </div>
 
 <div class="callout">

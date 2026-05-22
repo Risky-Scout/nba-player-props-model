@@ -1,23 +1,24 @@
 {
   "delivery_date": "2026-05-21",
-  "run_mode": "morning_expected",
-  "generated_at_utc": "2026-05-21T17:40:46Z",
-  "row_count": 2474,
+  "run_mode": "t25",
+  "generated_at_utc": "2026-05-22T11:36:32Z",
+  "row_count": 1208,
   "schema": "m88_derek_unified_v1",
   "lineup_status": {
-    "status": "pending_pre_tipoff_run",
-    "reason": "Morning-only forward-feed run for 2026-05-21. BDL confirmed lineups are not yet available; the lineup snapshot will be produced by the later derek_pre_tipoff_refresh / close_lock runs. Re-check after the pre-tipoff window.",
-    "snapshot_mode_running": "morning",
-    "lineup_phase_executed_today": false,
-    "checked_at_utc": "2026-05-21T17:40:46Z",
-    "schema_version": "lineup_snapshot_status.v2"
+    "status": "near_tip_projected_lineup_snapshot",
+    "snapshot_type_emitted": "near_tip",
+    "lineup_freshness_rollup": "projected=180",
+    "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
+    "checked_at_utc": "2026-05-22T11:36:32Z"
   },
   "rotation_bench_filter": {
     "policy": "defensive_publication_guard_only",
     "strategy": "legacy_market_quoted_player_fallback",
-    "rows_dropped": 0,
-    "players_dropped_count": 0,
-    "players_dropped": [],
+    "rows_dropped": 12,
+    "players_dropped_count": 1,
+    "players_dropped": [
+      "Landry Shamet"
+    ],
     "rationale": "Primary player-universe gate is upstream projected rotation/minutes eligibility (M8.9). This filter is a defensive publication guard only. If it drops many rows, scripts/validate_daily_pmf_delivery.py upstream should have failed first."
   },
   "files": {
@@ -28,7 +29,7 @@
   },
   "unique_props_summary": {
     "path": "deliveries/2026-05-21/derek_forward_feed/derek_unique_props_summary.csv",
-    "row_count": 132,
+    "row_count": 2,
     "columns": [
       "player_name",
       "projected_minutes",

@@ -1,22 +1,23 @@
 # Wizard of Odds — 2026-05-21
 
-## Run status — 2026-05-21 — snapshot `morning`
+## Run status — 2026-05-21 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
 - props: **180**
-- books: **14**
+- books: **12**
 - market coverage: **full**
 - injury freshness: **unknown**
-- role provenance: `derived_from_projected_minutes`: 180
-- model: `8ee6dd7e#phase10c`
+- role provenance: `missing`: 180
+- model: `24dddfd7#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-21T17:40:02Z'; reason=injury_report_not_yet_published_or_unavailable
+- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/180; dominant_status='unknown' (count=180); sample_injury_report_fetched_at_utc='2026-05-22T11:35:42Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
+- `role_bucket_missing` — 180 rows have missing role_bucket.
 
 ---
 
@@ -36,16 +37,16 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['injury_very_stale', 'lineup_unconfirmed']`
+- **finality_blockers**: `['injury_very_stale', 'lineup_unconfirmed', 'role_bucket_missing']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
-- **books_seen**: `14`
+- **books_seen**: `12`
 - **freshness.overall_status**: `ready`
 - **availability_freshness_status**: `fresh`
-- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 180}`
+- **role_freshness_status (rollup)**: `{'missing': 180}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=2515, publishable_edges=1931
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 564, 'fair_under_odds_null_count': 564, 'zero_or_one_prob_count': 300}`
+- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=1146, publishable_edges=872
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 560, 'fair_under_odds_null_count': 560, 'zero_or_one_prob_count': 300}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
