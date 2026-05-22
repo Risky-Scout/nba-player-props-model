@@ -5,21 +5,26 @@
 
 | path | before bytes | action | after bytes |
 |---|---:|---|---:|
-| `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv` | 335651 | ok |  |
-| `derek_forward_feed/derek_forward_feed.csv` | 1574194 | split_and_previewed | 524194 |
-| `derek_forward_feed/derek_unique_props_summary.csv` | 5731 | ok |  |
-| `derek_forward_feed/latest_available_snapshot.csv` | 7036138 | split_and_previewed | 524168 |
-| `derek_forward_feed/lineup_snapshot.csv` | 7036138 | split_and_previewed | 524168 |
+| `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv` | 333831 | ok |  |
+| `derek_forward_feed/derek_forward_feed.csv` | 1259023 | split_and_previewed | 524200 |
+| `derek_forward_feed/derek_unique_props_summary.csv` | 5720 | ok |  |
+| `derek_forward_feed/latest_available_snapshot.csv` | 6998597 | split_and_previewed | 520842 |
+| `derek_forward_feed/lineup_snapshot.csv` | 531265 | split_and_previewed | 524168 |
+| `derek_forward_feed/morning_snapshot.csv` | 6998597 | split_and_previewed | 520842 |
 | `derek_game_snapshots/21713530/lineup/full_pmf_wide.csv` | 382487 | ok |  |
-| `derek_game_snapshots/21713530/lineup/market_comparison.csv` | 2071201 | split_and_previewed | 523650 |
-| `derek_game_snapshots/21713530/lineup/outcome_level_probabilities.csv` | 659367 | split_and_previewed | 524220 |
+| `derek_game_snapshots/21713530/lineup/market_comparison.csv` | 543614 | split_and_previewed | 523650 |
+| `derek_game_snapshots/21713530/lineup/outcome_level_probabilities.csv` | 533522 | split_and_previewed | 524220 |
 | `derek_game_snapshots/21713530/lineup/prop_summary.csv` | 22350 | ok |  |
-| `pmf_model_review_package/04_PROP_SUMMARY.csv` | 112061 | ok |  |
-| `pmf_model_review_package/05_FULL_PMF_WIDE.csv` | 382487 | ok |  |
-| `pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv` | 4810726 | split_and_previewed | 523695 |
-| `pmf_model_review_package/machine_readable/model_only.csv` | 382487 | ok |  |
-| `wizard_of_odds/fair_odds_board.csv` | 2962498 | split_and_previewed | 523840 |
-| `wizard_of_odds/full_pmfs_outcome_level.csv` | 4810726 | split_and_previewed | 523695 |
-| `wizard_of_odds/full_pmfs_wide.csv` | 382487 | ok |  |
-| `wizard_of_odds/market_comparison.csv` | 2071201 | split_and_previewed | 523652 |
-| `wizard_of_odds/publishable_edges.csv` | 1599423 | split_and_previewed | 523741 |
+| `derek_game_snapshots/21713530/morning/full_pmf_wide.csv` | 381493 | ok |  |
+| `derek_game_snapshots/21713530/morning/market_comparison.csv` | 2036347 | split_and_previewed | 523612 |
+| `derek_game_snapshots/21713530/morning/outcome_level_probabilities.csv` | 666303 | split_and_previewed | 524269 |
+| `derek_game_snapshots/21713530/morning/prop_summary.csv` | 22511 | ok |  |
+| `pmf_model_review_package/04_PROP_SUMMARY.csv` | 108449 | ok |  |
+| `pmf_model_review_package/05_FULL_PMF_WIDE.csv` | 381493 | ok |  |
+| `pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv` | 4793834 | split_and_previewed | 524248 |
+| `pmf_model_review_package/machine_readable/model_only.csv` | 381493 | ok |  |
+| `wizard_of_odds/fair_odds_board.csv` | 2885543 | split_and_previewed | 523935 |
+| `wizard_of_odds/full_pmfs_outcome_level.csv` | 4793834 | split_and_previewed | 524248 |
+| `wizard_of_odds/full_pmfs_wide.csv` | 381493 | ok |  |
+| `wizard_of_odds/market_comparison.csv` | 2036347 | split_and_previewed | 523612 |
+| `wizard_of_odds/publishable_edges.csv` | 1574507 | split_and_previewed | 523817 |

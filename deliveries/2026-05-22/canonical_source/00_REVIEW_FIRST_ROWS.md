@@ -6,9 +6,9 @@ GitHub may refuse to render large CSV files. This file is intentionally small.
 
 ## `canonical_source/all_props_model_only.parquet`
 
-- bytes: `198,079`
+- bytes: `201,167`
 - rows: `156`
-- columns: `39`
+- columns: `38`
 
 Compact first 30 rows:
 
@@ -51,9 +51,9 @@ Shai Gilgeous-Alexander,175,SAS,21713530,stl,starter,stat_grid:hurdle_v1+role_aw
 
 ## `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv`
 
-- bytes: `335,651`
+- bytes: `333,831`
 - rows: `156`
-- columns: `39`
+- columns: `38`
 
 Compact first 30 rows:
 
@@ -96,9 +96,9 @@ Shai Gilgeous-Alexander,175,SAS,21713530,stl,starter,stat_grid:hurdle_v1+role_aw
 
 ## `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.jsonl`
 
-- bytes: `464,272`
+- bytes: `457,796`
 - rows: `156`
-- columns: `39`
+- columns: `38`
 
 Compact first 30 rows:
 
@@ -141,9 +141,9 @@ Shai Gilgeous-Alexander,175,SAS,21713530,stl,starter,stat_grid:hurdle_v1+role_aw
 
 ## `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet`
 
-- bytes: `198,079`
+- bytes: `201,167`
 - rows: `156`
-- columns: `39`
+- columns: `38`
 
 Compact first 30 rows:
 
