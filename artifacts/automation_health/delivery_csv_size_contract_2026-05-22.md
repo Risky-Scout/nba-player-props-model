@@ -5,7 +5,7 @@
 
 | path | before bytes | action | after bytes |
 |---|---:|---|---:|
-| `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv` | 333311 | ok |  |
+| `canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv` | 331982 | ok |  |
 | `derek_forward_feed/derek_forward_feed.csv` | 547216 | split_and_previewed | 524200 |
 | `derek_forward_feed/derek_unique_props_summary.csv` | 5720 | ok |  |
 | `derek_forward_feed/latest_available_snapshot.csv` | 527566 | split_and_previewed | 520842 |
@@ -19,12 +19,12 @@
 | `derek_game_snapshots/21713530/morning/market_comparison.csv` | 544699 | split_and_previewed | 523612 |
 | `derek_game_snapshots/21713530/morning/outcome_level_probabilities.csv` | 533679 | split_and_previewed | 524269 |
 | `derek_game_snapshots/21713530/morning/prop_summary.csv` | 22511 | ok |  |
-| `pmf_model_review_package/04_PROP_SUMMARY.csv` | 108761 | ok |  |
-| `pmf_model_review_package/05_FULL_PMF_WIDE.csv` | 380817 | ok |  |
-| `pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv` | 4810726 | split_and_previewed | 523684 |
-| `pmf_model_review_package/machine_readable/model_only.csv` | 380817 | ok |  |
-| `wizard_of_odds/fair_odds_board.csv` | 2892375 | split_and_previewed | 523701 |
-| `wizard_of_odds/full_pmfs_outcome_level.csv` | 4810726 | split_and_previewed | 523684 |
-| `wizard_of_odds/full_pmfs_wide.csv` | 380817 | ok |  |
-| `wizard_of_odds/market_comparison.csv` | 2012906 | split_and_previewed | 524261 |
-| `wizard_of_odds/publishable_edges.csv` | 1588085 | split_and_previewed | 524095 |
+| `pmf_model_review_package/04_PROP_SUMMARY.csv` | 108763 | ok |  |
+| `pmf_model_review_package/05_FULL_PMF_WIDE.csv` | 378474 | ok |  |
+| `pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv` | 4808747 | split_and_previewed | 523671 |
+| `pmf_model_review_package/machine_readable/model_only.csv` | 378474 | ok |  |
+| `wizard_of_odds/fair_odds_board.csv` | 2891660 | split_and_previewed | 524052 |
+| `wizard_of_odds/full_pmfs_outcome_level.csv` | 4808747 | split_and_previewed | 523671 |
+| `wizard_of_odds/full_pmfs_wide.csv` | 378474 | ok |  |
+| `wizard_of_odds/market_comparison.csv` | 2003969 | split_and_previewed | 523815 |
+| `wizard_of_odds/publishable_edges.csv` | 1588262 | split_and_previewed | 524264 |
