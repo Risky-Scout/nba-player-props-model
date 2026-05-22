@@ -367,8 +367,6 @@ jobs:
               --out "$OUT"
           fi
 
-          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
-
       - name: Run nightly training and role/stat calibration
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -483,8 +481,6 @@ jobs:
               --end-date "$D" \
               --out "$OUT"
           fi
-
-          python3 scripts/build_availability_table.py --slate-date "$D" --out data/player_availability_asof.parquet
 
       - name: Build training table if absent
         env:
