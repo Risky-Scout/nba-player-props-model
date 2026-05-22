@@ -551,6 +551,12 @@ jobs:
             --as-of-date "$ASOF" \
             --check-training-table
 
+      - name: Verify Phase 8 training table freshness and prob_active coverage
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_phase8_training_table_freshness.py \
+            --as-of-date "${{ needs.resolve_context.outputs.as_of_date }}"
+
       - name: Run Phase 8 PMF calibration folds + OOF aggregation + combo PMFs
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
