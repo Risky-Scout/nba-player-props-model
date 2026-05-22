@@ -20,6 +20,8 @@ Historical availability:
   Phase 2 resolves.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os
@@ -280,11 +282,60 @@ def _last_date(path: Path, col: str = "game_date"):
         return None
 
 
-def fetch_all_data():
+def _validate_as_of_coverage(df: pd.DataFrame, as_of_date: str | None, label: str) -> None:
+    """Fail clearly if source data is more than 3 days short of as_of_date.
+
+    A gap of 1-2 days is acceptable (rest days / no NBA games). A gap of
+    3+ days indicates a BDL outage or missing backfill run.
+    """
+    if not as_of_date or df.empty:
+        return
+    actual_max = df["game_date"].astype(str).str[:10].max()
+    from datetime import date as _date
+    try:
+        cutoff_dt = _date.fromisoformat(as_of_date)
+        max_dt = _date.fromisoformat(actual_max)
+    except ValueError:
+        return
+    gap = (cutoff_dt - max_dt).days
+    if gap > 3:
+        sys.exit(
+            f"FATAL: {label} max game_date ({actual_max}) is {gap} days before "
+            f"as_of_date ({as_of_date}). Source data appears incomplete. "
+            f"Run backfill_player_game_stats_from_bdl.py to refresh then retry."
+        )
+    elif gap > 0:
+        logger.warning(
+            f"{label}: max game_date ({actual_max}) is {gap} day(s) before "
+            f"as_of_date ({as_of_date}) — possible rest day or no-game day."
+        )
+    else:
+        logger.info(f"{label}: max game_date ({actual_max}) == as_of_date ({as_of_date}) ✓")
+
+
+def fetch_all_data(as_of_date: str | None = None):
+    """Fetch or load player game stats, advanced stats, and odds.
+
+    Parameters
+    ----------
+    as_of_date:
+        When provided, cap all BDL fetches at this date and filter the
+        returned DataFrames to ``game_date <= as_of_date``. This prevents
+        future-game rows from entering the training table when the on-disk
+        parquet was previously populated beyond as_of_date.
+        Fails clearly (sys.exit) if the resulting stats are more than
+        3 days short of as_of_date.
+    """
     STATS_PATH = DATA_DIR / "player_game_stats.parquet"
     ADV_PATH   = DATA_DIR / "advanced_stats.parquet"
     ODDS_PATH  = DATA_DIR / "game_odds.parquet"
     yesterday  = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+    # Fetch ceiling: as_of_date if provided, else yesterday. Never fetch
+    # beyond yesterday (BDL doesn't have today's finalized scores).
+    cutoff     = min(as_of_date, yesterday) if as_of_date else yesterday
+    if as_of_date:
+        logger.info(f"fetch_all_data: as_of_date={as_of_date} → fetch cutoff={cutoff}")
+
     last       = _last_date(STATS_PATH)
 
     if last is None:
@@ -294,14 +345,24 @@ def fetch_all_data():
     else:
         fetch_start = (last + timedelta(days=1)).strftime("%Y-%m-%d")
         is_initial  = False
-        if fetch_start > yesterday:
+        if fetch_start > cutoff:
             logger.info(f"Data current through {last.date()} — loading from disk.")
-            return (
-                pd.read_parquet(STATS_PATH),
-                pd.read_parquet(ADV_PATH)  if ADV_PATH.exists()  else pd.DataFrame(),
-                pd.read_parquet(ODDS_PATH) if ODDS_PATH.exists() else pd.DataFrame(),
-            )
-        logger.info(f"Incremental fetch: {fetch_start} → {yesterday}")
+            stats_df = pd.read_parquet(STATS_PATH)
+            adv_df   = pd.read_parquet(ADV_PATH)  if ADV_PATH.exists()  else pd.DataFrame()
+            odds_df  = pd.read_parquet(ODDS_PATH) if ODDS_PATH.exists() else pd.DataFrame()
+            # Filter in-memory to as_of_date so future rows (if any exist
+            # on disk from a prior run) do not enter the training table.
+            if as_of_date:
+                stats_df = stats_df[
+                    stats_df["game_date"].astype(str).str[:10] <= as_of_date
+                ].copy()
+                if not adv_df.empty:
+                    adv_df = adv_df[
+                        adv_df["game_date"].astype(str).str[:10] <= as_of_date
+                    ].copy()
+            _validate_as_of_coverage(stats_df, as_of_date, "player_game_stats")
+            return stats_df, adv_df, odds_df
+        logger.info(f"Incremental fetch: {fetch_start} → {cutoff}")
 
     # ── Stats ─────────────────────────────────────────────────────────────────
     new_stats_raw = []
@@ -313,7 +374,7 @@ def fetch_all_data():
             new_stats_raw.extend(batch)
             logger.info(f"    {len(batch)} records")
     else:
-        new_stats_raw = get_player_game_stats(start_date=fetch_start, end_date=yesterday)
+        new_stats_raw = get_player_game_stats(start_date=fetch_start, end_date=cutoff)
         logger.info(f"  {len(new_stats_raw)} new records")
 
     rows = [r for r in (_flat(x) for x in new_stats_raw) if r]
@@ -331,7 +392,7 @@ def fetch_all_data():
             )
             new_adv_raw.extend(batch)
     else:
-        new_adv_raw = get_advanced_stats_v2(start_date=fetch_start, end_date=yesterday)
+        new_adv_raw = get_advanced_stats_v2(start_date=fetch_start, end_date=cutoff)
     adv_rows   = [r for r in (_parse_adv(x) for x in new_adv_raw) if r]
     new_adv_df = pd.DataFrame(adv_rows)
 
@@ -339,7 +400,7 @@ def fetch_all_data():
     logger.info("Fetching game odds...")
     new_odds_raw = []
     cur = pd.Timestamp(max(fetch_start, f"{min(TRAIN_SEASONS)}-10-01"))
-    while cur <= pd.Timestamp(yesterday):
+    while cur <= pd.Timestamp(cutoff):
         new_odds_raw.extend(get_game_odds(dates=[cur.strftime("%Y-%m-%d")]))
         cur += timedelta(days=1)
     odds_rows   = [r for r in (_parse_odds(x) for x in new_odds_raw) if r]
@@ -370,15 +431,36 @@ def fetch_all_data():
         adv_df.to_parquet(ADV_PATH, index=False)
     if not odds_df.empty:  odds_df.to_parquet(ODDS_PATH,  index=False)
 
+    # Final in-memory filter: guard against any rows that slipped through
+    # (e.g. on-disk parquet had rows beyond cutoff merged in above).
+    if as_of_date and not stats_df.empty:
+        stats_df = stats_df[
+            stats_df["game_date"].astype(str).str[:10] <= as_of_date
+        ].copy()
+    if as_of_date and not adv_df.empty:
+        adv_df = adv_df[
+            adv_df["game_date"].astype(str).str[:10] <= as_of_date
+        ].copy()
+
+    _validate_as_of_coverage(stats_df, as_of_date, "player_game_stats")
+
     logger.info(f"Data: {len(stats_df)} stats | {len(adv_df)} adv | {len(odds_df)} odds")
     return stats_df, adv_df, odds_df
 
 
 # ── Training table ─────────────────────────────────────────────────────────────
 
-def build_training_table(stats_df, adv_df, odds_df):
+def build_training_table(stats_df, adv_df, odds_df, as_of_date: str | None = None):
     """
     Build feature matrix for all players and games.
+
+    Parameters
+    ----------
+    as_of_date:
+        When provided, filter stats_df rows to ``game_date <= as_of_date``
+        before building features. This is the belt-and-suspenders guard:
+        fetch_all_data already filters, but build_training_table enforces the
+        same cutoff so training rows can never exceed the declared as-of date.
 
     Injury map policy:
       - For each game date, attempt to load snapshot from injury_snapshots.parquet
@@ -389,6 +471,27 @@ def build_training_table(stats_df, adv_df, odds_df):
       - At inference (predict script), the live injury map is always populated.
     """
     logger.info("Building training table...")
+
+    # Belt-and-suspenders as_of_date filter: remove any rows that slipped
+    # past the fetch_all_data filter (e.g. if called directly with an
+    # already-loaded stats_df that spans beyond as_of_date).
+    if as_of_date and not stats_df.empty:
+        before = len(stats_df)
+        stats_df = stats_df[
+            stats_df["game_date"].astype(str).str[:10] <= as_of_date
+        ].copy()
+        filtered = before - len(stats_df)
+        if filtered:
+            logger.info(
+                f"[as_of_date={as_of_date}] stats_df trimmed: "
+                f"{before} → {len(stats_df)} rows ({filtered} future rows removed)"
+            )
+        else:
+            logger.info(
+                f"[as_of_date={as_of_date}] stats_df already clean "
+                f"(max game_date: "
+                f"{stats_df['game_date'].astype(str).str[:10].max()})"
+            )
 
     ctx_map = build_game_context_map(
         odds_df.to_dict("records",
@@ -1007,6 +1110,27 @@ def build_training_table(stats_df, adv_df, odds_df):
             f"Training table: {len(df)} rows | "
             f"{df['player_id'].nunique()} players | skipped={skipped}"
         )
+        # ── Rolling-feature warmup manifest ────────────────────────────────
+        # The training table min date is always later than the raw stats
+        # min date because each player's first training row requires
+        # MIN_GAMES=15 prior games for rolling features. With an NBA season
+        # opening ~Oct 24, reaching 15 prior games per player takes ~29 days
+        # (≈3 games/week × 5 weeks). This is expected and correct.
+        tt_min = df["game_date"].astype(str).str[:10].min()
+        tt_max = df["game_date"].astype(str).str[:10].max()
+        raw_min = stats_df["game_date"].astype(str).str[:10].min() if not stats_df.empty else "unknown"
+        warmup_days = (
+            (pd.Timestamp(tt_min) - pd.Timestamp(raw_min)).days
+            if tt_min and raw_min and raw_min != "unknown"
+            else None
+        )
+        logger.info(
+            f"Training table date range: {tt_min} → {tt_max} | "
+            f"raw stats start: {raw_min} | "
+            f"warmup gap: {warmup_days} days "
+            f"(MIN_GAMES={MIN_GAMES} prior games required before first row; "
+            f"typical ~29-day lag from season opening)"
+        )
         # ── Metric 1: injury-snapshot coverage (forward-only) ──────────
         if snap_dates_available > 0:
             logger.info(
@@ -1364,11 +1488,13 @@ def fit_correlation_engine(training_df: pd.DataFrame):
 
 # ── Main ───────────────────────────────────────────────────────────────────────
 
-def main(build_table_only: bool = False):
+def main(build_table_only: bool = False, as_of_date: str | None = None):
     logger.info("=" * 60)
     logger.info("NBA Props Model TRAINING — VERSION 2026-03-09-v12")
     logger.info("Quantile Regression | Expert-reviewed features | Pinball loss")
     logger.info("Temporal holdout | 30+ advanced fields | Injury snapshot system")
+    if as_of_date:
+        logger.info(f"AS_OF_DATE={as_of_date} — data and table capped to this date")
     logger.info("=" * 60)
 
     if not _get_api_key():
@@ -1379,17 +1505,32 @@ def main(build_table_only: bool = False):
     # This accumulates historical injury state going forward
     save_injury_snapshot()
 
-    stats_df, adv_df, odds_df = fetch_all_data()
+    stats_df, adv_df, odds_df = fetch_all_data(as_of_date=as_of_date)
     if stats_df.empty:
         sys.exit("No stats data.")
 
-    training_df = build_training_table(stats_df, adv_df, odds_df)
+    training_df = build_training_table(stats_df, adv_df, odds_df, as_of_date=as_of_date)
 
     # Issue 15 fix: set dynamic league 3P% prior from full training data
     if "fg3m" in stats_df.columns and "fg3a" in stats_df.columns:
         set_league_3p_prior(stats_df["fg3m"], stats_df["fg3a"])
     if training_df.empty:
         sys.exit("Training table empty.")
+
+    # ── as_of_date post-build verification ─────────────────────────────────
+    # After build_training_table persists the parquet, verify max date
+    # matches as_of_date so downstream calibration is never silently
+    # misaligned.
+    if as_of_date and not training_df.empty:
+        tt_max = training_df["game_date"].astype(str).str[:10].max()
+        if tt_max > as_of_date:
+            sys.exit(
+                f"FATAL: training_table max game_date ({tt_max}) exceeds "
+                f"as_of_date ({as_of_date}) — date leak in build_training_table"
+            )
+        logger.info(
+            f"training_table max game_date ({tt_max}) <= as_of_date ({as_of_date}) ✓"
+        )
 
     # ── --build-table-only exit point ───────────────────────────────────────
     # Phase 8 only needs data/training_table.parquet on disk; it must not

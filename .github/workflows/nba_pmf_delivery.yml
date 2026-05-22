@@ -367,6 +367,16 @@ jobs:
               --out "$OUT"
           fi
 
+      - name: Verify source data alignment before training
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+          # Check player_game_stats and availability are aligned to as_of_date.
+          # Omit --check-training-table: the table is built inside the
+          # nightly training script (not before it).
+          python3 scripts/verify_training_data_alignment.py \
+            --as-of-date "$ASOF"
+
       - name: Run nightly training and role/stat calibration
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
@@ -486,15 +496,60 @@ jobs:
               --out "$OUT"
           fi
 
-      - name: Build training table if absent
+      - name: Build training table if absent or stale
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          # Rebuild if absent OR if the existing table's max date != as_of_date.
+          # File-existence alone is insufficient: a prior run that fetched through
+          # a different date would leave a misaligned table on disk.
+          NEED_BUILD=false
           if [ ! -s data/training_table.parquet ]; then
-            python3 scripts/train.py --build-table-only
+            echo "Training table absent — building."
+            NEED_BUILD=true
+          else
+            ACTUAL_MAX=$(python3 - <<'PY'
+          import pandas as pd
+          df = pd.read_parquet("data/training_table.parquet", columns=["game_date"])
+          print(df["game_date"].astype(str).str[:10].max() if not df.empty else "")
+          PY
+          )
+            if [ "$ACTUAL_MAX" != "$ASOF" ]; then
+              echo "Training table max=${ACTUAL_MAX} != as_of_date=${ASOF} — rebuilding."
+              NEED_BUILD=true
+            else
+              echo "Training table max=${ACTUAL_MAX} == as_of_date=${ASOF} — reuse."
+            fi
           fi
+
+          if [ "$NEED_BUILD" = "true" ]; then
+            python3 scripts/train.py --build-table-only --as-of-date "$ASOF"
+          fi
+
+          # Verify max date after build/reuse.
+          FINAL_MAX=$(python3 - <<'PY'
+          import pandas as pd
+          df = pd.read_parquet("data/training_table.parquet", columns=["game_date"])
+          print(df["game_date"].astype(str).str[:10].max() if not df.empty else "EMPTY")
+          PY
+          )
+          if [ "$FINAL_MAX" != "$ASOF" ]; then
+            echo "::error::Training table max date ${FINAL_MAX} != expected ${ASOF} after build"
+            exit 1
+          fi
+          echo "Training table max date verified: ${FINAL_MAX} == ${ASOF}"
+
+      - name: Verify training data alignment before Phase 8 calibration
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+          python3 scripts/verify_training_data_alignment.py \
+            --as-of-date "$ASOF" \
+            --check-training-table
 
       - name: Run Phase 8 PMF calibration folds + OOF aggregation + combo PMFs
         env:
