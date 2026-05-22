@@ -117,8 +117,12 @@ def check_player_game_stats(as_of_date: str, errors: list[str]) -> None:
     if not path.exists():
         errors.append(f"player_game_stats: file not found at {path}")
         return
-    actual = _read_max_date(path)
-    _check_max_date("player_game_stats", actual, as_of_date, errors)
+    # Filter to <= as_of_date: the BDL backfill may pull rows beyond as_of_date
+    # (7-day rolling window), which is expected. The actual leakage guard is
+    # train.py --as-of-date which filters the training table. Here we only
+    # verify that fresh-enough data EXISTS up to as_of_date.
+    actual = _read_max_date_filtered(path, ceiling=as_of_date)
+    _check_max_date("player_game_stats (filtered ≤ as_of_date)", actual, as_of_date, errors)
 
 
 def check_player_availability(as_of_date: str, errors: list[str]) -> None:
