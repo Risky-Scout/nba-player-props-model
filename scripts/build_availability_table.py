@@ -112,6 +112,20 @@ def main() -> None:
             f"Merged slate {args.slate_date!r}: {len(feats):,} new rows, "
             f"{len(merged):,} total -> {out_path}  ({dt:.1f}s)"
         )
+    elif out_path.exists() and (args.start_date or args.end_date):
+        old = pd.read_parquet(out_path)
+        old_norm = pd.to_datetime(old["game_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+        start_filter = args.start_date or "0000-01-01"
+        end_filter = args.end_date or "9999-12-31"
+        old_kept = old.loc[~((old_norm >= start_filter) & (old_norm <= end_filter))].copy()
+        merged = pd.concat([old_kept, feats], ignore_index=True)
+        merged.to_parquet(out_path, index=False)
+        dt = time.time() - t0
+        logger.info(
+            f"Merged range {start_filter} \u2192 {end_filter}: "
+            f"{len(feats):,} new rows, {len(merged):,} total -> {out_path}  ({dt:.1f}s)"
+        )
+        _log_coverage(feats)
     else:
         feats.to_parquet(out_path, index=False)
         dt = time.time() - t0
