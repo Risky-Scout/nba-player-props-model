@@ -384,6 +384,10 @@ jobs:
             ARGS+=("--no-promote")
           fi
 
+          # model_chain is the real training path; pin this explicitly so
+          # parser/default drift can never silently flip to dry-run mode.
+          ARGS+=("--no-dry-run")
+
           python3 scripts/run_nightly_training_and_calibration.py "${ARGS[@]}"
 
       - name: Commit training/calibration artifacts
