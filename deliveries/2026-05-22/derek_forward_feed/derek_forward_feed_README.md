@@ -3,9 +3,9 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `derek_forward_feed/derek_forward_feed.csv`
-- Original rows: `2204`
+- Original rows: `958`
 - Original columns: `55`
-- Original bytes: `1259023`
+- Original bytes: `547216`
 - Current CSV preview rows: `958`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `derek_forward_feed.parquet`
@@ -16,5 +16,4 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 | part | rows | bytes |
 |---|---:|---:|
 | `derek_forward_feed_csv_parts/derek_forward_feed_part_000.csv` | 785 | 429613 |
-| `derek_forward_feed_csv_parts/derek_forward_feed_part_001.csv` | 785 | 431370 |
-| `derek_forward_feed_csv_parts/derek_forward_feed_part_002.csv` | 634 | 346753 |
+| `derek_forward_feed_csv_parts/derek_forward_feed_part_001.csv` | 173 | 95379 |
