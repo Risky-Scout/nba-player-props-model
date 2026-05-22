@@ -497,6 +497,21 @@ def test_phase8_preflight_refreshes_availability_before_build_training_table(wor
     )
 
 
+def test_model_chain_explicitly_pins_real_training_mode(workflow):
+    """model_chain must pass --no-dry-run explicitly to nightly training."""
+
+    steps = _job_steps(workflow, "model_chain_training_calibration")
+    run_idx = _first_step_index_with_run_marker(
+        steps, "scripts/run_nightly_training_and_calibration.py"
+    )
+    assert run_idx is not None, (
+        "model_chain missing run_nightly_training_and_calibration.py step"
+    )
+    run_text = steps[run_idx].get("run", "") or ""
+    assert 'ARGS+=("--no-dry-run")' in run_text
+    assert "scripts/run_nightly_training_and_calibration.py" in run_text
+
+
 def test_predict_daily_uses_resolver_outputs(workflow):
     predict = workflow["jobs"]["predict_daily"]
     cond = predict["if"]
