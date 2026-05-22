@@ -275,6 +275,11 @@ _AVAILABILITY_PREFLIGHT_CMD = (
 _AVAILABILITY_PREFLIGHT_DATE = (
     'D="${{ needs.resolve_context.outputs.delivery_date }}"'
 )
+_AVAILABILITY_RANGE_PREFLIGHT_MARKERS = (
+    "scripts/availability_preflight_start_date.py",
+    "--start-date \"$START_DATE\"",
+    "--end-date \"$D\"",
+)
 
 
 def _job_steps(workflow: dict, job_name: str) -> list[dict]:
@@ -310,6 +315,19 @@ def _assert_availability_preflight_command_contract(step: dict):
     assert "--slate-date \"$D\"" in run_text
     assert re.search(r"--slate-date\\s+\"20\\d\\d-\\d\\d-\\d\\d\"", run_text) is None, (
         "availability preflight must not hardcode a date literal"
+    )
+
+
+def _assert_availability_range_preflight_command_contract(step: dict):
+    run_text = step.get("run", "") or ""
+    assert _AVAILABILITY_PREFLIGHT_DATE in run_text
+    for marker in _AVAILABILITY_RANGE_PREFLIGHT_MARKERS:
+        assert marker in run_text
+    assert "if [ -n \"$START_DATE\" ]; then" in run_text
+    assert "build_availability_table.py --slate-date" not in run_text
+    assert "build_availability_table.py || true" not in run_text
+    assert re.search(r"--end-date\\s+\"20\\d\\d-\\d\\d-\\d\\d\"", run_text) is None, (
+        "availability range preflight must not hardcode a date literal"
     )
 
 
@@ -433,7 +451,7 @@ def test_model_chain_preflight_refreshes_availability_before_training_table_path
 
     steps = _job_steps(workflow, "model_chain_training_calibration")
     avail_idx, step = _availability_preflight_step(steps)
-    _assert_availability_preflight_command_contract(step)
+    _assert_availability_range_preflight_command_contract(step)
     _assert_availability_preflight_not_suppressed(step)
     _assert_no_indented_heredoc_terminator(step.get("run", "") or "")
     _assert_bash_parseable(step.get("run", "") or "")
@@ -463,7 +481,7 @@ def test_phase8_preflight_refreshes_availability_before_build_training_table(wor
 
     steps = _job_steps(workflow, "phase8_pmf_calibration_diagnostics_market_eval")
     avail_idx, step = _availability_preflight_step(steps)
-    _assert_availability_preflight_command_contract(step)
+    _assert_availability_range_preflight_command_contract(step)
     _assert_availability_preflight_not_suppressed(step)
     _assert_no_indented_heredoc_terminator(step.get("run", "") or "")
     _assert_bash_parseable(step.get("run", "") or "")
@@ -1267,6 +1285,11 @@ def test_availability_preflight_blocks_execute_with_builder_stub():
         run = re.sub(
             r"python3 scripts/build_availability_table\.py",
             "echo python3 scripts/build_availability_table.py",
+            run,
+        )
+        run = re.sub(
+            r'START_DATE="\$\(python3 scripts/availability_preflight_start_date\.py --date "\$D" --out "\$OUT"\)"',
+            'START_DATE="2026-05-01"',
             run,
         )
 
