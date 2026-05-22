@@ -1220,6 +1220,11 @@ jobs:
             local attempts="${1:-5}"
             for i in $(seq 1 "$attempts"); do
               cleanup_rebase_state
+              # Remove locally-generated prediction/feature files owned by predict_daily.
+              # delivery_build does not commit these; predict_daily commits them to
+              # origin/main. If left as untracked, git rebase refuses with
+              # "untracked file would be overwritten by checkout".
+              git clean -fd predictions/ data/features/ || true
               git status --short || true
 
               if git pull --rebase --autostash origin main && git push origin HEAD:main; then
