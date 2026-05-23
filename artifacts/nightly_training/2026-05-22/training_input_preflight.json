@@ -17,8 +17,8 @@
   },
   "all_required_present": true,
   "as_of_date": "2026-05-22",
-  "code_commit": "49a21d61d7d77f685de79614136b9015d5844dca",
-  "generated_at_utc": "2026-05-23T16:34:11+00:00",
+  "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+  "generated_at_utc": "2026-05-23T19:45:23+00:00",
   "missing_advisory": [
     "data/training_table.parquet"
   ],
@@ -37,17 +37,17 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-22",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260523T163408"
+    "training_run_id": "nightly-20260523T194519"
   },
   "required_inputs": {
     "champion_pmf_cal_role_ast": {
       "path": "artifacts/models/pmf_cal_role_ast.pkl",
-      "sha256_prefix": "f152efe4a7d4df9b",
-      "size_bytes": 114853
+      "sha256_prefix": "33e9cc5f3a6601c5",
+      "size_bytes": 114901
     },
     "champion_pmf_cal_role_blk": {
       "path": "artifacts/models/pmf_cal_role_blk.pkl",
-      "sha256_prefix": "107d2324be404f16",
+      "sha256_prefix": "29d6276b5e2056a5",
       "size_bytes": 114917
     },
     "champion_pmf_cal_role_fg3m": {
@@ -57,22 +57,22 @@
     },
     "champion_pmf_cal_role_pts": {
       "path": "artifacts/models/pmf_cal_role_pts.pkl",
-      "sha256_prefix": "a48ed05ab13e000a",
-      "size_bytes": 114773
+      "sha256_prefix": "1be9800a60c870d5",
+      "size_bytes": 114837
     },
     "champion_pmf_cal_role_reb": {
       "path": "artifacts/models/pmf_cal_role_reb.pkl",
-      "sha256_prefix": "5f3aac8535de9785",
+      "sha256_prefix": "2ccf994531bf2198",
       "size_bytes": 114901
     },
     "champion_pmf_cal_role_stl": {
       "path": "artifacts/models/pmf_cal_role_stl.pkl",
-      "sha256_prefix": "75a80bb139c2bf59",
+      "sha256_prefix": "66842a455cb8ff89",
       "size_bytes": 114917
     },
     "champion_pmf_cal_role_tov": {
       "path": "artifacts/models/pmf_cal_role_tov.pkl",
-      "sha256_prefix": "59d760166cd6dca8",
+      "sha256_prefix": "f2984fb449b74218",
       "size_bytes": 114917
     },
     "champion_pointer": {
@@ -82,8 +82,8 @@
     },
     "data/oof_pmfs.parquet": {
       "path": "data/oof_pmfs.parquet",
-      "sha256_prefix": "5f92d5367351d7b3",
-      "size_bytes": 12174727
+      "sha256_prefix": "c74c2d1da7eae21f",
+      "size_bytes": 12194185
     },
     "data/player_game_stats.parquet": {
       "path": "data/player_game_stats.parquet",

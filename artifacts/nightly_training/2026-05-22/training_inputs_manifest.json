@@ -3,8 +3,8 @@
   "champion_calibrators": {
     "ast": {
       "path": "artifacts/models/pmf_cal_role_ast.pkl",
-      "sha256_prefix": "f152efe4a7d4df9b",
-      "size_bytes": 114853
+      "sha256_prefix": "33e9cc5f3a6601c5",
+      "size_bytes": 114901
     },
     "fg3m": {
       "path": "artifacts/models/pmf_cal_role_fg3m.pkl",
@@ -13,32 +13,32 @@
     },
     "pts": {
       "path": "artifacts/models/pmf_cal_role_pts.pkl",
-      "sha256_prefix": "a48ed05ab13e000a",
-      "size_bytes": 114773
+      "sha256_prefix": "1be9800a60c870d5",
+      "size_bytes": 114837
     },
     "reb": {
       "path": "artifacts/models/pmf_cal_role_reb.pkl",
-      "sha256_prefix": "5f3aac8535de9785",
+      "sha256_prefix": "2ccf994531bf2198",
       "size_bytes": 114901
     },
     "tov": {
       "path": "artifacts/models/pmf_cal_role_tov.pkl",
-      "sha256_prefix": "59d760166cd6dca8",
+      "sha256_prefix": "f2984fb449b74218",
       "size_bytes": 114917
     }
   },
-  "code_commit": "49a21d61d7d77f685de79614136b9015d5844dca",
+  "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
   "errors": [],
-  "generated_at_utc": "2026-05-23T16:34:12+00:00",
+  "generated_at_utc": "2026-05-23T19:45:24+00:00",
   "inputs": {
     "fold_aggregate.parquet": {
       "future_rows_excluded": 0,
       "rows_after_cutoff": 79121,
       "rows_pre_cutoff": 79121,
       "scoped_path": "artifacts/models/challengers/2026-05-22/aggregate_input/fold_aggregate.parquet",
-      "scoped_sha256_prefix": "df9616f81c960318",
+      "scoped_sha256_prefix": "2d526a97e7753c7e",
       "source": "data/oof_pmfs.parquet",
-      "source_sha256_prefix": "5f92d5367351d7b3"
+      "source_sha256_prefix": "c74c2d1da7eae21f"
     },
     "training_table.parquet": {
       "advisory_only": true,
@@ -55,7 +55,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-22",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260523T163408"
+    "training_run_id": "nightly-20260523T194519"
   },
   "schema_version": "1.0",
   "stale_state_cleaned": [
