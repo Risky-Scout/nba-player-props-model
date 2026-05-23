@@ -3,7 +3,7 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "0c81602fb9edc5c24fc0921258ec5f9b0e026d2b",
+    "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -246,7 +246,7 @@
     },
     "model_version": "challenger-2026-04-30"
   },
-  "code_commit": "0c81602fb9edc5c24fc0921258ec5f9b0e026d2b",
+  "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -341,7 +341,7 @@
       "name": "market_benchmark_available"
     }
   ],
-  "generated_at_utc": "2026-05-23T22:22:00+00:00",
+  "generated_at_utc": "2026-05-23T22:31:40+00:00",
   "m6_3_matrix_summary": {
     "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
     "expected_role_buckets": [
@@ -664,7 +664,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "0c81602fb9edc5c24fc0921258ec5f9b0e026d2b",
+    "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
     "dates_included": [
       "2026-05-20",
       "2026-05-18",
@@ -699,7 +699,7 @@
     ],
     "delta_brier": 0.012077780653008373,
     "delta_logloss": 0.036980768653124906,
-    "generated_at_utc": "2026-05-23T22:21:48+00:00",
+    "generated_at_utc": "2026-05-23T22:31:31+00:00",
     "market_brier": 0.23386606711450633,
     "market_logloss": 0.6591127199592747,
     "min_bucket_rows": 50,
@@ -862,7 +862,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-22",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260523T222050"
+    "training_run_id": "nightly-20260523T223047"
   },
   "pmf_validity": {
     "checked_files": 1,

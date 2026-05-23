@@ -22,7 +22,7 @@
     "training_run_id": "nightly-20260501T124701",
     "validation_report_path": "artifacts/phase13s/validation_gates_report.json"
   },
-  "generated_at_utc": "2026-05-23T19:48:04+00:00Z",
+  "generated_at_utc": "2026-05-23T22:33:34+00:00Z",
   "metrics_per_target": {
     "ast": {
       "baseline_mse": 0.00956541013927596,
@@ -368,7 +368,7 @@
           "rps": 0.5523688472911159
         }
       },
-      "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+      "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
       "gates_failed": [
         "m6_3_stat_role_matrix_valid",
         "m6_3_review_cells_guarded",
@@ -394,7 +394,7 @@
         "no_phase10d_overlays_referenced",
         "market_benchmark_available"
       ],
-      "generated_at_utc": "2026-05-23T19:46:13+00:00",
+      "generated_at_utc": "2026-05-23T22:31:40+00:00",
       "m6_3_matrix_summary": {
         "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
         "expected_role_buckets": [
@@ -715,7 +715,7 @@
             "stat": "reb"
           }
         ],
-        "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+        "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
         "dates_included": [
           "2026-05-20",
           "2026-05-18",
@@ -750,7 +750,7 @@
         ],
         "delta_brier": 0.012077780653008373,
         "delta_logloss": 0.036980768653124906,
-        "generated_at_utc": "2026-05-23T19:46:04+00:00",
+        "generated_at_utc": "2026-05-23T22:31:31+00:00",
         "market_brier": 0.23386606711450633,
         "market_logloss": 0.6591127199592747,
         "min_bucket_rows": 50,
@@ -912,7 +912,7 @@
         "stale_fallback_used": false,
         "target_date_et": "2026-05-22",
         "target_policy": "manual_override",
-        "training_run_id": "nightly-20260523T194519"
+        "training_run_id": "nightly-20260523T223047"
       },
       "promote": false,
       "reason": "gate_failed:m6_3_stat_role_matrix_valid",
@@ -1484,8 +1484,8 @@
     },
     "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-05-22/promotion_decision.json",
     "promotion_manifest": {
-      "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
-      "decided_at_utc": "2026-05-23T19:46:14+00:00",
+      "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
+      "decided_at_utc": "2026-05-23T22:31:41+00:00",
       "decision_seen": {
         "as_of_date": "2026-05-22",
         "calibration_blend_policy": "stat_role_guarded_expanded_v1",
@@ -1723,7 +1723,7 @@
             "rps": 0.5523688472911159
           }
         },
-        "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+        "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
         "gates_failed": [
           "m6_3_stat_role_matrix_valid",
           "m6_3_review_cells_guarded",
@@ -1749,7 +1749,7 @@
           "no_phase10d_overlays_referenced",
           "market_benchmark_available"
         ],
-        "generated_at_utc": "2026-05-23T19:46:13+00:00",
+        "generated_at_utc": "2026-05-23T22:31:40+00:00",
         "m6_3_matrix_summary": {
           "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
           "expected_role_buckets": [
@@ -2070,7 +2070,7 @@
               "stat": "reb"
             }
           ],
-          "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+          "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
           "dates_included": [
             "2026-05-20",
             "2026-05-18",
@@ -2105,7 +2105,7 @@
           ],
           "delta_brier": 0.012077780653008373,
           "delta_logloss": 0.036980768653124906,
-          "generated_at_utc": "2026-05-23T19:46:04+00:00",
+          "generated_at_utc": "2026-05-23T22:31:31+00:00",
           "market_brier": 0.23386606711450633,
           "market_logloss": 0.6591127199592747,
           "min_bucket_rows": 50,

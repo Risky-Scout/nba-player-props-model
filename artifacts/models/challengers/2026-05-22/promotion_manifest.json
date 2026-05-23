@@ -1343,6 +1343,15 @@
     },
     "warnings": []
   },
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-22",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-22",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260523T223047"
+  },
   "promoted": false,
   "reason": "contextual_regression_blocked: existing champion pointer has feature_set_id='phase13s_direct_lineup_injury_pmf_driver_v1' (contextual/direct-lineup) but the new challenger train_manifest has feature_set_id='' \u2014 refusing to replace a contextual champion with a non-contextual pointer. Promote the contextual challenger first.",
   "schema_version": "1.0"

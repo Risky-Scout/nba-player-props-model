@@ -62,7 +62,7 @@
       "severity": "blocking"
     }
   ],
-  "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+  "code_commit": "6b271fd8568a97b67826c2e316d4ad5ecb5afc67",
   "counts": {
     "per_stat_rows_through_as_of": {
       "ast": 84338,
@@ -85,7 +85,7 @@
       "stl": "stl"
     }
   },
-  "generated_at_utc": "2026-05-23T19:45:22+00:00",
+  "generated_at_utc": "2026-05-23T22:30:49+00:00",
   "overall_pass": true,
   "phase13g": {
     "data_complete_for_target_date": null,
@@ -94,7 +94,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-22",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260523T194519"
+    "training_run_id": "nightly-20260523T223047"
   },
   "schema_version": "1.0"
 }
