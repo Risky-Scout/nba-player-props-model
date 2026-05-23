@@ -8,6 +8,7 @@ training output.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import json
 import sys
@@ -24,6 +25,16 @@ from nba_props_model.contextual import (  # noqa: E402
 
 
 def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Phase 13R state audit")
+    parser.add_argument(
+        "--as-of-date",
+        metavar="YYYY-MM-DD",
+        help="Look in artifacts/models/challengers/<date>_contextual/ first "
+             "so Phase 13Q dir is resolved before the Phase 13S "
+             "direct-lineup dir, which uses phase13s_*.pkl naming.",
+    )
+    args = parser.parse_args(argv)
+
     out_dir = REPO_ROOT / "artifacts" / "phase13r"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -31,8 +42,24 @@ def main(argv=None) -> int:
     pointer = json.loads(pointer_path.read_text(encoding="utf-8")) \
         if pointer_path.exists() else {}
 
-    challenger_dir, reason = resolve_contextual_challenger_dir(
-        REPO_ROOT, champion_pointer=pointer)
+    # When --as-of-date is given, prefer the exact Phase 13Q output directory
+    # to avoid accidentally resolving the Phase 13S _direct_lineup_contextual
+    # directory (which uses phase13s_*.pkl naming and would miss phase13q_* checks).
+    challenger_dir: Path | None = None
+    reason = ""
+    if args.as_of_date:
+        exact_dir = (
+            REPO_ROOT / "artifacts" / "models" / "challengers"
+            / f"{args.as_of_date}_contextual"
+        )
+        if exact_dir.exists():
+            challenger_dir = exact_dir
+            reason = f"exact Phase 13Q dir resolved from --as-of-date {args.as_of_date}"
+
+    if challenger_dir is None:
+        challenger_dir, reason = resolve_contextual_challenger_dir(
+            REPO_ROOT, champion_pointer=pointer)
+
     train_manifest = {}
     no_leakage_manifest = {}
     model_manifest = {}
@@ -54,18 +81,20 @@ def main(argv=None) -> int:
                 else:
                     model_manifest = val
         try:
-            engine = load_contextual_engine(challenger_dir)
+            # require_minutes=False: Phase 13S direct-lineup challengers may
+            # not include a "minutes" sub-model; allow the audit to proceed.
+            engine = load_contextual_engine(challenger_dir, require_minutes=False)
             feature_lists = {k: list(v) for k, v in engine.feature_lists.items()}
-            # Phase 13Q challengers use phase13q_*.pkl; Phase 13S direct-lineup
-            # challengers use phase13s_*.pkl.  Accept either set as valid
-            # contextual artifacts — Phase 13S supersedes Phase 13Q.
-            feature_files = sorted(
-                p.name for p in challenger_dir.glob("phase13q_*.pkl")
-            ) or sorted(
-                p.name for p in challenger_dir.glob("phase13s_*.pkl")
-            )
         except Exception:
             engine = None
+        # Phase 13Q challengers use phase13q_*.pkl; Phase 13S direct-lineup
+        # challengers use phase13s_*.pkl.  Accept either set as valid
+        # contextual artifacts — Phase 13S supersedes Phase 13Q.
+        feature_files = sorted(
+            p.name for p in challenger_dir.glob("phase13q_*.pkl")
+        ) or sorted(
+            p.name for p in challenger_dir.glob("phase13s_*.pkl")
+        )
 
     answers = {
         "1_phase13q_trained_real_artifacts": bool(feature_files),
@@ -160,7 +189,7 @@ def main(argv=None) -> int:
 
     issues = []
     if not feature_files:
-        issues.append("no phase13q_*.pkl files on disk")
+        issues.append("no phase13q_*.pkl or phase13s_*.pkl files on disk")
     if not feature_lists:
         issues.append("no per-target feature lists loadable")
     if not pointer.get("feature_set_id"):

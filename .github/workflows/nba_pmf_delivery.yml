@@ -740,8 +740,9 @@ jobs:
       - name: Phase 13R — contextual deployment verification (+ gated promotion)
         run: |
           set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
 
-          python3 scripts/_phase13r_write_state_audit.py
+          python3 scripts/_phase13r_write_state_audit.py --as-of-date "$ASOF"
           python3 scripts/verify_contextual_feature_lists.py
           python3 scripts/verify_contextual_predict_path.py
           python3 scripts/verify_contextual_pmf_sensitivity.py
