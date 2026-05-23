@@ -39,14 +39,6 @@ def main() -> int:
         # 9:30/12:30 UTC — before predict_daily. Valid-skip so Phase 8 can
         # commit fresh OOF artifacts; final_contract_verifiers re-checks after
         # predict_daily has run.
-        import json, time as _time
-        _log = Path(__file__).resolve().parents[1] / ".cursor" / "debug-fcc935.log"
-        try:
-            _log.parent.mkdir(parents=True, exist_ok=True)
-            with _log.open("a") as _f:
-                _f.write(json.dumps({"sessionId":"fcc935","hypothesisId":"A","location":"verify_role_bucket_contract.py:37","message":"stat_grid missing — valid skip","data":{"date":args.date,"path":str(p)},"timestamp":int(_time.time()*1000)}) + "\n")
-        except Exception:
-            pass
         print(f"ROLE_BUCKET_CONTRACT_VALID_SKIP stat_grid not yet available date={args.date!r}")
         return 0
 
@@ -89,25 +81,9 @@ def main() -> int:
     # Role diagnostics must be present (produced by diagnose_role_and_minutes_bias.py).
     missing = [str(x.relative_to(REPO_ROOT)) for x in REQUIRED_ROLE_DIAG if not x.exists()]
     if missing:
-        import json, time as _time
-        _log = Path(__file__).resolve().parents[1] / ".cursor" / "debug-fcc935.log"
-        try:
-            _log.parent.mkdir(parents=True, exist_ok=True)
-            with _log.open("a") as _f:
-                _f.write(json.dumps({"sessionId":"fcc935","hypothesisId":"C","location":"verify_role_bucket_contract.py:78","message":"role_diag missing","data":{"missing":missing},"timestamp":int(_time.time()*1000)}) + "\n")
-        except Exception:
-            pass
         print(f"ROLE_BUCKET_CONTRACT_FAIL missing_role_diagnostics={missing}", file=sys.stderr)
         return 2
 
-    import json, time as _time
-    _log = Path(__file__).resolve().parents[1] / ".cursor" / "debug-fcc935.log"
-    try:
-        _log.parent.mkdir(parents=True, exist_ok=True)
-        with _log.open("a") as _f:
-            _f.write(json.dumps({"sessionId":"fcc935","hypothesisId":"B","location":"verify_role_bucket_contract.py:83","message":"role_bucket contract PASS","data":{"date":args.date,"n_rows":len(df)},"timestamp":int(_time.time()*1000)}) + "\n")
-    except Exception:
-        pass
     print(f"ROLE_BUCKET_CONTRACT_PASS date={args.date!r}")
     return 0
 
