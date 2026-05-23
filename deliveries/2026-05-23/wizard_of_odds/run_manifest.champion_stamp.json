@@ -1,0 +1,18 @@
+{
+  "calibrated_through_date": "2026-04-30",
+  "calibration_run_id": "nightly-20260501T124701",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-04-30",
+  "champion_pointer_hash": "f1b07b5b90d474a4a6527c4a9252cba5",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "metadata_stamped_at_utc": "2026-05-23T16:11:41+00:00",
+  "model_source": "champion_pointer",
+  "no_challenger_artifacts_used": true,
+  "output_generated_at_utc": "2026-05-23T16:11:41+00:00",
+  "promotion_decision_id": "phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T134927",
+  "stamp_code_commit": "2497aaec6a1a3bb7181e807cd5ffb9ee31ae71c9",
+  "stamped_into": "deliveries/2026-05-23/wizard_of_odds/run_manifest.json",
+  "trained_through_date": "2026-04-30",
+  "training_run_id": "nightly-20260501T124701",
+  "validation_run_id": "nightly-20260501T124701"
+}

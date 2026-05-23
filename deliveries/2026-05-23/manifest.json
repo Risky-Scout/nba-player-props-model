@@ -1,0 +1,61 @@
+{
+  "delivery_date": "2026-05-23",
+  "train_through_date": "2026-05-22",
+  "status": "passed",
+  "failures": [],
+  "notes": {
+    "minutes_predictions_rows": 15,
+    "minutes_eligible_rows": 15,
+    "canonical_rows": 180,
+    "review_rows": 180,
+    "market_rows": 2464,
+    "derek_rows": 2425,
+    "proof_gates": {
+      "minutes_universe": "schema+uniqueness+null/range checks (NO deep-bench gate)",
+      "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
+    }
+  },
+  "checked_at_utc": "2026-05-23T16:11:57Z",
+  "selected_injury_report": null,
+  "selected_injury_report_time": null,
+  "injury_report_fallback_used": false,
+  "failed_injury_report_candidates": [
+    {
+      "report": "Injury-Report_2026-05-23_07_00PM",
+      "reason": "future_report_time_or_not_yet_available"
+    },
+    {
+      "report": "Injury-Report_2026-05-23_05_00PM",
+      "reason": "future_report_time_or_not_yet_available"
+    },
+    {
+      "report": "Injury-Report_2026-05-23_03_00PM",
+      "reason": "future_report_time_or_not_yet_available"
+    },
+    {
+      "report": "Injury-Report_2026-05-23_01_00PM",
+      "reason": "future_report_time_or_not_yet_available"
+    },
+    {
+      "report": "Injury-Report_2026-05-23_12_00PM",
+      "reason": "no_matching_slate_teams"
+    },
+    {
+      "report": "Injury-Report_2026-05-23_11_00AM",
+      "reason": "no_matching_slate_teams"
+    }
+  ],
+  "injury_freshness_status": "parser_failure_needs_attention",
+  "fetched_at_utc": "2026-05-23T16:10:24Z",
+  "market_eval_available": false,
+  "market_rows_keyed": true,
+  "market_rows_fresh": false,
+  "market_superiority_claim_allowed": false,
+  "market_eval_blocker": "missing_snapshot_timestamp",
+  "date": "2026-05-23",
+  "run_mode": "woo_morning_monetization",
+  "canonical_model_only_path": "deliveries/2026-05-23/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+  "all_props_model_only_path": "deliveries/2026-05-23/canonical_source/all_props_model_only.parquet",
+  "market_comparison_path": "deliveries/2026-05-23/wizard_of_odds/market_comparison.parquet",
+  "warnings": []
+}
