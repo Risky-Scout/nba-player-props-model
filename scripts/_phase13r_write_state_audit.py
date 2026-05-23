@@ -8,6 +8,7 @@ training output.
 """
 from __future__ import annotations
 
+import argparse
 import datetime as dt
 import json
 import sys
@@ -24,6 +25,14 @@ from nba_props_model.contextual import (  # noqa: E402
 
 
 def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Phase 13R state audit")
+    parser.add_argument(
+        "--as-of-date",
+        metavar="YYYY-MM-DD",
+        help="Look in artifacts/models/challengers/<date>_contextual/ first",
+    )
+    args = parser.parse_args(argv)
+
     out_dir = REPO_ROOT / "artifacts" / "phase13r"
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -31,8 +40,23 @@ def main(argv=None) -> int:
     pointer = json.loads(pointer_path.read_text(encoding="utf-8")) \
         if pointer_path.exists() else {}
 
-    challenger_dir, reason = resolve_contextual_challenger_dir(
-        REPO_ROOT, champion_pointer=pointer)
+    # When --as-of-date is given, try the exact Phase 13Q output directory
+    # first so we never accidentally pick up a Phase 13S _direct_lineup_contextual
+    # directory (which uses phase13s_*.pkl naming and would yield zero files).
+    challenger_dir: Path | None = None
+    reason = ""
+    if args.as_of_date:
+        exact_dir = (
+            REPO_ROOT / "artifacts" / "models" / "challengers"
+            / f"{args.as_of_date}_contextual"
+        )
+        if exact_dir.exists():
+            challenger_dir = exact_dir
+            reason = f"exact Phase 13Q dir resolved from --as-of-date {args.as_of_date}"
+
+    if challenger_dir is None:
+        challenger_dir, reason = resolve_contextual_challenger_dir(
+            REPO_ROOT, champion_pointer=pointer)
     train_manifest = {}
     no_leakage_manifest = {}
     model_manifest = {}
@@ -54,11 +78,11 @@ def main(argv=None) -> int:
                 else:
                     model_manifest = val
         try:
-            engine = load_contextual_engine(challenger_dir)
+            engine = load_contextual_engine(challenger_dir, require_minutes=False)
             feature_lists = {k: list(v) for k, v in engine.feature_lists.items()}
-            feature_files = sorted(p.name for p in challenger_dir.glob("phase13q_*.pkl"))
         except Exception:
             engine = None
+        feature_files = sorted(p.name for p in challenger_dir.glob("phase13q_*.pkl"))
 
     answers = {
         "1_phase13q_trained_real_artifacts": bool(feature_files),
@@ -81,8 +105,8 @@ def main(argv=None) -> int:
             pointer.get("contextual_pmf_engine")),
         "8_champion_pointer_references_contextual": bool(
             pointer.get("contextual_challenger_dir")),
-        "9_champion_pointer_includes_feature_set_id": bool(
-            pointer.get("feature_set_id")),
+        "9_train_manifest_includes_feature_set_id": bool(
+            train_manifest.get("feature_set_id")),
         "10_production_predict_uses_contextual_default": False,
         "10_note": (
             "scripts/predict.py default (WoO) is preserved "
@@ -138,7 +162,7 @@ def main(argv=None) -> int:
         f"- challenger_dir: `{payload['challenger_dir']}`",
         f"- challenger_dir_resolution_reason: {reason!r}",
         f"- expected_feature_set_id: `{CONTEXTUAL_FEATURE_SET_ID}`",
-        f"- pointer.feature_set_id: `{pointer.get('feature_set_id')}`",
+        f"- train_manifest.feature_set_id: `{train_manifest.get('feature_set_id')}`",
         f"- pointer.contextual_pmf_engine: **{pointer.get('contextual_pmf_engine')}**",
         f"- feature_files_on_disk: {feature_files}",
         "",
@@ -156,8 +180,8 @@ def main(argv=None) -> int:
         issues.append("no phase13q_*.pkl files on disk")
     if not feature_lists:
         issues.append("no per-target feature lists loadable")
-    if not pointer.get("feature_set_id"):
-        issues.append("champion_pointer.feature_set_id missing")
+    if not train_manifest.get("feature_set_id"):
+        issues.append("train_manifest.feature_set_id missing")
 
     if issues:
         print("PHASE13R_PHASE13Q_STATE_AUDIT_FAILED", file=sys.stderr)
@@ -166,7 +190,7 @@ def main(argv=None) -> int:
         return 1
     print("PHASE13R_PHASE13Q_STATE_AUDIT_PASS")
     print(f"  challenger_dir={payload['challenger_dir']}")
-    print(f"  feature_set_id={pointer.get('feature_set_id')}")
+    print(f"  feature_set_id={train_manifest.get('feature_set_id')}")
     return 0
 
 
