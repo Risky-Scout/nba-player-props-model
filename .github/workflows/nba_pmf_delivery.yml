@@ -339,7 +339,27 @@ jobs:
               cleanup_rebase_state
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                # A concurrent Phase 13AF/AE job may have written the same
+                # per-date freshness JSON/MD files.  When the rebase conflicts
+                # only on those files, skip the conflicting commit entirely
+                # (the remote version is authoritative; our local copy is
+                # redundant).  Any other conflict aborts and retries normally.
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
@@ -443,7 +463,27 @@ jobs:
               cleanup_rebase_state
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                # A concurrent Phase 13AF/AE job may have written the same
+                # per-date freshness JSON/MD files.  When the rebase conflicts
+                # only on those files, skip the conflicting commit entirely
+                # (the remote version is authoritative; our local copy is
+                # redundant).  Any other conflict aborts and retries normally.
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
@@ -654,7 +694,27 @@ jobs:
               cleanup_rebase_state
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                # A concurrent Phase 13AF/AE job may have written the same
+                # per-date freshness JSON/MD files.  When the rebase conflicts
+                # only on those files, skip the conflicting commit entirely
+                # (the remote version is authoritative; our local copy is
+                # redundant).  Any other conflict aborts and retries normally.
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
@@ -822,7 +882,27 @@ jobs:
               cleanup_rebase_state
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                # A concurrent Phase 13AF/AE job may have written the same
+                # per-date freshness JSON/MD files.  When the rebase conflicts
+                # only on those files, skip the conflicting commit entirely
+                # (the remote version is authoritative; our local copy is
+                # redundant).  Any other conflict aborts and retries normally.
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
@@ -931,7 +1011,27 @@ jobs:
               cleanup_rebase_state
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                # A concurrent Phase 13AF/AE job may have written the same
+                # per-date freshness JSON/MD files.  When the rebase conflicts
+                # only on those files, skip the conflicting commit entirely
+                # (the remote version is authoritative; our local copy is
+                # redundant).  Any other conflict aborts and retries normally.
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
@@ -1234,7 +1334,22 @@ jobs:
               git clean -fd predictions/ data/features/ || true
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
@@ -1351,7 +1466,27 @@ jobs:
               cleanup_rebase_state
               git status --short || true
 
-              if git pull --rebase --autostash origin main && git push origin HEAD:main; then
+              if git pull --rebase --autostash origin main; then
+                :
+              else
+                # A concurrent Phase 13AF/AE job may have written the same
+                # per-date freshness JSON/MD files.  When the rebase conflicts
+                # only on those files, skip the conflicting commit entirely
+                # (the remote version is authoritative; our local copy is
+                # redundant).  Any other conflict aborts and retries normally.
+                while [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; do
+                  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+                  [ -z "$conflicts" ] && break
+                  non_freshness=$(echo "$conflicts" | grep -v "player_game_stats_freshness" || true)
+                  if [ -z "$non_freshness" ]; then
+                    git rebase --skip 2>/dev/null || { cleanup_rebase_state; break; }
+                  else
+                    cleanup_rebase_state; break
+                  fi
+                done
+              fi
+
+              if git push origin HEAD:main; then
                 cleanup_rebase_state
                 return 0
               fi
