@@ -1,6 +1,6 @@
 # Near-tip snapshot root-cause audit — 2026-05-23
 
-Generated 2026-05-23T17:15:46Z.
+Generated 2026-05-23T18:16:57Z.
 
 ## Per-(matchup, snapshot) state
 
