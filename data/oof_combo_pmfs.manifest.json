@@ -3,8 +3,8 @@
   "input": "data/oof_pmfs.parquet",
   "output": "data/oof_combo_pmfs.parquet",
   "source_oof_path": "data/oof_pmfs.parquet",
-  "rows": 56375,
-  "player_games": 11275,
+  "rows": 56515,
+  "player_games": 11303,
   "combos_canonical": [
     "stocks",
     "pa",
@@ -22,27 +22,27 @@
   "combo_pmf_version": "combo_oof_pmf_v1",
   "dataset_status": "fresh_oof_v1",
   "oof_window_start": "2026-02-04",
-  "oof_window_end": "2026-05-21",
-  "training_cutoff_date": "2026-05-21",
-  "as_of_date": "2026-05-21",
+  "oof_window_end": "2026-05-22",
+  "training_cutoff_date": "2026-05-22",
+  "as_of_date": "2026-05-22",
   "days_since_oof_window_end": 0,
   "path_building_warning": "",
   "production_promoted": false,
   "final_calibration_ready": false,
   "staleness_warn_days": 7,
   "method_counts": {
-    "prior_actual_corr_gaussian_copula_v1": 54860,
+    "prior_actual_corr_gaussian_copula_v1": 55000,
     "independence_cold_start_v1": 1515
   },
   "n_draws_default": 20000,
   "min_prior_rows_for_copula": 200,
-  "n_copula_dates": 470,
+  "n_copula_dates": 475,
   "n_cold_start_dates": 10,
   "calibrated": false,
   "calibration_status": "pending_m6_stat_role_calibration",
   "pmf_validity_rate": 1.0,
   "pmf_sum_error_max": 3.3306690738754696e-16,
-  "generated_at_utc": "2026-05-23T03:29:58+00:00",
+  "generated_at_utc": "2026-05-23T07:43:30+00:00",
   "available_base_stats": [
     "ast",
     "blk",
@@ -83,28 +83,28 @@
   "combos_built": [
     {
       "combo": "stocks",
-      "rows": 11275
+      "rows": 11303
     },
     {
       "combo": "pa",
-      "rows": 11275
+      "rows": 11303
     },
     {
       "combo": "pr",
-      "rows": 11275
+      "rows": 11303
     },
     {
       "combo": "ra",
-      "rows": 11275
+      "rows": 11303
     },
     {
       "combo": "pra",
-      "rows": 11275
+      "rows": 11303
     }
   ],
   "combos_skipped": [],
   "skip_reasons": {},
-  "n_rows_written": 56375,
+  "n_rows_written": 56515,
   "status": "ok",
   "note": "M5C foundation. Combo OOF dataset for downstream M6 role-aware calibrator fitting. Combo rows are calibrated=False / calibration_status=pending_m6_stat_role_calibration. NOT yet wired into production delivery; M7+ handles production wiring."
 }
