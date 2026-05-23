@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-23T16:35:07+00:00 |
+| Generated (UTC) | 2026-05-23T16:41:04+00:00 |
 | Promote | no |
 | Reason | gate_failed:m6_3_stat_role_matrix_valid |
 | Champion model_version | challenger-2026-04-30 |
@@ -18,7 +18,7 @@
 - calibration_error_improves: challenger=0.316235 champion=0.316235 delta=+0 (tol=0.0)
 - p0_error_improves_or_non_worse: challenger=0.316235 champion=0.316235 delta=+0 (tol=0.005)
 - mean_bias_does_not_worsen: challenger=0.0669141 champion=0.0669141 delta=+0 (tol=0.05)
-- tov_does_not_regress: challenger=1.28057 champion=1.28057 delta=+0 (tol=0.02561141548757332)
+- tov_does_not_regress: challenger=1.28057 champion=1.28057 delta=+0 (tol=0.02561141548757333)
 - starter_core_role_buckets_do_not_regress: worst_core_nll_delta=0.0
 - bench_fringe_role_buckets_do_not_regress_materially: worst_bench_nll_delta=0.0
 - no_severe_stat_bucket_regression: worst_stat=pts delta=0.0
