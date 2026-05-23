@@ -1,0 +1,28 @@
+{
+  "as_of_date": "2026-05-22",
+  "backup_dir": "artifacts/models/champion/v_20260523T042855p0000",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "champion_pointer_sha256_after_swap": "5e28993b490f0839a3f442fda0faa326451985026d68e3e4f6c4c13ecafa4ee8",
+  "code_commit": "b04717ef7cfbcac928ec764304c2a2cc3257b86c",
+  "from_version": "challenger-2026-05-21",
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-22",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-22",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260523T042740"
+  },
+  "promoted": true,
+  "promoted_at_utc": "2026-05-23T04:28:55+00:00",
+  "schema_version": "1.0",
+  "soft_gate_failures_ignored": [
+    "m6_3_review_cells_guarded",
+    "m6_3_stat_role_matrix_valid",
+    "market_brier_non_inferior_or_better",
+    "market_logloss_non_inferior_or_better",
+    "no_severe_market_stat_bucket_regression"
+  ],
+  "to_version": "challenger-2026-05-22"
+}

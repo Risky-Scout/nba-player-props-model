@@ -1,8 +1,8 @@
 {
-  "calibrated_through_date": "2026-05-22",
+  "calibrated_through_date": "2026-05-21",
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
-  "calibration_manifest_path": "artifacts/models/challengers/2026-05-22/calibration_manifest.json",
-  "calibration_run_id": "nightly-20260523T042740",
+  "calibration_manifest_path": "artifacts/models/challengers/2026-05-21/calibration_manifest.json",
+  "calibration_run_id": "nightly-20260522T154521",
   "calibrator_version": "phase8-role-bucket",
   "champion_artifact_dir": "artifacts/models",
   "champion_calibrator_paths": {
@@ -19,41 +19,45 @@
     "stocks": "artifacts/models/pmf_cal_role_stocks.pkl",
     "tov": "artifacts/models/pmf_cal_role_tov.pkl"
   },
-  "champion_model_id": "challenger-2026-05-22",
-  "code_commit": "b04717ef7cfbcac928ec764304c2a2cc3257b86c",
-  "created_at_utc": "2026-05-23T04:28:55+00:00",
+  "champion_model_id": "challenger-2026-05-21",
+  "code_commit": "edeb33c66621544a6b5181bf3e515e091fb071ca",
+  "created_at_utc": "2026-05-22T15:46:55+00:00",
   "data_hashes": {
     "challenger_pickle_files": [
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_ast.pkl",
-        "sha256": "5209230cd9613a23b1af8f1f465c748c285a7da675e088250ab7c3073c1ff0a4"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_ast.pkl",
+        "sha256": "95739abbefc7e55b5250f65a51f1aa3e69f393953f812af32194986aeef2cf4e"
       },
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_blk.pkl",
-        "sha256": "2e921a1e1aa17ca67c363e7606bd3ea9680402fad53c37b923c299560c83fb30"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_blk.pkl",
+        "sha256": "34f3b048d3e97119e9af57ff470819fddd5ecc2d709a84b5a0d403d5cfe2bedf"
       },
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_fg3m.pkl",
-        "sha256": "61a3595b7e3ccb9ea06fe491c0d5dee7fa34277dcae1b5e79c4704a527bd2e7f"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_fg3m.pkl",
+        "sha256": "57edf14dad60a827bb7bda771a8b7723c48bc195c0bd90d6bda3a22bf72f852a"
       },
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_pts.pkl",
-        "sha256": "825d819bf3cb3deab3a287bb35d83c47abefb8b7a404a8f4f664011f33028c1a"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_pts.pkl",
+        "sha256": "4133ebd730cec6bf2401cb1e5707f3dd7eab502b693dca1886d39365d50c5eba"
       },
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_reb.pkl",
-        "sha256": "3f07893fdb95f193d6be0e7778d5517012bb0829103c4467c2e4b4908eedbf4a"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_reb.pkl",
+        "sha256": "ef761e201f32102ea70d76b8ad9047829eb40cb9d3efa7e958e526bb9ffca927"
       },
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_stl.pkl",
-        "sha256": "b220805d375c4fc508736c8338cdef43d8753d2e1f0cb6a14c830294059010f9"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_stl.pkl",
+        "sha256": "69a0f01a30bf81f54d817f8e1b71aa95cb190426a0eb09eff8eb3f5b51329ff7"
       },
       {
-        "path": "artifacts/models/challengers/2026-05-22/pmf_cal_role_tov.pkl",
-        "sha256": "603c752c77e4dc7db83b939e5202100190f1cfaf1ab01b697fb1d7b59101486b"
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_stocks.pkl",
+        "sha256": "6b2d1d96f33e4c520317cd863919544644bfae25538c7fe0d0a205fd2c4fcde9"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-05-21/pmf_cal_role_tov.pkl",
+        "sha256": "deedd3f0ed6faedd5b5b40f9e539a7af6f0ed0753473352b45e88ffd8404ad0d"
       }
     ],
-    "fold_aggregate_sha256": "6cd80bcd654aea739df2ba4e29d4475cac29758a6db6b9175d6cd21526e33c5d",
+    "fold_aggregate_sha256": "71fd0236eb6f1c488e262b71ecc0a81b6a9e0d66c5ca1d864cb074147450f2c2",
     "training_table_sha256": null
   },
   "dry_run_calibration": false,
@@ -285,22 +289,22 @@
     }
   ],
   "model_dir": "artifacts/models",
-  "model_version": "challenger-2026-05-22",
+  "model_version": "challenger-2026-05-21",
   "no_future_rows_verified": true,
   "no_partial_rows_verified": true,
   "notes": "Promoted via scripts/promote_challenger_if_validated.py.",
   "phase10d_overlays_in_use": false,
-  "previous_model_version": "challenger-2026-05-21",
-  "previous_pointer_backup": "artifacts/models/champion/v_20260523T042855p0000/champion_pointer.previous.json",
-  "promoted_at_utc": "2026-05-23T04:28:55+00:00",
-  "promoted_from_challenger_dir": "artifacts/models/challengers/2026-05-22",
-  "promoted_from_challenger_id": "challenger-2026-05-22",
-  "promotion_decision_id": "promotion-2026-05-22-20260523T042855",
-  "promotion_decision_path": "artifacts/models/challengers/2026-05-22/promotion_decision.json",
-  "resolved_training_cutoff_date": "2026-05-22",
+  "previous_model_version": "challenger-2026-04-30",
+  "previous_pointer_backup": "artifacts/models/champion/v_20260522T154655p0000/champion_pointer.previous.json",
+  "promoted_at_utc": "2026-05-22T15:46:55+00:00",
+  "promoted_from_challenger_dir": "artifacts/models/challengers/2026-05-21",
+  "promoted_from_challenger_id": "challenger-2026-05-21",
+  "promotion_decision_id": "promotion-2026-05-21-20260522T154655",
+  "promotion_decision_path": "artifacts/models/challengers/2026-05-21/promotion_decision.json",
+  "resolved_training_cutoff_date": "2026-05-21",
   "schema_version": "1.1",
-  "source_completeness_manifest_path": "artifacts/nightly_training/2026-05-22/source_completeness_manifest.json",
-  "source_data_refresh_manifest_path": "artifacts/nightly_training/2026-05-22/source_data_refresh_manifest.json",
+  "source_completeness_manifest_path": "artifacts/nightly_training/2026-05-21/source_completeness_manifest.json",
+  "source_data_refresh_manifest_path": "artifacts/nightly_training/2026-05-21/source_data_refresh_manifest.json",
   "stat_role_guarded_policy": {
     "guarded_fallback_required_cells": [
       {
@@ -878,12 +882,12 @@
     "ra",
     "pra"
   ],
-  "target_date_et": "2026-05-22",
+  "target_date_et": "2026-05-21",
   "target_policy": "manual_override",
-  "train_manifest_path": "artifacts/models/challengers/2026-05-22/train_manifest.json",
-  "trained_through_date": "2026-05-22",
-  "training_input_manifest_path": "artifacts/nightly_training/2026-05-22/training_inputs_manifest.json",
-  "training_run_id": "nightly-20260523T042740",
-  "validation_report_path": "artifacts/models/challengers/2026-05-22/validation_report.json",
-  "validation_run_id": "nightly-20260523T042740"
+  "train_manifest_path": "artifacts/models/challengers/2026-05-21/train_manifest.json",
+  "trained_through_date": "2026-05-21",
+  "training_input_manifest_path": "artifacts/nightly_training/2026-05-21/training_inputs_manifest.json",
+  "training_run_id": "nightly-20260522T154521",
+  "validation_report_path": "artifacts/models/challengers/2026-05-21/validation_report.json",
+  "validation_run_id": "nightly-20260522T154521"
 }
