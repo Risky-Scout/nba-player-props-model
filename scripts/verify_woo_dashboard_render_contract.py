@@ -18,6 +18,9 @@ import json
 import sys
 from pathlib import Path
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(_REPO_ROOT / "src"))  # noqa: E402 — required for nba_props_model
+
 REQUIRED_PROPS_PRESENT = [
     "window.EMBEDDED_DATA",
     "function finiteOrNull",

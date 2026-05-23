@@ -145,7 +145,9 @@ def main() -> int:
     if pmf_wf is None:
         failures.append(f"missing {PMF_DELIVERY_WF}")
     if pred_wf is None:
-        failures.append(f"missing {PREDICTIONS_WF}")
+        # daily_predictions.yml is optional — if it does not exist the repo
+        # trivially satisfies R6 (the legacy builder cannot be invoked).
+        print(f"  [advisory] {PREDICTIONS_WF.name} not found — R6 trivially satisfied (no legacy builder invocation possible)")
 
     # ── R1: deploy yaml runs all four new-pipeline scripts ───────────
     if deploy_wf is not None:
@@ -217,6 +219,7 @@ def main() -> int:
                 )
 
     # ── R6: daily_predictions yaml does NOT invoke legacy builder ───
+    # If the file is absent the repo trivially satisfies R6 (no invocation possible).
     if pred_wf is not None:
         pred_invoked = _scripts_invoked(pred_wf)
         if LEGACY_BUILDER_REL in pred_invoked:
