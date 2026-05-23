@@ -3,7 +3,7 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+    "code_commit": "a95a6996d66c217b2ac0ee08ff0a89a3216aeb69",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -16,7 +16,7 @@
         },
         "core": {
           "n": 1407,
-          "nll": 1.9850459687750968,
+          "nll": 1.9850459687750963,
           "p0_err": 0.2768778891064475
         },
         "fringe": {
@@ -43,7 +43,7 @@
       "by_stat": {
         "ast": {
           "calibrator_present": true,
-          "mean_bias": 0.004127129200915757,
+          "mean_bias": 0.004127129200915722,
           "nll": 1.5660891623295803,
           "p0_err": 0.32531882704713405,
           "rows_scored": 1250,
@@ -59,7 +59,7 @@
         },
         "fg3m": {
           "calibrator_present": true,
-          "mean_bias": -0.003858402244827327,
+          "mean_bias": -0.0038584022448273176,
           "nll": 2.294416210066595,
           "p0_err": 0.3076199555903852,
           "rows_scored": 1250,
@@ -67,7 +67,7 @@
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": 0.0859222847150514,
+          "mean_bias": 0.08592228471505135,
           "nll": 2.826185969204735,
           "p0_err": 0.2035120791024729,
           "rows_scored": 1250,
@@ -75,7 +75,7 @@
         },
         "reb": {
           "calibrator_present": true,
-          "mean_bias": 0.13962635379760874,
+          "mean_bias": 0.13962635379760877,
           "nll": 2.04434836359688,
           "p0_err": 0.23793292187098422,
           "rows_scored": 1250,
@@ -83,7 +83,7 @@
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": 0.10342441827963393,
+          "mean_bias": 0.10342441827963392,
           "nll": 1.059889842560801,
           "p0_err": 0.40976231417126147,
           "rows_scored": 1250,
@@ -91,7 +91,7 @@
         },
         "tov": {
           "calibrator_present": true,
-          "mean_bias": 0.03598245976659495,
+          "mean_bias": 0.035982459766594935,
           "nll": 1.2849857137200278,
           "p0_err": 0.38391042859238833,
           "rows_scored": 1250,
@@ -116,7 +116,7 @@
       "rows_scored_total": 8750,
       "rps": 0.9496525881099677,
       "tov": {
-        "mean_bias": 0.03598245976659495,
+        "mean_bias": 0.035982459766594935,
         "nll": 1.2849857137200278,
         "p0_error": 0.38391042859238833,
         "rps": 0.5523688472911159
@@ -138,7 +138,7 @@
         },
         "core": {
           "n": 1407,
-          "nll": 1.9850459687750968,
+          "nll": 1.9850459687750963,
           "p0_err": 0.2768778891064475
         },
         "fringe": {
@@ -165,7 +165,7 @@
       "by_stat": {
         "ast": {
           "calibrator_present": true,
-          "mean_bias": 0.004127129200915757,
+          "mean_bias": 0.004127129200915722,
           "nll": 1.5660891623295803,
           "p0_err": 0.32531882704713405,
           "rows_scored": 1250,
@@ -181,7 +181,7 @@
         },
         "fg3m": {
           "calibrator_present": true,
-          "mean_bias": -0.003858402244827327,
+          "mean_bias": -0.0038584022448273176,
           "nll": 2.294416210066595,
           "p0_err": 0.3076199555903852,
           "rows_scored": 1250,
@@ -189,7 +189,7 @@
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": 0.0859222847150514,
+          "mean_bias": 0.08592228471505135,
           "nll": 2.826185969204735,
           "p0_err": 0.2035120791024729,
           "rows_scored": 1250,
@@ -197,7 +197,7 @@
         },
         "reb": {
           "calibrator_present": true,
-          "mean_bias": 0.13962635379760874,
+          "mean_bias": 0.13962635379760877,
           "nll": 2.04434836359688,
           "p0_err": 0.23793292187098422,
           "rows_scored": 1250,
@@ -205,7 +205,7 @@
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": 0.10342441827963393,
+          "mean_bias": 0.10342441827963392,
           "nll": 1.059889842560801,
           "p0_err": 0.40976231417126147,
           "rows_scored": 1250,
@@ -213,7 +213,7 @@
         },
         "tov": {
           "calibrator_present": true,
-          "mean_bias": 0.03598245976659495,
+          "mean_bias": 0.035982459766594935,
           "nll": 1.2849857137200278,
           "p0_err": 0.38391042859238833,
           "rows_scored": 1250,
@@ -238,7 +238,7 @@
       "rows_scored_total": 8750,
       "rps": 0.9496525881099677,
       "tov": {
-        "mean_bias": 0.03598245976659495,
+        "mean_bias": 0.035982459766594935,
         "nll": 1.2849857137200278,
         "p0_error": 0.38391042859238833,
         "rps": 0.5523688472911159
@@ -246,7 +246,7 @@
     },
     "model_version": "challenger-2026-04-30"
   },
-  "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+  "code_commit": "a95a6996d66c217b2ac0ee08ff0a89a3216aeb69",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -341,7 +341,7 @@
       "name": "market_benchmark_available"
     }
   ],
-  "generated_at_utc": "2026-05-23T19:46:13+00:00",
+  "generated_at_utc": "2026-05-23T20:02:26+00:00",
   "m6_3_matrix_summary": {
     "detail": "expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']",
     "expected_role_buckets": [
@@ -664,7 +664,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "c49e8f23dc3ae6f619af839c7e0499449e18a641",
+    "code_commit": "a95a6996d66c217b2ac0ee08ff0a89a3216aeb69",
     "dates_included": [
       "2026-05-20",
       "2026-05-18",
@@ -699,7 +699,7 @@
     ],
     "delta_brier": 0.012077780653008373,
     "delta_logloss": 0.036980768653124906,
-    "generated_at_utc": "2026-05-23T19:46:04+00:00",
+    "generated_at_utc": "2026-05-23T20:02:16+00:00",
     "market_brier": 0.23386606711450633,
     "market_logloss": 0.6591127199592747,
     "min_bucket_rows": 50,
@@ -862,7 +862,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-22",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260523T194519"
+    "training_run_id": "nightly-20260523T200126"
   },
   "pmf_validity": {
     "checked_files": 1,
