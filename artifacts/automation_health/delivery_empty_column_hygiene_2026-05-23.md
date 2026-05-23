@@ -1,6 +1,6 @@
 # Delivery Empty Column Hygiene — 2026-05-23
 
-- files checked: `139`
+- files checked: `97`
 - files changed: `24`
 - columns removed total: `222`
 - errors: `0`
@@ -148,28 +148,28 @@
 - removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-23/wizard_of_odds/market_comparison.csv`
-- rows: `2486`
+- rows: `2474`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-23/wizard_of_odds/market_comparison.parquet`
-- rows: `2486`
+- rows: `2474`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-23/wizard_of_odds/publishable_edges.csv`
-- rows: `1719`
+- rows: `1666`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-23/wizard_of_odds/publishable_edges.parquet`
-- rows: `1719`
+- rows: `1666`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
