@@ -1,7 +1,7 @@
 # Phase 13L No-Breakage Verification
 
-- generated_at_utc: 2026-05-19T06:59:07+00:00
-- passed: **False**
+- generated_at_utc: 2026-05-23T17:15:49+00:00
+- passed: **True**
 
 ## Checks
 
@@ -30,7 +30,7 @@
 | champion_pointer_rich_fields_present | yes | all rich fields present |
 | derek_live_snapshots_did_not_pollute_protected_dirs | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "backfill_demo" | yes | ok |
-| phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "production_live_current" | NO | missing token 'snapshot_mode = "production_live_current"' |
+| phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "production_live_current" | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = "production_live" | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::champion_metadata_verified | yes | ok |
 | phase13_correction_token:run_derek_live_game_snapshot.py::lineup_feature_blocker | yes | ok |
@@ -52,10 +52,10 @@
 | phase13_correction_token:predict.py::PREDICT_DEREK_LIVE_ARGS_PASS | yes | ok |
 | phase13_correction_token:predict.py::PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PASS | yes | ok |
 | phase13_correction_token:predict.py::derek_live_predictions.parquet | yes | ok |
-| phase13_correction_token:verify_derek_live_api_readiness.py::DEREK_LIVE_API_READINESS_PASS | NO | missing token 'DEREK_LIVE_API_READINESS_PASS' |
+| phase13_correction_token:verify_derek_live_api_readiness.py::DEREK_LIVE_API_READINESS_PASS | yes | ok |
 | phase13_correction_token:verify_derek_live_api_readiness.py::BDL_API_KEY | yes | ok |
-| phase13_correction_token:verify_derek_live_api_readiness.py::get_lineups | NO | missing token 'get_lineups' |
-| phase13_correction_token:verify_derek_live_api_readiness.py::get_injuries | NO | missing token 'get_injuries' |
+| phase13_correction_token:verify_derek_live_api_readiness.py::get_lineups | yes | ok |
+| phase13_correction_token:verify_derek_live_api_readiness.py::get_injuries | yes | ok |
 | phase13_correction_token:live_context.py::PHASE13O_LIVE_CONTEXT_FEATURES_PASS | yes | ok |
 | phase13_correction_token:live_context.py::LINEUP_FEATURE_COLUMNS | yes | ok |
 | phase13_correction_token:live_context.py::INJURY_FEATURE_COLUMNS | yes | ok |

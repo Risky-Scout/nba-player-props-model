@@ -1,0 +1,26 @@
+{
+  "facts": {
+    "any_target_in_past": false,
+    "any_target_overdue": false,
+    "champion_pointer_contextual_pmf_engine": true,
+    "champion_pointer_direct_lineup_pmf_driver": true,
+    "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+    "delivery_date": "2026-05-23",
+    "now_utc": "2026-05-23T17:15:48Z",
+    "pending_reason": "all_targets_in_future",
+    "predictions_parquet_present": true,
+    "schedule_eval": [
+      {
+        "cl_overdue": false,
+        "cl_target_utc": "2026-05-24T00:05:00Z",
+        "game_id": "21713899",
+        "game_start_time": "2026-05-24T00:10:00Z",
+        "t25_overdue": false,
+        "t25_target_utc": "2026-05-23T23:45:00Z"
+      }
+    ],
+    "schedule_size": 1
+  },
+  "outcome": "pending",
+  "schema_version": "1.0"
+}

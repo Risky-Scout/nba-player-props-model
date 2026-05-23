@@ -1,0 +1,26 @@
+{
+  "code_commit": "80dabe1603e79de5f9f31ee1299e2f21d8020125",
+  "decisions": [
+    {
+      "decision": "skipped_not_due",
+      "detail": "now < target - 3min; will fire during the cron window starting at 2026-05-24T00:01:00+00:00",
+      "game_id": "21713899",
+      "now_utc": "2026-05-23T17:15:34Z",
+      "snapshot_dir": "deliveries/2026-05-23/derek_game_snapshots/21713899/close_lock",
+      "state": "NOT_DUE",
+      "target_utc": "2026-05-24T00:04:00Z"
+    }
+  ],
+  "delivery_date": "2026-05-23",
+  "eligible_rows": 0,
+  "now_utc": "2026-05-23T17:15:34Z",
+  "schedule_rows": 1,
+  "schema_version": "1.0",
+  "snapshot_type": "close_lock",
+  "summary": {
+    "failures": 0,
+    "fired": 0,
+    "skipped_already_run": 0,
+    "skipped_window": 1
+  }
+}

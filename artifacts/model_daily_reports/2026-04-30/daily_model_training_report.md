@@ -1,6 +1,6 @@
 # Daily model training / recalibration report — 2026-04-30
 
-- generated_at_utc: 2026-05-15T04:17:32+00:00Z
+- generated_at_utc: 2026-05-23T17:15:50+00:00Z
 
 ## Headline
 
@@ -30,7 +30,7 @@
 - validation_report_path: `artifacts/phase13s/validation_gates_report.json`
 - promotion_decision_path: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/promotion_decision.json`
 - no_leakage_manifest_path: `artifacts/models/challengers/2026-04-30_direct_lineup_contextual/no_leakage_manifest.json`
-- promotion_decision_id: `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T135826`
+- promotion_decision_id: `phase13s-promotion-2026-04-30_direct_lineup_contextual-20260503T134927`
 
 ## Promotion status
 

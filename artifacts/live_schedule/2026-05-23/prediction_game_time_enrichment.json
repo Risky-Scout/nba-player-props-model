@@ -1,0 +1,35 @@
+{
+  "added_columns": [
+    "game_start_time",
+    "game_start_time_source",
+    "game_start_time_resolution_confidence"
+  ],
+  "delivery_date": "2026-05-23",
+  "generated_at_utc": "2026-05-23T17:15:29+00:00Z",
+  "outcome": "pass",
+  "post_hash": "b230c9e8bd6b6953",
+  "post_rows": 37,
+  "pre_hash": "7c3ce6579f7db244",
+  "pre_rows": 37,
+  "resolved_count": 1,
+  "resolved_games": [
+    "21713899"
+  ],
+  "rows_changed": false,
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 1,
+    "delivery_date": "2026-05-23",
+    "from_predictions_count": 0,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 2,
+    "pmf_display_matchups_parsed": 1,
+    "predictions_present": true,
+    "predictions_rows": 37,
+    "predictions_unique_games": 1,
+    "resolved_count": 1,
+    "unresolved_count": 0
+  }
+}

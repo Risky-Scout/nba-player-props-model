@@ -116,9 +116,9 @@
       "passed": true
     },
     {
-      "detail": "missing token 'snapshot_mode = \"production_live_current\"'",
+      "detail": "ok",
       "name": "phase13_correction_token:run_derek_live_game_snapshot.py::snapshot_mode = \"production_live_current\"",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "ok",
@@ -226,9 +226,9 @@
       "passed": true
     },
     {
-      "detail": "missing token 'DEREK_LIVE_API_READINESS_PASS'",
+      "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_api_readiness.py::DEREK_LIVE_API_READINESS_PASS",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "ok",
@@ -236,14 +236,14 @@
       "passed": true
     },
     {
-      "detail": "missing token 'get_lineups'",
+      "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_api_readiness.py::get_lineups",
-      "passed": false
+      "passed": true
     },
     {
-      "detail": "missing token 'get_injuries'",
+      "detail": "ok",
       "name": "phase13_correction_token:verify_derek_live_api_readiness.py::get_injuries",
-      "passed": false
+      "passed": true
     },
     {
       "detail": "ok",
@@ -421,15 +421,15 @@
       "passed": true
     }
   ],
-  "code_commit": "a4a04e6f3fd61845e1e8d9e369659a876e3a4168",
+  "code_commit": "80dabe1603e79de5f9f31ee1299e2f21d8020125",
   "facts": {
     "champion_pointer": {
-      "champion_model_id": "sim-2099-12-31",
-      "champion_pointer_hash": "dfd4615c99bf495666b0dbd3c4c12f32",
+      "champion_model_id": "challenger-2026-04-30",
+      "champion_pointer_hash": "f1b07b5b90d474a4a6527c4a9252cba5",
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-05-19T06:59:07+00:00",
-  "passed": false,
+  "generated_at_utc": "2026-05-23T17:15:49+00:00",
+  "passed": true,
   "schema_version": "1.0"
 }
