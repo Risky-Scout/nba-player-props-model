@@ -206,6 +206,57 @@ def main(argv: list[str] | None = None) -> int:
     # All vetoes cleared. Acquire the lock and swap the pointer.
     pointer = load_champion_pointer()
     from_version = pointer.get("model_version", "unknown")
+
+    # ── Contextual-regression guard ──────────────────────────────────────────
+    # If the currently active champion pointer is a contextual/direct-lineup
+    # deployment, the new candidate pointer MUST also be contextual.
+    # A bare baseline challenger (feature_set_id=None, no contextual block)
+    # is NOT allowed to overwrite a contextual champion.
+    _CONTEXTUAL_FS_PREFIXES = ("phase13q_", "phase13r_", "phase13s_")
+
+    def _ptr_is_contextual(p: dict) -> bool:
+        fs = p.get("feature_set_id") or ""
+        return (
+            fs.startswith(_CONTEXTUAL_FS_PREFIXES)
+            or bool(p.get("contextual_challenger_dir"))
+            or bool(p.get("contextual_pmf_engine"))
+            or bool(p.get("direct_lineup_pmf_driver"))
+        )
+
+    existing_is_contextual = _ptr_is_contextual(pointer)
+    # Peek at the challenger's train_manifest to determine its feature_set_id
+    # before acquiring the promotion lock.  The new_pointer dict hasn't been
+    # built yet, so we inspect the manifest on disk directly.
+    _train_manifest_peek: dict = {}
+    _tm_path = ch_dir / "train_manifest.json"
+    if _tm_path.exists():
+        try:
+            _train_manifest_peek = read_json(_tm_path)
+        except Exception:
+            pass
+    _candidate_fs_id = _train_manifest_peek.get("feature_set_id") or ""
+    _candidate_is_contextual = _candidate_fs_id.startswith(_CONTEXTUAL_FS_PREFIXES)
+
+    if existing_is_contextual and not _candidate_is_contextual:
+        marker = _no_promotion(
+            ch_dir,
+            reason=(
+                f"contextual_regression_blocked: existing champion pointer has "
+                f"feature_set_id={pointer.get('feature_set_id')!r} "
+                f"(contextual/direct-lineup) but the new challenger train_manifest "
+                f"has feature_set_id={_candidate_fs_id!r} — refusing to replace a "
+                "contextual champion with a non-contextual pointer. "
+                "Promote the contextual challenger first."
+            ),
+            decision=decision,
+        )
+        print(json.dumps(marker))
+        print(
+            "Refusing to replace contextual champion pointer with non-contextual pointer.",
+            file=sys.stderr,
+        )
+        return 1
+    # ── End contextual-regression guard ──────────────────────────────────────
     challenger_version = (
         validation.get("challenger", {}).get("model_version")
         or f"challenger-{args.as_of_date}"
