@@ -1522,11 +1522,20 @@ def _build_snapshot_manifest(*,
     # on disk — does not count as recomputation and the manifest must not
     # claim it does. Snapshot_mode disambiguates the path.
     pmfs_recomputed = invoked_predict_ok
+    current_live_canonical_reuse = bool(predict_info.get("current_live_canonical_reuse"))
     if allow_backfill:
         snapshot_mode = "backfill_demo"
+    elif snapshot_type == "current_live":
+        # Phase 13U: current_live snapshots use a distinct mode string so
+        # downstream consumers (verifiers, Derek feed) can tell them apart
+        # from near-lineup production_live snapshots.
+        snapshot_mode = "production_live_current"
+        pmfs_recomputed = True
     else:
         snapshot_mode = "production_live"
-    if pmfs_recomputed:
+    if snapshot_mode == "production_live_current" and current_live_canonical_reuse:
+        pmf_source = "live_snapshot_recomputed_canonical_current"
+    elif pmfs_recomputed:
         pmf_source = "live_snapshot_recomputed"
     elif backfill_reused:
         pmf_source = "live_snapshot_reused_canonical"

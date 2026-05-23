@@ -346,10 +346,11 @@ def _check_phase13l_correction_semantics(report: Report) -> None:
             continue
         text = path.read_text(encoding="utf-8")
         for tok in tokens:
+            present = tok in text
             report.add(
                 f"phase13_correction_token:{path.name}::{tok[:50]}",
-                tok in text,
-                "ok" if tok in text else f"missing token {tok!r}",
+                present,
+                "ok" if present else f"missing token {tok!r}",
             )
 
 
