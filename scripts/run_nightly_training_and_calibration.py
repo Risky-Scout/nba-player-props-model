@@ -553,6 +553,50 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 )
 
+    # 5b. Contextual contract guard: verify the champion pointer has not
+    #     regressed from contextual/direct-lineup to non-contextual after
+    #     promotion.  Runs regardless of whether promotion was skipped or
+    #     succeeded — if promotion was blocked by the contextual regression
+    #     guard in promote_challenger_if_validated.py, the prior contextual
+    #     pointer is still active and the verifier should pass.  If it
+    #     fails, the nightly run declares failure so the workflow does not
+    #     commit a broken pointer.
+    if not args.no_promote:
+        steps.append(
+            _step(
+                "verify_champion_pointer_contextual_contract",
+                [
+                    sys.executable,
+                    "scripts/verify_champion_pointer_contextual_contract.py",
+                    "--require-contextual",
+                ],
+                run_dir,
+            )
+        )
+        # Hard-fail if the contextual contract verifier failed.
+        _ctx_step = next(
+            (s for s in reversed(steps) if s.get("name") == "verify_champion_pointer_contextual_contract"),
+            None,
+        )
+        if _ctx_step and _ctx_step.get("exit_code", 0) != 0:
+            final_status = "failed_contextual_contract"
+            write_json_atomic(
+                run_dir / "run_manifest.json",
+                {
+                    "schema_version": "1.0",
+                    "as_of_date": as_of,
+                    "final_status": final_status,
+                    "error": "verify_champion_pointer_contextual_contract failed",
+                    "steps": steps,
+                },
+            )
+            print(
+                "ERROR: verify_champion_pointer_contextual_contract failed — "
+                "champion pointer may have regressed from contextual to non-contextual.",
+                file=sys.stderr,
+            )
+            return 1
+
     # 6a. Phase 13G: stamp every sub-manifest with target_policy / target_date_et /
     #     stale_fallback_used / training_run_id so downstream verifiers see a
     #     consistent record on disk. Idempotent.

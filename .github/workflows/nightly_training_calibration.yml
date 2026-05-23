@@ -270,6 +270,21 @@ jobs:
           python scripts/write_aggregate_input_audit.py \
             --as-of-date ${{ steps.d.outputs.date }}
 
+      # Phase 13R: verify the champion pointer has not regressed from
+      # contextual/direct-lineup to non-contextual after promotion.
+      # This step runs immediately after the nightly training + promotion
+      # and BEFORE any git add / commit of champion_pointer.json.
+      # If this step fails, the commit step is gated out and the workflow
+      # fails so the operator can investigate.
+      - name: Verify champion pointer contextual contract
+        id: verify_contextual_contract
+        if: steps.d.outputs.date != '' && steps.run_nightly.outcome == 'success'
+        run: |
+          python3 scripts/verify_champion_pointer_contextual_contract.py \
+            --require-contextual
+          python3 scripts/verify_real_champion_pointer.py
+          python3 scripts/verify_champion_pointer_metadata.py
+
       - name: Run automation verification suite
         id: verify
         if: steps.d.outputs.date != ''
@@ -349,12 +364,21 @@ jobs:
           RUN="${{ steps.run_nightly.outcome }}"
           VER="${{ steps.verify.outcome }}"
           HEA="${{ steps.health.outcome }}"
+          CTX="${{ steps.verify_contextual_contract.outcome }}"
           echo "resolver_date=$DATE_RESOLVED"
-          echo "preflight=$PRE  prepare=$PREP  run_nightly=$RUN  verify=$VER  health=$HEA"
+          echo "preflight=$PRE  prepare=$PREP  run_nightly=$RUN  verify=$VER  health=$HEA  contextual_contract=$CTX"
 
-          # Core training succeeded. Treat post-training verify/health failures as
-          # diagnostic warnings, not a failed model-build workflow.
+          # Core training succeeded.  The contextual-contract verifier is a
+          # hard gate — if it ran and failed, the run is a real failure even
+          # if run_nightly itself returned success (meaning the promote guard
+          # inside run_nightly caught the regression but verify_contextual_contract
+          # provides the final definitive answer here).
           if [ "$PRE" = "success" ] && [ "$PREP" = "success" ] && [ "$RUN" = "success" ]; then
+            if [ "$CTX" = "failure" ]; then
+              echo "::error::CHAMPION_POINTER_CONTEXTUAL_CONTRACT_FAILED — promotion produced a non-contextual pointer"
+              echo "outcome=fail" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
             if [ "$VER" != "success" ] || [ "$HEA" != "success" ]; then
               echo "::notice::TRAINING_DIAGNOSTIC_WARN verify=$VER health=$HEA core_training=success"
             fi
@@ -396,7 +420,8 @@ jobs:
         # halted-run state).
         if: |
           steps.run_nightly.outcome == 'success' &&
-          steps.verify.outcome == 'success'
+          steps.verify.outcome == 'success' &&
+          steps.verify_contextual_contract.outcome == 'success'
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"

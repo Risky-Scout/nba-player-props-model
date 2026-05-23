@@ -56,7 +56,14 @@ def main(argv=None) -> int:
         try:
             engine = load_contextual_engine(challenger_dir)
             feature_lists = {k: list(v) for k, v in engine.feature_lists.items()}
-            feature_files = sorted(p.name for p in challenger_dir.glob("phase13q_*.pkl"))
+            # Phase 13Q challengers use phase13q_*.pkl; Phase 13S direct-lineup
+            # challengers use phase13s_*.pkl.  Accept either set as valid
+            # contextual artifacts — Phase 13S supersedes Phase 13Q.
+            feature_files = sorted(
+                p.name for p in challenger_dir.glob("phase13q_*.pkl")
+            ) or sorted(
+                p.name for p in challenger_dir.glob("phase13s_*.pkl")
+            )
         except Exception:
             engine = None
 
