@@ -27,12 +27,12 @@
     "vacated_opportunity_features_enabled",
     "validation_report_path"
   ],
-  "code_commit": "07334ab6360773d6d34fd2f1bf0d1a43ca57a006",
-  "contextual_challenger_dir": "artifacts/models/challengers/2026-04-30_contextual",
-  "decided_at_utc": "2026-05-03T01:32:00+00:00",
-  "decision_id": "contextual-promotion-2026-04-30_contextual-20260503T013200",
+  "code_commit": "f388a192b61a5e09fa67b22c35fe5f522c5da9ab",
+  "contextual_challenger_dir": "artifacts/models/challengers/2026-05-22_contextual",
+  "decided_at_utc": "2026-05-23T12:06:44+00:00",
+  "decision_id": "contextual-promotion-2026-05-22_contextual-20260523T120644",
   "feature_set_id": "phase13q_contextual_pmf_engine_v1",
-  "previous_pointer_backup": "artifacts/models/champion/v_phase13r_20260503T013200p0000/champion_pointer.previous.json",
+  "previous_pointer_backup": "artifacts/models/champion/v_phase13r_20260523T120644p0000/champion_pointer.previous.json",
   "promoted": true,
   "schema_version": "1.0"
 }

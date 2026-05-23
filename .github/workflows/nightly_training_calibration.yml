@@ -400,6 +400,11 @@ jobs:
         run: |
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+          # Contextual-contract guard: if the previous champion pointer was
+          # contextual, the new one must also carry contextual fields.
+          # This runs before git-add so a non-contextual promotion is caught
+          # before it is committed to origin/main.
+          python3 scripts/verify_champion_pointer_contextual_contract.py --require-contextual
           # Whitelist: only the lightweight registry + manifest JSON/MD/CSV.
           # NEVER stage:
           #   - data/odds_api, data/bdl, data/freshness_manifest, data/dunks_and_threes

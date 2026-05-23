@@ -211,6 +211,21 @@ def main(argv: list[str] | None = None) -> int:
         or f"challenger-{args.as_of_date}"
     )
 
+    # Contextual-pointer guard: refuse to silently strip contextual fields.
+    # If the existing champion pointer is contextual (feature_set_id starts
+    # with phase13q_/phase13s_, or has contextual_challenger_dir /
+    # contextual_pmf_engine / direct_lineup_pmf_driver), but the incoming
+    # new_pointer has NONE of those fields, abort before any write.
+    existing_pointer = load_champion_pointer()
+    existing_fsi = existing_pointer.get("feature_set_id") or ""
+    existing_was_contextual = (
+        existing_fsi.startswith("phase13q_")
+        or existing_fsi.startswith("phase13s_")
+        or bool(existing_pointer.get("contextual_challenger_dir"))
+        or bool(existing_pointer.get("contextual_pmf_engine"))
+        or bool(existing_pointer.get("direct_lineup_pmf_driver"))
+    )
+
     try:
         with promotion_lock(timeout_s=0.0):
             backup = _backup_existing_champion(CHAMPION_MODELS_DIR)
@@ -264,6 +279,9 @@ def main(argv: list[str] | None = None) -> int:
             promotion_decision_id = decision.get("decision_id") or (
                 f"promotion-{args.as_of_date}-{utcnow_iso().replace(':', '').replace('-', '')[:15]}"
             )
+
+            # Before constructing new_pointer, check contextual guard here
+            # (existing_was_contextual flag set before lock acquisition).
 
             new_pointer = {
                 "schema_version": "1.1",
@@ -331,6 +349,37 @@ def main(argv: list[str] | None = None) -> int:
                 "dry_run_calibration": bool(cal_manifest.get("dry_run", True)),
                 "data_hashes": data_hashes,
             }
+            # Contextual-pointer guard: if the existing pointer was contextual
+            # but the new_pointer has no contextual block, refuse the write.
+            new_fsi = new_pointer.get("feature_set_id") or ""
+            new_has_contextual = (
+                new_fsi.startswith("phase13q_")
+                or new_fsi.startswith("phase13s_")
+                or bool(new_pointer.get("contextual_challenger_dir"))
+                or bool(new_pointer.get("contextual_pmf_engine"))
+                or bool(new_pointer.get("direct_lineup_pmf_driver"))
+            )
+            if existing_was_contextual and not new_has_contextual:
+                print(
+                    "Refusing to replace contextual champion pointer with "
+                    "non-contextual pointer.",
+                    file=sys.stderr,
+                )
+                print(
+                    f"  Existing feature_set_id={existing_fsi!r}; "
+                    "new pointer has no contextual fields.",
+                    file=sys.stderr,
+                )
+                print(
+                    "  Run promote_contextual_challenger.py after this "
+                    "step to augment the pointer with contextual fields "
+                    "from the Phase 13Q/13S challenger.",
+                    file=sys.stderr,
+                )
+                raise RuntimeError(
+                    "contextual_pointer_guard: refusing non-contextual promotion"
+                )
+
             # Atomic write_json_atomic also handles the rename.
             write_json_atomic(CHAMPION_POINTER_PATH, new_pointer)
 
