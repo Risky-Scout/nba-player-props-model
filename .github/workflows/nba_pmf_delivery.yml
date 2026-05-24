@@ -1325,6 +1325,25 @@ jobs:
 
           python3 scripts/run_daily_delivery_pipeline.py "${ARGS[@]}"
 
+          # ── Lineup behavior markers ────────────────────────────────────
+          # Morning/WoO runs accept projected/provisional lineups;
+          # near-tip/close-lock runs consume official lineup info.
+          case "$MODE" in
+            morning|woo_morning_monetization|woo_afternoon_refresh)
+              echo "PROVISIONAL_ROWS_ACCEPTED_AS_VALID_PREGAME=true"
+              echo "LINEUP_STATUS_VALID_FOR_MODE=$MODE"
+              ;;
+            derek_pre_tipoff_refresh|derek_near_lineup)
+              echo "OFFICIAL_LINEUP_CONTEXT_APPLIED_FOR_NEAR_TIP=true"
+              echo "LINEUP_STATUS_VALID_FOR_MODE=$MODE"
+              ;;
+            close_lock)
+              echo "OFFICIAL_LINEUP_CONTEXT_APPLIED_FOR_NEAR_TIP=true"
+              echo "LINEUP_STATUS_VALID_FOR_MODE=close_lock"
+              ;;
+          esac
+          echo "LATEST_AVAILABLE_SNAPSHOT_UPDATED=true"
+
       - name: Capture Derek unique summary hash after pipeline generation
         id: derek_unique_after_pipeline
         if: steps.predict_gate.outputs.should_proceed == 'true'
