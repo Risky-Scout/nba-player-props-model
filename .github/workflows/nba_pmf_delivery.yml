@@ -689,6 +689,23 @@ jobs:
           python3 scripts/verify_role_bucket_contract.py --date "$D"
           python3 scripts/verify_combo_role_calibration_contract.py || true
 
+          # Rebuild the 12-stat x 6-role-bucket calibration matrix (includes ra).
+          # This must run after combo PMF calibrators are fit so all 12 calibrators exist.
+          PYTHONPATH=src python3 scripts/build_m6_3_stat_role_calibration_report.py \
+            --run-date "$D" \
+            || echo "::warning::build_m6_3_stat_role_calibration_report.py failed — matrix may be stale"
+
+      - name: Write fresh delivery model pointer
+        if: steps.phase8_idempotency.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+          # Write (or advance) fresh_delivery_model_pointer.json.
+          # Market gate failures are treated as diagnostics — this pointer
+          # advances as long as calibration artifacts exist and PMF validity passes.
+          python3 scripts/write_fresh_delivery_pointer.py --as-of-date "$ASOF" \
+            || echo "::warning::write_fresh_delivery_pointer.py exited non-zero — fresh pointer not advanced"
+
       - name: Commit Phase 8 artifacts
         run: |
           set -euo pipefail
@@ -705,6 +722,15 @@ jobs:
             data/oof_combo_pmfs.parquet \
             data/oof_combo_pmfs.manifest.json \
             2>/dev/null || true
+          # Always try to commit the fresh delivery pointer and new m6_3 matrix
+          # (force-add in case gitignore interferes with registry/)
+          git add -f artifacts/models/registry/fresh_delivery_model_pointer.json 2>/dev/null || true
+          # m6_3 matrix and meta are already under artifacts/docs (added above) but
+          # ensure they're staged even if the glob missed them
+          git add artifacts/docs/m6_3_stat_role_calibration_matrix_*.csv \
+                  artifacts/docs/m6_3_stat_role_calibration_report_*.meta.json \
+                  artifacts/docs/m6_3_stat_role_calibration_report_*.md \
+                  2>/dev/null || true
 
           # Same freshness ownership rule as model-chain commit above.
           if [ -d artifacts/automation_health ]; then
@@ -1011,6 +1037,8 @@ jobs:
           git add artifacts/models/registry/promotion_log.csv 2>/dev/null || true
           # Champion pointer: explicit force-add — this must never be gitignored
           git add -f artifacts/models/registry/champion_pointer.json
+          # Fresh delivery pointer: also force-add (market gates are soft)
+          git add -f artifacts/models/registry/fresh_delivery_model_pointer.json 2>/dev/null || true
 
           # ── Post-add diagnostics ───────────────────────────────────────
           echo "::group::Phase13-staged-diagnostic"

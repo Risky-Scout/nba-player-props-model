@@ -18,6 +18,9 @@ WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
 MAIN_WORKFLOW = WORKFLOWS_DIR / "nba_pmf_delivery.yml"
 NIGHTLY_WORKFLOW = WORKFLOWS_DIR / "nightly_training_calibration.yml"
 CHAMPION_POINTER = REPO_ROOT / "artifacts" / "models" / "registry" / "champion_pointer.json"
+FRESH_DELIVERY_POINTER = REPO_ROOT / "artifacts" / "models" / "registry" / "fresh_delivery_model_pointer.json"
+MATRIX_BUILDER = REPO_ROOT / "scripts" / "build_m6_3_stat_role_calibration_report.py"
+TARGETS_INIT = REPO_ROOT / "src" / "nba_props_model" / "targets" / "__init__.py"
 
 
 # ── A. Workflow consolidation ─────────────────────────────────────────────────
@@ -595,6 +598,18 @@ class TestPromotionReadbackVerification:
             f"{latest.name}/canonical_source/ must exist (delivery contract)."
         )
 
+    def test_fresh_delivery_pointer_not_gitignored(self):
+        result = subprocess.run(
+            ["git", "check-ignore", "-v",
+             "artifacts/models/registry/fresh_delivery_model_pointer.json"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0, (
+            "artifacts/models/registry/fresh_delivery_model_pointer.json must NOT be gitignored."
+        )
+
     def test_derek_unique_props_summary_untouched(self):
         """derek_unique_props_summary.csv must not be staged/modified by these changes."""
         result = subprocess.run(
@@ -610,4 +625,171 @@ class TestPromotionReadbackVerification:
         derek_touched = [f for f in modified if "derek_unique_props_summary" in f]
         assert not derek_touched, (
             f"derek_unique_props_summary.csv must not be touched: {derek_touched}"
+        )
+
+
+# ── Section 3: Market gates as diagnostics / fresh delivery pointer ───────────
+
+class TestMarketGatesDiagnostics:
+    """Verify that market gate failures are treated as diagnostics, not blockers."""
+
+    def test_write_fresh_delivery_pointer_script_exists(self):
+        assert (REPO_ROOT / "scripts" / "write_fresh_delivery_pointer.py").exists(), (
+            "scripts/write_fresh_delivery_pointer.py must exist."
+        )
+
+    def test_fresh_delivery_pointer_written(self):
+        assert FRESH_DELIVERY_POINTER.exists(), (
+            "artifacts/models/registry/fresh_delivery_model_pointer.json must exist "
+            "after training/calibration runs."
+        )
+
+    def test_fresh_delivery_pointer_has_required_fields(self):
+        if not FRESH_DELIVERY_POINTER.exists():
+            pytest.skip("fresh_delivery_model_pointer.json not yet written")
+        with open(FRESH_DELIVERY_POINTER) as f:
+            pointer = json.load(f)
+        for field in ("trained_through_date", "market_quality_status", "pointer_type", "base_model_version"):
+            assert field in pointer, (
+                f"fresh_delivery_model_pointer.json missing field: {field}"
+            )
+        assert pointer["pointer_type"] == "fresh_delivery"
+
+    def test_promote_challenger_treats_m6_3_gates_as_soft(self):
+        src = (REPO_ROOT / "scripts" / "promote_challenger_if_validated.py").read_text()
+        assert 'm6_3_' in src, (
+            "promote_challenger_if_validated.py must classify m6_3_* gates as soft."
+        )
+        assert 'soft_gate_failures' in src, (
+            "promote_challenger_if_validated.py must have soft_gate_failures logic."
+        )
+
+    def test_workflow_writes_fresh_delivery_pointer(self):
+        with open(REPO_ROOT / ".github" / "workflows" / "nba_pmf_delivery.yml") as f:
+            content = f.read()
+        assert "write_fresh_delivery_pointer.py" in content, (
+            "nba_pmf_delivery.yml must call write_fresh_delivery_pointer.py."
+        )
+
+    def test_workflow_force_adds_fresh_delivery_pointer(self):
+        with open(REPO_ROOT / ".github" / "workflows" / "nba_pmf_delivery.yml") as f:
+            content = f.read()
+        assert "fresh_delivery_model_pointer.json" in content, (
+            "nba_pmf_delivery.yml must include fresh_delivery_model_pointer.json in git add."
+        )
+
+    def test_fresh_delivery_pointer_training_automation_constant(self):
+        src = (REPO_ROOT / "src" / "nba_props_model" / "training_automation.py").read_text()
+        assert "FRESH_DELIVERY_POINTER_PATH" in src, (
+            "training_automation.py must export FRESH_DELIVERY_POINTER_PATH."
+        )
+
+
+# ── Section 6: RA + all 12 stats in Phase 8 OOF and matrix ──────────────────
+
+class TestDeliveryRequiredStats:
+    """Verify ra and all 12 required delivery stats are present throughout the pipeline."""
+
+    def test_delivery_required_targets_canonical_defined(self):
+        src = TARGETS_INIT.read_text()
+        assert "DELIVERY_REQUIRED_TARGETS_CANONICAL" in src, (
+            "src/nba_props_model/targets/__init__.py must define "
+            "DELIVERY_REQUIRED_TARGETS_CANONICAL with all 12 delivery stats."
+        )
+
+    def test_delivery_required_targets_canonical_has_12_stats(self):
+        sys.path.insert(0, str(REPO_ROOT / "src"))
+        from nba_props_model.targets import DELIVERY_REQUIRED_TARGETS_CANONICAL
+        assert len(DELIVERY_REQUIRED_TARGETS_CANONICAL) == 12, (
+            f"DELIVERY_REQUIRED_TARGETS_CANONICAL must have 12 stats, got {len(DELIVERY_REQUIRED_TARGETS_CANONICAL)}: "
+            f"{DELIVERY_REQUIRED_TARGETS_CANONICAL}"
+        )
+        assert "ra" in DELIVERY_REQUIRED_TARGETS_CANONICAL, (
+            "DELIVERY_REQUIRED_TARGETS_CANONICAL must include 'ra' (rebounds+assists)."
+        )
+
+    def test_ra_not_forbidden_in_matrix_builder(self):
+        src = MATRIX_BUILDER.read_text()
+        import re
+        # Match only the tuple/set literal on the FORBIDDEN_STATS line (before any comment)
+        match = re.search(r'FORBIDDEN_STATS\s*=\s*(\(.*?\))', src)
+        assert match, "FORBIDDEN_STATS must be defined as a tuple in build_m6_3_stat_role_calibration_report.py"
+        literal = match.group(1)
+        assert '"ra"' not in literal, (
+            f"FORBIDDEN_STATS tuple must not include '\"ra\"'. Got: {literal}"
+        )
+        assert '"reb_ast"' in literal, (
+            f"FORBIDDEN_STATS tuple must still include '\"reb_ast\"' alias. Got: {literal}"
+        )
+
+    def test_ra_in_matrix_builder_combo_stats(self):
+        src = MATRIX_BUILDER.read_text()
+        import re
+        match = re.search(r'COMBO_STATS\s*=\s*(.+)', src)
+        assert match, "COMBO_STATS must be defined in build_m6_3_stat_role_calibration_report.py"
+        assert '"ra"' in match.group(1), (
+            f"COMBO_STATS must include 'ra'. Got: {match.group(1)}"
+        )
+
+    def test_matrix_includes_ra_when_rebuilt(self):
+        """The latest m6_3 matrix CSV must include ra after the rebuild."""
+        docs_dir = REPO_ROOT / "artifacts" / "docs"
+        matrices = sorted(docs_dir.glob("m6_3_stat_role_calibration_matrix_*.csv"))
+        if not matrices:
+            pytest.skip("No m6_3 matrix CSV found in artifacts/docs/")
+        latest = matrices[-1]
+        import csv
+        with open(latest, newline="") as f:
+            rows = list(csv.DictReader(f))
+        stats = {r.get("stat", "") for r in rows}
+        assert "ra" in stats, (
+            f"Latest matrix {latest.name} must contain 'ra' rows. "
+            f"Found stats: {sorted(stats)}"
+        )
+
+    def test_matrix_has_72_rows(self):
+        """The latest m6_3 matrix must have 72 rows (12 stats x 6 role buckets)."""
+        docs_dir = REPO_ROOT / "artifacts" / "docs"
+        matrices = sorted(docs_dir.glob("m6_3_stat_role_calibration_matrix_*.csv"))
+        if not matrices:
+            pytest.skip("No m6_3 matrix CSV found in artifacts/docs/")
+        latest = matrices[-1]
+        import csv
+        with open(latest, newline="") as f:
+            rows = list(csv.DictReader(f))
+        assert len(rows) == 72, (
+            f"Latest matrix {latest.name} must have 72 rows (12 stats × 6 roles). "
+            f"Got {len(rows)}."
+        )
+
+    def test_ra_canonical_function(self):
+        """canonical('reb_ast') must return 'ra'."""
+        sys.path.insert(0, str(REPO_ROOT / "src"))
+        from nba_props_model.targets import canonical
+        assert canonical("reb_ast") == "ra", "canonical('reb_ast') must return 'ra'"
+        assert canonical("reb+ast") == "ra", "canonical('reb+ast') must return 'ra'"
+        assert canonical("ra") == "ra", "canonical('ra') must return 'ra'"
+
+    def test_validate_champion_uses_dynamic_matrix_path(self):
+        src = (REPO_ROOT / "scripts" / "validate_champion_vs_challenger.py").read_text()
+        assert "_resolve_latest_m6_3_matrix" in src, (
+            "validate_champion_vs_challenger.py must use _resolve_latest_m6_3_matrix() "
+            "to dynamically find the most recent matrix file."
+        )
+
+    def test_ra_not_forbidden_in_validate_script(self):
+        src = (REPO_ROOT / "scripts" / "validate_champion_vs_challenger.py").read_text()
+        import re
+        match = re.search(r'M7_FORBIDDEN_STATS\s*=\s*\{(.+?)\}', src)
+        assert match, "M7_FORBIDDEN_STATS must be defined in validate_champion_vs_challenger.py"
+        assert '"ra"' not in match.group(1), (
+            f"M7_FORBIDDEN_STATS must not include '\"ra\"'. Got: {match.group(1)}"
+        )
+
+    def test_workflow_runs_matrix_builder_in_phase8(self):
+        with open(REPO_ROOT / ".github" / "workflows" / "nba_pmf_delivery.yml") as f:
+            content = f.read()
+        assert "build_m6_3_stat_role_calibration_report.py" in content, (
+            "nba_pmf_delivery.yml must call build_m6_3_stat_role_calibration_report.py "
+            "in the Phase 8 diagnostics step."
         )

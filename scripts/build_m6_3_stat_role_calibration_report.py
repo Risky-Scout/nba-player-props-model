@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""M6.3 — Build the 11-stat x 6-role-bucket calibration A/B report.
+"""M6.3 — Build the 12-stat x 6-role-bucket calibration A/B report.
 
 Reads:
     data/oof_pmfs.parquet         -> 7 base stats: pts, reb, ast, fg3m, tov, stl, blk
-    data/oof_combo_pmfs.parquet   -> 4 combo stats: stocks, pa, pr, pra
+    data/oof_combo_pmfs.parquet   -> 5 combo stats: stocks, pa, pr, ra, pra
 
-Applies the 11 role-aware calibrators from artifacts/models/:
-    pmf_cal_role_{pts,reb,ast,fg3m,tov,stl,blk,stocks,pa,pr,pra}.pkl
+Applies the 12 role-aware calibrators from artifacts/models/:
+    pmf_cal_role_{pts,reb,ast,fg3m,tov,stl,blk,stocks,pa,pr,ra,pra}.pkl
 
-Emits a dense 66-row matrix (11 stats x 6 role buckets) with raw-vs-calibrated
+Emits a dense 72-row matrix (12 stats x 6 role buckets) with raw-vs-calibrated
 metrics per cell:
 
     artifacts/docs/m6_3_stat_role_calibration_matrix_{run_date}.csv
@@ -24,21 +24,21 @@ Status thresholds per packet 03_ACCEPTANCE_CRITERIA §3 + M6 acceptance:
 
 Caveats (informational at M6.3, hard gates at M7):
     sparse stats (stl, blk): calibrated p0 error must not worsen by > 0.01
-    combo stats (stocks, pa, pr, pra): calibrated |mean bias| must not worsen by > 0.5
+    combo stats (stocks, pa, pr, ra, pra): calibrated |mean bias| must not worsen by > 0.5
 
 Hard verification at end:
-    - exactly 66 rows
-    - all 11 expected stats present
+    - exactly 72 rows (12 stats x 6 role buckets)
+    - all 12 expected stats present (including ra)
     - all 6 expected role buckets present
-    - pa, pr, pra present
-    - ra and reb_ast absent
+    - all 5 combo stats present (stocks, pa, pr, ra, pra)
+    - reb_ast alias absent (only canonical "ra" is used)
     - no missing cells, no cells with n < 200
     - market_eval_available = false (we do not claim market superiority)
 
 Prints `M6_3_STAT_ROLE_REPORT_PASS` on success. Nonzero exit on failure.
 
 Drift guards (per 02_CLAUDE_CONTROL_NOTES.md):
-    #4  Mission canonical set only (no `ra` / `reb_ast`).
+    #4  Mission canonical set only; "reb_ast" alias is rejected, canonical "ra" is required.
     #6  Role-aware calibrators loaded via load_calibrator() and applied via
         .apply(pmf, role_bucket=...).
     #8  Calibrator load is via joblib (indirectly through load_calibrator);
@@ -71,12 +71,12 @@ from nba_props_model.calibration.pmf_calibration import load_calibrator  # noqa:
 
 # -- Constants -------------------------------------------------------------
 BASE_STATS = ("pts", "reb", "ast", "fg3m", "tov", "stl", "blk")
-COMBO_STATS = ("stocks", "pa", "pr", "pra")
-EXPECTED_STATS = BASE_STATS + COMBO_STATS  # 11 mission canonical
+COMBO_STATS = ("stocks", "pa", "pr", "ra", "pra")
+EXPECTED_STATS = BASE_STATS + COMBO_STATS  # 12 mission canonical (all required delivery stats)
 EXPECTED_ROLE_BUCKETS = (
     "inactive_risk", "fringe", "bench", "rotation", "core", "starter",
 )
-FORBIDDEN_STATS = ("ra", "reb_ast")
+FORBIDDEN_STATS = ("reb_ast",)  # only the mission alias is forbidden; canonical "ra" is required
 MIN_CELL_N = 200
 EPS = 1e-9
 
@@ -494,7 +494,8 @@ def _write_markdown(path: Path, matrix: pd.DataFrame, run_date: str) -> None:
     lines.append("")
     lines.append("## Aggregate verdict")
     lines.append("")
-    lines.append(f"- Total cells: {len(matrix)} (expected 66)")
+    _expected_cells = len(EXPECTED_STATS) * len(EXPECTED_ROLE_BUCKETS)
+    lines.append(f"- Total cells: {len(matrix)} (expected {_expected_cells})")
     lines.append(
         f"- Status counts: PASS={n_pass}, REVIEW={n_review}, "
         f"NEEDS_MORE_DATA={n_need}"
@@ -624,8 +625,9 @@ def _write_meta(
 
 def _verify(matrix: pd.DataFrame) -> list[str]:
     errs: list[str] = []
-    if len(matrix) != 66:
-        errs.append(f"row count {len(matrix)} != 66")
+    _expected_n_rows = len(EXPECTED_STATS) * len(EXPECTED_ROLE_BUCKETS)
+    if len(matrix) != _expected_n_rows:
+        errs.append(f"row count {len(matrix)} != {_expected_n_rows}")
 
     seen_stats = set(matrix["stat"].astype(str).unique())
     expected_stats = set(EXPECTED_STATS)
@@ -648,7 +650,7 @@ def _verify(matrix: pd.DataFrame) -> list[str]:
     if forbidden_present:
         errs.append(f"forbidden stats present: {sorted(forbidden_present)}")
 
-    for combo_stat in ("pa", "pr", "pra"):
+    for combo_stat in COMBO_STATS:
         if combo_stat not in seen_stats:
             errs.append(f"required combo stat absent: {combo_stat}")
 

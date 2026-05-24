@@ -1491,6 +1491,28 @@ def build_player_game_features(
     # ── Combo expectation proxies (always computed) ───────────────────────────
     if PROFILE_BUILD_TABLE:
         _t = _prof_time.perf_counter()
+    # RA-specific: rolling joint reb+ast features and covariance
+    if "reb" in df.columns and "ast" in df.columns:
+        _reb_raw = df["reb"].values.astype(float)
+        _ast_raw = df["ast"].values.astype(float)
+        _ra_raw  = _reb_raw + _ast_raw
+        f.update(rolling_full(_ra_raw, "ra_raw", stat="ra"))
+        _last10_reb = _reb_raw[-10:]
+        _last10_ast = _ast_raw[-10:]
+        if len(_last10_reb) > 2:
+            try:
+                _cov_mat = np.cov(_last10_reb, _last10_ast)
+                f["reb_ast_covariance_last10"] = float(_cov_mat[0, 1])
+            except Exception:
+                f["reb_ast_covariance_last10"] = np.nan
+        else:
+            f["reb_ast_covariance_last10"] = np.nan
+    else:
+        f["reb_ast_covariance_last10"] = np.nan
+        for _sfx in ["mean_last3","mean_last5","mean_last10","mean_season","median_last10",
+                     "vol_last10","cv_last10","ewma_10","p25_last10","p75_last10",
+                     "floor_last10","ceiling_last10","trend_3v10","ewma_5"]:
+            f[f"ra_raw_{_sfx}"] = np.nan
     f = add_interaction_features(f, "combo")
     if PROFILE_BUILD_TABLE:
         _BPGF_STATS["combo_interactions"] += _prof_time.perf_counter() - _t
@@ -1564,6 +1586,17 @@ def add_interaction_features(f: dict, stat: str) -> dict:
         f["E_pts_proxy"] = _mul(f.get("pts_per_min_mean_last10"), mp)
         f["E_reb_proxy"] = _mul(f.get("reb_per_min_mean_last10"), mp)
         f["E_ast_proxy"] = _mul(f.get("ast_per_min_mean_last10"), mp)
+
+    if stat in ("stocks", "combo", "all"):
+        # E_stocks_proxy: unconditional ZI means (per-game) for STL + BLK
+        # hurdle_rate = p_nonzero * zi_lambda = E[count per game] from the ZI model
+        _stl_h = f.get("stl_hurdle_rate_last10")
+        _blk_h = f.get("blk_hurdle_rate_last10")
+        if (_stl_h is not None and not (isinstance(_stl_h, float) and np.isnan(_stl_h)) and
+                _blk_h is not None and not (isinstance(_blk_h, float) and np.isnan(_blk_h))):
+            f["E_stocks_proxy"] = float(_stl_h) + float(_blk_h)
+        else:
+            f["E_stocks_proxy"] = np.nan
 
     return f
 
@@ -1703,17 +1736,30 @@ LAYER_2_COMBO = [
     "is_home",
 ]
 
+# Stocks (STL+BLK) environment — pace and defensive opportunity, not scoring
+LAYER_2_STOCKS = [
+    "opp_allowed_stl_ewma",
+    "opp_allowed_stl_guard_ewma",
+    "opp_allowed_blk_ewma",
+    "opp_allowed_blk_big_ewma",
+    "opp_fga_allowed_last10",
+    "opp_pace_proxy_last10",
+    "spread_for_team",
+    "is_home",
+]
+
 LAYER_2_MAP = {
-    "pts":  LAYER_2_PTS,
-    "ast":  LAYER_2_AST,
-    "reb":  LAYER_2_REB,
-    "fg3m": LAYER_2_FG3M,
-    "blk":  LAYER_2_BLK,
-    "stl":  LAYER_2_STL,
-    "pra":  LAYER_2_COMBO,
-    "pr":   LAYER_2_COMBO,
-    "pa":   LAYER_2_COMBO,
-    "ra":   LAYER_2_COMBO,
+    "pts":    LAYER_2_PTS,
+    "ast":    LAYER_2_AST,
+    "reb":    LAYER_2_REB,
+    "fg3m":   LAYER_2_FG3M,
+    "blk":    LAYER_2_BLK,
+    "stl":    LAYER_2_STL,
+    "stocks": LAYER_2_STOCKS,
+    "pra":    LAYER_2_COMBO,
+    "pr":     LAYER_2_COMBO,
+    "pa":     LAYER_2_COMBO,
+    "ra":     LAYER_2_COMBO,
 }
 
 
@@ -1942,11 +1988,13 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "blk_p_zero_last10",
         "blk_p_ge1_last10",
         "blk_p_ge2_last10",
-
-
-
-
-
+        # ZI hurdle features — directly fix positive mean bias across all BLK roles
+        "blk_p_nonzero_last20",
+        "blk_zi_lambda_last10",
+        "blk_hurdle_rate_last10",
+        # Opponent FGA volume: more attempts = more block opportunities
+        "opp_fga_allowed_last10",
+        "opp_allowed_blk_big_ewma",
 
 
 
@@ -1969,6 +2017,12 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "tov_p_zero_last10",
         "tov_p_ge1_last10",
         "tov_p_ge2_last10",
+        # ZI hurdle features — directly fix positive mean bias across all STL roles
+        "stl_p_nonzero_last20",
+        "stl_zi_lambda_last10",
+        "stl_hurdle_rate_last10",
+        # Opponent pace: faster games = more steal opportunities
+        "opp_pace_proxy_last10",
 
 
 
@@ -2018,17 +2072,44 @@ def get_feature_cols_for_stat(stat: str, all_cols: list) -> list:
         "per_min_ast_last10",
         "opp_allowed_ast_factor",
         "adv_mean_usage_percentage_last10",
-
+        # RA covariance features — joint reb+ast rolling stats
+        "ra_raw_mean_last10",
+        "ra_raw_ewma_10",
+        "reb_ast_covariance_last10",
         "vacated_minutes", "blowout_risk_x_mp_vol_gated",
     ]
 
+    # ── STOCKS Layer 4 ────────────────────────────────────────────────────────
+    # Previously: stocks had NO dedicated L4 — it used empty list fallback.
+    # Root cause of positive mean bias across all stocks role cells.
+    STOCKS_L4 = [
+        # STL predictors
+        "per_min_stl_last10",
+        "ewma10_stl",
+        "stl_p_nonzero_last20",
+        "stl_zi_lambda_last10",
+        "stl_hurdle_rate_last10",
+        # BLK predictors
+        "per_min_blk_last10",
+        "ewma10_blk",
+        "blk_p_nonzero_last20",
+        "blk_zi_lambda_last10",
+        "blk_hurdle_rate_last10",
+        # Stocks expectation proxy = ZI unconditional means summed
+        "E_stocks_proxy",
+        # Opportunity
+        "vacated_minutes",
+        "blowout_risk_x_mp_vol_gated",
+    ]
+
     STAT_L4 = {
-        "pts": PTS_L4, "ast": AST_L4, "reb": REB_L4,
-        "fg3m": FG3M_L4, "blk": BLK_L4, "stl": STL_L4,
-        "pra": PRA_L4, "pr": PR_L4, "pa": PA_L4, "ra": RA_L4,
+        "pts":    PTS_L4,    "ast":  AST_L4, "reb": REB_L4,
+        "fg3m":   FG3M_L4,   "blk":  BLK_L4, "stl": STL_L4,
+        "stocks": STOCKS_L4,
+        "pra":    PRA_L4,    "pr":   PR_L4,  "pa":  PA_L4, "ra": RA_L4,
     }
 
-    is_combo = stat in ("pra", "pr", "pa", "ra")
+    is_combo = stat in ("pra", "pr", "pa", "ra", "stocks")
     l1 = LAYER_1_CORE + (LAYER_1_COMBO_EXTENSION if is_combo else [])
     l2 = LAYER_2_MAP.get(stat, LAYER_2_PTS)
     l3 = LAYER_3_ROLE
