@@ -852,6 +852,15 @@ jobs:
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
 
+          echo "::group::Phase13-commit-diagnostic"
+          echo "--- champion_pointer.json on-disk state ---"
+          python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); print('champion_model_id:', p.get('champion_model_id')); print('feature_set_id:', p.get('feature_set_id')); print('contextual_trained_through_date:', p.get('contextual_trained_through_date')); print('contextual_challenger_dir:', p.get('contextual_challenger_dir'))" || echo "ERROR reading champion_pointer.json"
+          echo "--- git status before add (new/modified files) ---"
+          git status --short artifacts/models/registry/ artifacts/models/challengers/ artifacts/phase13r/ artifacts/phase13s/ || true
+          echo "--- challenger dirs ---"
+          ls artifacts/models/challengers/ | tail -8
+          echo "::endgroup::"
+
           git add \
             data/live_context_features.parquet \
             artifacts/phase13o \
@@ -866,7 +875,14 @@ jobs:
             artifacts/models/registry/promotion_log.csv \
             2>/dev/null || true
 
-          git diff --staged --quiet && exit 0
+          echo "::group::Phase13-staged-diagnostic"
+          echo "--- git diff --staged --name-status ---"
+          git diff --staged --name-status || true
+          echo "--- champion_pointer.json staged diff ---"
+          git diff --staged -- artifacts/models/registry/champion_pointer.json || true
+          echo "::endgroup::"
+
+          git diff --staged --quiet && { echo "::notice::Phase13 commit: no staged changes — champion_pointer.json unchanged on-disk vs HEAD"; exit 0; }
 
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: phase13 context chain ${{ needs.resolve_context.outputs.as_of_date }}"
