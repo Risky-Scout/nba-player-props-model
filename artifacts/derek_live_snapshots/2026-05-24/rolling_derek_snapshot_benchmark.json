@@ -14,7 +14,7 @@
       "rows": 68
     }
   },
-  "code_commit": "487f81625ee4219b792606a0722352794cd4f09b",
+  "code_commit": "ddd458f5bfc24ed459700107499ab8c8d35b1f83",
   "dates_included": [
     "2026-05-03",
     "2026-05-12",
@@ -47,7 +47,7 @@
     "2026-05-22",
     "2026-05-24"
   ],
-  "generated_at_utc": "2026-05-24T17:15:47+00:00",
+  "generated_at_utc": "2026-05-24T18:18:30+00:00",
   "minimum_sample_passed": false,
   "rows_by_snapshot_type": {
     "close_lock": 98,
