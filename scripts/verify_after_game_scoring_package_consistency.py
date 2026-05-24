@@ -317,12 +317,35 @@ def main(argv: list[str] | None = None) -> int:
 
     # 11. Prediction parquets exist (we don't recompute predictions; we just
     #     prove the files are still there and were not destroyed by reporting).
+    #
+    # lineup_snapshot.parquet is conditionally required: Derek only writes it
+    # after the pre-tipoff / close-lock window. If lineup_snapshot_status.json
+    # says lineup_phase_executed_today=false (morning-only run, or Derek was
+    # unable to complete the lineup phase), the file was never created and
+    # should not be treated as "destroyed".
+    lineup_status_path = derek / "lineup_snapshot_status.json"
+    lineup_executed = True  # assume required unless status says otherwise
+    if lineup_status_path.exists():
+        try:
+            import json as _json
+            _ls = _json.loads(lineup_status_path.read_text(encoding="utf-8"))
+            if not _ls.get("lineup_phase_executed_today", True):
+                lineup_executed = False
+        except Exception:
+            pass
+
+    required_preds = [
+        rel for rel in PREDICTION_FILES
+        if not (rel == "derek_forward_feed/lineup_snapshot.parquet" and not lineup_executed)
+    ]
+
     missing_preds: list[str] = []
-    for rel in PREDICTION_FILES:
+    for rel in required_preds:
         p = base / rel
         if not p.exists():
             missing_preds.append(rel)
     report.facts["prediction_files_missing"] = missing_preds
+    report.facts["lineup_phase_executed_today"] = lineup_executed
     report.add(
         "no_prediction_files_destroyed",
         not missing_preds,
