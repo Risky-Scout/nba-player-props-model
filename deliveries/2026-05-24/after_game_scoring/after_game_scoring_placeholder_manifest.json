@@ -1,0 +1,5 @@
+{
+  "after_game_scoring_status": "pending_actuals",
+  "delivery_date": "2026-05-24",
+  "reason": "Box-score outcomes not yet available; placeholder until scripts/score_daily_pmf_delivery_after_game.py runs."
+}
