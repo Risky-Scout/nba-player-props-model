@@ -268,6 +268,7 @@ def _resolve_slate_tipoff(
         return None
 
     tip_keys = (
+        "resolved_game_start_time_utc",  # resolve_game_start_times.py output format
         "game_start_time_utc",
         "start_time_utc",
         "tipoff_utc",
@@ -292,6 +293,16 @@ def _resolve_slate_tipoff(
             else:
                 continue
             break
+    # #region agent log H_KEY H_FIELD
+    _dbg("_resolve_slate_tipoff result", {
+        "hypothesisId": "H_KEY+H_FIELD",
+        "delivery_date": delivery_date,
+        "games_found": len(games),
+        "tips_found": len(tips),
+        "min_tip_utc": min(tips).isoformat() if tips else None,
+        "first_game_keys": list(games[0].keys()) if games else [],
+    })
+    # #endregion
     if not tips:
         return None
     return min(tips)
@@ -324,7 +335,9 @@ def _extract_games_list(payload) -> list:
     if isinstance(payload, list):
         return payload
     if isinstance(payload, dict):
-        for key in ("games", "game_start_times", "scheduled_games", "rows", "data"):
+        # "records" is the key used by resolve_game_start_times.py output;
+        # must be first in the scan so it wins over the fallback.
+        for key in ("records", "games", "game_start_times", "scheduled_games", "rows", "data"):
             v = payload.get(key)
             if isinstance(v, list):
                 return v
