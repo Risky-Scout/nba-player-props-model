@@ -1,20 +1,20 @@
 # PMF calibration run
 
-**Run at:** 2026-05-24T03:28:51.456009Z
+**Run at:** 2026-05-24T14:20:53.825687Z
 **Folds:** 4 walk-forward, 28-day validation, 365-day minimum training window.
-**Production artifact backup:** `/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/archive/aggregate_only_20260524_032811`
+**Production artifact backup:** `/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/archive/aggregate_only_20260524_142019`
 
 ## Per-stat result
 
 | Stat | N OOF rows | Calibrator fitted | PIT raw mean/std | PIT cal mean/std |
 |---|---:|---|---|---|
-| ast | 11,303 | yes | 0.550 / 0.256 | 0.510 / 0.272 |
-| blk | 11,303 | yes | 0.506 / 0.289 | 0.498 / 0.289 |
-| fg3m | 11,303 | yes | 0.471 / 0.329 | 0.487 / 0.313 |
-| pts | 11,303 | yes | 0.540 / 0.284 | 0.506 / 0.284 |
-| reb | 11,303 | yes | 0.549 / 0.255 | 0.506 / 0.274 |
-| stl | 11,303 | yes | 0.487 / 0.287 | 0.493 / 0.289 |
-| tov | 11,303 | yes | 0.542 / 0.262 | 0.523 / 0.276 |
+| ast | 11,322 | yes | 0.549 / 0.257 | 0.511 / 0.272 |
+| blk | 11,322 | yes | 0.503 / 0.290 | 0.496 / 0.287 |
+| fg3m | 11,322 | yes | 0.470 / 0.329 | 0.486 / 0.313 |
+| pts | 11,322 | yes | 0.540 / 0.283 | 0.505 / 0.284 |
+| reb | 11,322 | yes | 0.549 / 0.255 | 0.508 / 0.273 |
+| stl | 11,322 | yes | 0.488 / 0.287 | 0.492 / 0.287 |
+| tov | 11,322 | yes | 0.540 / 0.264 | 0.522 / 0.275 |
 
 ## Known caveat
 
