@@ -57,8 +57,8 @@
       "passed": true
     }
   ],
-  "code_commit": "29a99d13b2e79d9328b5e1489ffc3ebdad964c7c",
-  "generated_at_utc": "2026-05-24T11:00:10+00:00",
+  "code_commit": "d965ea2c52b731fcb140bc36df038ee51f64e928",
+  "generated_at_utc": "2026-05-24T14:10:58+00:00",
   "leakage_checks_passed": true,
   "max_dates": {
     "calibration_training_window_end": "2026-04-25",
@@ -78,7 +78,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-23",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260524T105910"
+    "training_run_id": "nightly-20260524T140939"
   },
   "resolved_training_cutoff_date": "2026-05-23",
   "schema_version": "1.0",

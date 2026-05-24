@@ -8,7 +8,7 @@
   "unique_game_dates": 97,
   "no_leakage_pass": true,
   "rule": "max input game_date <= training_cutoff_date",
-  "generated_at": "2026-05-24T11:00:05+00:00",
+  "generated_at": "2026-05-24T14:10:53+00:00",
   "source_files": {
     "train_manifest": "artifacts/models/challengers/2026-05-23/train_manifest.json",
     "fold_aggregate_parquet": "artifacts/models/challengers/2026-05-23/aggregate_input/fold_aggregate.parquet",

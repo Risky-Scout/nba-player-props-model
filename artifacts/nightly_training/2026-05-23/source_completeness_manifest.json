@@ -1,7 +1,7 @@
 {
   "checks": [
     {
-      "detail": "status=skipped_already_fresh finished_at=2026-05-24T10:59:11+00:00",
+      "detail": "status=skipped_already_fresh finished_at=2026-05-24T14:09:40+00:00",
       "name": "source_refresh_manifest_present",
       "passed": true
     },
@@ -31,9 +31,9 @@
       "passed": true
     }
   ],
-  "code_commit": "29a99d13b2e79d9328b5e1489ffc3ebdad964c7c",
+  "code_commit": "d965ea2c52b731fcb140bc36df038ee51f64e928",
   "fail_code": null,
-  "generated_at_utc": "2026-05-24T11:00:09+00:00",
+  "generated_at_utc": "2026-05-24T14:10:57+00:00",
   "metrics": {
     "max_game_date": "2026-05-23",
     "rolling_7day_dates": [
@@ -55,12 +55,12 @@
   "passed": true,
   "schema_version": "1.0",
   "source_refresh_seen": {
-    "finished_at_utc": "2026-05-24T10:59:11+00:00",
+    "finished_at_utc": "2026-05-24T14:09:40+00:00",
     "halted_reason": null,
     "post_refresh": {
       "exists": true,
       "max_game_date": "2026-05-23",
-      "mtime_utc": "2026-05-24T10:59:03.341655+00:00",
+      "mtime_utc": "2026-05-24T14:09:33.142978+00:00",
       "path": "data/player_game_stats.parquet",
       "recent_date_row_counts": {
         "2026-05-19": 19,
