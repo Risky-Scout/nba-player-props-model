@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-24T14:19:33+00:00 |
+| Generated (UTC) | 2026-05-24T16:42:22+00:00 |
 | Promote | no |
 | Reason | gate_failed:m6_3_stat_role_matrix_valid |
 | Champion model_version | challenger-2026-04-30 |
@@ -13,12 +13,12 @@
 
 ## Gates passed
 
-- nll_improves_or_non_worse: challenger=1.69826 champion=1.69826 delta=+0 (tol=0.016982608593554646)
-- rps_improves_or_non_worse: challenger=0.949547 champion=0.949547 delta=+0 (tol=0.009495474177241557)
-- calibration_error_improves: challenger=0.316235 champion=0.316235 delta=+0 (tol=0.0)
-- p0_error_improves_or_non_worse: challenger=0.316235 champion=0.316235 delta=+0 (tol=0.005)
-- mean_bias_does_not_worsen: challenger=0.0669141 champion=0.0669141 delta=+0 (tol=0.05)
-- tov_does_not_regress: challenger=1.28057 champion=1.28057 delta=+0 (tol=0.02561141548757333)
+- nll_improves_or_non_worse: challenger=1.69546 champion=1.69546 delta=+0 (tol=0.01695462197270075)
+- rps_improves_or_non_worse: challenger=0.942593 champion=0.942593 delta=+0 (tol=0.009425933512610188)
+- calibration_error_improves: challenger=0.31788 champion=0.31788 delta=+0 (tol=0.0)
+- p0_error_improves_or_non_worse: challenger=0.31788 champion=0.31788 delta=+0 (tol=0.005)
+- mean_bias_does_not_worsen: challenger=0.0837622 champion=0.0837622 delta=+0 (tol=0.05)
+- tov_does_not_regress: challenger=1.28558 champion=1.28558 delta=+0 (tol=0.025711580940985326)
 - starter_core_role_buckets_do_not_regress: worst_core_nll_delta=0.0
 - bench_fringe_role_buckets_do_not_regress_materially: worst_bench_nll_delta=0.0
 - no_severe_stat_bucket_regression: worst_stat=pts delta=0.0
@@ -28,7 +28,7 @@
 - derek_feed_compatibility: ok
 - woo_export_compatibility: ok
 - no_phase10d_overlays_referenced: ok
-- market_benchmark_available: rows_total=5625 dates_included=11
+- market_benchmark_available: rows_total=5625 dates_included=12
 
 ## Gates failed
 

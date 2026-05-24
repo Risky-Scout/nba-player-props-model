@@ -11,50 +11,50 @@
       "--output-dir",
       "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-23"
     ],
-    "calibrate_pmf_elapsed_seconds": 50.7,
+    "calibrate_pmf_elapsed_seconds": 28.3,
     "calibrate_pmf_log": "artifacts/models/challengers/2026-05-23/calibrate_pmf.log",
     "challenger_kind": "real-aggregate-mode-from-rolling-oof",
     "files": [
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_ast.pkl",
-        "sha256": "f152efe4a7d4df9be179d37e988d8d4d2e04662d3173454cb1967d7506b07c26"
+        "sha256": "fd78a17839ce59f10c0280ddce381feacb99c977fd7163f4fe89781687043a23"
       },
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_blk.pkl",
-        "sha256": "107d2324be404f165833e40251eb18d6aec10fd5853a09a0c6d12506d8c9197f"
+        "sha256": "70dcc41a2314f87ab32163af94ef6158771182e1b9801f41a11f92723d4dbb99"
       },
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_fg3m.pkl",
-        "sha256": "bc268febe4daef845f45a7f95149dad03f725ed6ed7b5b987e783545e05add19"
+        "sha256": "acf063da78d2f47d2e7fb35b264850a4cab474f89196ab9588179e930e1daa8e"
       },
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_pts.pkl",
-        "sha256": "a48ed05ab13e000a885df5b7d36e5d13927c9363ece40783094c73a2a0810390"
+        "sha256": "11655c9919c74ff64add6d4d158f56c1f69bd56ae46e0ec9ecf3a04ad3ba359c"
       },
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_reb.pkl",
-        "sha256": "5f3aac8535de97859159974fc06ae64a167392d768328e92e88d1b12004aebd3"
+        "sha256": "821f5752ced131b0c75d0b60f453920ed6ccbeaa4250cb0007f07a989bb11721"
       },
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_stl.pkl",
-        "sha256": "75a80bb139c2bf5986b006d5ca27644673670640203c58f39ac89f534d11ef13"
+        "sha256": "c56ffc552e1b5bf1124f4f8eef2ca74b89269ecd0276261581d909f9249927ef"
       },
       {
         "path": "artifacts/models/challengers/2026-05-23/pmf_cal_role_tov.pkl",
-        "sha256": "59d760166cd6dca88ae082276fa1d79e227dd62d8869106797dccc0a2ebb0304"
+        "sha256": "ee8fccf0603ab63564b429e4848c271aaaeaa53aa9cc79261f04ee18eb7e7c5d"
       }
     ],
     "fold_aggregate_input": "artifacts/models/challengers/2026-05-23/aggregate_input/fold_aggregate.parquet",
-    "fold_aggregate_sha256": "df9616f81c960318b22862488cfbc610e59e1f6d49ebfdeb7cbd310a6170f6b5",
+    "fold_aggregate_sha256": "43cc6e37933969e968d2c6fbcc4ce86b51986e50dbd277f67df47d3c20657516",
     "model_dir_reference": "artifacts/models/challengers/2026-05-23",
     "oof_pmfs_parquet": "artifacts/models/challengers/2026-05-23/oof_pmfs.parquet",
     "pmf_cal_meta_json": null,
     "training_table_sha256": null,
     "training_table_snapshot": null
   },
-  "code_commit": "c2e8a512c6f86e45a953f49e05bc8afbe430fa0d",
+  "code_commit": "47ca4b2d67e81487e70575c9c4cd2d2d0b4f8487",
   "dry_run": false,
-  "finished_at_utc": "2026-05-24T14:19:19+00:00",
+  "finished_at_utc": "2026-05-24T16:42:14+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -64,7 +64,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-23",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260524T141822"
+    "training_run_id": "nightly-20260524T164140"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
@@ -72,7 +72,7 @@
     "model_version": "challenger-2026-04-30"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-05-24T14:18:28+00:00",
+  "started_at_utc": "2026-05-24T16:41:45+00:00",
   "stats_trained": [
     "pts",
     "reb",
@@ -85,9 +85,9 @@
   "status": "ok",
   "training_summary": {
     "aggregate_oof_future_rows_excluded": null,
-    "aggregate_oof_rows_after_cutoff": 79121,
-    "aggregate_oof_rows_pre_cutoff": 79121,
-    "calibrate_pmf_elapsed_seconds": 50.7,
+    "aggregate_oof_rows_after_cutoff": 79254,
+    "aggregate_oof_rows_pre_cutoff": 79254,
+    "calibrate_pmf_elapsed_seconds": 28.3,
     "future_rows_excluded": 0,
     "max_date": "2026-05-23",
     "min_date": "2023-10-24",
