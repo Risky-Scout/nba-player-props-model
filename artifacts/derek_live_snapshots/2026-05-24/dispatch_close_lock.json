@@ -1,18 +1,26 @@
 {
-  "code_commit": "ac80b5fd83c491fae126cc41b488fc0358566200",
-  "decisions": [],
+  "code_commit": "487f81625ee4219b792606a0722352794cd4f09b",
+  "decisions": [
+    {
+      "decision": "skipped_not_due",
+      "detail": "now < target - 3min; will fire during the cron window starting at 2026-05-25T00:01:00+00:00",
+      "game_id": "21713531",
+      "now_utc": "2026-05-24T17:15:29Z",
+      "snapshot_dir": "deliveries/2026-05-24/derek_game_snapshots/21713531/close_lock",
+      "state": "NOT_DUE",
+      "target_utc": "2026-05-25T00:04:00Z"
+    }
+  ],
   "delivery_date": "2026-05-24",
   "eligible_rows": 0,
-  "note": "no schedule loaded \u2014 predictions/all_props_2026-05-24.parquet slate_status=predictions_parquet_missing. Dispatcher exits cleanly with no work.",
-  "now_utc": "2026-05-24T05:59:18Z",
-  "schedule_rows": 0,
+  "now_utc": "2026-05-24T17:15:29Z",
+  "schedule_rows": 1,
   "schema_version": "1.0",
-  "slate_status": "predictions_parquet_missing",
   "snapshot_type": "close_lock",
   "summary": {
     "failures": 0,
     "fired": 0,
     "skipped_already_run": 0,
-    "skipped_window": 0
+    "skipped_window": 1
   }
 }

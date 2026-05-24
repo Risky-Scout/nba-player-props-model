@@ -1,8 +1,8 @@
 # Game start time resolution — 2026-05-24
 
-- generated_at_utc: 2026-05-24T05:59:12+00:00Z
-- predictions_unique_games: 0
-- resolved: **0**
+- generated_at_utc: 2026-05-24T17:15:23+00:00Z
+- predictions_unique_games: 1
+- resolved: **1**
 - unresolved: **0**
 - ODDS_API_KEY present: True
 - BDL_API_KEY present: True
@@ -14,3 +14,4 @@
 
 | game_id | team | opponent | resolved_utc | source | confidence | blocker |
 | --- | --- | --- | --- | --- | --- | --- |
+| 21713531 | OKC | SAS | `2026-05-25T00:10:00Z` | odds_api_live_events | high |  |

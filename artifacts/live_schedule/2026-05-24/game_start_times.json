@@ -1,7 +1,18 @@
 {
   "delivery_date": "2026-05-24",
-  "generated_at_utc": "2026-05-24T05:59:12+00:00Z",
-  "records": [],
+  "generated_at_utc": "2026-05-24T17:15:23+00:00Z",
+  "records": [
+    {
+      "game_id": "21713531",
+      "opponent_abbr": "SAS",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-25T00:10:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "ba7ca2653e21aec5",
+      "source_used": "odds_api_live_events",
+      "team_abbr": "OKC"
+    }
+  ],
   "schema_version": "1.0",
   "telemetry": {
     "bdl_api_key_present": true,
@@ -11,10 +22,11 @@
     "odds_api_cached_events": 0,
     "odds_api_key_present": true,
     "odds_api_live_events": 2,
-    "pmf_display_matchups_parsed": 0,
-    "predictions_present": false,
-    "predictions_rows": 0,
-    "predictions_unique_games": 0,
-    "resolution_blocker": "predictions/all_props_<date>.parquet missing or has no game_id"
+    "pmf_display_matchups_parsed": 1,
+    "predictions_present": true,
+    "predictions_rows": 26,
+    "predictions_unique_games": 1,
+    "resolved_count": 1,
+    "unresolved_count": 0
   }
 }

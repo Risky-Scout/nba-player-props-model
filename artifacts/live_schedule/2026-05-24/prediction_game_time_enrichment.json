@@ -1,6 +1,35 @@
 {
-  "blocker": "predictions parquet missing: predictions/all_props_2026-05-24.parquet",
+  "added_columns": [
+    "game_start_time",
+    "game_start_time_source",
+    "game_start_time_resolution_confidence"
+  ],
   "delivery_date": "2026-05-24",
-  "outcome": "pending",
-  "schema_version": "1.0"
+  "generated_at_utc": "2026-05-24T17:15:25+00:00Z",
+  "outcome": "pass",
+  "post_hash": "4f1bfe7e19c4b0c9",
+  "post_rows": 26,
+  "pre_hash": "d829df87bac37838",
+  "pre_rows": 26,
+  "resolved_count": 1,
+  "resolved_games": [
+    "21713531"
+  ],
+  "rows_changed": false,
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 1,
+    "delivery_date": "2026-05-24",
+    "from_predictions_count": 0,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 2,
+    "pmf_display_matchups_parsed": 1,
+    "predictions_present": true,
+    "predictions_rows": 26,
+    "predictions_unique_games": 1,
+    "resolved_count": 1,
+    "unresolved_count": 0
+  }
 }
