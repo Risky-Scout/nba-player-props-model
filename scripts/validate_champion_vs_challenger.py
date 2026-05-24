@@ -478,7 +478,7 @@ def _compare_gate(
 
 
 def _load_m6_3_stat_role_policy() -> dict:
-    """Load M6.3's 66-cell report and build the M7 guarded fallback policy."""
+    """Load M6.3's 72-cell report (12 stats × 6 role buckets) and build the M7 guarded fallback policy."""
     expected_stats = set(M7_TARGET_STATS)
     expected_roles = set(M7_ROLE_BUCKETS)
 
@@ -522,7 +522,7 @@ def _load_m6_3_stat_role_policy() -> dict:
     extra_cells = sorted(f"{s}|{rb}" for s, rb in (observed_cells - expected_cells))
 
     if len(rows) != summary["expected_rows"]:
-        summary["issues"].append(f"expected 66 rows, found {len(rows)}")
+        summary["issues"].append(f"expected {summary['expected_rows']} rows, found {len(rows)}")
     if observed_stats != expected_stats:
         summary["issues"].append(
             f"stat mismatch missing={sorted(expected_stats - observed_stats)} extra={sorted(observed_stats - expected_stats)}"

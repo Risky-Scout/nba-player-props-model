@@ -82,9 +82,10 @@ from nba_props_model.targets import (  # noqa: E402
 # (was 7-stat BASE_STATS_FULL pre-M6.4; was 5-stat literal pre-M4A2).
 SUPPORTED_STATS = MISSION_REQUIRED_TARGETS_CANONICAL
 
-# M6.4: stats explicitly excluded from the mission set; must NEVER be
-# treated as required by preflight or downstream gates.
-FORBIDDEN_MISSION_STATS: tuple[str, ...] = ("ra", "reb_ast")
+# M6.4: mission-spec aliases that are NOT canonical delivery stats.
+# "reb_ast" is the mission alias for "ra"; only the alias is forbidden.
+# "ra" is canonical and required. This list is used only for diagnostics.
+FORBIDDEN_MISSION_STATS: tuple[str, ...] = ("reb_ast",)
 
 
 def _now_utc_iso() -> str:
