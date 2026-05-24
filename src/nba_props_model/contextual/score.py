@@ -372,6 +372,17 @@ def resolve_contextual_challenger_dir(repo_root: Path,
 
     if not is_contextual_pointer:
         if chosen is not None:
+            # Safety net: champion pointer is stale/non-contextual but a
+            # contextual challenger dir exists. Emit marker so operators
+            # can see that prediction is using a fresher model than what
+            # the champion pointer officially advertises.
+            import sys
+            print(
+                "MODEL_SELECTION_OVERRIDES_STALE_CHAMPION_POINTER "
+                f"champion_pointer.feature_set_id={fs_id!r} "
+                f"using_challenger_dir={chosen.name}",
+                file=sys.stderr,
+            )
             return chosen, (
                 f"contextual artifacts present at {chosen.name} but "
                 f"champion_pointer.feature_set_id={fs_id!r} is not a "
