@@ -6,7 +6,7 @@ GitHub may refuse to render large CSV files. This file is intentionally small.
 
 ## `derek_forward_feed/derek_forward_feed.csv`
 
-- bytes: `548,631`
+- bytes: `523,991`
 - rows: `1,027`
 - columns: `55`
 
@@ -276,7 +276,7 @@ Evan Mobley,pr,22.2027,24.5,0.3319
 
 ## `derek_forward_feed/latest_available_snapshot.csv`
 
-- bytes: `525,006`
+- bytes: `519,385`
 - rows: `158`
 - columns: `88`
 
@@ -411,7 +411,7 @@ Jarrett Allen,9,CLE,NYK,21713899,pts,core,stat_grid:pmf_sim_v1+role_aware_pmf_ca
 
 ## `derek_forward_feed/morning_snapshot.csv`
 
-- bytes: `525,006`
+- bytes: `519,385`
 - rows: `158`
 - columns: `88`
 

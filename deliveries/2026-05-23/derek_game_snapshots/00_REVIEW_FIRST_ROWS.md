@@ -96,7 +96,7 @@ Mikal Bridges,61,NYK,CLE,21713899,stl,starter,stat_grid:hurdle_v1+role_aware_pmf
 
 ## `derek_game_snapshots/21713899/morning/market_comparison.csv`
 
-- bytes: `539,781`
+- bytes: `523,836`
 - rows: `617`
 - columns: `67`
 
@@ -276,7 +276,7 @@ Jalen Brunson,73,NYK,CLE,21713899,pts,starter,stat_grid:pmf_sim_v1+role_aware_pm
 
 ## `derek_game_snapshots/21713899/morning/outcome_level_probabilities.csv`
 
-- bytes: `535,466`
+- bytes: `524,223`
 - rows: `7,227`
 - columns: `11`
 

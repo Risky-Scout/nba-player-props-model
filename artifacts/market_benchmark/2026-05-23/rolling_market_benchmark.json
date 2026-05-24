@@ -1,0 +1,282 @@
+{
+  "as_of_date": "2026-05-23",
+  "by_edge_bucket": [],
+  "by_role_bucket": [
+    {
+      "delta_brier": 0.07123777944753658,
+      "delta_logloss": 0.1750659027151236,
+      "market_brier": 0.24769508539726048,
+      "market_logloss": 0.6869415466849456,
+      "minimum_sample_passed": true,
+      "model_brier": 0.31893286484479705,
+      "model_logloss": 0.8620074494000691,
+      "n": 265,
+      "role_bucket": "bench"
+    },
+    {
+      "delta_brier": 0.08426167539549433,
+      "delta_logloss": 0.2559520403078335,
+      "market_brier": 0.2340544807054015,
+      "market_logloss": 0.6589789105923698,
+      "minimum_sample_passed": true,
+      "model_brier": 0.3183161561008958,
+      "model_logloss": 0.9149309509002033,
+      "n": 771,
+      "role_bucket": "core"
+    },
+    {
+      "delta_brier": 0.018154650942326465,
+      "delta_logloss": 0.0408764809910037,
+      "market_brier": 0.24292556778524288,
+      "market_logloss": 0.678738087834768,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2610802187275693,
+      "model_logloss": 0.7196145688257717,
+      "n": 1167,
+      "role_bucket": "rotation"
+    },
+    {
+      "delta_brier": -0.010839487071901289,
+      "delta_logloss": -0.02437683136748134,
+      "market_brier": 0.22966314659835804,
+      "market_logloss": 0.6502949886994498,
+      "minimum_sample_passed": true,
+      "model_brier": 0.21882365952645677,
+      "model_logloss": 0.6259181573319686,
+      "n": 3422,
+      "role_bucket": "starter"
+    }
+  ],
+  "by_stat": [
+    {
+      "delta_brier": 0.002668637672582973,
+      "delta_logloss": 0.01673423786612118,
+      "market_brier": 0.24319280639112723,
+      "market_logloss": 0.6791724459237639,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2458614440637102,
+      "model_logloss": 0.6959066837898851,
+      "n": 993,
+      "stat": "ast"
+    },
+    {
+      "delta_brier": 0.0026833262426101106,
+      "delta_logloss": 0.004483796547997784,
+      "market_brier": 0.22462976365941875,
+      "market_logloss": 0.6399887960109663,
+      "minimum_sample_passed": true,
+      "model_brier": 0.22731308990202886,
+      "model_logloss": 0.644472592558964,
+      "n": 1026,
+      "stat": "fg3m"
+    },
+    {
+      "delta_brier": 0.006382818396998942,
+      "delta_logloss": 0.015398077095721233,
+      "market_brier": 0.22771483759528197,
+      "market_logloss": 0.6456458274951987,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2340976559922809,
+      "model_logloss": 0.66104390459092,
+      "n": 2018,
+      "stat": "pts"
+    },
+    {
+      "delta_brier": 0.03126822337168473,
+      "delta_logloss": 0.09806425102982247,
+      "market_brier": 0.24181831926376968,
+      "market_logloss": 0.676038429707846,
+      "minimum_sample_passed": true,
+      "model_brier": 0.2730865426354544,
+      "model_logloss": 0.7741026807376685,
+      "n": 1588,
+      "stat": "reb"
+    }
+  ],
+  "code_commit": "c0f4d2461e958044a59009e7715b342340fb94d4",
+  "dates_included": [
+    "2026-05-23",
+    "2026-05-20",
+    "2026-05-18",
+    "2026-05-12",
+    "2026-05-08",
+    "2026-05-07",
+    "2026-05-06",
+    "2026-05-04",
+    "2026-05-03",
+    "2026-05-02",
+    "2026-05-01",
+    "2026-04-30"
+  ],
+  "dates_missing": [
+    "2026-05-22",
+    "2026-05-21",
+    "2026-05-19",
+    "2026-05-17",
+    "2026-05-16",
+    "2026-05-15",
+    "2026-05-14",
+    "2026-05-13",
+    "2026-05-11",
+    "2026-05-10",
+    "2026-05-09",
+    "2026-05-05",
+    "2026-04-29",
+    "2026-04-28",
+    "2026-04-27",
+    "2026-04-26"
+  ],
+  "delta_brier": 0.012077780653008373,
+  "delta_logloss": 0.036980768653124906,
+  "generated_at_utc": "2026-05-24T14:57:51+00:00",
+  "market_brier": 0.23386606711450633,
+  "market_logloss": 0.6591127199592747,
+  "min_bucket_rows": 50,
+  "min_overall_rows": 500,
+  "minimum_sample_passed": true,
+  "minimum_sample_passed_per_stat": {
+    "ast": true,
+    "fg3m": true,
+    "pts": true,
+    "reb": true
+  },
+  "model_brier": 0.24594384776751474,
+  "model_logloss": 0.6960934886123995,
+  "per_slate_summaries": [
+    {
+      "date": "2026-05-23",
+      "overall": null,
+      "rows_paired": null,
+      "rows_total": null
+    },
+    {
+      "date": "2026-05-20",
+      "overall": null,
+      "rows_paired": null,
+      "rows_total": null
+    },
+    {
+      "date": "2026-05-18",
+      "overall": null,
+      "rows_paired": null,
+      "rows_total": null
+    },
+    {
+      "date": "2026-05-12",
+      "overall": {
+        "delta_brier": 0.0015019138293587044,
+        "delta_logloss": 0.004124074336223234,
+        "market_brier": 0.2213243323227763,
+        "market_logloss": 0.6320078684123581,
+        "model_brier": 0.222826246152135,
+        "model_logloss": 0.6361319427485814,
+        "n": 1285
+      },
+      "rows_paired": 1285,
+      "rows_total": 1285
+    },
+    {
+      "date": "2026-05-08",
+      "overall": {
+        "delta_brier": 0.05865808122520783,
+        "delta_logloss": 0.2168529612539836,
+        "market_brier": 0.24920455187516175,
+        "market_logloss": 0.6914185995244296,
+        "model_brier": 0.30786263310036954,
+        "model_logloss": 0.9082715607784131,
+        "n": 578
+      },
+      "rows_paired": 578,
+      "rows_total": 578
+    },
+    {
+      "date": "2026-05-07",
+      "overall": {
+        "delta_brier": 0.026396093505119258,
+        "delta_logloss": 0.06910367034367539,
+        "market_brier": 0.2567955943455557,
+        "market_logloss": 0.7082855129207926,
+        "model_brier": 0.283191687850675,
+        "model_logloss": 0.7773891832644679,
+        "n": 400
+      },
+      "rows_paired": 400,
+      "rows_total": 400
+    },
+    {
+      "date": "2026-05-06",
+      "overall": null,
+      "rows_paired": 0,
+      "rows_total": 0
+    },
+    {
+      "date": "2026-05-04",
+      "overall": null,
+      "rows_paired": 0,
+      "rows_total": 0
+    },
+    {
+      "date": "2026-05-03",
+      "overall": {
+        "delta_brier": -0.004996112752997523,
+        "delta_logloss": -0.01409474223962366,
+        "market_brier": 0.23226423186711187,
+        "market_logloss": 0.654120135271143,
+        "model_brier": 0.22726811911411435,
+        "model_logloss": 0.6400253930315194,
+        "n": 489
+      },
+      "rows_paired": 489,
+      "rows_total": 489
+    },
+    {
+      "date": "2026-05-02",
+      "overall": {
+        "delta_brier": 0.05552741851279544,
+        "delta_logloss": 0.13676583058275626,
+        "market_brier": 0.23703766005352775,
+        "market_logloss": 0.6661274089055593,
+        "model_brier": 0.2925650785663232,
+        "model_logloss": 0.8028932394883157,
+        "n": 406
+      },
+      "rows_paired": 406,
+      "rows_total": 406
+    },
+    {
+      "date": "2026-05-01",
+      "overall": {
+        "delta_brier": 0.01322563112080243,
+        "delta_logloss": 0.028488900614722285,
+        "market_brier": 0.23601795744796422,
+        "market_logloss": 0.6642631878469255,
+        "model_brier": 0.24924358856876663,
+        "model_logloss": 0.6927520884616478,
+        "n": 1202
+      },
+      "rows_paired": 1202,
+      "rows_total": 1202
+    },
+    {
+      "date": "2026-04-30",
+      "overall": {
+        "delta_brier": -0.011425686035537818,
+        "delta_logloss": -0.026200275407755876,
+        "market_brier": 0.22990380043087913,
+        "market_logloss": 0.651120914792373,
+        "model_brier": 0.21847811439534132,
+        "model_logloss": 0.6249206393846171,
+        "n": 1265
+      },
+      "rows_paired": 1265,
+      "rows_total": 1265
+    }
+  ],
+  "rows_non_push": 5625,
+  "rows_total": 5625,
+  "schema_version": "1.0",
+  "status": "ok",
+  "window_days": 28,
+  "window_end": "2026-05-23",
+  "window_start": "2026-04-26"
+}
