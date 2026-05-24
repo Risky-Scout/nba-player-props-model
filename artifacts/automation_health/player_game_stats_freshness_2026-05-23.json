@@ -1,10 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-05-24T10:59:03+00:00",
+  "generated_at_utc": "2026-05-24T14:09:33+00:00",
   "from_date": "2026-05-17",
   "to_date": "2026-05-23",
   "status": "PASS",
-  "rows_added": 19,
+  "rows_added": 0,
   "summary": {
     "rows_total": 84357,
     "min_game_date": "2023-10-24",
@@ -25,5 +25,5 @@
       "min": 0
     }
   },
-  "refresh_stdout_tail": "  existing parquet: 84338 rows, latest game_date=2026-05-22\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-17 \u2192 2026-05-23\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-17 \u2192 2026-05-23\n    got 161 raw records in 0.8s\n    161 rows after schema map / min>=1 filter\n\n  incoming rows: 161\n    distinct game_dates: ['2026-05-17', '2026-05-18', '2026-05-19', '2026-05-20', '2026-05-21', '2026-05-22', '2026-05-23']\n    distinct game_ids:   7\n    distinct players:    68\n\n  merge summary:\n    rows kept (no key conflict):     84196\n    rows replaced (key conflict):    142\n    rows added (new keys):           19\n    final row count:                 84357\n\nwrote data/player_game_stats.parquet  (2026-05-24T10:59:03Z)\n"
+  "refresh_stdout_tail": "  existing parquet: 84357 rows, latest game_date=2026-05-23\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-17 \u2192 2026-05-23\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-17 \u2192 2026-05-23\n    got 161 raw records in 1.0s\n    161 rows after schema map / min>=1 filter\n\n  incoming rows: 161\n    distinct game_dates: ['2026-05-17', '2026-05-18', '2026-05-19', '2026-05-20', '2026-05-21', '2026-05-22', '2026-05-23']\n    distinct game_ids:   7\n    distinct players:    68\n\n  merge summary:\n    rows kept (no key conflict):     84196\n    rows replaced (key conflict):    161\n    rows added (new keys):           0\n    final row count:                 84357\n\nwrote data/player_game_stats.parquet  (2026-05-24T14:09:33Z)\n"
 }
