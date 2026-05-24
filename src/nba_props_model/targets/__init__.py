@@ -103,6 +103,15 @@ MISSION_REQUIRED_TARGETS_MISSION: tuple[str, ...] = (
     MISSION_REQUIRED_BASE + MISSION_REQUIRED_COMBOS_MISSION
 )
 
+# ── Delivery-required canonical stat list (authoritative 12-stat set) ────
+# Every delivery output, PMF prediction, stat-role matrix, market comparison,
+# calibration report, and dashboard export MUST include all 12 of these stats.
+# Use this constant instead of hardcoded stat lists anywhere stats are iterated.
+DELIVERY_REQUIRED_TARGETS_CANONICAL: tuple[str, ...] = (
+    "pts", "reb", "ast", "fg3m", "tov", "stl", "blk",
+    "stocks", "pa", "pr", "ra", "pra",
+)
+
 # ── Full codebase target universe (12 = 7 base + 5 combo, includes "ra") ─
 
 ALL_TARGETS_CANONICAL: tuple[str, ...] = BASE_STATS_FULL + COMBO_STATS_CANONICAL
@@ -117,8 +126,17 @@ ALL_KNOWN_NAMES: frozenset[str] = frozenset(
 # ── Helpers ──────────────────────────────────────────────────────────────
 
 
+_EXTRA_ALIASES: dict[str, str] = {
+    # All known surface forms for ra (rebounds + assists)
+    "reb_ast":           "ra",
+    "reb+ast":           "ra",
+    "rebounds_assists":  "ra",
+    "r+a":               "ra",
+}
+
+
 def canonical(stat: str) -> str:
-    """Return the internal canonical name (accepts canonical or mission).
+    """Return the internal canonical name (accepts canonical, mission, or extended alias).
 
     >>> canonical("pra")
     'pra'
@@ -128,9 +146,17 @@ def canonical(stat: str) -> str:
     'stocks'
     >>> canonical("pts")
     'pts'
+    >>> canonical("reb_ast")
+    'ra'
+    >>> canonical("rebounds_assists")
+    'ra'
+    >>> canonical("reb+ast")
+    'ra'
     """
     if stat in MISSION_TO_CANONICAL:
         return MISSION_TO_CANONICAL[stat]
+    if stat in _EXTRA_ALIASES:
+        return _EXTRA_ALIASES[stat]
     return stat
 
 

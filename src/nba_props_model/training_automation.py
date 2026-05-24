@@ -43,6 +43,7 @@ CHAMPION_DIR = CHAMPION_MODELS_DIR / "champion"
 CHALLENGERS_DIR = CHAMPION_MODELS_DIR / "challengers"
 
 CHAMPION_POINTER_PATH = REGISTRY_DIR / "champion_pointer.json"
+FRESH_DELIVERY_POINTER_PATH = REGISTRY_DIR / "fresh_delivery_model_pointer.json"
 MODEL_REGISTRY_PATH = REGISTRY_DIR / "model_registry.json"
 PROMOTION_LOG_PATH = REGISTRY_DIR / "promotion_log.csv"
 PROMOTION_LOCK_PATH = REGISTRY_DIR / "promotion.lock"

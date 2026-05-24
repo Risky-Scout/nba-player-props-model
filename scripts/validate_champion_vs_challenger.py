@@ -54,9 +54,30 @@ from nba_props_model.targets import (  # noqa: E402
 ROLE_AWARE_BLEND_POLICY = "stat_role_guarded_expanded_v1"
 M7_TARGET_STATS = tuple(MISSION_REQUIRED_TARGETS_CANONICAL)
 M7_ROLE_BUCKETS = ("inactive_risk", "fringe", "bench", "rotation", "core", "starter")
-M7_FORBIDDEN_STATS = {"ra", "reb_ast"}
-M6_3_MATRIX_PATH = REPO_ROOT / "artifacts" / "docs" / "m6_3_stat_role_calibration_matrix_2026-05-11.csv"
-M6_3_META_PATH = REPO_ROOT / "artifacts" / "docs" / "m6_3_stat_role_calibration_report_2026-05-11.meta.json"
+# Only the mission-spec alias "reb_ast" is forbidden; canonical "ra" is a required delivery stat.
+M7_FORBIDDEN_STATS = {"reb_ast"}
+_DOCS_DIR = REPO_ROOT / "artifacts" / "docs"
+
+
+def _resolve_latest_m6_3_matrix() -> tuple[Path, Path]:
+    """Return (matrix_csv_path, meta_json_path) for the latest available m6_3 matrix.
+
+    Searches for all m6_3_stat_role_calibration_matrix_YYYY-MM-DD.csv files and
+    returns the most recent one. Falls back to the pinned 2026-05-24 paths if none found.
+    """
+    candidates = sorted(_DOCS_DIR.glob("m6_3_stat_role_calibration_matrix_*.csv"))
+    if candidates:
+        latest = candidates[-1]
+        run_date = latest.stem.replace("m6_3_stat_role_calibration_matrix_", "")
+        meta = _DOCS_DIR / f"m6_3_stat_role_calibration_report_{run_date}.meta.json"
+        return latest, meta
+    return (
+        _DOCS_DIR / "m6_3_stat_role_calibration_matrix_2026-05-24.csv",
+        _DOCS_DIR / "m6_3_stat_role_calibration_report_2026-05-24.meta.json",
+    )
+
+
+M6_3_MATRIX_PATH, M6_3_META_PATH = _resolve_latest_m6_3_matrix()
 
 
 def pmf_validity_checks(challenger_artifacts_dir: Path) -> dict:
