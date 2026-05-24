@@ -2,14 +2,14 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-24T16:42:22+00:00 |
+| Generated (UTC) | 2026-05-24T19:56:03+00:00 |
 | Promote | no |
-| Reason | gate_failed:m6_3_stat_role_matrix_valid |
+| Reason | gate_failed:market_logloss_non_inferior_or_better |
 | Champion model_version | challenger-2026-04-30 |
 | Challenger dry_run | False |
 | PMF validity issues | 0 |
-| Gates passed | 16 |
-| Gates failed | 5 |
+| Gates passed | 18 |
+| Gates failed | 3 |
 
 ## Gates passed
 
@@ -28,12 +28,12 @@
 - derek_feed_compatibility: ok
 - woo_export_compatibility: ok
 - no_phase10d_overlays_referenced: ok
+- m6_3_stat_role_matrix_valid: valid
+- m6_3_review_cells_guarded: review_cells=3 guarded_cells=3
 - market_benchmark_available: rows_total=5625 dates_included=12
 
 ## Gates failed
 
-- m6_3_stat_role_matrix_valid: expected 66 rows, found 66; stat mismatch missing=['ra'] extra=[]; missing_cells=['ra|bench', 'ra|core', 'ra|fringe', 'ra|inactive_risk', 'ra|rotation', 'ra|starter']
-- m6_3_review_cells_guarded: review_cells=18 guarded_cells=18
 - market_logloss_non_inferior_or_better: delta_logloss=0.036980768653124906 tolerance=0.005 (negative favors model)
 - market_brier_non_inferior_or_better: delta_brier=0.012077780653008373 tolerance=0.005 (negative favors model)
 - no_severe_market_stat_bucket_regression: severe market regression on reb: delta_logloss=+0.0981
