@@ -3,9 +3,9 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `derek_game_snapshots/21713531/morning/outcome_level_probabilities.csv`
-- Original rows: `9036`
+- Original rows: `6287`
 - Original columns: `11`
-- Original bytes: `773202`
+- Original bytes: `533979`
 - Current CSV preview rows: `6287`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `outcome_level_probabilities.parquet`
@@ -16,4 +16,4 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 | part | rows | bytes |
 |---|---:|---:|
 | `outcome_level_probabilities_csv_parts/outcome_level_probabilities_part_000.csv` | 5532 | 459610 |
-| `outcome_level_probabilities_csv_parts/outcome_level_probabilities_part_001.csv` | 3504 | 299615 |
+| `outcome_level_probabilities_csv_parts/outcome_level_probabilities_part_001.csv` | 755 | 64769 |
