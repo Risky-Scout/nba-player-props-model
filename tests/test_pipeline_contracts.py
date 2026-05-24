@@ -793,3 +793,68 @@ class TestDeliveryRequiredStats:
             "nba_pmf_delivery.yml must call build_m6_3_stat_role_calibration_report.py "
             "in the Phase 8 diagnostics step."
         )
+
+
+class TestPhase13DependencyCondition:
+    """Phase 13 must run when Phase 8 is 'success' OR 'skipped'.
+
+    When Phase 8 is skipped at job level (e.g. stage=phase13_context manual
+    trigger, or model_chain run where Phase 8 already completed idempotently
+    and exited with result='skipped'), Phase 13 must still proceed.  The only
+    case Phase 13 should be blocked is when Phase 8 explicitly *failed*.
+    """
+
+    @pytest.fixture(scope="class")
+    def workflow_content(self):
+        path = REPO_ROOT / ".github" / "workflows" / "nba_pmf_delivery.yml"
+        with open(path) as f:
+            return f.read()
+
+    def test_phase13_accepts_phase8_success(self, workflow_content):
+        """Phase 13 condition must include the 'success' case for Phase 8."""
+        assert (
+            "phase8_pmf_calibration_diagnostics_market_eval.result == 'success'" in workflow_content
+        ), "Phase 13 if-condition must accept phase8 result == 'success'."
+
+    def test_phase13_accepts_phase8_skipped(self, workflow_content):
+        """Phase 13 must run even when Phase 8 is skipped (e.g. idempotent or phase13_context stage)."""
+        assert (
+            "phase8_pmf_calibration_diagnostics_market_eval.result == 'skipped'" in workflow_content
+        ), (
+            "Phase 13 if-condition must accept phase8 result == 'skipped'. "
+            "Without this, a manual stage=phase13_context trigger or any run where "
+            "Phase 8 is skipped will silently block Phase 13 even though calibration "
+            "artifacts already exist."
+        )
+
+    def test_phase13_condition_uses_or_for_phase8(self, workflow_content):
+        """Both 'success' and 'skipped' must appear together with || in the Phase 13 condition."""
+        import re
+        pattern = (
+            r"phase8_pmf_calibration_diagnostics_market_eval\.result == 'success'"
+            r".*?\|\|.*?"
+            r"phase8_pmf_calibration_diagnostics_market_eval\.result == 'skipped'"
+        )
+        assert re.search(pattern, workflow_content), (
+            "Phase 13 if-condition must use 'result == success || result == skipped' "
+            "so it is never blocked by an idempotent Phase 8 skip."
+        )
+
+    def test_phase13_context_stage_sets_run_phase13_without_phase8(self):
+        """Manual stage=phase13_context must set run_phase13=true with run_phase8=false."""
+        import sys
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        from resolve_nba_pmf_schedule import parse_args, resolve
+
+        result = resolve(parse_args([
+            "--event-name", "workflow_dispatch",
+            "--manual-stage", "phase13_context",
+            "--manual-force-run", "false",
+            "--manual-no-promote", "false",
+            "--now-utc", "2026-05-24T09:00:00+00:00",
+        ]))
+        assert result.run_phase13 is True, "stage=phase13_context must set run_phase13=true"
+        assert result.run_phase8 is False, (
+            "stage=phase13_context must NOT set run_phase8=true — "
+            "Phase 8 is intentionally skipped when re-running Phase 13 alone."
+        )
