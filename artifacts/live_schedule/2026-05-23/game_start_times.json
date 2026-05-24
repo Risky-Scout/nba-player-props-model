@@ -1,14 +1,14 @@
 {
   "delivery_date": "2026-05-23",
-  "generated_at_utc": "2026-05-23T20:39:08+00:00Z",
+  "generated_at_utc": "2026-05-24T01:52:45+00:00Z",
   "records": [
     {
       "game_id": "21713899",
       "opponent_abbr": "NYK",
       "resolution_blocker": "",
-      "resolved_game_start_time_utc": "2026-05-24T00:10:00Z",
+      "resolved_game_start_time_utc": "2026-05-24T00:13:40Z",
       "source_confidence": "high",
-      "source_payload_hash": "35939ca11d62694b",
+      "source_payload_hash": "2bf1a00bf00cd54e",
       "source_used": "odds_api_live_events",
       "team_abbr": "CLE"
     }

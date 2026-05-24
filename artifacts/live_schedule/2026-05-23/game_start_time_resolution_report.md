@@ -1,6 +1,6 @@
 # Game start time resolution — 2026-05-23
 
-- generated_at_utc: 2026-05-23T20:39:08+00:00Z
+- generated_at_utc: 2026-05-24T01:52:45+00:00Z
 - predictions_unique_games: 1
 - resolved: **1**
 - unresolved: **0**
@@ -14,4 +14,4 @@
 
 | game_id | team | opponent | resolved_utc | source | confidence | blocker |
 | --- | --- | --- | --- | --- | --- | --- |
-| 21713899 | CLE | NYK | `2026-05-24T00:10:00Z` | odds_api_live_events | high |  |
+| 21713899 | CLE | NYK | `2026-05-24T00:13:40Z` | odds_api_live_events | high |  |

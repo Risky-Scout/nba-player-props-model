@@ -6,11 +6,11 @@
     ]
   },
   "eligible_close_lock": [],
-  "eligible_current_live": [
+  "eligible_current_live": [],
+  "eligible_t_minus_25": [],
+  "games_already_tipped": [
     "21713899"
   ],
-  "eligible_t_minus_25": [],
-  "games_already_tipped": [],
   "games_in_predictions": [
     "21713899"
   ],
@@ -21,7 +21,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-23T20:39:10Z",
+  "now_utc": "2026-05-24T01:52:47Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {
