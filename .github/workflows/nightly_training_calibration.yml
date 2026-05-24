@@ -22,20 +22,12 @@ name: NBA PMF Model — Nightly Training & Calibration
 # git config + --author flags. Never list Claude/Anthropic/bot as author.
 
 on:
-  schedule:
-    # Phase 13AJ: deferred-retry pattern. The strict resolver halts when
-    # previous-day-ET settled outcomes are not yet present in
-    # data/player_game_stats.parquet. To prevent a single early-morning
-    # BDL delay from blocking training for the entire day, we fire at
-    # five different times spread across the day. Each firing first
-    # refreshes BDL stats, then the resolver picks the latest safe
-    # cutoff. If no new cutoff is available, the workflow exits with
-    # SKIPPED_WITH_REASON (not red failure).
-    - cron: '30 9 * * *'   # 09:30 UTC — early morning (post-after_game)
-    - cron: '30 12 * * *'  # 12:30 UTC — late morning retry
-    - cron: '30 15 * * *'  # 15:30 UTC — early afternoon retry
-    - cron: '30 18 * * *'  # 18:30 UTC — late afternoon retry
-    - cron: '30 21 * * *'  # 21:30 UTC — evening retry (before WoO close)
+  # DISABLED: scheduled crons removed 2026-05-24.
+  # nba_pmf_delivery.yml's model_chain_training_calibration job now owns
+  # all scheduled training/calibration/promotion at 09:30, 12:30, 15:30,
+  # 18:30, and 21:30 UTC.  Keeping this workflow here as a manual-only
+  # helper for ad-hoc baseline training runs.  Do not re-add schedule
+  # crons without first removing the equivalent crons from nba_pmf_delivery.yml.
   workflow_dispatch:
     inputs:
       as_of_date:

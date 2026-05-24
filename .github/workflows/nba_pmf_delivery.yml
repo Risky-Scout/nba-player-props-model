@@ -521,7 +521,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Phase 8 same-date idempotency check
+        id: phase8_idempotency
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+          FORCE="${{ needs.resolve_context.outputs.force_run }}"
+
+          if [ "$FORCE" = "true" ]; then
+            echo "::notice::force_run=true — Phase 8 idempotency bypassed"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Phase 8 is complete when diagnostics meta and OOF PMFs exist for
+          # this delivery_date and the calibration meta JSON is present.
+          META="artifacts/docs/diagnostics_${D}.meta.json"
+          OOF="data/oof_pmfs.parquet"
+          CAL_META="artifacts/models/pmf_cal_meta.json"
+
+          if [ -f "$META" ] && [ -f "$OOF" ] && [ -f "$CAL_META" ]; then
+            echo "PHASE8_ALREADY_COMPLETE_FOR_AS_OF_DATE=$ASOF"
+            echo "PHASE8_SKIPPED_IDEMPOTENT=true"
+            echo "  Diagnostics meta: $META"
+            echo "  OOF PMFs: $OOF"
+            echo "  Calibration meta: $CAL_META"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Phase 8 outputs absent or incomplete — will run."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Preflight availability as-of table through delivery date
+        if: steps.phase8_idempotency.outputs.skip != 'true'
         run: |
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
@@ -537,6 +570,7 @@ jobs:
           fi
 
       - name: Build training table if absent or stale
+        if: steps.phase8_idempotency.outputs.skip != 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -584,6 +618,7 @@ jobs:
           echo "Training table max date verified: ${FINAL_MAX} == ${ASOF}"
 
       - name: Verify training data alignment before Phase 8 calibration
+        if: steps.phase8_idempotency.outputs.skip != 'true'
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -592,12 +627,14 @@ jobs:
             --check-training-table
 
       - name: Verify Phase 8 training table freshness and prob_active coverage
+        if: steps.phase8_idempotency.outputs.skip != 'true'
         run: |
           set -euo pipefail
           python3 scripts/verify_phase8_training_table_freshness.py \
             --as-of-date "${{ needs.resolve_context.outputs.as_of_date }}"
 
       - name: Run Phase 8 PMF calibration folds + OOF aggregation + combo PMFs
+        if: steps.phase8_idempotency.outputs.skip != 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -630,6 +667,7 @@ jobs:
             --oof data/oof_combo_pmfs.parquet
 
       - name: Run diagnostics and market-eval gates (no unexplained NaNs)
+        if: steps.phase8_idempotency.outputs.skip != 'true'
         env:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
@@ -753,7 +791,61 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Phase 13 same-date idempotency check
+        id: phase13_idempotency
+        run: |
+          set -euo pipefail
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+          FORCE="${{ needs.resolve_context.outputs.force_run }}"
+
+          CTX_DIR="artifacts/models/challengers/${ASOF}_contextual"
+          DL_DIR="artifacts/models/challengers/${ASOF}_direct_lineup_contextual"
+
+          if [ "$FORCE" = "true" ]; then
+            echo "::notice::force_run=true — Phase 13 idempotency bypassed"
+            echo "skip_training=false" >> "$GITHUB_OUTPUT"
+            echo "skip_promotion=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Determine if both challenger dirs already exist (training already ran)
+          if [ -d "$CTX_DIR" ] && [ -d "$DL_DIR" ]; then
+            echo "PHASE13_ALREADY_COMPLETE_FOR_AS_OF_DATE=$ASOF"
+            echo "skip_training=true" >> "$GITHUB_OUTPUT"
+
+            # Check if champion pointer in origin/main already reflects this date
+            ORIGIN_CTX=$(python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); print(p.get('contextual_trained_through_date') or '')" 2>/dev/null || echo "")
+
+            if [ "$ORIGIN_CTX" = "$ASOF" ]; then
+              echo "PHASE13_SKIPPED_IDEMPOTENT=true"
+              echo "  Champion pointer already points to $ASOF contextual challenger"
+              echo "skip_promotion=true" >> "$GITHUB_OUTPUT"
+            else
+              # Check if promotion_decision says promoted but pointer not updated
+              for PDIR in "$DL_DIR" "$CTX_DIR"; do
+                if [ -f "$PDIR/promotion_decision.json" ]; then
+                  PDONE=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(str(p.get('promoted',False)).lower())" 2>/dev/null || echo "false")
+                  if [ "$PDONE" = "true" ]; then
+                    echo "PHASE13_PROMOTION_PERSISTENCE_FAIL"
+                    echo "  promotion_decision.json says promoted=true for $PDIR"
+                    echo "  but champion_pointer.json contextual_trained_through_date=$ORIGIN_CTX"
+                    echo "  Skipping training, will retry promotion + commit."
+                    echo "skip_promotion=false" >> "$GITHUB_OUTPUT"
+                    exit 0
+                  fi
+                fi
+              done
+              echo "  Challenger dirs exist; promotion not yet done — will run promotion."
+              echo "skip_promotion=false" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "Phase 13 challenger dirs absent — will train."
+            echo "skip_training=false" >> "$GITHUB_OUTPUT"
+            echo "skip_promotion=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Phase 13O — live-context training dataset
+        if: steps.phase13_idempotency.outputs.skip_training != 'true'
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -768,6 +860,7 @@ jobs:
           python3 scripts/_phase13o_record_derek_readiness.py
 
       - name: Phase 13P — live-context challenger
+        if: steps.phase13_idempotency.outputs.skip_training != 'true'
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -783,6 +876,7 @@ jobs:
           python3 scripts/verify_phase13l_no_breakage.py
 
       - name: Phase 13Q — contextual challenger
+        if: steps.phase13_idempotency.outputs.skip_training != 'true'
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -798,6 +892,7 @@ jobs:
           python3 scripts/verify_phase13l_no_breakage.py
 
       - name: Phase 13R — contextual deployment verification (+ gated promotion)
+        if: steps.phase13_idempotency.outputs.skip_training != 'true' || steps.phase13_idempotency.outputs.skip_promotion != 'true'
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -809,30 +904,44 @@ jobs:
           python3 scripts/verify_phase13q_no_leakage.py
           python3 scripts/verify_phase13l_no_breakage.py
 
-          if [ "${{ needs.resolve_context.outputs.allow_promote }}" = "true" ]; then
+          if [ "${{ needs.resolve_context.outputs.allow_promote }}" = "true" ] && \
+             [ "${{ steps.phase13_idempotency.outputs.skip_promotion }}" != "true" ]; then
             python3 scripts/promote_contextual_challenger.py
             python3 scripts/verify_phase13r_deployment.py
+          elif [ "${{ steps.phase13_idempotency.outputs.skip_promotion }}" = "true" ]; then
+            echo "::notice::Phase 13R promotion skipped — champion already at $ASOF"
           else
             echo "::notice::allow_promote!=true — skipping promote_contextual_challenger.py"
           fi
 
       - name: Phase 13S — direct-lineup contextual PMF (+ gated promotion)
+        if: steps.phase13_idempotency.outputs.skip_training != 'true' || steps.phase13_idempotency.outputs.skip_promotion != 'true'
         run: |
           set -euo pipefail
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
 
-          python3 scripts/_phase13s_write_baseline_audit.py
-          python3 scripts/build_direct_lineup_training_dataset.py --as-of-date "$ASOF"
-          python3 scripts/train_direct_lineup_contextual_challenger.py --as-of-date "$ASOF"
-          python3 scripts/verify_direct_lineup_feature_lists.py
-          python3 scripts/verify_direct_lineup_pmf_sensitivity.py
-          python3 scripts/verify_phase13s_validation_gates.py
-          python3 scripts/verify_phase13s_no_leakage.py
-          python3 scripts/verify_phase13l_no_breakage.py
+          if [ "${{ steps.phase13_idempotency.outputs.skip_training }}" != "true" ]; then
+            python3 scripts/_phase13s_write_baseline_audit.py
+            python3 scripts/build_direct_lineup_training_dataset.py --as-of-date "$ASOF"
+            python3 scripts/train_direct_lineup_contextual_challenger.py --as-of-date "$ASOF"
+            python3 scripts/verify_direct_lineup_feature_lists.py
+            python3 scripts/verify_direct_lineup_pmf_sensitivity.py
+            python3 scripts/verify_phase13s_validation_gates.py
+            python3 scripts/verify_phase13s_no_leakage.py
+            python3 scripts/verify_phase13l_no_breakage.py
+          else
+            echo "::notice::Phase 13S training skipped — challenger dir already exists for $ASOF"
+            # Still run verifiers to confirm artifacts are intact
+            python3 scripts/verify_direct_lineup_feature_lists.py
+            python3 scripts/verify_direct_lineup_pmf_sensitivity.py
+          fi
 
-          if [ "${{ needs.resolve_context.outputs.allow_promote }}" = "true" ]; then
+          if [ "${{ needs.resolve_context.outputs.allow_promote }}" = "true" ] && \
+             [ "${{ steps.phase13_idempotency.outputs.skip_promotion }}" != "true" ]; then
             python3 scripts/promote_direct_lineup_challenger.py
             python3 scripts/verify_phase13s_deployment.py
+          elif [ "${{ steps.phase13_idempotency.outputs.skip_promotion }}" = "true" ]; then
+            echo "::notice::Phase 13S promotion skipped — champion already at $ASOF"
           else
             echo "::notice::allow_promote!=true — skipping promote_direct_lineup_challenger.py"
           fi
@@ -852,29 +961,58 @@ jobs:
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
 
+          # ── Pre-add diagnostics ────────────────────────────────────────
           echo "::group::Phase13-commit-diagnostic"
           echo "--- champion_pointer.json on-disk state ---"
-          python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); print('champion_model_id:', p.get('champion_model_id')); print('feature_set_id:', p.get('feature_set_id')); print('contextual_trained_through_date:', p.get('contextual_trained_through_date')); print('contextual_challenger_dir:', p.get('contextual_challenger_dir'))" || echo "ERROR reading champion_pointer.json"
-          echo "--- git status before add (new/modified files) ---"
-          git status --short artifacts/models/registry/ artifacts/models/challengers/ artifacts/phase13r/ artifacts/phase13s/ || true
+          python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); [print(k+':',p.get(k)) for k in ['champion_model_id','feature_set_id','contextual_trained_through_date','contextual_challenger_dir','promoted_at_utc']]" || echo "ERROR reading champion_pointer.json"
+          echo "--- git status before add ---"
+          git status --short artifacts/models/registry/ artifacts/models/challengers/ \
+            artifacts/phase13r/ artifacts/phase13s/ || true
           echo "--- challenger dirs ---"
-          ls artifacts/models/challengers/ | tail -8
+          ls artifacts/models/challengers/ | tail -10
+          echo "--- git check-ignore champion_pointer.json ---"
+          git check-ignore -v artifacts/models/registry/champion_pointer.json \
+            && echo "::warning::champion_pointer.json IS gitignored!" \
+            || echo "champion_pointer.json is NOT gitignored (good)"
           echo "::endgroup::"
 
-          git add \
-            data/live_context_features.parquet \
-            artifacts/phase13o \
-            artifacts/phase13p \
-            artifacts/phase13q \
-            artifacts/phase13r \
-            artifacts/phase13s \
-            artifacts/models/challengers \
-            artifacts/models/champion/v_phase13r_* \
-            artifacts/models/champion/v_phase13s_* \
-            artifacts/models/registry/champion_pointer.json \
-            artifacts/models/registry/promotion_log.csv \
-            2>/dev/null || true
+          # ── Clean up any lingering rebase state before staging ─────────
+          git rebase --abort 2>/dev/null || true
+          rm -rf .git/rebase-merge .git/rebase-apply
 
+          # ── Determine whether promotion actually succeeded ─────────────
+          PROMOTION_DONE=false
+          PROMOTED_MODEL_ID=""
+          for PDIR in \
+            "$(ls -d artifacts/models/challengers/*_direct_lineup_contextual 2>/dev/null | sort | tail -1)" \
+            "$(ls -d artifacts/models/challengers/*_contextual 2>/dev/null | grep -v direct_lineup | sort | tail -1)"; do
+            [ -z "$PDIR" ] && continue
+            if [ -f "$PDIR/promotion_decision.json" ]; then
+              PDONE=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(str(p.get('promoted',False)).lower())" 2>/dev/null || echo "false")
+              if [ "$PDONE" = "true" ]; then
+                PROMOTION_DONE=true
+                PROMOTED_MODEL_ID=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(p.get('champion_model_id','unknown'))" 2>/dev/null || echo "unknown")
+                echo "Promotion confirmed: $PROMOTED_MODEL_ID from $PDIR"
+                break
+              fi
+            fi
+          done
+
+          # ── Stage Phase 13 artifacts ───────────────────────────────────
+          # Optional large artifacts (ok if absent or gitignored)
+          git add data/live_context_features.parquet 2>/dev/null || true
+          git add artifacts/phase13o artifacts/phase13p artifacts/phase13q \
+                  artifacts/phase13r artifacts/phase13s 2>/dev/null || true
+          git add artifacts/models/challengers 2>/dev/null || true
+          # Glob expansions may match nothing — suppress only the missing-path error
+          git add artifacts/models/champion/v_phase13r_* 2>/dev/null || true
+          git add artifacts/models/champion/v_phase13s_* 2>/dev/null || true
+          # Promotion log (ok if absent)
+          git add artifacts/models/registry/promotion_log.csv 2>/dev/null || true
+          # Champion pointer: explicit force-add — this must never be gitignored
+          git add -f artifacts/models/registry/champion_pointer.json
+
+          # ── Post-add diagnostics ───────────────────────────────────────
           echo "::group::Phase13-staged-diagnostic"
           echo "--- git diff --staged --name-status ---"
           git diff --staged --name-status || true
@@ -882,7 +1020,21 @@ jobs:
           git diff --staged -- artifacts/models/registry/champion_pointer.json || true
           echo "::endgroup::"
 
-          git diff --staged --quiet && { echo "::notice::Phase13 commit: no staged changes — champion_pointer.json unchanged on-disk vs HEAD"; exit 0; }
+          # ── Guard: if promotion succeeded, staged changes are required ──
+          if git diff --staged --quiet; then
+            if [ "$PROMOTION_DONE" = "true" ]; then
+              echo "::error::PHASE13_PROMOTION_PERSISTENCE_FAIL_NO_STAGED_CHANGES"
+              echo "  Promotion of $PROMOTED_MODEL_ID was reported successful"
+              echo "  but git add produced no staged changes for champion_pointer.json."
+              echo "  This means the on-disk champion_pointer.json matches HEAD,"
+              echo "  which should not be possible after a contextual promotion."
+              exit 1
+            else
+              echo "::notice::Phase13 commit: no staged changes — promotion was blocked or skipped (expected)"
+              echo "PHASE13_COMMIT_SKIPPED_NO_PROMOTION"
+              exit 0
+            fi
+          fi
 
           git commit --author="Joseph Shackelford <josephshack@gmail.com>" \
             -m "NBA PMF Delivery: phase13 context chain ${{ needs.resolve_context.outputs.as_of_date }}"
@@ -920,6 +1072,18 @@ jobs:
 
               if git push origin HEAD:main; then
                 cleanup_rebase_state
+                # ── Post-push verification: confirm pointer persisted ──────
+                git fetch origin main --quiet
+                LOCAL_CTX=$(python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); print(p.get('contextual_trained_through_date') or p.get('trained_through_date') or 'missing')" 2>/dev/null || echo "missing")
+                ORIGIN_CTX=$(git show origin/main:artifacts/models/registry/champion_pointer.json 2>/dev/null | python3 -c "import json,sys; p=json.load(sys.stdin); print(p.get('contextual_trained_through_date') or p.get('trained_through_date') or 'missing')" 2>/dev/null || echo "missing")
+                if [ "$LOCAL_CTX" = "$ORIGIN_CTX" ] && [ "$LOCAL_CTX" != "missing" ]; then
+                  echo "PHASE13_CHAMPION_POINTER_PERSISTED_TO_ORIGIN_MAIN"
+                  echo "  contextual_trained_through_date=$LOCAL_CTX"
+                else
+                  echo "::error::PHASE13_PROMOTION_PUSH_VERIFY_FAIL"
+                  echo "  local=$LOCAL_CTX origin/main=$ORIGIN_CTX"
+                  exit 1
+                fi
                 return 0
               fi
 
@@ -1595,4 +1759,124 @@ jobs:
           if [ -d "deliveries/$D/after_game_scoring" ]; then
             python3 scripts/verify_after_game_scoring_package_consistency.py \
               --delivery-date "$D" || true
+          fi
+
+  # ────────────────────────────────────────────────────────────────
+  # Pipeline summary — always runs, reports final verdict.
+  # ────────────────────────────────────────────────────────────────
+  pipeline_summary:
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - resolve_context
+      - readiness
+      - model_chain_training_calibration
+      - phase8_pmf_calibration_diagnostics_market_eval
+      - phase13_live_context_contextual_lineup
+      - predict_daily
+      - delivery_build
+      - after_game_scoring
+      - final_contract_verifiers
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - run: git pull --rebase origin main || true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Emit pipeline final summary
+        env:
+          RESOLVE_RESULT:    ${{ needs.resolve_context.result }}
+          READINESS_RESULT:  ${{ needs.readiness.result }}
+          MC_RESULT:         ${{ needs.model_chain_training_calibration.result }}
+          P8_RESULT:         ${{ needs.phase8_pmf_calibration_diagnostics_market_eval.result }}
+          P13_RESULT:        ${{ needs.phase13_live_context_contextual_lineup.result }}
+          PREDICT_RESULT:    ${{ needs.predict_daily.result }}
+          DELIVERY_RESULT:   ${{ needs.delivery_build.result }}
+          AFTER_RESULT:      ${{ needs.after_game_scoring.result }}
+          VERIFIERS_RESULT:  ${{ needs.final_contract_verifiers.result }}
+          RUN_ID:            ${{ github.run_id }}
+          SHA:               ${{ github.sha }}
+          STAGE:             ${{ needs.resolve_context.outputs.stage }}
+          MODE:              ${{ needs.resolve_context.outputs.mode }}
+          DELIVERY_DATE:     ${{ needs.resolve_context.outputs.delivery_date }}
+          AS_OF_DATE:        ${{ needs.resolve_context.outputs.as_of_date }}
+          ALLOW_PROMOTE:     ${{ needs.resolve_context.outputs.allow_promote }}
+          VALID_SKIP_REASON: ${{ needs.resolve_context.outputs.valid_skip_reason }}
+        run: |
+          set -euo pipefail
+          D="$DELIVERY_DATE"
+          ASOF="$AS_OF_DATE"
+
+          echo "=================================================================="
+          echo "PIPELINE FINAL SUMMARY"
+          echo "=================================================================="
+          echo "run_id:        $RUN_ID"
+          echo "sha:           $SHA"
+          echo "stage:         $STAGE"
+          echo "mode:          $MODE"
+          echo "delivery_date: $D"
+          echo "as_of_date:    $ASOF"
+          echo "allow_promote: $ALLOW_PROMOTE"
+          [ -n "$VALID_SKIP_REASON" ] && echo "valid_skip:    $VALID_SKIP_REASON"
+          echo ""
+          echo "── Job Results ───────────────────────────────────────────────────"
+          echo "resolve_context:             $RESOLVE_RESULT"
+          echo "readiness:                   $READINESS_RESULT"
+          echo "model_chain_training:        $MC_RESULT"
+          echo "phase8_calibration:          $P8_RESULT"
+          echo "phase13_contextual:          $P13_RESULT"
+          echo "predict_daily:               $PREDICT_RESULT"
+          echo "delivery_build:              $DELIVERY_RESULT"
+          echo "after_game_scoring:          $AFTER_RESULT"
+          echo "final_contract_verifiers:    $VERIFIERS_RESULT"
+          echo ""
+
+          echo "── Champion Pointer ──────────────────────────────────────────────"
+          python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); [print(k+': '+str(p.get(k))) for k in ['champion_model_id','feature_set_id','trained_through_date','calibrated_through_date','contextual_trained_through_date','promoted_at_utc']]; fs=p.get('feature_set_id') or ''; print('champion_is_contextual: '+('yes' if fs.startswith(('phase13q_','phase13s_')) else 'NO'))" || echo "ERROR reading champion_pointer.json"
+
+          echo ""
+          echo "── Delivery Folder ───────────────────────────────────────────────"
+          if [ -d "deliveries/$D" ]; then
+            echo "deliveries/$D exists"
+            find "deliveries/$D" -name "*.parquet" -o -name "*.csv" | wc -l | xargs echo "  output files:"
+            python3 -c "import os; d='deliveries/$D'; [print('  '+s+': '+('PRESENT' if os.path.isdir(d+'/'+s) else 'ABSENT')) for s in ['canonical_source','wizard_of_odds','derek_forward_feed','pmf_model_review_package','after_game_scoring']]" || true
+          else
+            echo "deliveries/$D: not generated this run (training-only or skipped)"
+          fi
+
+          echo ""
+          echo "── Final Verdict ─────────────────────────────────────────────────"
+          FAILED_JOBS=""
+          for JOB_NAME_RESULT in \
+            "resolve_context:$RESOLVE_RESULT" \
+            "readiness:$READINESS_RESULT" \
+            "model_chain:$MC_RESULT" \
+            "phase8:$P8_RESULT" \
+            "phase13:$P13_RESULT" \
+            "predict_daily:$PREDICT_RESULT" \
+            "delivery_build:$DELIVERY_RESULT" \
+            "after_game_scoring:$AFTER_RESULT" \
+            "final_verifiers:$VERIFIERS_RESULT"; do
+            JOB="${JOB_NAME_RESULT%%:*}"
+            RES="${JOB_NAME_RESULT##*:}"
+            if [ "$RES" = "failure" ] || [ "$RES" = "cancelled" ]; then
+              FAILED_JOBS="$FAILED_JOBS $JOB($RES)"
+            fi
+          done
+
+          if [ -n "$FAILED_JOBS" ]; then
+            echo "PIPELINE_FINAL_VERDICT=FAIL"
+            echo "  failed_jobs:$FAILED_JOBS"
+            exit 1
+          elif [ -n "$VALID_SKIP_REASON" ]; then
+            echo "PIPELINE_FINAL_VERDICT=PASS_WITH_WARNINGS"
+            echo "  valid_skip_reason=$VALID_SKIP_REASON"
+          else
+            echo "PIPELINE_FINAL_VERDICT=PASS"
           fi
