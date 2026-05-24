@@ -87,8 +87,12 @@ SCHEDULED_DELIVERY_CRONS = {
 }
 
 # Scheduled model_chain crons with promotion allowed.
+# 07:30 UTC (3:30 AM ET) is primary — fires ~1 h after after-game scoring
+# (06:30 UTC) so Phase 8 + Phase 13 (~6 h total) completes by 13:30 UTC
+# (9:30 AM ET), before the 14:00 UTC morning prediction run.
+# 12:30 UTC is the backup retry if the 07:30 UTC run fails early.
 MODEL_CHAIN_PROMOTE_CRONS = frozenset({
-    "30 9 * * *",
+    "30 7 * * *",
     "30 12 * * *",
 })
 

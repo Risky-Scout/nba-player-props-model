@@ -11,20 +11,21 @@ Implement this UTC schedule in .github/workflows/nba_pmf_delivery.yml:
 - after_game
 - scores previous ET slate
 
-09:30 UTC:
-- model_chain
+07:30 UTC:
+- model_chain (primary promote run, 3:30 AM ET)
 - settled-stat refresh
 - nightly training/calibration
-- Phase 8
-- Phase 13O/P/Q/R/S
+- Phase 8 (~3.5 h) + Phase 13 (~2.5 h) = done by ~13:30 UTC (9:30 AM ET)
 - promotion allowed only if gates pass
+- starts ~1 h after after-game scoring so game data is fully settled
 
 12:30 UTC:
-- model_chain retry
-- promotion allowed only if gates pass
+- model_chain backup retry
+- promotion allowed only if gates pass (catches 07:30 UTC failures)
 
 14:00 UTC:
 - predict current ET slate
+- by this time promotion is already complete (model trained through prev day)
 
 14:30 UTC:
 - promotion cutoff

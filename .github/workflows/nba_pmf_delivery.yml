@@ -29,10 +29,15 @@ on:
     # 06:30 UTC — after-game scoring of the PREVIOUS ET slate.
     - cron: "30 6 * * *"
 
-    # Model-chain (training → Phase 8 → Phase 13 O/P/Q/R/S). 09:30 and
-    # 12:30 UTC may promote when gates pass; 15:30, 18:30, 21:30 UTC are
-    # post-cutoff retries that MUST run with `--no-promote`.
-    - cron: "30 9 * * *"
+    # Model-chain (training → Phase 8 → Phase 13 O/P/Q/R/S).
+    # 07:30 UTC (3:30 AM ET) is the primary promote run — starts ~1 h after
+    # after-game scoring (06:30 UTC) so training uses fully-settled game data.
+    # Phase 8 (~3.5 h) + Phase 13 (~2.5 h) completes by ~13:30 UTC (9:30 AM ET),
+    # 30 min before the 14:00 UTC morning prediction, ensuring every delivery
+    # uses the model trained through the previous night's games.
+    # 12:30 UTC is the backup promote retry if the 07:30 run fails early.
+    # 15:30, 18:30, 21:30 UTC are post-cutoff retries (no promotion).
+    - cron: "30 7 * * *"
     - cron: "30 12 * * *"
     - cron: "30 15 * * *"
     - cron: "30 18 * * *"
