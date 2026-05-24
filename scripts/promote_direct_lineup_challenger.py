@@ -153,7 +153,15 @@ def main(argv=None) -> int:
         case1 = sens.get("case_results", {}).get("case_1_direct_lineup", {})
         diff = float(case1.get("abs_diff_minutes_delta") or 0.0)
         sensitivity_proven = diff > 0.5
-        _debug_log("gate:sensitivity", {"abs_diff_minutes_delta": diff, "sensitivity_proven": sensitivity_proven})
+        _debug_log("gate:sensitivity", {"hypothesisId": "H5", "abs_diff_minutes_delta": diff,
+                                         "sensitivity_proven": sensitivity_proven,
+                                         "sens_path": str(sens_path),
+                                         "case_results_keys": list(sens.get("case_results", {}).keys())})
+    else:
+        _debug_log("gate:sensitivity_file_missing", {"hypothesisId": "H5",
+                                                      "sens_path": str(sens_path),
+                                                      "gates_path_exists": gates_path.exists(),
+                                                      "leak_path_exists": leak_path.exists()})
     if not sensitivity_proven and not args.force:
         _debug_log("BLOCK: sensitivity not proven")
         return _block(

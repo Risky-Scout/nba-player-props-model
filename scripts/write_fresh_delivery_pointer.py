@@ -107,6 +107,21 @@ def _market_quality_status(soft_failures: list[str]) -> str:
     return f"market_underperforming:{','.join(sorted(market_failures))}"
 
 
+def _dbg(msg: str, data: dict) -> None:
+    """Append one NDJSON line to the session debug log (silent on failure)."""
+    import json as _json
+    import time as _time
+    _log_path = REPO_ROOT / ".cursor" / "debug-cd71ad.log"
+    try:
+        _log_path.parent.mkdir(parents=True, exist_ok=True)
+        entry = {"sessionId": "cd71ad", "location": "write_fresh_delivery_pointer.py",
+                 "message": msg, "data": data, "timestamp": int(_time.time() * 1000)}
+        with open(_log_path, "a", encoding="utf-8") as _f:
+            _f.write(_json.dumps(entry) + "\n")
+    except Exception:
+        pass
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--as-of-date", required=True, help="Training as-of date YYYY-MM-DD")
@@ -118,6 +133,17 @@ def main(argv: list[str] | None = None) -> int:
 
     # ── 1. Check calibration artifacts ────────────────────────────────────
     cal_ok, cal_reason = _check_calibration_artifacts()
+    # #region agent log H2
+    _dbg("calibration artifacts check", {
+        "hypothesisId": "H2",
+        "as_of_date": as_of_date,
+        "challenger_dir": str(ch_dir),
+        "challenger_dir_exists": ch_dir.exists(),
+        "cal_ok": cal_ok,
+        "cal_reason": cal_reason,
+        "pkl_files": [f.name for f in MODEL_DIR.glob("*.pkl")][:10],
+    })
+    # #endregion
     if not cal_ok:
         print(f"FRESH_DELIVERY_POINTER_BLOCKED: calibration artifacts missing: {cal_reason}", flush=True)
         return 1

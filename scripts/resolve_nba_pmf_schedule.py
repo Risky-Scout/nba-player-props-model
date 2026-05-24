@@ -29,7 +29,7 @@ and ``CURSOR_TASK_NBA_PMF_PRODUCTION_PIPELINE.md``):
 - All slate logic runs in ``America/New_York``. UTC dates are never
   used for ``delivery_date`` / ``as_of_date`` reasoning.
 - 06:30 UTC ``after_game`` scores the **previous** ET slate.
-- 09:30/12:30 UTC ``model_chain`` runs may promote.
+- 07:30/12:30 UTC ``model_chain`` runs may promote.
 - 14:30 UTC is the promotion cutoff (15:30/18:30/21:30 UTC ``model_chain_no_promote``).
 - 14:00 UTC ``predict`` runs the daily prediction pipeline.
 - 15:00 UTC ``woo_morning_monetization``, 18:00/20:00 UTC
@@ -436,7 +436,7 @@ def _resolve_scheduled(args, now_utc: datetime) -> ResolverOutputs:
         out.allow_promote = False
         return out
 
-    # 09:30 / 12:30 UTC — model chain WITH promotion permission.
+    # 07:30 / 12:30 UTC — model chain WITH promotion permission.
     if sched in MODEL_CHAIN_PROMOTE_CRONS:
         out.stage = "model_chain"
         out.mode = "model_chain"
@@ -798,8 +798,38 @@ def resolve(args: argparse.Namespace) -> ResolverOutputs:
     return out
 
 
+def _dbg(message: str, data: dict) -> None:
+    """Append one NDJSON line to the session debug log (silent on failure)."""
+    import json as _json
+    import time as _time
+    _log_path = REPO_ROOT / ".cursor" / "debug-cd71ad.log"
+    try:
+        _log_path.parent.mkdir(parents=True, exist_ok=True)
+        entry = {"sessionId": "cd71ad", "location": "resolve_nba_pmf_schedule.py",
+                 "message": message, "data": data, "timestamp": int(_time.time() * 1000)}
+        with open(_log_path, "a", encoding="utf-8") as _f:
+            _f.write(_json.dumps(entry) + "\n")
+    except Exception:
+        pass
+
+
 def emit(outputs: ResolverOutputs, github_output_path: str) -> None:
     """Write outputs to ``$GITHUB_OUTPUT`` and print the summary line."""
+
+    # #region agent log H1
+    _dbg("emit: final resolved outputs", {
+        "hypothesisId": "H1",
+        "stage": outputs.stage,
+        "mode": outputs.mode,
+        "allow_promote": outputs.allow_promote,
+        "run_training": outputs.run_training,
+        "run_phase8": outputs.run_phase8,
+        "run_phase13": outputs.run_phase13,
+        "as_of_date": outputs.as_of_date,
+        "delivery_date": outputs.delivery_date,
+        "valid_skip_reason": outputs.valid_skip_reason,
+    })
+    # #endregion
 
     payload = outputs.as_output_dict()
     if github_output_path:
