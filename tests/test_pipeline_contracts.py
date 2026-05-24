@@ -407,3 +407,207 @@ class TestNoGeneratedDataCommitted:
         assert not large_pkls, (
             f"Large .pkl files committed in challengers/: {large_pkls}"
         )
+
+
+# ── Promotion script readback verification ───────────────────────────────────
+
+class TestPromotionReadbackVerification:
+    """Verify that promotion scripts emit PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL
+    and exit non-zero when champion_pointer.json is not updated as expected,
+    rather than silently emitting PASS while leaving the pointer stale.
+    """
+
+    DIRECT_LINEUP_PROMOTER = REPO_ROOT / "scripts" / "promote_direct_lineup_challenger.py"
+    CONTEXTUAL_PROMOTER = REPO_ROOT / "scripts" / "promote_contextual_challenger.py"
+
+    def _script_source(self, path: Path) -> str:
+        return path.read_text(encoding="utf-8")
+
+    # ── Script existence ─────────────────────────────────────────────────────
+
+    def test_direct_lineup_promoter_exists(self):
+        assert self.DIRECT_LINEUP_PROMOTER.exists()
+
+    def test_contextual_promoter_exists(self):
+        assert self.CONTEXTUAL_PROMOTER.exists()
+
+    # ── Readback guard present in direct-lineup promoter ────────────────────
+
+    def test_direct_lineup_promoter_has_readback(self):
+        src = self._script_source(self.DIRECT_LINEUP_PROMOTER)
+        assert "PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL" in src, (
+            "promote_direct_lineup_challenger.py must emit "
+            "PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL when readback fails."
+        )
+
+    def test_direct_lineup_promoter_reads_back_after_write(self):
+        src = self._script_source(self.DIRECT_LINEUP_PROMOTER)
+        # Use the readback-verification sentinel which is inserted right after
+        # write_json_atomic(CHAMPION_POINTER_PATH, …).  The initial read of the
+        # pointer (before promotion) is at an earlier offset; the sentinel block
+        # is what confirms the readback occurs AFTER the write.
+        write_idx = src.index("write_json_atomic(CHAMPION_POINTER_PATH, new_pointer)")
+        sentinel_idx = src.index("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL")
+        assert sentinel_idx > write_idx, (
+            "The PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL readback block must "
+            "appear AFTER write_json_atomic(CHAMPION_POINTER_PATH) in "
+            "promote_direct_lineup_challenger.py."
+        )
+
+    def test_direct_lineup_promoter_does_not_pass_before_readback(self):
+        src = self._script_source(self.DIRECT_LINEUP_PROMOTER)
+        # The PASS print statement — skip the docstring occurrence by finding
+        # the actual print() call.
+        pass_idx = src.index('print("PHASE13S_DIRECT_LINEUP_CHAMPION_PROMOTION_PASS")')
+        sentinel_idx = src.index("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL")
+        assert sentinel_idx < pass_idx, (
+            "promote_direct_lineup_challenger.py must verify readback (and possibly "
+            "call sys.exit(1)) BEFORE printing "
+            "PHASE13S_DIRECT_LINEUP_CHAMPION_PROMOTION_PASS."
+        )
+
+    def test_direct_lineup_promoter_verifies_ctx_dir_in_readback(self):
+        src = self._script_source(self.DIRECT_LINEUP_PROMOTER)
+        assert "rb_ctx_dir" in src and "expected_ctx_dir" in src, (
+            "promote_direct_lineup_challenger.py must compare contextual_challenger_dir "
+            "in the readback against the expected value."
+        )
+
+    def test_direct_lineup_promoter_verifies_ttd_in_readback(self):
+        src = self._script_source(self.DIRECT_LINEUP_PROMOTER)
+        assert "rb_ttd" in src and "expected_ttd" in src, (
+            "promote_direct_lineup_challenger.py must compare "
+            "contextual_trained_through_date in the readback."
+        )
+
+    def test_direct_lineup_promoter_exits_nonzero_on_fail(self):
+        src = self._script_source(self.DIRECT_LINEUP_PROMOTER)
+        fail_block_idx = src.index("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL")
+        exit_idx = src.index("sys.exit(1)", fail_block_idx)
+        assert exit_idx > fail_block_idx, (
+            "promote_direct_lineup_challenger.py must call sys.exit(1) after "
+            "PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL."
+        )
+
+    # ── Readback guard present in contextual promoter ───────────────────────
+
+    def test_contextual_promoter_has_readback(self):
+        src = self._script_source(self.CONTEXTUAL_PROMOTER)
+        assert "PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL" in src, (
+            "promote_contextual_challenger.py must emit "
+            "PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL when readback fails."
+        )
+
+    def test_contextual_promoter_reads_back_after_write(self):
+        src = self._script_source(self.CONTEXTUAL_PROMOTER)
+        write_idx = src.index("write_json_atomic(CHAMPION_POINTER_PATH, new_pointer)")
+        sentinel_idx = src.index("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL")
+        assert sentinel_idx > write_idx, (
+            "The PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL readback block must "
+            "appear AFTER write_json_atomic(CHAMPION_POINTER_PATH) in "
+            "promote_contextual_challenger.py."
+        )
+
+    def test_contextual_promoter_does_not_pass_before_readback(self):
+        src = self._script_source(self.CONTEXTUAL_PROMOTER)
+        pass_idx = src.index('print("PHASE13R_CONTEXTUAL_CHAMPION_PROMOTION_PASS")')
+        sentinel_idx = src.index("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL")
+        assert sentinel_idx < pass_idx, (
+            "promote_contextual_challenger.py must verify readback BEFORE "
+            "printing PHASE13R_CONTEXTUAL_CHAMPION_PROMOTION_PASS."
+        )
+
+    def test_contextual_promoter_exits_nonzero_on_fail(self):
+        src = self._script_source(self.CONTEXTUAL_PROMOTER)
+        fail_block_idx = src.index("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL")
+        exit_idx = src.index("sys.exit(1)", fail_block_idx)
+        assert exit_idx > fail_block_idx, (
+            "promote_contextual_challenger.py must call sys.exit(1) after "
+            "PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL."
+        )
+
+    # ── Commit step guards ───────────────────────────────────────────────────
+
+    def test_commit_step_force_adds_champion_pointer(self):
+        """The commit step must use git add -f to force-add champion_pointer.json."""
+        with open(MAIN_WORKFLOW) as f:
+            content = f.read()
+        assert "git add -f artifacts/models/registry/champion_pointer.json" in content, (
+            "Commit Phase 13 artifacts step must use 'git add -f champion_pointer.json' "
+            "to prevent gitignore from silently blocking the stage."
+        )
+
+    def test_commit_step_fails_on_promoted_but_no_staged_changes(self):
+        """Commit step must fail with PHASE13_PROMOTION_PERSISTENCE_FAIL_NO_STAGED_CHANGES."""
+        with open(MAIN_WORKFLOW) as f:
+            content = f.read()
+        assert "PHASE13_PROMOTION_PERSISTENCE_FAIL_NO_STAGED_CHANGES" in content, (
+            "Commit step must fail loudly when promotion reported success but "
+            "git add produced no staged changes."
+        )
+
+    def test_commit_step_has_post_push_verify(self):
+        """Commit step must verify origin/main after push."""
+        with open(MAIN_WORKFLOW) as f:
+            content = f.read()
+        assert "PHASE13_PROMOTION_PUSH_VERIFY_FAIL" in content, (
+            "Commit step must verify champion_pointer on origin/main after push."
+        )
+
+    # ── .gitignore does not block required champion artifacts ────────────────
+
+    def test_champion_pointer_not_gitignored(self):
+        result = subprocess.run(
+            ["git", "check-ignore", "-v",
+             "artifacts/models/registry/champion_pointer.json"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0, (
+            "artifacts/models/registry/champion_pointer.json must NOT be gitignored. "
+            f"But git check-ignore output: {result.stdout.strip()!r}"
+        )
+
+    def test_promotion_log_not_gitignored(self):
+        result = subprocess.run(
+            ["git", "check-ignore", "-v",
+             "artifacts/models/registry/promotion_log.csv"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode != 0, (
+            "artifacts/models/registry/promotion_log.csv must NOT be gitignored."
+        )
+
+    # ── Delivery layout/schema untouched ────────────────────────────────────
+
+    def test_delivery_folder_structure_present(self):
+        """deliveries/ folder must exist and contain canonical_source."""
+        deliveries = REPO_ROOT / "deliveries"
+        assert deliveries.exists(), "deliveries/ folder must exist."
+        date_dirs = [d for d in deliveries.iterdir() if d.is_dir()
+                     and d.name[0].isdigit()]
+        assert date_dirs, "deliveries/ must contain at least one date directory."
+        latest = sorted(date_dirs)[-1]
+        assert (latest / "canonical_source").exists(), (
+            f"{latest.name}/canonical_source/ must exist (delivery contract)."
+        )
+
+    def test_derek_unique_props_summary_untouched(self):
+        """derek_unique_props_summary.csv must not be staged/modified by these changes."""
+        result = subprocess.run(
+            ["git", "diff", "--name-only",
+             "artifacts/models/registry/champion_pointer.json",
+             "scripts/promote_direct_lineup_challenger.py",
+             "scripts/promote_contextual_challenger.py"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        modified = result.stdout.strip().splitlines()
+        derek_touched = [f for f in modified if "derek_unique_props_summary" in f]
+        assert not derek_touched, (
+            f"derek_unique_props_summary.csv must not be touched: {derek_touched}"
+        )

@@ -289,6 +289,33 @@ def main(argv=None) -> int:
     # Atomic write.
     write_json_atomic(CHAMPION_POINTER_PATH, new_pointer)
 
+    # ── Readback verification ──────────────────────────────────────────────────
+    # Confirm the file on disk actually reflects the promoted model before
+    # emitting PASS.  Catches silent write failures so the commit step never
+    # sees "promoted=True but nothing staged".
+    try:
+        readback = json.loads(CHAMPION_POINTER_PATH.read_text(encoding="utf-8"))
+    except Exception as exc:
+        print("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL", flush=True)
+        print(f"  could not read back champion_pointer.json: {exc}", flush=True)
+        sys.exit(1)
+
+    expected_ctx_dir = str(contextual_dir.relative_to(REPO_ROOT))
+    expected_ttd = tm.get("trained_through_date")
+    rb_ctx_dir = readback.get("contextual_challenger_dir")
+    rb_ttd = readback.get("contextual_trained_through_date")
+    rb_fs_id = readback.get("feature_set_id")
+    if rb_ctx_dir != expected_ctx_dir or rb_ttd != expected_ttd or rb_fs_id != feature_set_id:
+        print("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL", flush=True)
+        print(f"  expected contextual_challenger_dir={expected_ctx_dir!r}", flush=True)
+        print(f"  got     contextual_challenger_dir={rb_ctx_dir!r}", flush=True)
+        print(f"  expected contextual_trained_through_date={expected_ttd!r}", flush=True)
+        print(f"  got     contextual_trained_through_date={rb_ttd!r}", flush=True)
+        print(f"  expected feature_set_id={feature_set_id!r}", flush=True)
+        print(f"  got     feature_set_id={rb_fs_id!r}", flush=True)
+        sys.exit(1)
+    # ── End readback verification ──────────────────────────────────────────────
+
     # Per-challenger promotion_decision.json so downstream consumers
     # can find the decision next to the artifacts.
     write_json_atomic(contextual_dir / "promotion_decision.json", {
