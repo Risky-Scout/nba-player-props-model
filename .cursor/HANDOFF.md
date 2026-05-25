@@ -130,13 +130,10 @@ Used throughout calibration, delivery, and market-superiority reporting. Never r
 
 ## 8. Known Architectural Limitations (do not "fix" without a plan)
 
-### A. `calibrate_daily_challenger_pmfs.py` is a stub
-This script is called during nightly training but is intentionally a bootstrap stub — it inherits calibrators from the champion by reference rather than fully re-calibrating. This means the **base model's calibration** doesn't actually re-run from scratch each day. The Phase 13S contextual overlay compensates for this, but it is a known gap. Fixing it requires significant re-engineering + testing. Do not touch without a separate explicit plan.
-
-### B. Base model never actually gets a new `champion_model_id` from `promote_challenger_if_validated.py`
+### A. Base model never actually gets a new `champion_model_id` from `promote_challenger_if_validated.py`
 The base model challenger promotion (`promote_challenger_if_validated.py`) is blocked by a contextual regression guard: if the existing champion is contextual (Phase 13S), the new base challenger must ALSO be contextual to replace it. Since the base challenger's `feature_set_id` is not `phase13s_*`, it is blocked. The base fields (`champion_model_id`, `trained_through_date`) are now updated by Phase 13 promotion instead (§5 fix). This is the intended behavior going forward.
 
-### C. `.gitignore` blocks challenger .pkl and .parquet files
+### B. `.gitignore` blocks challenger .pkl and .parquet files
 `artifacts/models/challengers/**/*.pkl` and `**/*.parquet` are gitignored. This prevents challenger calibration artifacts from being committed, which is why base model promotion through `promote_challenger_if_validated.py` always shows `rows_scored: 0`. This is intentional (large binary files). The Phase 13 path is the canonical promotion path.
 
 ---
