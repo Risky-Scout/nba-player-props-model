@@ -1,7 +1,18 @@
 {
   "delivery_date": "2026-05-25",
-  "generated_at_utc": "2026-05-25T06:47:18+00:00Z",
-  "records": [],
+  "generated_at_utc": "2026-05-25T17:52:35+00:00Z",
+  "records": [
+    {
+      "game_id": "21713901",
+      "opponent_abbr": "NYK",
+      "resolution_blocker": "",
+      "resolved_game_start_time_utc": "2026-05-26T00:10:00Z",
+      "source_confidence": "high",
+      "source_payload_hash": "fdb2241082cbaab5",
+      "source_used": "odds_api_live_events",
+      "team_abbr": "CLE"
+    }
+  ],
   "schema_version": "1.0",
   "telemetry": {
     "bdl_api_key_present": true,
@@ -11,10 +22,11 @@
     "odds_api_cached_events": 0,
     "odds_api_key_present": true,
     "odds_api_live_events": 2,
-    "pmf_display_matchups_parsed": 0,
-    "predictions_present": false,
-    "predictions_rows": 0,
-    "predictions_unique_games": 0,
-    "resolution_blocker": "predictions/all_props_<date>.parquet missing or has no game_id"
+    "pmf_display_matchups_parsed": 1,
+    "predictions_present": true,
+    "predictions_rows": 31,
+    "predictions_unique_games": 1,
+    "resolved_count": 1,
+    "unresolved_count": 0
   }
 }
