@@ -1,0 +1,15 @@
+{
+  "delivery_date": "2026-05-24",
+  "detail": "game already tipped at 2026-05-25T00:13:00+00:00; do not fabricate pre-tip data \u2014 write missed_snapshot_manifest.json",
+  "game_id": "21713531",
+  "game_start_time_utc": "2026-05-25T00:13:00Z",
+  "missed_reason": "post_tip_no_pretip_snapshot_was_generated",
+  "next_automation_status": "next-day cron will resume normal scheduling; this miss is documented for the audit trail.",
+  "no_fake_pretip_snapshot": true,
+  "now_utc": "2026-05-25T01:58:59Z",
+  "production_fix_applied": true,
+  "schema_version": "1.0",
+  "snapshot_target_time_utc": "2026-05-24T23:48:00Z",
+  "snapshot_type": "t_minus_25",
+  "state": "MISSED_POST_TIP"
+}

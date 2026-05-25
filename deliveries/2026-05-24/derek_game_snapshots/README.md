@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — May 24, 2026
 
-Generated 2026-05-24T20:42:37Z.
+Generated 2026-05-25T01:59:15Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Thunder @ Spurs | Pending dispatch | Pending dispatch | Pending dispatch |
+| Thunder @ Spurs | Pending dispatch | Missed during setup window; documented, not backfilled | Available |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
 
@@ -23,10 +23,13 @@ Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; t
 
 ### Thunder @ Spurs
 
-_Game ID `21713531` (used in paths only). Tip time UTC: ``._
+_Game ID `21713531` (used in paths only). Tip time UTC: `2026-05-25T00:13:00Z`._
 
-- **T-minus-25**: Pending dispatch
-- **Close-lock**: Pending dispatch
+- **T-minus-25** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21713531/t_minus_25/missed_snapshot_report.md)
+- **Close-lock** (Available):
+  - [snapshot_report.md](21713531/close_lock/snapshot_report.md)
+  - [market_comparison.csv](21713531/close_lock/market_comparison.csv)
 
 ## PMF variance experience study
 

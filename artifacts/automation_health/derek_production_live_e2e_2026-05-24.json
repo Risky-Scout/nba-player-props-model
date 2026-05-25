@@ -1,26 +1,110 @@
 {
   "facts": {
-    "any_target_in_past": false,
-    "any_target_overdue": false,
+    "any_target_in_past": true,
+    "any_target_overdue": true,
     "champion_pointer_contextual_pmf_engine": true,
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-24",
-    "now_utc": "2026-05-24T20:42:38Z",
-    "pending_reason": "all_targets_in_future",
+    "now_utc": "2026-05-25T01:59:17Z",
+    "overdue_missing_snapshots": [],
+    "overdue_unresolved": [],
+    "per_type_lines": [
+      {
+        "detail": "game=21713531 target_utc=2026-05-24T23:48:00Z now=2026-05-25T01:59:17Z  missed_snapshot_manifest.json present",
+        "outcome": "MISSED_POST_TIP_DOCUMENTED",
+        "type": "T_MINUS_25"
+      },
+      {
+        "detail": "game=21713531 issues=['missing context file lineup_context.csv', 'missing context file lineup_context.parquet', 'missing context file injury_availability_context.csv', 'missing context file injury_availability_context.parquet', 'missing context file game_context.csv', 'missing context file game_context.parquet', 'missing context file contextual_feature_audit.csv', 'missing context file contextual_feature_audit.parquet', 'missing context file prediction_input_audit.csv', 'missing context file prediction_input_audit.parquet', 'missing context file pmf_driver_decomposition.csv', 'missing context file pmf_driver_decomposition.parquet', 'missing context file pmf_driver_decomposition.md', 'missing context file lineup_injury_impact_report.json', 'missing context file lineup_injury_impact_report.md', 'missing context file direct_lineup_impact_report.json', 'missing context file direct_lineup_impact_report.md', \"pmfs_recomputed=None pmf_source='corrected_wizard_of_odds_full_pmfs_wide' \u2014 production-live must recompute\", 'contextual_pmf_engine flag not true on snapshot manifest', \"champion is Phase 13S direct-lineup driver but snapshot's contextual_pmf_applied is not true\", 'no_post_tip_data_used flag not true', 'manifest.game_start_time is None (required non-null)', 'manifest.game_start_time_utc is None (required non-null)', 'manifest.game_start_time_source is None (required non-null)', 'manifest.game_start_time_resolution_confidence is None (required non-null)', 'manifest.BDL_lineup_fetch_attempted is None (required non-null)', 'manifest.BDL_lineup_fetch_status is None (required non-null)', 'manifest.BDL_lineup_rows is None (required non-null)', 'manifest.BDL_lineup_endpoint is None (required non-null)', 'manifest.BDL_injury_fetch_attempted is None (required non-null)', 'manifest.BDL_injury_fetch_status is None (required non-null)', 'manifest.BDL_injury_rows is None (required non-null)', 'manifest.BDL_injury_endpoint is None (required non-null)', 'manifest.official_lineup_context_supplied is None (required non-null)', 'manifest.lineup_context_supplied is None (required non-null)', 'manifest.injury_context_supplied is None (required non-null)', 'manifest.game_context_supplied is None (required non-null)', 'manifest.lineup_aware is None (required non-null)', 'manifest.lineup_affects_pmf_features is None (required non-null)', 'manifest.injury_affects_pmf_features is None (required non-null)', 'manifest.direct_lineup_features_consumed is None (required non-null)', 'manifest.injury_blocker is None (required non-null)', 'manifest.no_post_tip_data_used is None (required non-null)', 'manifest.market_odds_used_as_features is None (required non-null)', 'manifest.market_odds_used_for_edge_only is None (required non-null)', 'manifest.direct_lineup_pmf_driver missing/false even though champion_pointer.direct_lineup_pmf_driver=True', 'manifest.official_lineup_features_enabled missing/false but pointer enables it', 'manifest.injury_availability_features_enabled missing/false but pointer enables it', 'manifest.vacated_opportunity_features_enabled missing/false but pointer enables it', 'manifest.lineup_composition_features_enabled missing/false but pointer enables it', 'manifest.game_context_features_enabled missing/false but pointer enables it']",
+        "outcome": "FAILED",
+        "type": "CLOSE_LOCK"
+      }
+    ],
+    "phase13x_actionable_unconfirmed_failures": [],
+    "phase13x_blocker_threshold_failures": [],
+    "phase13x_publish_col_failures": [],
+    "phase13x_reports_missing": [],
+    "pl_fail_count": 1,
+    "pl_fails": [
+      {
+        "feature_set_id": null,
+        "game_id": "21713531",
+        "issues": [
+          "missing context file lineup_context.csv",
+          "missing context file lineup_context.parquet",
+          "missing context file injury_availability_context.csv",
+          "missing context file injury_availability_context.parquet",
+          "missing context file game_context.csv",
+          "missing context file game_context.parquet",
+          "missing context file contextual_feature_audit.csv",
+          "missing context file contextual_feature_audit.parquet",
+          "missing context file prediction_input_audit.csv",
+          "missing context file prediction_input_audit.parquet",
+          "missing context file pmf_driver_decomposition.csv",
+          "missing context file pmf_driver_decomposition.parquet",
+          "missing context file pmf_driver_decomposition.md",
+          "missing context file lineup_injury_impact_report.json",
+          "missing context file lineup_injury_impact_report.md",
+          "missing context file direct_lineup_impact_report.json",
+          "missing context file direct_lineup_impact_report.md",
+          "pmfs_recomputed=None pmf_source='corrected_wizard_of_odds_full_pmfs_wide' \u2014 production-live must recompute",
+          "contextual_pmf_engine flag not true on snapshot manifest",
+          "champion is Phase 13S direct-lineup driver but snapshot's contextual_pmf_applied is not true",
+          "no_post_tip_data_used flag not true",
+          "manifest.game_start_time is None (required non-null)",
+          "manifest.game_start_time_utc is None (required non-null)",
+          "manifest.game_start_time_source is None (required non-null)",
+          "manifest.game_start_time_resolution_confidence is None (required non-null)",
+          "manifest.BDL_lineup_fetch_attempted is None (required non-null)",
+          "manifest.BDL_lineup_fetch_status is None (required non-null)",
+          "manifest.BDL_lineup_rows is None (required non-null)",
+          "manifest.BDL_lineup_endpoint is None (required non-null)",
+          "manifest.BDL_injury_fetch_attempted is None (required non-null)",
+          "manifest.BDL_injury_fetch_status is None (required non-null)",
+          "manifest.BDL_injury_rows is None (required non-null)",
+          "manifest.BDL_injury_endpoint is None (required non-null)",
+          "manifest.official_lineup_context_supplied is None (required non-null)",
+          "manifest.lineup_context_supplied is None (required non-null)",
+          "manifest.injury_context_supplied is None (required non-null)",
+          "manifest.game_context_supplied is None (required non-null)",
+          "manifest.lineup_aware is None (required non-null)",
+          "manifest.lineup_affects_pmf_features is None (required non-null)",
+          "manifest.injury_affects_pmf_features is None (required non-null)",
+          "manifest.direct_lineup_features_consumed is None (required non-null)",
+          "manifest.injury_blocker is None (required non-null)",
+          "manifest.no_post_tip_data_used is None (required non-null)",
+          "manifest.market_odds_used_as_features is None (required non-null)",
+          "manifest.market_odds_used_for_edge_only is None (required non-null)",
+          "manifest.direct_lineup_pmf_driver missing/false even though champion_pointer.direct_lineup_pmf_driver=True",
+          "manifest.official_lineup_features_enabled missing/false but pointer enables it",
+          "manifest.injury_availability_features_enabled missing/false but pointer enables it",
+          "manifest.vacated_opportunity_features_enabled missing/false but pointer enables it",
+          "manifest.lineup_composition_features_enabled missing/false but pointer enables it",
+          "manifest.game_context_features_enabled missing/false but pointer enables it"
+        ],
+        "snapshot_mode": "production_live",
+        "snapshot_type": "close_lock"
+      }
+    ],
+    "pl_pass_count": 0,
+    "pl_passes": [],
     "predictions_parquet_present": true,
     "schedule_eval": [
       {
-        "cl_overdue": false,
-        "cl_target_utc": "2026-05-25T00:05:00Z",
+        "cl_overdue": true,
+        "cl_target_utc": "2026-05-25T00:08:00Z",
         "game_id": "21713531",
-        "game_start_time": "2026-05-25T00:10:00Z",
-        "t25_overdue": false,
-        "t25_target_utc": "2026-05-24T23:45:00Z"
+        "game_start_time": "2026-05-25T00:13:00Z",
+        "t25_overdue": true,
+        "t25_target_utc": "2026-05-24T23:48:00Z"
       }
     ],
     "schedule_size": 1
   },
-  "outcome": "pending",
+  "failed_reasons": [
+    "snapshot 21713531/close_lock issues=['missing context file lineup_context.csv', 'missing context file lineup_context.parquet', 'missing context file injury_availability_context.csv', 'missing context file injury_availability_context.parquet', 'missing context file game_context.csv', 'missing context file game_context.parquet', 'missing context file contextual_feature_audit.csv', 'missing context file contextual_feature_audit.parquet', 'missing context file prediction_input_audit.csv', 'missing context file prediction_input_audit.parquet', 'missing context file pmf_driver_decomposition.csv', 'missing context file pmf_driver_decomposition.parquet', 'missing context file pmf_driver_decomposition.md', 'missing context file lineup_injury_impact_report.json', 'missing context file lineup_injury_impact_report.md', 'missing context file direct_lineup_impact_report.json', 'missing context file direct_lineup_impact_report.md', \"pmfs_recomputed=None pmf_source='corrected_wizard_of_odds_full_pmfs_wide' \u2014 production-live must recompute\", 'contextual_pmf_engine flag not true on snapshot manifest', \"champion is Phase 13S direct-lineup driver but snapshot's contextual_pmf_applied is not true\", 'no_post_tip_data_used flag not true', 'manifest.game_start_time is None (required non-null)', 'manifest.game_start_time_utc is None (required non-null)', 'manifest.game_start_time_source is None (required non-null)', 'manifest.game_start_time_resolution_confidence is None (required non-null)', 'manifest.BDL_lineup_fetch_attempted is None (required non-null)', 'manifest.BDL_lineup_fetch_status is None (required non-null)', 'manifest.BDL_lineup_rows is None (required non-null)', 'manifest.BDL_lineup_endpoint is None (required non-null)', 'manifest.BDL_injury_fetch_attempted is None (required non-null)', 'manifest.BDL_injury_fetch_status is None (required non-null)', 'manifest.BDL_injury_rows is None (required non-null)', 'manifest.BDL_injury_endpoint is None (required non-null)', 'manifest.official_lineup_context_supplied is None (required non-null)', 'manifest.lineup_context_supplied is None (required non-null)', 'manifest.injury_context_supplied is None (required non-null)', 'manifest.game_context_supplied is None (required non-null)', 'manifest.lineup_aware is None (required non-null)', 'manifest.lineup_affects_pmf_features is None (required non-null)', 'manifest.injury_affects_pmf_features is None (required non-null)', 'manifest.direct_lineup_features_consumed is None (required non-null)', 'manifest.injury_blocker is None (required non-null)', 'manifest.no_post_tip_data_used is None (required non-null)', 'manifest.market_odds_used_as_features is None (required non-null)', 'manifest.market_odds_used_for_edge_only is None (required non-null)', 'manifest.direct_lineup_pmf_driver missing/false even though champion_pointer.direct_lineup_pmf_driver=True', 'manifest.official_lineup_features_enabled missing/false but pointer enables it', 'manifest.injury_availability_features_enabled missing/false but pointer enables it', 'manifest.vacated_opportunity_features_enabled missing/false but pointer enables it', 'manifest.lineup_composition_features_enabled missing/false but pointer enables it', 'manifest.game_context_features_enabled missing/false but pointer enables it']"
+  ],
+  "outcome": "failed",
   "schema_version": "1.0"
 }

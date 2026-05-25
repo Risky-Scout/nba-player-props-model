@@ -1,19 +1,19 @@
 {
-  "code_commit": "723d58a83d07d0aa87719360cd129eb149cd2d7a",
+  "code_commit": "b76a999279fe121dc5c7399ce91276da5647d24d",
   "decisions": [
     {
-      "decision": "skipped_not_due",
-      "detail": "now < target - 180min; will fire during the cron window starting at 2026-05-24T21:10:00+00:00",
+      "decision": "skipped_already_tipped",
+      "detail": "game already tipped at 2026-05-25T00:13:00+00:00; do not fabricate pre-tip data \u2014 write missed_snapshot_manifest.json",
       "game_id": "21713531",
-      "now_utc": "2026-05-24T20:42:23Z",
+      "now_utc": "2026-05-25T01:58:58Z",
       "snapshot_dir": "deliveries/2026-05-24/derek_game_snapshots/21713531/current_live",
-      "state": "NOT_DUE",
-      "target_utc": "2026-05-25T00:10:00Z"
+      "state": "MISSED_POST_TIP",
+      "target_utc": "2026-05-25T00:13:00Z"
     }
   ],
   "delivery_date": "2026-05-24",
   "eligible_rows": 0,
-  "now_utc": "2026-05-24T20:42:23Z",
+  "now_utc": "2026-05-25T01:58:58Z",
   "schedule_rows": 1,
   "schema_version": "1.0",
   "snapshot_type": "current_live",
