@@ -1,4 +1,5 @@
 name: Derek — Per-Game Live PMF Snapshots (T-25 / Close-Lock)
+run-name: "Derek — Live Game Snapshot${{ github.event_name == 'workflow_dispatch' && ' (Manual)' || '' }}"
 # Schedule refresh marker: restored schedule-proven Derek workflow path.
 
 # Phase 13L. Derek-only per-game live snapshots. Independent of WoO and

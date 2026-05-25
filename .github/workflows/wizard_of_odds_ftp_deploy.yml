@@ -1,4 +1,5 @@
 name: Wizard of Odds — FTP Deploy
+run-name: "Wizard of Odds — Public Web Deploy${{ github.event_name == 'workflow_dispatch' && ' (Manual)' || '' }}"
 
 # Phase 12B/12D/12E/12F/13AM — publish public_export/wizard_of_odds/ to
 # the WoO FTP portal after the daily PMF delivery has produced a public
