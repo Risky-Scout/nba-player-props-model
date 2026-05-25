@@ -1963,6 +1963,15 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Overwrite existing snapshot folder if present.",
     )
+    p.add_argument(
+        "--game-start-time",
+        default=None,
+        help=(
+            "ISO-8601 UTC game start time passed from the dispatch script. "
+            "Used as the primary source when the predictions parquet has no "
+            "game_start_time column or the value is null."
+        ),
+    )
     args = p.parse_args(argv)
 
     run_started = _utcnow()
@@ -2214,8 +2223,75 @@ def main(argv: list[str] | None = None) -> int:
     # Derive game_start_time_utc from the slice (it is the same for every
     # row in a single game).
     game_start_time_utc = None
-    if "game_start_time" in sub.columns and sub["game_start_time"].notna().any():
+    # CLI --game-start-time takes priority (passed from dispatch script).
+    if getattr(args, "game_start_time", None):
+        game_start_time_utc = args.game_start_time
+    elif "game_start_time" in sub.columns and sub["game_start_time"].notna().any():
         game_start_time_utc = str(sub["game_start_time"].dropna().iloc[0])
+
+    # Fallback: live schedule artifact written by the main pipeline.
+    if game_start_time_utc is None:
+        try:
+            _sched = (
+                REPO_ROOT / "artifacts" / "live_schedule" / args.delivery_date
+                / "game_start_times.json"
+            )
+            if _sched.exists():
+                _sched_data = json.loads(_sched.read_text(encoding="utf-8"))
+                for _r in (_sched_data.get("records") or []):
+                    if str(_r.get("game_id")) == str(args.game_id):
+                        _gst = (
+                            _r.get("resolved_game_start_time_utc")
+                            or _r.get("game_start_time_utc")
+                            or _r.get("game_start_time")
+                        )
+                        if _gst:
+                            game_start_time_utc = str(_gst)
+                        break
+        except Exception:
+            pass
+
+    # Fallback: invoke the resolver directly (Odds API / BDL).
+    if game_start_time_utc is None:
+        try:
+            from nba_props_model.schedule.game_start_times import GameStartTimeResolver
+            _resolver = GameStartTimeResolver(repo_root=REPO_ROOT)
+            _records, _ = _resolver.resolve(args.delivery_date)
+            for _rr in _records:
+                if str(_rr.game_id) == str(args.game_id) and _rr.resolved_game_start_time_utc:
+                    game_start_time_utc = str(_rr.resolved_game_start_time_utc)
+                    break
+        except Exception:
+            pass
+
+    # #region agent log - debug instrumentation cd71ad
+    import time as _dbg_time
+    _dbg_payload = {
+        "sessionId": "cd71ad", "runId": "run1", "hypothesisId": "H1_H2",
+        "location": "run_derek_live_game_snapshot.py:2216",
+        "message": "game_start_time_utc resolution",
+        "data": {
+            "game_id": str(args.game_id),
+            "snapshot_type": args.snapshot_type,
+            "game_start_time_utc": game_start_time_utc,
+            "cli_game_start_time": getattr(args, "game_start_time", None),
+            "parquet_has_col": "game_start_time" in sub.columns,
+            "parquet_col_notna": bool(
+                "game_start_time" in sub.columns
+                and sub["game_start_time"].notna().any()
+            ),
+        },
+        "timestamp": int(_dbg_time.time() * 1000),
+    }
+    try:
+        import json as _json_dbg
+        _log_path = REPO_ROOT / ".cursor" / "debug-cd71ad.log"
+        _log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(_log_path, "a", encoding="utf-8") as _lf:
+            _lf.write(_json_dbg.dumps(_dbg_payload) + "\n")
+    except Exception:
+        pass
+    # #endregion agent log
 
     # Phase 13M: BDL confirmed-lineup status. In production-live mode the
     # fetch already ran upstream (so we could pass --lineup-context to

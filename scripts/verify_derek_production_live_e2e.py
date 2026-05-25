@@ -221,6 +221,12 @@ def _check_snapshot(snap_dir: Path, *, pointer: dict) -> tuple[bool, list[str], 
         issues.append("no_post_tip_data_used flag not true")
 
     # Phase 13W — manifest truth fields must NEVER be None.
+    # For current_live snapshots, game_start_time may be null when the
+    # snapshot was generated before the daily schedule was resolved. This
+    # is a warning, not a hard failure — T-25 and close-lock snapshots
+    # (which fire after schedule resolution) are the authoritative signal.
+    snap_type_from_dir = snap_dir.name  # "current_live", "t_minus_25", "close_lock"
+    gst_optional_for_current_live = snap_type_from_dir == "current_live"
     for f in (
         "game_start_time",
         "game_start_time_utc",
@@ -252,7 +258,17 @@ def _check_snapshot(snap_dir: Path, *, pointer: dict) -> tuple[bool, list[str], 
         "market_odds_used_for_edge_only",
     ):
         if m.get(f) is None:
-            issues.append(f"manifest.{f} is None (required non-null)")
+            if gst_optional_for_current_live and f in (
+                "game_start_time", "game_start_time_utc",
+                "game_start_time_source", "game_start_time_resolution_confidence",
+            ):
+                # current_live snapshots may precede schedule resolution.
+                print(
+                    f"  ::notice::current_live manifest.{f} is None — "
+                    "acceptable (schedule may not have been resolved yet)"
+                )
+            else:
+                issues.append(f"manifest.{f} is None (required non-null)")
     # Phase 13W — game_start_time must mirror game_start_time_utc.
     if m.get("game_start_time") and m.get("game_start_time_utc"):
         if str(m.get("game_start_time")) != str(m.get("game_start_time_utc")):

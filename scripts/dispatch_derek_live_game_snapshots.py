@@ -177,7 +177,8 @@ REQUIRED_SNAPSHOT_FILES = (
 
 
 def _run_snapshot(delivery_date: str, game_id: str, snapshot_type: str,
-                   allow_backfill: bool, force: bool) -> tuple[int, dict]:
+                   allow_backfill: bool, force: bool,
+                   game_start_time: str | None = None) -> tuple[int, dict]:
     """Invoke run_derek_live_game_snapshot.py and capture FULL child
     output for the dispatcher's audit log.
 
@@ -204,6 +205,8 @@ def _run_snapshot(delivery_date: str, game_id: str, snapshot_type: str,
         cmd.append("--allow-backfill-test")
     if force:
         cmd.append("--force")
+    if game_start_time:
+        cmd += ["--game-start-time", game_start_time]
     t0 = _time.perf_counter()
     proc = subprocess.run(
         cmd, cwd=REPO_ROOT, capture_output=True, text=True, check=False,
@@ -523,6 +526,7 @@ def main(argv: list[str] | None = None) -> int:
             delivery_date, game_id, args.snapshot_type,
             allow_backfill=bool(args.allow_backfill_test),
             force=(args.force or action == "regenerate_force"),
+            game_start_time=gs_iso,
         )
         if rc == 0:
             fired += 1

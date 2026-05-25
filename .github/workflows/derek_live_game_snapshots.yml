@@ -260,7 +260,7 @@ jobs:
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
           if python scripts/verify_bdl_fetch_proof_for_derek.py \
-            --delivery-date ${{ steps.d.outputs.date }}; then
+            --date ${{ steps.d.outputs.date }}; then
             echo "legacy verify_bdl_fetch_proof_for_derek PASS"
           else
             echo "::notice::legacy BDL fetch proof failed; corrected PMF verifier is authoritative"
