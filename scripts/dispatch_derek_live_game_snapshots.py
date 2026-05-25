@@ -42,12 +42,11 @@ DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PRED_DIR = REPO_ROOT / "predictions"
 DISPATCH_DIR = REPO_ROOT / "artifacts" / "derek_live_snapshots"
 
-# Execution windows per spec Part J. close_lock uses -6 minutes from tip
-# to absorb GitHub Actions runner latency.
+# Execution windows: T-25 for projected lineups, T-10 for confirmed lineups.
 T_MINUS_25_OFFSET_MIN = 25
-CLOSE_LOCK_OFFSET_MIN = 6
+CLOSE_LOCK_OFFSET_MIN = 10
 T_MINUS_25_WINDOW = (-5, 7)        # (target - 5min, target + 7min)
-CLOSE_LOCK_WINDOW = (-5, -1)       # (target - 5min, target - 1min) i.e. tip-10 to tip-6
+CLOSE_LOCK_WINDOW = (-5, 5)        # (target - 5min, target + 5min) i.e. tip-15 to tip-5
 
 
 def _utcnow() -> dt.datetime:
