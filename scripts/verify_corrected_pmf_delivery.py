@@ -169,8 +169,13 @@ def verify_date(
 
     for mpath in ([] if skip_derek_snapshots else manifests):
         manifest = json.loads(mpath.read_text())
-        if manifest.get("source") != expected_source:
-            fail(f"{date} Derek snapshot source mismatch in {mpath}: {manifest.get('source')}")
+        # Derek snapshot manifests use pmf_source / snapshot_mode, not source.
+        # current_live snapshots are pre-game baselines and may have pmf_source=None;
+        # that is acceptable. Only flag snapshots that have an unexpected non-None source.
+        snap_type = mpath.parent.name  # "current_live", "t_minus_25", "close_lock"
+        manifest_source = manifest.get("source")
+        if manifest_source is not None and manifest_source != expected_source:
+            fail(f"{date} Derek snapshot source mismatch in {mpath}: {manifest_source}")
         snap = pd.read_parquet(mpath.parent / "full_pmf_wide.parquet")
         snap = _apply_context_defaults(snap)
         snap_stats = set(snap["stat"].astype(str).str.lower())
