@@ -235,7 +235,7 @@
       "rps": 0.5536666641877083
     }
   },
-  "code_commit": "7c592a246874207f4c7ad949185631e262d9bfc6",
+  "code_commit": "2be2af615d701eed914f3bd5f8161acea6d4d0d2",
   "gates_failed": [
     "market_logloss_non_inferior_or_better",
     "market_brier_non_inferior_or_better",
@@ -261,7 +261,7 @@
     "m6_3_review_cells_guarded",
     "market_benchmark_available"
   ],
-  "generated_at_utc": "2026-05-25T20:18:21+00:00",
+  "generated_at_utc": "2026-05-25T22:43:22+00:00",
   "m6_3_matrix_summary": {
     "detail": "valid",
     "expected_role_buckets": [
@@ -433,7 +433,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "7c592a246874207f4c7ad949185631e262d9bfc6",
+    "code_commit": "2be2af615d701eed914f3bd5f8161acea6d4d0d2",
     "dates_included": [
       "2026-05-24",
       "2026-05-23",
@@ -468,7 +468,7 @@
     ],
     "delta_brier": 0.012077780653008373,
     "delta_logloss": 0.036980768653124906,
-    "generated_at_utc": "2026-05-25T20:18:10+00:00",
+    "generated_at_utc": "2026-05-25T22:43:11+00:00",
     "market_brier": 0.23386606711450633,
     "market_logloss": 0.6591127199592747,
     "min_bucket_rows": 50,
@@ -642,7 +642,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-05-24",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260525T201710"
+    "training_run_id": "nightly-20260525T224214"
   },
   "promote": false,
   "reason": "gate_failed:market_logloss_non_inferior_or_better",
