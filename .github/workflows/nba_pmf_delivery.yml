@@ -1014,23 +1014,29 @@ jobs:
           # ── Determine whether promotion actually succeeded ─────────────
           PROMOTION_DONE=false
           PROMOTED_MODEL_ID=""
-          # H3: emit dirs found so we can verify detection is correct
-          echo "::debug::H3 direct_lineup_contextual dirs: $(ls -d artifacts/models/challengers/*_direct_lineup_contextual 2>/dev/null | sort || echo NONE)"
-          echo "::debug::H3 contextual dirs: $(ls -d artifacts/models/challengers/*_contextual 2>/dev/null | grep -v direct_lineup | sort || echo NONE)"
-          for PDIR in \
-            "$(ls -d artifacts/models/challengers/*_direct_lineup_contextual 2>/dev/null | sort | tail -1)" \
-            "$(ls -d artifacts/models/challengers/*_contextual 2>/dev/null | grep -v direct_lineup | sort | tail -1)"; do
-            [ -z "$PDIR" ] && continue
-            if [ -f "$PDIR/promotion_decision.json" ]; then
-              PDONE=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(str(p.get('promoted',False)).lower())" 2>/dev/null || echo "false")
-              if [ "$PDONE" = "true" ]; then
-                PROMOTION_DONE=true
-                PROMOTED_MODEL_ID=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(p.get('champion_model_id','unknown'))" 2>/dev/null || echo "unknown")
-                echo "Promotion confirmed: $PROMOTED_MODEL_ID from $PDIR"
-                break
+          # Only detect promotion if Phase 13 actually ran this turn (not idempotently skipped).
+          # When skip_promotion=true the promotion was already committed in a prior run;
+          # reading promoted=true from a stale promotion_decision.json would falsely set
+          # PROMOTION_DONE=true and then fail on no-staged-changes.
+          SKIP_PROMO="${{ steps.phase13_idempotency.outputs.skip_promotion }}"
+          if [ "$SKIP_PROMO" != "true" ]; then
+            for PDIR in \
+              "$(ls -d artifacts/models/challengers/*_direct_lineup_contextual 2>/dev/null | sort | tail -1)" \
+              "$(ls -d artifacts/models/challengers/*_contextual 2>/dev/null | grep -v direct_lineup | sort | tail -1)"; do
+              [ -z "$PDIR" ] && continue
+              if [ -f "$PDIR/promotion_decision.json" ]; then
+                PDONE=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(str(p.get('promoted',False)).lower())" 2>/dev/null || echo "false")
+                if [ "$PDONE" = "true" ]; then
+                  PROMOTION_DONE=true
+                  PROMOTED_MODEL_ID=$(python3 -c "import json; p=json.load(open('$PDIR/promotion_decision.json')); print(p.get('champion_model_id','unknown'))" 2>/dev/null || echo "unknown")
+                  echo "Promotion confirmed: $PROMOTED_MODEL_ID from $PDIR"
+                  break
+                fi
               fi
-            fi
-          done
+            done
+          else
+            echo "Phase 13 promotion was idempotently skipped (already committed) — PROMOTION_DONE stays false"
+          fi
 
           # ── Stage Phase 13 artifacts ───────────────────────────────────
           # Optional large artifacts (ok if absent or gitignored)
