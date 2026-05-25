@@ -240,8 +240,17 @@ def main(argv=None) -> int:
     )
 
     new_pointer = dict(pointer)
+    _ttd = tm.get("trained_through_date")
+    _ctd = tm.get("calibrated_through_date")
     contextual_block = {
         # New / overwritten: promote to Phase 13S contextual.
+        # Base champion fields must advance with each contextual promotion so
+        # champion_model_id and trained_through_date reflect the actual model date.
+        "champion_model_id": f"challenger-{_ttd}" if _ttd else pointer.get("champion_model_id"),
+        "model_version": f"challenger-{_ttd}" if _ttd else pointer.get("model_version"),
+        "trained_through_date": _ttd,
+        "calibrated_through_date": _ctd,
+        "promoted_at_utc": utcnow_iso(),
         "feature_set_id": DIRECT_LINEUP_FEATURE_SET_ID,
         "direct_lineup_pmf_driver": True,
         "contextual_pmf_engine": True,
@@ -257,8 +266,8 @@ def main(argv=None) -> int:
         "actionability_sensitivity_verified": True,
         "market_only_edge_sensitivity_verified": True,
         "contextual_pmf_sensitivity_verified": True,
-        "contextual_trained_through_date": tm.get("trained_through_date"),
-        "contextual_calibrated_through_date": tm.get("calibrated_through_date"),
+        "contextual_trained_through_date": _ttd,
+        "contextual_calibrated_through_date": _ctd,
         "contextual_challenger_dir": str(contextual_dir.relative_to(REPO_ROOT)),
         "contextual_train_manifest_path": str(
             train_manifest_path.relative_to(REPO_ROOT)),
@@ -281,6 +290,13 @@ def main(argv=None) -> int:
     }
     new_pointer.update(contextual_block)
 
+    # #region agent log
+    import time as _time
+    _dbg_log = __import__('pathlib').Path("/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/.cursor/debug-cd71ad.log")
+    _dbg_log.parent.mkdir(parents=True, exist_ok=True)
+    _dbg_log.open("a").write(__import__('json').dumps({"sessionId":"cd71ad","hypothesisId":"H-base-fields","location":"promote_direct_lineup_challenger.py:292","message":"phase13s_promotion_writing_pointer","data":{"champion_model_id":new_pointer.get("champion_model_id"),"trained_through_date":new_pointer.get("trained_through_date"),"calibrated_through_date":new_pointer.get("calibrated_through_date"),"contextual_trained_through_date":new_pointer.get("contextual_trained_through_date")},"timestamp":int(_time.time()*1000)}) + "\n")
+    # #endregion agent log
+
     write_json_atomic(CHAMPION_POINTER_PATH, new_pointer)
 
     # ── Readback verification ──────────────────────────────────────────────────
@@ -299,13 +315,23 @@ def main(argv=None) -> int:
     expected_ttd = tm.get("trained_through_date")
     rb_ctx_dir = readback.get("contextual_challenger_dir")
     rb_ttd = readback.get("contextual_trained_through_date")
+    rb_base_ttd = readback.get("trained_through_date")
     rb_fs_id = readback.get("feature_set_id")
-    if rb_ctx_dir != expected_ctx_dir or rb_ttd != expected_ttd or rb_fs_id != DIRECT_LINEUP_FEATURE_SET_ID:
+    rb_champion_id = readback.get("champion_model_id")
+    expected_champion_id = f"challenger-{expected_ttd}" if expected_ttd else None
+    if (rb_ctx_dir != expected_ctx_dir or rb_ttd != expected_ttd
+            or rb_fs_id != DIRECT_LINEUP_FEATURE_SET_ID
+            or rb_base_ttd != expected_ttd
+            or (expected_champion_id and rb_champion_id != expected_champion_id)):
         print("PHASE13_PROMOTION_POINTER_WRITE_VERIFY_FAIL", flush=True)
         print(f"  expected contextual_challenger_dir={expected_ctx_dir!r}", flush=True)
         print(f"  got     contextual_challenger_dir={rb_ctx_dir!r}", flush=True)
         print(f"  expected contextual_trained_through_date={expected_ttd!r}", flush=True)
         print(f"  got     contextual_trained_through_date={rb_ttd!r}", flush=True)
+        print(f"  expected trained_through_date={expected_ttd!r}", flush=True)
+        print(f"  got     trained_through_date={rb_base_ttd!r}", flush=True)
+        print(f"  expected champion_model_id={expected_champion_id!r}", flush=True)
+        print(f"  got     champion_model_id={rb_champion_id!r}", flush=True)
         print(f"  expected feature_set_id={DIRECT_LINEUP_FEATURE_SET_ID!r}", flush=True)
         print(f"  got     feature_set_id={rb_fs_id!r}", flush=True)
         sys.exit(1)
