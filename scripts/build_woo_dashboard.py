@@ -18,16 +18,33 @@ INPUT (read-only — produced by scripts/publish_woo_public_export.py):
   predictions/_template_nba_props.html
   predictions/_template_nba_pmf_research.html
 
-OUTPUT:
+OUTPUT (all paths populated so the FTP tree mirrors the required URL structure):
 
-  predictions/nba-props.html
-  predictions/nba-pmf-research.html
+  predictions/nba-props.html                                     (legacy)
+  predictions/nba-pmf-research.html                              (legacy)
+
+  public_export/wizard_of_odds/<date>/nba-props.html             (dated archive)
+  public_export/wizard_of_odds/<date>/nba-pmf-research.html      (dated archive)
+  public_export/wizard_of_odds/<date>/nba-pmf-research           (dated extensionless)
+
+  public_export/wizard_of_odds/latest/nba-props.html             (latest alias)
+  public_export/wizard_of_odds/latest/nba-pmf-research.html      (latest alias)
+  public_export/wizard_of_odds/latest/nba-pmf-research           (latest extensionless)
+
+  public_export/wizard_of_odds/nba-props.html                    (root current)
+  public_export/wizard_of_odds/nba-pmf-research.html             (root current)
+  public_export/wizard_of_odds/nba-pmf-research                  (root extensionless)
+
+The root current files are what the live public URLs serve:
+  https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-props.html
+  https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-pmf-research.html
+  https://dev.wizardofodds.com/tools/odds-scanner/predictions/nba-pmf-research
+
+The FTP deploy script uploads public_export/wizard_of_odds/ verbatim under
+WOO_FTP_REMOTE_DIR (/odds-scanner/predictions/), so all three path sets are
+covered by one deploy pass.
 
 This script does not modify any model artifact. It is a thin renderer.
-It also prints an explicit audit of which stats appear in the JSON so
-the operator can verify before uploading. Stats outside the supported
-allowlist (pts/reb/ast/fg3m/tov) are filtered at render time by the
-template's JS and reported here at build time.
 """
 from __future__ import annotations
 
@@ -56,6 +73,39 @@ PMF_OUTPUT         = PREDICTIONS_DIR / "nba-pmf-research.html"
 
 DASHBOARD_MARKER   = "<!-- INJECT_DASHBOARD_DATA_HERE -->"
 PMF_MARKER         = "<!-- INJECT_PMF_DATA_HERE -->"
+
+
+def _write_html_to_all_paths(html: str, filename: str, date: str) -> list[str]:
+    """Write html to dated/latest/root copies under public_export/wizard_of_odds/.
+
+    Returns list of written paths for audit logging.
+    """
+    targets = [
+        PUBLIC_EXPORT / date / filename,
+        PUBLIC_EXPORT / "latest" / filename,
+        PUBLIC_EXPORT / filename,
+    ]
+    written = []
+    for p in targets:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(html)
+        written.append(str(p.relative_to(REPO_ROOT)))
+    return written
+
+
+def _write_extensionless_alias(html: str, alias: str, date: str) -> list[str]:
+    """Write extensionless alias copies (nba-pmf-research without .html)."""
+    targets = [
+        PUBLIC_EXPORT / date / alias,
+        PUBLIC_EXPORT / "latest" / alias,
+        PUBLIC_EXPORT / alias,
+    ]
+    written = []
+    for p in targets:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(html)
+        written.append(str(p.relative_to(REPO_ROOT)))
+    return written
 
 # Mirrors SUPPORTED_SINGLE_STATS in both HTML templates. Used here only
 # for the build-time audit print. Actual runtime filtering happens in
@@ -181,6 +231,9 @@ def render_dashboard(date: str, dry_run: bool = False) -> int:
         DASHBOARD_OUTPUT.write_text(html)
         print(f"  wrote {DASHBOARD_OUTPUT.relative_to(REPO_ROOT)}  "
               f"({len(html):,} chars)")
+        written = _write_html_to_all_paths(html, "nba-props.html", date)
+        for p in written:
+            print(f"  wrote {p}")
     return 0
 
 
@@ -216,6 +269,12 @@ def render_pmf_research(date: str, dry_run: bool = False) -> int:
         PMF_OUTPUT.write_text(html)
         print(f"  wrote {PMF_OUTPUT.relative_to(REPO_ROOT)}  "
               f"({len(html):,} chars)")
+        written = _write_html_to_all_paths(html, "nba-pmf-research.html", date)
+        for p in written:
+            print(f"  wrote {p}")
+        ext_written = _write_extensionless_alias(html, "nba-pmf-research", date)
+        for p in ext_written:
+            print(f"  wrote {p}  (extensionless alias)")
     return 0
 
 
@@ -230,10 +289,8 @@ def main():
     print("=" * 72)
     print()
     print(f"Allowlist: {sorted(SUPPORTED_SINGLE_STATS)}")
-    # M8.1: allowlist is now the 11-stat mission canonical; the only filtered
-    # tokens are non-mission stats like 'ra' and 'reb_ast'.
     print("Allowlist source: nba_props_model.targets.MISSION_REQUIRED_TARGETS_CANONICAL.")
-    print("Anything outside the allowlist (e.g. 'ra', 'reb_ast') is filtered before render.")
+    print("Anything outside the 12-stat allowlist is filtered before render.")
     print()
 
     rc1 = render_dashboard(args.date, dry_run=args.dry_run)

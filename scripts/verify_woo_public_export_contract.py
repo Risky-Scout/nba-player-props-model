@@ -410,19 +410,40 @@ def main(argv: list[str] | None = None) -> int:
 
     failures: list[str] = []
 
-    # 1. HTML pages
-    html = PRED_DIR / "nba-props.html"
-    if not html.exists():
-        failures.append(f"missing {html.relative_to(REPO_ROOT)}")
-    elif html.stat().st_size < 5 * 1024:
-        failures.append(f"{html.relative_to(REPO_ROOT)} too small "
-                        f"({html.stat().st_size} bytes)")
+    # 1. HTML pages — predictions/ (legacy) and all public_export tree paths
+    def _check_html(path, min_bytes=5_000, required_marker=None):
+        rp = path.relative_to(REPO_ROOT) if path.is_absolute() else path
+        if not path.exists():
+            failures.append(f"missing {rp}")
+            return
+        if path.stat().st_size < min_bytes:
+            failures.append(f"{rp} too small ({path.stat().st_size} bytes)")
+            return
+        if required_marker:
+            text = path.read_text(errors="ignore")
+            if required_marker not in text:
+                failures.append(f"{rp} missing required marker: {required_marker!r}")
 
-    research_html = PRED_DIR / "nba-pmf-research.html"
-    research_extless = PRED_DIR / "nba-pmf-research"
-    if not (research_html.exists() or research_extless.exists()):
-        # Advisory: not all environments host this page. Don't hard-fail.
-        pass
+    _check_html(PRED_DIR / "nba-props.html",        required_marker="window.EMBEDDED_DATA")
+    _check_html(PRED_DIR / "nba-pmf-research.html", required_marker="window.EMBEDDED_PMF_DATA")
+
+    # Dated archive
+    _check_html(EXPORT_ROOT / date / "nba-props.html",        required_marker="window.EMBEDDED_DATA")
+    _check_html(EXPORT_ROOT / date / "nba-pmf-research.html", required_marker="window.EMBEDDED_PMF_DATA")
+    if not (EXPORT_ROOT / date / "nba-pmf-research").exists():
+        failures.append(f"missing public_export/wizard_of_odds/{date}/nba-pmf-research (extensionless)")
+
+    # Latest alias
+    _check_html(EXPORT_ROOT / "latest" / "nba-props.html",        required_marker="window.EMBEDDED_DATA")
+    _check_html(EXPORT_ROOT / "latest" / "nba-pmf-research.html", required_marker="window.EMBEDDED_PMF_DATA")
+    if not (EXPORT_ROOT / "latest" / "nba-pmf-research").exists():
+        failures.append("missing public_export/wizard_of_odds/latest/nba-pmf-research (extensionless)")
+
+    # Root current (live URL targets)
+    _check_html(EXPORT_ROOT / "nba-props.html",        required_marker="window.EMBEDDED_DATA")
+    _check_html(EXPORT_ROOT / "nba-pmf-research.html", required_marker="window.EMBEDDED_PMF_DATA")
+    if not (EXPORT_ROOT / "nba-pmf-research").exists():
+        failures.append("missing public_export/wizard_of_odds/nba-pmf-research (extensionless)")
 
     # 2. JSON contract: <date>/, latest/, root
     aff_paths = (

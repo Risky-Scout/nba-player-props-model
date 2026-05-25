@@ -188,12 +188,33 @@ def _delivery_manifest_confirmed_no_games_slate(repo: Path, date: str) -> bool:
     )
 
 
+def _check_html_file(path, required_needles, forbidden_needles, failures, label):
+    """Check a single HTML file for required/forbidden content."""
+    def fail(msg):
+        failures.append(msg)
+        print(f"  [FAIL] {msg}")
+
+    def passed(msg):
+        print(f"  [PASS] {msg}")
+
+    if not path.exists():
+        fail(f"{label} missing: {path}")
+        return
+    text = path.read_text()
+    for needle in required_needles:
+        (passed if needle in text else fail)(f"{label} contains: {needle}")
+    for needle in forbidden_needles:
+        (fail if needle in text else passed)(f"{label} absent: {needle!r}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True)
     args = ap.parse_args()
 
     repo = Path(__file__).resolve().parent.parent
+    export_root = repo / "public_export" / "wizard_of_odds"
+
     if _delivery_manifest_confirmed_no_games_slate(repo, args.date):
         print(
             f"WOO_DASHBOARD_RENDER_CONTRACT_SOFT_SKIP_NO_GAMES_SLATE "
@@ -207,8 +228,8 @@ def main() -> int:
 
     props_html = repo / "predictions" / "nba-props.html"
     pmf_html = repo / "predictions" / "nba-pmf-research.html"
-    aff_json = repo / "public_export" / "wizard_of_odds" / args.date / "affiliate_dashboard.json"
-    pmf_json = repo / "public_export" / "wizard_of_odds" / args.date / "pmf_research.json"
+    aff_json = export_root / args.date / "affiliate_dashboard.json"
+    pmf_json = export_root / args.date / "pmf_research.json"
 
     failures: list[str] = []
 
@@ -219,26 +240,68 @@ def main() -> int:
     def passed(msg: str) -> None:
         print(f"  [PASS] {msg}")
 
-    print("PROPS HTML — required content:")
-    if not props_html.exists():
-        fail(f"props HTML missing at {props_html}")
-    else:
-        text = props_html.read_text()
-        for needle in REQUIRED_PROPS_PRESENT:
-            (passed if needle in text else fail)(f"contains: {needle}")
-        for needle in FORBIDDEN_PROPS:
-            (fail if needle in text else passed)(f"absent: {needle!r}")
+    # ── Legacy predictions/ files (build_woo_dashboard writes these too) ──
+    print("PROPS HTML (predictions/) — required content:")
+    _check_html_file(props_html, REQUIRED_PROPS_PRESENT, FORBIDDEN_PROPS, failures, "predictions/nba-props.html")
 
-    print("\nPMF HTML — required content:")
-    if not pmf_html.exists():
-        fail(f"PMF HTML missing at {pmf_html}")
-    else:
-        text = pmf_html.read_text()
-        for needle in REQUIRED_PMF_PRESENT:
-            (passed if needle in text else fail)(f"contains: {needle}")
-        for needle in FORBIDDEN_PMF:
-            (fail if needle in text else passed)(f"absent: {needle!r}")
+    print("\nPMF HTML (predictions/) — required content:")
+    _check_html_file(pmf_html, REQUIRED_PMF_PRESENT, FORBIDDEN_PMF, failures, "predictions/nba-pmf-research.html")
 
+    # ── Dated archive ──
+    print(f"\nDated archive ({args.date}/):")
+    _check_html_file(
+        export_root / args.date / "nba-props.html",
+        ["window.EMBEDDED_DATA", args.date], [], failures,
+        f"public_export/wizard_of_odds/{args.date}/nba-props.html",
+    )
+    _check_html_file(
+        export_root / args.date / "nba-pmf-research.html",
+        ["window.EMBEDDED_PMF_DATA", args.date], [], failures,
+        f"public_export/wizard_of_odds/{args.date}/nba-pmf-research.html",
+    )
+    ext_dated = export_root / args.date / "nba-pmf-research"
+    if not ext_dated.exists():
+        fail(f"extensionless alias missing: public_export/wizard_of_odds/{args.date}/nba-pmf-research")
+    else:
+        passed(f"extensionless alias present: public_export/wizard_of_odds/{args.date}/nba-pmf-research")
+
+    # ── Latest alias ──
+    print("\nLatest alias:")
+    _check_html_file(
+        export_root / "latest" / "nba-props.html",
+        ["window.EMBEDDED_DATA"], [], failures,
+        "public_export/wizard_of_odds/latest/nba-props.html",
+    )
+    _check_html_file(
+        export_root / "latest" / "nba-pmf-research.html",
+        ["window.EMBEDDED_PMF_DATA"], [], failures,
+        "public_export/wizard_of_odds/latest/nba-pmf-research.html",
+    )
+    ext_latest = export_root / "latest" / "nba-pmf-research"
+    if not ext_latest.exists():
+        fail("extensionless alias missing: public_export/wizard_of_odds/latest/nba-pmf-research")
+    else:
+        passed("extensionless alias present: public_export/wizard_of_odds/latest/nba-pmf-research")
+
+    # ── Root current (live public URL targets) ──
+    print("\nRoot current (live public URL targets):")
+    _check_html_file(
+        export_root / "nba-props.html",
+        ["window.EMBEDDED_DATA"], [], failures,
+        "public_export/wizard_of_odds/nba-props.html",
+    )
+    _check_html_file(
+        export_root / "nba-pmf-research.html",
+        ["window.EMBEDDED_PMF_DATA"], [], failures,
+        "public_export/wizard_of_odds/nba-pmf-research.html",
+    )
+    ext_root = export_root / "nba-pmf-research"
+    if not ext_root.exists():
+        fail("extensionless alias missing: public_export/wizard_of_odds/nba-pmf-research")
+    else:
+        passed("extensionless alias present: public_export/wizard_of_odds/nba-pmf-research")
+
+    # ── JSON shape ──
     print("\nJSON shape:")
     if not aff_json.exists():
         fail(f"affiliate_dashboard.json missing at {aff_json}")
@@ -281,10 +344,6 @@ def main() -> int:
                             continue
                         sp = _stat_support_points(obj)
                         if not sp:
-                            # No renderable support points for this stat — the
-                            # canonical builder may emit support+probs but no
-                            # support_points yet. Skip rather than spuriously
-                            # failing the sum-to-1 check on an empty list.
                             continue
                         s = sum(float(pt.get("p", 0.0) or 0.0) for pt in sp)
                         if not (0.99 <= s <= 1.01):
