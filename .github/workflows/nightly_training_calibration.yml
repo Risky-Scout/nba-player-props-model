@@ -1,4 +1,5 @@
 name: NBA PMF Model — Nightly Training & Calibration
+run-name: "PMF Training & Calibration | ${{ github.event_name == 'workflow_dispatch' && (inputs.delivery_date != '' && inputs.delivery_date || 'auto-date') || 'scheduled' }}"
 
 # Phase 13A — daily champion/challenger training, calibration, validation,
 # and (if gates pass) atomic promotion.

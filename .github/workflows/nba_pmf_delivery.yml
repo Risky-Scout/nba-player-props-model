@@ -1,4 +1,8 @@
 name: NBA PMF Delivery
+run-name: >-
+  ${{ github.event_name == 'workflow_dispatch'
+    && format('PMF Delivery | {0} | {1}', inputs.stage, inputs.delivery_date != '' && inputs.delivery_date || 'auto-date')
+    || format('PMF Delivery | scheduled | {0}', github.event.schedule) }}
 
 # Consolidated production workflow. Replaces the inline schedule
 # routing that lived in this file's `resolve_context` job with a single
