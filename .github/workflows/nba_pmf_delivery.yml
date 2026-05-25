@@ -1,8 +1,37 @@
 name: NBA PMF Delivery
 run-name: >-
-  ${{ github.event_name == 'workflow_dispatch'
-    && format('PMF Delivery | {0} | {1}', inputs.stage, inputs.delivery_date != '' && inputs.delivery_date || 'auto-date')
-    || format('PMF Delivery | scheduled | {0}', github.event.schedule) }}
+  NBA Props Model — ${{
+    github.event_name == 'workflow_dispatch' && (
+      inputs.stage == 'full_cycle'             && 'Full Pipeline Run' ||
+      inputs.stage == 'training'               && 'Model Training' ||
+      inputs.stage == 'model_chain'            && 'Training → Calibration → Promote' ||
+      inputs.stage == 'model_chain_no_promote' && 'Training → Calibration (No Promote)' ||
+      inputs.stage == 'phase8'                 && 'Phase 8 PMF Calibration' ||
+      inputs.stage == 'phase13_context'        && 'Phase 13 Live Context' ||
+      inputs.stage == 'predict'                && 'Daily Predictions' ||
+      inputs.stage == 'delivery'               && 'Delivery Build' ||
+      inputs.stage == 'after_game'             && 'After-Game Scoring' ||
+      inputs.stage == 'verifiers'              && 'Contract Verifiers' ||
+      inputs.stage == 'auto'                   && 'Auto (Manual Trigger)' ||
+      inputs.stage
+    ) ||
+    github.event.schedule == '30 6 * * *'          && 'After-Game Scoring' ||
+    github.event.schedule == '30 9 * * *'          && 'Morning Training & Calibration' ||
+    github.event.schedule == '30 12 * * *'         && 'Midday Training Retry' ||
+    github.event.schedule == '0 14 * * *'          && 'Daily Predictions' ||
+    github.event.schedule == '0 15 * * *'          && 'WoO Morning Delivery' ||
+    github.event.schedule == '30 15 * * *'         && 'Model Refresh (No Promote)' ||
+    github.event.schedule == '0 18 * * *'          && 'WoO Afternoon Refresh' ||
+    github.event.schedule == '30 18 * * *'         && 'Evening Model Refresh' ||
+    github.event.schedule == '0 20 * * *'          && 'WoO Late Refresh' ||
+    github.event.schedule == '30 21 * * *'         && 'Night Model Refresh' ||
+    github.event.schedule == '25 22 * * *'         && 'Derek Pre-Tip Window' ||
+    github.event.schedule == '40,55 22 * * *'      && 'Derek Near-Lineup' ||
+    github.event.schedule == '10,25,40,55 23,0,1,2 * * *' && 'Derek Near-Lineup / Close-Lock' ||
+    github.event.schedule == '10 3 * * *'          && 'Derek Close-Lock' ||
+    github.event.schedule == '25 3 * * *'          && 'Derek Final Close-Lock' ||
+    'Scheduled Run'
+  }}
 
 # Consolidated production workflow. Replaces the inline schedule
 # routing that lived in this file's `resolve_context` job with a single
