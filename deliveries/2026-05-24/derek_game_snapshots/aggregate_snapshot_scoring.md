@@ -1,5 +1,6 @@
 # Aggregate snapshot scoring — 2026-05-24
 
-- status: **pending_outcomes**
-- blocker: `no rows in player_game_stats.parquet for game_date=2026-05-24`
-- generated_at_utc: 2026-05-25T01:59:20+00:00
+- status: **scored**
+- generated_at_utc: 2026-05-25T11:11:42+00:00
+- snapshots scored: 1
+- mean_nll across all scored snapshots: `2.069729708264571`
