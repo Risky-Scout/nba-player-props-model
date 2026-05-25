@@ -6,17 +6,22 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-25",
-    "now_utc": "2026-05-25T22:02:00Z",
+    "now_utc": "2026-05-25T23:20:16Z",
     "overdue_missing_snapshots": [],
     "overdue_unresolved": [],
     "per_type_lines": [
       {
-        "detail": "game=21713901 target_utc=2026-05-25T23:45:00Z now=2026-05-25T22:02:00Z",
+        "detail": "",
+        "outcome": "PASS",
+        "type": "CURRENT_LIVE"
+      },
+      {
+        "detail": "game=21713901 target_utc=2026-05-25T23:45:00Z now=2026-05-25T23:20:16Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21713901 target_utc=2026-05-26T00:05:00Z now=2026-05-25T22:02:00Z",
+        "detail": "game=21713901 target_utc=2026-05-26T00:05:00Z now=2026-05-25T23:20:16Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "CLOSE_LOCK"
       }
@@ -25,21 +30,18 @@
     "phase13x_blocker_threshold_failures": [],
     "phase13x_publish_col_failures": [],
     "phase13x_reports_missing": [],
-    "pl_fail_count": 1,
-    "pl_fails": [
+    "pl_fail_count": 0,
+    "pl_fails": [],
+    "pl_pass_count": 1,
+    "pl_passes": [
       {
         "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
         "game_id": "21713901",
-        "issues": [
-          "manifest.game_start_time is None (required non-null)",
-          "manifest.game_start_time_utc is None (required non-null)"
-        ],
+        "issues": [],
         "snapshot_mode": "production_live_current",
         "snapshot_type": "current_live"
       }
     ],
-    "pl_pass_count": 0,
-    "pl_passes": [],
     "predictions_parquet_present": true,
     "schedule_eval": [
       {
@@ -53,9 +55,6 @@
     ],
     "schedule_size": 1
   },
-  "failed_reasons": [
-    "snapshot 21713901/current_live issues=['manifest.game_start_time is None (required non-null)', 'manifest.game_start_time_utc is None (required non-null)']"
-  ],
-  "outcome": "failed",
+  "outcome": "pass",
   "schema_version": "1.0"
 }
