@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "delivery_date": "2026-05-24",
+  "game_id": "21713531",
+  "snapshot_type": "close_lock",
+  "snapshot_mode": "production_live",
+  "generated_at_utc": "2026-05-25T00:21:11Z",
+  "snapshot_time_utc": "2026-05-25T00:21:11Z",
+  "game_start_time_utc": null,
+  "source": "deliveries/2026-05-24/wizard_of_odds/full_pmfs_wide.parquet",
+  "pmf_source": "corrected_wizard_of_odds_full_pmfs_wide",
+  "lineup_confirmed": false,
+  "lineup_source": "bdl_lineup_freshness_manifest",
+  "lineup_blocker": "no confirmed lineup source in corrected delivery",
+  "injury_source": "corrected_pmf_delivery",
+  "availability_source": "corrected_pmf_delivery",
+  "stats": [
+    "ast",
+    "blk",
+    "fg3m",
+    "pa",
+    "pr",
+    "pra",
+    "pts",
+    "ra",
+    "reb",
+    "stl",
+    "stocks",
+    "tov"
+  ],
+  "rows": 168,
+  "market_rows": 1695,
+  "outputs": {
+    "prop_summary": 168,
+    "full_pmf_wide": 168,
+    "market_comparison": 1695,
+    "outcome_level_probabilities": 8308
+  },
+  "lineup_freshness_status": {
+    "confirmed": 168
+  },
+  "injury_freshness_status": {
+    "latest_valid_report_selected": 168
+  },
+  "role_bucket": {
+    "starter": 72,
+    "rotation": 60,
+    "core": 36
+  }
+}

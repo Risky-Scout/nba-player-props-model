@@ -1,21 +1,21 @@
 # Wizard of Odds — 2026-05-24
 
-## Run status — 2026-05-24 — snapshot `pre_close`
+## Run status — 2026-05-24 — snapshot `close_lock`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
-- props: **180**
+- props: **168**
 - books: **14**
 - market coverage: **full**
-- injury freshness: **fallback_used**
-- role provenance: `derived_from_projected_minutes`: 180
-- model: `a0eeb53f#phase10c`
+- injury freshness: **latest_valid_report_selected**
+- role provenance: `confirmed_lineup`: 120, `missing`: 48
+- model: `6aee383e#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
+- `role_bucket_missing` — 48 rows have missing role_bucket.
 
 ---
 
@@ -35,16 +35,16 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 ## Run summary
 
 - **finality_status**: `provisional`
-- **finality_blockers**: `['lineup_unconfirmed']`
+- **finality_blockers**: `['role_bucket_missing']`
 - **market_coverage_status**: `full`
 - **odds.fetch_status**: `consumed_from_disk`
 - **books_seen**: `14`
 - **freshness.overall_status**: `ready`
 - **availability_freshness_status**: `fresh`
-- **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 180}`
+- **role_freshness_status (rollup)**: `{'confirmed_lineup': 120, 'missing': 48}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3855, full_pmfs_wide=180, market_comparison=2584, publishable_edges=2187
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 511, 'fair_under_odds_null_count': 511, 'zero_or_one_prob_count': 300}`
+- **row counts**: fair_odds_board=3598, full_pmfs_wide=168, market_comparison=1695, publishable_edges=0
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 497, 'fair_under_odds_null_count': 497, 'zero_or_one_prob_count': 280}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

@@ -6,38 +6,29 @@
   "notes": {
     "minutes_predictions_rows": 15,
     "minutes_eligible_rows": 15,
-    "canonical_rows": 180,
-    "review_rows": 180,
-    "market_rows": 2584,
-    "derek_rows": 2552,
+    "canonical_rows": 168,
+    "review_rows": 168,
+    "market_rows": 1695,
+    "derek_rows": 1696,
     "proof_gates": {
       "minutes_universe": "schema+uniqueness+null/range checks (NO deep-bench gate)",
       "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
     }
   },
-  "checked_at_utc": "2026-05-24T20:52:19Z",
-  "selected_injury_report": "Injury-Report_2026-05-24_04_00PM",
-  "selected_injury_report_time": "2026-05-24T16:00:00-04:00",
-  "injury_report_fallback_used": true,
-  "failed_injury_report_candidates": [
-    {
-      "report": "Injury-Report_2026-05-24_07_00PM",
-      "reason": "future_report_time_or_not_yet_available"
-    },
-    {
-      "report": "Injury-Report_2026-05-24_05_00PM",
-      "reason": "future_report_time_or_not_yet_available"
-    }
-  ],
-  "injury_freshness_status": "fallback_used",
-  "fetched_at_utc": "2026-05-24T20:50:58Z",
+  "checked_at_utc": "2026-05-25T00:21:45Z",
+  "selected_injury_report": "Injury-Report_2026-05-24_08_00PM",
+  "selected_injury_report_time": "2026-05-24T20:00:00-04:00",
+  "injury_report_fallback_used": false,
+  "failed_injury_report_candidates": [],
+  "injury_freshness_status": "latest_valid_report_selected",
+  "fetched_at_utc": "2026-05-25T00:20:10Z",
   "market_eval_available": false,
   "market_rows_keyed": true,
   "market_rows_fresh": false,
   "market_superiority_claim_allowed": false,
   "market_eval_blocker": "missing_snapshot_timestamp",
   "date": "2026-05-24",
-  "run_mode": "woo_afternoon_refresh",
+  "run_mode": "close_lock",
   "canonical_model_only_path": "deliveries/2026-05-24/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
   "all_props_model_only_path": "deliveries/2026-05-24/canonical_source/all_props_model_only.parquet",
   "market_comparison_path": "deliveries/2026-05-24/wizard_of_odds/market_comparison.parquet",

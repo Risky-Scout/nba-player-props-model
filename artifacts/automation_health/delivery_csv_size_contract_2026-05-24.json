@@ -8,53 +8,94 @@
   "records": [
     {
       "path": "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv",
-      "bytes_before": 384804,
+      "bytes_before": 361830,
       "max_bytes": 524288,
       "action": "ok",
-      "columns": 38
+      "columns": 39
     },
     {
       "path": "derek_forward_feed/derek_forward_feed.csv",
-      "bytes_before": 548270,
+      "bytes_before": 990064,
       "max_bytes": 524288,
       "action": "split_and_previewed",
-      "rows_original": 998,
+      "rows_original": 1696,
       "cols_original": 55,
-      "preview_rows": 998,
-      "bytes_after": 524235,
-      "sha256_before": "456f472cb92885afd6045d98a3099b6da41cd0866e7b04d32ba630be63ec564c",
-      "sha256_after": "377e6b5df1c4f6bc33a528f71f45e4d96682dfc182d173bbdf4e94a2b95c3c7c",
+      "preview_rows": 937,
+      "bytes_after": 524271,
+      "sha256_before": "7489e0dd597eb0e72d6945dffadb6344691c2ad0439aa1c6ea67f807b16cba24",
+      "sha256_after": "9910bc23aa1e2fc65a804f6d9dd410dbc8230886af360fbb868f927cb015641c",
       "parquet": "derek_forward_feed/derek_forward_feed.parquet",
       "parts_dir": "derek_forward_feed/derek_forward_feed_csv_parts",
-      "parts_count": 2,
+      "parts_count": 3,
       "parts": [
         "derek_forward_feed/derek_forward_feed_csv_parts/derek_forward_feed_part_000.csv",
-        "derek_forward_feed/derek_forward_feed_csv_parts/derek_forward_feed_part_001.csv"
+        "derek_forward_feed/derek_forward_feed_csv_parts/derek_forward_feed_part_001.csv",
+        "derek_forward_feed/derek_forward_feed_csv_parts/derek_forward_feed_part_002.csv"
       ]
     },
     {
       "path": "derek_forward_feed/derek_unique_props_summary.csv",
-      "bytes_before": 6685,
+      "bytes_before": 5566,
       "max_bytes": 524288,
       "action": "ok",
       "columns": 6
     },
     {
       "path": "derek_forward_feed/latest_available_snapshot.csv",
-      "bytes_before": 530055,
+      "bytes_before": 5331889,
       "max_bytes": 524288,
       "action": "split_and_previewed",
-      "rows_original": 176,
-      "cols_original": 88,
-      "preview_rows": 176,
-      "bytes_after": 523150,
-      "sha256_before": "da2868e47693f4a1b13281b33841d57d223a45a636a67df0f36368c23d446777",
-      "sha256_after": "e9fa153db7b4cc2df2cb45b3a9cfba54dc1cd8b3766af8fbeb18126969b82dab",
+      "rows_original": 1696,
+      "cols_original": 89,
+      "preview_rows": 174,
+      "bytes_after": 524286,
+      "sha256_before": "6728034487fcc03df096ea164ab11c26458380fff07aa335d146ebc27a088a6f",
+      "sha256_after": "680596fedf38d199933fdd4708d3356214d459471e1b037f1c00f1fc28fa4a8d",
       "parquet": "derek_forward_feed/latest_available_snapshot.parquet",
       "parts_dir": "derek_forward_feed/latest_available_snapshot_csv_parts",
-      "parts_count": 1,
+      "parts_count": 12,
       "parts": [
-        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_000.csv"
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_000.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_001.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_002.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_003.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_004.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_005.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_006.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_007.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_008.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_009.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_010.csv",
+        "derek_forward_feed/latest_available_snapshot_csv_parts/latest_available_snapshot_part_011.csv"
+      ]
+    },
+    {
+      "path": "derek_forward_feed/lineup_snapshot.csv",
+      "bytes_before": 5331889,
+      "max_bytes": 524288,
+      "action": "split_and_previewed",
+      "rows_original": 1696,
+      "cols_original": 89,
+      "preview_rows": 174,
+      "bytes_after": 524286,
+      "sha256_before": "6728034487fcc03df096ea164ab11c26458380fff07aa335d146ebc27a088a6f",
+      "sha256_after": "680596fedf38d199933fdd4708d3356214d459471e1b037f1c00f1fc28fa4a8d",
+      "parquet": "derek_forward_feed/lineup_snapshot.parquet",
+      "parts_dir": "derek_forward_feed/lineup_snapshot_csv_parts",
+      "parts_count": 12,
+      "parts": [
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_000.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_001.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_002.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_003.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_004.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_005.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_006.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_007.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_008.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_009.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_010.csv",
+        "derek_forward_feed/lineup_snapshot_csv_parts/lineup_snapshot_part_011.csv"
       ]
     },
     {
@@ -74,6 +115,60 @@
       "parts": [
         "derek_forward_feed/morning_snapshot_csv_parts/morning_snapshot_part_000.csv"
       ]
+    },
+    {
+      "path": "derek_game_snapshots/21713531/close_lock/full_pmf_wide.csv",
+      "bytes_before": 409597,
+      "max_bytes": 524288,
+      "action": "ok",
+      "columns": 70
+    },
+    {
+      "path": "derek_game_snapshots/21713531/close_lock/market_comparison.csv",
+      "bytes_before": 1561860,
+      "max_bytes": 524288,
+      "action": "split_and_previewed",
+      "rows_original": 1695,
+      "cols_original": 68,
+      "preview_rows": 591,
+      "bytes_after": 523780,
+      "sha256_before": "4ace73a6adb2ecc56b4b4a971cb8d536fce4e55098f878d721c03f0fd43a129c",
+      "sha256_after": "049c3d8d0cefa596f7abab7f5ecf2ea80d5fec821718e607f4115c4f5a185bf1",
+      "parquet": "derek_game_snapshots/21713531/close_lock/market_comparison.parquet",
+      "parts_dir": "derek_game_snapshots/21713531/close_lock/market_comparison_csv_parts",
+      "parts_count": 4,
+      "parts": [
+        "derek_game_snapshots/21713531/close_lock/market_comparison_csv_parts/market_comparison_part_000.csv",
+        "derek_game_snapshots/21713531/close_lock/market_comparison_csv_parts/market_comparison_part_001.csv",
+        "derek_game_snapshots/21713531/close_lock/market_comparison_csv_parts/market_comparison_part_002.csv",
+        "derek_game_snapshots/21713531/close_lock/market_comparison_csv_parts/market_comparison_part_003.csv"
+      ]
+    },
+    {
+      "path": "derek_game_snapshots/21713531/close_lock/outcome_level_probabilities.csv",
+      "bytes_before": 836154,
+      "max_bytes": 524288,
+      "action": "split_and_previewed",
+      "rows_original": 8308,
+      "cols_original": 11,
+      "preview_rows": 5344,
+      "bytes_after": 524275,
+      "sha256_before": "d65fb5955f64e8f72055b6747da2c9073e2d619a493811610f6c3379b393a65f",
+      "sha256_after": "190235fdf83fc4242c4e613d799deaf253a990667807a3b8ddd32c72e79d2856",
+      "parquet": "derek_game_snapshots/21713531/close_lock/outcome_level_probabilities.parquet",
+      "parts_dir": "derek_game_snapshots/21713531/close_lock/outcome_level_probabilities_csv_parts",
+      "parts_count": 2,
+      "parts": [
+        "derek_game_snapshots/21713531/close_lock/outcome_level_probabilities_csv_parts/outcome_level_probabilities_part_000.csv",
+        "derek_game_snapshots/21713531/close_lock/outcome_level_probabilities_csv_parts/outcome_level_probabilities_part_001.csv"
+      ]
+    },
+    {
+      "path": "derek_game_snapshots/21713531/close_lock/prop_summary.csv",
+      "bytes_before": 26856,
+      "max_bytes": 524288,
+      "action": "ok",
+      "columns": 19
     },
     {
       "path": "derek_game_snapshots/21713531/morning/full_pmf_wide.csv",
@@ -129,32 +224,32 @@
     },
     {
       "path": "pmf_model_review_package/04_PROP_SUMMARY.csv",
-      "bytes_before": 125438,
+      "bytes_before": 117614,
       "max_bytes": 524288,
       "action": "ok",
-      "columns": 37
+      "columns": 38
     },
     {
       "path": "pmf_model_review_package/05_FULL_PMF_WIDE.csv",
-      "bytes_before": 438961,
+      "bytes_before": 409597,
       "max_bytes": 524288,
       "action": "ok",
-      "columns": 69
+      "columns": 70
     },
     {
       "path": "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv",
-      "bytes_before": 5561921,
+      "bytes_before": 5191845,
       "max_bytes": 524288,
       "action": "split_and_previewed",
-      "rows_original": 9759,
+      "rows_original": 9110,
       "cols_original": 24,
-      "preview_rows": 989,
-      "bytes_after": 523695,
-      "sha256_before": "5a7ae606bc039327a391ea86e12bc279e33823bbbc76a87edf7942d61584c8c0",
-      "sha256_after": "ea153bd39ca07cc6a7eb2dc81e56abeb36b15bba385393bf7dfa0f0ad6a896a2",
+      "preview_rows": 996,
+      "bytes_after": 524286,
+      "sha256_before": "1c05aff0b061e4786b77833158514e1daf340b361edc13f6dadde759027a3a51",
+      "sha256_after": "650aa27a71c9f974b76da29bbf93fee0771d0a91e0222849cc7cb1c9984eed8b",
       "parquet": "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.parquet",
       "parts_dir": "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts",
-      "parts_count": 17,
+      "parts_count": 15,
       "parts": [
         "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_000.csv",
         "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_001.csv",
@@ -170,29 +265,27 @@
         "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_011.csv",
         "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_012.csv",
         "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_013.csv",
-        "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_014.csv",
-        "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_015.csv",
-        "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_016.csv"
+        "pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES_csv_parts/06_OUTCOME_LEVEL_PROBABILITIES_part_014.csv"
       ]
     },
     {
       "path": "pmf_model_review_package/machine_readable/model_only.csv",
-      "bytes_before": 438961,
+      "bytes_before": 409597,
       "max_bytes": 524288,
       "action": "ok",
-      "columns": 69
+      "columns": 70
     },
     {
       "path": "wizard_of_odds/fair_odds_board.csv",
-      "bytes_before": 3337342,
+      "bytes_before": 3124644,
       "max_bytes": 524288,
       "action": "split_and_previewed",
-      "rows_original": 3855,
-      "cols_original": 62,
-      "preview_rows": 649,
-      "bytes_after": 524105,
-      "sha256_before": "38fe2e2090ad3310981ea8f9f600ec2432ed8e736e50121c3d35c05cb6591535",
-      "sha256_after": "ae64bf1686e4e21c41c4376863fdfdcfd902a259b7d757a4d46d826e2aa41bd0",
+      "rows_original": 3598,
+      "cols_original": 63,
+      "preview_rows": 647,
+      "bytes_after": 524092,
+      "sha256_before": "697ecbc81d502732adb7572fc4d6b17d420baf4e56e6cb45446f3f90e622fb96",
+      "sha256_after": "5078ba896f3a3d167ba4c66e73b779a5eb4f099f32447c743f7d5dc5d74854ee",
       "parquet": "wizard_of_odds/fair_odds_board.parquet",
       "parts_dir": "wizard_of_odds/fair_odds_board_csv_parts",
       "parts_count": 7,
@@ -208,18 +301,18 @@
     },
     {
       "path": "wizard_of_odds/full_pmfs_outcome_level.csv",
-      "bytes_before": 5561921,
+      "bytes_before": 5191845,
       "max_bytes": 524288,
       "action": "split_and_previewed",
-      "rows_original": 9759,
+      "rows_original": 9110,
       "cols_original": 24,
-      "preview_rows": 989,
-      "bytes_after": 523695,
-      "sha256_before": "5a7ae606bc039327a391ea86e12bc279e33823bbbc76a87edf7942d61584c8c0",
-      "sha256_after": "ea153bd39ca07cc6a7eb2dc81e56abeb36b15bba385393bf7dfa0f0ad6a896a2",
+      "preview_rows": 996,
+      "bytes_after": 524286,
+      "sha256_before": "1c05aff0b061e4786b77833158514e1daf340b361edc13f6dadde759027a3a51",
+      "sha256_after": "650aa27a71c9f974b76da29bbf93fee0771d0a91e0222849cc7cb1c9984eed8b",
       "parquet": "wizard_of_odds/full_pmfs_outcome_level.parquet",
       "parts_dir": "wizard_of_odds/full_pmfs_outcome_level_csv_parts",
-      "parts_count": 17,
+      "parts_count": 15,
       "parts": [
         "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_000.csv",
         "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_001.csv",
@@ -235,61 +328,43 @@
         "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_011.csv",
         "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_012.csv",
         "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_013.csv",
-        "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_014.csv",
-        "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_015.csv",
-        "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_016.csv"
+        "wizard_of_odds/full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_014.csv"
       ]
     },
     {
       "path": "wizard_of_odds/full_pmfs_wide.csv",
-      "bytes_before": 438961,
+      "bytes_before": 409597,
       "max_bytes": 524288,
       "action": "ok",
-      "columns": 69
+      "columns": 70
     },
     {
       "path": "wizard_of_odds/market_comparison.csv",
-      "bytes_before": 2357026,
+      "bytes_before": 1561860,
       "max_bytes": 524288,
       "action": "split_and_previewed",
-      "rows_original": 2584,
-      "cols_original": 67,
-      "preview_rows": 599,
-      "bytes_after": 524154,
-      "sha256_before": "30eb1148ebfa301e58ee94f78cb2c5d32b1e45bf37f86a51cd1f81be2abfe744",
-      "sha256_after": "c1b5692e7f85fbdde3fb8651dbe29496321b2a295dd2816b3bb52d0f5bd796f3",
+      "rows_original": 1695,
+      "cols_original": 68,
+      "preview_rows": 591,
+      "bytes_after": 523780,
+      "sha256_before": "898cde330d57556cc034c23322b5b9d34c54dc4ad5137c71ad552c2465f3db78",
+      "sha256_after": "b43b50a844144ccb4e50469d37100eff945b34fa368a8fbcfe40359012ca0f9d",
       "parquet": "wizard_of_odds/market_comparison.parquet",
       "parts_dir": "wizard_of_odds/market_comparison_csv_parts",
-      "parts_count": 5,
+      "parts_count": 4,
       "parts": [
         "wizard_of_odds/market_comparison_csv_parts/market_comparison_part_000.csv",
         "wizard_of_odds/market_comparison_csv_parts/market_comparison_part_001.csv",
         "wizard_of_odds/market_comparison_csv_parts/market_comparison_part_002.csv",
-        "wizard_of_odds/market_comparison_csv_parts/market_comparison_part_003.csv",
-        "wizard_of_odds/market_comparison_csv_parts/market_comparison_part_004.csv"
+        "wizard_of_odds/market_comparison_csv_parts/market_comparison_part_003.csv"
       ]
     },
     {
       "path": "wizard_of_odds/publishable_edges.csv",
-      "bytes_before": 2010706,
+      "bytes_before": 849,
       "max_bytes": 524288,
-      "action": "split_and_previewed",
-      "rows_original": 2187,
-      "cols_original": 67,
-      "preview_rows": 602,
-      "bytes_after": 523873,
-      "sha256_before": "a3e9b8edc5a87de18d864aa03d373ccdbb946008d63e256f392febe79cb1d9f6",
-      "sha256_after": "00fbbb33e8402a42b3f2b2f68260285ef6d8802f45f1792f1de4811966dc50dc",
-      "parquet": "wizard_of_odds/publishable_edges.parquet",
-      "parts_dir": "wizard_of_odds/publishable_edges_csv_parts",
-      "parts_count": 5,
-      "parts": [
-        "wizard_of_odds/publishable_edges_csv_parts/publishable_edges_part_000.csv",
-        "wizard_of_odds/publishable_edges_csv_parts/publishable_edges_part_001.csv",
-        "wizard_of_odds/publishable_edges_csv_parts/publishable_edges_part_002.csv",
-        "wizard_of_odds/publishable_edges_csv_parts/publishable_edges_part_003.csv",
-        "wizard_of_odds/publishable_edges_csv_parts/publishable_edges_part_004.csv"
-      ]
+      "action": "ok",
+      "columns": 69
     }
   ],
   "oversized_after": [],

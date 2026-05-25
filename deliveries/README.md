@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-24T20:52:19Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-25T00:21:45Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -33,7 +33,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-21** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 1251 | 973 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 1325 | `n/a` | `ca3b8e02#phase10c` |
 | **2026-05-22** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 156 | 3341 | 2197 | 1726 | `full` | `fresh` | `present` | `morning_present` | 2204 | `pending_pre_tipoff_run` | 2204 | `n/a` | `b28310a0#phase10c` |
 | **2026-05-23** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2474 | 1666 | `full` | `fresh` | `present` | `morning_present` | 2425 | `pending_pre_tipoff_run` | 2425 | `scored` | `d1ddc807#phase10c` |
-| **2026-05-24** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2584 | 2187 | `full` | `fresh` | `present` | `morning_present` | 2552 | `pending_pre_tipoff_run` | 2552 | `n/a` | `a0eeb53f#phase10c` |
+| **2026-05-24** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 1695 | 0 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 1696 | `n/a` | `6aee383e#phase10c` |
 
 ## Per-date links
 
@@ -1118,7 +1118,7 @@ _injury_very_stale, lineup_unconfirmed_
 
 ### 2026-05-24 — `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS`
 
-_lineup_unconfirmed_
+_role_bucket_missing_
 
 **Derek (PMF model review)**
 
@@ -1130,7 +1130,7 @@ _lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-24/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-24/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — morning rows=2552 · lineup=pending_pre_tipoff_run · latest→morning
+**Derek forward feed (PMF snapshots)** — lineup=present · latest→lineup
 
 - [FEED_README.md](2026-05-24/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-24/derek_forward_feed/feed_manifest.json)
@@ -1139,6 +1139,9 @@ _lineup_unconfirmed_
 - [morning_snapshot.jsonl](2026-05-24/derek_forward_feed/morning_snapshot.jsonl)
 - [latest_available_snapshot.csv](2026-05-24/derek_forward_feed/latest_available_snapshot.csv)
 - [latest_available_snapshot.parquet](2026-05-24/derek_forward_feed/latest_available_snapshot.parquet)
+- [lineup_snapshot.csv](2026-05-24/derek_forward_feed/lineup_snapshot.csv)
+- [lineup_snapshot.parquet](2026-05-24/derek_forward_feed/lineup_snapshot.parquet)
+- [lineup_snapshot.jsonl](2026-05-24/derek_forward_feed/lineup_snapshot.jsonl)
 - [lineup_snapshot_status.json](2026-05-24/derek_forward_feed/lineup_snapshot_status.json)
 
 **Wizard of Odds**
