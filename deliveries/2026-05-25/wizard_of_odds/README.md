@@ -1,6 +1,6 @@
 # Wizard of Odds — 2026-05-25
 
-## Run status — 2026-05-25 — snapshot `morning`
+## Run status — 2026-05-25 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
@@ -9,13 +9,13 @@
 - market coverage: **full**
 - injury freshness: **unknown**
 - role provenance: `derived_from_projected_minutes`: 144
-- model: `a9062c09#phase10c`
+- model: `951aa863#phase10c`
 
 ### Caveats
 
 Full detail (including the `required_to_resolve` field for each blocker) is in `wizard_of_odds/run_manifest.json`.
 
-- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/144; dominant_status='unknown' (count=144); sample_injury_report_fetched_at_utc='2026-05-25T17:15:55Z'; reason=injury_report_not_yet_published_or_unavailable
+- `injury_very_stale` — No canonical delivery row had a row-level injury freshness verdict of fresh. row_level_injury_fresh_rows=0/144; dominant_status='unknown' (count=144); sample_injury_report_fetched_at_utc='2026-05-25T19:23:55Z'; reason=injury_report_not_yet_published_or_unavailable
 - `lineup_unconfirmed` — No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.
 
 ---
@@ -44,8 +44,8 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 144}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=3084, full_pmfs_wide=144, market_comparison=2254, publishable_edges=1743
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 411, 'fair_under_odds_null_count': 411, 'zero_or_one_prob_count': 240}`
+- **row counts**: fair_odds_board=3084, full_pmfs_wide=144, market_comparison=2285, publishable_edges=1779
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 401, 'fair_under_odds_null_count': 401, 'zero_or_one_prob_count': 240}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
