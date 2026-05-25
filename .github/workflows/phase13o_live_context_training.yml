@@ -1,4 +1,4 @@
-name: Phase 13O — Live-Context Training Dataset (build + verify)
+name: NBA Player Props — Manual Contextual Training Step 1 (Live Context Dataset)
 
 # Builds the Phase 13O live-context training dataset and runs the
 # verifiers. This workflow does NOT call the existing nightly trainer

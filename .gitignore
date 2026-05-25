@@ -71,3 +71,6 @@ artifacts/nightly_training/**/logs/
 CLAUDE.md
 .run_with_env.py
 .run_with_env.py
+
+# Internal Cursor IDE config (not part of the project)
+.cursor/

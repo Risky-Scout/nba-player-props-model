@@ -1,4 +1,4 @@
-name: Phase 13P — Live-Context Challenger (train + validate, no-promote)
+name: NBA Player Props — Manual Contextual Training Step 2 (Live Context Challenger)
 
 # Trains the Phase 13P additive live-context challenger and runs the
 # verifiers. Does NOT auto-promote. Champion promotion remains owned by

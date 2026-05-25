@@ -1,4 +1,4 @@
-name: Phase 13R — Contextual PMF Engine Deployment Verification
+name: NBA Player Props — Manual Contextual Training Step 4 (Deployment Verification)
 
 # Hardens and proves the Phase 13Q contextual PMF engine is real,
 # wired, and safe to deploy. Each verifier step is hard-gated: a

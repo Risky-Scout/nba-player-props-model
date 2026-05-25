@@ -1,4 +1,4 @@
-name: Derek — Per-Game Live PMF Snapshots (T-25 / Close-Lock)
+name: NBA Player Props — Live Game Snapshots (T-25 / T-10)
 run-name: "Derek — Live Game Snapshot${{ github.event_name == 'workflow_dispatch' && ' (Manual)' || '' }}"
 # Schedule refresh marker: restored schedule-proven Derek workflow path.
 

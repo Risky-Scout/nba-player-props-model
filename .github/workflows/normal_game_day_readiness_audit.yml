@@ -1,4 +1,4 @@
-name: Normal Game-Day Pipeline Readiness Audit
+name: NBA Player Props — Manual Game-Day Readiness Audit
 
 # A pre-flight audit that proves every condition required for the
 # games-exist delivery path to run end-to-end and produce Derek's

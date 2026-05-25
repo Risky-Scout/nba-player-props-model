@@ -1,7 +1,7 @@
 # M8.6 — static contract checks (no API keys, no dated delivery artifacts).
 # Date-scoped verifiers run in daily_pmf_delivery.yml after a successful pipeline.
 
-name: M8.6 delivery contract verifiers
+name: NBA Player Props — Code & Delivery Verification (CI)
 
 on:
   pull_request:

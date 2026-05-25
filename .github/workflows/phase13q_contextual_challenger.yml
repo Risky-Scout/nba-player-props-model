@@ -1,4 +1,4 @@
-name: Phase 13Q — Contextual PMF Engine (train + validate, no-promote)
+name: NBA Player Props — Manual Contextual Training Step 3 (Contextual PMF Engine)
 
 # Trains the Phase 13Q additive contextual challenger (Phase 13P live-
 # context features + game-context features: rest, b2b, three-in-four,

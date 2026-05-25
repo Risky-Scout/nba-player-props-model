@@ -1,4 +1,4 @@
-name: NBA PMF Model — Nightly Training & Calibration
+name: NBA Player Props — Manual Training & Calibration
 run-name: "NBA Props Model — Training & Calibration${{ github.event_name == 'workflow_dispatch' && ' (Manual)' || '' }}"
 
 # Phase 13A — daily champion/challenger training, calibration, validation,

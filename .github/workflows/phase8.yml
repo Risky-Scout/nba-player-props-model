@@ -1,4 +1,4 @@
-name: NBA Props Model — Phase 8 (PMF calibration + diagnostics + event-market validation)
+name: NBA Player Props — Manual PMF Calibration
 
 # Split into three dependent jobs to stay inside GitHub Actions timeouts and
 # let any single stage be rerun without paying the cost of the others:

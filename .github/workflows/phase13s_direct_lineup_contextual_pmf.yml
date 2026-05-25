@@ -1,4 +1,4 @@
-name: Phase 13S — Direct Lineup Contextual PMF Driver
+name: NBA Player Props — Manual Contextual Training Step 5 (Direct Lineup Model)
 
 # Builds the no-leakage direct-lineup training dataset, trains the
 # Phase 13S Ridge minutes / per-stat rate adjustment models that

@@ -1,4 +1,4 @@
-name: NBA PMF Delivery — Daily Pipeline
+name: NBA Player Props — Manual Full Pipeline (Legacy Helper)
 
 # Phase 12D-amend — Derek's evaluation feed and WoO's monetization feed
 # now have separate scheduled lifecycles:

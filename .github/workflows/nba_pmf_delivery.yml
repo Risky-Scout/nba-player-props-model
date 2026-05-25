@@ -1,49 +1,41 @@
-name: NBA PMF Delivery
+name: NBA Player Props — Production Pipeline
 run-name: >-
-  NBA Props Model — ${{
+  NBA Player Props — ${{
     github.event_name == 'workflow_dispatch' && (
-      inputs.stage == 'full_cycle'             && 'Full Pipeline Run' ||
-      inputs.stage == 'training'               && 'Model Training' ||
-      inputs.stage == 'model_chain'            && 'Training → Calibration → Promote' ||
-      inputs.stage == 'model_chain_no_promote' && 'Training → Calibration (No Promote)' ||
-      inputs.stage == 'phase8'                 && 'Phase 8 PMF Calibration' ||
-      inputs.stage == 'phase13_context'        && 'Phase 13 Live Context' ||
-      inputs.stage == 'predict'                && 'Daily Predictions' ||
-      inputs.stage == 'delivery'               && 'Delivery Build' ||
-      inputs.stage == 'after_game'             && 'After-Game Scoring' ||
-      inputs.stage == 'verifiers'              && 'Contract Verifiers' ||
+      inputs.stage == 'full_cycle'             && 'Full Pipeline (Manual)' ||
+      inputs.stage == 'training'               && 'Model Training (Manual)' ||
+      inputs.stage == 'model_chain'            && 'Train → Calibrate → Promote (Manual)' ||
+      inputs.stage == 'model_chain_no_promote' && 'Train → Calibrate, No Promote (Manual)' ||
+      inputs.stage == 'phase8'                 && 'PMF Calibration (Manual)' ||
+      inputs.stage == 'phase13_context'        && 'Contextual Model Update (Manual)' ||
+      inputs.stage == 'predict'                && 'Daily Predictions (Manual)' ||
+      inputs.stage == 'delivery'               && 'Delivery Build (Manual)' ||
+      inputs.stage == 'after_game'             && 'After-Game Scoring (Manual)' ||
+      inputs.stage == 'verifiers'              && 'Delivery Verification (Manual)' ||
       inputs.stage == 'auto'                   && 'Auto (Manual Trigger)' ||
       inputs.stage
     ) ||
-    github.event.schedule == '30 6 * * *'          && 'After-Game Scoring' ||
-    github.event.schedule == '30 9 * * *'          && 'Morning Training & Calibration' ||
-    github.event.schedule == '30 12 * * *'         && 'Midday Training Retry' ||
-    github.event.schedule == '0 14 * * *'          && 'Daily Predictions' ||
-    github.event.schedule == '0 15 * * *'          && 'WoO Morning Delivery' ||
-    github.event.schedule == '30 15 * * *'         && 'Model Refresh (No Promote)' ||
-    github.event.schedule == '0 18 * * *'          && 'WoO Afternoon Refresh' ||
-    github.event.schedule == '30 18 * * *'         && 'Evening Model Refresh' ||
-    github.event.schedule == '0 20 * * *'          && 'WoO Late Refresh' ||
-    github.event.schedule == '30 21 * * *'         && 'Night Model Refresh' ||
-    github.event.schedule == '25 22 * * *'         && 'Derek Pre-Tip Window' ||
-    github.event.schedule == '40,55 22 * * *'      && 'Derek Near-Lineup' ||
-    github.event.schedule == '10,25,40,55 23,0,1,2 * * *' && 'Derek Near-Lineup / Close-Lock' ||
-    github.event.schedule == '10 3 * * *'          && 'Derek Close-Lock' ||
-    github.event.schedule == '25 3 * * *'          && 'Derek Final Close-Lock' ||
+    github.event.schedule == '30 6 * * *'          && 'Score Previous Games (2:30 AM ET)' ||
+    github.event.schedule == '30 7 * * *'          && 'Train & Calibrate Model (3:30 AM ET)' ||
+    github.event.schedule == '30 12 * * *'         && 'Training Retry (8:30 AM ET)' ||
+    github.event.schedule == '0 14 * * *'          && 'Generate Daily Predictions (10:00 AM ET)' ||
+    github.event.schedule == '0 15 * * *'          && 'Publish Morning Odds (11:00 AM ET)' ||
+    github.event.schedule == '30 15 * * *'         && 'Refresh Model — No Promote (11:30 AM ET)' ||
+    github.event.schedule == '0 18 * * *'          && 'Refresh Odds — Afternoon (2:00 PM ET)' ||
+    github.event.schedule == '30 18 * * *'         && 'Refresh Model — No Promote (2:30 PM ET)' ||
+    github.event.schedule == '0 20 * * *'          && 'Refresh Odds — Late Afternoon (4:00 PM ET)' ||
+    github.event.schedule == '30 21 * * *'         && 'Refresh Model — No Promote (5:30 PM ET)' ||
+    github.event.schedule == '25 22 * * *'         && 'Pre-Game Lineup Check (6:25 PM ET)' ||
+    github.event.schedule == '40,55 22 * * *'      && 'Near-Tip Lineup Update (6:40–6:55 PM ET)' ||
+    github.event.schedule == '10,25,40,55 23,0,1,2 * * *' && 'Near-Tip / Close-Lock Update' ||
+    github.event.schedule == '10 3 * * *'          && 'Close-Lock Snapshot (11:10 PM ET)' ||
+    github.event.schedule == '25 3 * * *'          && 'Final Close-Lock Snapshot (11:25 PM ET)' ||
     'Scheduled Run'
   }}
 
-# Consolidated production workflow. Replaces the inline schedule
-# routing that lived in this file's `resolve_context` job with a single
-# Python source of truth: `scripts/resolve_nba_pmf_schedule.py`. That
-# script owns every (delivery_date, as_of_date, stage, mode,
-# allow_promote, force_run, valid_skip_reason) decision the workflow
-# needs, including the Derek tipoff-window gate.
-#
-# Brief contract: CURSOR_TASK_NBA_PMF_PRODUCTION_PIPELINE.md
-# Rules:         .cursor/rules/01_production_schedule.mdc,
-#                .cursor/rules/02_calibration_market_superiority.mdc,
-#                .cursor/rules/04_delivery_contracts.mdc
+# Production pipeline for NBA player prop predictions.
+# All scheduling decisions are owned by scripts/resolve_nba_pmf_schedule.py
+# which determines: delivery_date, as_of_date, stage, mode, allow_promote.
 #
 # Hard rules:
 # - No top-level workflow concurrency. Long training/Phase 13 runs
@@ -178,6 +170,7 @@ jobs:
   # resolve_context — single source of truth for every gate flag.
   # ────────────────────────────────────────────────────────────────
   resolve_context:
+    name: Resolve Schedule & Date Context
     runs-on: ubuntu-latest
     outputs:
       delivery_date: ${{ steps.resolve.outputs.delivery_date }}
@@ -239,6 +232,7 @@ jobs:
   # readiness — secrets preflight + champion-pointer verification.
   # ────────────────────────────────────────────────────────────────
   readiness:
+    name: Preflight Checks
     runs-on: ubuntu-latest
     needs: resolve_context
     steps:
@@ -309,6 +303,7 @@ jobs:
   # Model chain: training + role/stat calibration.
   # ────────────────────────────────────────────────────────────────
   model_chain_training_calibration:
+    name: Train & Calibrate Model
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
     if: needs.resolve_context.outputs.run_training == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
@@ -539,6 +534,7 @@ jobs:
   # Strict prerequisite: model chain must have SUCCEEDED.
   # ────────────────────────────────────────────────────────────────
   phase8_pmf_calibration_diagnostics_market_eval:
+    name: PMF Calibration & Market Evaluation
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness, model_chain_training_calibration]
     if: needs.resolve_context.outputs.run_phase8 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && needs.model_chain_training_calibration.result == 'success'
@@ -835,6 +831,7 @@ jobs:
   # Order is locked: 13O → 13P → 13Q → 13R → 13S.
   # ────────────────────────────────────────────────────────────────
   phase13_live_context_contextual_lineup:
+    name: Train Contextual Model & Promote
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness, phase8_pmf_calibration_diagnostics_market_eval]
     if: needs.resolve_context.outputs.run_phase13 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && (needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'success' || needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'skipped')
@@ -1174,6 +1171,7 @@ jobs:
   # Predict daily — 14:00 UTC cron + manual stage=predict.
   # ────────────────────────────────────────────────────────────────
   predict_daily:
+    name: Generate Daily Predictions
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
     if: needs.resolve_context.outputs.run_predict == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
@@ -1317,6 +1315,7 @@ jobs:
   # so long training runs never block delivery refresh.
   # ────────────────────────────────────────────────────────────────
   delivery_build:
+    name: Build & Publish Deliveries
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
     if: needs.resolve_context.outputs.run_delivery == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
@@ -1654,6 +1653,7 @@ jobs:
   # the calibration/market-superiority chain has fresh evidence.
   # ────────────────────────────────────────────────────────────────
   after_game_scoring:
+    name: Score Previous Games
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
     if: needs.resolve_context.outputs.run_after_game == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
@@ -1794,6 +1794,7 @@ jobs:
   # the resolver enabled).
   # ────────────────────────────────────────────────────────────────
   final_contract_verifiers:
+    name: Verify Delivery Contracts
     runs-on: ubuntu-latest
     needs:
       - resolve_context
@@ -1871,6 +1872,7 @@ jobs:
   # Pipeline summary — always runs, reports final verdict.
   # ────────────────────────────────────────────────────────────────
   pipeline_summary:
+    name: Pipeline Run Summary
     runs-on: ubuntu-latest
     if: always()
     needs:
