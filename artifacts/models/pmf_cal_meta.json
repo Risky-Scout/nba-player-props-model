@@ -4,7 +4,7 @@
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -12,16 +12,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -31,16 +31,16 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.5485749002722604,
-      "pit_std_raw": 0.2568854405187667,
-      "pit_mean_cal": 0.5107387139012135,
-      "pit_std_cal": 0.27180449958256975
+      "pit_mean_raw": 0.5480639696886994,
+      "pit_std_raw": 0.2571115473050972,
+      "pit_mean_cal": 0.5103288662019904,
+      "pit_std_cal": 0.27277033343516427
     },
     "blk": {
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -48,16 +48,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -67,16 +67,16 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.503409282200072,
-      "pit_std_raw": 0.2895941977030718,
-      "pit_mean_cal": 0.4964059918806424,
-      "pit_std_cal": 0.28742404780503866
+      "pit_mean_raw": 0.5012584642711851,
+      "pit_std_raw": 0.29047891808396625,
+      "pit_mean_cal": 0.5019848845256842,
+      "pit_std_cal": 0.2879858100299993
     },
     "fg3m": {
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -84,16 +84,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -103,16 +103,16 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.4702234445811333,
-      "pit_std_raw": 0.32880962235745076,
-      "pit_mean_cal": 0.48606095967259894,
-      "pit_std_cal": 0.31254683692188734
+      "pit_mean_raw": 0.47146938173240416,
+      "pit_std_raw": 0.3290132830528208,
+      "pit_mean_cal": 0.48978781182805875,
+      "pit_std_cal": 0.311971126553124
     },
     "pts": {
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -120,16 +120,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -139,16 +139,16 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.5396779481314476,
-      "pit_std_raw": 0.28303782522618043,
-      "pit_mean_cal": 0.5049578839133366,
-      "pit_std_cal": 0.2843156927734063
+      "pit_mean_raw": 0.5399432481167035,
+      "pit_std_raw": 0.28280506188842863,
+      "pit_mean_cal": 0.5060765185569163,
+      "pit_std_cal": 0.2847242651314534
     },
     "reb": {
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -156,16 +156,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -175,16 +175,16 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.549042837903579,
-      "pit_std_raw": 0.25487155330585987,
-      "pit_mean_cal": 0.507555522256157,
-      "pit_std_cal": 0.27341202063701475
+      "pit_mean_raw": 0.5496654092738535,
+      "pit_std_raw": 0.25425808667621924,
+      "pit_mean_cal": 0.508120897813919,
+      "pit_std_cal": 0.27344950332847834
     },
     "stl": {
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -192,16 +192,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -211,16 +211,16 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.4883476845805745,
-      "pit_std_raw": 0.28656561205235737,
-      "pit_mean_cal": 0.4919452900466212,
-      "pit_std_cal": 0.28654667547557033
+      "pit_mean_raw": 0.4867247258168134,
+      "pit_std_raw": 0.2868183717712127,
+      "pit_mean_cal": 0.49153294555736976,
+      "pit_std_cal": 0.28893543324228643
     },
     "tov": {
       "fitted": true,
       "role_aware": true,
       "calibration_version": "role_aware_pmf_cal_v1",
-      "n_train": 3510,
+      "n_train": 3535,
       "fold_spans": [
         [
           "2026-04-01",
@@ -228,16 +228,16 @@
         ],
         [
           "2026-04-29",
-          "2026-05-23"
+          "2026-05-24"
         ]
       ],
       "bucket_counts": {
-        "bench": 1929,
-        "core": 3125,
-        "fringe": 783,
-        "inactive_risk": 813,
-        "rotation": 2794,
-        "starter": 1878
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
       },
       "fitted_buckets": [
         "bench",
@@ -247,15 +247,239 @@
         "rotation",
         "starter"
       ],
-      "pit_mean_raw": 0.54029447894327,
-      "pit_std_raw": 0.26366294648183203,
-      "pit_mean_cal": 0.5223472427422583,
-      "pit_std_cal": 0.27483613927277145
+      "pit_mean_raw": 0.5420782446752705,
+      "pit_std_raw": 0.2622835476302594,
+      "pit_mean_cal": 0.5215714841924042,
+      "pit_std_cal": 0.27475732936952035
+    },
+    "stocks": {
+      "fitted": true,
+      "role_aware": true,
+      "calibration_version": "role_aware_pmf_cal_v1",
+      "n_train": 7900,
+      "fold_spans": [
+        [
+          "2026-03-04",
+          "2026-03-31"
+        ],
+        [
+          "2026-04-01",
+          "2026-04-28"
+        ],
+        [
+          "2026-04-29",
+          "2026-05-24"
+        ]
+      ],
+      "bucket_counts": {
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
+      },
+      "fitted_buckets": [
+        "bench",
+        "core",
+        "fringe",
+        "inactive_risk",
+        "rotation",
+        "starter"
+      ],
+      "pit_mean_raw": 0.48846751966129676,
+      "pit_std_raw": 0.2828539858857341,
+      "pit_mean_cal": 0.49517113316622385,
+      "pit_std_cal": 0.2860539859822301
+    },
+    "pa": {
+      "fitted": true,
+      "role_aware": true,
+      "calibration_version": "role_aware_pmf_cal_v1",
+      "n_train": 7900,
+      "fold_spans": [
+        [
+          "2026-03-04",
+          "2026-03-31"
+        ],
+        [
+          "2026-04-01",
+          "2026-04-28"
+        ],
+        [
+          "2026-04-29",
+          "2026-05-24"
+        ]
+      ],
+      "bucket_counts": {
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
+      },
+      "fitted_buckets": [
+        "bench",
+        "core",
+        "fringe",
+        "inactive_risk",
+        "rotation",
+        "starter"
+      ],
+      "pit_mean_raw": 0.5530673228799273,
+      "pit_std_raw": 0.2712443420531306,
+      "pit_mean_cal": 0.5154550792390321,
+      "pit_std_cal": 0.28406858053923384
+    },
+    "pr": {
+      "fitted": true,
+      "role_aware": true,
+      "calibration_version": "role_aware_pmf_cal_v1",
+      "n_train": 7900,
+      "fold_spans": [
+        [
+          "2026-03-04",
+          "2026-03-31"
+        ],
+        [
+          "2026-04-01",
+          "2026-04-28"
+        ],
+        [
+          "2026-04-29",
+          "2026-05-24"
+        ]
+      ],
+      "bucket_counts": {
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
+      },
+      "fitted_buckets": [
+        "bench",
+        "core",
+        "fringe",
+        "inactive_risk",
+        "rotation",
+        "starter"
+      ],
+      "pit_mean_raw": 0.5526462835906097,
+      "pit_std_raw": 0.2745667159499166,
+      "pit_mean_cal": 0.5145164412926786,
+      "pit_std_cal": 0.2855163017881353
+    },
+    "ra": {
+      "fitted": true,
+      "role_aware": true,
+      "calibration_version": "role_aware_pmf_cal_v1",
+      "n_train": 7900,
+      "fold_spans": [
+        [
+          "2026-03-04",
+          "2026-03-31"
+        ],
+        [
+          "2026-04-01",
+          "2026-04-28"
+        ],
+        [
+          "2026-04-29",
+          "2026-05-24"
+        ]
+      ],
+      "bucket_counts": {
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
+      },
+      "fitted_buckets": [
+        "bench",
+        "core",
+        "fringe",
+        "inactive_risk",
+        "rotation",
+        "starter"
+      ],
+      "pit_mean_raw": 0.5567089142837711,
+      "pit_std_raw": 0.25556917334740153,
+      "pit_mean_cal": 0.5168884421456436,
+      "pit_std_cal": 0.28000617630112
+    },
+    "pra": {
+      "fitted": true,
+      "role_aware": true,
+      "calibration_version": "role_aware_pmf_cal_v1",
+      "n_train": 7900,
+      "fold_spans": [
+        [
+          "2026-03-04",
+          "2026-03-31"
+        ],
+        [
+          "2026-04-01",
+          "2026-04-28"
+        ],
+        [
+          "2026-04-29",
+          "2026-05-24"
+        ]
+      ],
+      "bucket_counts": {
+        "bench": 1932,
+        "core": 3129,
+        "fringe": 786,
+        "inactive_risk": 818,
+        "rotation": 2799,
+        "starter": 1883
+      },
+      "fitted_buckets": [
+        "bench",
+        "core",
+        "fringe",
+        "inactive_risk",
+        "rotation",
+        "starter"
+      ],
+      "pit_mean_raw": 0.5569707674230623,
+      "pit_std_raw": 0.26848638398403224,
+      "pit_mean_cal": 0.5161058595778537,
+      "pit_std_cal": 0.28408409451393996
     }
   },
   "fold_days": 28,
   "min_train_days": 56,
   "calibration_version": "role_aware_pmf_cal_v1",
   "calibration_target": "active_conditioned_prop_live",
-  "pmf_active_available": true
+  "pmf_active_available": true,
+  "combo_calibration_fitter": "fit_combo_pmf_calibrators.py",
+  "combo_calibration_source_oof": "data/oof_combo_pmfs.parquet",
+  "combo_calibration_status": "fitted_m6_role_aware",
+  "combo_target_stats_canonical": [
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "combo_target_stats_mission": [
+    "stl_blk",
+    "pts_ast",
+    "pts_reb",
+    "reb_ast",
+    "pts_reb_ast"
+  ],
+  "combo_calibration_combos_fitted": [
+    "pa",
+    "pr",
+    "pra",
+    "ra",
+    "stocks"
+  ]
 }
