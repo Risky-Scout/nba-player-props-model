@@ -4,24 +4,148 @@
       "detail": "deliveries/2026-05-25/derek_game_snapshots",
       "name": "derek_game_snapshots_dir_present",
       "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "21713901/current_live/required_outputs_present",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-05-25T22:01:03Z finished=2026-05-25T22:01:41Z",
+      "name": "21713901/current_live/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live_current'",
+      "name": "21713901/current_live/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live_current' allow_backfill_test=False",
+      "name": "21713901/current_live/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmfs_recomputed=True pmf_source='live_snapshot_recomputed'",
+      "name": "21713901/current_live/production_live_pmfs_recomputed",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21713901/current_live/champion_metadata_verified",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21713901/current_live/no_leakage_champion_cutoff_verified",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_retrained=False",
+      "name": "21713901/current_live/live_snapshot_did_not_retrain",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_recalibrated=False",
+      "name": "21713901/current_live/live_snapshot_did_not_recalibrate",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-current_live-21713901-20260525T220103'",
+      "name": "21713901/current_live/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='8d2f7093f96f7653a04673784290cb831bbc07b9'",
+      "name": "21713901/current_live/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-05-25T22:01:40Z'",
+      "name": "21713901/current_live/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='07ab74e8297ba032'",
+      "name": "21713901/current_live/manifest_field_present:pmf_output_hash",
+      "passed": true
+    },
+    {
+      "detail": "rows=32",
+      "name": "21713901/current_live/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21713901/current_live/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=32",
+      "name": "21713901/current_live/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-05-24' pointer='challenger-2026-05-24'",
+      "name": "21713901/current_live/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_confirmed=False blocker='confirmed_lineups_not_available_yet'",
+      "name": "21713901/current_live/lineup_blocker_documented_when_unconfirmed",
+      "passed": true
+    },
+    {
+      "detail": "lineup_feature_blocker must be documented when lineup_affects_pmf_features=false",
+      "name": "21713901/current_live/lineup_feature_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='confirmed_lineups_not_available_yet'",
+      "name": "21713901/current_live/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21713901/current_live/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "contextual_pmf_engine=True; no_challenger_artifacts_used=False",
+      "name": "21713901/current_live/contextual_pmf_engine_recorded",
+      "passed": true
+    },
+    {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21713901/current_live/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21713901/current_live/availability_source_recorded",
+      "passed": true
     }
   ],
-  "code_commit": "c699b7754463b25f6becdfddaf16c7ea2763e3b3",
+  "code_commit": "8d2f7093f96f7653a04673784290cb831bbc07b9",
   "delivery_date": "2026-05-25",
   "facts": {
     "game_count": 1,
     "mode_counts": {
       "backfill_demo": 0,
       "production_live": 0,
-      "production_live_current": 0,
+      "production_live_current": 1,
       "unknown": 0
     },
-    "pending_reason": "no_snapshots_due_yet_dir_empty",
-    "recomputed_snapshot_count": 0,
-    "slate_games": 1,
-    "snapshot_count": 0
+    "phase13n_outputs_status": [
+      {
+        "label": "21713901/current_live",
+        "missing": []
+      }
+    ],
+    "recomputed_snapshot_count": 1,
+    "snapshot_count": 1
   },
-  "generated_at_utc": "2026-05-25T20:50:41+00:00",
+  "generated_at_utc": "2026-05-25T22:01:52+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

@@ -1,0 +1,55 @@
+{
+  "contextual_blocker": "",
+  "contextual_pmf_applied": true,
+  "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+  "injury_summary": {
+    "confirmed_out": 0,
+    "non_actionable": 0
+  },
+  "lineup_summary": {
+    "confirmed_benches": 32,
+    "confirmed_starters": 0,
+    "lineup_aware": true
+  },
+  "minutes_delta_abs_max": 14.452106810119794,
+  "minutes_delta_abs_mean": 14.452106810119794,
+  "rate_delta_summary": {
+    "ast": {
+      "abs_max": 0.008652133615600266,
+      "abs_mean": 0.008652133615600266,
+      "n": 32
+    },
+    "blk": {
+      "abs_max": 0.0005421461974211162,
+      "abs_mean": 0.0005421461974211162,
+      "n": 32
+    },
+    "fg3m": {
+      "abs_max": 0.001493628507207502,
+      "abs_mean": 0.001493628507207502,
+      "n": 32
+    },
+    "pts": {
+      "abs_max": 0.029736128406171774,
+      "abs_mean": 0.029736128406171774,
+      "n": 32
+    },
+    "reb": {
+      "abs_max": 0.007779966918364127,
+      "abs_mean": 0.007779966918364127,
+      "n": 32
+    },
+    "stl": {
+      "abs_max": 0.0019942612926327754,
+      "abs_mean": 0.0019942612926327754,
+      "n": 32
+    },
+    "tov": {
+      "abs_max": 0.0048421906163421445,
+      "abs_mean": 0.0048421906163421445,
+      "n": 32
+    }
+  },
+  "rows_scored": 32,
+  "schema_version": "1.0"
+}
