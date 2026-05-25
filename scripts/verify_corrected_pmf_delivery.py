@@ -167,7 +167,7 @@ def verify_date(
     if (not skip_derek_snapshots) and (not manifests):
         fail(f"{date} missing Derek per-game snapshot manifests")
 
-    for mpath in manifests:
+    for mpath in ([] if skip_derek_snapshots else manifests):
         manifest = json.loads(mpath.read_text())
         if manifest.get("source") != expected_source:
             fail(f"{date} Derek snapshot source mismatch in {mpath}: {manifest.get('source')}")
