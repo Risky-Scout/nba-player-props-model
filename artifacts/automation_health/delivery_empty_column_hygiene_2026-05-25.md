@@ -1,6 +1,6 @@
 # Delivery Empty Column Hygiene — 2026-05-25
 
-- files checked: `126`
+- files checked: `90`
 - files changed: `24`
 - columns removed total: `222`
 - errors: `0`
@@ -64,14 +64,14 @@
 - removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, model_p_over, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-25/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv`
-- rows: `7812`
+- rows: `7815`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
 - removed columns: `game_start_time`
 
 ### `deliveries/2026-05-25/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.parquet`
-- rows: `7812`
+- rows: `7815`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
@@ -120,14 +120,14 @@
 - removed columns: `game_start_time, book, market_over_odds, market_under_odds, market_no_vig_over_prob, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-25/wizard_of_odds/full_pmfs_outcome_level.csv`
-- rows: `7812`
+- rows: `7815`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
 - removed columns: `game_start_time`
 
 ### `deliveries/2026-05-25/wizard_of_odds/full_pmfs_outcome_level.parquet`
-- rows: `7812`
+- rows: `7815`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
@@ -148,28 +148,28 @@
 - removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-25/wizard_of_odds/market_comparison.csv`
-- rows: `2285`
+- rows: `2298`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-25/wizard_of_odds/market_comparison.parquet`
-- rows: `2285`
+- rows: `2298`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-25/wizard_of_odds/publishable_edges.csv`
-- rows: `1779`
+- rows: `1777`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-05-25/wizard_of_odds/publishable_edges.parquet`
-- rows: `1779`
+- rows: `1777`
 - cols before: `69`
 - cols after: `67`
 - preserved columns: ``
