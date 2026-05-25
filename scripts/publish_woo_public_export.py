@@ -995,9 +995,44 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
 
     src = woo / "market_comparison.parquet"
     if not src.exists():
-        return
+        # ── Fallback: predictions/all_props_{date}.parquet ──────────────
+        # When the delivery pipeline has not yet written market_comparison.
+        # parquet we derive the affiliate dashboard from the predictions/
+        # all_props parquet which carries the same market/model fields.
+        _all_props = root / "predictions" / f"all_props_{date}.parquet"
+        if not _all_props.exists():
+            return
+        try:
+            _ap_df = pd.read_parquet(_all_props)
+        except Exception as _e:
+            print(f"WOO_MONETIZATION_FALLBACK_READ_ERROR  {_all_props}  {_e}")
+            return
+        if _ap_df.empty:
+            return
+        # Derive model_prob_over from per-side model_prob.
+        # all_props rows each carry either side=OVER or side=UNDER.
+        # _m86 expects model_prob_over (the over-prob regardless of side).
+        if "model_prob_over" not in _ap_df.columns:
+            def _derive_mpo(row):
+                side = str(row.get("side", "")).upper()
+                mp = float(row.get("model_prob", 0.5))
+                return mp if side == "OVER" else (1.0 - mp)
+            _ap_df = _ap_df.copy()
+            _ap_df["model_prob_over"] = _ap_df.apply(_derive_mpo, axis=1)
+        # Rename bet_vendor → book if needed
+        if "book" not in _ap_df.columns and "bet_vendor" in _ap_df.columns:
+            _ap_df = _ap_df.copy()
+            _ap_df["book"] = _ap_df["bet_vendor"]
+        # Deduplicate to one row per (player, stat, line, book) to avoid
+        # emitting duplicate OVER+UNDER pairs from same-sided input rows.
+        _key_cols = [c for c in ["player_id", "stat", "line", "book"] if c in _ap_df.columns]
+        if _key_cols:
+            _ap_df = _ap_df.drop_duplicates(subset=_key_cols, keep="first")
+        print(f"WOO_MONETIZATION_FALLBACK  predictions/all_props_{date}.parquet  rows={len(_ap_df)}")
+        df = _ap_df
+    else:
+        df = pd.read_parquet(src)
 
-    df = pd.read_parquet(src)
     if df.empty:
         return
 

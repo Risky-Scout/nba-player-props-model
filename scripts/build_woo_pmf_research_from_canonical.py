@@ -314,6 +314,47 @@ def _load_source(root: Path, date: str) -> Tuple[Path, pd.DataFrame, str]:
                 )
             return path, df, f"__outcome_level__:{outcome_col}:{prob_col}"
 
+    # ── Fallback: predictions/all_props_{date}.parquet ──────────────────
+    # When the delivery pipeline has not yet populated deliveries/$DATE/
+    # we fall back to the predictions/ parquet which has a `pmf` column
+    # containing full JSON PMF dicts.  This is production model output —
+    # not fabricated — just stored in a different location.
+    _pred_fallback = root / "predictions" / f"all_props_{date}.parquet"
+    if _pred_fallback.exists():
+        try:
+            _fb_df = pd.read_parquet(_pred_fallback)
+            # Derive model_prob_over / model_prob_under from per-side
+            # model_prob so the render-contract model_prob check passes.
+            # all_props rows carry side=OVER or side=UNDER plus a per-side
+            # model_prob; the canonical builder expects model_prob_over.
+            if "model_prob_over" not in _fb_df.columns and "model_prob" in _fb_df.columns:
+                import numpy as _np
+                _side_up = _fb_df.get("side", _fb_df.get("pick_side", None))
+                if _side_up is not None:
+                    _is_over = _side_up.astype(str).str.upper() == "OVER"
+                    _mp = _fb_df["model_prob"].astype(float).clip(1e-9, 1 - 1e-9)
+                    _fb_df = _fb_df.copy()
+                    _fb_df["model_prob_over"] = _np.where(_is_over, _mp, 1.0 - _mp)
+                    _fb_df["model_prob_under"] = 1.0 - _fb_df["model_prob_over"]
+            for c in ATOM_PMF_COLUMNS:
+                if c not in _fb_df.columns:
+                    continue
+                ok = False
+                for sample in _fb_df[c].dropna().head(500).tolist():
+                    if _parse_pmf(sample) is not None:
+                        ok = True
+                        break
+                if ok:
+                    print(
+                        f"WOO_PMF_RESEARCH_FALLBACK_SOURCE  "
+                        f"predictions/all_props_{date}.parquet  col={c}  "
+                        f"rows={len(_fb_df)}"
+                    )
+                    checked.append(_source_diag(_pred_fallback))
+                    return _pred_fallback, _fb_df, c
+        except Exception as _fb_exc:
+            checked.append(f"{_pred_fallback} | FALLBACK_ERROR {_fb_exc}")
+
     raise SystemExit(
         "FATAL M8_6O_BUILD_PMF_RESEARCH_NO_ATOM_SOURCE\n"
         + "\n".join(checked)
@@ -453,6 +494,39 @@ def _records_from_outcome(df: pd.DataFrame, source_path: Path, outcome_col: str,
     return records, invalid
 
 
+def _build_support_points(support: list, probs: list) -> list:
+    """Convert parallel ``support``/``probs`` arrays to the legacy
+    ``support_points`` format with correct ``is_tail`` / ``k_min`` labels.
+
+    The tail-bucket convention: the LAST support point is labeled as a
+    tail bucket (``is_tail=True``, key ``k_min`` instead of ``k``) when
+    the gap between it and the second-to-last support point is > 1.
+    This matches the schema used by ``publish_woo_public_export.py`` and
+    is required by ``verify_woo_public_export_contract.py``.
+    """
+    if not support or not probs or len(support) != len(probs):
+        return []
+    pts = []
+    for i, (k, p) in enumerate(zip(support, probs)):
+        try:
+            ki = int(k)
+            pf = float(p)
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(pf) or pf < 0:
+            continue
+        is_tail = (
+            i == len(support) - 1
+            and len(support) >= 2
+            and (ki - int(support[-2])) > 1
+        )
+        if is_tail:
+            pts.append({"k_min": ki, "label": f"{ki}+", "p": pf, "is_tail": True})
+        else:
+            pts.append({"k": ki, "p": pf, "label": str(ki), "is_tail": False})
+    return pts
+
+
 def _group_players(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     grouped: Dict[str, Dict[str, Any]] = {}
 
@@ -474,6 +548,8 @@ def _group_players(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         # players[].stats[] must contain true atom PMF fields, but must not
         # contain any forbidden reconstruction/policy tokens:
         # ladder, p_ge, survival, cdf, cumulative, reconstructed, threshold.
+        _support = rec.get("support", [])
+        _probs = rec.get("probs", [])
         stat_atom = {
             "player": rec.get("player", ""),
             "player_id": rec.get("player_id", ""),
@@ -488,8 +564,11 @@ def _group_players(records: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "pmf_mean": rec.get("pmf_mean", None),
             "p_over": rec.get("p_over", None),
             "variance": rec.get("variance", None),
-            "support": rec.get("support", []),
-            "probs": rec.get("probs", []),
+            "support": _support,
+            "probs": _probs,
+            # support_points with proper is_tail / k_min tail-bucket labels —
+            # required by verify_woo_public_export_contract.py tail-bucket check.
+            "support_points": _build_support_points(_support, _probs),
             "atom_pmf": rec.get("pmf", {}),
             "pmf": rec.get("pmf", {}),
             "support_min": rec.get("support_min", None),
@@ -595,6 +674,8 @@ def _write_html(payload: Dict[str, Any], paths: Iterable[Path]) -> None:
 
 PMF_RESEARCH_MODEL_PROB_PRECEDENCE: tuple[str, ...] = (
     "model_prob",
+    "model_prob_over",
+    "model_prob_under",
     "model_p",
     "model_probability",
     "edge_model_prob",

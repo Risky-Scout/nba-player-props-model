@@ -119,6 +119,106 @@ def _safe_json_for_inline_script(payload: dict) -> str:
     return s.replace("</", "<\\/")
 
 
+def _normalize_pmf_payload(payload: dict) -> dict:
+    """Convert canonical PMF builder output to template-compatible format.
+
+    The canonical builder (build_woo_pmf_research_from_canonical.py) emits
+    ``players[i].stats`` as a LIST of stat-atom dicts, each with
+    ``{stat, support, probs, atom_pmf, ...}``.  The HTML template JS
+    expects a DICT keyed by stat name with ``{support_points, expected_mean,
+    ...}``.  This function converts between the two shapes WITHOUT touching
+    any probability values.
+
+    Also ensures ``count_players`` / ``count_props`` are present.
+    """
+    import math as _math
+
+    if not isinstance(payload, dict):
+        return payload
+    players = payload.get("players")
+    if not isinstance(players, list):
+        return payload
+
+    def _make_support_points(support, probs):
+        if not support or not probs or len(support) != len(probs):
+            return []
+        pts = []
+        for i, (k, p) in enumerate(zip(support, probs)):
+            try:
+                ki = int(k)
+                pf = float(p)
+            except Exception:
+                continue
+            if not _math.isfinite(pf) or pf < 0:
+                continue
+            is_tail = (
+                i == len(support) - 1
+                and len(support) >= 2
+                and (ki - int(support[-2])) > 1
+            )
+            if is_tail:
+                pts.append({"k_min": ki, "label": f"{ki}+", "p": pf, "is_tail": True})
+            else:
+                pts.append({"k": ki, "p": pf, "label": str(ki), "is_tail": False})
+        return pts
+
+    normalized_players = []
+    for p in players:
+        if not isinstance(p, dict):
+            normalized_players.append(p)
+            continue
+        stats = p.get("stats")
+        if isinstance(stats, dict):
+            # Already in dict format (legacy format) — pass through unchanged.
+            normalized_players.append(p)
+            continue
+        if not isinstance(stats, list):
+            normalized_players.append(p)
+            continue
+        # Convert canonical list format → template dict format.
+        stats_dict: dict = {}
+        for atom in stats:
+            if not isinstance(atom, dict):
+                continue
+            stat_key = str(
+                atom.get("stat") or atom.get("stat_key") or atom.get("market") or ""
+            ).lower()
+            if not stat_key:
+                continue
+            support = atom.get("support") or []
+            probs = atom.get("probs") or []
+            # Derive support_points from atom_pmf list when support/probs absent.
+            if (not support or not probs) and isinstance(atom.get("atom_pmf"), list):
+                atom_list = atom["atom_pmf"]
+                support = [a.get("outcome", i) for i, a in enumerate(atom_list)]
+                probs = [a.get("probability", 0.0) for a in atom_list]
+            sp = _make_support_points(support, probs)
+            mean_val = atom.get("mean") or atom.get("pmf_mean") or atom.get("expected_mean")
+            stats_dict[stat_key] = {
+                "support_points": sp,
+                "expected_mean": mean_val,
+                "mean": mean_val,
+                "pmf_mean": mean_val,
+                "median": atom.get("median"),
+                "mode": atom.get("mode"),
+                "p0": float(next((pt["p"] for pt in sp if pt.get("k") == 0), 0.0)),
+                "market_line": atom.get("market_line") or atom.get("line"),
+                "p_over": atom.get("p_over"),
+                "variance": atom.get("variance"),
+                "atom_probability_sum": atom.get("atom_probability_sum"),
+            }
+        normalized_p = dict(p)
+        normalized_p["stats"] = stats_dict
+        normalized_players.append(normalized_p)
+
+    result = dict(payload)
+    result["players"] = normalized_players
+    if "count_players" not in result:
+        result["count_players"] = len(normalized_players)
+    if "count_props" not in result:
+        result["count_props"] = sum(len(p.get("stats") or {}) for p in normalized_players if isinstance(p, dict))
+    return result
+
 
 def _m8_6_normalize_dashboard_rows(rows):
     """Normalize WoO dashboard JSON rows into a flat list[dict].
@@ -249,6 +349,10 @@ def render_pmf_research(date: str, dry_run: bool = False) -> int:
 
     with src_pmf.open() as f:
         pmf_payload = json.load(f)
+    # Normalize canonical list-stats format → template dict format so the
+    # HTML JS can render distributions correctly regardless of which builder
+    # produced pmf_research.json.
+    pmf_payload = _normalize_pmf_payload(pmf_payload)
     print(f"  pmf_research.json: {pmf_payload.get('count_players')} players, "
           f"{pmf_payload.get('count_props')} distributions, "
           f"convention='{pmf_payload.get('tail_bucket_convention', '')}'")
