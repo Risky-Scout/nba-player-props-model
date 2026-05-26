@@ -831,6 +831,18 @@ def main(argv: list[str] | None = None) -> int:
 
     wide_path, market_path = _delivery_paths(date)
     if not wide_path.exists():
+        # Guard: if the WoO delivery folder already has a complete delivery on
+        # disk, refuse to publish an empty/nodata export that would overwrite it.
+        from scripts.verify_woo_delivery_complete import verify as _woo_verify, _resolve_woo_path as _woo_resolve
+        _woo_dir = _woo_resolve(date, None)
+        _woo_ok, _ = _woo_verify(_woo_dir)
+        if _woo_ok:
+            print(
+                f"WOO_DELIVERY_REFUSED_TO_OVERWRITE_COMPLETE_WITH_EMPTY"
+                f"  date={date}"
+                f"  reason=full_pmfs_wide_not_on_disk_but_existing_delivery_is_complete"
+            )
+            return 1
         payload = {
             "schema_version": "1.0",
             "date": date,
@@ -992,6 +1004,24 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
 
     root = Path(".")
     woo = root / "deliveries" / date / "wizard_of_odds"
+
+    # Guard: refuse to overwrite a complete delivery with an incomplete one.
+    # A complete delivery has fair_odds_board.parquet with at least 1 row.
+    _fob = woo / "fair_odds_board.parquet"
+    if _fob.exists():
+        try:
+            import pyarrow.parquet as _pq
+            _fob_rows = _pq.read_table(str(_fob)).num_rows
+            if _fob_rows > 0:
+                print(
+                    f"WOO_DELIVERY_REFUSED_TO_OVERWRITE_COMPLETE_WITH_EMPTY"
+                    f"  date={date}"
+                    f"  fair_odds_board_rows={_fob_rows}"
+                    f"  reason=existing_complete_delivery_preserved"
+                )
+                return
+        except Exception as _e:
+            print(f"WOO_REPAIR_GUARD_CHECK_ERROR  {_e}")
 
     src = woo / "market_comparison.parquet"
     if not src.exists():

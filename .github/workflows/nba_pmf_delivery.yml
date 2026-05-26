@@ -1579,6 +1579,48 @@ jobs:
             --mode production \
             --allow-pending-lineup || true
 
+      - name: Fail-closed delivery integrity verification (must pass before commit)
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          MODE="${{ needs.resolve_context.outputs.mode }}"
+
+          echo "=== FAIL-CLOSED DELIVERY INTEGRITY CHECKS ==="
+          echo "DATE=$D  MODE=$MODE"
+
+          # 1. Parquet readability for all_props.
+          AP="predictions/all_props_${D}.parquet"
+          if [ -f "$AP" ]; then
+            python3 scripts/verify_parquet_readability.py \
+              --path "$AP" \
+              --min-rows 1 \
+              --all-props-columns
+          else
+            echo "PARQUET_VERIFY_SKIP  path=$AP  reason=file_not_present_for_this_mode"
+          fi
+
+          # 2. WoO delivery completeness — fatal for morning/afternoon.
+          case "$MODE" in
+            morning|woo_morning_monetization|woo_afternoon_refresh|close_lock)
+              python3 scripts/verify_woo_delivery_complete.py --date "$D"
+              ;;
+            *)
+              python3 scripts/verify_woo_delivery_complete.py --date "$D" || \
+                echo "WOO_DELIVERY_VERIFY_WARN  mode=$MODE  non_fatal_for_this_mode"
+              ;;
+          esac
+
+          # 3. Sparse-stat PMF shape — fatal if full_pmfs_wide available.
+          WOO="deliveries/$D/wizard_of_odds"
+          if [ -f "$WOO/full_pmfs_wide.parquet" ] || [ -f "$WOO/full_pmfs_wide.csv" ]; then
+            python3 scripts/verify_sparse_stat_pmf_shape.py --date "$D"
+          else
+            echo "SPARSE_STAT_PMF_SHAPE_SKIP  date=$D  reason=full_pmfs_wide_not_present"
+          fi
+
+          echo "=== DELIVERY INTEGRITY CHECKS COMPLETE ==="
+
       - name: Build delivery index and commit delivery outputs
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
