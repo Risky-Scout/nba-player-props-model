@@ -8,7 +8,7 @@
       "promotion_decision.json": "artifacts/models/challengers/2026-05-24_direct_lineup_contextual/promotion_decision.json",
       "train_manifest.json": "artifacts/models/challengers/2026-05-24_direct_lineup_contextual/train_manifest.json"
     },
-    "direct_lineup_pmf_driver": true,
+    "direct_lineup_pmf_driver": null,
     "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "issues": [],
     "no_leakage_manifest": {
@@ -39,10 +39,10 @@
     },
     "trained_through_date": "2026-05-24",
     "validation_report": {
-      "any_positive_improvement": true,
-      "issues": [],
-      "minutes_min_rel_improvement": 0.05,
-      "safe_noninferiority_threshold": -0.005
+      "any_positive_improvement": null,
+      "issues": null,
+      "minutes_min_rel_improvement": null,
+      "safe_noninferiority_threshold": null
     }
   },
   "outcome": "pass",

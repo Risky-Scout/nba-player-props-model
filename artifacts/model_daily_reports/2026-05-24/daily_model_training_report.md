@@ -1,6 +1,6 @@
 # Daily model training / recalibration report — 2026-05-24
 
-- generated_at_utc: 2026-05-26T05:49:16+00:00Z
+- generated_at_utc: 2026-05-26T18:36:40+00:00Z
 
 ## Headline
 
@@ -12,7 +12,7 @@
 - retraining_ran: **True**
 - recalibration_ran: **True**
 - no_leakage_passed: **True**
-- validation_gates_passed: **True**
+- validation_gates_passed: **None**
 - challenger_promoted: **True**
 - promotion_reason: `None`
 
@@ -20,17 +20,17 @@
 
 - champion_model_id: `challenger-2026-05-24`
 - feature_set_id: `phase13s_direct_lineup_injury_pmf_driver_v1`
-- direct_lineup_pmf_driver: `True`
+- direct_lineup_pmf_driver: `None`
 - contextual_pmf_engine: `True`
 - trained_through_date: `2026-05-24`
 - calibrated_through_date: `2026-05-24`
-- training_run_id: `nightly-20260501T124701`
-- calibration_manifest_path: `artifacts/models/challengers/2026-04-30/calibration_manifest.json`
+- training_run_id: `nightly-20260523T042740`
+- calibration_manifest_path: `artifacts/models/challengers/2026-05-22/calibration_manifest.json`
 - train_manifest_path: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/train_manifest.json`
-- validation_report_path: `artifacts/phase13s/validation_gates_report.json`
+- validation_report_path: `artifacts/models/challengers/2026-05-22/validation_report.json`
 - promotion_decision_path: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/promotion_decision.json`
 - no_leakage_manifest_path: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/no_leakage_manifest.json`
-- promotion_decision_id: `phase13s-promotion-2026-05-24_direct_lineup_contextual-20260525T152955`
+- promotion_decision_id: `promotion-2026-05-22-20260523T042855`
 
 ## Promotion status
 
@@ -46,10 +46,10 @@
 
 ## Validation gates
 
-- any_positive_improvement: **True**
-- issues: []
-- minutes_min_rel_improvement: `0.05`
-- safe_noninferiority_threshold: `-0.005`
+- any_positive_improvement: **None**
+- issues: None
+- minutes_min_rel_improvement: `None`
+- safe_noninferiority_threshold: `None`
 
 ## Per-target metrics (training-time validation)
 
@@ -98,7 +98,7 @@
 - train_manifest: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/train_manifest.json`
 - no_leakage_manifest: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/no_leakage_manifest.json`
 - promotion_decision: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/promotion_decision.json`
-- validation_report: `artifacts/phase13s/validation_gates_report.json`
+- validation_report: `artifacts/models/challengers/2026-05-22/validation_report.json`
 - contextual_no_leakage_manifest: `artifacts/models/challengers/2026-05-24_direct_lineup_contextual/no_leakage_manifest.json`
 - Phase 13S sensitivity: `artifacts/phase13s/direct_lineup_pmf_sensitivity.json`
 - Phase 13S no-leakage report: `artifacts/phase13s/no_leakage_report.json`
