@@ -831,32 +831,16 @@ def main(argv: list[str] | None = None) -> int:
 
     wide_path, market_path = _delivery_paths(date)
     if not wide_path.exists():
-        # Guard: if the WoO delivery folder already has a complete delivery on
-        # disk, refuse to publish an empty/nodata export that would overwrite it.
-        from scripts.verify_woo_delivery_complete import verify as _woo_verify, _resolve_woo_path as _woo_resolve
-        _woo_dir = _woo_resolve(date, None)
-        _woo_ok, _ = _woo_verify(_woo_dir)
-        if _woo_ok:
-            print(
-                f"WOO_DELIVERY_REFUSED_TO_OVERWRITE_COMPLETE_WITH_EMPTY"
-                f"  date={date}"
-                f"  reason=full_pmfs_wide_not_on_disk_but_existing_delivery_is_complete"
-            )
-            return 1
-        payload = {
-            "schema_version": "1.0",
-            "date": date,
-            "generated_at": _utc_iso(),
-            "rows": [],
-            "count": 0,
-            "reason": (f"deliveries/{date}/wizard_of_odds/full_pmfs_wide.parquet "
-                       "does not exist; dated Derek/WoO delivery has not been built."),
-        }
-        payload_pmf = {**payload, "players": []}
-        _write_export(date, payload, payload_pmf)
-        print(f"WOO_PUBLIC_EXPORT_PUBLISH_NODATA  date={date}  "
-              f"reason=missing_delivery_full_pmfs_wide")
-        return 0
+        # Part B fix: delivery artifacts must exist before public export runs.
+        # Never build a degraded public export from all_props or other fallbacks
+        # when the complete WoO delivery package is absent from disk.
+        print(
+            f"SOURCE_WOO_DELIVERY_ARTIFACTS_MISSING"
+            f"  date={date}"
+            f"  missing={wide_path.name}"
+            f"  reason=full_pmfs_wide_not_on_disk_cannot_publish_public_export"
+        )
+        return 1
 
     wide_df = pd.read_parquet(wide_path)
     _validate_delivery_wide(wide_df, wide_path)
@@ -1005,8 +989,6 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
     root = Path(".")
     woo = root / "deliveries" / date / "wizard_of_odds"
 
-    # Guard: refuse to overwrite a complete delivery with an incomplete one.
-    # A complete delivery has fair_odds_board.parquet with at least 1 row.
     _fob = woo / "fair_odds_board.parquet"
     if _fob.exists():
         try:
@@ -1025,20 +1007,17 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
 
     src = woo / "market_comparison.parquet"
     if not src.exists():
-        # ── Fallback: predictions/all_props_{date}.parquet ──────────────
-        # When the delivery pipeline has not yet written market_comparison.
-        # parquet we derive the affiliate dashboard from the predictions/
-        # all_props parquet which carries the same market/model fields.
-        _all_props = root / "predictions" / f"all_props_{date}.parquet"
-        if not _all_props.exists():
-            return
-        try:
-            _ap_df = pd.read_parquet(_all_props)
-        except Exception as _e:
-            print(f"WOO_MONETIZATION_FALLBACK_READ_ERROR  {_all_props}  {_e}")
-            return
-        if _ap_df.empty:
-            return
+        # Part B fix: if the full WoO delivery package is absent from disk
+        # (sparse checkout, failed build, etc.) stop with a clear message.
+        # Do NOT fall back to all_props — a 31-row all_props file must never
+        # replace fair_odds_board / full_pmfs_wide / market_comparison.
+        print(
+            f"SOURCE_WOO_DELIVERY_ARTIFACTS_MISSING"
+            f"  date={date}"
+            f"  missing=market_comparison.parquet"
+            f"  reason=public_export_skipped_no_delivery_artifacts"
+        )
+        return
         # Derive model_prob_over from per-side model_prob.
         # all_props rows each carry either side=OVER or side=UNDER.
         # _m86 expects model_prob_over (the over-prob regardless of side).
@@ -1374,8 +1353,11 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         "omitted_bets": [],
     }
 
+    # Part C fix: public export is read-only relative to deliveries/.
+    # Only write to public_export/; never write to deliveries/$DATE/wizard_of_odds/.
+    # The delivery build path (build_daily_pmf_delivery.py) is the sole writer
+    # of omitted_bets.json inside deliveries/.
     for outp in [
-        woo / "omitted_bets.json",
         root / "public_export" / "wizard_of_odds" / date / "omitted_bets.json",
         root / "public_export" / "wizard_of_odds" / "latest" / "omitted_bets.json",
         root / "public_export" / "wizard_of_odds" / "omitted_bets.json",
@@ -1414,8 +1396,10 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         "sources": {"affiliate_dashboard_rows": str(src)},
     }
 
+    # Part C fix: only write to public_export/; never write to deliveries/.
+    # The delivery build path is the sole writer of count_diagnostics.json
+    # inside deliveries/$DATE/wizard_of_odds/.
     for outp in [
-        woo / "count_diagnostics.json",
         root / "public_export" / "wizard_of_odds" / date / "count_diagnostics.json",
         root / "public_export" / "wizard_of_odds" / "latest" / "count_diagnostics.json",
         root / "public_export" / "wizard_of_odds" / "count_diagnostics.json",
