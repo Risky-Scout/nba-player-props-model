@@ -303,12 +303,13 @@ def _enforce_monotone_positive_tail(
     n = len(arr)
     if n <= start_k:
         return arr
+    prev_nonzero_val = -1.0
     for k in range(start_k, n):
-        if k == 0 or arr[k - 1] <= 0:
+        if arr[k] <= 0:
             continue
-        if arr[k] > arr[k - 1]:
-            excess = arr[k] - arr[k - 1]
-            arr[k] = arr[k - 1]
+        if prev_nonzero_val > 0 and arr[k] > prev_nonzero_val:
+            excess = arr[k] - prev_nonzero_val
+            arr[k] = prev_nonzero_val
             # Redistribute excess to bins [start_k, k-1] proportionally.
             receiver_mass = arr[start_k:k].sum()
             if receiver_mass > 0:
@@ -316,6 +317,7 @@ def _enforce_monotone_positive_tail(
             else:
                 # All receivers are zero: push to bin start_k-1 if safe.
                 arr[max(start_k - 1, 0)] += excess
+        prev_nonzero_val = arr[k]
     # Clip and renormalise to handle floating-point drift.
     arr = np.clip(arr, 0.0, None)
     s = arr.sum()

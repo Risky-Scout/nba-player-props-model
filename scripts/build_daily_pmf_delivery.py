@@ -229,6 +229,37 @@ def _now_utc_iso() -> str:
 
 # ── PMF math helpers ─────────────────────────────────────────────────────
 
+_SPARSE_STATS_ENFORCE_MONOTONE = {"stl", "blk", "stocks"}
+_SPARSE_STAT_SPIKE_START_K = {"stl": 2, "blk": 2, "stocks": 3}
+
+
+def _enforce_pmf_monotone_tail(pmf_arr: "list | np.ndarray",
+                                start_k: int = 2) -> "np.ndarray":
+    """Delivery-layer monotone-tail enforcement for sparse/combo stats.
+
+    Mirrors _enforce_monotone_positive_tail in sparse_hurdle.py but works on
+    the full PMF array (not just the positive component) and tracks the
+    previous *non-zero* bin so that gaps (k=9 zero, k=10 spike) are also
+    caught — matching the verifier's comparison logic.
+    """
+    arr = np.array(pmf_arr, dtype=float)
+    prev_val = -1.0
+    for k in range(start_k, len(arr)):
+        if arr[k] <= 0:
+            continue
+        if prev_val > 0 and arr[k] > prev_val:
+            excess = arr[k] - prev_val
+            arr[k] = prev_val
+            rcv = arr[start_k:k].sum()
+            if rcv > 0:
+                arr[start_k:k] += excess * arr[start_k:k] / rcv
+            else:
+                arr[max(start_k - 1, 0)] += excess
+        prev_val = arr[k]
+    arr = np.clip(arr, 0.0, None)
+    s = arr.sum()
+    return arr / s if s > 0 else arr
+
 
 def _pmf_to_array(pmf_obj, max_k: int = 21) -> np.ndarray:
     """Coerce a `pmf_json` cell or a list/ndarray to an ndarray of length
@@ -1344,6 +1375,11 @@ def build_canonical_rows(model_only: pd.DataFrame, *,
                         role_source = "projected_bdl_lineup"
         cal_source = _derive_cal_source(r) or "phase8_pmf_cal"
         pmf = _pmf_to_array(r.get("pmf_json"))
+        _stat = r.get("stat")
+        if _stat in _SPARSE_STATS_ENFORCE_MONOTONE:
+            pmf = _enforce_pmf_monotone_tail(
+                pmf, start_k=_SPARSE_STAT_SPIKE_START_K.get(_stat, 2)
+            )
         smry = _pmf_summary(pmf)
         role = r.get("role_bucket")
         # Serialize the (already normalized) full PMF as a JSON dict so
@@ -2198,6 +2234,17 @@ def write_woo_package(canonical: pd.DataFrame, fair_board: pd.DataFrame,
     if cd is not None:
         (pkg_dir / "count_diagnostics.json").write_text(
             json.dumps(cd, indent=2, default=str))
+
+    omitted = {
+        "schema_version": "m8_6o_omitted_bets_v1",
+        "date": manifest.get("date", ""),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "status": "generated_from_delivery_build",
+        "total_omitted": 0,
+        "omitted_bets": [],
+    }
+    (pkg_dir / "omitted_bets.json").write_text(
+        json.dumps(omitted, indent=2, sort_keys=True), encoding="utf-8")
 
     (pkg_dir / "README.md").write_text(
         _woo_readme_text(manifest=manifest, run_status_md=run_status_md))
