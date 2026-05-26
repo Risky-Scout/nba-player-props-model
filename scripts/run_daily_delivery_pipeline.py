@@ -1642,11 +1642,17 @@ def _same_day_source_inputs_ok(date: str) -> tuple[bool, list[str]]:
     return (len(miss) == 0), miss
 
 
+# Pipeline modes that explicitly never build the Derek forward feed and therefore
+# should not be hard-failed when derek_forward_feed.parquet is absent.
+_NO_DEREK_BUILD_MODES = frozenset({"woo_afternoon_refresh"})
+
+
 def _verify_m88_delivery_bundle(
     date: str,
     run_stamp: str,
     *,
     fail_on_missing: bool,
+    internal_mode: str | None = None,
 ) -> int:
     """Run delivery completeness + Derek contract + injury-lineup + GitHub audits.
 
@@ -1698,16 +1704,22 @@ def _verify_m88_delivery_bundle(
                 run_stamp,
             ],
         ),
-        (
-            "verify_derek_forward_feed_contract",
-            [
-                PYTHON,
-                str(VERIFY_DEREK_CONTRACT),
-                "--date",
-                date,
-                "--run-mode",
-                run_stamp,
-            ],
+        *(
+            []
+            if internal_mode in _NO_DEREK_BUILD_MODES
+            else [
+                (
+                    "verify_derek_forward_feed_contract",
+                    [
+                        PYTHON,
+                        str(VERIFY_DEREK_CONTRACT),
+                        "--date",
+                        date,
+                        "--run-mode",
+                        run_stamp,
+                    ],
+                )
+            ]
         ),
         (
             "audit_injury_lineup_run_modes",
@@ -1727,6 +1739,11 @@ def _verify_m88_delivery_bundle(
     worst = 0
     env = os.environ.copy()
     env.setdefault("PYTHONPATH", str(REPO_ROOT / "src"))
+    if internal_mode in _NO_DEREK_BUILD_MODES:
+        print(
+            f"  [verify] DEREK_CONTRACT_SOFT_SKIP: internal_mode={internal_mode!r} "
+            "never builds derek_forward_feed — skipping verify_derek_forward_feed_contract"
+        )
     for label, cmd in steps:
         if not Path(cmd[1]).exists():
             print(f"  [verify] skip missing script {cmd[1]}")
@@ -2309,6 +2326,7 @@ def main() -> int:
             args.date,
             stamp,
             fail_on_missing=bool(args.fail_on_missing_delivery),
+            internal_mode=internal,
         )
         rc = max(rc, vrc)
     return rc
