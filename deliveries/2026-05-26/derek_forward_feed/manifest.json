@@ -1,0 +1,50 @@
+{
+  "delivery_date": "2026-05-26",
+  "run_mode": "t25",
+  "generated_at_utc": "2026-05-26T22:34:27Z",
+  "row_count": 2690,
+  "schema": "m88_derek_unified_v1",
+  "lineup_status": {
+    "status": "near_tip_projected_lineup_snapshot",
+    "snapshot_type_emitted": "near_tip",
+    "lineup_freshness_rollup": "projected=192",
+    "reason": "Upstream wizard_of_odds package contains projected (not BDL-confirmed) lineup data; snapshot labelled near_tip to keep Derek's archive honest.",
+    "checked_at_utc": "2026-05-26T22:34:27Z"
+  },
+  "rotation_bench_filter": {
+    "policy": "defensive_publication_guard_only",
+    "strategy": "legacy_market_quoted_player_fallback",
+    "rows_dropped": 0,
+    "players_dropped_count": 0,
+    "players_dropped": [],
+    "rationale": "Primary player-universe gate is upstream projected rotation/minutes eligibility (M8.9). This filter is a defensive publication guard only. If it drops many rows, scripts/validate_daily_pmf_delivery.py upstream should have failed first."
+  },
+  "files": {
+    "parquet": "deliveries/2026-05-26/derek_forward_feed/derek_forward_feed.parquet",
+    "csv": "deliveries/2026-05-26/derek_forward_feed/derek_forward_feed.csv",
+    "jsonl": "deliveries/2026-05-26/derek_forward_feed/derek_forward_feed.jsonl",
+    "unique_props_summary_csv": "deliveries/2026-05-26/derek_forward_feed/derek_unique_props_summary.csv"
+  },
+  "unique_props_summary": {
+    "path": "deliveries/2026-05-26/derek_forward_feed/derek_unique_props_summary.csv",
+    "row_count": 152,
+    "columns": [
+      "player_name",
+      "projected_minutes",
+      "stat",
+      "pmf_mean",
+      "market_line",
+      "p_over"
+    ],
+    "column_lineage": {
+      "pmf_mean": "direct_expectation_from_pmf_json",
+      "p_over": "direct_pmf_tail_probability_gt_market_line",
+      "market_line": "bdl_player_props_line_value_over_under_consensus"
+    },
+    "dedupe_keys": [
+      "player_name",
+      "stat"
+    ],
+    "market_line_source": "bdl_player_props_over_under"
+  }
+}

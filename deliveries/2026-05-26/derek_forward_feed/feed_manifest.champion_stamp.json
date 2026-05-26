@@ -1,0 +1,18 @@
+{
+  "calibrated_through_date": "2026-05-25",
+  "calibration_run_id": "nightly-20260523T042740",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-05-25",
+  "champion_pointer_hash": "80d28342e50386cf6e5567767f208d51",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "metadata_stamped_at_utc": "2026-05-26T22:34:50+00:00",
+  "model_source": "champion_pointer",
+  "no_challenger_artifacts_used": true,
+  "output_generated_at_utc": "2026-05-26T22:34:50+00:00",
+  "promotion_decision_id": "phase13s-promotion-2026-05-25_direct_lineup_contextual-20260526T195231",
+  "stamp_code_commit": "ff00ad3dc4f5e045b6304679df5923305d47dc52",
+  "stamped_into": "deliveries/2026-05-26/derek_forward_feed/feed_manifest.json",
+  "trained_through_date": "2026-05-25",
+  "training_run_id": "nightly-20260523T042740",
+  "validation_run_id": "nightly-20260523T042740"
+}
