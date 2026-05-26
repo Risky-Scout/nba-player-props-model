@@ -1,32 +1,32 @@
 $ python3 scripts/calibrate_pmf.py --core-props-only --aggregate-mode --aggregate-oofs /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-25/aggregate_input --output-dir /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-25
 
-2026-05-26 13:51:46,894 [INFO] CLI args: fold_index=None max_folds=999 core_props_only=True val_rows_limit=None aggregate_mode=True
-2026-05-26 13:51:46,894 [INFO] CLI args: pmf_draws=3000
-2026-05-26 13:51:46,894 [INFO] CLI args: allowed_stats=['ast', 'fg3m', 'pts', 'reb', 'tov']
-2026-05-26 13:51:46,894 [INFO] ============================================================
-2026-05-26 13:51:46,894 [INFO] PMF calibration — walk-forward OOF refits
-2026-05-26 13:51:46,894 [INFO] ============================================================
-2026-05-26 13:51:46,983 [INFO] Aggregate mode: loaded 1 fold files (79,429 rows total)
-2026-05-26 13:51:48,277 [INFO] OOF PMF universe persisted to /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-25/oof_pmfs.parquet (79,429 rows)
-2026-05-26 13:51:48,354 [INFO] OOF aggregation:
-2026-05-26 13:51:48,355 [INFO]   ast: n=11,347  domain=26
-2026-05-26 13:51:48,355 [INFO]   blk: n=11,347  domain=11
-2026-05-26 13:51:48,355 [INFO]   fg3m: n=11,347  domain=16
-2026-05-26 13:51:48,355 [INFO]   pts: n=11,347  domain=81
-2026-05-26 13:51:48,355 [INFO]   reb: n=11,347  domain=31
-2026-05-26 13:51:48,355 [INFO]   stl: n=11,347  domain=11
-2026-05-26 13:51:48,355 [INFO]   tov: n=11,347  domain=13
-2026-05-26 13:52:35,521 [INFO] Augmented pmf_cal_meta.json: calibration_target=active_conditioned_prop_live, pmf_active_available=true
-2026-05-26 13:52:35,522 [INFO] Final calibrators fitted for stats: ast, blk, fg3m, pts, reb, stl, tov
-2026-05-26 13:52:35,522 [INFO] ============================================================
-2026-05-26 13:52:35,522 [INFO] Per-stat calibration results
-2026-05-26 13:52:35,522 [INFO] ============================================================
-2026-05-26 13:52:35,522 [INFO]      ast  n_train= 3,535  PIT raw mean=0.548  std=0.257  -> cal mean=0.510  std=0.273
-2026-05-26 13:52:35,522 [INFO]      blk  n_train= 3,535  PIT raw mean=0.501  std=0.290  -> cal mean=0.502  std=0.288
-2026-05-26 13:52:35,522 [INFO]     fg3m  n_train= 3,535  PIT raw mean=0.471  std=0.329  -> cal mean=0.490  std=0.312
-2026-05-26 13:52:35,522 [INFO]      pts  n_train= 3,535  PIT raw mean=0.540  std=0.283  -> cal mean=0.506  std=0.285
-2026-05-26 13:52:35,522 [INFO]      reb  n_train= 3,535  PIT raw mean=0.550  std=0.254  -> cal mean=0.508  std=0.273
-2026-05-26 13:52:35,522 [INFO]      stl  n_train= 3,535  PIT raw mean=0.487  std=0.287  -> cal mean=0.492  std=0.289
-2026-05-26 13:52:35,522 [INFO]      tov  n_train= 3,535  PIT raw mean=0.542  std=0.262  -> cal mean=0.522  std=0.275
-2026-05-26 13:52:35,522 [INFO] Wrote /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-25/pmf_calibration_run.md
-2026-05-26 13:52:35,522 [INFO] Done in 0.8 min
+2026-05-26 16:01:54,896 [INFO] CLI args: fold_index=None max_folds=999 core_props_only=True val_rows_limit=None aggregate_mode=True
+2026-05-26 16:01:54,896 [INFO] CLI args: pmf_draws=3000
+2026-05-26 16:01:54,896 [INFO] CLI args: allowed_stats=['ast', 'fg3m', 'pts', 'reb', 'tov']
+2026-05-26 16:01:54,896 [INFO] ============================================================
+2026-05-26 16:01:54,896 [INFO] PMF calibration — walk-forward OOF refits
+2026-05-26 16:01:54,896 [INFO] ============================================================
+2026-05-26 16:01:54,984 [INFO] Aggregate mode: loaded 1 fold files (79,429 rows total)
+2026-05-26 16:01:56,246 [INFO] OOF PMF universe persisted to /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-25/oof_pmfs.parquet (79,429 rows)
+2026-05-26 16:01:56,322 [INFO] OOF aggregation:
+2026-05-26 16:01:56,322 [INFO]   ast: n=11,347  domain=26
+2026-05-26 16:01:56,322 [INFO]   blk: n=11,347  domain=11
+2026-05-26 16:01:56,322 [INFO]   fg3m: n=11,347  domain=16
+2026-05-26 16:01:56,322 [INFO]   pts: n=11,347  domain=81
+2026-05-26 16:01:56,322 [INFO]   reb: n=11,347  domain=31
+2026-05-26 16:01:56,322 [INFO]   stl: n=11,347  domain=11
+2026-05-26 16:01:56,322 [INFO]   tov: n=11,347  domain=13
+2026-05-26 16:02:43,859 [INFO] Augmented pmf_cal_meta.json: calibration_target=active_conditioned_prop_live, pmf_active_available=true
+2026-05-26 16:02:43,859 [INFO] Final calibrators fitted for stats: ast, blk, fg3m, pts, reb, stl, tov
+2026-05-26 16:02:43,859 [INFO] ============================================================
+2026-05-26 16:02:43,859 [INFO] Per-stat calibration results
+2026-05-26 16:02:43,859 [INFO] ============================================================
+2026-05-26 16:02:43,859 [INFO]      ast  n_train= 3,535  PIT raw mean=0.548  std=0.257  -> cal mean=0.510  std=0.273
+2026-05-26 16:02:43,859 [INFO]      blk  n_train= 3,535  PIT raw mean=0.501  std=0.290  -> cal mean=0.502  std=0.288
+2026-05-26 16:02:43,859 [INFO]     fg3m  n_train= 3,535  PIT raw mean=0.471  std=0.329  -> cal mean=0.490  std=0.312
+2026-05-26 16:02:43,859 [INFO]      pts  n_train= 3,535  PIT raw mean=0.540  std=0.283  -> cal mean=0.506  std=0.285
+2026-05-26 16:02:43,859 [INFO]      reb  n_train= 3,535  PIT raw mean=0.550  std=0.254  -> cal mean=0.508  std=0.273
+2026-05-26 16:02:43,859 [INFO]      stl  n_train= 3,535  PIT raw mean=0.487  std=0.287  -> cal mean=0.492  std=0.289
+2026-05-26 16:02:43,859 [INFO]      tov  n_train= 3,535  PIT raw mean=0.542  std=0.262  -> cal mean=0.522  std=0.275
+2026-05-26 16:02:43,859 [INFO] Wrote /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-05-25/pmf_calibration_run.md
+2026-05-26 16:02:43,859 [INFO] Done in 0.8 min
