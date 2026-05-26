@@ -1028,6 +1028,26 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         _key_cols = [c for c in ["player_id", "stat", "line", "book"] if c in _ap_df.columns]
         if _key_cols:
             _ap_df = _ap_df.drop_duplicates(subset=_key_cols, keep="first")
+        # Derive pmf_mean from the PMF column when market_comparison.parquet
+        # is absent — all_props carries a 'pmf' JSON column but not pmf_mean.
+        # We compute it here so the existing pmf_mean_alias get() finds it.
+        if "pmf_mean" not in _ap_df.columns and "pmf" in _ap_df.columns:
+            import json as _pmf_json
+            def _compute_pmf_mean(blob):
+                try:
+                    if blob is None or (isinstance(blob, float) and math.isnan(blob)):
+                        return None
+                    raw = blob if isinstance(blob, dict) else _pmf_json.loads(blob)
+                    if not raw:
+                        return None
+                    total = sum(float(p) for p in raw.values())
+                    if total <= 0:
+                        return None
+                    return float(sum(int(k) * float(p) for k, p in raw.items())) / total
+                except Exception:
+                    return None
+            _ap_df = _ap_df.copy()
+            _ap_df["pmf_mean"] = _ap_df["pmf"].apply(_compute_pmf_mean)
         print(f"WOO_MONETIZATION_FALLBACK  predictions/all_props_{date}.parquet  rows={len(_ap_df)}")
         df = _ap_df
     else:
@@ -1151,8 +1171,29 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         under_odds = get(r, "market_under_odds", "under_odds", "side_odds", "odds", default=0)
         fair_over = get(r, "fair_over_odds_american", "fair_odds_over", "fair_odds_model", default=0)
         fair_under = get(r, "fair_under_odds_american", "fair_odds_under", "fair_odds_model", default=0)
-        edge = num(get(r, "edge", default=0.0), 0.0)
-
+        edge = num(get(r, "edge", "raw_edge", default=0.0), 0.0)
+        # EV per unit — prefer row's own ev (already computed by model for
+        # OVER side); derive UNDER ev from model_prob_under * decimal_odds - 1.
+        # When the row is a deduped OVER row, ev from the parquet is OVER EV.
+        _row_ev = num(get(r, "ev", default=0.0), 0.0)
+        def _decimal(amer):
+            try:
+                f = float(amer)
+                if not math.isfinite(f) or f == 0:
+                    return None
+                return (1.0 + f / 100.0) if f > 0 else (1.0 + 100.0 / abs(f))
+            except Exception:
+                return None
+        _dec_over = _decimal(over_odds)
+        _dec_under = _decimal(under_odds)
+        _row_ev_over = _row_ev  # row's ev is for OVER (deduped, OVER-first)
+        if _dec_under is not None and mpu > 0:
+            _row_ev_under = round(float(mpu) * _dec_under - 1.0, 6)
+        elif _dec_over is not None and mpu > 0:
+            # under_odds not available, rough estimate from over decimal
+            _row_ev_under = round(float(mpu) * _dec_over - 1.0, 6)
+        else:
+            _row_ev_under = 0.0
         # M8.6Q: market_prob is the per-side no-vig probability the
         # public-export contract verifier requires on every affiliate
         # row. Resolve it from any of the canonical no-vig over-prob
@@ -1229,7 +1270,7 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
                 "side_odds": odds,
                 "fair_odds_model": fair,
                 "edge": float(edge if side == "OVER" else -edge),
-                "ev": 0.0,
+                "ev": float(_row_ev_over if side == "OVER" else _row_ev_under),
                 "kelly": 0.0,
                 "kelly_raw": 0.0,
                 "kelly_capped": 0.0,
