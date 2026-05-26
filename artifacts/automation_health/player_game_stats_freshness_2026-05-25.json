@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-05-26T13:20:42+00:00",
+  "from_date": "2026-05-19",
+  "to_date": "2026-05-25",
+  "status": "PASS",
+  "rows_added": 27,
+  "summary": {
+    "rows_total": 84409,
+    "min_game_date": "2023-10-24",
+    "max_game_date": "2026-05-25",
+    "duplicate_key_rows": 0,
+    "null_counts": {
+      "player_id": 0,
+      "player_name": 0,
+      "game_id": 0,
+      "game_date": 0,
+      "pts": 0,
+      "reb": 0,
+      "ast": 0,
+      "fg3m": 0,
+      "stl": 0,
+      "blk": 0,
+      "turnover": 0,
+      "min": 0
+    }
+  },
+  "refresh_stdout_tail": "  existing parquet: 84382 rows, latest game_date=2026-05-24\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-19 \u2192 2026-05-25\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-19 \u2192 2026-05-25\n    got 166 raw records in 0.8s\n    166 rows after schema map / min>=1 filter\n\n  incoming rows: 166\n    distinct game_dates: ['2026-05-19', '2026-05-20', '2026-05-21', '2026-05-22', '2026-05-23', '2026-05-24', '2026-05-25']\n    distinct game_ids:   7\n    distinct players:    57\n\n  merge summary:\n    rows kept (no key conflict):     84243\n    rows replaced (key conflict):    139\n    rows added (new keys):           27\n    final row count:                 84409\n\nwrote data/player_game_stats.parquet  (2026-05-26T13:20:42Z)\n"
+}
