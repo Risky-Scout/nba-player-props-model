@@ -1,0 +1,28 @@
+{
+  "as_of_date": "2026-05-25",
+  "calibrator_version": "to-be-fitted",
+  "code_commit": "a6548c7586d64bd2c1307c32dd69f180d4f9ad96",
+  "dry_run": false,
+  "model_dir_reference": "artifacts/models/challengers/2026-05-25",
+  "model_version": "challenger-2026-05-25",
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-05-25",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-05-25",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260526T135139"
+  },
+  "schema_version": "1.0",
+  "stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ],
+  "warnings": []
+}
