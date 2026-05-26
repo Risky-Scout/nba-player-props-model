@@ -245,12 +245,36 @@ def hurdle_pmf(stat: str, feature_row: dict) -> Optional[np.ndarray]:
 
     # Discretize conditional-positive to integer bins by sampling the
     # piecewise-linear CDF.
+    #
+    # Dynamic high bound: use the max quantile value plus a moderate buffer
+    # rather than anchoring at DOMAIN_MAX+0.5. Anchoring at DOMAIN_MAX+0.5
+    # was the root cause of non-monotone tail spikes: when q90≈2 for steals,
+    # the remaining 10% of mass spread uniformly over [2, 10.5], creating
+    # physically impossible spikes at k=6-10 (higher P than k=3-5).
+    #
+    # Rule: hi = max(q_max_val + _hi_buffer, lo + 1.0), capped at DOMAIN_MAX+0.5.
+    _hi_buffer = 1.5  # allow ~1-2 bins of right-tail slack beyond the last quantile
+    q_max_val = max(
+        float(max(lo, min(DOMAIN_MAX[stat] + 0.5, q[k])))
+        for k in q_table
+    ) if q_table else lo
+    hi_dynamic = min(
+        max(q_max_val + _hi_buffer, lo + 1.0),
+        DOMAIN_MAX[stat] + 0.5,
+    )
+
     rng = np.random.default_rng(0)
     samples = _sample_from_quantile_table(q_table, 4_000, rng, lo=0.5,
-                                          hi=DOMAIN_MAX[stat] + 0.5)
+                                          hi=hi_dynamic)
     integers = np.clip(np.rint(samples).astype(int), 1, DOMAIN_MAX[stat])
     pos_counts = np.bincount(integers, minlength=DOMAIN_MAX[stat] + 1)
     pos_pmf = pos_counts.astype(float) / max(pos_counts.sum(), 1)
+
+    # Monotone tail repair: for k >= 2, enforce that each bin is ≤ the
+    # previous bin (non-increasing positive tail). Any excess mass is
+    # redistributed backward to the nearest non-zero lower bins.
+    # This eliminates residual non-monotone spikes from the CDF sampling.
+    pos_pmf = _enforce_monotone_positive_tail(pos_pmf, start_k=2)
 
     pmf = np.zeros(DOMAIN_MAX[stat] + 1)
     pmf[0] = p_zero
@@ -260,6 +284,43 @@ def hurdle_pmf(stat: str, feature_row: dict) -> Optional[np.ndarray]:
     if total > 0:
         pmf = pmf / total
     return pmf
+
+
+def _enforce_monotone_positive_tail(
+    pos_pmf: np.ndarray, *, start_k: int = 2
+) -> np.ndarray:
+    """Enforce that the positive-count PMF is non-increasing for k >= start_k.
+
+    Redistributes excess mass from any bin that exceeds its predecessor
+    (a non-monotone spike) back to bins start_k..k-1 proportionally.
+    Does not alter bins 0..start_k-1. Preserves total mass.
+
+    This is a post-sampling repair that eliminates impossible shapes like
+    P(7 steals) > P(3 steals).
+    """
+    arr = pos_pmf.copy()
+    n = len(arr)
+    if n <= start_k:
+        return arr
+    for k in range(start_k, n):
+        if k == 0 or arr[k - 1] <= 0:
+            continue
+        if arr[k] > arr[k - 1]:
+            excess = arr[k] - arr[k - 1]
+            arr[k] = arr[k - 1]
+            # Redistribute excess to bins [start_k, k-1] proportionally.
+            receiver_mass = arr[start_k:k].sum()
+            if receiver_mass > 0:
+                arr[start_k:k] += excess * arr[start_k:k] / receiver_mass
+            else:
+                # All receivers are zero: push to bin start_k-1 if safe.
+                arr[max(start_k - 1, 0)] += excess
+    # Clip and renormalise to handle floating-point drift.
+    arr = np.clip(arr, 0.0, None)
+    s = arr.sum()
+    if s > 0:
+        arr /= s
+    return arr
 
 
 def _sample_from_quantile_table(

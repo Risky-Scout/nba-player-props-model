@@ -57,8 +57,10 @@ def test_workflow_has_predict_cron_at_1400_utc(workflow):
     "cron",
     [
         # Brief Phase 2 mandated 15-cron list.
+        # 07:30 UTC = 3:30 AM ET (primary train/calibrate).
+        # 30 9 * * * was removed; primary is now 30 7 (3:30 AM ET).
         "30 6 * * *",
-        "30 9 * * *",
+        "30 7 * * *",
         "30 12 * * *",
         "0 14 * * *",
         "0 15 * * *",
@@ -818,23 +820,25 @@ def test_selectable_jobs_gate_on_valid_skip_reason_empty(workflow, job_name):
 
 
 def test_commit_retry_loops_use_autostash(workflow_text):
-    """Every `git pull --rebase ... && git push` retry loop must use --autostash.
+    """Commit/push retry loops must use --autostash in the rebase pull.
 
     The failure-prone pattern was `git pull --rebase origin main && git push`.
-    The fixed pattern is `git pull --rebase --autostash origin main && git push`.
-    Asserting on the raw `&& git push` shape lets the post-checkout standalone
-    `git pull --rebase origin main || true` lines (which run against a clean
-    working tree right after checkout) keep their original shape.
+    The current implementation uses sync_and_push() with
+    `git pull --rebase --autostash origin main` inside a retry loop.
+    We check that the old non-autostash && pattern is absent and that
+    the autostash pull is present (regardless of whether it's chained
+    with && or used inside an if-block).
     """
 
-    failing = "git pull --rebase origin main && git push"
-    fixed = "git pull --rebase --autostash origin main && git push"
-    assert failing not in workflow_text, (
+    bare_failing = "git pull --rebase origin main && git push"
+    autostash_pull = "git pull --rebase --autostash origin main"
+    assert bare_failing not in workflow_text, (
         "commit/push retry loop missing --autostash; "
         "this is the Bug-E regression from predict run 26159233882"
     )
-    assert workflow_text.count(fixed) >= 1, (
-        "expected at least one autostashed commit/push retry loop"
+    assert workflow_text.count(autostash_pull) >= 1, (
+        "expected at least one `git pull --rebase --autostash origin main` "
+        "in commit/push retry loops"
     )
 
 
@@ -934,7 +938,9 @@ def test_self_commit_blocks_clean_stale_rebase_state(workflow_text):
 
     # The pattern is used by every self-commit step we patched. The
     # step name appears verbatim in the YAML and the helpers + invocation
-    # must live in the same step body (well within 4000 chars).
+    # must live in the same step body.  The "Commit Phase 13 artifacts"
+    # step has extended pre-commit diagnostics (::group:: blocks) so
+    # we allow a larger search window for that step.
     expected_blocks = [
         "Commit refreshed player stats",
         "Commit training/calibration artifacts",
@@ -946,7 +952,9 @@ def test_self_commit_blocks_clean_stale_rebase_state(workflow_text):
     ]
     for block_name in expected_blocks:
         idx = text.index(block_name)
-        window = text[idx : idx + 4000]
+        # Phase 13 commit step has extended diagnostics; use a larger window.
+        win_size = 8000 if "Phase 13" in block_name else 4000
+        window = text[idx : idx + win_size]
         assert "cleanup_rebase_state" in window, (
             f"{block_name!r} missing cleanup_rebase_state"
         )
@@ -1132,19 +1140,31 @@ def test_only_canonical_nba_pmf_delivery_workflow_has_automatic_trigger():
     canonical_seen = False
     for wf_path in sorted(wf_dir.glob("*.yml")):
         text = wf_path.read_text(encoding="utf-8")
-        # Same pre-screen rationale as the schedule-only sibling test:
-        # only candidate workflows whose ``name:`` line starts with
-        # the "NBA PMF Delivery" prefix participate.
-        if not any(
-            line.startswith('name: NBA PMF Delivery')
-            or line.startswith('name: "NBA PMF Delivery')
-            or line.startswith("name: 'NBA PMF Delivery")
-            for line in text.splitlines()
-        ):
+        # Pre-screen: only production-pipeline delivery workflows participate.
+        # The canonical workflow was renamed from "NBA PMF Delivery" to
+        # "NBA Player Props — Production Pipeline". Other "NBA Player Props — …"
+        # workflows (health monitors, Derek live snapshots) are legitimate
+        # scheduled workflows and are explicitly out of scope here.
+        def _is_delivery_pipeline_name(line: str) -> bool:
+            legacy_prefixes = (
+                'name: NBA PMF Delivery',
+                'name: "NBA PMF Delivery',
+                "name: 'NBA PMF Delivery",
+            )
+            # Exact match for the new canonical name only — do NOT use a
+            # broad "NBA Player Props" prefix since that would catch unrelated
+            # scheduled workflows like chain_health_monitor.yml.
+            canonical_names = (
+                'name: NBA Player Props \u2014 Production Pipeline',
+            )
+            return (any(line.startswith(p) for p in legacy_prefixes)
+                    or line.strip() in canonical_names)
+
+        if not any(_is_delivery_pipeline_name(line) for line in text.splitlines()):
             continue
         data = yaml.safe_load(text)
         assert isinstance(data, dict), (
-            f"{wf_path.name} declares an NBA-PMF-Delivery `name:` but is "
+            f"{wf_path.name} declares an NBA-delivery `name:` but is "
             "not a parseable mapping"
         )
         triggers = data.get("on") if "on" in data else data.get(True)
@@ -1192,23 +1212,31 @@ def test_only_canonical_nba_pmf_delivery_workflow_has_schedule_trigger():
     for wf_path in sorted(wf_dir.glob("*.yml")):
         text = wf_path.read_text(encoding="utf-8")
         # Pre-screen by file text: only candidate workflows whose
-        # ``name:`` line starts with the "NBA PMF Delivery" prefix
-        # participate in this cross-workflow check. This keeps the
-        # test robust against unrelated workflows whose YAML bodies
-        # embed inline Python heredocs that PyYAML's strict
-        # ``safe_load`` rejects (see e.g.
+        # ``name:`` line starts with the production pipeline name prefix
+        # participate in this cross-workflow check. The workflow was renamed
+        # from "NBA PMF Delivery" to "NBA Player Props — Production Pipeline";
+        # we match either prefix. This keeps the test robust against unrelated
+        # workflows whose YAML bodies embed inline Python heredocs that
+        # PyYAML's strict ``safe_load`` rejects (see e.g.
         # ``derek_live_game_snapshots.yml``); GitHub Actions parses
         # them fine, but they are out of scope here.
-        if not any(
-            line.startswith('name: NBA PMF Delivery')
-            or line.startswith('name: "NBA PMF Delivery')
-            or line.startswith("name: 'NBA PMF Delivery")
-            for line in text.splitlines()
-        ):
+        def _is_delivery_pipeline_name(line: str) -> bool:
+            legacy_prefixes = (
+                'name: NBA PMF Delivery',
+                'name: "NBA PMF Delivery',
+                "name: 'NBA PMF Delivery",
+            )
+            canonical_names = (
+                'name: NBA Player Props \u2014 Production Pipeline',
+            )
+            return (any(line.startswith(p) for p in legacy_prefixes)
+                    or line.strip() in canonical_names)
+
+        if not any(_is_delivery_pipeline_name(line) for line in text.splitlines()):
             continue
         data = yaml.safe_load(text)
         assert isinstance(data, dict), (
-            f"{wf_path.name} declares an NBA-PMF-Delivery `name:` but is "
+            f"{wf_path.name} declares an NBA-delivery `name:` but is "
             "not a parseable mapping"
         )
         # PyYAML 1.1 parses bare ``on:`` as the boolean True key.
