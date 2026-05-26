@@ -183,6 +183,11 @@ CANONICAL_COLUMNS_BASE = [
 # to per-(player,stat) wide tables only — not to per-line tables.
 WIDE_ONLY_COLUMNS = ["pmf_json"]
 
+# Values smaller than this are treated as numerical noise (ghost probabilities)
+# and zeroed out during PMF normalization. Handles e.g. scipy binom.pmf
+# underflow artifacts (1e-299 values) that are mathematically zero but stored
+# as tiny non-zero floats due to floating-point representation.
+_PMF_GHOST_FLOOR = 1e-15
 
 # ── Provenance ────────────────────────────────────────────────────────────
 
@@ -227,7 +232,12 @@ def _now_utc_iso() -> str:
 
 def _pmf_to_array(pmf_obj, max_k: int = 21) -> np.ndarray:
     """Coerce a `pmf_json` cell or a list/ndarray to an ndarray of length
-    >= max_k. Missing tail entries are zero-padded."""
+    >= max_k. Missing tail entries are zero-padded.
+
+    Ghost-probability clipping is applied: values below _PMF_GHOST_FLOOR are
+    zeroed so that numerical underflow artifacts (1e-299 values from model tail
+    sampling) do not persist through the delivery pipeline.
+    """
     if isinstance(pmf_obj, str):
         try:
             d = json.loads(pmf_obj)
@@ -239,6 +249,7 @@ def _pmf_to_array(pmf_obj, max_k: int = 21) -> np.ndarray:
             a = np.zeros(max(K, max_k), dtype=float)
             for k, v in d.items():
                 a[int(k)] = float(v)
+            a = np.where(a < _PMF_GHOST_FLOOR, 0.0, a)
             return a
         if isinstance(d, list):
             a = np.asarray(d, dtype=float)
@@ -250,6 +261,7 @@ def _pmf_to_array(pmf_obj, max_k: int = 21) -> np.ndarray:
         a = np.zeros(max_k, dtype=float)
     if len(a) < max_k:
         a = np.concatenate([a, np.zeros(max_k - len(a), dtype=float)])
+    a = np.where(a < _PMF_GHOST_FLOOR, 0.0, a)
     return a
 
 
@@ -558,7 +570,13 @@ def _team_id_to_abbr_map() -> dict[int, str]:
 
 def _normalize_pmf_json_string(s) -> str | None:
     """Take a PMF JSON dict-string with possibly imprecise sums; return a
-    new JSON dict-string normalized to sum exactly 1 (to float64 precision)."""
+    new JSON dict-string normalized to sum exactly 1 (to float64 precision).
+
+    Ghost-probability clipping: values below _PMF_GHOST_FLOOR are set to 0.0
+    before normalization. This removes floating-point underflow artifacts (e.g.
+    1e-299 values from Binomial tails) that are numerically indistinguishable
+    from zero but cause PMF shape verifier failures.
+    """
     if not isinstance(s, str):
         return None
     try:
@@ -571,6 +589,9 @@ def _normalize_pmf_json_string(s) -> str | None:
     arr = np.zeros(K, dtype=float)
     for k, v in d.items():
         arr[k] = max(0.0, float(v))
+    # Clip ghost probabilities — values this small are numerical noise, not
+    # meaningful probability mass (e.g. scipy binom.pmf underflow artifacts).
+    arr = np.where(arr < _PMF_GHOST_FLOOR, 0.0, arr)
     s_total = arr.sum()
     if s_total <= 0 or not np.isfinite(s_total):
         return None

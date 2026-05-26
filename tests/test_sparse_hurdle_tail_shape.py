@@ -227,3 +227,55 @@ class TestPositivePMFBuildPath:
                 assert not (rel > SPIKE_REL and p_curr > SPIKE_ABS), (
                     f"stocks spike at k={k}: P({k-1})={p_prev:.6f} P({k})={p_curr:.6f}"
                 )
+
+
+# ---------------------------------------------------------------------------
+# Ghost probability and verifier tests
+# ---------------------------------------------------------------------------
+
+class TestPMFGhostProbabilities:
+    """Test that ghost probabilities (sub-floor non-zero values) are caught."""
+
+    def test_verifier_rejects_ghost_probs(self):
+        """verify_sparse_stat_pmf_shape._check_pmf fails on 1e-299 values."""
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+        from verify_sparse_stat_pmf_shape import _check_pmf
+        # Simulate the Schroder fg3m underflow pattern
+        ghost_pmf = {0: 0.704, 1: 0.143, 2: 0.153,
+                     3: 9.72e-301, 4: 9.08e-301, 5: 8.48e-301}
+        failures = _check_pmf("fg3m", "TestPlayer", ghost_pmf)
+        ghost_failures = [f for f in failures if "PMF_GHOST_PROB_FAIL" in f]
+        assert len(ghost_failures) > 0, (
+            "Should flag ghost probabilities in fg3m PMF"
+        )
+
+    def test_verifier_passes_clean_pmf(self):
+        """verify_sparse_stat_pmf_shape._check_pmf passes a clean PMF with no ghost values."""
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+        from verify_sparse_stat_pmf_shape import _check_pmf
+        clean_pmf = {0: 0.704, 1: 0.143, 2: 0.153}
+        failures = _check_pmf("fg3m", "TestPlayer", clean_pmf)
+        ghost_failures = [f for f in failures if "PMF_GHOST_PROB_FAIL" in f]
+        assert len(ghost_failures) == 0, (
+            f"Clean PMF should not have ghost failures: {ghost_failures}"
+        )
+
+    def test_normalize_clips_ghost_values(self):
+        """build_daily_pmf_delivery._normalize_pmf_json_string removes 1e-299 values."""
+        import sys, os, json
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'scripts'))
+        from build_daily_pmf_delivery import _normalize_pmf_json_string
+        ghost_json = json.dumps({
+            "0": 0.7042, "1": 0.1432, "2": 0.1526,
+            "3": 9.72e-301, "4": 9.08e-301, "5": 8.48e-301
+        })
+        result = _normalize_pmf_json_string(ghost_json)
+        assert result is not None
+        d = json.loads(result)
+        # k=3+ should be absent (clipped to 0, excluded from output)
+        assert "3" not in d, f"Ghost k=3 should be removed, got {d}"
+        assert "4" not in d, f"Ghost k=4 should be removed, got {d}"
+        total = sum(d.values())
+        assert abs(total - 1.0) < 1e-10, f"PMF should sum to 1.0, got {total}"

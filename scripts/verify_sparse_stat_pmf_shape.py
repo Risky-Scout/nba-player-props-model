@@ -1,13 +1,16 @@
-"""verify_sparse_stat_pmf_shape.py — Fail-closed stl/blk/stocks PMF shape check.
+"""verify_sparse_stat_pmf_shape.py — Fail-closed PMF shape and validity check.
 
 Usage:
     python3 scripts/verify_sparse_stat_pmf_shape.py --date 2026-05-25
     python3 scripts/verify_sparse_stat_pmf_shape.py \\
         --path deliveries/2026-05-25/wizard_of_odds/full_pmfs_wide.csv
 
-Checks each stl/blk/stocks PMF for:
-  - sum ≈ 1.0
+Checks ALL stat PMFs for:
+  - sum ≈ 1.0 (SUM_TOLERANCE)
   - no negative probabilities
+  - no ghost probabilities (values in (0, GHOST_FLOOR) — numerical underflow artifacts)
+
+Checks stl/blk/stocks PMFs additionally for:
   - no non-monotone tail spikes after the plausible region
 
 Spike rule (stl/blk after k >= 2, stocks after k >= 3):
@@ -15,11 +18,12 @@ Spike rule (stl/blk after k >= 2, stocks after k >= 3):
     - is > 25% relatively larger than the previous bin, AND
     - has absolute probability > SPIKE_ABS_THRESHOLD
 
-Failure code emitted:
-    SPARSE_STAT_PMF_TAIL_SPIKE_FAIL
-    SPARSE_STAT_PMF_NEGATIVE_PROB_FAIL
-    SPARSE_STAT_PMF_SUM_FAIL
-    SPARSE_STAT_PMF_FILE_MISSING
+Failure codes emitted:
+    SPARSE_STAT_PMF_TAIL_SPIKE_FAIL       — non-monotone tail (stl/blk/stocks only)
+    PMF_GHOST_PROB_FAIL                   — sub-floor non-zero value (any stat)
+    SPARSE_STAT_PMF_NEGATIVE_PROB_FAIL    — negative probability (any stat)
+    SPARSE_STAT_PMF_SUM_FAIL              — PMF doesn't sum to ~1 (any stat)
+    SPARSE_STAT_PMF_FILE_MISSING          — input file absent
 
 Exits 0 when all checks pass.
 Exits 1 on any failure.
@@ -39,6 +43,9 @@ SPIKE_REL_THRESHOLD = 0.25
 SPIKE_ABS_THRESHOLD = 0.00025
 # Sum tolerance.
 SUM_TOLERANCE = 1e-3
+# Ghost probability floor: values in (0, GHOST_FLOOR) are numerical noise artifacts.
+# Must match _PMF_GHOST_FLOOR in build_daily_pmf_delivery.py.
+GHOST_FLOOR = 1e-15
 # Spike-check start index per stat.
 SPIKE_START_BY_STAT: dict[str, int] = {"stl": 2, "blk": 2, "stocks": 3}
 SPARSE_STATS = {"stl", "blk", "stocks"}
@@ -61,14 +68,14 @@ def _check_pmf(
     vals = [pmf[k] for k in ks]
     total = sum(vals)
 
-    # Sum check.
+    # Sum check (all stats).
     if abs(total - 1.0) > SUM_TOLERANCE:
         failures.append(
             f"SPARSE_STAT_PMF_SUM_FAIL"
             f"  player={player_name!r}  stat={stat}  sum={total:.6f}"
         )
 
-    # Negative probability check.
+    # Negative probability check (all stats).
     for k, v in zip(ks, vals):
         if v < -1e-9:
             failures.append(
@@ -76,34 +83,45 @@ def _check_pmf(
                 f"  player={player_name!r}  stat={stat}  k={k}  prob={v:.8f}"
             )
 
-    # Tail spike check.
-    start = SPIKE_START_BY_STAT.get(stat, 2)
-    for i in range(1, len(ks)):
-        k_prev, k_curr = ks[i - 1], ks[i]
-        if k_prev < start:
-            continue
-        p_prev, p_curr = pmf[k_prev], pmf[k_curr]
-        if p_prev <= 0:
-            continue
-        rel_increase = (p_curr - p_prev) / p_prev
-        if rel_increase > SPIKE_REL_THRESHOLD and p_curr > SPIKE_ABS_THRESHOLD:
+    # Ghost probability check (all stats): values numerically indistinguishable
+    # from zero but not exactly zero. These are underflow artifacts (e.g. 1e-299
+    # from scipy binom.pmf for k > n) and should never appear in stored PMFs.
+    for k, v in zip(ks, vals):
+        if 0.0 < v < GHOST_FLOOR:
             failures.append(
-                f"SPARSE_STAT_PMF_TAIL_SPIKE_FAIL"
-                f"  player={player_name!r}  stat={stat}"
-                f"  k_prev={k_prev}  p_prev={p_prev:.6f}"
-                f"  k_curr={k_curr}  p_curr={p_curr:.6f}"
-                f"  rel_increase={rel_increase:.2f}"
+                f"PMF_GHOST_PROB_FAIL"
+                f"  player={player_name!r}  stat={stat}  k={k}  prob={v:.3e}"
+                f"  reason=underflow_ghost_below_{GHOST_FLOOR:.0e}"
             )
+
+    # Tail spike check (sparse stats only).
+    if stat in SPARSE_STATS:
+        start = SPIKE_START_BY_STAT.get(stat, 2)
+        for i in range(1, len(ks)):
+            k_prev, k_curr = ks[i - 1], ks[i]
+            if k_prev < start:
+                continue
+            p_prev, p_curr = pmf[k_prev], pmf[k_curr]
+            if p_prev <= 0:
+                continue
+            rel_increase = (p_curr - p_prev) / p_prev
+            if rel_increase > SPIKE_REL_THRESHOLD and p_curr > SPIKE_ABS_THRESHOLD:
+                failures.append(
+                    f"SPARSE_STAT_PMF_TAIL_SPIKE_FAIL"
+                    f"  player={player_name!r}  stat={stat}"
+                    f"  k_prev={k_prev}  p_prev={p_prev:.6f}"
+                    f"  k_curr={k_curr}  p_curr={p_curr:.6f}"
+                    f"  rel_increase={rel_increase:.2f}"
+                )
 
     return failures
 
 
 def verify_file(source: Path) -> tuple[bool, list[str]]:
-    """Read full_pmfs_wide CSV or parquet, check all sparse-stat rows."""
+    """Read full_pmfs_wide CSV or parquet, check all rows."""
     if not source.exists():
         return False, [f"SPARSE_STAT_PMF_FILE_MISSING  path={source}"]
 
-    # Load.
     try:
         if source.suffix.lower() == ".parquet":
             import pandas as pd
@@ -120,8 +138,6 @@ def verify_file(source: Path) -> tuple[bool, list[str]]:
 
     for _, row in df.iterrows():
         stat = str(row.get("stat", "")).lower()
-        if stat not in SPARSE_STATS:
-            continue
         player = str(row.get("player_name", "unknown"))
         pmf_blob = row.get("pmf_json", None)
         if pmf_blob is None or (isinstance(pmf_blob, float)):
@@ -183,7 +199,6 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     print(f"SPARSE_STAT_PMF_SHAPE_FAIL  source={source}  failures={len(failures)}")
-    # Print up to 25 failures to avoid flooding logs.
     for f in failures[:25]:
         print(f"  {f}")
     if len(failures) > 25:
