@@ -453,7 +453,7 @@ jobs:
             "artifacts/automation_health/derek_slate_completeness_${{ steps.d.outputs.date }}.md"
             "artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.json"
             "artifacts/automation_health/derek_production_live_e2e_${{ steps.d.outputs.date }}.md"
-            "artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.json"
+            "artifacts/source_readiness/${{ steps.d.outputs.date }}/bdl_fetch_proof.json"
             "artifacts/automation_health/bdl_fetch_proof_${{ steps.d.outputs.date }}.md"
             "artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.json"
             "artifacts/automation_health/contextual_delta_variation_${{ steps.d.outputs.date }}.md"
@@ -498,7 +498,7 @@ jobs:
           PUSH_SUCCESS=0
           for attempt in 1 2 3; do
             echo "git push attempt $attempt"
-            if git pull --rebase origin main && git push origin main; then
+            if git pull --rebase --autostash origin main && git push origin main; then
               PUSH_SUCCESS=1
               break
             fi

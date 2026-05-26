@@ -2264,35 +2264,6 @@ def main(argv: list[str] | None = None) -> int:
         except Exception:
             pass
 
-    # #region agent log - debug instrumentation cd71ad
-    import time as _dbg_time
-    _dbg_payload = {
-        "sessionId": "cd71ad", "runId": "run1", "hypothesisId": "H1_H2",
-        "location": "run_derek_live_game_snapshot.py:2216",
-        "message": "game_start_time_utc resolution",
-        "data": {
-            "game_id": str(args.game_id),
-            "snapshot_type": args.snapshot_type,
-            "game_start_time_utc": game_start_time_utc,
-            "cli_game_start_time": getattr(args, "game_start_time", None),
-            "parquet_has_col": "game_start_time" in sub.columns,
-            "parquet_col_notna": bool(
-                "game_start_time" in sub.columns
-                and sub["game_start_time"].notna().any()
-            ),
-        },
-        "timestamp": int(_dbg_time.time() * 1000),
-    }
-    try:
-        import json as _json_dbg
-        _log_path = REPO_ROOT / ".cursor" / "debug-cd71ad.log"
-        _log_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(_log_path, "a", encoding="utf-8") as _lf:
-            _lf.write(_json_dbg.dumps(_dbg_payload) + "\n")
-    except Exception:
-        pass
-    # #endregion agent log
-
     # Phase 13M: BDL confirmed-lineup status. In production-live mode the
     # fetch already ran upstream (so we could pass --lineup-context to
     # predict.py); reuse that result. In backfill_demo mode we still
@@ -2349,6 +2320,19 @@ def main(argv: list[str] | None = None) -> int:
             "sha256_prefix": sha256_file(out_root / "contextual_feature_audit.parquet")[:16],
         }
     run_finished = _utcnow()
+
+    # Fail closed: t_minus_25 and close_lock snapshots require a known game
+    # start time so downstream verifiers can validate timing. current_live
+    # snapshots may proceed without it.
+    if game_start_time_utc is None and args.snapshot_type in ("t_minus_25", "close_lock"):
+        print(
+            f"DEREK_LIVE_SNAPSHOT_GST_UNRESOLVED_ABORT "
+            f"game_id={args.game_id} snapshot_type={args.snapshot_type} "
+            f"-- game_start_time_utc could not be resolved; refusing to write "
+            f"manifest with null game start time.",
+            flush=True,
+        )
+        sys.exit(1)
 
     manifest = _build_snapshot_manifest(
         delivery_date=args.delivery_date,

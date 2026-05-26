@@ -31,10 +31,10 @@ from nba_props_model.schedule.game_start_times import (  # noqa: E402
     GameStartTimeResolver,
     NBA_TEAM_NAME_TO_ABBR,
 )
+from nba_props_model.derek.snapshot_state import CLOSE_LOCK_OFFSET_MIN  # noqa: E402
 
 
 T_MINUS_25_OFFSET_MIN = 25
-CLOSE_LOCK_OFFSET_MIN = 5
 T_MINUS_25_WINDOW = (-5, 7)
 CLOSE_LOCK_WINDOW = (-5, -1)
 

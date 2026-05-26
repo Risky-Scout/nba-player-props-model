@@ -56,6 +56,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from nba_props_model.derek.snapshot_state import CLOSE_LOCK_OFFSET_MIN  # noqa: E402
 
 DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PRED_DIR = REPO_ROOT / "predictions"
@@ -63,7 +64,6 @@ HEALTH_DIR = REPO_ROOT / "artifacts" / "automation_health"
 CHAMPION_POINTER_PATH = REPO_ROOT / "artifacts" / "models" / "registry" / "champion_pointer.json"
 
 T_MINUS_25_OFFSET_MIN = 25
-CLOSE_LOCK_OFFSET_MIN = 5
 
 # Required snapshot files for a PASS-level production-live snapshot.
 REQUIRED_PMF_FILES = (

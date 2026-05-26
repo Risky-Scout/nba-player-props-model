@@ -85,21 +85,6 @@ def _find_dir(arg: str | None) -> Path | None:
     return cands[-1] if cands else None
 
 
-def _debug_log(msg: str, data: dict | None = None) -> None:
-    """Append a single NDJSON line to the debug log for session cd71ad."""
-    import json as _json
-    import time as _time
-    log_path = REPO_ROOT / ".cursor" / "debug-cd71ad.log"
-    try:
-        log_path.parent.mkdir(parents=True, exist_ok=True)
-        entry = {"sessionId": "cd71ad", "location": "promote_direct_lineup_challenger.py",
-                 "message": msg, "data": data or {}, "timestamp": int(_time.time() * 1000)}
-        with open(log_path, "a", encoding="utf-8") as _f:
-            _f.write(_json.dumps(entry) + "\n")
-    except Exception:
-        pass
-
-
 def main(argv=None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--challenger-dir", default=None)
@@ -109,20 +94,12 @@ def main(argv=None) -> int:
                    help="Dry-run: validate all gates but do not write champion_pointer.json")
     args = p.parse_args(argv)
 
-    _debug_log("promote_direct_lineup_challenger started",
-               {"check_only": args.check_only, "challenger_dir": args.challenger_dir,
-                "force": args.force})
-
     contextual_dir = _find_dir(args.challenger_dir)
     if contextual_dir is None or not contextual_dir.exists():
-        _debug_log("BLOCK: no contextual dir found")
         return _block("no <date>_direct_lineup_contextual dir found")
-
-    _debug_log("gate:contextual_dir", {"dir": str(contextual_dir), "exists": contextual_dir.exists()})
 
     train_manifest_path = contextual_dir / "train_manifest.json"
     if not train_manifest_path.exists():
-        _debug_log("BLOCK: train_manifest.json missing")
         return _block("missing train_manifest.json", contextual_dir=contextual_dir)
     tm = json.loads(train_manifest_path.read_text(encoding="utf-8"))
 
@@ -130,21 +107,16 @@ def main(argv=None) -> int:
     leak_path = REPO_ROOT / "artifacts" / "phase13s" / "no_leakage_report.json"
     sens_path = REPO_ROOT / "artifacts" / "phase13s" / "direct_lineup_pmf_sensitivity.json"
     if not gates_path.exists():
-        _debug_log("BLOCK: validation_gates_report.json missing")
         return _block("validation_gates_report.json missing — run gates first",
                       contextual_dir=contextual_dir)
     gates = json.loads(gates_path.read_text(encoding="utf-8"))
-    _debug_log("gate:validation_gates", {"issues": gates.get("issues"), "gates_passed": gates.get("gates_passed")})
     if gates.get("issues"):
-        _debug_log("BLOCK: validation gates failed", {"issues": gates["issues"]})
         return _block(f"validation gates issues: {gates['issues']}",
                       contextual_dir=contextual_dir,
                       extra={"validation_gates": gates})
     if leak_path.exists():
         leak = json.loads(leak_path.read_text(encoding="utf-8"))
-        _debug_log("gate:no_leakage", {"issues": leak.get("issues")})
         if leak.get("issues"):
-            _debug_log("BLOCK: leakage issues", {"issues": leak["issues"]})
             return _block(f"no-leakage issues: {leak['issues']}",
                           contextual_dir=contextual_dir)
     sensitivity_proven = False
@@ -153,17 +125,7 @@ def main(argv=None) -> int:
         case1 = sens.get("case_results", {}).get("case_1_direct_lineup", {})
         diff = float(case1.get("abs_diff_minutes_delta") or 0.0)
         sensitivity_proven = diff > 0.5
-        _debug_log("gate:sensitivity", {"hypothesisId": "H5", "abs_diff_minutes_delta": diff,
-                                         "sensitivity_proven": sensitivity_proven,
-                                         "sens_path": str(sens_path),
-                                         "case_results_keys": list(sens.get("case_results", {}).keys())})
-    else:
-        _debug_log("gate:sensitivity_file_missing", {"hypothesisId": "H5",
-                                                      "sens_path": str(sens_path),
-                                                      "gates_path_exists": gates_path.exists(),
-                                                      "leak_path_exists": leak_path.exists()})
     if not sensitivity_proven and not args.force:
-        _debug_log("BLOCK: sensitivity not proven")
         return _block(
             "direct lineup PMF sensitivity not proven (case 1 abs_diff <= 0.5 min); "
             "run scripts/verify_direct_lineup_pmf_sensitivity.py",
@@ -172,12 +134,9 @@ def main(argv=None) -> int:
     try:
         engine = load_contextual_engine(contextual_dir)
     except Exception as exc:
-        _debug_log("BLOCK: engine load failed", {"error": str(exc)})
         return _block(f"contextual engine load failed: {exc}",
                       contextual_dir=contextual_dir)
-    _debug_log("gate:engine_loaded", {"fitted_targets": list(engine.fitted_targets), "has_minutes": "minutes" in engine.feature_lists})
     if "minutes" not in engine.feature_lists:
-        _debug_log("BLOCK: no minutes in feature_lists")
         return _block("contextual engine has no minutes adjustment",
                       contextual_dir=contextual_dir)
 
@@ -186,10 +145,8 @@ def main(argv=None) -> int:
     try:
         ttd = dt.date.fromisoformat(str(ttd_str)[:10])
     except Exception:
-        _debug_log("BLOCK: unparseable trained_through_date", {"ttd_str": ttd_str})
         return _block(f"unparseable trained_through_date={ttd_str!r}",
                       contextual_dir=contextual_dir)
-    _debug_log("gate:trained_through_date", {"ttd": ttd_str, "today": str(today), "future": ttd > today})
     if ttd > today and not args.allow_future_trained_through:
         _debug_log("BLOCK: trained_through_date in future")
         return _block(
@@ -199,27 +156,17 @@ def main(argv=None) -> int:
             contextual_dir=contextual_dir)
 
     if not CHAMPION_POINTER_PATH.exists():
-        _debug_log("BLOCK: champion_pointer.json missing")
         return _block("champion_pointer.json missing", contextual_dir=contextual_dir)
     pointer = json.loads(CHAMPION_POINTER_PATH.read_text(encoding="utf-8"))
     existing_fs_id = pointer.get("feature_set_id") or ""
-    _debug_log("gate:existing_champion", {
-        "champion_model_id": pointer.get("champion_model_id"),
-        "existing_fs_id": existing_fs_id,
-        "contextual_trained_through_date": pointer.get("contextual_trained_through_date"),
-    })
     if (existing_fs_id and existing_fs_id != DIRECT_LINEUP_FEATURE_SET_ID
         and existing_fs_id.startswith("phase13s_") and not args.force):
-        _debug_log("BLOCK: feature_set_id conflict", {"existing_fs_id": existing_fs_id})
         return _block(
             f"champion_pointer.feature_set_id already set to {existing_fs_id!r}; "
             f"refusing to overwrite without --force",
             contextual_dir=contextual_dir)
 
     if args.check_only:
-        _debug_log("CHECK_ONLY: all gates passed — would promote",
-                   {"contextual_dir": str(contextual_dir), "ttd": ttd_str,
-                    "fitted_targets": list(engine.fitted_targets)})
         print(f"PHASE13S_CHECK_ONLY_PASS: all gates passed for {contextual_dir.name}", flush=True)
         return 0
 
@@ -289,13 +236,6 @@ def main(argv=None) -> int:
         "promotion_decision_id": decision_id,
     }
     new_pointer.update(contextual_block)
-
-    # #region agent log
-    import time as _time
-    _dbg_log = __import__('pathlib').Path("/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/.cursor/debug-cd71ad.log")
-    _dbg_log.parent.mkdir(parents=True, exist_ok=True)
-    _dbg_log.open("a").write(__import__('json').dumps({"sessionId":"cd71ad","hypothesisId":"H-base-fields","location":"promote_direct_lineup_challenger.py:292","message":"phase13s_promotion_writing_pointer","data":{"champion_model_id":new_pointer.get("champion_model_id"),"trained_through_date":new_pointer.get("trained_through_date"),"calibrated_through_date":new_pointer.get("calibrated_through_date"),"contextual_trained_through_date":new_pointer.get("contextual_trained_through_date")},"timestamp":int(_time.time()*1000)}) + "\n")
-    # #endregion agent log
 
     write_json_atomic(CHAMPION_POINTER_PATH, new_pointer)
 

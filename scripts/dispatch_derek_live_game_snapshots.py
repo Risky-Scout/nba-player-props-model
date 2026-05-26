@@ -35,6 +35,9 @@ from nba_props_model.training_automation import (  # noqa: E402
     utcnow_iso,
     write_json_atomic,
 )
+from nba_props_model.derek.snapshot_state import (  # noqa: E402
+    CLOSE_LOCK_OFFSET_MIN,
+)
 
 
 SNAPSHOT_TYPES = ("current_live", "t_minus_25", "close_lock")
@@ -42,9 +45,8 @@ DELIVERIES_DIR = REPO_ROOT / "deliveries"
 PRED_DIR = REPO_ROOT / "predictions"
 DISPATCH_DIR = REPO_ROOT / "artifacts" / "derek_live_snapshots"
 
-# Execution windows: T-25 for projected lineups, T-10 for confirmed lineups.
+# Execution windows: T-25 for projected lineups, T-6 (close_lock) for confirmed lineups.
 T_MINUS_25_OFFSET_MIN = 25
-CLOSE_LOCK_OFFSET_MIN = 10
 T_MINUS_25_WINDOW = (-5, 7)        # (target - 5min, target + 7min)
 CLOSE_LOCK_WINDOW = (-5, 5)        # (target - 5min, target + 5min) i.e. tip-15 to tip-5
 

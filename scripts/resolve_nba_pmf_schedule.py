@@ -293,15 +293,6 @@ def _resolve_slate_tipoff(
             else:
                 continue
             break
-    # #region agent log H_KEY H_FIELD
-    _dbg("_resolve_slate_tipoff result", {
-        "hypothesisId": "H_KEY+H_FIELD",
-        "delivery_date": delivery_date,
-        "games_found": len(games),
-        "tips_found": len(tips),
-        "min_tip_utc": min(tips).isoformat() if tips else None,
-        "first_game_keys": list(games[0].keys()) if games else [],
-    })
     # #endregion
     if not tips:
         return None
@@ -811,38 +802,8 @@ def resolve(args: argparse.Namespace) -> ResolverOutputs:
     return out
 
 
-def _dbg(message: str, data: dict) -> None:
-    """Append one NDJSON line to the session debug log (silent on failure)."""
-    import json as _json
-    import time as _time
-    _log_path = REPO_ROOT / ".cursor" / "debug-cd71ad.log"
-    try:
-        _log_path.parent.mkdir(parents=True, exist_ok=True)
-        entry = {"sessionId": "cd71ad", "location": "resolve_nba_pmf_schedule.py",
-                 "message": message, "data": data, "timestamp": int(_time.time() * 1000)}
-        with open(_log_path, "a", encoding="utf-8") as _f:
-            _f.write(_json.dumps(entry) + "\n")
-    except Exception:
-        pass
-
-
 def emit(outputs: ResolverOutputs, github_output_path: str) -> None:
     """Write outputs to ``$GITHUB_OUTPUT`` and print the summary line."""
-
-    # #region agent log H1
-    _dbg("emit: final resolved outputs", {
-        "hypothesisId": "H1",
-        "stage": outputs.stage,
-        "mode": outputs.mode,
-        "allow_promote": outputs.allow_promote,
-        "run_training": outputs.run_training,
-        "run_phase8": outputs.run_phase8,
-        "run_phase13": outputs.run_phase13,
-        "as_of_date": outputs.as_of_date,
-        "delivery_date": outputs.delivery_date,
-        "valid_skip_reason": outputs.valid_skip_reason,
-    })
-    # #endregion
 
     payload = outputs.as_output_dict()
     if github_output_path:
