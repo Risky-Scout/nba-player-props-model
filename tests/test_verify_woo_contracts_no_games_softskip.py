@@ -159,6 +159,11 @@ def _make_export_module(monkeypatch, repo_root: Path):
     mod = _load_module(monkeypatch, "verify_woo_public_export_contract.py",
                        "_public_export_under_test")
     monkeypatch.setattr(mod, "REPO_ROOT", repo_root, raising=True)
+    # PRED_DIR and EXPORT_ROOT are computed at module-import time from REPO_ROOT;
+    # they must be patched separately so the verifier stays inside tmp_path.
+    monkeypatch.setattr(mod, "PRED_DIR", repo_root / "predictions", raising=True)
+    monkeypatch.setattr(mod, "EXPORT_ROOT",
+                        repo_root / "public_export" / "wizard_of_odds", raising=True)
     return mod
 
 

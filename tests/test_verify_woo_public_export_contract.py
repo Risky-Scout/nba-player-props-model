@@ -353,9 +353,23 @@ def test_end_to_end_canonical_payload_passes_both_contracts(tmp_path, monkeypatc
     aff_latest_dir.mkdir(parents=True)
     aff_root_dir = repo / "public_export" / "wizard_of_odds"
 
-    # Required HTML stubs (size > 5KB for the props page).
-    (pred_dir / "nba-props.html").write_text("a" * 8192)
-    (pred_dir / "nba-pmf-research.html").write_text("a" * 4096)
+    # Required HTML stubs: must contain required markers and be >5KB.
+    _pad = "x" * 6000
+    props_html = f"window.EMBEDDED_DATA = {{}};\n{_pad}"
+    pmf_html = f"window.EMBEDDED_PMF_DATA = {{}};\n{_pad}"
+    (pred_dir / "nba-props.html").write_text(props_html)
+    (pred_dir / "nba-pmf-research.html").write_text(pmf_html)
+
+    # Dated and alias copies must also contain the markers (+ date for dated).
+    props_html_dated = f"window.EMBEDDED_DATA = {{}};\n{date}\n{_pad}"
+    pmf_html_dated = f"window.EMBEDDED_PMF_DATA = {{}};\n{date}\n{_pad}"
+    (aff_date_dir / "nba-props.html").write_text(props_html_dated)
+    (aff_date_dir / "nba-pmf-research.html").write_text(pmf_html_dated)
+    (aff_date_dir / "nba-pmf-research").write_text(pmf_html_dated)
+    for d in (aff_latest_dir, aff_root_dir):
+        (d / "nba-props.html").write_text(props_html)
+        (d / "nba-pmf-research.html").write_text(pmf_html)
+        (d / "nba-pmf-research").write_text(pmf_html)
 
     aff_payload = {
         "date": date,
@@ -423,7 +437,26 @@ def test_end_to_end_legacy_payload_still_passes(tmp_path, monkeypatch):
         d = repo / "public_export" / "wizard_of_odds" / sub
         d.mkdir(parents=True, exist_ok=True)
 
-    (pred_dir / "nba-props.html").write_text("a" * 8192)
+    _pad = "x" * 6000
+    props_html = f"window.EMBEDDED_DATA = {{}};\n{_pad}"
+    pmf_html = f"window.EMBEDDED_PMF_DATA = {{}};\n{_pad}"
+    (pred_dir / "nba-props.html").write_text(props_html)
+    (pred_dir / "nba-pmf-research.html").write_text(pmf_html)
+
+    # Dated + alias HTML copies required by the verifier.
+    props_html_dated = f"window.EMBEDDED_DATA = {{}};\n{date}\n{_pad}"
+    pmf_html_dated = f"window.EMBEDDED_PMF_DATA = {{}};\n{date}\n{_pad}"
+    dated_dir = repo / "public_export" / "wizard_of_odds" / date
+    dated_dir.mkdir(parents=True, exist_ok=True)
+    (dated_dir / "nba-props.html").write_text(props_html_dated)
+    (dated_dir / "nba-pmf-research.html").write_text(pmf_html_dated)
+    (dated_dir / "nba-pmf-research").write_text(pmf_html_dated)
+    for sub in ("latest", ""):
+        d = repo / "public_export" / "wizard_of_odds" / sub
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "nba-props.html").write_text(props_html)
+        (d / "nba-pmf-research.html").write_text(pmf_html)
+        (d / "nba-pmf-research").write_text(pmf_html)
 
     aff_payload = {
         "date": date,
@@ -457,6 +490,7 @@ def test_end_to_end_legacy_payload_still_passes(tmp_path, monkeypatch):
     }
     for sub in ("", "latest", date):
         d = repo / "public_export" / "wizard_of_odds" / sub
+        d.mkdir(parents=True, exist_ok=True)
         (d / "affiliate_dashboard.json").write_text(json.dumps(aff_payload))
         (d / "pmf_research.json").write_text(json.dumps(pmf_payload))
 
