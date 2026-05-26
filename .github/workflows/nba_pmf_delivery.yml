@@ -1351,8 +1351,8 @@ jobs:
   delivery_build:
     name: Build & Publish Deliveries
     runs-on: ubuntu-latest
-    needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_delivery == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
+    needs: [resolve_context, readiness, phase13_live_context_contextual_lineup]
+    if: needs.resolve_context.outputs.run_delivery == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && (needs.phase13_live_context_contextual_lineup.result == 'success' || needs.phase13_live_context_contextual_lineup.result == 'skipped')
     timeout-minutes: 120
     concurrency:
       group: nba-pmf-delivery-${{ needs.resolve_context.outputs.delivery_date }}-${{ needs.resolve_context.outputs.mode }}

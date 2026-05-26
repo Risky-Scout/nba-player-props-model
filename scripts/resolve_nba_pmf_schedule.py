@@ -443,12 +443,13 @@ def _resolve_scheduled(args, now_utc: datetime) -> ResolverOutputs:
     # 07:30 / 12:30 UTC — model chain WITH promotion permission.
     if sched in MODEL_CHAIN_PROMOTE_CRONS:
         out.stage = "model_chain"
-        out.mode = "model_chain"
+        out.mode = "woo_morning_monetization"
         out.delivery_date = today_et
         out.as_of_date = yesterday_et
         out.run_training = True
         out.run_phase8 = True
         out.run_phase13 = True
+        out.run_delivery = True
         out.run_verifiers = True
         out.allow_promote = True
         return out
@@ -456,12 +457,13 @@ def _resolve_scheduled(args, now_utc: datetime) -> ResolverOutputs:
     # 15:30 / 18:30 / 21:30 UTC — model chain post 14:30 cutoff, NO promotion.
     if sched in MODEL_CHAIN_NO_PROMOTE_CRONS:
         out.stage = "model_chain_no_promote"
-        out.mode = "model_chain_no_promote"
+        out.mode = "woo_morning_monetization"
         out.delivery_date = today_et
         out.as_of_date = yesterday_et
         out.run_training = True
         out.run_phase8 = True
         out.run_phase13 = True
+        out.run_delivery = True
         out.run_verifiers = True
         out.allow_promote = False
         return out
