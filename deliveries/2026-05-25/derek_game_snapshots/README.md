@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — May 25, 2026
 
-Generated 2026-05-25T23:20:14Z.
+Generated 2026-05-26T01:27:19Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Knicks @ Cavaliers | Available | Pending dispatch | Pending dispatch |
+| Knicks @ Cavaliers | Available | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
 
@@ -23,7 +23,7 @@ Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; t
 
 ### Knicks @ Cavaliers
 
-_Game ID `21713901` (used in paths only). Tip time UTC: ``._
+_Game ID `21713901` (used in paths only). Tip time UTC: `2026-05-26T00:13:29Z`._
 
 - **Current-live** (Available):
   - [snapshot_report.md](21713901/current_live/snapshot_report.md)
@@ -33,8 +33,10 @@ _Game ID `21713901` (used in paths only). Tip time UTC: ``._
   - [pmf_driver_decomposition.md](21713901/current_live/pmf_driver_decomposition.md)
   - [lineup_injury_impact_report.md](21713901/current_live/lineup_injury_impact_report.md)
   - [direct_lineup_impact_report.md](21713901/current_live/direct_lineup_impact_report.md)
-- **T-minus-25**: Pending dispatch
-- **Close-lock**: Pending dispatch
+- **T-minus-25** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21713901/t_minus_25/missed_snapshot_report.md)
+- **Close-lock** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21713901/close_lock/missed_snapshot_report.md)
 
 ## PMF variance experience study
 

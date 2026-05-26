@@ -1,26 +1,26 @@
 {
-  "code_commit": "068dc296c5a9edc2f1a349c09c3e61de002aa9b9",
+  "code_commit": "ae5c6cdf638a41c83885aa87265af46a8d194aa0",
   "decisions": [
     {
-      "decision": "skipped_already_run",
+      "decision": "skipped_already_tipped",
       "detail": "snapshot_manifest.json present",
       "game_id": "21713901",
-      "now_utc": "2026-05-25T23:19:58Z",
+      "now_utc": "2026-05-26T01:27:02Z",
       "snapshot_dir": "deliveries/2026-05-25/derek_game_snapshots/21713901/current_live",
       "state": "EXISTS",
-      "target_utc": "2026-05-26T00:10:00Z"
+      "target_utc": "2026-05-26T00:13:29Z"
     }
   ],
   "delivery_date": "2026-05-25",
   "eligible_rows": 0,
-  "now_utc": "2026-05-25T23:19:58Z",
+  "now_utc": "2026-05-26T01:27:02Z",
   "schedule_rows": 1,
   "schema_version": "1.0",
   "snapshot_type": "current_live",
   "summary": {
     "failures": 0,
     "fired": 0,
-    "skipped_already_run": 1,
-    "skipped_window": 0
+    "skipped_already_run": 0,
+    "skipped_window": 1
   }
 }
