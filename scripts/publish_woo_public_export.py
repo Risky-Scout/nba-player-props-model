@@ -600,7 +600,12 @@ def _build_affiliate_rows_from_delivery(market_df: pd.DataFrame) -> tuple[list[d
             counters["joinable_rows"] += 1
             is_alt = bool(row.get("is_alternate", False))
             if is_alt: flag_counts["alt_line"] += 1
-            mp_over_raw = row.get("model_p_over") or row.get("model_prob_over")
+            mp_over_raw = (
+                row.get("model_p_over")
+                or row.get("model_prob_over")
+                or row.get("p_over")
+                or row.get("prob_over")
+            )
             try:
                 if mp_over_raw is None or pd.isna(mp_over_raw):
                     _omit("missing_model_prob_over", row, side); continue
@@ -848,7 +853,7 @@ def main(argv: list[str] | None = None) -> int:
     market_df = (pd.read_parquet(market_path)
                  if market_path.exists() else pd.DataFrame())
 
-    aff_rows = _build_affiliate_rows_from_delivery(market_df)
+    aff_rows, _aff_counters, _aff_omitted = _build_affiliate_rows_from_delivery(market_df)
     pmf_players = _build_research_players_from_delivery(wide_df)
 
     if not aff_rows and not args.allow_empty_affiliate:
@@ -995,13 +1000,41 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
             import pyarrow.parquet as _pq
             _fob_rows = _pq.read_table(str(_fob)).num_rows
             if _fob_rows > 0:
-                print(
-                    f"WOO_DELIVERY_REFUSED_TO_OVERWRITE_COMPLETE_WITH_EMPTY"
-                    f"  date={date}"
-                    f"  fair_odds_board_rows={_fob_rows}"
-                    f"  reason=existing_complete_delivery_preserved"
-                )
-                return
+                # Guard: only protect against overwriting when the current
+                # affiliate_dashboard.json already has valid rows. If it is
+                # empty/broken (tuple-serialisation bug or other), allow the
+                # repair to run.
+                _aff_check = root / "public_export" / "wizard_of_odds" / date / "affiliate_dashboard.json"
+                _aff_has_rows = False
+                try:
+                    import json as _jchk
+                    _aff_data = _jchk.loads(_aff_check.read_text(encoding="utf-8")) if _aff_check.exists() else {}
+                    _aff_rows_val = _aff_data.get("rows", [])
+                    # Valid rows are dicts with model_prob; a 3-tuple-serialised
+                    # list like [[], {...}, [...]] is NOT valid rows.
+                    _aff_has_rows = (
+                        isinstance(_aff_rows_val, list)
+                        and len(_aff_rows_val) > 0
+                        and isinstance(_aff_rows_val[0], dict)
+                        and _aff_rows_val[0].get("model_prob") is not None
+                    )
+                except Exception:
+                    _aff_has_rows = False
+                if _aff_has_rows:
+                    print(
+                        f"WOO_DELIVERY_REFUSED_TO_OVERWRITE_COMPLETE_WITH_EMPTY"
+                        f"  date={date}"
+                        f"  fair_odds_board_rows={_fob_rows}"
+                        f"  reason=existing_complete_delivery_preserved"
+                    )
+                    return
+                else:
+                    print(
+                        f"WOO_REPAIR_GUARD_OVERRIDE"
+                        f"  date={date}"
+                        f"  fair_odds_board_rows={_fob_rows}"
+                        f"  reason=affiliate_dashboard_has_empty_or_broken_rows_allowing_repair"
+                    )
         except Exception as _e:
             print(f"WOO_REPAIR_GUARD_CHECK_ERROR  {_e}")
 
