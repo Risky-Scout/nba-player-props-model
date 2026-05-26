@@ -1,20 +1,20 @@
 {
-  "generated_at_utc": "2026-05-26T22:34:55Z",
+  "generated_at_utc": "2026-05-26T23:09:38Z",
   "reports": [
     {
       "date": "2026-05-26",
       "delivery_dir": "deliveries/2026-05-26",
       "write": true,
-      "generated_at_utc": "2026-05-26T22:34:50Z",
-      "files_checked": 41,
+      "generated_at_utc": "2026-05-26T23:09:29Z",
+      "files_checked": 158,
       "files_changed": 37,
-      "columns_removed_total": 254,
+      "columns_removed_total": 283,
       "changes": [
         {
           "file": "deliveries/2026-05-26/canonical_source/all_props_model_only.parquet",
           "rows": 192,
           "cols_before": 53,
-          "cols_after": 39,
+          "cols_after": 38,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_et",
@@ -24,6 +24,7 @@
             "role_bucket_confidence",
             "mp_bucket",
             "usage_bucket",
+            "lineup_last_updated_utc",
             "projected_minutes",
             "minutes_q10",
             "minutes_q90",
@@ -37,7 +38,7 @@
           "file": "deliveries/2026-05-26/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv",
           "rows": 192,
           "cols_before": 53,
-          "cols_after": 39,
+          "cols_after": 38,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_et",
@@ -47,6 +48,7 @@
             "role_bucket_confidence",
             "mp_bucket",
             "usage_bucket",
+            "lineup_last_updated_utc",
             "projected_minutes",
             "minutes_q10",
             "minutes_q90",
@@ -60,7 +62,7 @@
           "file": "deliveries/2026-05-26/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.jsonl",
           "rows": 192,
           "cols_before": 53,
-          "cols_after": 39,
+          "cols_after": 38,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_et",
@@ -70,6 +72,7 @@
             "role_bucket_confidence",
             "mp_bucket",
             "usage_bucket",
+            "lineup_last_updated_utc",
             "projected_minutes",
             "minutes_q10",
             "minutes_q90",
@@ -83,7 +86,7 @@
           "file": "deliveries/2026-05-26/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
           "rows": 192,
           "cols_before": 53,
-          "cols_after": 39,
+          "cols_after": 38,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_et",
@@ -93,6 +96,7 @@
             "role_bucket_confidence",
             "mp_bucket",
             "usage_bucket",
+            "lineup_last_updated_utc",
             "projected_minutes",
             "minutes_q10",
             "minutes_q90",
@@ -104,74 +108,79 @@
         },
         {
           "file": "deliveries/2026-05-26/derek_forward_feed/latest_available_snapshot.csv",
-          "rows": 2690,
+          "rows": 2685,
           "cols_before": 93,
-          "cols_after": 89,
+          "cols_after": 88,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time_utc",
             "minutes_source",
             "minutes_model_version",
-            "availability_freshness_status"
+            "availability_freshness_status",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/derek_forward_feed/latest_available_snapshot.parquet",
-          "rows": 2690,
+          "rows": 2685,
           "cols_before": 93,
-          "cols_after": 89,
+          "cols_after": 88,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time_utc",
             "minutes_source",
             "minutes_model_version",
-            "availability_freshness_status"
+            "availability_freshness_status",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_forward_feed/lineup_snapshot.csv",
-          "rows": 2690,
+          "file": "deliveries/2026-05-26/derek_forward_feed/morning_snapshot.csv",
+          "rows": 2685,
           "cols_before": 93,
-          "cols_after": 89,
+          "cols_after": 88,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time_utc",
             "minutes_source",
             "minutes_model_version",
-            "availability_freshness_status"
+            "availability_freshness_status",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_forward_feed/lineup_snapshot.jsonl",
-          "rows": 2690,
+          "file": "deliveries/2026-05-26/derek_forward_feed/morning_snapshot.jsonl",
+          "rows": 2685,
           "cols_before": 93,
-          "cols_after": 89,
+          "cols_after": 88,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time_utc",
             "minutes_source",
             "minutes_model_version",
-            "availability_freshness_status"
+            "availability_freshness_status",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_forward_feed/lineup_snapshot.parquet",
-          "rows": 2690,
+          "file": "deliveries/2026-05-26/derek_forward_feed/morning_snapshot.parquet",
+          "rows": 2685,
           "cols_before": 93,
-          "cols_after": 89,
+          "cols_after": 88,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time_utc",
             "minutes_source",
             "minutes_model_version",
-            "availability_freshness_status"
+            "availability_freshness_status",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/full_pmf_wide.csv",
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/full_pmf_wide.csv",
           "rows": 192,
           "cols_before": 83,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -186,14 +195,15 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/full_pmf_wide.parquet",
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/full_pmf_wide.parquet",
           "rows": 192,
           "cols_before": 83,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -208,32 +218,35 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/market_comparison.csv",
-          "rows": 2736,
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/market_comparison.csv",
+          "rows": 2724,
           "cols_before": 70,
-          "cols_after": 69,
+          "cols_after": 68,
           "preserved_columns": [],
           "removed_columns": [
-            "game_start_time"
+            "game_start_time",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/market_comparison.parquet",
-          "rows": 2736,
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/market_comparison.parquet",
+          "rows": 2724,
           "cols_before": 70,
-          "cols_after": 69,
+          "cols_after": 68,
           "preserved_columns": [],
           "removed_columns": [
-            "game_start_time"
+            "game_start_time",
+            "lineup_last_updated_utc"
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/outcome_level_probabilities.csv",
-          "rows": 6622,
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/outcome_level_probabilities.csv",
+          "rows": 6642,
           "cols_before": 12,
           "cols_after": 11,
           "preserved_columns": [],
@@ -242,8 +255,8 @@
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/outcome_level_probabilities.parquet",
-          "rows": 6622,
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/outcome_level_probabilities.parquet",
+          "rows": 6642,
           "cols_before": 12,
           "cols_after": 11,
           "preserved_columns": [],
@@ -252,7 +265,7 @@
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/prop_summary.csv",
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/prop_summary.csv",
           "rows": 192,
           "cols_before": 20,
           "cols_after": 19,
@@ -262,7 +275,7 @@
           ]
         },
         {
-          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/lineup/prop_summary.parquet",
+          "file": "deliveries/2026-05-26/derek_game_snapshots/21713532/morning/prop_summary.parquet",
           "rows": 192,
           "cols_before": 20,
           "cols_after": 19,
@@ -275,7 +288,7 @@
           "file": "deliveries/2026-05-26/pmf_model_review_package/04_PROP_SUMMARY.csv",
           "rows": 192,
           "cols_before": 50,
-          "cols_after": 38,
+          "cols_after": 37,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -289,14 +302,15 @@
             "p_over",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/pmf_model_review_package/04_PROP_SUMMARY.parquet",
           "rows": 192,
           "cols_before": 50,
-          "cols_after": 38,
+          "cols_after": 37,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -310,14 +324,15 @@
             "p_over",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/pmf_model_review_package/05_FULL_PMF_WIDE.csv",
           "rows": 192,
           "cols_before": 84,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -333,14 +348,15 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/pmf_model_review_package/05_FULL_PMF_WIDE.parquet",
           "rows": 192,
           "cols_before": 84,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -356,7 +372,8 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
@@ -383,7 +400,7 @@
           "file": "deliveries/2026-05-26/pmf_model_review_package/machine_readable/model_only.csv",
           "rows": 192,
           "cols_before": 84,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -399,14 +416,15 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/pmf_model_review_package/machine_readable/model_only.jsonl",
           "rows": 192,
           "cols_before": 84,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -422,14 +440,15 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/pmf_model_review_package/machine_readable/model_only.parquet",
           "rows": 192,
           "cols_before": 84,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -445,14 +464,15 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/fair_odds_board.csv",
           "rows": 4112,
           "cols_before": 70,
-          "cols_after": 64,
+          "cols_after": 63,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -460,14 +480,15 @@
             "market_over_odds",
             "market_under_odds",
             "market_no_vig_over_prob",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/fair_odds_board.jsonl",
           "rows": 4112,
           "cols_before": 70,
-          "cols_after": 64,
+          "cols_after": 63,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -475,14 +496,15 @@
             "market_over_odds",
             "market_under_odds",
             "market_no_vig_over_prob",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/fair_odds_board.parquet",
           "rows": 4112,
           "cols_before": 70,
-          "cols_after": 64,
+          "cols_after": 63,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -490,7 +512,8 @@
             "market_over_odds",
             "market_under_odds",
             "market_no_vig_over_prob",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
@@ -517,7 +540,7 @@
           "file": "deliveries/2026-05-26/wizard_of_odds/full_pmfs_wide.csv",
           "rows": 192,
           "cols_before": 83,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -532,14 +555,15 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/full_pmfs_wide.parquet",
           "rows": 192,
           "cols_before": 83,
-          "cols_after": 70,
+          "cols_after": 69,
           "preserved_columns": [],
           "removed_columns": [
             "game_start_time",
@@ -554,55 +578,60 @@
             "market_line",
             "fair_over_odds_american",
             "fair_under_odds_american",
-            "edge"
+            "edge",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/market_comparison.csv",
-          "rows": 2736,
+          "rows": 2724,
           "cols_before": 70,
-          "cols_after": 69,
+          "cols_after": 68,
           "preserved_columns": [],
           "removed_columns": [
-            "game_start_time"
+            "game_start_time",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/market_comparison.parquet",
-          "rows": 2736,
+          "rows": 2724,
           "cols_before": 70,
-          "cols_after": 69,
+          "cols_after": 68,
           "preserved_columns": [],
           "removed_columns": [
-            "game_start_time"
+            "game_start_time",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/publishable_edges.csv",
-          "rows": 2281,
+          "rows": 2289,
           "cols_before": 70,
-          "cols_after": 69,
+          "cols_after": 68,
           "preserved_columns": [],
           "removed_columns": [
-            "game_start_time"
+            "game_start_time",
+            "lineup_last_updated_utc"
           ]
         },
         {
           "file": "deliveries/2026-05-26/wizard_of_odds/publishable_edges.parquet",
-          "rows": 2281,
+          "rows": 2289,
           "cols_before": 70,
-          "cols_after": 69,
+          "cols_after": 68,
           "preserved_columns": [],
           "removed_columns": [
-            "game_start_time"
+            "game_start_time",
+            "lineup_last_updated_utc"
           ]
         }
       ],
       "errors": []
     }
   ],
-  "files_checked": 41,
+  "files_checked": 158,
   "files_changed": 37,
-  "columns_removed_total": 254,
+  "columns_removed_total": 283,
   "errors": []
 }

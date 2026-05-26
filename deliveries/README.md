@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-26T22:35:08Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-26T23:09:52Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -35,7 +35,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-23** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2474 | 1666 | `full` | `fresh` | `present` | `morning_present` | 2425 | `pending_pre_tipoff_run` | 2425 | `scored` | `d1ddc807#phase10c` |
 | **2026-05-24** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 1695 | 0 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 1696 | `scored` | `6aee383e#phase10c` |
 | **2026-05-25** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 144 | 3084 | 2298 | 1777 | `full` | `fresh` | `present` | `morning_present` | 2206 | `pending_pre_tipoff_run` | 2206 | `n/a` | `717a301b#phase10c` |
-| **2026-05-26** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2736 | 2281 | `full` | `fresh` | `present` | `incomplete` | — | `present` | 2690 | `n/a` | `ff00ad3d#phase10c` |
+| **2026-05-26** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2724 | 2289 | `full` | `fresh` | `present` | `morning_present` | 2685 | `pending_pre_tipoff_run` | 2685 | `n/a` | `affd8687#phase10c` |
 
 ## Per-date links
 
@@ -1225,10 +1225,13 @@ _lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-26/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-26/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — lineup=present · latest→lineup
+**Derek forward feed (PMF snapshots)** — morning rows=2685 · lineup=pending_pre_tipoff_run · latest→morning
 
 - [FEED_README.md](2026-05-26/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-26/derek_forward_feed/feed_manifest.json)
+- [morning_snapshot.csv](2026-05-26/derek_forward_feed/morning_snapshot.csv)
+- [morning_snapshot.parquet](2026-05-26/derek_forward_feed/morning_snapshot.parquet)
+- [morning_snapshot.jsonl](2026-05-26/derek_forward_feed/morning_snapshot.jsonl)
 - [latest_available_snapshot.csv](2026-05-26/derek_forward_feed/latest_available_snapshot.csv)
 - [latest_available_snapshot.parquet](2026-05-26/derek_forward_feed/latest_available_snapshot.parquet)
 - [lineup_snapshot.csv](2026-05-26/derek_forward_feed/lineup_snapshot.csv)

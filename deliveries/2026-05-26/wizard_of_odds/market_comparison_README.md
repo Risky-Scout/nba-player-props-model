@@ -3,10 +3,10 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `wizard_of_odds/market_comparison.csv`
-- Original rows: `2736`
-- Original columns: `69`
-- Original bytes: `2585735`
-- Current CSV preview rows: `582`
+- Original rows: `2724`
+- Original columns: `68`
+- Original bytes: `2555739`
+- Current CSV preview rows: `587`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `market_comparison.parquet`
 - CSV parts folder: `market_comparison_csv_parts/`
@@ -15,8 +15,9 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 | part | rows | bytes |
 |---|---:|---:|
-| `market_comparison_csv_parts/market_comparison_part_000.csv` | 548 | 494025 |
-| `market_comparison_csv_parts/market_comparison_part_001.csv` | 548 | 487604 |
-| `market_comparison_csv_parts/market_comparison_part_002.csv` | 548 | 498417 |
-| `market_comparison_csv_parts/market_comparison_part_003.csv` | 548 | 510227 |
-| `market_comparison_csv_parts/market_comparison_part_004.csv` | 544 | 504052 |
+| `market_comparison_csv_parts/market_comparison_part_000.csv` | 537 | 479927 |
+| `market_comparison_csv_parts/market_comparison_part_001.csv` | 537 | 473034 |
+| `market_comparison_csv_parts/market_comparison_part_002.csv` | 537 | 488832 |
+| `market_comparison_csv_parts/market_comparison_part_003.csv` | 537 | 491266 |
+| `market_comparison_csv_parts/market_comparison_part_004.csv` | 537 | 488472 |
+| `market_comparison_csv_parts/market_comparison_part_005.csv` | 39 | 44174 |
