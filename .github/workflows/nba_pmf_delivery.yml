@@ -292,6 +292,30 @@ jobs:
             python3 scripts/verify_secrets_preflight.py --mode daily --require-lineup-source
           fi
 
+      - name: Compile-check critical pipeline scripts
+        if: needs.resolve_context.outputs.valid_skip_reason == ''
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            src/nba_props_model/models/sparse_hurdle.py \
+            scripts/calibrate_pmf.py \
+            scripts/build_combo_oof_pmfs_from_base_oof.py \
+            scripts/fit_combo_pmf_calibrators.py \
+            scripts/run_nightly_training_and_calibration.py \
+            scripts/build_daily_pmf_delivery.py \
+            scripts/publish_woo_public_export.py
+          echo "::notice::All critical pipeline scripts compiled without SyntaxError"
+
+      - name: Smoke-test sparse hurdle PMF path
+        if: needs.resolve_context.outputs.valid_skip_reason == ''
+        run: |
+          set -euo pipefail
+          PYTHONPATH=src python3 -m pytest \
+            tests/test_sparse_hurdle.py \
+            tests/test_sparse_hurdle_tail_shape.py \
+            -x -q --tb=short
+          echo "::notice::Sparse hurdle PMF smoke tests passed"
+
       - name: Verify champion pointer
         if: needs.resolve_context.outputs.valid_skip_reason == ''
         run: |
