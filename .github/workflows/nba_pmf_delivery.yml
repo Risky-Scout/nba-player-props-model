@@ -1095,11 +1095,22 @@ jobs:
           # ── Guard: if promotion succeeded, staged changes are required ──
           if git diff --staged --quiet; then
             if [ "$PROMOTION_DONE" = "true" ]; then
+              # A concurrent run may have already committed the same champion pointer.
+              # If the on-disk pointer already reflects this as_of_date, that is an
+              # idempotent success — not a failure.
+              POINTER_DATE=$(python3 -c "import json; p=json.load(open('artifacts/models/registry/champion_pointer.json')); print(p.get('contextual_trained_through_date') or '')" 2>/dev/null || echo "")
+              ASOF_EXPECTED="${{ needs.resolve_context.outputs.as_of_date }}"
+              if [ "$POINTER_DATE" = "$ASOF_EXPECTED" ]; then
+                echo "::notice::PHASE13_PROMOTION_IDEMPOTENT — champion_pointer already at $ASOF_EXPECTED (concurrent run committed first)"
+                echo "PHASE13_COMMIT_IDEMPOTENT_SUCCESS"
+                exit 0
+              fi
               echo "::error::PHASE13_PROMOTION_PERSISTENCE_FAIL_NO_STAGED_CHANGES"
               echo "  Promotion of $PROMOTED_MODEL_ID was reported successful"
               echo "  but git add produced no staged changes for champion_pointer.json."
               echo "  This means the on-disk champion_pointer.json matches HEAD,"
               echo "  which should not be possible after a contextual promotion."
+              echo "  champion_pointer contextual_trained_through_date=$POINTER_DATE expected=$ASOF_EXPECTED"
               exit 1
             else
               echo "::notice::Phase13 commit: no staged changes — promotion was blocked or skipped (expected)"
