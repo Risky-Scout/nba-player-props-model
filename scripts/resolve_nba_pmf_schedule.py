@@ -774,7 +774,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     p.add_argument("--manual-delivery-date", default="", help="workflow_dispatch input: delivery_date YYYY-MM-DD (blank = today ET).")
     p.add_argument("--manual-as-of-date", default="", help="workflow_dispatch input: as_of_date YYYY-MM-DD (blank = yesterday ET).")
     p.add_argument("--manual-force-run", default="false", help="workflow_dispatch input: force_run ('true'/'false'). Bypasses delivery time-window gates.")
-    p.add_argument("--manual-no-promote", default="true", help="workflow_dispatch input: no_promote ('true'/'false'). Defaults to 'true' for manual safety.")
+    p.add_argument("--manual-no-promote", default="false", help="workflow_dispatch input: no_promote ('true'/'false'). Defaults to 'false' — promote when gates pass.")
     p.add_argument("--github-output", default="", help="Path to GITHUB_OUTPUT file. If blank, only stdout summary is printed.")
     p.add_argument("--now-utc", default="", help="Override the current UTC time (ISO-8601). Test-only.")
     return p.parse_args(argv)

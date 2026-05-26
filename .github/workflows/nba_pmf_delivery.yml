@@ -129,11 +129,11 @@ on:
         required: false
         default: ""
       no_promote:
-        description: "Block champion promotion during manual testing"
+        description: "Block champion promotion (set true only for testing; default false = promote when gates pass)"
         required: false
-        default: "true"
+        default: "false"
         type: choice
-        options: ["true", "false"]
+        options: ["false", "true"]
       run_predict:
         description: "Run scripts/predict.py inside delivery stage"
         required: false
@@ -223,7 +223,7 @@ jobs:
             --manual-delivery-date "${{ github.event.inputs.delivery_date || '' }}" \
             --manual-as-of-date "${{ github.event.inputs.as_of_date || '' }}" \
             --manual-force-run "${{ github.event.inputs.force_run || 'false' }}" \
-            --manual-no-promote "${{ github.event.inputs.no_promote || 'true' }}" \
+            --manual-no-promote "${{ github.event.inputs.no_promote || 'false' }}" \
             --github-output "$GITHUB_OUTPUT"
 
   # ────────────────────────────────────────────────────────────────
