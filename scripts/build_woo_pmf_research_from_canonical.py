@@ -674,8 +674,6 @@ def _write_html(payload: Dict[str, Any], paths: Iterable[Path]) -> None:
 
 PMF_RESEARCH_MODEL_PROB_PRECEDENCE: tuple[str, ...] = (
     "model_prob",
-    "model_prob_over",
-    "model_prob_under",
     "model_p",
     "model_probability",
     "edge_model_prob",

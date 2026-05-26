@@ -108,9 +108,10 @@ def test_workflow_dispatch_has_required_stage_options(workflow):
         assert required in opts, f"workflow_dispatch.stage missing option: {required}"
 
 
-def test_workflow_dispatch_no_promote_default_true(workflow):
+def test_workflow_dispatch_no_promote_default_false(workflow):
+    """no_promote must default to 'false' so manual model_chain promotes when gates pass."""
     inputs = workflow["__on__"]["workflow_dispatch"]["inputs"]
-    assert str(inputs["no_promote"].get("default", "")).lower() == "true"
+    assert str(inputs["no_promote"].get("default", "")).lower() == "false"
 
 
 # ── Resolver wiring ─────────────────────────────────────────────────

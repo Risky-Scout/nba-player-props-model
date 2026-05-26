@@ -191,7 +191,7 @@ def test_eligible_view_excludes_deep_bench_when_no_market_line():
     # Empty market frame -> no current_market_line signal.
     empty_market = pd.DataFrame(columns=["slate_date", "game_id", "player_id", "line", "stat"])
 
-    eligible = build_eligible_view(universe, slate_date=SLATE_DATE, market_df=empty_market)
+    eligible = build_eligible_view(universe, slate_date=SLATE_DATE, market_raw_df=empty_market)
 
     universe_ids = set(universe["player_id"].tolist())
     eligible_ids = set(eligible["player_id"].tolist())
@@ -230,7 +230,7 @@ def test_eligible_view_keeps_deep_bench_with_market_line():
         ]
     )
 
-    eligible = build_eligible_view(universe, slate_date=SLATE_DATE, market_df=market)
+    eligible = build_eligible_view(universe, slate_date=SLATE_DATE, market_raw_df=market)
     assert len(eligible) == 1
     row = eligible.iloc[0].to_dict()
     assert row["player_id"] == 202

@@ -100,15 +100,15 @@ def test_scheduled_0630_after_game_scores_previous_et_slate(resolver):
     assert out.valid_skip_reason == ""
 
 
-# ── Test 2: 09:30 UTC model_chain promote ───────────────────────────
+# ── Test 2: 07:30 UTC primary model_chain promote ───────────────────────────
 
 
-def test_scheduled_0930_model_chain_allows_promote(resolver):
+def test_scheduled_0730_model_chain_allows_promote(resolver):
     out = _resolve(
         resolver,
         event_name="schedule",
-        schedule="30 9 * * *",
-        now_utc="2026-05-20T09:30:00Z",
+        schedule="30 7 * * *",
+        now_utc="2026-05-20T07:30:00Z",
     )
     assert out.stage == "model_chain"
     assert out.run_training is True
