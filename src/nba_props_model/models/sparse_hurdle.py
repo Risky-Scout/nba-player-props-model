@@ -253,6 +253,7 @@ def hurdle_pmf(stat: str, feature_row: dict) -> Optional[np.ndarray]:
     # physically impossible spikes at k=6-10 (higher P than k=3-5).
     #
     # Rule: hi = max(q_max_val + _hi_buffer, lo + 1.0), capped at DOMAIN_MAX+0.5.
+    lo = 0.5  # positive outcomes start at 0.5 (rounds to integer 1)
     _hi_buffer = 1.5  # allow ~1-2 bins of right-tail slack beyond the last quantile
     q_max_val = max(
         float(max(lo, min(DOMAIN_MAX[stat] + 0.5, q[k])))
