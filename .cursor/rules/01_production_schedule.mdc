@@ -49,14 +49,21 @@ Implement this UTC schedule in .github/workflows/nba_pmf_delivery.yml:
 21:30 UTC:
 - model_chain_no_promote
 
-22:25 UTC through 03:25 UTC:
-- Derek candidate windows
+Playoffs evening windows (8:00 PM ET and 8:30 PM ET tip-offs):
+- 23:35 UTC: Pre-Game Lineup Check (7:35 PM ET / 8:00 PM tip)
+- 23:40, 23:45, 23:50, 23:55 UTC: Near-Tip / Close-Lock Update (7:40–7:55 PM ET)
+- 00:05, 00:10, 00:15, 00:20, 00:25 UTC: Pre-Game + Near-Tip / Close-Lock (8:05–8:25 PM ET / 8:30 PM tip)
+- 00:55 UTC: Final Close-Lock Snapshot (8:55 PM ET / 8:30 PM tip)
 - slate-aware valid-skip outside useful pre-tip windows
 
+For an 8:00 PM ET game:
+- 23:40–23:55 UTC same day => derek_near_lineup / close_lock
+- 00:25 UTC next day => Final Close-Lock Snapshot (25 min post-tip)
+- 06:30 UTC next day => after_game for that slate
+
 For an 8:30 PM ET game:
-- 23:55 UTC same day => derek_near_lineup
-- 00:10 UTC next day => derek_near_lineup
-- 00:25 UTC next day => close_lock
+- 00:05–00:25 UTC next day => derek_near_lineup / close_lock
+- 00:55 UTC next day => Final Close-Lock Snapshot (25 min post-tip)
 - 06:30 UTC next day => after_game for that slate
 
 Training/Phase jobs must never block WoO/Derek delivery.

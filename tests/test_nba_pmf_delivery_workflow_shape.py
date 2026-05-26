@@ -56,9 +56,7 @@ def test_workflow_has_predict_cron_at_1400_utc(workflow):
 @pytest.mark.parametrize(
     "cron",
     [
-        # Brief Phase 2 mandated 15-cron list.
-        # 07:30 UTC = 3:30 AM ET (primary train/calibrate).
-        # 30 9 * * * was removed; primary is now 30 7 (3:30 AM ET).
+        # Morning/afternoon crons (unchanged).
         "30 6 * * *",
         "30 7 * * *",
         "30 12 * * *",
@@ -69,19 +67,19 @@ def test_workflow_has_predict_cron_at_1400_utc(workflow):
         "30 18 * * *",
         "0 20 * * *",
         "30 21 * * *",
-        "25 22 * * *",
-        "40,55 22 * * *",
-        "10,25,40,55 23,0,1,2 * * *",
-        "10 3 * * *",
-        "25 3 * * *",
+        # Playoffs evening windows (8:00 PM ET and 8:30 PM ET tip-offs).
+        "35 23 * * *",
+        "40,45,50,55 23 * * *",
+        "5,10,15,20,25 0 * * *",
+        "55 0 * * *",
     ],
 )
 def test_workflow_has_each_required_cron(workflow, cron):
     assert cron in _crons(workflow)
 
 
-def test_workflow_has_exactly_fifteen_crons(workflow):
-    assert len(_crons(workflow)) == 15
+def test_workflow_has_exactly_fourteen_crons(workflow):
+    assert len(_crons(workflow)) == 14
 
 
 # ── workflow_dispatch inputs ────────────────────────────────────────
