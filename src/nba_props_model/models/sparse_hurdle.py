@@ -256,7 +256,7 @@ def hurdle_pmf(stat: str, feature_row: dict) -> Optional[np.ndarray]:
     lo = 0.5  # positive outcomes start at 0.5 (rounds to integer 1)
     _hi_buffer = 1.5  # allow ~1-2 bins of right-tail slack beyond the last quantile
     q_max_val = max(
-        float(max(lo, min(DOMAIN_MAX[stat] + 0.5, q[k])))
+        float(max(lo, min(DOMAIN_MAX[stat] + 0.5, q_table[k])))
         for k in q_table
     ) if q_table else lo
     hi_dynamic = min(

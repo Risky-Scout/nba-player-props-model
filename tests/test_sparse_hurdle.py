@@ -55,6 +55,52 @@ def test_hurdle_pmf_returns_none_when_no_artifacts(tmp_path, monkeypatch):
     assert hurdle_pmf("stl", feature_row={"usage_proxy": 0.3}) is None
 
 
+class _ConstantPredictor:
+    """Minimal sklearn-compatible stub that always returns a fixed value."""
+    def __init__(self, value: float):
+        self._v = value
+
+    def predict(self, X):
+        return np.full(len(X), self._v)
+
+    def predict_proba(self, X):
+        return np.column_stack([
+            np.full(len(X), 1.0 - self._v),
+            np.full(len(X), self._v),
+        ])
+
+
+def test_hurdle_pmf_with_mock_artifacts_produces_valid_pmf(monkeypatch):
+    """Regression test: hurdle_pmf must reach the lo/hi sampling path without NameError.
+
+    This test exercises the full hurdle_pmf() execution path by injecting
+    mock model artifacts directly into _SPARSE_CACHE, bypassing disk I/O.
+    Any undefined variable inside hurdle_pmf (e.g. the 'lo' NameError that
+    occurred on 2026-05-26) will raise a NameError here before hitting CI.
+    """
+    from nba_props_model.models import sparse_hurdle as sh
+
+    mock_arts = {
+        "features": ["usage_proxy", "opp_pace"],
+        "zero_clf": _ConstantPredictor(0.65),
+        "pos_q": {
+            10: _ConstantPredictor(1.0),
+            25: _ConstantPredictor(1.0),
+            50: _ConstantPredictor(1.5),
+            75: _ConstantPredictor(2.0),
+            90: _ConstantPredictor(2.5),
+        },
+    }
+
+    monkeypatch.setattr(sh, "_SPARSE_CACHE", {"stl": mock_arts})
+    result = hurdle_pmf("stl", feature_row={"usage_proxy": 0.18, "opp_pace": 100.0})
+
+    assert result is not None, "hurdle_pmf returned None with valid mock artifacts"
+    assert result.shape == (DOMAIN_MAX["stl"] + 1,)
+    assert abs(result.sum() - 1.0) < 1e-5, f"PMF sums to {result.sum()}, not 1.0"
+    assert np.all(result >= 0), "Negative probability in hurdle_pmf output"
+
+
 def test_stocks_pmf_sums_to_one_and_preserves_domain():
     # Hand-built component PMFs
     stl = np.array([0.6, 0.25, 0.1, 0.04, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
