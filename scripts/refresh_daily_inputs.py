@@ -387,6 +387,32 @@ def _predictions_status(date: str) -> dict:
         except Exception:
             pass
     missing_stats = sorted(set(SUPPORTED_STATS) - set(stats_in_predictions))
+
+    # TOV is never offered by BDL as a market prop, so it will always be
+    # absent from all_props.parquet (the market-line-driven predict output).
+    # Check the stat grid parquet as an authoritative secondary source: the
+    # stat grid generates tov rows via rate-model PMFs without requiring BDL
+    # prop lines.  If tov is present there, the canonical MODEL_ONLY delivery
+    # will include it and the warning is spurious.
+    tov_in_all_props = "tov" in stats_in_predictions
+    tov_via_stat_grid = False
+    if not tov_in_all_props:
+        sg_path = REPO_ROOT / "predictions" / f"stat_grid_{date}.parquet"
+        if sg_path.exists():
+            try:
+                import pandas as pd
+                sg_stats = pd.read_parquet(sg_path, columns=["stat"])["stat"].astype(str).unique().tolist()
+                tov_via_stat_grid = "tov" in sg_stats
+            except Exception:
+                pass
+
+    if tov_in_all_props:
+        tov_status = "present"
+    elif tov_via_stat_grid:
+        tov_status = "present_via_stat_grid"
+    else:
+        tov_status = "missing_from_prediction_source"
+
     return {
         "path": str(p.relative_to(REPO_ROOT)),
         "exists": p.exists(),
@@ -395,8 +421,7 @@ def _predictions_status(date: str) -> dict:
         "rows": n_rows,
         "stats_in_predictions": stats_in_predictions,
         "missing_supported_stats": missing_stats,
-        "tov_status": ("present" if "tov" in stats_in_predictions
-                       else "missing_from_prediction_source"),
+        "tov_status": tov_status,
     }
 
 

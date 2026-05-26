@@ -88,9 +88,38 @@ def _load_availability(repo_root: Path, date: str) -> pd.DataFrame:
     if not p.is_file():
         return pd.DataFrame()
     df = pd.read_parquet(p)
-    if "game_date" in df.columns:
-        df = df[df["game_date"].astype(str) == date]
-    return df
+    if "game_date" not in df.columns:
+        return df
+    exact = df[df["game_date"].astype(str) == date]
+    if not exact.empty:
+        return exact
+    # Fallback: use the most recent available date within 7 days when the
+    # table has not yet been refreshed for today.  This prevents all
+    # availability features from defaulting to "source_unavailable" /
+    # prob_active=0.5 on game days that immediately follow a data-pipeline
+    # gap.  Staleness beyond the 7-day window is treated as missing to
+    # avoid silently propagating injury statuses that are too old to trust.
+    available_dates = sorted(df["game_date"].astype(str).unique())
+    recent_candidates = [d for d in available_dates if d < date]
+    if recent_candidates:
+        from datetime import datetime as _dt
+        latest = recent_candidates[-1]
+        try:
+            delta_days = (_dt.fromisoformat(date) - _dt.fromisoformat(latest)).days
+        except Exception:
+            delta_days = 999
+        if delta_days <= 7:
+            fallback = df[df["game_date"].astype(str) == latest].copy()
+            # Stamp the fallback rows with the target date so downstream
+            # merges (which join on game_date == date) succeed.
+            fallback["game_date"] = date
+            print(
+                "AVAILABILITY_DATE_FALLBACK "
+                f"requested={date} using_latest={latest} "
+                f"staleness_days={delta_days} rows={len(fallback)}"
+            )
+            return fallback
+    return pd.DataFrame()
 
 
 def _load_lineup_status(repo_root: Path, date: str) -> dict[str, Any]:

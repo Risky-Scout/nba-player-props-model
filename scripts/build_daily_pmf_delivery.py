@@ -2533,8 +2533,23 @@ def main() -> int:
     in_delivery_stats = sorted(canonical["stat"].astype(str).unique().tolist())
     missing_stats = sorted(set(expected_stats) - set(in_delivery_stats))
     extra_stats = sorted(set(in_delivery_stats) - set(expected_stats))
-    tov_status_field = ("present" if "tov" in in_delivery_stats
-                        else "missing_from_prediction_source")
+    # TOV is always generated via the stat grid (rate-model PMF, no BDL prop
+    # line required).  When the canonical was built from the stat grid the
+    # label is "present"; when the canonical had to fall back to the sparse
+    # all_props.parquet (which BDL never populates with tov), use a more
+    # descriptive label to distinguish a known-acceptable absence from an
+    # unexpected one.
+    if "tov" in in_delivery_stats:
+        tov_status_field = "present"
+    else:
+        # Check whether the stat grid exists for this date — if it does,
+        # the absence signals a pipeline ordering issue (stat grid not yet
+        # consumed by the delivery build), not a model gap.
+        _sg_check = REPO_ROOT / "predictions" / f"stat_grid_{delivery_date}.parquet"
+        if _sg_check.exists():
+            tov_status_field = "missing_from_delivery_stat_grid_not_consumed"
+        else:
+            tov_status_field = "missing_from_prediction_source"
 
     # Odds-fetch status: explicit signal even when the runner is disk-only.
     if args.no_odds_fetch:
