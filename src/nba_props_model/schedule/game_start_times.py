@@ -115,14 +115,35 @@ def _load_team_id_to_abbr(repo_root: Path) -> dict[int, str]:
 
 
 def _load_predictions(repo_root: Path, delivery_date: str):
+    """Load predictions DataFrame for game-id resolution.
+
+    Cascade:
+    1. ``predictions/all_props_<date>.parquet`` — written by the daily
+       predict step (present on normal game days).
+    2. ``deliveries/<date>/canonical_source/all_props_model_only.parquet``
+       — written by the delivery build; available even when the predict
+       step failed or ran in a mode that skips the predictions/ commit
+       (e.g. woo_morning_monetization manual rebuild). Carries game_id
+       which is all the resolver needs to anchor tip-time lookups.
+    """
     p = repo_root / "predictions" / f"all_props_{delivery_date}.parquet"
-    if not p.exists():
-        return None, p
-    try:
-        import pandas as pd
-        return pd.read_parquet(p), p
-    except Exception:
-        return None, p
+    if p.exists():
+        try:
+            import pandas as pd
+            return pd.read_parquet(p), p
+        except Exception:
+            return None, p
+    # Fallback: canonical delivery artifact — has game_id even when the
+    # predictions/ file was never committed (manual rebuild modes).
+    p2 = (repo_root / "deliveries" / delivery_date
+          / "canonical_source" / "all_props_model_only.parquet")
+    if p2.exists():
+        try:
+            import pandas as pd
+            return pd.read_parquet(p2), p2
+        except Exception:
+            return None, p2
+    return None, p
 
 
 def _load_pmf_display(repo_root: Path, delivery_date: str) -> Optional[dict]:
