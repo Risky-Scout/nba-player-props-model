@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-27T14:50:40+00:00 |
+| Generated (UTC) | 2026-05-27T16:36:05+00:00 |
 | Promote | no |
 | Reason | gate_failed:market_logloss_non_inferior_or_better |
 | Champion model_version | challenger-2026-05-25 |
@@ -30,7 +30,7 @@
 - no_phase10d_overlays_referenced: ok
 - m6_3_stat_role_matrix_valid: valid
 - m6_3_review_cells_guarded: review_cells=2 guarded_cells=2
-- market_benchmark_available: rows_total=5625 dates_included=13
+- market_benchmark_available: rows_total=5625 dates_included=14
 
 ## Gates failed
 
