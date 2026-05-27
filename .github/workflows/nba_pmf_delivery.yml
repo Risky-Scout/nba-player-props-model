@@ -310,7 +310,6 @@ jobs:
         if: needs.resolve_context.outputs.valid_skip_reason == ''
         run: |
           set -euo pipefail
-          python3 -m pip install --quiet pytest
           PYTHONPATH=src python3 -m pytest \
             tests/test_sparse_hurdle.py \
             tests/test_sparse_hurdle_tail_shape.py \
