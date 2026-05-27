@@ -1,0 +1,31 @@
+{
+  "as_of_date": "2026-05-23",
+  "schema_version": "m8_6q_v2",
+  "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+  "forbidden_columns_check": "no_market_full_pmf_columns",
+  "odds_snapshot_family": "hist_lockday",
+  "odds_snapshot_path": "data/odds_api/processed/2026-05-23/odds_pairs_hist_lockday_2026-05-23.parquet",
+  "odds_snapshot_type": "hist_lockday",
+  "odds_snapshot_substr_used": "hist_lockday",
+  "odds_snapshot_rank": 1,
+  "odds_snapshot_is_historical": true,
+  "odds_snapshot_lock_offset_minutes": 5,
+  "rows": 3462,
+  "matched_rows": 1337,
+  "scored_rows_all_fields_nonnull": 1337,
+  "odds_rows": 3462,
+  "market_overlap_ratio": 0.386193,
+  "insufficient_market_overlap": false,
+  "scoring_blocker_counts": {
+    "market_join_failed": 2125,
+    "none": 1337
+  },
+  "odds_pairs_source": "data/odds_api/processed/2026-05-23/odds_pairs_hist_lockday_2026-05-23.parquet",
+  "oof_single_rows": 0,
+  "oof_combo_rows": 95,
+  "model_source_mode": "oof_plus_canonical",
+  "box_score_rows_for_as_of_date": 19,
+  "box_score_actual_lookup_keys": 228,
+  "pmf_col_single": null,
+  "pmf_col_combo": "pmf"
+}
