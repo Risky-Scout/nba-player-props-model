@@ -296,25 +296,31 @@ def _canonical_delivery_path(date: str) -> Path:
 
 
 def _enrich_odds_player_ids(odds: pd.DataFrame, date: str) -> pd.DataFrame:
-    """Odds pairs often lack player_id; map from same-slate canonical model rows."""
+    """Odds pairs often lack player_id; map from same-slate canonical model rows.
+
+    Matches on player_name only (not stat) so that combo-stat odds rows
+    (pa, pr, pra, ra, stocks) get enriched even when the canonical only
+    covers single stats (pts, reb, ast, stl, blk, fg3m).
+    """
     odds = odds.copy()
     if "player_id" not in odds.columns:
         odds["player_id"] = pd.NA
     cpath = _canonical_delivery_path(date)
     if not cpath.exists():
         return odds
-    can = pd.read_parquet(cpath, columns=["player_id", "player_name", "stat"])
-    can["stat_canonical"] = can["stat"].apply(_norm_stat)
+    can = pd.read_parquet(cpath, columns=["player_id", "player_name"])
     can["_player_name_norm"] = (
         can["player_name"].astype(str).str.lower().str.strip()
     )
-    mp = can.drop_duplicates(subset=["_player_name_norm", "stat_canonical"])[
-        ["_player_name_norm", "stat_canonical", "player_id"]
-    ]
+    # One player_id per name — take lowest id on collision to be deterministic.
+    mp = (
+        can.dropna(subset=["_player_name_norm", "player_id"])
+        .groupby("_player_name_norm", as_index=False)["player_id"]
+        .min()
+    )
     odds = odds.merge(
         mp,
-        left_on=["_player_name_norm", "stat_canonical"],
-        right_on=["_player_name_norm", "stat_canonical"],
+        on="_player_name_norm",
         how="left",
         suffixes=("", "_canon"),
     )
@@ -529,14 +535,22 @@ def _main_single_date(
     else:
         model_df = pd.DataFrame()
 
-    if model_df.empty:
-        model_df = _load_canonical_model_pmfs(date)
-        model_source_mode = (
-            "delivery_canonical_fallback"
-            if (oof_single_path.exists() or oof_combo_path.exists())
-            else "delivery_canonical_only"
-        )
-
+    # Always merge in canonical single-stat PMFs when available. OOF only
+    # covers combo stats (pa, pr, pra, ra, stocks); the canonical delivery
+    # covers single stats (pts, reb, ast, stl, blk, fg3m). Without this
+    # merge, matched=0 for all single-stat odds rows when OOF is non-empty.
+    can_df = _load_canonical_model_pmfs(date)
+    if not can_df.empty:
+        if model_df.empty:
+            model_df = can_df
+            model_source_mode = (
+                "delivery_canonical_fallback"
+                if (oof_single_path.exists() or oof_combo_path.exists())
+                else "delivery_canonical_only"
+            )
+        else:
+            model_df = pd.concat([model_df, can_df], ignore_index=True)
+            model_source_mode = "oof_plus_canonical"
     if model_df.empty:
         empty = pd.DataFrame(columns=[
             "date","stat","line","model_prob_over","join_status","m8_6q_schema_version",
