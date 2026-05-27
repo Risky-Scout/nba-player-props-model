@@ -328,7 +328,7 @@ jobs:
     name: Train & Calibrate Model
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_training == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
+    if: always() && needs.resolve_context.result == 'success' && needs.readiness.result == 'success' && needs.resolve_context.outputs.run_training == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
     timeout-minutes: 360
     concurrency:
       group: nba-pmf-model-chain-${{ needs.resolve_context.outputs.as_of_date }}
@@ -559,7 +559,7 @@ jobs:
     name: PMF Calibration & Market Evaluation
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness, model_chain_training_calibration]
-    if: needs.resolve_context.outputs.run_phase8 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && needs.model_chain_training_calibration.result == 'success'
+    if: always() && needs.resolve_context.result == 'success' && needs.readiness.result == 'success' && needs.resolve_context.outputs.run_phase8 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && needs.model_chain_training_calibration.result == 'success'
     timeout-minutes: 360
     concurrency:
       group: nba-pmf-phase8-${{ needs.resolve_context.outputs.as_of_date }}
@@ -856,7 +856,7 @@ jobs:
     name: Train Contextual Model & Promote
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness, phase8_pmf_calibration_diagnostics_market_eval]
-    if: needs.resolve_context.outputs.run_phase13 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && (needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'success' || needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'skipped')
+    if: always() && needs.resolve_context.result == 'success' && needs.readiness.result == 'success' && needs.resolve_context.outputs.run_phase13 == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && (needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'success' || needs.phase8_pmf_calibration_diagnostics_market_eval.result == 'skipped')
     timeout-minutes: 240
     concurrency:
       group: nba-pmf-phase13-${{ needs.resolve_context.outputs.as_of_date }}
@@ -1207,7 +1207,7 @@ jobs:
     name: Generate Daily Predictions
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_predict == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
+    if: always() && needs.resolve_context.result == 'success' && needs.readiness.result == 'success' && needs.resolve_context.outputs.run_predict == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
     timeout-minutes: 90
     concurrency:
       group: nba-pmf-predict-${{ needs.resolve_context.outputs.delivery_date }}
@@ -1351,7 +1351,7 @@ jobs:
     name: Build & Publish Deliveries
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness, phase13_live_context_contextual_lineup]
-    if: needs.resolve_context.outputs.run_delivery == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && (needs.phase13_live_context_contextual_lineup.result == 'success' || needs.phase13_live_context_contextual_lineup.result == 'skipped')
+    if: always() && needs.resolve_context.result == 'success' && needs.readiness.result == 'success' && needs.resolve_context.outputs.run_delivery == 'true' && needs.resolve_context.outputs.valid_skip_reason == '' && (needs.phase13_live_context_contextual_lineup.result == 'success' || needs.phase13_live_context_contextual_lineup.result == 'skipped')
     timeout-minutes: 120
     concurrency:
       group: nba-pmf-delivery-${{ needs.resolve_context.outputs.delivery_date }}-${{ needs.resolve_context.outputs.mode }}
@@ -1731,7 +1731,7 @@ jobs:
     name: Score Previous Games
     runs-on: ubuntu-latest
     needs: [resolve_context, readiness]
-    if: needs.resolve_context.outputs.run_after_game == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
+    if: always() && needs.resolve_context.result == 'success' && needs.readiness.result == 'success' && needs.resolve_context.outputs.run_after_game == 'true' && needs.resolve_context.outputs.valid_skip_reason == ''
     timeout-minutes: 120
     concurrency:
       group: nba-pmf-after-game-${{ needs.resolve_context.outputs.delivery_date }}
@@ -1881,6 +1881,9 @@ jobs:
       - delivery_build
       - after_game_scoring
     if: >-
+      always() &&
+      needs.resolve_context.result == 'success' &&
+      needs.readiness.result == 'success' &&
       needs.resolve_context.outputs.run_verifiers == 'true' &&
       needs.resolve_context.outputs.valid_skip_reason == '' &&
       (needs.model_chain_training_calibration.result == 'success' || needs.model_chain_training_calibration.result == 'skipped') &&
