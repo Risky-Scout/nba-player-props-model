@@ -299,9 +299,19 @@ jobs:
         id: audit_edge_calibration
         continue-on-error: true
         run: |
-          AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${{ steps.d.outputs.date }}')")
+          DATE=${{ steps.d.outputs.date }}
+          ROOT_CAUSE_JSON="artifacts/automation_health/derek_edge_root_cause_${DATE}.json"
+          # Ensure root-cause file exists before the calibration audit reads it.
+          # If the previous step produced it we skip; otherwise run it now so the
+          # calibration audit gets real data instead of writing a warn-only stub.
+          if [ ! -f "$ROOT_CAUSE_JSON" ]; then
+            echo "Root-cause JSON missing; running audit_derek_edge_root_cause.py now..."
+            python scripts/audit_derek_edge_root_cause.py --delivery-date "$DATE" || \
+              echo "::notice::audit_derek_edge_root_cause still failed on retry; calibration audit will produce warn output"
+          fi
+          AS_OF=$(python -c "import json,pathlib;p=pathlib.Path('artifacts/models/registry/champion_pointer.json');d=json.loads(p.read_text()) if p.exists() else {};print(d.get('contextual_trained_through_date') or d.get('trained_through_date') or '${DATE}')")
           python scripts/audit_derek_calibration_for_edge_buckets.py \
-            --delivery-date ${{ steps.d.outputs.date }} \
+            --delivery-date "$DATE" \
             --as-of-date "$AS_OF"
 
       - name: Apply Derek edge publishability columns (Phase 13X)
