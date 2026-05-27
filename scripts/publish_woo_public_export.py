@@ -600,15 +600,10 @@ def _build_affiliate_rows_from_delivery(market_df: pd.DataFrame) -> tuple[list[d
             counters["joinable_rows"] += 1
             is_alt = bool(row.get("is_alternate", False))
             if is_alt: flag_counts["alt_line"] += 1
-            mp_over_raw = (
-                row.get("model_p_over")
-                or row.get("model_prob_over")
-                or row.get("p_over")
-                or row.get("prob_over")
-            )
+            mp_over_raw = row.get("p_over")
             try:
                 if mp_over_raw is None or pd.isna(mp_over_raw):
-                    _omit("missing_model_prob_over", row, side); continue
+                    _omit("missing_p_over", row, side); continue
                 model_prob_over = float(mp_over_raw)
             except Exception:
                 _omit("model_prob_not_numeric", row, side); continue
@@ -1214,10 +1209,6 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         fair_over = get(r, "fair_over_odds_american", "fair_odds_over", "fair_odds_model", default=0)
         fair_under = get(r, "fair_under_odds_american", "fair_odds_under", "fair_odds_model", default=0)
         edge = num(get(r, "edge", "raw_edge", default=0.0), 0.0)
-        # EV per unit — prefer row's own ev (already computed by model for
-        # OVER side); derive UNDER ev from model_prob_under * decimal_odds - 1.
-        # When the row is a deduped OVER row, ev from the parquet is OVER EV.
-        _row_ev = num(get(r, "ev", default=0.0), 0.0)
         def _decimal(amer):
             try:
                 f = float(amer)
@@ -1228,7 +1219,16 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
                 return None
         _dec_over = _decimal(over_odds)
         _dec_under = _decimal(under_odds)
-        _row_ev_over = _row_ev  # row's ev is for OVER (deduped, OVER-first)
+        # Prefer parquet ev for OVER; fall back to computing from odds so
+        # rows are never 0.0 EV when market_comparison.parquet lacks the ev column.
+        _row_ev_parquet = get(r, "ev", default=None)
+        _row_ev_parquet = None if _row_ev_parquet is None else num(_row_ev_parquet, None)
+        if _row_ev_parquet is not None:
+            _row_ev_over = _row_ev_parquet
+        elif _dec_over is not None and mpo > 0:
+            _row_ev_over = round(float(mpo) * _dec_over - 1.0, 6)
+        else:
+            _row_ev_over = 0.0
         if _dec_under is not None and mpu > 0:
             _row_ev_under = round(float(mpu) * _dec_under - 1.0, 6)
         elif _dec_over is not None and mpu > 0:
@@ -1369,13 +1369,24 @@ def _m86_repair_woo_monetization_contract_after_publish(date: str) -> None:
         "total_rows": len(rows),
     }
 
+    def _repair_json_default(o):
+        try:
+            import numpy as _np
+            if isinstance(o, _np.integer): return int(o)
+            if isinstance(o, _np.floating): return float(o)
+            if isinstance(o, _np.bool_): return bool(o)
+            if isinstance(o, _np.ndarray): return o.tolist()
+        except ImportError:
+            pass
+        return str(o)
+
     for outp in [
         root / "public_export" / "wizard_of_odds" / date / "affiliate_dashboard.json",
         root / "public_export" / "wizard_of_odds" / "latest" / "affiliate_dashboard.json",
         root / "public_export" / "wizard_of_odds" / "affiliate_dashboard.json",
     ]:
         outp.parent.mkdir(parents=True, exist_ok=True)
-        outp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+        outp.write_text(json.dumps(payload, indent=2, sort_keys=True, default=_repair_json_default), encoding="utf-8")
 
     omitted = {
         "schema_version": "m8_6o_omitted_bets_v1",
