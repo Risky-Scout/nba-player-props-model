@@ -1029,7 +1029,19 @@ def main() -> int:
     after_game_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"scoring delivery {delivery_date} …")
-    canonical = pd.read_parquet(woo_dir / "full_pmfs_wide.parquet")
+    # #region agent log
+    import json as _json, time as _time
+    _log_path = "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/.cursor/debug-dba82a.log"
+    _woo_pmf = woo_dir / "full_pmfs_wide.parquet"
+    _canonical_fallback = REPO_ROOT / "deliveries" / delivery_date / "canonical_source" / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
+    with open(_log_path, "a") as _lf:
+        _lf.write(_json.dumps({"sessionId": "dba82a", "runId": "verify1", "hypothesisId": "A", "location": "score_daily_pmf_delivery_after_game.py:1032", "message": "full_pmfs_wide.parquet exists check", "data": {"full_pmfs_wide_exists": _woo_pmf.exists(), "canonical_fallback_exists": _canonical_fallback.exists(), "delivery_date": delivery_date, "woo_dir": str(woo_dir)}, "timestamp": int(_time.time() * 1000)}) + "\n")
+    # #endregion
+    if not _woo_pmf.exists() and _canonical_fallback.exists():
+        print(f"  full_pmfs_wide.parquet missing; falling back to canonical_source for scoring")
+        canonical = pd.read_parquet(_canonical_fallback)
+    else:
+        canonical = pd.read_parquet(_woo_pmf)
     market_comp = pd.read_parquet(woo_dir / "market_comparison.parquet")
     print(f"  canonical rows: {len(canonical):,}")
     print(f"  market_comparison rows: {len(market_comp):,}")
