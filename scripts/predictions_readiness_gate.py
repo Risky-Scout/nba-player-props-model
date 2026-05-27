@@ -311,6 +311,31 @@ def main() -> int:
     missing_names = ",".join(p.name for p in missing)
     _emit(f"[gate] predictions missing for {date} mode={mode} files={missing_names}")
 
+    # FTP-deploy canonical-delivery fallback: the FTP deploy workflow only
+    # needs the wizard_of_odds delivery artifacts to build + upload HTML —
+    # it does NOT read predictions/all_props_<date>.parquet at all.
+    # When predictions/ files are absent but the canonical delivery + WoO
+    # market comparison exist on disk, treat that as sufficient proof that
+    # predictions ran and allow the FTP deploy to proceed.
+    if mode == "ftp_deploy":
+        canonical = REPO_ROOT / "deliveries" / date / "canonical_source" / "all_props_model_only.parquet"
+        woo_mc = REPO_ROOT / "deliveries" / date / "wizard_of_odds" / "market_comparison.parquet"
+        if canonical.exists() and woo_mc.exists():
+            _emit(
+                f"[gate] ftp_deploy canonical-delivery fallback: "
+                f"predictions/ missing but delivery artifacts present — proceeding. "
+                f"canonical={canonical.relative_to(REPO_ROOT)} "
+                f"woo_mc={woo_mc.relative_to(REPO_ROOT)}"
+            )
+            return _proceed(date, mode)
+        else:
+            _emit(
+                f"[gate] ftp_deploy canonical-delivery fallback: "
+                f"neither predictions/ nor delivery artifacts found — valid-skip. "
+                f"canonical_exists={canonical.exists()} woo_mc_exists={woo_mc.exists()}"
+            )
+            return _valid_skip(date, mode, reason="no_predictions_and_no_delivery_artifacts")
+
     now_utc = _now_utc()
     now_hour = now_utc.hour
     today_utc = now_utc.date().isoformat()
