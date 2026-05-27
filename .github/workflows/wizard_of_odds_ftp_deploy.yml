@@ -34,7 +34,7 @@ run-name: "Wizard of Odds — Public Web Deploy${{ github.event_name == 'workflo
 #
 # Triggers:
 #   - workflow_dispatch (manual)
-#   - workflow_run "completed" of "NBA PMF Delivery — Daily Pipeline"
+#   - workflow_run "completed" of "NBA Player Props — Production Pipeline"
 #
 # Hard rules:
 #   - Credentials read only from GitHub Actions secrets, never echoed.
@@ -72,7 +72,7 @@ on:
         type: choice
         options: ["false", "true"]
   workflow_run:
-    workflows: ["NBA PMF Delivery — Daily Pipeline"]
+    workflows: ["NBA Player Props — Production Pipeline"]
     types: [completed]
 
 # Phase 13AN-H1: queue concurrent FTP deploys so two simultaneous
@@ -92,7 +92,10 @@ jobs:
     timeout-minutes: 20
     if: |
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'cancelled')
+      # Run on 'success' OR 'failure': delivery can succeed even when training
+      # fails (market gate blocked, etc.). The deploy step itself will
+      # valid-skip if no new delivery files exist for today's slate.
     steps:
       - uses: actions/checkout@v5
         with:

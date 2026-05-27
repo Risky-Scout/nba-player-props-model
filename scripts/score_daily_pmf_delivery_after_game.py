@@ -1031,12 +1031,34 @@ def main() -> int:
     print(f"scoring delivery {delivery_date} …")
     _woo_pmf = woo_dir / "full_pmfs_wide.parquet"
     _canonical_fallback = REPO_ROOT / "deliveries" / delivery_date / "canonical_source" / "player_prop_pmfs_tonight_MODEL_ONLY.parquet"
-    if not _woo_pmf.exists() and _canonical_fallback.exists():
+    _market_comp_path = woo_dir / "market_comparison.parquet"
+
+    # Determine PMF source — gracefully valid-skip if no delivery files exist at all.
+    if _woo_pmf.exists():
+        canonical = pd.read_parquet(_woo_pmf)
+    elif _canonical_fallback.exists():
         print(f"  full_pmfs_wide.parquet missing; falling back to canonical_source for scoring")
         canonical = pd.read_parquet(_canonical_fallback)
     else:
-        canonical = pd.read_parquet(_woo_pmf)
-    market_comp = pd.read_parquet(woo_dir / "market_comparison.parquet")
+        print(
+            f"  AFTER_GAME_SCORE_VALID_SKIP date={delivery_date} "
+            f"reason=no_delivery_pmfs_available"
+        )
+        (after_game_dir / "score_status.json").write_text(
+            __import__("json").dumps({
+                "delivery_date": delivery_date,
+                "outcome": "valid_skip",
+                "reason": "no_delivery_pmfs_available — delivery did not run for this date",
+            }, indent=2)
+        )
+        return
+
+    # market_comparison is optional; scoring still runs without it.
+    if _market_comp_path.exists():
+        market_comp = pd.read_parquet(_market_comp_path)
+    else:
+        print(f"  market_comparison.parquet missing — market scoring will be skipped")
+        market_comp = pd.DataFrame()
     print(f"  canonical rows: {len(canonical):,}")
     print(f"  market_comparison rows: {len(market_comp):,}")
 
