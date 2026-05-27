@@ -1,8 +1,10 @@
 {
-  "blocker": "no rows in player_game_stats.parquet for game_date=2026-05-26",
-  "code_commit": "c4a94744eabc0cb8bd1cffbebc432b71bf68dc54",
+  "by_game": {
+    "21713532": {}
+  },
+  "code_commit": "5a895ce234d6ccdfff97047a4d14e95515822bbd",
   "delivery_date": "2026-05-26",
-  "generated_at_utc": "2026-05-27T01:54:58+00:00",
+  "generated_at_utc": "2026-05-27T15:04:14+00:00",
   "schema_version": "1.0",
-  "status": "pending_outcomes"
+  "status": "scored"
 }
