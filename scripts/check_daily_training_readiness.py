@@ -239,12 +239,6 @@ def check_outcomes(report: ReadinessReport, as_of: dt.date) -> None:
 
     # Min sample threshold.
     enough_total = n_through >= MIN_TRAINING_ROWS
-    # #region agent log
-    import json as _json_r, time as _time_r
-    _log_path_r = "/Users/josephshackelford/repos/nba-player-props-model-pmf-fix/.cursor/debug-dba82a.log"
-    with open(_log_path_r, "a") as _lf_r:
-        _lf_r.write(_json_r.dumps({"sessionId": "dba82a", "runId": "verify1", "hypothesisId": "B", "location": "check_daily_training_readiness.py:241", "message": "min_training_rows check", "data": {"n_through": n_through, "min_required": MIN_TRAINING_ROWS, "passes": enough_total, "as_of": str(as_of)}, "timestamp": int(_time_r.time() * 1000)}) + "\n")
-    # #endregion
     report.checks.append(
         CheckResult(
             name="min_training_rows",
