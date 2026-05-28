@@ -1,13 +1,27 @@
 {
-  "checks": [],
-  "code_commit": "fdc1ccbd96f94bff737a01cc05c72fa4e97d972d",
+  "checks": [
+    {
+      "detail": "deliveries/2026-05-28/derek_game_snapshots",
+      "name": "derek_game_snapshots_dir_present",
+      "passed": true
+    }
+  ],
+  "code_commit": "993151c89aeefa2f42fef78e270949232971622a",
   "delivery_date": "2026-05-28",
   "facts": {
-    "pending_reason": "no_predictions_parquet",
-    "predictions_parquet_present": false,
-    "slate_games": 0
+    "game_count": 1,
+    "mode_counts": {
+      "backfill_demo": 0,
+      "production_live": 0,
+      "production_live_current": 0,
+      "unknown": 0
+    },
+    "pending_reason": "no_snapshots_due_yet_dir_empty",
+    "recomputed_snapshot_count": 0,
+    "slate_games": 1,
+    "snapshot_count": 0
   },
-  "generated_at_utc": "2026-05-28T08:29:29+00:00",
+  "generated_at_utc": "2026-05-28T18:44:17+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
