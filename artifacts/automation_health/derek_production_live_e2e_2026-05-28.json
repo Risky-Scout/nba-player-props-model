@@ -6,8 +6,42 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-05-28",
-    "now_utc": "2026-05-28T21:06:04Z",
-    "pending_reason": "all_targets_in_future",
+    "now_utc": "2026-05-28T22:49:40Z",
+    "overdue_missing_snapshots": [],
+    "overdue_unresolved": [],
+    "per_type_lines": [
+      {
+        "detail": "",
+        "outcome": "PASS",
+        "type": "CURRENT_LIVE"
+      },
+      {
+        "detail": "game=21713533 target_utc=2026-05-29T00:15:00Z now=2026-05-28T22:49:40Z",
+        "outcome": "PENDING_NOT_DUE",
+        "type": "T_MINUS_25"
+      },
+      {
+        "detail": "game=21713533 target_utc=2026-05-29T00:34:00Z now=2026-05-28T22:49:40Z",
+        "outcome": "PENDING_NOT_DUE",
+        "type": "CLOSE_LOCK"
+      }
+    ],
+    "phase13x_actionable_unconfirmed_failures": [],
+    "phase13x_blocker_threshold_failures": [],
+    "phase13x_publish_col_failures": [],
+    "phase13x_reports_missing": [],
+    "pl_fail_count": 0,
+    "pl_fails": [],
+    "pl_pass_count": 1,
+    "pl_passes": [
+      {
+        "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+        "game_id": "21713533",
+        "issues": [],
+        "snapshot_mode": "production_live_current",
+        "snapshot_type": "current_live"
+      }
+    ],
     "predictions_parquet_present": true,
     "schedule_eval": [
       {
@@ -21,6 +55,6 @@
     ],
     "schedule_size": 1
   },
-  "outcome": "pending",
+  "outcome": "pass",
   "schema_version": "1.0"
 }
