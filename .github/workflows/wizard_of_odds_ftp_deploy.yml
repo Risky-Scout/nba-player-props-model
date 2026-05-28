@@ -93,9 +93,6 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'cancelled')
-      # Run on 'success' OR 'failure': delivery can succeed even when training
-      # fails (market gate blocked, etc.). The deploy step itself will
-      # valid-skip if no new delivery files exist for today's slate.
     steps:
       - uses: actions/checkout@v5
         with:

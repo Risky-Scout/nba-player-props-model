@@ -54,7 +54,7 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 # Reuse the canonical BDL client so retry/backoff behaviour stays identical.
 from nba_props_model.data.bdl_client import (  # noqa: E402
-    get_player_game_stats, parse_minutes,
+    get_player_game_stats, get_games, parse_minutes,
 )
 
 PARQUET_PATH = REPO_ROOT / "data" / "player_game_stats.parquet"
@@ -215,6 +215,28 @@ def main() -> int:
               f"(kept {len(incoming)})")
 
     if incoming.empty:
+        # Before flagging as a real gap, check whether BDL scheduled any
+        # games in this window.  On genuine rest days / off-nights BDL
+        # returns an empty games list; zero stat rows are then expected and
+        # the parquet is left unchanged (exit 0, valid-skip).  Only exit 1
+        # when BDL confirms games were played but returned no stat rows,
+        # which indicates a real data lag or API issue.
+        try:
+            games_in_window = get_games(
+                start_date=start_dt.isoformat(),
+                end_date=end_dt.isoformat(),
+            )
+        except Exception as exc:
+            print(f"  WARN: BDL /v1/games check failed ({exc}); treating as data gap.")
+            games_in_window = None  # unknown — fall through to exit 1
+
+        if games_in_window is not None and len(games_in_window) == 0:
+            print(
+                f"  NO_GAMES_VALID_SKIP: BDL reports 0 games for "
+                f"{start_dt} → {end_dt}; no stat rows expected."
+            )
+            return 0
+
         print("  WARN: BDL returned 0 mapped rows for this window.")
         # Don't write — exit non-zero so cron flags the gap.
         return 1

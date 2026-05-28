@@ -67,12 +67,29 @@ def main(argv: list[str] | None = None) -> int:
     max_date = str(s.max().date())
     min_date = str(s.min().date())
     if max_date < required:
-        failures.append(
-            f"latest game_date {max_date!r} < required_through_date "
-            f"{required!r} — backfill is missing dates "
-            f"{(dt.date.fromisoformat(max_date) + dt.timedelta(days=1)).isoformat()} "
-            f"through {required}"
-        )
+        # Before failing, confirm BDL actually had games on the required date.
+        # On genuine no-games / rest days, max_date < required is expected and
+        # should not block training.
+        _no_games_day = False
+        try:
+            from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
+            games_on_required = get_games(start_date=required, end_date=required)
+            if len(games_on_required) == 0:
+                _no_games_day = True
+                print(
+                    f"  FRESHNESS_NOCHECK: {required} is a no-games day per BDL "
+                    f"(max_date={max_date}); treating freshness as satisfied."
+                )
+        except Exception as exc:
+            print(f"  WARN: BDL games check for {required} failed ({exc}); "
+                  f"applying freshness gate conservatively.")
+        if not _no_games_day:
+            failures.append(
+                f"latest game_date {max_date!r} < required_through_date "
+                f"{required!r} — backfill is missing dates "
+                f"{(dt.date.fromisoformat(max_date) + dt.timedelta(days=1)).isoformat()} "
+                f"through {required}"
+            )
 
     rows_for_required = int((s.dt.date.astype(str) == required).sum())
 
