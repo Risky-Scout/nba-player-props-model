@@ -1,0 +1,16 @@
+{
+  "challenger_dir": "artifacts/models/challengers/2026-05-27_contextual",
+  "code_commit": "7c23c5d5fa7aa041d0d831311cd655b626348149",
+  "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "fitted_targets": [
+    "minutes",
+    "pts",
+    "reb",
+    "ast",
+    "tov",
+    "stl",
+    "blk",
+    "fg3m"
+  ],
+  "promoted_at_utc": null
+}
