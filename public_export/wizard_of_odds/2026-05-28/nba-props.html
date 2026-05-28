@@ -601,12 +601,11 @@ function renderBetRow(bet) {
     const kellyRaw    = bestBook && Number.isFinite(bestBook.odds) ? kellyFractionRaw(sideProbModel, bestBook.odds) : 0;
     const kellyApplied = kellyRaw * STATE.kelly;
     const kellyCapped  = Math.min(KELLY_CAP, kellyApplied);
-    betAmount = Number.isFinite(kellyCapped) ? STATE.bankroll * kellyCapped : 0;
-    // Display the APPLIED (uncapped) kelly % so the user can see their
-    // fraction selection working. The cap only gates the dollar amount.
+    // $ to Bet = bankroll × Bankroll% (the displayed fraction, not the safety cap).
+    betAmount = Number.isFinite(kellyApplied) ? STATE.bankroll * kellyApplied : 0;
     const capApplied = kellyApplied > KELLY_CAP;
     kellyDisplayPct = (kellyApplied * 100).toFixed(2) + '%';
-    kellyDisplaySub = capApplied ? `capped $${fmtMoney(betAmount)}` : (kellyApplied > 0 ? `$${fmtMoney(betAmount)}` : '—');
+    kellyDisplaySub = kellyApplied > 0 ? `$${fmtMoney(betAmount)}` : '—';
     betAmountDisplay = betAmount >= 0.5
       ? `<span class="currency">$</span>${fmtMoney(betAmount)}`
       : '—';
@@ -791,7 +790,7 @@ function render() {
     const edge = b.model_prob - best.book.market_prob;
     if (edge <= 0 || Math.abs(edge) >= 0.20) return; // Skip neg + suspicious
     const kellyRaw = kellyFractionRaw(b.model_prob, best.book.odds);
-    const kellyApplied = Math.min(KELLY_CAP, kellyRaw * STATE.kelly);
+    const kellyApplied = kellyRaw * STATE.kelly;
     totalAction += STATE.bankroll * kellyApplied;
   });
   document.getElementById('kpi-action').textContent = '$' + fmtMoney(totalAction);
