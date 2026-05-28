@@ -600,8 +600,11 @@ function renderBetRow(bet) {
     const kellyApplied = kellyRaw * STATE.kelly;
     const kellyCapped  = Math.min(KELLY_CAP, kellyApplied);
     betAmount = Number.isFinite(kellyCapped) ? STATE.bankroll * kellyCapped : 0;
-    kellyDisplayPct = (kellyCapped * 100).toFixed(2) + '%';
-    kellyDisplaySub = kellyCapped.toFixed(4) + 'u raw';
+    // Display the APPLIED (uncapped) kelly % so the user can see their
+    // fraction selection working. The cap only gates the dollar amount.
+    const capApplied = kellyApplied > KELLY_CAP;
+    kellyDisplayPct = (kellyApplied * 100).toFixed(2) + '%';
+    kellyDisplaySub = capApplied ? `capped $${fmtMoney(betAmount)}` : (kellyApplied > 0 ? `$${fmtMoney(betAmount)}` : '—');
     betAmountDisplay = betAmount >= 0.5
       ? `<span class="currency">$</span>${fmtMoney(betAmount)}`
       : '—';
@@ -806,6 +809,11 @@ document.getElementById('search').oninput = (e) => {
   render();
 };
 document.getElementById('bankroll-input').oninput = (e) => {
+  const v = parseFloat(e.target.value);
+  STATE.bankroll = (isNaN(v) || v <= 0) ? 0 : v;
+  render();
+};
+document.getElementById('bankroll-input').onchange = (e) => {
   const v = parseFloat(e.target.value);
   STATE.bankroll = (isNaN(v) || v <= 0) ? 0 : v;
   render();
