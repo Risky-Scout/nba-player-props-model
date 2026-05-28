@@ -3,6 +3,6 @@
   "reason": "Morning-only forward-feed run for 2026-05-28. BDL confirmed lineups are not yet available; the lineup snapshot will be produced by the later derek_pre_tipoff_refresh / close_lock runs. Re-check after the pre-tipoff window.",
   "snapshot_mode_running": "morning",
   "lineup_phase_executed_today": false,
-  "checked_at_utc": "2026-05-28T18:23:40Z",
+  "checked_at_utc": "2026-05-28T18:48:50Z",
   "schema_version": "lineup_snapshot_status.v2"
 }
