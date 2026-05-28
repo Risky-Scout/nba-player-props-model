@@ -1,6 +1,6 @@
 {
   "schema_version": "m8_6m_v1",
-  "created_at_utc": "2026-05-28T21:11:47.893387+00:00",
+  "created_at_utc": "2026-05-28T21:59:46.900707+00:00",
   "date": "2026-05-28",
   "canonical_source_type": "MODEL_ONLY_TRUE_ATOM_PMF",
   "atom_pmf_policy": "atom_source_only_no_ladder_fallback",
@@ -73,7 +73,7 @@
     "model_only_parquet": "deliveries/2026-05-28/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "model_only_parquet_path": "deliveries/2026-05-28/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "parquet_path": "deliveries/2026-05-28/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-    "parquet_sha256": "349c45fe9bf5e2186f435dfe24aebac95fe4191352f2ae49e3a3f9c934c67b05",
+    "parquet_sha256": "da0ccc587861d6c819d7d7ab6d836ccbe7e476caf98ea09a973d5e4471523be3",
     "atom_pmf_present": true,
     "atom_pmf_column": "pmf_active",
     "atom_pmf_columns": [
