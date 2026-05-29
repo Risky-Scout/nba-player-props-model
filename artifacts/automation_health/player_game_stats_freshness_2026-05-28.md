@@ -1,6 +1,6 @@
 # Player game stats freshness — 2026-05-28
 
-_Generated 2026-05-29T18:28:02+00:00._
+_Generated 2026-05-29T20:50:57+00:00._
 
 - backfill window: **2026-05-22 → 2026-05-28**
 - status: **PASS**
