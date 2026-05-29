@@ -146,7 +146,10 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     lineup_status = _read_json(feed_dir / "lineup_snapshot_status.json") or {}
-    lineup_pending = str(lineup_status.get("status") or "") == "pending_lineup_snapshot"
+    lineup_pending = str(lineup_status.get("status") or "") in (
+        "pending_lineup_snapshot",
+        "pending_pre_tipoff_run",  # written by morning delivery runs before T-25 fires
+    )
 
     # ── Required files ──────────────────────────────────────────────
     required = [
