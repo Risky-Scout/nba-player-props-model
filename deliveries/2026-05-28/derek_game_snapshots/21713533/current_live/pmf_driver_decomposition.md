@@ -6,24 +6,24 @@ Per-row contextual deltas from the Phase 13S direct-lineup engine. Constant delt
 
 ## Per-player contextual deltas (top 30)
 
-| player_name | team | exp_mp_contextual | contextual_minutes_delta | contextual_pmf_mean_baseline | contextual_pmf_mean_post |
-| --- | --- | --- | --- | --- | --- |
-| De'Aaron Fox | SAS | 14.451 | 14.451 | nan | nan |
-| Jalen Williams | OKC | 14.451 | 14.451 | nan | nan |
-| Isaiah Hartenstein | OKC | 14.451 | 14.451 | nan | nan |
-| Cason Wallace | OKC | 14.451 | 14.451 | nan | nan |
-| Jaylin Williams | OKC | 14.451 | 14.451 | nan | nan |
-| Jared McCain | OKC | 14.451 | 14.451 | nan | nan |
-| Stephon Castle | SAS | 14.451 | 14.451 | nan | nan |
-| Devin Vassell | SAS | 14.451 | 14.451 | nan | nan |
-| Shai Gilgeous-Alexander | OKC | 14.451 | 14.451 | nan | nan |
-| Luguentz Dort | OKC | 14.451 | 14.451 | nan | nan |
-| Julian Champagnie | SAS | 14.451 | 14.451 | nan | nan |
-| Chet Holmgren | OKC | 14.451 | 14.451 | nan | nan |
-| Dylan Harper | SAS | 14.451 | 14.451 | nan | nan |
-| Alex Caruso | OKC | 14.451 | 14.451 | nan | nan |
-| Keldon Johnson | SAS | 14.451 | 14.451 | nan | nan |
-| Victor Wembanyama | SAS | 14.451 | 14.451 | nan | nan |
+| player_name | team | exp_mp_contextual | contextual_minutes_delta |
+| --- | --- | --- | --- |
+| De'Aaron Fox | SAS | 14.451 | 14.451 |
+| Jalen Williams | OKC | 14.451 | 14.451 |
+| Isaiah Hartenstein | OKC | 14.451 | 14.451 |
+| Cason Wallace | OKC | 14.451 | 14.451 |
+| Jaylin Williams | OKC | 14.451 | 14.451 |
+| Jared McCain | OKC | 14.451 | 14.451 |
+| Stephon Castle | SAS | 14.451 | 14.451 |
+| Devin Vassell | SAS | 14.451 | 14.451 |
+| Shai Gilgeous-Alexander | OKC | 14.451 | 14.451 |
+| Luguentz Dort | OKC | 14.451 | 14.451 |
+| Julian Champagnie | SAS | 14.451 | 14.451 |
+| Chet Holmgren | OKC | 14.451 | 14.451 |
+| Dylan Harper | SAS | 14.451 | 14.451 |
+| Alex Caruso | OKC | 14.451 | 14.451 |
+| Keldon Johnson | SAS | 14.451 | 14.451 |
+| Victor Wembanyama | SAS | 14.451 | 14.451 |
 
 ## Technical audit details
 
