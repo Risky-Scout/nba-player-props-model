@@ -3,9 +3,9 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `derek_game_snapshots/21713534/morning/market_comparison.csv`
-- Original rows: `596`
+- Original rows: `2756`
 - Original columns: `68`
-- Original bytes: `545644`
+- Original bytes: `2547776`
 - Current CSV preview rows: `596`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `market_comparison.parquet`
@@ -15,5 +15,8 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 | part | rows | bytes |
 |---|---:|---:|
-| `market_comparison_csv_parts/market_comparison_part_000.csv` | 570 | 503438 |
-| `market_comparison_csv_parts/market_comparison_part_001.csv` | 26 | 20921 |
+| `market_comparison_csv_parts/market_comparison_part_000.csv` | 570 | 503518 |
+| `market_comparison_csv_parts/market_comparison_part_001.csv` | 570 | 493650 |
+| `market_comparison_csv_parts/market_comparison_part_002.csv` | 570 | 512557 |
+| `market_comparison_csv_parts/market_comparison_part_003.csv` | 570 | 499728 |
+| `market_comparison_csv_parts/market_comparison_part_004.csv` | 476 | 447206 |
