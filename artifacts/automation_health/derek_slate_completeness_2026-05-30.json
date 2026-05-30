@@ -21,7 +21,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-05-30T19:56:07Z",
+  "now_utc": "2026-05-30T21:12:54Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {

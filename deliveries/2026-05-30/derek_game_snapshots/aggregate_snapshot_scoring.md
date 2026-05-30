@@ -2,4 +2,4 @@
 
 - status: **pending_outcomes**
 - blocker: `no rows in player_game_stats.parquet for game_date=2026-05-30`
-- generated_at_utc: 2026-05-30T19:56:26+00:00
+- generated_at_utc: 2026-05-30T21:13:56+00:00

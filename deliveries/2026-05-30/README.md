@@ -1,19 +1,20 @@
 # Derek PMF Delivery — May 30, 2026
 
-Generated 2026-05-30T19:56:22Z.
+Generated 2026-05-30T21:13:52Z.
 
 ## What to open first
 
 1. **Derek snapshot index** — [derek_game_snapshots/README.md](derek_game_snapshots/README.md)
-2. **Edge reasonability audit** — [../../artifacts/automation_health/derek_edge_root_cause_2026-05-30.md](../../artifacts/automation_health/derek_edge_root_cause_2026-05-30.md)
-3. **Edge calibration audit** — [../../artifacts/automation_health/derek_edge_calibration_2026-05-30.md](../../artifacts/automation_health/derek_edge_calibration_2026-05-30.md)
-4. **Daily model report** — see `artifacts/model_daily_reports/<trained_through_date>/daily_model_training_report.md`
+2. **Current-live for Spurs @ Thunder** — [snapshot_report.md](derek_game_snapshots/21713534/current_live/snapshot_report.md)
+3. **Edge reasonability audit** — [../../artifacts/automation_health/derek_edge_root_cause_2026-05-30.md](../../artifacts/automation_health/derek_edge_root_cause_2026-05-30.md)
+4. **Edge calibration audit** — [../../artifacts/automation_health/derek_edge_calibration_2026-05-30.md](../../artifacts/automation_health/derek_edge_calibration_2026-05-30.md)
+5. **Daily model report** — see `artifacts/model_daily_reports/<trained_through_date>/daily_model_training_report.md`
 
 ## Snapshot status by game
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Spurs @ Thunder | Pending dispatch | Pending dispatch | Pending dispatch |
+| Spurs @ Thunder | Available | Scheduled | Scheduled |
 
 Missed snapshots are documented rather than backfilled. This avoids creating fake pre-tip output after a game has started. Going forward the dispatcher's snapshot state machine prevents silent misses by classifying every (game, snapshot type) pair as one of: Available, Scheduled, Pending dispatch, Available (late but pre-tip), or Missed during setup window.
 

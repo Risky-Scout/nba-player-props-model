@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — May 30, 2026
 
-Generated 2026-05-30T19:56:22Z.
+Generated 2026-05-30T21:13:52Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Spurs @ Thunder | Pending dispatch | Pending dispatch | Pending dispatch |
+| Spurs @ Thunder | Available | Scheduled | Scheduled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
 
@@ -23,10 +23,18 @@ Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; t
 
 ### Spurs @ Thunder
 
-_Game ID `21713534` (used in paths only). Tip time UTC: ``._
+_Game ID `21713534` (used in paths only). Tip time UTC: `2026-05-31T00:10:00Z`._
 
-- **T-minus-25**: Pending dispatch
-- **Close-lock**: Pending dispatch
+- **Current-live** (Available):
+  - [snapshot_report.md](21713534/current_live/snapshot_report.md)
+  - [market_comparison.csv](21713534/current_live/market_comparison.csv)
+  - [full_pmf_wide.csv](21713534/current_live/full_pmf_wide.csv)
+  - [outcome_level_probabilities.csv](21713534/current_live/outcome_level_probabilities.csv)
+  - [pmf_driver_decomposition.md](21713534/current_live/pmf_driver_decomposition.md)
+  - [lineup_injury_impact_report.md](21713534/current_live/lineup_injury_impact_report.md)
+  - [direct_lineup_impact_report.md](21713534/current_live/direct_lineup_impact_report.md)
+- **T-minus-25**: Scheduled
+- **Close-lock**: Scheduled
 
 ## PMF variance experience study
 
