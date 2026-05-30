@@ -1,1 +1,2 @@
 game_id,team_abbr,opponent_abbr,resolved_game_start_time_utc,source_used,source_confidence,source_payload_hash,resolution_blocker
+21713534,OKC,SAS,2026-05-31T00:10:00Z,odds_api_live_events,high,eee4dc40611c6fd8,
