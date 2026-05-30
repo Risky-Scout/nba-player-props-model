@@ -5,8 +5,8 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 - Original relative path: `wizard_of_odds/fair_odds_board.csv`
 - Original rows: `4112`
 - Original columns: `63`
-- Original bytes: `3594329`
-- Current CSV preview rows: `646`
+- Original bytes: `3603017`
+- Current CSV preview rows: `644`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `fair_odds_board.parquet`
 - CSV parts folder: `fair_odds_board_csv_parts/`
@@ -15,10 +15,10 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 | part | rows | bytes |
 |---|---:|---:|
-| `fair_odds_board_csv_parts/fair_odds_board_part_000.csv` | 596 | 488415 |
-| `fair_odds_board_csv_parts/fair_odds_board_part_001.csv` | 596 | 491431 |
-| `fair_odds_board_csv_parts/fair_odds_board_part_002.csv` | 596 | 513384 |
-| `fair_odds_board_csv_parts/fair_odds_board_part_003.csv` | 596 | 493682 |
-| `fair_odds_board_csv_parts/fair_odds_board_part_004.csv` | 596 | 489613 |
-| `fair_odds_board_csv_parts/fair_odds_board_part_005.csv` | 596 | 514325 |
-| `fair_odds_board_csv_parts/fair_odds_board_part_006.csv` | 536 | 456311 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_000.csv` | 592 | 486919 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_001.csv` | 592 | 487214 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_002.csv` | 592 | 509871 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_003.csv` | 592 | 497192 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_004.csv` | 592 | 488640 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_005.csv` | 592 | 505682 |
+| `fair_odds_board_csv_parts/fair_odds_board_part_006.csv` | 560 | 481626 |
