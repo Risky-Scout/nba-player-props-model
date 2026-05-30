@@ -1,6 +1,6 @@
 # Derek slate completeness — 2026-05-30
 
-- now_utc: 2026-05-30T21:12:54Z
+- now_utc: 2026-05-30T22:17:47Z
 - predictions_parquet_present: True
 - games_in_real_slate: **1**
 - games_in_predictions: **1**
@@ -11,4 +11,4 @@
 - eligible_close_lock: []
 - games_already_tipped: []
 - games_missed_t_minus_25: []
-- derek_game_folders: {'21713534': ['morning']}
+- derek_game_folders: {'21713534': ['current_live', 'morning']}

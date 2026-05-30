@@ -41,7 +41,7 @@ Sort: largest |raw_edge| first. `edge_publish_status` is the gate that determine
 | Keldon Johnson | fg3m | OVER | 0.500 | 0.807 | 0.579 | +0.228 | +0.321 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 48 |
 | Isaiah Joe | fg3m | OVER | 0.500 | 0.721 | 0.508 | +0.212 | +0.347 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 48 |
 | Alex Caruso | reb | UNDER | 3.500 | 0.721 | 0.512 | +0.210 | +0.377 | REVIEW_LARGE_EDGE | CALIBRATION_SUPPORTED | 221 |
-| Jared McCain | pts | UNDER | 13.500 | 0.707 | 0.507 | +0.203 | +0.322 | PUBLISH_BLOCKER | CALIBRATION_SUPPORTED | 994 |
+| Jared McCain | pts | UNDER | 13.500 | 0.707 | 0.507 | +0.203 | +0.322 | PUBLISH_BLOCKER | CALIBRATION_SUPPORTED | 285 |
 | Isaiah Hartenstein | blk | UNDER | 0.500 | 0.711 | 0.512 | +0.199 | +0.330 | WATCHLIST_NOT_CONFIRMED_LINEUP | CALIBRATION_SAMPLE_LIMITED | 76 |
 | Alex Caruso | ast | UNDER | 2.500 | 0.684 | 0.489 | +0.195 | +0.367 | WATCHLIST_NOT_CONFIRMED_LINEUP | CALIBRATION_SUPPORTED | 136 |
 | Victor Wembanyama | pts | UNDER | 26.500 | 0.677 | 0.501 | +0.178 | +0.321 | PUBLISH_BLOCKER | CALIBRATION_SUPPORTED | 994 |

@@ -1,17 +1,16 @@
 # Derek edge calibration audit — 2026-05-30
 
-- high-edge rows audited: **28**
+- high-edge rows audited: **27**
 - scoring corpus: **11096 rows** across 13 delivery dates
 - thin/limited buckets: **12**
 - review-required buckets: **0**
-- supported buckets: **16**
+- supported buckets: **15**
 
 ## Per-row calibration support
 
 | player | stat | side | line | edge_bucket | n | model_ll | market_ll | Δll | calibration_status |
 | --- | --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- |
 | Isaiah Joe | fg3m | OVER | 0.5 | EDGE_20_30 | 48 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
-| De'Aaron Fox | pts | OVER | 13.5 | EDGE_10_20 | 994 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | De'Aaron Fox | reb | OVER | 4.5 | EDGE_10_20 | 382 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Jaylin Williams | stl | UNDER | 0.5 | EDGE_10_20 | 82 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
 | Stephon Castle | fg3m | OVER | 1.5 | EDGE_10_20 | 283 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
@@ -36,7 +35,7 @@
 | Alex Caruso | fg3m | UNDER | 1.5 | EDGE_20_30 | 196 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Alex Caruso | blk | UNDER | 0.5 | EDGE_10_20 | 76 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
 | Kenrich Williams | fg3m | OVER | 0.5 | EDGE_20_30 | 48 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
-| Jared McCain | pts | UNDER | 13.5 | EDGE_10_20 | 994 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Jared McCain | pts | UNDER | 13.5 | EDGE_20_30 | 285 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Julian Champagnie | blk | OVER | 0.5 | EDGE_20_30 | 19 | nan | nan | +nan | **CALIBRATION_SAMPLE_THIN** |
 
 ## Stat-level model-vs-market summary (historical corpus)

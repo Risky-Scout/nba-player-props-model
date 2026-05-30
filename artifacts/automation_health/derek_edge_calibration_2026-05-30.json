@@ -13,25 +13,9 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Isaiah Joe",
-      "raw_edge": 0.2121,
+      "raw_edge": 0.2120827545530003,
       "side": "OVER",
       "stat": "fg3m"
-    },
-    {
-      "calibration_status": "CALIBRATION_SUPPORTED",
-      "delta_logloss_mean": NaN,
-      "edge_bucket": "EDGE_10_20",
-      "historical_n": 994,
-      "line": 13.5,
-      "line_bucket": "high_gt_10.5",
-      "market_brier_mean": NaN,
-      "market_logloss_mean": NaN,
-      "model_brier_mean": NaN,
-      "model_logloss_mean": NaN,
-      "player_name": "De'Aaron Fox",
-      "raw_edge": 0.101,
-      "side": "OVER",
-      "stat": "pts"
     },
     {
       "calibration_status": "CALIBRATION_SUPPORTED",
@@ -45,7 +29,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "De'Aaron Fox",
-      "raw_edge": 0.1139,
+      "raw_edge": 0.11329897786040771,
       "side": "OVER",
       "stat": "reb"
     },
@@ -61,7 +45,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Jaylin Williams",
-      "raw_edge": 0.1721,
+      "raw_edge": 0.17216987505744952,
       "side": "UNDER",
       "stat": "stl"
     },
@@ -77,7 +61,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Stephon Castle",
-      "raw_edge": 0.1259,
+      "raw_edge": 0.12593775671406005,
       "side": "OVER",
       "stat": "fg3m"
     },
@@ -93,7 +77,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Luguentz Dort",
-      "raw_edge": 0.1129,
+      "raw_edge": 0.11286301159252188,
       "side": "UNDER",
       "stat": "fg3m"
     },
@@ -109,7 +93,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Luguentz Dort",
-      "raw_edge": 0.1646,
+      "raw_edge": 0.16460509218612818,
       "side": "UNDER",
       "stat": "stl"
     },
@@ -125,7 +109,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Shai Gilgeous-Alexander",
-      "raw_edge": 0.2684,
+      "raw_edge": 0.27205170518788135,
       "side": "UNDER",
       "stat": "pts"
     },
@@ -141,7 +125,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Shai Gilgeous-Alexander",
-      "raw_edge": 0.1447,
+      "raw_edge": 0.1446856025808767,
       "side": "UNDER",
       "stat": "fg3m"
     },
@@ -157,7 +141,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Shai Gilgeous-Alexander",
-      "raw_edge": 0.2291,
+      "raw_edge": 0.22896990960663172,
       "side": "UNDER",
       "stat": "blk"
     },
@@ -173,7 +157,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Keldon Johnson",
-      "raw_edge": 0.2279,
+      "raw_edge": 0.22793887750921749,
       "side": "OVER",
       "stat": "fg3m"
     },
@@ -189,7 +173,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Victor Wembanyama",
-      "raw_edge": 0.1754,
+      "raw_edge": 0.1782156161741849,
       "side": "UNDER",
       "stat": "pts"
     },
@@ -205,7 +189,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Victor Wembanyama",
-      "raw_edge": 0.1687,
+      "raw_edge": 0.17010139707509736,
       "side": "UNDER",
       "stat": "reb"
     },
@@ -221,7 +205,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Victor Wembanyama",
-      "raw_edge": 0.1627,
+      "raw_edge": 0.16372638230999492,
       "side": "UNDER",
       "stat": "ast"
     },
@@ -237,7 +221,7 @@
       "model_brier_mean": null,
       "model_logloss_mean": null,
       "player_name": "Victor Wembanyama",
-      "raw_edge": 0.1242,
+      "raw_edge": 0.12427209302325581,
       "side": "UNDER",
       "stat": "blk"
     },
@@ -253,7 +237,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Cason Wallace",
-      "raw_edge": 0.1011,
+      "raw_edge": 0.10201354226571618,
       "side": "UNDER",
       "stat": "reb"
     },
@@ -269,7 +253,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Cason Wallace",
-      "raw_edge": 0.144,
+      "raw_edge": 0.14460706943941848,
       "side": "UNDER",
       "stat": "ast"
     },
@@ -285,7 +269,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Cason Wallace",
-      "raw_edge": 0.166,
+      "raw_edge": 0.16595436893203885,
       "side": "UNDER",
       "stat": "fg3m"
     },
@@ -301,7 +285,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Isaiah Hartenstein",
-      "raw_edge": 0.126,
+      "raw_edge": 0.12732413980503388,
       "side": "UNDER",
       "stat": "reb"
     },
@@ -317,7 +301,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Isaiah Hartenstein",
-      "raw_edge": 0.1994,
+      "raw_edge": 0.19946765518978793,
       "side": "UNDER",
       "stat": "blk"
     },
@@ -333,7 +317,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Alex Caruso",
-      "raw_edge": 0.2515,
+      "raw_edge": 0.2553925636381296,
       "side": "UNDER",
       "stat": "pts"
     },
@@ -349,7 +333,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Alex Caruso",
-      "raw_edge": 0.2095,
+      "raw_edge": 0.21036628663623003,
       "side": "UNDER",
       "stat": "reb"
     },
@@ -365,7 +349,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Alex Caruso",
-      "raw_edge": 0.1941,
+      "raw_edge": 0.19516558209679863,
       "side": "UNDER",
       "stat": "ast"
     },
@@ -381,7 +365,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Alex Caruso",
-      "raw_edge": 0.2611,
+      "raw_edge": 0.2610700247437257,
       "side": "UNDER",
       "stat": "fg3m"
     },
@@ -397,7 +381,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Alex Caruso",
-      "raw_edge": 0.1035,
+      "raw_edge": 0.10348638878642569,
       "side": "UNDER",
       "stat": "blk"
     },
@@ -413,15 +397,15 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Kenrich Williams",
-      "raw_edge": 0.2872,
+      "raw_edge": 0.2872835334476843,
       "side": "OVER",
       "stat": "fg3m"
     },
     {
       "calibration_status": "CALIBRATION_SUPPORTED",
       "delta_logloss_mean": NaN,
-      "edge_bucket": "EDGE_10_20",
-      "historical_n": 994,
+      "edge_bucket": "EDGE_20_30",
+      "historical_n": 285,
       "line": 13.5,
       "line_bucket": "high_gt_10.5",
       "market_brier_mean": NaN,
@@ -429,7 +413,7 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Jared McCain",
-      "raw_edge": 0.1995,
+      "raw_edge": 0.20288479312494634,
       "side": "UNDER",
       "stat": "pts"
     },
@@ -445,13 +429,13 @@
       "model_brier_mean": NaN,
       "model_logloss_mean": NaN,
       "player_name": "Julian Champagnie",
-      "raw_edge": 0.2979,
+      "raw_edge": 0.2978297423815853,
       "side": "OVER",
       "stat": "blk"
     }
   ],
   "delivery_date": "2026-05-30",
-  "high_edge_row_count": 28,
+  "high_edge_row_count": 27,
   "review_required_count": 0,
   "schema_version": "1.0",
   "scoring_corpus_dates": [
@@ -784,6 +768,6 @@
       "n": 1
     }
   },
-  "supported_count": 16,
+  "supported_count": 15,
   "thin_or_limited_count": 12
 }
