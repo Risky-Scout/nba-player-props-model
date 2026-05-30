@@ -9,7 +9,7 @@
 - market coverage: **full**
 - injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 192
-- model: `a8800de5#phase10c`
+- model: `494a3e93#phase10c`
 
 ### Caveats
 
@@ -43,8 +43,8 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 192}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=4112, full_pmfs_wide=192, market_comparison=2764, publishable_edges=2443
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 868, 'fair_under_odds_null_count': 868, 'zero_or_one_prob_count': 865}`
+- **row counts**: fair_odds_board=4112, full_pmfs_wide=192, market_comparison=2774, publishable_edges=2438
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 886, 'fair_under_odds_null_count': 886, 'zero_or_one_prob_count': 880}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package

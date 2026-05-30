@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-05-30T16:16:14Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-05-30T16:52:07Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -37,7 +37,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-05-25** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 144 | 3084 | 2298 | 1777 | `full` | `fresh` | `present` | `morning_present` | 2206 | `pending_pre_tipoff_run` | 2206 | `n/a` | `717a301b#phase10c` |
 | **2026-05-26** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2724 | 2289 | `full` | `fresh` | `present` | `morning_present` | 2685 | `pending_pre_tipoff_run` | 2685 | `scored` | `affd8687#phase10c` |
 | **2026-05-28** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 168 | 3598 | 2489 | 2149 | `full` | `fresh` | `present` | `morning_present` | 2388 | `pending_pre_tipoff_run` | 2388 | `scored` | `12bafe90#phase10c` |
-| **2026-05-30** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2764 | 2443 | `full` | `fresh` | `present` | `morning_present` | 2709 | `pending_pre_tipoff_run` | 2709 | `n/a` | `a8800de5#phase10c` |
+| **2026-05-30** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2774 | 2438 | `full` | `fresh` | `present` | `morning_present` | 2718 | `pending_pre_tipoff_run` | 2718 | `n/a` | `494a3e93#phase10c` |
 
 ## Per-date links
 
@@ -1320,7 +1320,7 @@ _lineup_unconfirmed_
 - [machine_readable/model_only.parquet](2026-05-30/pmf_model_review_package/machine_readable/model_only.parquet)
 - [MODEL_PERFORMANCE_AND_CALIBRATION.md](2026-05-30/pmf_model_review_package/MODEL_PERFORMANCE_AND_CALIBRATION.md)
 
-**Derek forward feed (PMF snapshots)** — morning rows=2709 · lineup=pending_pre_tipoff_run · latest→morning
+**Derek forward feed (PMF snapshots)** — morning rows=2718 · lineup=pending_pre_tipoff_run · latest→morning
 
 - [FEED_README.md](2026-05-30/derek_forward_feed/FEED_README.md)
 - [feed_manifest.json](2026-05-30/derek_forward_feed/feed_manifest.json)
