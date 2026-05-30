@@ -1,11 +1,11 @@
 {
-  "code_commit": "faf0cf57fca84b8df4c5afbef3ff58cb7230c3c6",
+  "code_commit": "39ad2e3827fdd1445a27131a613490ba39ab3399",
   "decisions": [
     {
       "decision": "skipped_already_run",
       "detail": "snapshot_manifest.json present",
       "game_id": "21713534",
-      "now_utc": "2026-05-30T22:17:48Z",
+      "now_utc": "2026-05-30T23:34:21Z",
       "snapshot_dir": "deliveries/2026-05-30/derek_game_snapshots/21713534/current_live",
       "state": "EXISTS",
       "target_utc": "2026-05-31T00:10:00Z"
@@ -13,7 +13,7 @@
   ],
   "delivery_date": "2026-05-30",
   "eligible_rows": 0,
-  "now_utc": "2026-05-30T22:17:48Z",
+  "now_utc": "2026-05-30T23:34:21Z",
   "schedule_rows": 1,
   "schema_version": "1.0",
   "snapshot_type": "current_live",

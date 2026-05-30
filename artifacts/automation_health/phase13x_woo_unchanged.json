@@ -1,9 +1,5 @@
 {
   "changed_files": [
-    "artifacts/automation_health/derek_edge_calibration_2026-05-30.json",
-    "artifacts/automation_health/derek_edge_calibration_2026-05-30.md",
-    "artifacts/automation_health/derek_edge_root_cause_2026-05-30.json",
-    "artifacts/automation_health/derek_edge_root_cause_2026-05-30.md",
     "artifacts/automation_health/derek_live_api_readiness.json",
     "artifacts/automation_health/derek_live_api_readiness.md",
     "artifacts/automation_health/derek_live_champion_ready_2026-05-30.json",
@@ -23,8 +19,7 @@
     "artifacts/source_readiness/2026-05-30/bdl_fetch_proof.json",
     "deliveries/2026-05-30/README.md",
     "deliveries/2026-05-30/derek_game_snapshots/21713534/current_live/market_comparison.csv",
-    "deliveries/2026-05-30/derek_game_snapshots/21713534/current_live/market_comparison.parquet",
-    "deliveries/2026-05-30/derek_game_snapshots/21713534/current_live/snapshot_report.md",
+    "deliveries/2026-05-30/derek_game_snapshots/21713534/current_live/pmf_driver_decomposition.md",
     "deliveries/2026-05-30/derek_game_snapshots/README.md",
     "predictions/all_props_2026-05-30.parquet",
     "predictions/all_props_2026-05-30.pre_game_time_enrichment_backup.parquet"
