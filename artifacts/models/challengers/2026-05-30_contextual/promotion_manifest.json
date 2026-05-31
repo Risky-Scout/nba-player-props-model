@@ -1,0 +1,10 @@
+{
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "code_commit": "64d9d742a9becc585cf4677314b5fa9af7c03a9c",
+  "decision_id": "contextual-promotion-2026-05-30_contextual-20260531T132803",
+  "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "previous_pointer_backup": "artifacts/models/champion/v_phase13r_20260531T132803p0000/champion_pointer.previous.json",
+  "promoted": true,
+  "promoted_at_utc": "2026-05-31T13:28:03+00:00",
+  "schema_version": "1.0"
+}
