@@ -146,6 +146,12 @@ on:
         default: "false"
         type: choice
         options: ["false", "true"]
+      run_sgp_engine:
+        description: "Run SGP Engine during delivery (opt-in; disabled by default until readiness gates pass)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
 
 permissions:
   contents: write
@@ -162,6 +168,11 @@ env:
   DUNKS_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
   DNT_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
   DUNKS_THREES_API_KEY: ${{ secrets.DUNKS_AND_THREES_API_KEY }}
+  # SGP Engine is opt-in only. Default false until all readiness gates pass.
+  # To enable: set ENABLE_SGP_ENGINE=true here OR pass run_sgp_engine=true
+  # as a workflow_dispatch input. See docs/SGP_ENGINE_BUILD_PLAN.md §0C for
+  # the full list of readiness gates that must pass before this becomes true.
+  ENABLE_SGP_ENGINE: "false"
 
 jobs:
   # ────────────────────────────────────────────────────────────────
@@ -1661,6 +1672,21 @@ jobs:
           BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
           ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
         run: |
+          # ── SGP Engine feature flag gate ────────────────────────────────────
+          # SGP Engine is OPT-IN ONLY. Default: disabled.
+          # Enable via:
+          #   workflow_dispatch input  run_sgp_engine=true
+          #   repo/org env variable   ENABLE_SGP_ENGINE=true
+          # Do NOT change the default until all readiness gates in
+          # docs/SGP_ENGINE_BUILD_PLAN.md §0C have explicitly passed.
+          RUN_SGP="${{ github.event.inputs.run_sgp_engine || 'false' }}"
+          if [ "${RUN_SGP}" != "true" ] && [ "${ENABLE_SGP_ENGINE:-false}" != "true" ]; then
+            echo "SGP Engine disabled (ENABLE_SGP_ENGINE=false, run_sgp_engine=${RUN_SGP}); skipping."
+            echo "SGP_ENGINE_SKIPPED=true" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "SGP_ENGINE_SKIPPED=false" >> "$GITHUB_ENV"
+
           set -euo pipefail
           D="${{ needs.resolve_context.outputs.delivery_date }}"
           ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
@@ -1681,6 +1707,10 @@ jobs:
             --date "$D" \
             --repo-root . || true
 
+          python3 scripts/verify_sgp_delivery_outputs.py \
+            --date "$D" \
+            --repo-root . || true
+
       - name: Build delivery index and commit delivery outputs
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -1692,8 +1722,11 @@ jobs:
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
 
-          git add deliveries/"$D"/sgp_engine/ 2>/dev/null || true
-          git add public_export/wizard_of_odds/sgp/ 2>/dev/null || true
+          # Only stage SGP outputs when the SGP Engine actually ran this cycle.
+          if [ "${SGP_ENGINE_SKIPPED:-true}" != "true" ]; then
+            git add deliveries/"$D"/sgp_engine/ 2>/dev/null || true
+            git add public_export/wizard_of_odds/sgp/ 2>/dev/null || true
+          fi
 
           git add \
             deliveries/"$D" \

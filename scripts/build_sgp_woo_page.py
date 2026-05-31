@@ -199,6 +199,51 @@ def _build_price_table_html(df: pd.DataFrame) -> str:
 """
 
 
+def _build_diagnostic_banner_html(gate_status: dict | None) -> str:
+    """Return a prominent diagnostic/warning banner when calibration is not yet certified."""
+    if gate_status is None:
+        gs = "UNAVAILABLE"
+    else:
+        gs = gate_status.get("gate_status", "UNKNOWN")
+
+    if gs == "CERTIFIED":
+        # Calibration gates passed — no banner needed
+        return ""
+
+    if gs == "INSUFFICIENT_SAMPLE":
+        msg = "Joint calibration pending historical SGP backtest sample."
+        detail = (
+            "The SGP Engine has not yet accumulated enough out-of-sample backtest rows "
+            "to fit reliable joint probability calibrators. Prices shown are model fair values "
+            "computed from the correlated simulation. <strong>No market-superiority claim is made.</strong>"
+        )
+    elif gs in ("MODEL_PRICE", "DIAGNOSTIC_ONLY"):
+        msg = "SGP Engine — Model Price Mode."
+        detail = (
+            "Calibration gates have not yet passed. Prices are raw model estimates. "
+            "<strong>No market-superiority claim is made.</strong>"
+        )
+    else:
+        msg = f"SGP Engine Diagnostic Mode (gate_status={gs})."
+        detail = (
+            "Calibration readiness gates have not passed. "
+            "<strong>No market-superiority claim is made.</strong>"
+        )
+
+    return f"""
+  <section id="diagnostic-banner" style="background:#fff3cd;border:2px solid #ffc107;border-radius:10px;padding:16px 24px;margin-bottom:20px;">
+    <h3 style="color:#856404;font-size:1rem;">⚠ {html.escape(msg)}</h3>
+    <p style="color:#856404;font-size:.88rem;margin-top:8px;">{detail}</p>
+    <p style="color:#856404;font-size:.82rem;margin-top:6px;">
+      This page is for diagnostic and research purposes only.
+      SGP Engine outputs are isolated from the main PMF delivery pipeline
+      and are not published as certified market recommendations until
+      all readiness gates (docs/SGP_ENGINE_BUILD_PLAN.md §0C) pass.
+    </p>
+  </section>
+"""
+
+
 def _build_full_html(
     slate_date: str,
     price_df: pd.DataFrame | None,
@@ -210,6 +255,7 @@ def _build_full_html(
     table_html = _build_price_table_html(price_df) if price_df is not None else (
         "<p class='muted'>No price data available.</p>"
     )
+    banner_html = _build_diagnostic_banner_html(gate_status)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -224,7 +270,7 @@ def _build_full_html(
 <body>
   <h1>NBA Same-Game Parlay Engine</h1>
   <h2>Wizard of Odds &mdash; Slate: {html.escape(slate_date)}</h2>
-
+{banner_html}
   <section id="engine-status">
     <h3>Engine Status</h3>
 {status_html}

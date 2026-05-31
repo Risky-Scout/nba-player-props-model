@@ -32,3 +32,16 @@ Do not claim market superiority until:
 - calibrated joint probability beats raw simulator out-of-sample
 - raw/calibrated simulator beats independence baseline
 - comparison to market SGP prices, if available, passes bootstrap gates
+
+## Pipeline isolation policy (§0B–0F)
+
+The SGP Engine is **opt-in only** until all readiness gates pass.
+
+- `ENABLE_SGP_ENGINE=false` by default in `.github/workflows/nba_pmf_delivery.yml`
+- Enable per-run via `run_sgp_engine=true` workflow dispatch input
+- SGP failures never block the existing production PMF delivery
+- SGP outputs are isolated to `deliveries/{date}/sgp_engine/` and `public_export/wizard_of_odds/sgp/`
+- The WoO SGP page carries a diagnostic banner until Gate 4 (calibration) passes
+
+Full readiness gates and promotion checklist: **[docs/SGP_READINESS_GATES.md](SGP_READINESS_GATES.md)**
+
