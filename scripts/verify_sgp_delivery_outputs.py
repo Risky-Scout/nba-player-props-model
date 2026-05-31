@@ -123,6 +123,35 @@ def main() -> int:
     else:
         warnings.append("simulation_diagnostics.json missing")
 
+    # Dependency diagnostics parquet check (soft — may be missing on single-player slates)
+    dep_diag_path = sgp_root / "simulation" / "dependency_diagnostics.parquet"
+    if not dep_diag_path.exists():
+        warnings.append("dependency_diagnostics.parquet missing")
+    else:
+        try:
+            dep_df = pd.read_parquet(dep_diag_path)
+            if not dep_df.empty:
+                required_dep_cols = {
+                    "game_id", "player_a", "stat_a", "player_b", "stat_b",
+                    "relationship_type", "simulated_pearson_r",
+                }
+                missing_dep_cols = required_dep_cols - set(dep_df.columns)
+                if missing_dep_cols:
+                    warnings.append(
+                        f"dependency_diagnostics.parquet missing columns: {sorted(missing_dep_cols)}"
+                    )
+                bad_r = (~np.isfinite(pd.to_numeric(dep_df["simulated_pearson_r"], errors="coerce").fillna(np.nan))).sum()
+                if bad_r > 0:
+                    warnings.append(f"dependency_diagnostics: {bad_r} non-finite simulated_pearson_r values")
+        except Exception as exc:
+            warnings.append(f"dependency_diagnostics.parquet unreadable: {exc}")
+
+    # Correlation factor check (soft — only when market baseline is populated)
+    if price_df is not None and not price_df.empty and "model_corr_factor" in price_df.columns:
+        cf_vals = pd.to_numeric(price_df["model_corr_factor"], errors="coerce").dropna()
+        if len(cf_vals) == 0:
+            warnings.append("model_corr_factor column is entirely null — market baseline not computed")
+
     # ── Print warnings to stderr ───────────────────────────────────────────────
     for w in warnings:
         print(f"::warning::{w}", file=sys.stderr)

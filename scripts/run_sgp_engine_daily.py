@@ -246,6 +246,95 @@ def _combo_coherence_report(
     return pd.DataFrame(rows)
 
 
+# ── Dependency diagnostics ────────────────────────────────────────────────────
+
+def _dependency_diagnostics(
+    tape,
+    pmf_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """Compute pairwise correlation diagnostics for all (player,stat) pairs in the same game.
+
+    For each game, builds a matrix of simulated outcomes [n_sims × n_keys], computes
+    the full Pearson correlation matrix, and returns records for every unique pair.
+
+    Columns:
+      game_id, player_a, stat_a, team_a, player_b, stat_b, team_b,
+      relationship_type, simulated_pearson_r, n_sims,
+      player_a_mean, player_b_mean, player_a_std, player_b_std
+    """
+    from sgp_engine.pricing import _classify_relationship
+    from sgp_engine.schema import SGPLeg
+
+    # Build lookup: (game_id, player_id, stat) -> team_id
+    team_lookup: dict[tuple[str, str, str], str] = {}
+    for _, r in pmf_df.iterrows():
+        team_lookup[(str(r["game_id"]), str(r["player_id"]), str(r["stat"]).lower())] = str(r.get("team_id", "UNK"))
+
+    rows = []
+    # Group tape keys by game_id
+    by_game: dict[str, list[tuple[str, str, str]]] = {}
+    for (gid, pid, stat) in tape.stats:
+        # Skip "minutes" in diagnostics to focus on scoring stats
+        if stat == "minutes":
+            continue
+        by_game.setdefault(gid, []).append((gid, pid, stat))
+
+    for game_id, keys in by_game.items():
+        if len(keys) < 2:
+            continue
+        # Build matrix: columns = keys, rows = sims
+        try:
+            mat = np.stack([tape.get(*k).astype(np.float32) for k in keys], axis=1)  # (n_sims, n_keys)
+        except Exception:
+            continue
+        # Vectorised Pearson correlation matrix
+        try:
+            corr_mat = np.corrcoef(mat.T)  # (n_keys, n_keys)
+        except Exception:
+            continue
+
+        means = mat.mean(axis=0)
+        stds = mat.std(axis=0)
+
+        for i in range(len(keys)):
+            for j in range(i + 1, len(keys)):
+                gid_a, pid_a, stat_a = keys[i]
+                gid_b, pid_b, stat_b = keys[j]
+                team_a = team_lookup.get((gid_a, pid_a, stat_a), "UNK")
+                team_b = team_lookup.get((gid_b, pid_b, stat_b), "UNK")
+                r_val = float(corr_mat[i, j]) if np.isfinite(corr_mat[i, j]) else np.nan
+
+                # Classify relationship using pricing module logic
+                leg_a = SGPLeg(player_id=pid_a, stat=stat_a, line=0.5, side="over",
+                               game_id=game_id, team_id=team_a)
+                leg_b = SGPLeg(player_id=pid_b, stat=stat_b, line=0.5, side="over",
+                               game_id=game_id, team_id=team_b)
+                rel = _classify_relationship([leg_a, leg_b])
+
+                rows.append({
+                    "game_id": game_id,
+                    "player_a": pid_a,
+                    "stat_a": stat_a,
+                    "team_a": team_a,
+                    "player_b": pid_b,
+                    "stat_b": stat_b,
+                    "team_b": team_b,
+                    "relationship_type": rel,
+                    "simulated_pearson_r": round(r_val, 6),
+                    "n_sims": tape.n_sims,
+                    "player_a_mean": round(float(means[i]), 4),
+                    "player_b_mean": round(float(means[j]), 4),
+                    "player_a_std": round(float(stds[i]), 4),
+                    "player_b_std": round(float(stds[j]), 4),
+                })
+
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df = df.sort_values(["game_id", "relationship_type", "simulated_pearson_r"],
+                            ascending=[True, True, False]).reset_index(drop=True)
+    return df
+
+
 # ── Market comparison ─────────────────────────────────────────────────────────
 
 def _build_market_comparison(
@@ -447,7 +536,7 @@ def main() -> int:
         "n_games": n_games,
         "simulation_runtime_seconds": round(sim_runtime, 2),
         "factor_weights_used": factor_weights_used,
-        "minutes_pool_used": False,
+        "minutes_pool_used": True,
         "marginal_preservation": marg_stats,
     }
     (sim_dir / "simulation_diagnostics.json").write_text(
@@ -477,6 +566,28 @@ def main() -> int:
             sim_dir / "combo_coherence_report.parquet", index=False
         )
 
+    # ── 4b. Dependency diagnostics per player-pair ─────────────────────────────
+    print("[SGP] Computing pairwise dependency diagnostics ...", flush=True)
+    dep_diag_df = _dependency_diagnostics(tape, pmf_df)
+    if not dep_diag_df.empty:
+        dep_diag_df.to_parquet(sim_dir / "dependency_diagnostics.parquet", index=False)
+        n_pairs = len(dep_diag_df)
+        n_positive = int((dep_diag_df["simulated_pearson_r"] > 0.05).sum())
+        n_negative = int((dep_diag_df["simulated_pearson_r"] < -0.05).sum())
+        print(
+            f"  {n_pairs} pairs: {n_positive} positively correlated, "
+            f"{n_negative} negatively correlated (|r|>0.05)",
+            flush=True,
+        )
+    else:
+        pd.DataFrame(columns=[
+            "game_id", "player_a", "stat_a", "team_a",
+            "player_b", "stat_b", "team_b", "relationship_type",
+            "simulated_pearson_r", "n_sims",
+            "player_a_mean", "player_b_mean", "player_a_std", "player_b_std",
+        ]).to_parquet(sim_dir / "dependency_diagnostics.parquet", index=False)
+        print("  No pairs to diagnose (single-player slate?)", flush=True)
+
     # ── 5. Generate candidate tickets ─────────────────────────────────────────
     print(f"[SGP] Generating up to {args.max_candidates} candidate tickets ...", flush=True)
     candidates = generate_sgp_candidates(
@@ -484,37 +595,80 @@ def main() -> int:
     )
     print(f"  Generated {len(candidates)} candidates", flush=True)
 
+    # Define calibrator path and default flags before the candidates branch so
+    # subsequent code (cal_report, gate_status) can reference them safely.
+    cal_model_path = (
+        repo_root / "artifacts" / "models" / "sgp" / "calibrator"
+        / "sgp_joint_calibrator_latest.pkl"
+    )
+    registry = None
+    calibration_available = False
+    market_comparison_available = False
+
     if not candidates:
         print("[SGP] No candidates generated — writing empty price grid.", file=sys.stderr)
         price_df = pd.DataFrame()
     else:
-        # ── 6. Load calibrator if available ───────────────────────────────────
-        cal_model_path = (
-            repo_root / "artifacts" / "models" / "sgp" / "joint_calibrator" / "global_isotonic.pkl"
-        )
-        calibrator = None
-        calibration_available = False
+        # ── 6. Load calibrator registry if available ──────────────────────────
         if cal_model_path.exists():
             try:
-                from sgp_engine.calibration import JointProbabilityCalibrator
-                calibrator = JointProbabilityCalibrator.load(cal_model_path)
-                calibration_available = True
-                print(f"  Loaded calibrator: {cal_model_path.name}", flush=True)
+                from sgp_engine.calibration import HierarchicalCalibratorRegistry
+                registry = HierarchicalCalibratorRegistry.load(cal_model_path)
+                # Registry is useful only if it has at least a global calibrator or cells.
+                calibration_available = (
+                    registry.global_calibrator is not None or registry.cell_count > 0
+                )
+                status = (
+                    f"{registry.cell_count} cells + global"
+                    if registry.global_calibrator is not None
+                    else f"{registry.cell_count} cells, no global"
+                )
+                print(f"  Loaded calibrator registry: {status}", flush=True)
             except Exception as exc:
-                print(f"  WARNING: Could not load calibrator: {exc}", file=sys.stderr)
+                print(f"  WARNING: Could not load calibrator registry: {exc}",
+                      file=sys.stderr)
         else:
             print("  No calibrator found — using raw joint probability.", flush=True)
 
         # ── 7. Price candidates ────────────────────────────────────────────────
         print(f"[SGP] Pricing {len(candidates)} tickets ...", flush=True)
         try:
+            # Price without calibration; we apply the registry post-hoc so we can
+            # pass ticket-level features (n_legs, stat_mix, relationship_type, role_mix).
             price_df = price_tickets_to_frame(
-                candidates, tape, pmf_df, joint_calibrator=calibrator
+                candidates, tape, pmf_df, joint_calibrator=None
             )
         except Exception as exc:
             print(f"::error::Price grid generation failed: {exc}", file=sys.stderr)
             return 1
         print(f"  Priced {len(price_df)} tickets", flush=True)
+
+        # Apply registry calibration per ticket using ticket-level features.
+        if registry is not None and not price_df.empty:
+            cal_probs: list[float] = []
+            cal_confs: list[str]   = []
+            for _, row in price_df.iterrows():
+                raw_p = float(row.get("raw_joint_probability", 0.5))
+                ticket_features = {
+                    "n_legs":            row.get("n_legs"),
+                    "stat_mix":          row.get("stat_mix"),
+                    "relationship_type": row.get("dependency_explanation_json"),
+                    "role_mix":          row.get("role_mix"),
+                }
+                cal_p, confidence = registry.predict(raw_p, ticket_features)
+                cal_probs.append(float(cal_p))
+                cal_confs.append(str(confidence))
+            price_df = price_df.copy()
+            price_df["calibrated_joint_probability"] = cal_probs
+            price_df["calibrated_prob"]              = cal_probs
+            price_df["calibration_confidence"]       = cal_confs
+        else:
+            raw_col = "raw_joint_probability"
+            price_df = price_df.copy()
+            price_df["calibrated_prob"] = (
+                price_df[raw_col] if raw_col in price_df.columns else np.nan
+            )
+            price_df["calibration_confidence"] = "NO_CALIBRATOR"
 
         # ── 8. Market comparison ───────────────────────────────────────────────
         market_lines = bundle.market_lines
@@ -574,13 +728,12 @@ def main() -> int:
     cal_dir = sgp_root / "calibration"
     cal_dir.mkdir(parents=True, exist_ok=True)
 
+    _has_prices = price_df is not None and not price_df.empty
     gate_status = _compute_gate_status(
         slate_date,
         backtest_path=repo_root / "data" / "sgp_backtest_rows.parquet",
-        calibration_available=calibration_available if price_df is not None and not price_df.empty else False,
-        market_comparison_available=(
-            market_comparison_available if price_df is not None and not price_df.empty else False
-        ),
+        calibration_available=calibration_available and _has_prices,
+        market_comparison_available=market_comparison_available and _has_prices,
     )
 
     cal_report = {

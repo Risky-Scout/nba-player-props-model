@@ -104,13 +104,6 @@ def test_ece_positive_for_biased_predictions():
 # 4 · Hierarchical registry falls back to global for small cells
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "HierarchicalCalibratorRegistry is not yet implemented in calibration.py. "
-        "This test will pass once stratified / cell-level calibration is added."
-    ),
-)
 def test_hierarchical_registry_falls_back_to_global():
     """A cell with n < 500 rows should use the global calibrator as fallback."""
     from sgp_engine.calibration import HierarchicalCalibratorRegistry  # type: ignore[attr-defined]
@@ -133,13 +126,6 @@ def test_hierarchical_registry_falls_back_to_global():
 # 5 · fit_stratified creates separate calibrators for cells with enough data
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "fit_stratified_joint_calibrators is not yet implemented. "
-        "This test will pass once the stratified fitting function is added."
-    ),
-)
 def test_fit_stratified_creates_multiple_cells():
     """fit_stratified should produce one calibrator per (stat, role) cell."""
     from sgp_engine.calibration import fit_stratified_joint_calibrators  # type: ignore[attr-defined]

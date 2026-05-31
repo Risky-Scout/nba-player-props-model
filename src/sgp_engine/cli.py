@@ -12,6 +12,45 @@ from .sports.nba.adapter import build_nba_slate_state_bundle
 from .sports.nba.simulator import NBASimulator
 
 
+def verify_sgp_delivery_outputs(
+    repo_root,
+    date: str,
+    *,
+    require_price_grid: bool = False,
+) -> dict:
+    """Verify SGP delivery outputs for a given date.
+
+    Returns a dict with status, hard_failures, and warnings.
+    Raises FileNotFoundError if require_price_grid=True and the price grid is absent.
+    """
+    import json as _json
+    root = Path(repo_root)
+    sgp_dir = root / "deliveries" / date / "sgp_engine"
+
+    hard: list[str] = []
+    warns: list[str] = []
+
+    if require_price_grid:
+        price_grid = sgp_dir / "prices" / "sgp_price_grid.parquet"
+        if not price_grid.exists():
+            hard.append(f"sgp_price_grid.parquet missing at {price_grid}")
+
+    gate_file = sgp_dir / "calibration" / "sgp_gate_status.json"
+    if gate_file.exists():
+        gj = _json.loads(gate_file.read_text())
+        if gj.get("gate_status") not in ("PASS", "CERTIFIED"):
+            warns.append(f"calibration_gate_status={gj.get('gate_status')}")
+
+    result = {
+        "status": "FAIL" if hard else "PASS",
+        "hard_failures": hard,
+        "warnings": warns,
+    }
+    if hard:
+        raise FileNotFoundError(hard[0])
+    return result
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser("sgp-engine")
     sub = parser.add_subparsers(dest="cmd", required=True)

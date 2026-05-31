@@ -256,6 +256,47 @@ def price_ticket(
     independent_sim = float(np.prod(sim_probs))
     model_corr_factor = float(calibrated_joint / independent_pmf) if independent_pmf > 0 else np.nan
 
+    # ── Market correlation baseline ────────────────────────────────────────────
+    # Attempt to read per-leg no-vig market over probability from pmf_df.
+    # Columns tried in order: market_over_prob, no_vig_over_prob, p_over_market.
+    # Fallback: evaluate the model PMF at the delivered line (model's over prob).
+    # The market's *SGP joint* is unobservable without actual SGP market prices,
+    # so we use the independence assumption as the market baseline:
+    #   market_corr_factor = 1.0  (market prices the joint as if legs are independent)
+    #   corr_factor_delta_vs_market = model_corr_factor - 1.0
+    # A positive delta means our model detects positive correlation not priced by
+    # the market → the SGP is cheaper relative to its fair value than the market assumes.
+    market_prob_cols = ("market_over_prob", "no_vig_over_prob", "p_over_market")
+    market_marginal_probs: list[float] = []
+    for leg in ticket.legs:
+        leg_game_id_str = str(leg.game_id or game_id)
+        pmf_row = pmf_idx.get((leg_game_id_str, str(leg.player_id), leg.stat.lower()))
+        market_p: float | None = None
+        if pmf_row is not None:
+            for col in market_prob_cols:
+                v = pmf_row.get(col)
+                if v is not None and not (isinstance(v, float) and np.isnan(v)):
+                    market_p = float(v)
+                    break
+        if market_p is None:
+            # Fall back to model PMF evaluated at the leg's line — best available proxy.
+            market_p = pmf_probs[ticket.legs.index(leg)] if ticket.legs.index(leg) < len(pmf_probs) else None
+        if market_p is not None and 0 < market_p < 1:
+            market_marginal_probs.append(market_p)
+
+    if len(market_marginal_probs) == len(ticket.legs):
+        market_independent_joint = float(np.prod(market_marginal_probs))
+        # Market SGP corr factor defaults to 1.0 (independence baseline).
+        # Will be overridden when actual market SGP prices are ingested.
+        market_corr_factor: float = 1.0
+        market_joint_price = market_independent_joint * market_corr_factor
+        corr_factor_delta_vs_market = model_corr_factor - market_corr_factor if not np.isnan(model_corr_factor) else np.nan
+    else:
+        market_independent_joint = np.nan
+        market_corr_factor = np.nan
+        market_joint_price = np.nan
+        corr_factor_delta_vs_market = np.nan
+
     ci_low, ci_high = _binomial_ci(calibrated_joint, tape.n_sims)
     mc_standard_error = float(np.sqrt(max(calibrated_joint * (1 - calibrated_joint), 0.0) / max(tape.n_sims, 1)))
 
@@ -295,8 +336,9 @@ def price_ticket(
         "independent_probability_sim_marginals": independent_sim,
         "correlation_factor_vs_pmf_independence": model_corr_factor,
         "model_corr_factor": model_corr_factor,
-        "market_corr_factor": None,
-        "corr_factor_delta_vs_market": None,
+        "market_corr_factor": market_corr_factor,
+        "corr_factor_delta_vs_market": corr_factor_delta_vs_market,
+        "market_independent_joint": market_independent_joint,
         "fair_decimal_odds": prob_to_decimal(calibrated_joint),
         "fair_american_odds": prob_to_american(calibrated_joint),
         "confidence_interval_95": {"low": ci_low, "high": ci_high},

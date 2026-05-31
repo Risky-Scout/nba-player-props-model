@@ -157,13 +157,6 @@ def test_competitive_minutes_negative_teammate_correlation(tmp_path):
 # 2 · Minutes sum to team total (5 players × 48 min = 240 player-minutes)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "Explicit minutes simulation is not yet available as a named stat in the tape. "
-        "This test will pass once the simulator outputs a 'minutes' key per player."
-    ),
-)
 def test_minutes_sum_to_team_total(tmp_path):
     """Sum of all team players' simulated minutes ≈ 240 (5×48) per simulation."""
     players = [f"P{i}" for i in range(5)]
@@ -296,10 +289,6 @@ def test_combo_standalone_leg_uses_anchored(tmp_path):
 # 7 · tape.to_frame() returns DataFrame with expected columns
 # ---------------------------------------------------------------------------
 
-@pytest.mark.xfail(
-    strict=False,
-    reason="SimulationTape.to_frame() is not yet implemented.",
-)
 def test_tape_to_frame_shape(tmp_path):
     """tape.to_frame() returns a DataFrame with one row per (game, player, stat, sim)."""
     rows = [

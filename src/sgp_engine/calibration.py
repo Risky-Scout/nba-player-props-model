@@ -145,6 +145,39 @@ class HierarchicalCalibratorRegistry:
             raise TypeError(f"Expected HierarchicalCalibratorRegistry, got {type(obj)}")
         return obj
 
+    def get(self, stat: str, role: str) -> "JointProbabilityCalibrator":
+        """Return the best calibrator for (stat, role), falling back to global."""
+        key = f"{stat}__{role}"
+        if key in self.cells:
+            return self.cells[key]
+        if self.global_calibrator is not None:
+            return self.global_calibrator
+        raise KeyError(f"No calibrator for {key!r} and no global fallback")
+
+    def has_cell(self, stat: str, role: str) -> bool:
+        """Return True if a specific (stat, role) calibrator has been registered."""
+        return f"{stat}__{role}" in self.cells
+
+    def maybe_register(
+        self,
+        stat: str,
+        role: str,
+        df: pd.DataFrame,
+        *,
+        min_n: int = 500,
+        pred_col: str = "raw_joint_probability",
+        y_col: str = "hit_result",
+    ) -> bool:
+        """Fit and register a calibrator for (stat, role) if df has >= min_n rows.
+
+        Returns True if registered, False if skipped due to insufficient data.
+        """
+        if len(df) < min_n:
+            return False
+        key = f"{stat}__{role}"
+        self.cells[key] = _fit_single_calibrator(df[[pred_col, y_col]], pred_col, y_col, key)
+        return True
+
     @property
     def cell_count(self) -> int:
         return len(self.cells)
@@ -251,6 +284,48 @@ def fit_stratified_calibrators(
             calibrator_id=f"global_isotonic_n{len(df)}",
             model=global_cal.model,
             n_train=len(df),
+            cell="global",
+        )
+
+    return HierarchicalCalibratorRegistry(cells=cells, global_calibrator=global_cal)
+
+
+def fit_stratified_joint_calibrators(
+    backtest_rows: pd.DataFrame,
+    *,
+    pred_col: str = "raw_joint_probability",
+    y_col: str = "hit_result",
+    stat_col: str = "stat",
+    role_col: str = "role_bucket",
+    min_n_per_cell: int = 500,
+    shrinkage_k: float = 400.0,
+) -> HierarchicalCalibratorRegistry:
+    """Fit one calibrator per (stat, role_bucket) cell with sufficient backtest data.
+
+    Cell keys use the format ``{stat}__{role}``.  Cells with fewer than
+    ``min_n_per_cell`` rows are skipped and fall back to the global calibrator.
+    """
+    df = backtest_rows.copy()
+    cells: dict[str, JointProbabilityCalibrator] = {}
+
+    if stat_col in df.columns and role_col in df.columns:
+        cell_df = df[[stat_col, role_col, pred_col, y_col]].dropna(subset=[pred_col, y_col])
+        for (stat_val, role_val), grp in cell_df.groupby([stat_col, role_col]):
+            if len(grp) < min_n_per_cell:
+                continue
+            key = f"{stat_val}__{role_val}"
+            cells[key] = _fit_single_calibrator(
+                grp[[pred_col, y_col]], pred_col, y_col, key, shrinkage_k
+            )
+
+    global_cal: JointProbabilityCalibrator | None = None
+    global_df = df[[pred_col, y_col]].dropna()
+    if len(global_df) >= 200:
+        global_cal = _fit_single_calibrator(global_df, pred_col, y_col, "global", shrinkage_k)
+        global_cal = JointProbabilityCalibrator(
+            calibrator_id=f"global_isotonic_n{len(global_df)}",
+            model=global_cal.model,
+            n_train=len(global_df),
             cell="global",
         )
 

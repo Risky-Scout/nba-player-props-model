@@ -37,7 +37,10 @@ class SimulationTape:
             "__n_sims__": np.array([self.n_sims], dtype=np.int64),
         }
         for i, (key, arr) in enumerate(self.stats.items()):
-            arrays[f"stat_{i}"] = arr.astype(np.int16, copy=False)
+            if np.issubdtype(arr.dtype, np.floating):
+                arrays[f"stat_{i}"] = arr.astype(np.float32, copy=False)
+            else:
+                arrays[f"stat_{i}"] = arr.astype(np.int16, copy=False)
         # Factors can be large; only save 1D numeric diagnostic arrays.
         for name, arr in self.factors.items():
             if isinstance(arr, np.ndarray) and arr.ndim == 1 and len(arr) == self.n_sims:
@@ -45,6 +48,27 @@ class SimulationTape:
         np.savez_compressed(path, **arrays)
 
     def to_frame(self) -> pd.DataFrame:
+        """Return a long DataFrame with one row per (game_id, player_id, stat, sim_index).
+
+        Columns: game_id, player_id, stat, outcome (int16), sim_index (int32).
+        """
+        if not self.stats:
+            return pd.DataFrame(columns=["game_id", "player_id", "stat", "outcome", "sim_index"])
+
+        sim_index = np.arange(self.n_sims, dtype=np.int32)
+        parts = []
+        for (game_id, player_id, stat), arr in self.stats.items():
+            parts.append(pd.DataFrame({
+                "game_id": game_id,
+                "player_id": player_id,
+                "stat": stat,
+                "outcome": arr.astype(np.int16),
+                "sim_index": sim_index,
+            }))
+
+        return pd.concat(parts, ignore_index=True)
+
+    def to_wide_frame(self) -> pd.DataFrame:
         """Return a wide DataFrame with columns: simulation_id, game_id, player_id, and one column per stat.
 
         Stat columns: pts, reb, ast, fg3m, tov, stl, blk, pa, pr, ra, pra, stocks.

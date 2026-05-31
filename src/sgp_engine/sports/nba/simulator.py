@@ -94,6 +94,9 @@ def _load_factor_weights(repo_root: Path) -> tuple[dict[str, list[tuple[str, flo
         raw = json.loads(fw_path.read_text())
         weights: dict[str, list[tuple[str, float]]] = {}
         for stat, pairs in raw.items():
+            if stat.startswith("_"):
+                # Skip metadata keys like "_meta".
+                continue
             if isinstance(pairs, list):
                 weights[stat] = [(str(p[0]), float(p[1])) for p in pairs if len(p) == 2]
             elif isinstance(pairs, dict):
@@ -306,6 +309,7 @@ class NBASimulator:
                     es = max(exp_stds[pid], 1.0)
                     minutes_z = np.clip((am - em) / es, -4.0, 4.0)
                     team_minutes_sim.setdefault(team, {})[pid] = minutes_z
+                    stats[(game_id, pid, "minutes")] = am.astype(np.float32)
 
                 factors_out[f"{game_id}__{team}__team_total_minutes"] = team_total.astype(np.float32)
 
