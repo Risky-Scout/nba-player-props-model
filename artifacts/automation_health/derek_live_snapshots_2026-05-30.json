@@ -131,10 +131,14 @@
       "passed": true
     }
   ],
-  "code_commit": "39ad2e3827fdd1445a27131a613490ba39ab3399",
+  "code_commit": "d7206c3b8a90e75a8f15f6cb8cfca68e691c5af2",
   "delivery_date": "2026-05-30",
   "facts": {
     "game_count": 1,
+    "missed_post_tip_markers": [
+      "21713534/t_minus_25",
+      "21713534/close_lock"
+    ],
     "mode_counts": {
       "backfill_demo": 0,
       "production_live": 0,
@@ -150,7 +154,7 @@
     "recomputed_snapshot_count": 1,
     "snapshot_count": 1
   },
-  "generated_at_utc": "2026-05-30T23:34:32+00:00",
+  "generated_at_utc": "2026-05-31T01:54:43+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
