@@ -1654,6 +1654,33 @@ jobs:
 
           echo "=== DELIVERY INTEGRITY CHECKS COMPLETE ==="
 
+      - name: Build SGP Engine daily prices and WoO page
+        if: steps.predict_gate.outputs.should_proceed == 'true'
+        continue-on-error: true
+        env:
+          BDL_API_KEY: ${{ secrets.BDL_API_KEY }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: |
+          set -euo pipefail
+          D="${{ needs.resolve_context.outputs.delivery_date }}"
+          ASOF="${{ needs.resolve_context.outputs.as_of_date }}"
+
+          python3 scripts/build_sgp_slate_state_bundle.py \
+            --date "$D" \
+            --repo-root . \
+            --allow-missing-asof-metadata \
+            ${ASOF:+--expected-cutoff-date "$ASOF"} || true
+
+          python3 scripts/run_sgp_engine_daily.py \
+            --date "$D" \
+            --repo-root . \
+            --n-sims 200000 \
+            --allow-missing-asof-metadata || true
+
+          python3 scripts/build_sgp_woo_page.py \
+            --date "$D" \
+            --repo-root . || true
+
       - name: Build delivery index and commit delivery outputs
         if: steps.predict_gate.outputs.should_proceed == 'true'
         run: |
@@ -1664,6 +1691,9 @@ jobs:
 
           git config user.name "Joseph Shackelford"
           git config user.email "josephshack@gmail.com"
+
+          git add deliveries/"$D"/sgp_engine/ 2>/dev/null || true
+          git add public_export/wizard_of_odds/sgp/ 2>/dev/null || true
 
           git add \
             deliveries/"$D" \

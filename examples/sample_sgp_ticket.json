@@ -1,0 +1,18 @@
+{
+  "ticket_id": "example_replace_player_ids",
+  "game_id": "UNKNOWN_GAME",
+  "legs": [
+    {
+      "player_id": "REPLACE_PLAYER_ID_1",
+      "stat": "pts",
+      "line": 24.5,
+      "side": "over"
+    },
+    {
+      "player_id": "REPLACE_PLAYER_ID_2",
+      "stat": "ast",
+      "line": 6.5,
+      "side": "over"
+    }
+  ]
+}
