@@ -1,0 +1,10 @@
+{
+  "after_game_status": "scored",
+  "delivery_date": "2026-05-30",
+  "scored_at_utc": "2026-05-31T09:43:08Z",
+  "n_scored_pmf_rows": 192,
+  "n_scored_market_rows": 2777,
+  "n_clv_rows": 0,
+  "outcomes_source": "/tmp/player_actuals_2026-05-30_all_target_stats_long.parquet",
+  "reason": null
+}

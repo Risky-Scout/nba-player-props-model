@@ -1,8 +1,23 @@
 {
-  "blocker": "no rows in player_game_stats.parquet for game_date=2026-05-30",
-  "code_commit": "d7206c3b8a90e75a8f15f6cb8cfca68e691c5af2",
+  "by_game": {
+    "21713534": {
+      "current_live": {
+        "blocker": "",
+        "matched_rows": 40,
+        "mean_nll": 2.440457516406248,
+        "median_p_realized": 0.1447,
+        "present": true,
+        "snapshot_dir": "deliveries/2026-05-30/derek_game_snapshots/21713534/current_live"
+      }
+    }
+  },
+  "code_commit": "08311c9dbc6ca89840f87a7094fee84a5b093cf2",
   "delivery_date": "2026-05-30",
-  "generated_at_utc": "2026-05-31T01:54:53+00:00",
+  "generated_at_utc": "2026-05-31T09:43:10+00:00",
   "schema_version": "1.0",
-  "status": "pending_outcomes"
+  "status": "scored",
+  "summary": {
+    "mean_nll": 2.440457516406248,
+    "snapshots_scored": 1
+  }
 }
