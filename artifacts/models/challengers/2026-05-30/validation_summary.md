@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-05-31T14:29:09+00:00 |
+| Generated (UTC) | 2026-05-31T16:51:19+00:00 |
 | Promote | no |
 | Reason | gate_failed:market_logloss_non_inferior_or_better |
 | Champion model_version | challenger-2026-05-30 |
