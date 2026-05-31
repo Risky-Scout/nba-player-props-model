@@ -1,0 +1,102 @@
+{
+  "run_date": "2026-05-31",
+  "report_date": "2026-05-31",
+  "generated_at_utc": "2026-05-31T13:24:12.929146+00:00",
+  "rows": 72,
+  "expected_rows": 72,
+  "n_cells": 72,
+  "expected_stats": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "expected_stats_canonical": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "observed_stats": [
+    "ast",
+    "blk",
+    "fg3m",
+    "pa",
+    "pr",
+    "pra",
+    "pts",
+    "ra",
+    "reb",
+    "stl",
+    "stocks",
+    "tov"
+  ],
+  "expected_role_buckets": [
+    "inactive_risk",
+    "fringe",
+    "bench",
+    "rotation",
+    "core",
+    "starter"
+  ],
+  "observed_role_buckets": [
+    "bench",
+    "core",
+    "fringe",
+    "inactive_risk",
+    "rotation",
+    "starter"
+  ],
+  "missing_cells": [],
+  "cells_with_0_n_lt_200": [],
+  "min_n": 593,
+  "max_n": 2098,
+  "status_counts": {
+    "PASS": 64,
+    "REVIEW": 8,
+    "NEEDS_MORE_DATA": 0
+  },
+  "review_cells_count": 8,
+  "caveat_cells_count": 2,
+  "n_cells_with_caveats": 2,
+  "baseline_for_m6_3": "raw_uncalibrated_pmf",
+  "market_eval_available": false,
+  "status_threshold_policy": "starter +0.003 NLL, all other role buckets +0.005 NLL",
+  "bucket_nll_thresholds": {
+    "starter": 0.003,
+    "core": 0.005,
+    "rotation": 0.005,
+    "bench": 0.005,
+    "fringe": 0.005,
+    "inactive_risk": 0.005
+  },
+  "sparse_p0_regression_limit": 0.01,
+  "combo_mean_bias_regression_limit": 0.5,
+  "min_cell_n": 200,
+  "base_oof_source": "data/oof_pmfs.parquet",
+  "combo_oof_source": "data/oof_combo_pmfs.parquet",
+  "calibrator_dir": "artifacts/models",
+  "forbidden_stats": [
+    "reb_ast"
+  ],
+  "forbidden_stats_present": [],
+  "m6_3_report_pass": true,
+  "verification_passed": true,
+  "verification_errors": []
+}
