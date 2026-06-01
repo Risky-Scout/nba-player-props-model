@@ -194,10 +194,12 @@ class TestSGPModelPointerSchema:
         "n_backtest_rows",
         "n_games",
         "n_segments",
+        "n_certified_segments",
         "calibration_status",
         "promotion_status",
         "default_delivery_enabled",
         "market_sgp_odds_available",
+        "commit_sha",
         "created_at_utc",
     ]
 
@@ -427,3 +429,232 @@ class TestShadowWorkflowDefaultsDisabled:
 
     def test_market_correlation_baseline_script_exists(self):
         assert (_SCRIPTS / "build_sgp_market_correlation_baseline.py").exists()
+
+
+# ── 11. Training artifact verifier — VALID_SKIP ───────────────────────────────
+
+class TestTrainingArtifactVerifierValidSkip:
+    def test_verifier_exits_zero_on_valid_skip(self, tmp_path):
+        """verify_sgp_training_artifacts.py must exit 0 when training valid-skipped."""
+        # Run training to create a VALID_SKIP status file.
+        subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "run_sgp_training_and_calibration.py"),
+                "--as-of-date", "2026-05-01",
+                "--repo-root", str(tmp_path),
+                "--season-mode", "auto",
+            ],
+            capture_output=True,
+        )
+        # Now run the verifier — should accept VALID_SKIP without error.
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", "2026-05-01",
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, (
+            f"Expected exit 0 on VALID_SKIP, got {result.returncode}\n{result.stderr}"
+        )
+
+    def test_verifier_reports_valid_skip_status(self, tmp_path):
+        """Verifier output must mention VALID_SKIP when training valid-skipped."""
+        subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "run_sgp_training_and_calibration.py"),
+                "--as-of-date", "2026-05-01",
+                "--repo-root", str(tmp_path),
+                "--season-mode", "auto",
+            ],
+            capture_output=True,
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", "2026-05-01",
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert "VALID_SKIP" in result.stdout, "Verifier should report VALID_SKIP in output"
+
+    def test_verifier_rejects_future_as_of_date(self, tmp_path):
+        """Verifier must exit 1 if as_of_date >= today."""
+        future = (date.today() + timedelta(days=1)).isoformat()
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", future,
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 1, f"Expected exit 1 for future date {future}, got {result.returncode}"
+
+    def test_verifier_does_not_require_calibrator_on_valid_skip(self, tmp_path):
+        """Verifier must not hard-fail when calibrator is absent on a valid-skip run."""
+        subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "run_sgp_training_and_calibration.py"),
+                "--as-of-date", "2026-05-01",
+                "--repo-root", str(tmp_path),
+                "--season-mode", "auto",
+            ],
+            capture_output=True,
+        )
+        # Ensure there is no calibrator.
+        cal_dir = tmp_path / "artifacts" / "models" / "sgp" / "joint_calibrators"
+        assert not any(cal_dir.glob("*.pkl")) if cal_dir.exists() else True
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", "2026-05-01",
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+        )
+        assert result.returncode == 0
+
+
+# ── 12. Training artifact verifier — FIT_COMPLETE ────────────────────────────
+
+class TestTrainingArtifactVerifierFitComplete:
+    """Tests for the verifier's behaviour when artifacts are fully present (FIT_COMPLETE)."""
+
+    def _write_fit_complete_artifacts(self, tmp_path: Path, as_of_date: str) -> None:
+        """Write the minimum set of artifacts expected for a FIT_COMPLETE run."""
+        import pickle, numpy as np
+
+        sgp_dir = tmp_path / "artifacts" / "models" / "sgp"
+        fw_dir = sgp_dir / "factor_weights"
+        cal_dir = sgp_dir / "joint_calibrators"
+        rep_dir = sgp_dir / "reports"
+        reg_dir = sgp_dir / "registry"
+        for d in [fw_dir, cal_dir, rep_dir, reg_dir]:
+            d.mkdir(parents=True, exist_ok=True)
+
+        # Factor weights.
+        fw = {"_meta": {"as_of_date": as_of_date, "method": "test", "trained_rows": 600}}
+        (fw_dir / "factor_weights_latest.json").write_text(json.dumps(fw))
+        (fw_dir / f"factor_weights_{as_of_date}.json").write_text(json.dumps(fw))
+
+        # Calibrator (minimal pickle stub).
+        (cal_dir / "joint_calibrator_latest.pkl").write_bytes(pickle.dumps({"stub": True}))
+        (cal_dir / f"joint_calibrator_{as_of_date}.pkl").write_bytes(pickle.dumps({"stub": True}))
+
+        # Reports.
+        for rname in ["sgp_training_report", "sgp_calibration_report", "sgp_gate_report"]:
+            rdata = {"as_of_date": as_of_date, "status": "FIT_COMPLETE", "promotion_status": "FIT_COMPLETE_NOT_CERTIFIED"}
+            (rep_dir / f"{rname}_{as_of_date}.json").write_text(json.dumps(rdata))
+
+        # Training status.
+        status = {"status": "COMPLETE", "as_of_date": as_of_date}
+        (rep_dir / "sgp_training_status.json").write_text(json.dumps(status))
+
+        # Registry pointer.
+        pointer = {
+            "sgp_model_version": "v1",
+            "trained_through_date": as_of_date,
+            "calibrated_through_date": as_of_date,
+            "latest_actual_box_score_date": as_of_date,
+            "n_backtest_rows": 600,
+            "n_games": 20,
+            "n_segments": 5,
+            "n_certified_segments": 0,
+            "factor_weights_artifact": str(fw_dir / f"factor_weights_{as_of_date}.json"),
+            "joint_calibrator_artifact": str(cal_dir / f"joint_calibrator_{as_of_date}.pkl"),
+            "calibration_status": "FIT_COMPLETE",
+            "promotion_status": "FIT_COMPLETE_NOT_CERTIFIED",
+            "default_delivery_enabled": False,
+            "market_sgp_odds_available": False,
+            "commit_sha": None,
+            "created_at_utc": "2026-05-31T00:00:00+00:00",
+        }
+        (reg_dir / "sgp_model_pointer.json").write_text(json.dumps(pointer))
+
+    def test_verifier_exits_zero_when_fit_complete_artifacts_present(self, tmp_path):
+        as_of_date = "2026-05-01"
+        self._write_fit_complete_artifacts(tmp_path, as_of_date)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", as_of_date,
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, (
+            f"Expected exit 0 with FIT_COMPLETE artifacts, got {result.returncode}\n"
+            f"stdout: {result.stdout}\nstderr: {result.stderr}"
+        )
+
+    def test_verifier_fails_if_fit_complete_but_calibrator_missing(self, tmp_path):
+        as_of_date = "2026-05-01"
+        self._write_fit_complete_artifacts(tmp_path, as_of_date)
+        # Remove the calibrator — verifier should now fail.
+        cal_dir = tmp_path / "artifacts" / "models" / "sgp" / "joint_calibrators"
+        for p in cal_dir.glob("*.pkl"):
+            p.unlink()
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", as_of_date,
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 1, (
+            f"Expected exit 1 when FIT_COMPLETE but calibrator missing, got {result.returncode}"
+        )
+
+    def test_verifier_rejects_pointer_claiming_default_production_approved(self, tmp_path):
+        as_of_date = "2026-05-01"
+        self._write_fit_complete_artifacts(tmp_path, as_of_date)
+        # Inject unauthorized production status.
+        reg_dir = tmp_path / "artifacts" / "models" / "sgp" / "registry"
+        pointer = json.loads((reg_dir / "sgp_model_pointer.json").read_text())
+        pointer["promotion_status"] = "DEFAULT_PRODUCTION_APPROVED"
+        (reg_dir / "sgp_model_pointer.json").write_text(json.dumps(pointer))
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(_SCRIPTS / "verify_sgp_training_artifacts.py"),
+                "--as-of-date", as_of_date,
+                "--repo-root", str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 1, "Verifier should reject DEFAULT_PRODUCTION_APPROVED"
+
+    def test_pointer_has_n_certified_segments_field(self, tmp_path):
+        as_of_date = "2026-05-01"
+        self._write_fit_complete_artifacts(tmp_path, as_of_date)
+        reg_dir = tmp_path / "artifacts" / "models" / "sgp" / "registry"
+        pointer = json.loads((reg_dir / "sgp_model_pointer.json").read_text())
+        assert "n_certified_segments" in pointer, "Pointer must have n_certified_segments field"
+        assert isinstance(pointer["n_certified_segments"], int)
+
+    def test_pointer_has_commit_sha_field(self, tmp_path):
+        as_of_date = "2026-05-01"
+        self._write_fit_complete_artifacts(tmp_path, as_of_date)
+        reg_dir = tmp_path / "artifacts" / "models" / "sgp" / "registry"
+        pointer = json.loads((reg_dir / "sgp_model_pointer.json").read_text())
+        assert "commit_sha" in pointer, "Pointer must have commit_sha field"

@@ -92,6 +92,21 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True, default=str))
 
 
+def _get_commit_sha(repo_root: Path) -> str | None:
+    """Return HEAD commit SHA, or None if not in a git repo."""
+    import subprocess
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, cwd=str(repo_root), timeout=5,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+    except Exception:
+        pass
+    return None
+
+
 def _valid_skip(reason: str, as_of_date: str, out_dir: Path) -> int:
     status = {
         "status": "VALID_SKIP",
@@ -751,6 +766,18 @@ def _compute_gate_status(
     gates["all_gates_pass"] = all_non_market and gates["gate5_market_superiority"]
     gates["non_market_gates_pass"] = all_non_market
 
+    # Count certified segments (those passing all calibration thresholds).
+    seg_reliability = calibration_report.get("segment_reliability", [])
+    n_certified_segs = 0
+    for seg in seg_reliability:
+        seg_ece = seg.get("ece")
+        seg_slope = seg.get("slope")
+        seg_n = seg.get("n", 0)
+        if (seg_n >= 200 and seg_ece is not None and seg_ece <= _ECE_THRESHOLD
+                and seg_slope is not None and _SLOPE_LO <= seg_slope <= _SLOPE_HI):
+            n_certified_segs += 1
+    gates["n_certified_segments"] = n_certified_segs
+
     # Promotion status.
     if not gates["gate1_sufficient_sample"]:
         gates["promotion_status"] = "INSUFFICIENT_SAMPLE"
@@ -828,6 +855,7 @@ def _write_registry_pointer(
         "n_settled": n_settled,
         "n_games": n_games,
         "n_segments": cal_result.get("cell_count", 0),
+        "n_certified_segments": int(gate_report.get("n_certified_segments", 0)),
         # ── Status ────────────────────────────────────────────────────────
         "factor_weights_status": fw_result.get("status", "UNKNOWN"),
         "calibration_status": cal_result.get("status", "UNKNOWN"),
@@ -849,6 +877,7 @@ def _write_registry_pointer(
         "oof_slope": cal_result.get("oof_metrics", {}).get("oof_slope"),
         "oof_intercept": cal_result.get("oof_metrics", {}).get("oof_intercept"),
         # ── Metadata ──────────────────────────────────────────────────────
+        "commit_sha": _get_commit_sha(repo_root),
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     reg_dir = repo_root / "artifacts" / "models" / "sgp" / "registry"
