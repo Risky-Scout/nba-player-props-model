@@ -153,9 +153,12 @@ def _price_configs(
     pmf_df: pd.DataFrame,
     slate_date: str,
     as_of_date: str | None = None,
+    bundle_meta: dict | None = None,
 ) -> list[dict]:
     from sgp_engine.pricing import _classify_relationship
     from sgp_engine.schema import SGPLeg
+
+    _bmeta = bundle_meta or {}
 
     # Build PMF JSON lookup for percentile computation.
     pmf_json_lut: dict[tuple[str, str, str], tuple[str, int | None]] = {}
@@ -308,6 +311,11 @@ def _price_configs(
             "independence_brier": np.nan,
             "logloss_delta_vs_independence": np.nan,
             "brier_delta_vs_independence": np.nan,
+            # Provenance — for schema stability and audit.
+            "pmf_source_file": str(_bmeta.get("pmf_source_file", "unknown")),
+            "model_version": str(_bmeta.get("champion_model_version", "unknown")),
+            "sgp_engine_version": "v1",
+            "created_at_utc": datetime.now(timezone.utc).isoformat(),
         }
         rows.append(row)
     return rows
@@ -503,7 +511,7 @@ def main() -> int:
         configs = _sample_leg_configs(pmf_df, rng, max_per_game=args.max_pairs_per_game)
         print(f"  {len(configs)} ticket configurations to price ...", flush=True)
 
-        rows = _price_configs(configs, tape, pmf_df, slate_date, as_of_date=slate_date)
+        rows = _price_configs(configs, tape, pmf_df, slate_date, as_of_date=slate_date, bundle_meta=bundle.manifest)
         all_rows.extend(rows)
         print(f"  {len(rows)} rows priced for {slate_date}.", flush=True)
 
