@@ -1,0 +1,223 @@
+name: "NBA SGP Engine — Shadow Training & Calibration"
+
+on:
+  # Daily shadow training run — after overnight box-score settlement.
+  # 12:30 UTC = 08:30 ET. Runs after the main model chain has scored
+  # the prior slate so oof_stat_pmf_predictions.parquet is fresh.
+  schedule:
+    - cron: "30 12 * * *"
+
+  workflow_dispatch:
+    inputs:
+      as_of_date:
+        description: "Training as-of date YYYY-MM-DD. Blank = America/New_York yesterday."
+        required: false
+        default: ""
+      auto_build_dates:
+        description: "Auto-build missing SGP backtest rows from settled game dates"
+        required: false
+        default: "true"
+        type: choice
+        options: ["true", "false"]
+      no_commit:
+        description: "Run without committing artifacts (dry-run commit)"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      force_run:
+        description: "Bypass valid-skip on no-new-data days"
+        required: false
+        default: "false"
+        type: choice
+        options: ["false", "true"]
+      n_sims:
+        description: "MC simulation draws per backtest ticket (default 50000)"
+        required: false
+        default: "50000"
+
+# This workflow does NOT block or modify the main PMF delivery pipeline.
+# It only accumulates shadow training artifacts under artifacts/models/sgp/.
+# SGP delivery remains disabled by default (ENABLE_SGP_ENGINE=false).
+concurrency:
+  group: sgp-shadow-training
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  PYTHONPATH: src
+  # Shadow training is always opt-in. This workflow does NOT enable SGP delivery.
+  ENABLE_SGP_ENGINE: "false"
+  ENABLE_SGP_TRAINING: "true"
+
+jobs:
+  sgp-shadow-training:
+    name: "SGP Shadow Training & Calibration"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Resolve as-of date (America/New_York yesterday)
+        id: resolve_date
+        shell: bash
+        run: |
+          INPUT_DATE="${{ github.event.inputs.as_of_date }}"
+          if [ -n "$INPUT_DATE" ]; then
+            ASOF="$INPUT_DATE"
+          else
+            # Yesterday in America/New_York
+            ASOF=$(TZ="America/New_York" date -d "yesterday" +%Y-%m-%d 2>/dev/null \
+                   || TZ="America/New_York" python3 -c \
+                      "from datetime import datetime,timedelta,timezone; \
+                       import zoneinfo; \
+                       ny=zoneinfo.ZoneInfo('America/New_York'); \
+                       print((datetime.now(ny)-timedelta(days=1)).strftime('%Y-%m-%d'))")
+          fi
+          TODAY=$(date +%Y-%m-%d)
+          echo "ASOF=$ASOF" >> "$GITHUB_ENV"
+          echo "TODAY=$TODAY" >> "$GITHUB_ENV"
+          echo "as_of_date=$ASOF" >> "$GITHUB_OUTPUT"
+          echo "[SGP-SHADOW] as_of_date=$ASOF  today=$TODAY"
+
+      - name: Safety gate — reject future as_of_date
+        shell: bash
+        run: |
+          if [[ "$ASOF" >= "$TODAY" ]]; then
+            echo "ERROR: as_of_date=$ASOF >= today=$TODAY. Never train on current-day data." >&2
+            exit 1
+          fi
+          echo "[SGP-SHADOW] as_of_date=$ASOF is strictly before today=$TODAY. OK."
+
+      - name: Run SGP shadow training and calibration
+        shell: bash
+        run: |
+          EXTRA_FLAGS=""
+          if [[ "${{ github.event.inputs.auto_build_dates }}" == "true" ]]; then
+            EXTRA_FLAGS="--auto-build-dates"
+          fi
+          if [[ "${{ github.event.inputs.force_run }}" == "true" ]]; then
+            EXTRA_FLAGS="$EXTRA_FLAGS --season-mode season"
+          fi
+
+          python3 scripts/run_sgp_training_and_calibration.py \
+            --as-of-date "$ASOF" \
+            --repo-root . \
+            --season-mode auto \
+            --n-sims "${{ github.event.inputs.n_sims || '50000' }}" \
+            --max-pairs-per-game 150 \
+            $EXTRA_FLAGS
+
+      - name: Run market correlation baseline (valid-skip if no source)
+        shell: bash
+        run: |
+          python3 scripts/build_sgp_market_correlation_baseline.py \
+            --date "$ASOF" \
+            --repo-root .
+
+      - name: Verify SGP training artifacts
+        shell: bash
+        run: |
+          python3 scripts/verify_sgp_training_artifacts.py \
+            --as-of-date "$ASOF" \
+            --repo-root .
+
+      - name: Show gate report
+        shell: bash
+        run: |
+          GATE="artifacts/models/sgp/reports/sgp_gate_report_${ASOF}.json"
+          if [ -f "$GATE" ]; then
+            echo "=== SGP Gate Report ==="
+            python3 -c "
+          import json, sys
+          g = json.load(open('$GATE'))
+          for k in ['promotion_status','gate1_sufficient_sample','gate2_ece',
+                    'gate3_mce','gate4_slope','gate5_market_superiority',
+                    'all_gates_pass','n_settled']:
+              print(f'  {k}: {g.get(k)}')
+          "
+          else
+            echo "Gate report not found (valid-skip or training not run)"
+          fi
+
+      - name: Confirm SGP delivery remains disabled
+        shell: bash
+        run: |
+          # Verify the main workflow still has SGP disabled by default.
+          ENABLE_DEFAULT=$(python3 -c "
+          import re, sys
+          txt = open('.github/workflows/nba_pmf_delivery.yml').read()
+          m = re.search(r'ENABLE_SGP_ENGINE:\s*[\"\'](.*?)[\"\']]', txt)
+          print(m.group(1) if m else 'not_found')
+          " 2>/dev/null || echo "")
+          echo "[SGP-SHADOW] ENABLE_SGP_ENGINE in delivery workflow = '${ENABLE_DEFAULT}'"
+          # This is informational — shadow training does not modify delivery workflow.
+
+      - name: Commit SGP training artifacts
+        if: ${{ github.event.inputs.no_commit != 'true' }}
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage only SGP training artifacts and backtest rows.
+          git add \
+            artifacts/models/sgp/factor_weights/ \
+            artifacts/models/sgp/joint_calibrators/ \
+            artifacts/models/sgp/reports/ \
+            artifacts/models/sgp/registry/ \
+            data/sgp_backtest_rows.parquet \
+            deliveries/*/sgp_engine/market_comparison/sgp_market_correlation_status.json \
+            2>/dev/null || true
+
+          if git diff --staged --quiet; then
+            echo "[SGP-SHADOW] No artifact changes to commit."
+          else
+            git commit -m "SGP shadow training: as_of_date=${ASOF} [skip ci]"
+            git push
+            echo "[SGP-SHADOW] Artifacts committed and pushed."
+          fi
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## SGP Shadow Training Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Item | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| as_of_date | $ASOF |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| SGP delivery enabled | false (opt-in only) |" >> "$GITHUB_STEP_SUMMARY"
+
+          POINTER="artifacts/models/sgp/registry/sgp_model_pointer.json"
+          if [ -f "$POINTER" ]; then
+            PROMO=$(python3 -c "import json; d=json.load(open('$POINTER')); print(d.get('promotion_status','?'))" 2>/dev/null)
+            N_ROWS=$(python3 -c "import json; d=json.load(open('$POINTER')); print(d.get('n_backtest_rows',0))" 2>/dev/null)
+            echo "| promotion_status | $PROMO |" >> "$GITHUB_STEP_SUMMARY"
+            echo "| n_backtest_rows | $N_ROWS |" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "| promotion_status | DIAGNOSTIC_NO_BACKTEST |" >> "$GITHUB_STEP_SUMMARY"
+            echo "| n_backtest_rows | 0 |" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**SGP Engine remains disabled by default.** " >> "$GITHUB_STEP_SUMMARY"
+          echo "Default production activation requires explicit user approval after all gates pass." >> "$GITHUB_STEP_SUMMARY"

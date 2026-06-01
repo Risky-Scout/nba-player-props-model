@@ -886,6 +886,34 @@ def main() -> int:
     # Write factor_weights_used.json to bundle dir (§5 spec).
     bundle_dir = sgp_root / "slate_state_bundle_v1"
     bundle_dir.mkdir(parents=True, exist_ok=True)
+
+    # ── Load SGP model pointer (single source of truth for training state). ──
+    pointer_path = repo_root / "artifacts" / "models" / "sgp" / "registry" / "sgp_model_pointer.json"
+    sgp_pointer: dict[str, Any] = {}
+    sgp_pointer_used = False
+    if pointer_path.exists():
+        try:
+            sgp_pointer = json.loads(pointer_path.read_text())
+            sgp_pointer_used = True
+            # If pointer has a better calibrator path, prefer it.
+            ptr_cal = sgp_pointer.get("joint_calibrator_artifact")
+            if ptr_cal and Path(str(ptr_cal)).exists():
+                _ptr_cal_path = Path(str(ptr_cal))
+                # Will be used below when loading calibrator registry.
+            # If pointer has factor weights path, record it.
+            if sgp_pointer.get("factor_weights_artifact_exists"):
+                fw_meta["pointer_trained_through"] = sgp_pointer.get("trained_through_date")
+                fw_meta["pointer_promotion_status"] = sgp_pointer.get("promotion_status", "DIAGNOSTIC_NO_BACKTEST")
+                fw_meta["pointer_n_backtest_rows"] = sgp_pointer.get("n_backtest_rows", 0)
+        except Exception as exc:
+            print(f"  WARNING: Could not load sgp_model_pointer.json: {exc}", file=sys.stderr)
+
+    fw_meta["sgp_model_pointer_used"] = sgp_pointer_used
+    fw_meta["sgp_model_pointer_path"] = str(pointer_path) if sgp_pointer_used else None
+    fw_meta["joint_calibrator_artifact_used"] = sgp_pointer.get("joint_calibrator_artifact")
+    fw_meta["calibration_status_from_pointer"] = sgp_pointer.get("calibration_status", "NOT_AVAILABLE")
+    fw_meta["promotion_status_from_pointer"] = sgp_pointer.get("promotion_status", "DIAGNOSTIC_NO_BACKTEST")
+
     (bundle_dir / "factor_weights_used.json").write_text(
         json.dumps(fw_meta, indent=2, sort_keys=True)
     )
@@ -1014,10 +1042,19 @@ def main() -> int:
 
     # Define calibrator path and default flags before the candidates branch so
     # subsequent code (cal_report, gate_status) can reference them safely.
+    # Prefer calibrator from sgp_model_pointer.json if available.
+    _ptr_cal_from_pointer = sgp_pointer.get("joint_calibrator_latest") or sgp_pointer.get("joint_calibrator_artifact")
     cal_model_path = (
-        repo_root / "artifacts" / "models" / "sgp" / "calibrator"
-        / "sgp_joint_calibrator_latest.pkl"
+        Path(str(_ptr_cal_from_pointer))
+        if _ptr_cal_from_pointer and Path(str(_ptr_cal_from_pointer)).exists()
+        else repo_root / "artifacts" / "models" / "sgp" / "joint_calibrators" / "joint_calibrator_latest.pkl"
     )
+    if not cal_model_path.exists():
+        # Legacy path fallback.
+        cal_model_path = (
+            repo_root / "artifacts" / "models" / "sgp" / "calibrator"
+            / "sgp_joint_calibrator_latest.pkl"
+        )
     registry = None
     calibration_available = False
     market_comparison_available = False
@@ -1294,6 +1331,15 @@ def main() -> int:
         pd.DataFrame(columns=_CAL_CTX_COLS).to_parquet(
             bundle_dir / "calibration_context.parquet", index=False
         )
+
+    # Enrich gate_status with pointer provenance fields.
+    gate_status["sgp_model_pointer_used"] = sgp_pointer_used
+    gate_status["sgp_model_pointer_path"] = str(pointer_path) if sgp_pointer_used else None
+    gate_status["factor_weights_artifact_used"] = fw_meta.get("path")
+    gate_status["joint_calibrator_artifact_used"] = fw_meta.get("joint_calibrator_artifact_used")
+    gate_status["calibration_status_from_pointer"] = fw_meta.get("calibration_status_from_pointer", "NOT_AVAILABLE")
+    gate_status["promotion_status_from_pointer"] = fw_meta.get("promotion_status_from_pointer", "DIAGNOSTIC_NO_BACKTEST")
+    gate_status["default_delivery_enabled"] = False   # never set True without explicit approval
 
     (cal_dir / "sgp_gate_status.json").write_text(
         json.dumps(gate_status, indent=2, sort_keys=True)

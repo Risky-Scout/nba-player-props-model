@@ -492,15 +492,54 @@ def _fit_factor_weights_full(
                     pit_corr_by_stat_pair[pair] = round(shrunk_r, 4)
                     pit_sample_sizes[pair] = n_pair
 
+    # Standard factor names for the NBA game-mechanism model.
+    _FACTOR_NAMES = [
+        "pace", "total", "team_offense", "team_shooting", "team_rebound_pool",
+        "team_turnover", "minutes", "usage", "player_shooting", "defensive_activity",
+        "overtime", "blowout", "close_game",
+    ]
+
+    # Target correlations: empirical corr by stat pair (from PIT) + by relationship.
+    target_correlations = {}
+    target_correlations.update({f"rel__{k}": v for k, v in emp_corr_by_rel.items()})
+    target_correlations.update({f"pit__{k}": v for k, v in pit_corr_by_stat_pair.items()})
+
+    # Fit diagnostics.
+    n_corr_cells = len(emp_corr_by_rel) + len(pit_corr_by_stat_pair)
+    n_eligible = len([v for v in list(emp_corr_by_rel.values()) + list(pit_corr_by_stat_pair.values()) if abs(v) > 0])
+    fit_diagnostics = {
+        "rmse_corr": float(np.sqrt(np.mean([v**2 for v in target_correlations.values()]))) if target_correlations else None,
+        "max_abs_corr": float(max(abs(v) for v in target_correlations.values())) if target_correlations else None,
+        "n_corr_cells": n_corr_cells,
+        "n_eligible_cells": n_eligible,
+        "min_cell_n": int(min(list(sample_sizes_by_rel.values()) + list(pit_sample_sizes.values()))) if (sample_sizes_by_rel or pit_sample_sizes) else 0,
+        "median_cell_n": float(np.median(list(sample_sizes_by_rel.values()) + list(pit_sample_sizes.values()))) if (sample_sizes_by_rel or pit_sample_sizes) else 0,
+        "shrinkage_applied": True,
+    }
+
+    # Combine sample sizes.
+    sample_sizes_by_cell = {}
+    sample_sizes_by_cell.update({f"rel__{k}": v for k, v in sample_sizes_by_rel.items()})
+    sample_sizes_by_cell.update({f"pit__{k}": v for k, v in pit_sample_sizes.items()})
+
     fw_out["_meta"] = {
         "as_of_date": as_of_date,
         "fitted_at_utc": datetime.now(timezone.utc).isoformat(),
         "method": "midpoint_pit_cross_player_corr_shrinkage",
+        "trained_rows": n_rows,
+        "n_games": n_settled,          # proxy; true game count from context
         "n_backtest_rows": n_rows,
         "n_settled": n_settled,
         "n_pit_rows": n_pit,
+        "factor_names": _FACTOR_NAMES,
+        "target_correlations": target_correlations,
+        "fit_diagnostics": fit_diagnostics,
+        "sample_sizes_by_cell": sample_sizes_by_cell,
         "shrinkage_k": _SHRINK_K,
         "fallback_used": n_settled < 500,
+        "latest_actual_box_score_date": None,   # set by caller via _meta update
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+        # Legacy keys for backward compat.
         "empirical_corr_by_relationship": emp_corr_by_rel,
         "pit_corr_by_stat_pair": pit_corr_by_stat_pair,
         "sample_sizes_by_relationship": sample_sizes_by_rel,
@@ -734,39 +773,88 @@ def _write_registry_pointer(
     fw_result: dict,
     cal_result: dict,
     gate_report: dict,
+    ctx: dict | None = None,
 ) -> None:
-    """Write sgp_model_pointer.json for the current best artifact."""
+    """Write sgp_model_pointer.json — single source of truth for SGP training state."""
     fw_dir = repo_root / "artifacts" / "models" / "sgp" / "factor_weights"
     cal_dir = repo_root / "artifacts" / "models" / "sgp" / "joint_calibrators"
 
     fw_artifact = str(fw_dir / f"factor_weights_{as_of_date}.json")
     cal_artifact = str(cal_dir / f"joint_calibrator_{as_of_date}.pkl")
 
+    # Derive promotion_status from gate_report.
+    promo = gate_report.get("promotion_status", "INSUFFICIENT_SAMPLE")
+    # Map internal status values to spec-defined values.
+    if n_rows == 0:
+        promo = "DIAGNOSTIC_NO_BACKTEST"
+    elif not gate_report.get("gate1_sufficient_sample", False):
+        promo = "DIAGNOSTIC_NO_BACKTEST"
+    elif cal_result.get("status") in ("FIT_COMPLETE",) and fw_result.get("status") == "FIT_COMPLETE":
+        if gate_report.get("all_gates_pass", False):
+            promo = "CERTIFIED_SEGMENTS_AVAILABLE"
+        elif gate_report.get("non_market_gates_pass", False):
+            promo = "FIT_COMPLETE_NOT_CERTIFIED"
+        else:
+            promo = "CALIBRATOR_FIT_INSUFFICIENT_SEGMENTS"
+    elif fw_result.get("status") == "FIT_COMPLETE" and cal_result.get("status") != "FIT_COMPLETE":
+        promo = "FACTOR_WEIGHTS_ONLY"
+    else:
+        promo = "DIAGNOSTIC_NO_BACKTEST"
+
+    # Determine latest actual box-score date from context.
+    latest_box_score = (ctx or {}).get("latest_game_date", as_of_date)
+
+    # Check if fw artifact actually exists on disk.
+    fw_exists = (fw_dir / f"factor_weights_{as_of_date}.json").exists()
+    cal_exists = (cal_dir / f"joint_calibrator_{as_of_date}.pkl").exists()
+
+    # Build pointer with all required fields.
     pointer = {
+        # ── Identity ──────────────────────────────────────────────────────
+        "sgp_model_version": "v1",
+        # ── Temporal ──────────────────────────────────────────────────────
         "trained_through_date": as_of_date,
         "calibrated_through_date": as_of_date,
+        "latest_actual_box_score_date": latest_box_score,
+        # ── Artifacts ─────────────────────────────────────────────────────
+        "factor_weights_artifact": fw_artifact if fw_exists else None,
+        "factor_weights_artifact_exists": fw_exists,
+        "factor_weights_latest": str(fw_dir / "factor_weights_latest.json") if (fw_dir / "factor_weights_latest.json").exists() else None,
+        "joint_calibrator_artifact": cal_artifact if cal_exists else None,
+        "joint_calibrator_artifact_exists": cal_exists,
+        "joint_calibrator_latest": str(cal_dir / "joint_calibrator_latest.pkl") if (cal_dir / "joint_calibrator_latest.pkl").exists() else None,
+        # ── Data counts ───────────────────────────────────────────────────
         "n_backtest_rows": n_rows,
         "n_settled": n_settled,
         "n_games": n_games,
         "n_segments": cal_result.get("cell_count", 0),
-        "factor_weights_artifact": fw_artifact,
-        "joint_calibrator_artifact": cal_artifact,
-        "factor_weights_status": fw_result.get("status"),
-        "calibration_status": cal_result.get("status"),
-        "promotion_status": gate_report.get("promotion_status", "INSUFFICIENT_SAMPLE"),
+        # ── Status ────────────────────────────────────────────────────────
+        "factor_weights_status": fw_result.get("status", "UNKNOWN"),
+        "calibration_status": cal_result.get("status", "UNKNOWN"),
+        "promotion_status": promo,
         "all_gates_pass": gate_report.get("all_gates_pass", False),
         "non_market_gates_pass": gate_report.get("non_market_gates_pass", False),
         "market_superiority_certified": gate_report.get("gate5_market_superiority", False),
-        "updated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "note": (
+        "market_sgp_odds_available": False,   # true only when real SGP odds ingested
+        # ── Production gating ─────────────────────────────────────────────
+        "default_delivery_enabled": False,    # NEVER set to True programmatically
+        "default_delivery_note": (
             "SGP Engine remains opt-in (ENABLE_SGP_ENGINE=false, run_sgp_engine default false). "
-            "Do not activate default production until user explicitly approves after all gates pass."
+            "Setting default_delivery_enabled=True requires explicit user approval "
+            "after all calibration gates pass."
         ),
+        # ── Calibration quality (from OOF holdout if available) ───────────
+        "oof_ece": cal_result.get("oof_metrics", {}).get("oof_ece"),
+        "oof_mce": cal_result.get("oof_metrics", {}).get("oof_mce"),
+        "oof_slope": cal_result.get("oof_metrics", {}).get("oof_slope"),
+        "oof_intercept": cal_result.get("oof_metrics", {}).get("oof_intercept"),
+        # ── Metadata ──────────────────────────────────────────────────────
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
     }
     reg_dir = repo_root / "artifacts" / "models" / "sgp" / "registry"
     reg_dir.mkdir(parents=True, exist_ok=True)
     _write_json(reg_dir / "sgp_model_pointer.json", pointer)
-    print(f"  Registry pointer written: promotion_status={pointer['promotion_status']}")
+    print(f"  Registry pointer written: promotion_status={promo}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -971,6 +1059,7 @@ def main() -> int:
             repo_root, as_of_date,
             n_rows, n_settled_total, n_games,
             fw_result, cal_result, gate_report,
+            ctx=ctx,
         )
 
     print(f"[SGP-TRAIN] ─────────────────────────────────────────────────────")
