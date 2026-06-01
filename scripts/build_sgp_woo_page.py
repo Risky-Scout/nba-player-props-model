@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import numpy as np
 import json
 import sys
 from datetime import datetime, timezone
@@ -156,15 +157,34 @@ def _build_price_table_html(df: pd.DataFrame) -> str:
     if visible.empty:
         return "<p class='muted'>No prices available for this slate.</p>"
 
-    headers = ["Ticket", "Legs", "Fair Odds", "Joint Prob.", "Corr. Factor", "Tier"]
+    headers = ["Ticket", "Legs", "Leg#", "Fair Prob.", "Fair Odds (Am.)", "Fair Odds (Dec.)", "Joint Prob. (Calib.)", "Corr. Factor", "Tier"]
     thead = "".join(f"<th>{h}</th>" for h in headers)
 
     rows_html_parts = []
     for _, row in visible.iterrows():
         tier = str(row.get("tier", "MODEL_PRICE"))
         legs_label = _parse_legs_label(row.get("legs_json"))
-        odds = _fmt_odds(row.get("fair_american_odds"))
-        prob = _fmt_prob(row.get("calibrated_joint_probability"))
+        leg_count = str(int(row["leg_count"])) if "leg_count" in row and pd.notna(row["leg_count"]) else (
+            str(int(row["n_legs"])) if "n_legs" in row and pd.notna(row.get("n_legs")) else "?"
+        )
+        # Fair probability is the primary output.
+        fair_p = row.get("fair_probability", row.get("calibrated_joint_probability"))
+        fair_prob_str = _fmt_prob(fair_p)
+        # American odds derived from fair probability.
+        fair_am = row.get("fair_american_odds")
+        try:
+            fair_am_valid = fair_am is not None and np.isfinite(float(fair_am))
+        except (TypeError, ValueError):
+            fair_am_valid = False
+        odds_am = _fmt_odds(fair_am if fair_am_valid else None)
+        # Decimal odds.
+        fair_dec = row.get("fair_decimal_odds")
+        try:
+            odds_dec = f"{float(fair_dec):.3f}" if fair_dec is not None and np.isfinite(float(fair_dec)) else "—"
+        except Exception:
+            odds_dec = "—"
+        # Calibrated probability shown separately for transparency.
+        prob_cal = _fmt_prob(row.get("calibrated_joint_probability"))
         corr = _fmt_corr(row.get("correlation_factor_vs_pmf_independence"))
         ticket_id = str(row.get("ticket_id", ""))
         tier_html = _tier_cell(tier)
@@ -178,14 +198,22 @@ def _build_price_table_html(df: pd.DataFrame) -> str:
             f"<tr>"
             f"<td>{html.escape(ticket_id)}</td>"
             f"<td>{html.escape(legs_label)}</td>"
-            f"<td><strong>{html.escape(odds)}</strong></td>"
-            f"<td>{html.escape(prob)}</td>"
+            f"<td style='text-align:center'>{html.escape(leg_count)}</td>"
+            f"<td><strong>{html.escape(fair_prob_str)}</strong></td>"
+            f"<td><strong style='color:#1a7abf'>{html.escape(odds_am)}</strong></td>"
+            f"<td>{html.escape(odds_dec)}</td>"
+            f"<td>{html.escape(prob_cal)}</td>"
             f"<td>{html.escape(corr)}</td>"
             f"<td>{tier_html}{note}</td>"
             f"</tr>"
         )
 
     rows_html = "\n".join(rows_html_parts)
+    n_two = sum(1 for _, r in visible.iterrows() if str(r.get("leg_count", r.get("n_legs", ""))) == "2")
+    n_three = sum(1 for _, r in visible.iterrows() if str(r.get("leg_count", r.get("n_legs", ""))) == "3")
+    summary = f"{len(visible)} tickets shown (SUPPRESSED rows hidden)"
+    if n_two or n_three:
+        summary += f" — {n_two} two-leg · {n_three} three-leg"
     return f"""
     <div class="table-wrapper">
       <table>
@@ -195,7 +223,7 @@ def _build_price_table_html(df: pd.DataFrame) -> str:
         </tbody>
       </table>
     </div>
-    <p class="muted">{len(visible)} tickets shown (SUPPRESSED rows hidden).</p>
+    <p class="muted">{summary}.</p>
 """
 
 
