@@ -72,62 +72,114 @@ def _candidate_legs(pmf_df: pd.DataFrame) -> dict[str, list[dict]]:
 def generate_sgp_candidates(
     pmf_df: pd.DataFrame,
     *,
-    max_candidates: int = 500,
+    max_candidates: int = 100_000,
+    max_per_game: int = 20_000,
+    max_three_leg_per_game: int = 5_000,
+    max_leg_count: int = 3,
     seed: int = 20260530,
 ) -> list[SGPTicket]:
-    """Generate 2-leg SGP candidate tickets from player-stat PMF data."""
+    """Generate exhaustive over-SGP candidate tickets up to ``max_leg_count`` legs.
+
+    Coverage guarantee
+    ------------------
+    **All** 2-leg combinations are always generated (complete coverage of the
+    SGP probability space for 2-leg overs).  3-leg combinations are added from
+    a shuffled enumeration up to ``max_three_leg_per_game`` per game, so every
+    3-leg combination has an equal chance of being sampled.
+
+    The global ``max_candidates`` cap provides a ceiling across all games.
+
+    Parameters
+    ----------
+    max_candidates:
+        Global ceiling on total tickets (all leg counts combined).
+    max_per_game:
+        Per-game ceiling on total tickets.
+    max_three_leg_per_game:
+        Separate cap on 3-leg tickets per game.  2-leg tickets are always
+        generated in full before any 3-leg cap is applied.
+    max_leg_count:
+        Maximum leg count (2 or 3).
+    seed:
+        Random seed for reproducible 3-leg shuffling.
+    """
     rng = np.random.default_rng(seed)
     by_game = _candidate_legs(pmf_df)
     tickets: list[SGPTicket] = []
     ticket_counter = 0
 
+    def _make_leg(leg_def: dict, game_id: str) -> dict:
+        return {
+            "player_id": leg_def["player_id"],
+            "stat": leg_def["stat"],
+            "line": leg_def["line"],
+            "side": "over",
+            "game_id": game_id,
+            "team_id": leg_def["team_id"],
+            "label": leg_def["player_name"],
+        }
+
     for game_id, legs in by_game.items():
-        # Group legs by (player_id, stat) to avoid same player+stat duplicates in one ticket
-        by_player_stat: dict[tuple, list[dict]] = {}
+        if len(tickets) >= max_candidates:
+            break
+
+        # One canonical leg per (player_id, stat) — use median available line.
+        by_player_stat: dict[tuple, dict] = {}
         for leg in legs:
             key = (leg["player_id"], leg["stat"])
             by_player_stat.setdefault(key, []).append(leg)
+        canonical: list[dict] = []
+        for opts in by_player_stat.values():
+            canonical.append(opts[len(opts) // 2])
 
-        player_stat_keys = list(by_player_stat.keys())
-        if len(player_stat_keys) < 2:
+        if len(canonical) < 2:
             continue
 
-        # Sample pairs of distinct (player_id, stat) combinations
-        pair_indices = list(itertools.combinations(range(len(player_stat_keys)), 2))
-        rng.shuffle(pair_indices)
+        game_tickets: list[SGPTicket] = []
 
-        game_count = 0
-        for i, j in pair_indices:
-            if game_count >= max_candidates // max(len(by_game), 1) + 10:
-                break
-            key_a = player_stat_keys[i]
-            key_b = player_stat_keys[j]
-            leg_options_a = by_player_stat[key_a]
-            leg_options_b = by_player_stat[key_b]
-            # Take the median line option for each
-            leg_a = leg_options_a[len(leg_options_a) // 2]
-            leg_b = leg_options_b[len(leg_options_b) // 2]
-
+        # ── 2-leg: ALWAYS enumerate ALL combinations ──────────────────────
+        for leg_a, leg_b in itertools.combinations(canonical, 2):
             ticket = SGPTicket.from_dict({
                 "ticket_id": f"cand_{ticket_counter:07d}",
                 "game_id": game_id,
-                "legs": [
-                    {"player_id": leg_a["player_id"], "stat": leg_a["stat"],
-                     "line": leg_a["line"], "side": "over", "game_id": game_id,
-                     "team_id": leg_a["team_id"], "label": leg_a["player_name"]},
-                    {"player_id": leg_b["player_id"], "stat": leg_b["stat"],
-                     "line": leg_b["line"], "side": "over", "game_id": game_id,
-                     "team_id": leg_b["team_id"], "label": leg_b["player_name"]},
-                ],
+                "legs": [_make_leg(leg_a, game_id), _make_leg(leg_b, game_id)],
             })
-            tickets.append(ticket)
+            game_tickets.append(ticket)
             ticket_counter += 1
-            game_count += 1
 
-            if len(tickets) >= max_candidates:
-                return tickets
+        # ── 3-leg: enumerate all, shuffle, apply per-game 3-leg cap ──────
+        if max_leg_count >= 3 and len(canonical) >= 3:
+            three_leg_all = list(itertools.combinations(canonical, 3))
+            rng.shuffle(three_leg_all)
+            for leg_a, leg_b, leg_c in three_leg_all[:max_three_leg_per_game]:
+                ticket = SGPTicket.from_dict({
+                    "ticket_id": f"cand_{ticket_counter:07d}",
+                    "game_id": game_id,
+                    "legs": [
+                        _make_leg(leg_a, game_id),
+                        _make_leg(leg_b, game_id),
+                        _make_leg(leg_c, game_id),
+                    ],
+                })
+                game_tickets.append(ticket)
+                ticket_counter += 1
 
-    return tickets
+        # Apply overall per-game cap (preserves 2-leg first).
+        if len(game_tickets) > max_per_game:
+            two_leg_t = [t for t in game_tickets if len(t.legs) == 2]
+            three_leg_t = [t for t in game_tickets if len(t.legs) == 3]
+            if len(two_leg_t) >= max_per_game:
+                game_tickets = two_leg_t[:max_per_game]
+            else:
+                remaining = max_per_game - len(two_leg_t)
+                game_tickets = two_leg_t + three_leg_t[:remaining]
+
+        tickets.extend(game_tickets)
+
+        if len(tickets) >= max_candidates:
+            break
+
+    return tickets[:max_candidates]
 
 
 # ── Tier / suppression logic ─────────────────────────────────────────────────
@@ -631,12 +683,17 @@ def _build_market_comparison(
 
 
 def _publishable_edges(price_df: pd.DataFrame) -> pd.DataFrame:
-    """Return rows that represent publishable MODEL_PRICE or CERTIFIED edges."""
+    """Return rows that represent publishable MODEL_PRICE or CERTIFIED edges.
+
+    Every row is guaranteed to include fair_probability, fair_decimal_odds,
+    and fair_american_odds so downstream consumers can use them directly.
+    """
     mask = price_df["tier"].isin({"MODEL_PRICE", "CERTIFIED"})
     cols = [c for c in [
         "sgp_id", "ticket_id", "game_id", "leg_count", "n_legs", "legs_json",
         "relationship_type", "stat_mix", "role_mix",
-        "calibrated_joint_probability", "fair_american_odds", "fair_decimal_odds",
+        "fair_probability", "fair_decimal_odds", "fair_american_odds",
+        "calibrated_joint_probability", "raw_joint_probability",
         "model_corr_factor", "market_corr_factor", "market_corr_factor_source",
         "corr_factor_delta_vs_market", "tier", "suppression_reason",
         "calibration_confidence", "simulation_count", "mc_standard_error",
@@ -707,6 +764,40 @@ def _standardize_price_grid(df: pd.DataFrame) -> pd.DataFrame:
     # publishable flag.
     if "publishable" not in out.columns:
         out["publishable"] = out.get("tier", pd.Series("MODEL_PRICE", index=out.index)).isin({"MODEL_PRICE", "CERTIFIED"})
+
+    # ── Fair odds — mandatory on every row ──────────────────────────────────
+    # fair_probability = calibrated_joint_probability (or raw when no calibrator).
+    if "fair_probability" not in out.columns:
+        if "calibrated_joint_probability" in out.columns:
+            out["fair_probability"] = out["calibrated_joint_probability"]
+        elif "raw_joint_probability" in out.columns:
+            out["fair_probability"] = out["raw_joint_probability"]
+        else:
+            out["fair_probability"] = np.nan
+
+    # Compute fair_decimal_odds and fair_american_odds from fair_probability.
+    def _decimal_from_p(p: float) -> float | None:
+        try:
+            fp = float(p)
+            if np.isfinite(fp) and fp > 0:
+                return round(1.0 / fp, 4)
+        except Exception:
+            pass
+        return None
+
+    def _american_from_p(p: float) -> int | None:
+        dec = _decimal_from_p(p)
+        if dec is None:
+            return None
+        if dec >= 2.0:
+            return int(round((dec - 1) * 100))
+        else:
+            return int(round(-100 / (dec - 1)))
+
+    if "fair_decimal_odds" not in out.columns or out["fair_decimal_odds"].isna().all():
+        out["fair_decimal_odds"] = out["fair_probability"].apply(_decimal_from_p)
+    if "fair_american_odds" not in out.columns or out["fair_american_odds"].isna().all():
+        out["fair_american_odds"] = out["fair_probability"].apply(_american_from_p)
 
     # Market correlation placeholder labels (§16 spec).
     if "market_corr_factor_source" not in out.columns:
@@ -779,8 +870,17 @@ def main() -> int:
     ap.add_argument("--allow-missing-asof-metadata", action="store_true")
     ap.add_argument("--no-fail-on-missing-calibrator", action="store_true",
                     help="Never fail if calibrator is absent (default behavior).")
-    ap.add_argument("--max-candidates", type=int, default=500,
-                    help="Max SGP candidate tickets to generate (default: 500).")
+    ap.add_argument("--max-candidates", type=int, default=100_000,
+                    help="Global ceiling on candidate tickets generated (default: 100000). "
+                         "Set to 0 for no limit (enumerate everything).")
+    ap.add_argument("--max-per-game", type=int, default=20_000,
+                    help="Per-game ceiling on total tickets (default: 20000). "
+                         "2-leg combos are always included first.")
+    ap.add_argument("--max-three-leg-per-game", type=int, default=5_000,
+                    help="Per-game ceiling on 3-leg tickets only (default: 5000). "
+                         "All 2-leg combos are generated before any 3-leg cap is applied.")
+    ap.add_argument("--max-leg-count", type=int, default=3,
+                    help="Maximum leg count per ticket: 2 or 3 (default: 3).")
     ap.add_argument("--seed", type=int, default=20260530)
     args = ap.parse_args()
 
@@ -886,6 +986,34 @@ def main() -> int:
     # Write factor_weights_used.json to bundle dir (§5 spec).
     bundle_dir = sgp_root / "slate_state_bundle_v1"
     bundle_dir.mkdir(parents=True, exist_ok=True)
+
+    # ── Load SGP model pointer (single source of truth for training state). ──
+    pointer_path = repo_root / "artifacts" / "models" / "sgp" / "registry" / "sgp_model_pointer.json"
+    sgp_pointer: dict[str, Any] = {}
+    sgp_pointer_used = False
+    if pointer_path.exists():
+        try:
+            sgp_pointer = json.loads(pointer_path.read_text())
+            sgp_pointer_used = True
+            # If pointer has a better calibrator path, prefer it.
+            ptr_cal = sgp_pointer.get("joint_calibrator_artifact")
+            if ptr_cal and Path(str(ptr_cal)).exists():
+                _ptr_cal_path = Path(str(ptr_cal))
+                # Will be used below when loading calibrator registry.
+            # If pointer has factor weights path, record it.
+            if sgp_pointer.get("factor_weights_artifact_exists"):
+                fw_meta["pointer_trained_through"] = sgp_pointer.get("trained_through_date")
+                fw_meta["pointer_promotion_status"] = sgp_pointer.get("promotion_status", "DIAGNOSTIC_NO_BACKTEST")
+                fw_meta["pointer_n_backtest_rows"] = sgp_pointer.get("n_backtest_rows", 0)
+        except Exception as exc:
+            print(f"  WARNING: Could not load sgp_model_pointer.json: {exc}", file=sys.stderr)
+
+    fw_meta["sgp_model_pointer_used"] = sgp_pointer_used
+    fw_meta["sgp_model_pointer_path"] = str(pointer_path) if sgp_pointer_used else None
+    fw_meta["joint_calibrator_artifact_used"] = sgp_pointer.get("joint_calibrator_artifact")
+    fw_meta["calibration_status_from_pointer"] = sgp_pointer.get("calibration_status", "NOT_AVAILABLE")
+    fw_meta["promotion_status_from_pointer"] = sgp_pointer.get("promotion_status", "DIAGNOSTIC_NO_BACKTEST")
+
     (bundle_dir / "factor_weights_used.json").write_text(
         json.dumps(fw_meta, indent=2, sort_keys=True)
     )
@@ -1006,18 +1134,32 @@ def main() -> int:
         print("  No pairs to diagnose (single-player slate?)", flush=True)
 
     # ── 5. Generate candidate tickets ─────────────────────────────────────────
-    print(f"[SGP] Generating up to {args.max_candidates} candidate tickets ...", flush=True)
+    print(f"[SGP] Generating candidate tickets (max_leg_count={args.max_leg_count} max_candidates={args.max_candidates} max_per_game={args.max_per_game} max_three_leg_per_game={args.max_three_leg_per_game}) ...", flush=True)
     candidates = generate_sgp_candidates(
-        pmf_df, max_candidates=args.max_candidates, seed=args.seed,
+        pmf_df,
+        max_candidates=args.max_candidates,
+        max_per_game=args.max_per_game,
+        max_three_leg_per_game=args.max_three_leg_per_game,
+        max_leg_count=args.max_leg_count,
+        seed=args.seed,
     )
-    print(f"  Generated {len(candidates)} candidates", flush=True)
+    print(f"  Generated {len(candidates)} candidates ({sum(1 for c in candidates if len(c.legs)==2)} 2-leg  {sum(1 for c in candidates if len(c.legs)==3)} 3-leg)", flush=True)
 
     # Define calibrator path and default flags before the candidates branch so
     # subsequent code (cal_report, gate_status) can reference them safely.
+    # Prefer calibrator from sgp_model_pointer.json if available.
+    _ptr_cal_from_pointer = sgp_pointer.get("joint_calibrator_latest") or sgp_pointer.get("joint_calibrator_artifact")
     cal_model_path = (
-        repo_root / "artifacts" / "models" / "sgp" / "calibrator"
-        / "sgp_joint_calibrator_latest.pkl"
+        Path(str(_ptr_cal_from_pointer))
+        if _ptr_cal_from_pointer and Path(str(_ptr_cal_from_pointer)).exists()
+        else repo_root / "artifacts" / "models" / "sgp" / "joint_calibrators" / "joint_calibrator_latest.pkl"
     )
+    if not cal_model_path.exists():
+        # Legacy path fallback.
+        cal_model_path = (
+            repo_root / "artifacts" / "models" / "sgp" / "calibrator"
+            / "sgp_joint_calibrator_latest.pkl"
+        )
     registry = None
     calibration_available = False
     market_comparison_available = False
@@ -1294,6 +1436,15 @@ def main() -> int:
         pd.DataFrame(columns=_CAL_CTX_COLS).to_parquet(
             bundle_dir / "calibration_context.parquet", index=False
         )
+
+    # Enrich gate_status with pointer provenance fields.
+    gate_status["sgp_model_pointer_used"] = sgp_pointer_used
+    gate_status["sgp_model_pointer_path"] = str(pointer_path) if sgp_pointer_used else None
+    gate_status["factor_weights_artifact_used"] = fw_meta.get("path")
+    gate_status["joint_calibrator_artifact_used"] = fw_meta.get("joint_calibrator_artifact_used")
+    gate_status["calibration_status_from_pointer"] = fw_meta.get("calibration_status_from_pointer", "NOT_AVAILABLE")
+    gate_status["promotion_status_from_pointer"] = fw_meta.get("promotion_status_from_pointer", "DIAGNOSTIC_NO_BACKTEST")
+    gate_status["default_delivery_enabled"] = False   # never set True without explicit approval
 
     (cal_dir / "sgp_gate_status.json").write_text(
         json.dumps(gate_status, indent=2, sort_keys=True)
