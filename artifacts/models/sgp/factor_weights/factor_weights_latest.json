@@ -218,13 +218,13 @@
     ]
   ],
   "_meta": {
-    "fitted_at_utc": "2026-05-31T01:30:46.512918+00:00",
+    "fitted_at_utc": "2026-05-31T01:32:47.257110+00:00",
     "data_source": "oof_stat_pmf_predictions.parquet",
     "n_games": 924,
     "n_player_stat_obs": 153664,
     "fit_method": "pit_z_pearson_constrained_ls",
     "min_obs_used": 50,
-    "as_of_date": "2026-05-29",
+    "as_of_date": "2026-05-30",
     "n_dates_scanned": 141,
     "fitted_stats": [
       "ast",

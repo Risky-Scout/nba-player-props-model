@@ -270,6 +270,11 @@ def _build_full_html(
 <body>
   <h1>NBA Same-Game Parlay Engine</h1>
   <h2>Wizard of Odds &mdash; Slate: {html.escape(slate_date)}</h2>
+  <p style="font-size:.9rem;color:#555;margin-top:-8px;margin-bottom:16px;">
+    <strong>SGP Engine Diagnostic / Model Price Mode</strong> &mdash;
+    Opt-in feature. Joint calibration pending historical SGP backtest sample.
+    No market-superiority claim is made.
+  </p>
 {banner_html}
   <section id="engine-status">
     <h3>Engine Status</h3>
