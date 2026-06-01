@@ -1,0 +1,265 @@
+{
+  "ast": [
+    [
+      "pace_z",
+      0.0684
+    ],
+    [
+      "total_z",
+      0.056
+    ],
+    [
+      "team_assist_env_z",
+      0.3
+    ],
+    [
+      "team_shooting_z",
+      0.26
+    ],
+    [
+      "player_usage_z",
+      0.22
+    ],
+    [
+      "player_minutes_z",
+      0.4
+    ],
+    [
+      "ot_flag",
+      0.07
+    ]
+  ],
+  "blk": [
+    [
+      "pace_z",
+      0.3857
+    ],
+    [
+      "opp_offense_z",
+      0.14
+    ],
+    [
+      "team_def_activity_z",
+      0.2
+    ],
+    [
+      "player_minutes_z",
+      0.4
+    ],
+    [
+      "player_defense_z",
+      0.3
+    ],
+    [
+      "player_energy_z",
+      0.16
+    ],
+    [
+      "player_foul_z",
+      -0.08
+    ]
+  ],
+  "fg3m": [
+    [
+      "pace_z",
+      0.0592
+    ],
+    [
+      "total_z",
+      0.0488
+    ],
+    [
+      "team_three_z",
+      0.3
+    ],
+    [
+      "team_shooting_z",
+      0.16
+    ],
+    [
+      "player_usage_z",
+      0.22
+    ],
+    [
+      "player_minutes_z",
+      0.4
+    ],
+    [
+      "player_shooting_z",
+      0.26
+    ],
+    [
+      "ot_flag",
+      0.06
+    ]
+  ],
+  "pts": [
+    [
+      "pace_z",
+      0.0908
+    ],
+    [
+      "total_z",
+      0.0908
+    ],
+    [
+      "team_offense_z",
+      0.18
+    ],
+    [
+      "team_shooting_z",
+      0.18
+    ],
+    [
+      "player_usage_z",
+      0.28
+    ],
+    [
+      "player_minutes_z",
+      0.4
+    ],
+    [
+      "player_shooting_z",
+      0.18
+    ],
+    [
+      "ot_flag",
+      0.08
+    ],
+    [
+      "blowout_z",
+      -0.05
+    ]
+  ],
+  "reb": [
+    [
+      "pace_z",
+      0.1325
+    ],
+    [
+      "opp_shooting_z",
+      -0.15
+    ],
+    [
+      "team_rebound_pool_z",
+      0.2
+    ],
+    [
+      "opp_rebound_pool_z",
+      0.22
+    ],
+    [
+      "player_minutes_z",
+      0.4
+    ],
+    [
+      "player_energy_z",
+      0.22
+    ],
+    [
+      "ot_flag",
+      0.07
+    ],
+    [
+      "blowout_z",
+      0.03
+    ]
+  ],
+  "stl": [
+    [
+      "pace_z",
+      0.4838
+    ],
+    [
+      "opp_turnover_z",
+      0.24
+    ],
+    [
+      "team_def_activity_z",
+      0.26
+    ],
+    [
+      "player_minutes_z",
+      0.4
+    ],
+    [
+      "player_defense_z",
+      0.24
+    ],
+    [
+      "player_energy_z",
+      0.14
+    ]
+  ],
+  "tov": [
+    [
+      "pace_z",
+      0.1661
+    ],
+    [
+      "team_turnover_z",
+      0.26
+    ],
+    [
+      "opp_def_activity_z",
+      0.2
+    ],
+    [
+      "player_usage_z",
+      0.28
+    ],
+    [
+      "player_minutes_z",
+      0.3345
+    ],
+    [
+      "foul_env_z",
+      0.08
+    ]
+  ],
+  "_meta": {
+    "fitted_at_utc": "2026-05-31T01:32:47.257110+00:00",
+    "data_source": "oof_stat_pmf_predictions.parquet",
+    "n_games": 924,
+    "n_player_stat_obs": 153664,
+    "fit_method": "pit_z_pearson_constrained_ls",
+    "min_obs_used": 50,
+    "as_of_date": "2026-05-30",
+    "n_dates_scanned": 141,
+    "fitted_stats": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pts",
+      "reb",
+      "stl",
+      "tov"
+    ],
+    "empirical_correlations": {
+      "ast": {
+        "cross_team": 0.0078
+      },
+      "blk": {
+        "cross_team": 0.1487
+      },
+      "fg3m": {
+        "cross_team": 0.0059
+      },
+      "pts": {
+        "cross_team": 0.0165
+      },
+      "reb": {
+        "cross_team": 0.0176
+      },
+      "stl": {
+        "cross_team": 0.2341
+      },
+      "stocks": {
+        "cross_team": 0.3413
+      },
+      "tov": {
+        "cross_team": 0.0276
+      }
+    }
+  }
+}
