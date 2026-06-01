@@ -24,6 +24,12 @@ COMBO_COMPONENTS = {
     "stocks": ("stl", "blk"),
 }
 
+# NBA regulation game = 5 periods × 48 min = 240 total team-player-minutes.
+# OT adds one 5-min period per team (~25 player-minutes per OT period).
+_REGULATION_TEAM_MINUTES: float = 240.0
+_OT_EXTRA_MINUTES_PER_PERIOD: float = 25.0
+_MEAN_OT_RATE: float = 0.06  # ~6 % of games go to OT (used for Dirichlet normalisation)
+
 # Default factor weight table.  Each stat → list of (factor_name, weight) pairs.
 # These can be overridden by artifacts/models/sgp/factor_weights/factor_weights_latest.json.
 _DEFAULT_FACTOR_WEIGHTS: dict[str, list[tuple[str, float]]] = {
@@ -190,6 +196,9 @@ class NBASimulator:
         # Marginal preservation tracking.
         marginal_records: list[dict[str, Any]] = []
 
+        # Minutes allocation diagnostics.
+        minutes_diag: dict[str, Any] = {}
+
         for game_id, game_pmfs in pmfs.groupby("game_id", dropna=False):
             game_id = str(game_id)
             # Global game script factors.
@@ -197,12 +206,23 @@ class NBASimulator:
             total_z = rng.normal(size=self.n_sims)
             close_z = rng.normal(size=self.n_sims)
             foul_env_z = rng.normal(size=self.n_sims)
-            ot_flag = rng.binomial(1, 0.06, size=self.n_sims).astype(float)
+            ot_flag = rng.binomial(1, _MEAN_OT_RATE, size=self.n_sims).astype(float)
             blowout_z = rng.normal(size=self.n_sims)
 
             factors_out[f"{game_id}__pace_z"] = pace_z.astype(np.float32)
             factors_out[f"{game_id}__total_z"] = total_z.astype(np.float32)
             factors_out[f"{game_id}__overtime_flag"] = ot_flag.astype(np.float32)
+
+            # Full team total minutes per simulation (varies with OT draws).
+            full_team_total = (
+                _REGULATION_TEAM_MINUTES + _OT_EXTRA_MINUTES_PER_PERIOD * ot_flag
+            )  # shape (n_sims,)
+
+            # Expected (mean) full team total – used as Dirichlet normaliser so that
+            # each tracked player's *expected* simulated minutes equals their PMF mean.
+            full_team_expected = (
+                _REGULATION_TEAM_MINUTES + _OT_EXTRA_MINUTES_PER_PERIOD * _MEAN_OT_RATE
+            )  # scalar ≈ 241.5
 
             teams = sorted(set(map(str, game_pmfs["team_id"].dropna())))
             team_factors: dict[str, dict[str, np.ndarray]] = {}
@@ -218,7 +238,10 @@ class NBASimulator:
                 }
 
             # Phase D: competitive minutes pool per team.
-            # Draw team totals using OT model, then Dirichlet-allocate to players.
+            # Draw Dirichlet shares and allocate *full_team_total* minutes.
+            # A ghost/remainder bucket absorbs the gap between full_team_expected and
+            # sum(tracked_expected_minutes), so that each tracked player's simulated
+            # minutes are centred on their PMF-expected value (minutes_z mean ≈ 0).
             team_minutes_sim: dict[str, dict[str, np.ndarray]] = {}
             team_concentration = 20.0
 
@@ -226,9 +249,6 @@ class NBASimulator:
                 team_pmf_rows = game_pmfs[game_pmfs["team_id"].astype(str) == team].copy()
                 if team_pmf_rows.empty:
                     continue
-
-                # Team total minutes: 240 regular + 25 per OT period.
-                team_total = 240.0 + 25.0 * ot_flag  # shape (n_sims,)
 
                 # Get unique players on this team with their expected minutes.
                 # Some columns are only present in real deliveries, not minimal test bundles.
@@ -272,8 +292,7 @@ class NBASimulator:
                 # Phase D competitive minutes pool only applies when multiple players
                 # compete for minutes.  With a single player there is no competition
                 # and the Dirichlet would unconditionally allocate the full team total
-                # (240 min) to that player, producing extreme minutes_z values that
-                # corrupt the marginal PMF anchoring.
+                # to that one player, producing extreme minutes_z values.
                 if len(active_player_ids) < 2:
                     continue
 
@@ -289,19 +308,55 @@ class NBASimulator:
                     exp_mins[pid] = float(m) if m is not None and not (isinstance(m, float) and np.isnan(m)) else 20.0
                     exp_stds[pid] = float(s) if s is not None and not (isinstance(s, float) and np.isnan(s)) else 5.0
 
-                total_exp = sum(exp_mins.values())
-                if total_exp <= 0:
-                    total_exp = len(active_player_ids) * 20.0
+                tracked_exp_total = sum(exp_mins.values())
+                if tracked_exp_total <= 0:
+                    tracked_exp_total = len(active_player_ids) * 20.0
 
-                # Dirichlet concentration parameters.
-                concentrations = np.array([
-                    max(exp_mins[pid] / total_exp, 1e-3) * team_concentration
-                    for pid in active_player_ids
-                ])
+                # ── Ghost/remainder bucket (P0 Dirichlet inflation fix) ────────
+                # The PMF delivery only covers 8–9 tracked players per team, whose
+                # expected minutes sum to 184–197.  The full game has 240+ minutes
+                # split across the entire 15-man roster.  Without a ghost bucket the
+                # Dirichlet would inflate every tracked player's minutes by 22–30%,
+                # creating a systematic +5–7% upward bias in all stat outcomes.
+                #
+                # Fix: add a synthetic "untracked_bench" bucket to absorb the gap.
+                # The Dirichlet normaliser is full_team_expected (≈241.5), so each
+                # tracked player's E[simulated_minutes] = exp_mins[pid].  The ghost's
+                # allocation is discarded; it never enters the simulation.
+                ghost_expected = max(full_team_expected - tracked_exp_total, 0.0)
+                use_ghost = ghost_expected > 0.5  # only when gap is meaningful
 
-                # Draw Dirichlet shares → actual minutes.
-                shares = rng.dirichlet(concentrations, size=self.n_sims)  # (n_sims, n_players)
-                actual_minutes = shares * team_total[:, np.newaxis]  # (n_sims, n_players)
+                if use_ghost:
+                    total_all = tracked_exp_total + ghost_expected  # ≈ full_team_expected
+                    all_exp = [exp_mins[pid] for pid in active_player_ids] + [ghost_expected]
+                    concentrations = np.array([
+                        max(m / total_all, 1e-3) * team_concentration for m in all_exp
+                    ])
+                    shares = rng.dirichlet(concentrations, size=self.n_sims)  # (n_sims, n_tracked+1)
+                    # Drop ghost bucket (last column); scale by full team total.
+                    actual_minutes = shares[:, :-1] * full_team_total[:, np.newaxis]
+                    method = "ghost_remainder_dirichlet"
+                else:
+                    # Tracked players already consume close to the full team total;
+                    # allocate tracked_exp_total proportionally and scale with OT.
+                    concentrations = np.array([
+                        max(exp_mins[pid] / tracked_exp_total, 1e-3) * team_concentration
+                        for pid in active_player_ids
+                    ])
+                    shares = rng.dirichlet(concentrations, size=self.n_sims)  # (n_sims, n_tracked)
+                    actual_minutes = shares * full_team_total[:, np.newaxis]
+                    method = "tracked_total_dirichlet"
+
+                # Record per-team diagnostics.
+                realized_mins_mean = float(actual_minutes.mean(axis=0).sum())
+                minutes_diag[f"{game_id}__{team}"] = {
+                    "method": method,
+                    "tracked_expected_total": round(tracked_exp_total, 2),
+                    "full_team_expected": round(full_team_expected, 2),
+                    "ghost_expected_minutes": round(ghost_expected, 2),
+                    "realized_tracked_minutes_mean": round(realized_mins_mean, 2),
+                    "inflation_factor_raw": round(float(_REGULATION_TEAM_MINUTES) / max(tracked_exp_total, 1), 4),
+                }
 
                 for i, pid in enumerate(active_player_ids):
                     am = actual_minutes[:, i]
@@ -311,7 +366,7 @@ class NBASimulator:
                     team_minutes_sim.setdefault(team, {})[pid] = minutes_z
                     stats[(game_id, pid, "minutes")] = am.astype(np.float32)
 
-                factors_out[f"{game_id}__{team}__team_total_minutes"] = team_total.astype(np.float32)
+                factors_out[f"{game_id}__{team}__team_total_minutes"] = full_team_total.astype(np.float32)
 
             # Build player factors, pulling minutes_z from Phase D where available.
             player_factors: dict[str, dict[str, np.ndarray]] = {}
@@ -361,7 +416,9 @@ class NBASimulator:
                 # Marginal preservation: compare simulated mean and P(over line) to PMF.
                 ks = np.arange(len(pmf), dtype=float)
                 pmf_mean = float((ks * pmf).sum())
+                pmf_var = float(((ks - pmf_mean) ** 2 * pmf).sum())
                 sim_mean = float(outcomes.mean())
+                sim_var = float(outcomes.var()) if len(outcomes) > 1 else np.nan
                 line = r.get("line")
                 if line is not None and not (isinstance(line, float) and np.isnan(line)):
                     try:
@@ -370,13 +427,26 @@ class NBASimulator:
                     except Exception:
                         pmf_p_over = sim_p_over = np.nan
                 else:
-                    pmf_p_over = sim_p_over = np.nan
+                    # Use PMF mean as evaluation line when no market line available.
+                    try:
+                        pmf_p_over = event_probability(pmf, pmf_mean, "over")
+                        sim_p_over = float((outcomes.astype(float) > pmf_mean).mean())
+                    except Exception:
+                        pmf_p_over = sim_p_over = np.nan
                 marginal_records.append({
-                    "game_id": game_id, "player_id": player_id, "stat": stat,
-                    "pmf_mean": pmf_mean, "sim_mean": sim_mean,
+                    "game_id": game_id,
+                    "player_id": player_id,
+                    "stat": stat,
+                    "pmf_mean": pmf_mean,
+                    "sim_mean": sim_mean,
                     "mean_delta": sim_mean - pmf_mean,
-                    "pmf_p_over_line": pmf_p_over, "sim_p_over_line": sim_p_over,
-                    "line": line,
+                    "pmf_variance": pmf_var,
+                    "sim_variance": sim_var,
+                    "variance_delta": sim_var - pmf_var if np.isfinite(sim_var) else np.nan,
+                    "pmf_p_over_line": pmf_p_over,
+                    "sim_p_over_line": sim_p_over,
+                    "p_over_signed_diff": (sim_p_over - pmf_p_over) if np.isfinite(pmf_p_over) and np.isfinite(sim_p_over) else np.nan,
+                    "line": line if line is not None and not (isinstance(line, float) and np.isnan(line)) else pmf_mean,
                 })
 
             # Build combo stats from components, then optionally marginal-anchor ranks.
@@ -428,5 +498,7 @@ class NBASimulator:
                 "simulator": "nba_mechanism_factor_marginal_anchored_v1",
                 "learned_factor_weights": learned_weights,
                 "marginal_preservation_report": marginal_records,
+                "minutes_allocation_diagnostics": minutes_diag,
+                "minutes_allocation_method": "ghost_remainder_dirichlet",
             },
         )

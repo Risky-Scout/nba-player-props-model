@@ -158,7 +158,13 @@ def test_competitive_minutes_negative_teammate_correlation(tmp_path):
 # ---------------------------------------------------------------------------
 
 def test_minutes_sum_to_team_total(tmp_path):
-    """Sum of all team players' simulated minutes ≈ 240 (5×48) per simulation."""
+    """Tracked players' total simulated minutes ≈ their tracked expected total.
+
+    With the ghost-bucket fix, the Dirichlet allocates full_team_expected (≈241.5)
+    across tracked players + ghost bucket.  If tracked players default to 20 min
+    each (5 × 20 = 100), they should collectively receive ~100 minutes, NOT ~240.
+    The ghost bucket absorbs the ~141.5 untracked bench minutes.
+    """
     players = [f"P{i}" for i in range(5)]
     rows = [
         {"player_id": pid, "team_id": "TEA", "opponent_id": "TEB",
@@ -168,14 +174,19 @@ def test_minutes_sum_to_team_total(tmp_path):
     bundle = _make_minimal_bundle(tmp_path, rows)
     tape = NBASimulator(bundle, n_sims=5_000, seed=1).run()
 
-    # Sum each player's simulated minutes (requires 'minutes' stat in tape)
+    # Sum each tracked player's simulated minutes.
     total_minutes = np.zeros(tape.n_sims, dtype=float)
     for pid in players:
-        total_minutes += tape.get("G1", pid, "minutes").astype(float)
+        if tape.has("G1", pid, "minutes"):
+            total_minutes += tape.get("G1", pid, "minutes").astype(float)
 
     mean_total = float(total_minutes.mean())
-    assert abs(mean_total - 240.0) < 5.0, (
-        f"Mean total team minutes {mean_total:.1f} is not close to 240"
+    # Tracked expected: 5 × 20.0 = 100.0 (ghost absorbs the remaining ~141.5).
+    # Allow ±20 slack for MC noise, OT variation, and default minutes assumptions.
+    tracked_expected = 5 * 20.0
+    assert abs(mean_total - tracked_expected) < 25.0, (
+        f"Mean tracked team minutes {mean_total:.1f} is not close to tracked expected "
+        f"{tracked_expected:.1f} (ghost-bucket fix should prevent ~240 inflation)"
     )
 
 

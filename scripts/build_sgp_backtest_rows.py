@@ -103,12 +103,67 @@ def _sample_leg_configs(player_stat_pmfs: pd.DataFrame, rng: np.random.Generator
     return all_configs
 
 
+def _line_percentile(pmf_json: str | None, line: float, domain_max: int | None = None) -> float | None:
+    """Compute CDF at line from PMF JSON (probability of outcome <= line)."""
+    if pmf_json is None:
+        return None
+    try:
+        _REPO_SRC_BT = Path(__file__).resolve().parent.parent / "src"
+        if str(_REPO_SRC_BT) not in sys.path:
+            sys.path.insert(0, str(_REPO_SRC_BT))
+        from sgp_engine.pmf import parse_pmf
+        pmf = parse_pmf(pmf_json, domain_max=domain_max)
+        cdf = float(sum(pmf[k] for k in range(len(pmf)) if k <= line))
+        return cdf
+    except Exception:
+        return None
+
+
+def _bucket_percentile(p: float | None) -> str:
+    if p is None:
+        return "unknown"
+    if p < 0.20:
+        return "low_tail"
+    if p < 0.40:
+        return "lower_mid"
+    if p < 0.60:
+        return "mid"
+    if p < 0.80:
+        return "upper_mid"
+    return "high_tail"
+
+
+def _classify_leg_mix(stats: list[str]) -> str:
+    """Classify the stat mix of a set of legs."""
+    SPARSE = {"stl", "blk", "stocks"}
+    COMBOS = {"pa", "pr", "ra", "pra"}
+    s = set(s.lower() for s in stats)
+    if s & SPARSE:
+        return "includes_sparse"
+    if s & COMBOS:
+        return "includes_combo"
+    if len(s) == 1:
+        return f"same_stat:{list(s)[0]}"
+    return "mixed"
+
+
 def _price_configs(
     configs: list[dict],
     tape,
     pmf_df: pd.DataFrame,
     slate_date: str,
+    as_of_date: str | None = None,
 ) -> list[dict]:
+    from sgp_engine.pricing import _classify_relationship
+    from sgp_engine.schema import SGPLeg
+
+    # Build PMF JSON lookup for percentile computation.
+    pmf_json_lut: dict[tuple[str, str, str], tuple[str, int | None]] = {}
+    for _, r in pmf_df.iterrows():
+        pmf_json_lut[(str(r["game_id"]), str(r["player_id"]), str(r["stat"]).lower())] = (
+            str(r.get("pmf_json", "")), r.get("domain_max")
+        )
+
     rows = []
     for i, cfg in enumerate(configs):
         game_id = cfg["game_id"]
@@ -118,21 +173,116 @@ def _price_configs(
             "ticket_id": f"bt_{slate_date}_{i:06d}",
             "legs": [
                 {"player_id": la["player_id"], "stat": la["stat"], "line": la["line"], "side": la["side"],
-                 "game_id": game_id},
+                 "game_id": game_id, "team_id": la.get("team_id", "UNK")},
                 {"player_id": lb["player_id"], "stat": lb["stat"], "line": lb["line"], "side": lb["side"],
-                 "game_id": game_id},
+                 "game_id": game_id, "team_id": lb.get("team_id", "UNK")},
             ],
         })
         try:
             result = price_ticket(ticket, tape, pmf_df)
-        except Exception as exc:
+        except Exception:
             continue
 
+        # Relationship classification.
+        leg_a_sgp = SGPLeg(player_id=la["player_id"], stat=la["stat"], line=la["line"], side=la["side"],
+                           game_id=game_id, team_id=la.get("team_id", "UNK"))
+        leg_b_sgp = SGPLeg(player_id=lb["player_id"], stat=lb["stat"], line=lb["line"], side=lb["side"],
+                           game_id=game_id, team_id=lb.get("team_id", "UNK"))
+        rel_type = _classify_relationship([leg_a_sgp, leg_b_sgp])
+
+        # Demographic columns.
+        same_player = 1 if la["player_id"] == lb["player_id"] else 0
+        same_team = 1 if (la.get("team_id", "UNK") == lb.get("team_id", "UNK") and la.get("team_id") != "UNK") else 0
+        opponent = 1 - same_player - same_team if (1 - same_player - same_team) >= 0 else 0
+
+        stats_list = [la["stat"].lower(), lb["stat"].lower()]
+        stat_mix = _classify_leg_mix(stats_list)
+
+        COMBOS = {"pa", "pr", "ra", "pra"}
+        COMBO_COMPONENTS = {"pa": {"pts","ast"}, "pr": {"pts","reb"}, "ra": {"reb","ast"},
+                            "pra": {"pts","reb","ast"}, "stocks": {"stl","blk"}}
+        contains_combo_overlap = False
+        for combo_s in COMBOS:
+            if combo_s in stats_list:
+                other_stats = set(s for s in stats_list if s != combo_s)
+                if other_stats & COMBO_COMPONENTS.get(combo_s, set()):
+                    contains_combo_overlap = True
+                    break
+
+        SPARSE = {"stl", "blk", "stocks"}
+        contains_sparse = any(s in SPARSE for s in stats_list)
+
+        # Alt-line detection: line far from PMF mean.
+        contains_alt_line = False
+        for leg_d, stat_s in [(la, la["stat"].lower()), (lb, lb["stat"].lower())]:
+            pmf_row = pmf_df[(pmf_df["player_id"].astype(str) == leg_d["player_id"]) &
+                             (pmf_df["stat"].astype(str).str.lower() == stat_s) &
+                             (pmf_df["game_id"].astype(str) == game_id)]
+            if not pmf_row.empty:
+                pmf_mean = float(pmf_row.iloc[0].get("mean", 0.0))
+                if abs(leg_d["line"] - pmf_mean) > 3.0:
+                    contains_alt_line = True
+                    break
+
+        # Line percentile buckets.
+        pcts = []
+        for leg_d, stat_s in [(la, la["stat"].lower()), (lb, lb["stat"].lower())]:
+            pmf_j_key = (game_id, leg_d["player_id"], stat_s)
+            pmf_j, dom = pmf_json_lut.get(pmf_j_key, (None, None))
+            p = _line_percentile(pmf_j, leg_d["line"], dom)
+            pcts.append(_bucket_percentile(p))
+        # Combined bucket: if any extreme, mark tail.
+        TAIL_BUCKETS = {"low_tail", "high_tail"}
+        if any(b in TAIL_BUCKETS for b in pcts):
+            combined_bucket = "tail"
+        elif len(set(pcts)) == 1:
+            combined_bucket = pcts[0]
+        else:
+            combined_bucket = "mixed"
+
+        # Legs JSON.
+        legs_json_str = json.dumps([
+            {"player_id": la["player_id"], "stat": la["stat"], "line": la["line"], "side": la["side"]},
+            {"player_id": lb["player_id"], "stat": lb["stat"], "line": lb["line"], "side": lb["side"]},
+        ])
+        sgp_id = f"sgp_{slate_date}_{i:06d}"
+
+        raw_p = float(result.get("raw_joint_probability", np.nan))
+        cal_p = float(result.get("calibrated_joint_probability", raw_p))
+        indep_p = float(result.get("independent_probability_pmf_marginals", np.nan))
+        corr_factor = float(result.get("correlation_factor_vs_pmf_independence", np.nan))
+        model_corr = float(result.get("model_corr_factor", corr_factor))
+
         row = {
-            "slate_date": slate_date,
+            "prediction_date": slate_date,
+            "as_of_date": as_of_date or slate_date,
             "game_id": game_id,
+            "sgp_id": sgp_id,
             "ticket_id": ticket.ticket_id,
+            "leg_count": 2,
             "n_legs": 2,
+            "legs_json": legs_json_str,
+            "relationship_type": rel_type,
+            "stat_mix": stat_mix,
+            "role_mix": "unknown",
+            "same_player_count": same_player,
+            "same_team_count": same_team,
+            "opponent_count": opponent,
+            "contains_combo_overlap": contains_combo_overlap,
+            "contains_sparse_stat": contains_sparse,
+            "contains_alt_line": contains_alt_line,
+            "line_percentile_bucket": combined_bucket,
+            "lineup_status": "unknown",
+            "raw_joint_probability": raw_p,
+            "calibrated_joint_probability": cal_p,
+            "independent_probability": indep_p,
+            "correlation_factor": corr_factor,
+            "model_corr_factor": model_corr,
+            "market_sgp_probability": np.nan,
+            "market_sgp_odds": np.nan,
+            "market_corr_factor": 1.0,  # independence placeholder
+            "market_corr_factor_source": "independence_placeholder",
+            "corr_factor_delta_vs_market": model_corr - 1.0,
             "leg_1_player_id": la["player_id"],
             "leg_1_stat": la["stat"],
             "leg_1_line": la["line"],
@@ -143,13 +293,21 @@ def _price_configs(
             "leg_2_line": lb["line"],
             "leg_2_side": lb["side"],
             "leg_2_marginal_probability_pmf": result["legs"][1]["marginal_probability_pmf"],
-            "raw_joint_probability": result["raw_joint_probability"],
-            "calibrated_joint_probability": result["calibrated_joint_probability"],
-            "independent_probability_pmf_marginals": result["independent_probability_pmf_marginals"],
-            "correlation_factor_vs_pmf_independence": result["correlation_factor_vs_pmf_independence"],
-            "fair_american_odds": result["fair_american_odds"],
-            "simulation_count": result["simulation_count"],
-            "hit_result": None,  # populated from settled outcomes
+            "fair_american_odds": result.get("fair_american_odds"),
+            "simulation_count": result.get("simulation_count"),
+            "actual_hit": None,   # populated from settled outcomes
+            "hit_result": None,   # backwards-compat alias
+            # Loss fields — populated once actual_hit is known.
+            "model_logloss": np.nan,
+            "model_brier": np.nan,
+            "market_logloss": np.nan,
+            "market_brier": np.nan,
+            "logloss_delta_vs_market": np.nan,
+            "brier_delta_vs_market": np.nan,
+            "independence_logloss": np.nan,
+            "independence_brier": np.nan,
+            "logloss_delta_vs_independence": np.nan,
+            "brier_delta_vs_independence": np.nan,
         }
         rows.append(row)
     return rows
@@ -217,49 +375,59 @@ def _link_outcomes(
     rows: list[dict],
     stats_lookup: dict[tuple[str, str, str], float],
 ) -> list[dict]:
-    """Populate hit_result for each row using settled stats lookup."""
+    """Populate actual_hit for each row using settled stats lookup and compute loss fields."""
+    EPS = 1e-7
     out = []
     for row in rows:
         game_id = str(row.get("game_id", ""))
         resolved = True
         all_hit = True
 
-        # Check leg 1
-        pid1 = str(row.get("leg_1_player_id", ""))
-        stat1 = str(row.get("leg_1_stat", "")).lower()
-        line1 = float(row.get("leg_1_line", 0.0))
-        side1 = str(row.get("leg_1_side", "over"))
+        for leg_num in [1, 2]:
+            pid = str(row.get(f"leg_{leg_num}_player_id", ""))
+            stat = str(row.get(f"leg_{leg_num}_stat", "")).lower()
+            line = float(row.get(f"leg_{leg_num}_line", 0.0))
+            side = str(row.get(f"leg_{leg_num}_side", "over"))
 
-        val1 = stats_lookup.get((game_id, pid1, stat1))
-        if val1 is None and stat1 in _COMBO_STAT_COMPONENTS:
-            comps = _COMBO_STAT_COMPONENTS[stat1]
-            comp_vals = [stats_lookup.get((game_id, pid1, c)) for c in comps]
-            if all(v is not None for v in comp_vals):
-                val1 = sum(float(v) for v in comp_vals)
-        if val1 is None:
-            resolved = False
-        elif not _evaluate_leg(val1, line1, side1):
-            all_hit = False
-
-        # Check leg 2
-        pid2 = str(row.get("leg_2_player_id", ""))
-        stat2 = str(row.get("leg_2_stat", "")).lower()
-        line2 = float(row.get("leg_2_line", 0.0))
-        side2 = str(row.get("leg_2_side", "over"))
-
-        val2 = stats_lookup.get((game_id, pid2, stat2))
-        if val2 is None and stat2 in _COMBO_STAT_COMPONENTS:
-            comps = _COMBO_STAT_COMPONENTS[stat2]
-            comp_vals = [stats_lookup.get((game_id, pid2, c)) for c in comps]
-            if all(v is not None for v in comp_vals):
-                val2 = sum(float(v) for v in comp_vals)
-        if val2 is None:
-            resolved = False
-        elif not _evaluate_leg(val2, line2, side2):
-            all_hit = False
+            val = stats_lookup.get((game_id, pid, stat))
+            if val is None and stat in _COMBO_STAT_COMPONENTS:
+                comps = _COMBO_STAT_COMPONENTS[stat]
+                comp_vals = [stats_lookup.get((game_id, pid, c)) for c in comps]
+                if all(v is not None for v in comp_vals):
+                    val = sum(float(v) for v in comp_vals)
+            if val is None:
+                resolved = False
+            elif not _evaluate_leg(val, line, side):
+                all_hit = False
 
         new_row = dict(row)
-        new_row["hit_result"] = int(all_hit) if resolved else None
+        hit = int(all_hit) if resolved else None
+        new_row["actual_hit"] = hit
+        new_row["hit_result"] = hit  # backwards-compat
+
+        if hit is not None:
+            cal_p = float(row.get("calibrated_joint_probability", row.get("raw_joint_probability", 0.5)))
+            cal_p = max(min(cal_p, 1 - EPS), EPS)
+            indep_p = float(row.get("independent_probability", row.get("independent_probability_pmf_marginals", 0.5)))
+            indep_p = max(min(indep_p, 1 - EPS), EPS)
+            y = float(hit)
+
+            new_row["model_logloss"] = -(y * np.log(cal_p) + (1 - y) * np.log(1 - cal_p))
+            new_row["model_brier"] = (cal_p - y) ** 2
+            new_row["independence_logloss"] = -(y * np.log(indep_p) + (1 - y) * np.log(1 - indep_p))
+            new_row["independence_brier"] = (indep_p - y) ** 2
+            new_row["logloss_delta_vs_independence"] = new_row["model_logloss"] - new_row["independence_logloss"]
+            new_row["brier_delta_vs_independence"] = new_row["model_brier"] - new_row["independence_brier"]
+
+            # Market losses: only if actual market SGP probability is available.
+            mkt_p = float(row.get("market_sgp_probability", np.nan))
+            if np.isfinite(mkt_p) and 0 < mkt_p < 1:
+                mkt_p = max(min(mkt_p, 1 - EPS), EPS)
+                new_row["market_logloss"] = -(y * np.log(mkt_p) + (1 - y) * np.log(1 - mkt_p))
+                new_row["market_brier"] = (mkt_p - y) ** 2
+                new_row["logloss_delta_vs_market"] = new_row["model_logloss"] - new_row["market_logloss"]
+                new_row["brier_delta_vs_market"] = new_row["model_brier"] - new_row["market_brier"]
+
         out.append(new_row)
     return out
 
@@ -335,7 +503,7 @@ def main() -> int:
         configs = _sample_leg_configs(pmf_df, rng, max_per_game=args.max_pairs_per_game)
         print(f"  {len(configs)} ticket configurations to price ...", flush=True)
 
-        rows = _price_configs(configs, tape, pmf_df, slate_date)
+        rows = _price_configs(configs, tape, pmf_df, slate_date, as_of_date=slate_date)
         all_rows.extend(rows)
         print(f"  {len(rows)} rows priced for {slate_date}.", flush=True)
 
@@ -380,9 +548,9 @@ def main() -> int:
     df.to_parquet(out_path, index=False)
 
     hit_rate = None
-    settled = df.dropna(subset=["hit_result"])
+    settled = df.dropna(subset=["actual_hit"])
     if not settled.empty:
-        hit_rate = float(settled["hit_result"].mean())
+        hit_rate = float(settled["actual_hit"].mean())
 
     summary = {
         "status": "DONE",

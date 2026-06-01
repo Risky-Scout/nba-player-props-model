@@ -90,29 +90,39 @@ SLATE_DATE = "2026-03-15"
 
 
 def test_canonical_source_preferred_over_wizard_of_odds(tmp_path):
-    """canonical_source/ is chosen even when wizard_of_odds/ also exists."""
+    """wizard_of_odds/ is now preferred; canonical_source is fallback.
+
+    The updated PMF_SOURCE_CANDIDATES list puts wizard_of_odds/full_pmfs_wide.parquet
+    first.  When both sources exist and wizard_of_odds has real data, it should be
+    chosen.  When wizard_of_odds is missing, canonical_source is used.
+    """
     repo = tmp_path / "repo"
     delivery_dir = _make_fake_delivery(repo, SLATE_DATE)
 
-    # Also write a wizard_of_odds/ parquet that has different (corrupt) PMFs
+    # Write wizard_of_odds/ parquet with valid but distinct data (P_WOO player).
     woo = delivery_dir / "wizard_of_odds"
-    woo.mkdir()
-    corrupt_df = pd.DataFrame([{
-        "game_id": "WRONG",
-        "player_id": "WRONG",
-        "team_id": "XXX",
-        "opponent_id": "YYY",
+    woo.mkdir(parents=True, exist_ok=True)
+    woo_df = pd.DataFrame([{
+        "game_id": "G1",
+        "player_id": "P_WOO",
+        "team_id": "T1",
+        "opponent_id": "T2",
         "stat": "pts",
-        "pmf_json": json.dumps({"0": 1.0}),
+        "pmf_json": json.dumps({"0": 0.1, "1": 0.9}),
+        "domain_max": 1,
+        "mean": 0.9,
+        "pmf_valid": True,
     }])
-    corrupt_df.to_parquet(woo / "full_pmfs_wide.parquet", index=False)
+    woo_df.to_parquet(woo / "full_pmfs_wide.parquet", index=False)
 
     bundle = build_nba_slate_state_bundle(repo, SLATE_DATE, allow_missing_asof_metadata=True, strict=False)
     assert bundle is not None
-    # Should NOT have loaded from wizard_of_odds — the corrupt WRONG game_id shouldn't appear
+    # wizard_of_odds is now preferred source, so P_WOO should be found.
     player_ids = set(bundle.player_stat_pmfs["player_id"].astype(str))
-    assert "WRONG" not in player_ids
-    assert "P1" in player_ids
+    assert "P_WOO" in player_ids, (
+        "wizard_of_odds/full_pmfs_wide.parquet should be preferred when it exists "
+        "(P_WOO player should appear in bundle)"
+    )
 
 
 def test_canonical_source_works_when_woo_missing(tmp_path):

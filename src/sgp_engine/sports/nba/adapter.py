@@ -37,23 +37,28 @@ STAT_ALIASES = {
 
 
 # Ordered by model-only purity preference; first hit wins.
+# wizard_of_odds/full_pmfs_wide.parquet is preferred because it is the
+# fully post-processed WoO-calibrated output and is available earlier
+# in the delivery sequence than canonical_source on many run windows.
 PMF_SOURCE_CANDIDATES = [
+    "wizard_of_odds/full_pmfs_wide.parquet",
+    "wizard_of_odds/full_pmfs_wide.csv",
     "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv",
-    "canonical_source/all_props_model_only.parquet",
     "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.jsonl",
+    "canonical_source/all_props_model_only.parquet",
     "derek_forward_feed/machine_readable/model_only.parquet",
     "derek_forward_feed/machine_readable/model_only.csv",
     "derek_forward_feed/latest_available_snapshot.parquet",
     "derek_forward_feed/derek_forward_feed.parquet",
-    "wizard_of_odds/full_pmfs_wide.parquet",
-    "wizard_of_odds/full_pmfs_wide.csv",
     "predictions/full_pmfs_wide.parquet",
     "full_pmfs_wide.parquet",
     "full_pmfs_wide.csv",
 ]
 
 _MODEL_ONLY_CANDIDATES = frozenset([
+    "wizard_of_odds/full_pmfs_wide.parquet",
+    "wizard_of_odds/full_pmfs_wide.csv",
     "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
     "canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.csv",
     "canonical_source/all_props_model_only.parquet",
