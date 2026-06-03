@@ -1,0 +1,137 @@
+{
+  "as_of_date": "2026-06-02",
+  "challenger_suffix": "live_context",
+  "code_commit": "71f054c1d96aac4589081fb685b59c70560f544f",
+  "feature_columns": [
+    "is_actionable",
+    "is_confirmed_out",
+    "is_inactive",
+    "is_doubtful",
+    "is_questionable",
+    "is_probable",
+    "injury_status_encoded",
+    "availability_status_encoded",
+    "injury_features_missing",
+    "num_teammates_out_total",
+    "num_teammates_out_guard",
+    "num_teammates_out_wing",
+    "num_teammates_out_big",
+    "vacated_minutes_total",
+    "vacated_minutes_guard",
+    "vacated_minutes_wing",
+    "vacated_minutes_big",
+    "vacated_fga_total",
+    "vacated_features_missing",
+    "starter_proxy_lagged"
+  ],
+  "feature_set_id": "phase13p_lineup_injury_driver_v1",
+  "fitted_targets": [
+    "minutes",
+    "pts",
+    "reb",
+    "ast",
+    "tov",
+    "stl",
+    "blk",
+    "fg3m"
+  ],
+  "generated_at_utc": "2026-06-03T12:30:35+00:00",
+  "historical_lineup_source": "official_boxscore_starter_proxy",
+  "historical_lineup_source_safe_for_training": true,
+  "historical_lineup_timestamp_limited": true,
+  "injury_availability_source_safe_for_training": true,
+  "lineup_history_note": "starter identity is pre-game knowable; no same-game performance outcomes are used as predictors. starter_proxy_lagged is derived from prior-game minutes (mp_mean_last10 >= 24).",
+  "lineup_injury_context_upstream_of_pmf": true,
+  "live_context_features_enabled": true,
+  "metrics_per_target": {
+    "ast": {
+      "baseline_mse": 0.00993260059418344,
+      "challenger_mse": 0.009932733661120298,
+      "coef_l2_norm": 0.0022428483603644943,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "ast",
+      "rel_improvement": -1.3396988592911057e-05
+    },
+    "blk": {
+      "baseline_mse": 0.0026145181937569984,
+      "challenger_mse": 0.0026146926799400162,
+      "coef_l2_norm": 0.0008121257896759974,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "blk",
+      "rel_improvement": -6.673741396577483e-05
+    },
+    "fg3m": {
+      "baseline_mse": 0.005465397005830994,
+      "challenger_mse": 0.005464367232420369,
+      "coef_l2_norm": 0.0017954868812572497,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "fg3m",
+      "rel_improvement": 0.0001884169456539807
+    },
+    "minutes": {
+      "baseline_mse": 57.790765324073035,
+      "challenger_mse": 57.15225393436806,
+      "coef_l2_norm": 1.059961146025951,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "minutes",
+      "rel_improvement": 0.0110486750975592
+    },
+    "pts": {
+      "baseline_mse": 0.09602212754119208,
+      "challenger_mse": 0.09600527997103041,
+      "coef_l2_norm": 0.010549989463958421,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "pts",
+      "rel_improvement": 0.00017545508095976012
+    },
+    "reb": {
+      "baseline_mse": 0.024109900902854642,
+      "challenger_mse": 0.024110101374165072,
+      "coef_l2_norm": 0.0010426425134168467,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "reb",
+      "rel_improvement": -8.314895662085889e-06
+    },
+    "stl": {
+      "baseline_mse": 0.0042202435963827134,
+      "challenger_mse": 0.004220460987392281,
+      "coef_l2_norm": 0.0013964069911675636,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "stl",
+      "rel_improvement": -5.1511483781223044e-05
+    },
+    "tov": {
+      "baseline_mse": 0.007634148069711642,
+      "challenger_mse": 0.00763389359492846,
+      "coef_l2_norm": 0.0018716950912711413,
+      "n_test": 16422,
+      "n_train": 65688,
+      "name": "tov",
+      "rel_improvement": 3.333374999522097e-05
+    }
+  },
+  "no_leakage_verified": true,
+  "phase": "13P",
+  "rows_used": 82110,
+  "schema_version": "1.0",
+  "source_hashes": {
+    "live_context_features_parquet": "3fb45a56a9ada1b9fd45232536f776f2",
+    "player_game_stats_parquet": "8abad1bc10592cb926ce7b421f9d456d"
+  },
+  "source_paths": {
+    "live_context_features_parquet": "data/live_context_features.parquet",
+    "player_game_stats_parquet": "data/player_game_stats.parquet"
+  },
+  "trained_through_date": "2026-06-02",
+  "trained_with_injury_availability_features": true,
+  "trained_with_lineup_interaction_features": false,
+  "trained_with_lineup_status_features": true,
+  "trained_with_vacated_opportunity_features": true
+}
