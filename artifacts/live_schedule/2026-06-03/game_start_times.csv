@@ -1,1 +1,2 @@
 game_id,team_abbr,opponent_abbr,resolved_game_start_time_utc,source_used,source_confidence,source_payload_hash,resolution_blocker
+21716134,NYK,SAS,2026-06-04T00:30:00Z,odds_api_live_events,high,0f6a264169f92077,

@@ -1,13 +1,13 @@
 {
   "checks": [],
-  "code_commit": "9538d6e78017ea2e76db2ac74c81632ce1fc5807",
+  "code_commit": "901416419cd2e77ff5d0be15684c85f659eba43e",
   "delivery_date": "2026-06-03",
   "facts": {
-    "pending_reason": "no_predictions_parquet",
-    "predictions_parquet_present": false,
-    "slate_games": 0
+    "pending_reason": "no_snapshots_due_yet",
+    "predictions_parquet_present": true,
+    "slate_games": 1
   },
-  "generated_at_utc": "2026-06-03T05:21:01+00:00",
+  "generated_at_utc": "2026-06-03T19:58:40+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
