@@ -1,0 +1,6 @@
+{
+  "blocker": "predictions parquet missing: predictions/all_props_2026-06-04.parquet",
+  "delivery_date": "2026-06-04",
+  "outcome": "pending",
+  "schema_version": "1.0"
+}
