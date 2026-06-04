@@ -153,12 +153,9 @@ def _price_configs(
     pmf_df: pd.DataFrame,
     slate_date: str,
     as_of_date: str | None = None,
-    bundle_meta: dict | None = None,
 ) -> list[dict]:
     from sgp_engine.pricing import _classify_relationship
     from sgp_engine.schema import SGPLeg
-
-    _bmeta = bundle_meta or {}
 
     # Build PMF JSON lookup for percentile computation.
     pmf_json_lut: dict[tuple[str, str, str], tuple[str, int | None]] = {}
@@ -311,11 +308,6 @@ def _price_configs(
             "independence_brier": np.nan,
             "logloss_delta_vs_independence": np.nan,
             "brier_delta_vs_independence": np.nan,
-            # Provenance — for schema stability and audit.
-            "pmf_source_file": str(_bmeta.get("pmf_source_file", "unknown")),
-            "model_version": str(_bmeta.get("champion_model_version", "unknown")),
-            "sgp_engine_version": "v1",
-            "created_at_utc": datetime.now(timezone.utc).isoformat(),
         }
         rows.append(row)
     return rows
@@ -449,13 +441,6 @@ def main() -> int:
                     help="Simulation draws per slate (default: 100000).")
     ap.add_argument("--max-pairs-per-game", type=int, default=200,
                     help="Max 2-leg ticket configurations per game (default: 200).")
-    ap.add_argument("--max-candidates-per-game", type=int, default=None,
-                    help="Alias for --max-pairs-per-game (overrides if set).")
-    ap.add_argument("--max-leg-count", type=int, default=2,
-                    help="Maximum leg count per ticket (default: 2; 3 generates 3-leg chain candidates).")
-    ap.add_argument("--include-alt-lines", default="true",
-                    choices=["true", "false"],
-                    help="Include alt-line candidates (mild/tail lines, default: true).")
     ap.add_argument("--seed", type=int, default=20260530)
     ap.add_argument("--out", required=True,
                     help="Output parquet path (e.g. tmp/sgp_backtest_rows.parquet).")
@@ -472,11 +457,6 @@ def main() -> int:
     repo_root = Path(args.repo_root).resolve()
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-
-    # Resolve max pairs: --max-candidates-per-game overrides --max-pairs-per-game.
-    max_pairs = args.max_candidates_per_game if args.max_candidates_per_game is not None else args.max_pairs_per_game
-    include_alt_lines = args.include_alt_lines.lower() == "true"
-    max_leg_count = args.max_leg_count
 
     dates = [d.strip() for d in args.dates.split(",") if d.strip()]
     if not dates:
@@ -520,10 +500,10 @@ def main() -> int:
         n_games = pmf_df["game_id"].nunique()
         print(f"  {n_players} players / {n_games} games — sampling ticket configs ...", flush=True)
 
-        configs = _sample_leg_configs(pmf_df, rng, max_per_game=max_pairs)
+        configs = _sample_leg_configs(pmf_df, rng, max_per_game=args.max_pairs_per_game)
         print(f"  {len(configs)} ticket configurations to price ...", flush=True)
 
-        rows = _price_configs(configs, tape, pmf_df, slate_date, as_of_date=slate_date, bundle_meta=bundle.manifest)
+        rows = _price_configs(configs, tape, pmf_df, slate_date, as_of_date=slate_date)
         all_rows.extend(rows)
         print(f"  {len(rows)} rows priced for {slate_date}.", flush=True)
 
