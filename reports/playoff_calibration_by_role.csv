@@ -1,0 +1,11 @@
+n,status,role_bucket,context,mean_predicted_prob,observed_hit_rate,calibration_error,mean_absolute_error_stat,mean_signed_error_stat,brier_score,bias_direction
+0,insufficient_sample,rotation,regular_season,,,,,,,
+7829,ok,rotation,playoff,0.4683,0.5053,0.037,0.71,-0.71,0.2483,model_too_low
+0,insufficient_sample,starter,regular_season,,,,,,,
+18136,ok,starter,playoff,0.4365,0.4392,0.0026,0.042,0.042,0.2386,within_tolerance
+0,insufficient_sample,bench,regular_season,,,,,,,
+1670,ok,bench,playoff,0.4499,0.3946,0.0553,0.47,0.47,0.2514,within_tolerance
+0,insufficient_sample,core,regular_season,,,,,,,
+8364,ok,core,playoff,0.4778,0.4336,0.0442,0.41,0.41,0.2649,within_tolerance
+0,insufficient_sample,fringe,regular_season,,,,,,,
+56,ok,fringe,playoff,,0.4643,,0.387,-0.387,,within_tolerance

@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-06-04T02:03:20+00:00",
+  "playoff_start_date": "2026-04-19",
+  "regular_season": {
+    "n": 0,
+    "status": "insufficient_sample"
+  },
+  "playoff": {
+    "n": 36061,
+    "mean_predicted_prob": 0.4547,
+    "observed_hit_rate": 0.4502,
+    "calibration_error": 0.0044,
+    "mean_absolute_error_stat": 0.017,
+    "mean_signed_error_stat": -0.017,
+    "brier_score": 0.2477,
+    "bias_direction": "within_tolerance",
+    "status": "ok"
+  },
+  "by_stat": {
+    "ast": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 5746,
+        "mean_predicted_prob": 0.4764,
+        "observed_hit_rate": 0.4394,
+        "calibration_error": 0.0369,
+        "mean_absolute_error_stat": 0.224,
+        "mean_signed_error_stat": -0.224,
+        "brier_score": 0.2329,
+        "bias_direction": "within_tolerance",
+        "status": "ok"
+      }
+    },
+    "blk": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 1484,
+        "mean_predicted_prob": 0.2616,
+        "observed_hit_rate": 0.3598,
+        "calibration_error": 0.0982,
+        "mean_absolute_error_stat": 0.006,
+        "mean_signed_error_stat": -0.006,
+        "brier_score": 0.2663,
+        "bias_direction": "within_tolerance",
+        "status": "ok"
+      }
+    },
+    "fg3m": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 5917,
+        "mean_predicted_prob": 0.3488,
+        "observed_hit_rate": 0.4286,
+        "calibration_error": 0.0798,
+        "mean_absolute_error_stat": 0.108,
+        "mean_signed_error_stat": -0.108,
+        "brier_score": 0.2381,
+        "bias_direction": "within_tolerance",
+        "status": "ok"
+      }
+    },
+    "pts": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 12939,
+        "mean_predicted_prob": 0.5235,
+        "observed_hit_rate": 0.4601,
+        "calibration_error": 0.0634,
+        "mean_absolute_error_stat": 0.144,
+        "mean_signed_error_stat": 0.144,
+        "brier_score": 0.2501,
+        "bias_direction": "within_tolerance",
+        "status": "ok"
+      }
+    },
+    "reb": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 8223,
+        "mean_predicted_prob": 0.4951,
+        "observed_hit_rate": 0.4694,
+        "calibration_error": 0.0257,
+        "mean_absolute_error_stat": 0.004,
+        "mean_signed_error_stat": -0.004,
+        "brier_score": 0.2441,
+        "bias_direction": "within_tolerance",
+        "status": "ok"
+      }
+    },
+    "stl": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 1724,
+        "mean_predicted_prob": 0.3622,
+        "observed_hit_rate": 0.4693,
+        "calibration_error": 0.107,
+        "mean_absolute_error_stat": 0.273,
+        "mean_signed_error_stat": -0.273,
+        "brier_score": 0.2848,
+        "bias_direction": "within_tolerance",
+        "status": "ok"
+      }
+    },
+    "tov": {
+      "regular_season": {
+        "n": 0,
+        "status": "insufficient_sample"
+      },
+      "playoff": {
+        "n": 28,
+        "status": "insufficient_sample"
+      }
+    }
+  },
+  "artifacts": {
+    "by_stat_csv": "reports/playoff_calibration_by_stat.csv",
+    "by_role_csv": "reports/playoff_calibration_by_role.csv"
+  }
+}
