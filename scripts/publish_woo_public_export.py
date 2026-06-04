@@ -883,6 +883,17 @@ def main(argv: list[str] | None = None) -> int:
     }
     _write_export(date, payload_aff, payload_pmf)
 
+    # Copy nba_props_today.json to public_export/wizard_of_odds/ so the
+    # HTML page's static fallback path (./nba_props_today.json) resolves
+    # correctly on the FTP server at the same URL level as nba-props.html.
+    _today_src = REPO_ROOT / "predictions" / "nba_props_today.json"
+    if _today_src.exists():
+        import shutil as _shutil
+        for _parent in (EXPORT_ROOT / date, EXPORT_ROOT / "latest", EXPORT_ROOT):
+            _parent.mkdir(parents=True, exist_ok=True)
+            _shutil.copy2(_today_src, _parent / "nba_props_today.json")
+        print(f"  copied nba_props_today.json → {EXPORT_ROOT.relative_to(REPO_ROOT)}/[date|latest|root]")
+
     print(f"WOO_PUBLIC_EXPORT_PUBLISH_PASS  date={date}  "
           f"affiliate_rows={len(aff_rows)}  pmf_players={len(pmf_players)}  "
           f"source={wide_path.relative_to(REPO_ROOT)}  "

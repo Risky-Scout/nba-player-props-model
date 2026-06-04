@@ -123,11 +123,9 @@ jobs:
         id: d
         # Priority:
         #   1. workflow_dispatch input date (if provided and non-empty)
-        #   2. Latest available deliveries/YYYY-MM-DD/ folder (in case
-        #      the daily pipeline ran on a different UTC-midnight boundary)
+        #   2. Latest COMPLETE deliveries/YYYY-MM-DD/ folder — must have
+        #      wizard_of_odds/full_pmfs_wide.parquet (stub-only folders are skipped)
         #   3. Current ET date (fallback)
-        # Never deploy a stale older date as current: the chosen date must
-        # have a wizard_of_odds delivery folder OR be the current ET date.
         run: |
           INPUT_DATE="${{ github.event.inputs.date }}"
           ET_DATE=$(TZ=America/New_York date +%Y-%m-%d)
@@ -136,14 +134,23 @@ jobs:
             DEPLOY_DATE="$INPUT_DATE"
             echo "Using workflow_dispatch input date: $DEPLOY_DATE"
           else
-            # Find the latest deliveries/YYYY-MM-DD/ folder
-            LATEST_DELIVERY=$(ls -1d deliveries/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] 2>/dev/null | sort -r | head -1 | xargs basename 2>/dev/null || true)
-            if [ -n "$LATEST_DELIVERY" ]; then
-              DEPLOY_DATE="$LATEST_DELIVERY"
-              echo "Latest delivery folder found: $DEPLOY_DATE"
-            else
+            # Find the latest COMPLETE deliveries/YYYY-MM-DD/ folder.
+            # A complete delivery must have wizard_of_odds/full_pmfs_wide.parquet.
+            # Stub-only folders (created when delivery partially failed) are skipped.
+            DEPLOY_DATE=""
+            for D in $(ls -1d deliveries/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] 2>/dev/null | sort -r); do
+              BASENAME=$(basename "$D")
+              if [ -f "deliveries/${BASENAME}/wizard_of_odds/full_pmfs_wide.parquet" ]; then
+                DEPLOY_DATE="$BASENAME"
+                echo "Latest complete delivery folder found: $DEPLOY_DATE"
+                break
+              else
+                echo "Skipping stub/incomplete folder: $BASENAME (no wizard_of_odds/full_pmfs_wide.parquet)"
+              fi
+            done
+            if [ -z "$DEPLOY_DATE" ]; then
               DEPLOY_DATE="$ET_DATE"
-              echo "No delivery folder found; using ET date: $DEPLOY_DATE"
+              echo "No complete delivery folder found; using ET date: $DEPLOY_DATE"
             fi
           fi
 
