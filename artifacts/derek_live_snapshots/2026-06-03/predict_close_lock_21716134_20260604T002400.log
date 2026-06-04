@@ -1,0 +1,129 @@
+$ /opt/hostedtoolcache/Python/3.11.15/x64/bin/python scripts/predict.py --derek-live-snapshot --target-date 2026-06-03 --game-id 21716134 --snapshot-output-dir deliveries/2026-06-03/derek_game_snapshots/21716134/close_lock --snapshot-type close_lock --snapshot-run-id derek-snapshot-close_lock-21716134-20260604T002400 --lineup-context artifacts/live_lineups/2026-06-03/21716134/bdl_lineups_normalized.parquet
+
+2026-06-04 00:24:04,247 [INFO] ============================================================
+2026-06-04 00:24:04,247 [INFO] NBA Props Model PREDICTIONS — VERSION 2026-03-26-v15
+2026-06-04 00:24:04,247 [INFO] ============================================================
+2026-06-04 00:24:04,247 [INFO] Target date: 2026-06-03
+2026-06-04 00:24:04,247 [INFO] Loading models...
+2026-06-04 00:24:04,339 [INFO]   pts: 11 quantile models
+2026-06-04 00:24:04,415 [INFO]   reb: 11 quantile models
+2026-06-04 00:24:04,488 [INFO]   ast: 11 quantile models
+2026-06-04 00:24:04,555 [INFO]   fg3m: 11 quantile models
+2026-06-04 00:24:04,620 [INFO]   stl: 11 quantile models
+2026-06-04 00:24:04,683 [INFO]   blk: 11 quantile models
+2026-06-04 00:24:04,752 [INFO]   tov: 11 quantile models
+2026-06-04 00:24:04,886 [INFO]   pra: 11 quantile models
+2026-06-04 00:24:05,028 [INFO]   pr: 11 quantile models
+2026-06-04 00:24:05,163 [INFO]   pa: 11 quantile models
+2026-06-04 00:24:05,299 [INFO]   ra: 11 quantile models
+2026-06-04 00:24:05,431 [INFO]   stocks: 11 quantile models
+2026-06-04 00:24:05,432 [INFO]   Within-player correlation engine loaded
+2026-06-04 00:24:05,433 [INFO]   Global calibrator loaded: OVER
+2026-06-04 00:24:05,434 [INFO]   Global calibrator loaded: UNDER
+2026-06-04 00:24:05,434 [INFO]   Q50 bias corrections: {'ast': 1.139, 'blk': 1.04, 'fg3m': 1.092, 'pts': 5.39, 'reb': 0.911, 'stl': 0.29}
+2026-06-04 00:24:05,435 [INFO]   Residual centerer not available: Can't get attribute '__pyx_unpickle_CyHalfSquaredError' on <module 'sklearn._loss._loss' from '/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/sklearn/_loss/_loss.cpython-311-x86_64-linux-gnu.so'>
+2026-06-04 00:24:05,435 [WARNING]   FG3M hurdle model failed to load: Can't get attribute '__pyx_unpickle_CyHalfBinomialLoss' on <module 'sklearn._loss._loss' from '/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/sklearn/_loss/_loss.cpython-311-x86_64-linux-gnu.so'>
+2026-06-04 00:24:05,435 [INFO]   Live calibration table loaded: 46 entries
+2026-06-04 00:24:05,436 [INFO]   Minutes bucket corrections loaded: 12 entries
+2026-06-04 00:24:05,436 [INFO]   Calibration manifest: 0 promoted stat×side calibrators
+2026-06-04 00:24:05,445 [INFO]   PMF pipeline ready for 7/8 stats: ['ast', 'blk', 'pts', 'reb', 'stl', 'stocks', 'tov']
+2026-06-04 00:24:05,445 [INFO]   PMF calibrators loaded: ['ast', 'blk', 'fg3m', 'pts', 'reb', 'stl', 'stocks', 'tov']
+2026-06-04 00:24:07,839 [INFO]   Availability table has no rows for today; live builder ready for on-demand features_for calls per player-game.
+2026-06-04 00:24:07,839 [INFO] Loading historical data...
+2026-06-04 00:24:12,384 [INFO] Fetching today's games (2026-06-03)...
+2026-06-04 00:24:12,550 [INFO]   1 games
+2026-06-04 00:24:12,722 [INFO] Enriching game context with line movement snapshots...
+2026-06-04 00:24:12,722 [INFO] enrich_game_context_with_team_ids: 0/0 games enriched
+2026-06-04 00:24:12,723 [INFO]   No snapshot data — ctx_map team IDs set, line movement skipped
+2026-06-04 00:24:12,723 [INFO] Fetching injuries...
+2026-06-04 00:24:12,901 [INFO]   25 BDL injury records
+2026-06-04 00:24:14,030 [INFO] NBA injury report selected: report=Injury-Report_2026-06-03_08_00PM fallback_used=False freshness=latest_valid_report_selected
+2026-06-04 00:24:14,030 [INFO] Wrote NBA injury report selection manifest to /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/injury_report_selection/2026-06-03.json
+2026-06-04 00:24:14,031 [INFO] NBA injury report: 1 players from Injury-Report_2026-06-03_08_00PM
+2026-06-04 00:24:14,084 [WARNING] injury_merge_alias_ambiguous: key='k. johnson' candidate_pids=[17896041, 56677853]
+2026-06-04 00:24:14,084 [WARNING] injury_merge_alias_ambiguous: key='k johnson' candidate_pids=[17896041, 56677853]
+2026-06-04 00:24:14,085 [WARNING] injury_merge_alias_ambiguous: key='m. morris' candidate_pids=[328, 329]
+2026-06-04 00:24:14,085 [WARNING] injury_merge_alias_ambiguous: key='m morris' candidate_pids=[328, 329]
+2026-06-04 00:24:14,088 [WARNING] injury_merge_alias_ambiguous: key='d. jones' candidate_pids=[248, 1028245237]
+2026-06-04 00:24:14,088 [WARNING] injury_merge_alias_ambiguous: key='d jones' candidate_pids=[248, 1028245237]
+2026-06-04 00:24:14,088 [WARNING] injury_merge_alias_ambiguous: key='j. butler' candidate_pids=[79, 18677954]
+2026-06-04 00:24:14,088 [WARNING] injury_merge_alias_ambiguous: key='j butler' candidate_pids=[79, 18677954]
+2026-06-04 00:24:14,092 [WARNING] injury_merge_alias_ambiguous: key='k. george' candidate_pids=[56677834, 1028026060]
+2026-06-04 00:24:14,092 [WARNING] injury_merge_alias_ambiguous: key='k george' candidate_pids=[56677834, 1028026060]
+2026-06-04 00:24:14,093 [WARNING] injury_merge_alias_ambiguous: key='c. martin' candidate_pids=[666747, 666748]
+2026-06-04 00:24:14,093 [WARNING] injury_merge_alias_ambiguous: key='c martin' candidate_pids=[666747, 666748]
+2026-06-04 00:24:14,093 [WARNING] injury_merge_alias_ambiguous: key='t. young' candidate_pids=[489, 490]
+2026-06-04 00:24:14,093 [WARNING] injury_merge_alias_ambiguous: key='t young' candidate_pids=[489, 490]
+2026-06-04 00:24:14,097 [WARNING] injury_merge_alias_ambiguous: key='m. bagley' candidate_pids=[24, 1046231372]
+2026-06-04 00:24:14,097 [WARNING] injury_merge_alias_ambiguous: key='m bagley' candidate_pids=[24, 1046231372]
+2026-06-04 00:24:14,098 [WARNING] injury_merge_alias_ambiguous: key='k. brown' candidate_pids=[38017701, 56677849]
+2026-06-04 00:24:14,098 [WARNING] injury_merge_alias_ambiguous: key='k brown' candidate_pids=[38017701, 56677849]
+2026-06-04 00:24:14,098 [WARNING] injury_merge_alias_ambiguous: key='k. jones' candidate_pids=[17896032, 1057389374]
+2026-06-04 00:24:14,098 [WARNING] injury_merge_alias_ambiguous: key='k jones' candidate_pids=[17896032, 1057389374]
+2026-06-04 00:24:14,100 [WARNING] injury_merge_alias_ambiguous: key='j. sims' candidate_pids=[17896063, 1047375587]
+2026-06-04 00:24:14,100 [WARNING] injury_merge_alias_ambiguous: key='j sims' candidate_pids=[17896063, 1047375587]
+2026-06-04 00:24:14,101 [WARNING] injury_merge_alias_ambiguous: key='d. powell' candidate_pids=[379, 1057279425]
+2026-06-04 00:24:14,101 [WARNING] injury_merge_alias_ambiguous: key='d powell' candidate_pids=[379, 1057279425]
+2026-06-04 00:24:14,101 [WARNING] injury_merge_alias_ambiguous: key='t. smith' candidate_pids=[56677788, 1028038570]
+2026-06-04 00:24:14,101 [WARNING] injury_merge_alias_ambiguous: key='t smith' candidate_pids=[56677788, 1028038570]
+2026-06-04 00:24:14,102 [WARNING] injury_merge_alias_ambiguous: key='c. jones' candidate_pids=[56677845, 1057846921]
+2026-06-04 00:24:14,102 [WARNING] injury_merge_alias_ambiguous: key='c jones' candidate_pids=[56677845, 1057846921]
+2026-06-04 00:24:14,102 [WARNING] injury_merge_alias_ambiguous: key='a. bailey' candidate_pids=[56677848, 1057260888]
+2026-06-04 00:24:14,102 [WARNING] injury_merge_alias_ambiguous: key='a bailey' candidate_pids=[56677848, 1057260888]
+2026-06-04 00:24:14,104 [WARNING] injury_merge_alias_ambiguous: key='b. bogdanovic' candidate_pids=[53, 54]
+2026-06-04 00:24:14,104 [WARNING] injury_merge_alias_ambiguous: key='b bogdanovic' candidate_pids=[53, 54]
+2026-06-04 00:24:14,105 [WARNING] injury_merge_alias_ambiguous: key='m. williams' candidate_pids=[38017698, 1018685894]
+2026-06-04 00:24:14,105 [WARNING] injury_merge_alias_ambiguous: key='m williams' candidate_pids=[38017698, 1018685894]
+2026-06-04 00:24:14,105 [WARNING] injury_merge_alias_ambiguous: key='l. ball' candidate_pids=[27, 3547239]
+2026-06-04 00:24:14,105 [WARNING] injury_merge_alias_ambiguous: key='l ball' candidate_pids=[27, 3547239]
+2026-06-04 00:24:14,105 [WARNING] injury_merge_alias_ambiguous: key='t. mann' candidate_pids=[666743, 17896036]
+2026-06-04 00:24:14,105 [WARNING] injury_merge_alias_ambiguous: key='t mann' candidate_pids=[666743, 17896036]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='s. curry' candidate_pids=[114, 115]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='s curry' candidate_pids=[114, 115]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='d. green' candidate_pids=[184, 185]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='d green' candidate_pids=[184, 185]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='j. richardson' candidate_pids=[391, 1057279571]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='j richardson' candidate_pids=[391, 1057279571]
+2026-06-04 00:24:14,106 [WARNING] injury_merge_alias_ambiguous: key='j. green' candidate_pids=[188, 3547258]
+2026-06-04 00:24:14,107 [WARNING] injury_merge_alias_ambiguous: key='j green' candidate_pids=[188, 3547258]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='j. holiday' candidate_pids=[214, 215]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='j holiday' candidate_pids=[214, 215]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='k. murray' candidate_pids=[38017688, 56677791]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='k murray' candidate_pids=[38017688, 56677791]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='a. williams' candidate_pids=[38017723, 1057396966]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='a williams' candidate_pids=[38017723, 1057396966]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='j. johnson' candidate_pids=[242, 17896040]
+2026-06-04 00:24:14,109 [WARNING] injury_merge_alias_ambiguous: key='j johnson' candidate_pids=[242, 17896040]
+2026-06-04 00:24:14,110 [WARNING] injury_merge_alias_ambiguous: key='m. gueye' candidate_pids=[56677806, 377705601]
+2026-06-04 00:24:14,110 [WARNING] injury_merge_alias_ambiguous: key='m gueye' candidate_pids=[56677806, 377705601]
+2026-06-04 00:24:14,110 [WARNING] injury_merge_alias_ambiguous: key='t. jones' candidate_pids=[249, 3547274]
+2026-06-04 00:24:14,110 [WARNING] injury_merge_alias_ambiguous: key='t jones' candidate_pids=[249, 3547274]
+2026-06-04 00:24:14,110 [WARNING] injury_merge_alias_ambiguous: key='c. johnson' candidate_pids=[666679, 1057846840]
+2026-06-04 00:24:14,110 [WARNING] injury_merge_alias_ambiguous: key='c johnson' candidate_pids=[666679, 1057846840]
+2026-06-04 00:24:14,113 [WARNING] injury_merge_alias_ambiguous: key='j. walker' candidate_pids=[38017711, 56677832]
+2026-06-04 00:24:14,113 [WARNING] injury_merge_alias_ambiguous: key='j walker' candidate_pids=[38017711, 56677832]
+2026-06-04 00:24:14,114 [WARNING] injury_merge_alias_ambiguous: key='j. edwards' candidate_pids=[1028214238, 1028244177]
+2026-06-04 00:24:14,114 [WARNING] injury_merge_alias_ambiguous: key='j edwards' candidate_pids=[1028214238, 1028244177]
+2026-06-04 00:24:14,114 [WARNING] injury_merge_alias_ambiguous: key='j. mcdaniels' candidate_pids=[666762, 3547259]
+2026-06-04 00:24:14,114 [WARNING] injury_merge_alias_ambiguous: key='j mcdaniels' candidate_pids=[666762, 3547259]
+2026-06-04 00:24:14,115 [WARNING] injury_merge_alias_ambiguous: key='a. thompson' candidate_pids=[56677825, 56677826]
+2026-06-04 00:24:14,115 [WARNING] injury_merge_alias_ambiguous: key='a thompson' candidate_pids=[56677825, 56677826]
+2026-06-04 00:24:14,115 [WARNING] injury_merge_alias_ambiguous: key='d. mitchell' candidate_pids=[322, 17553994]
+2026-06-04 00:24:14,115 [WARNING] injury_merge_alias_ambiguous: key='d mitchell' candidate_pids=[322, 17553994]
+2026-06-04 00:24:14,117 [WARNING] injury_merge_alias_ambiguous: key='m. bridges' candidate_pids=[61, 62]
+2026-06-04 00:24:14,117 [WARNING] injury_merge_alias_ambiguous: key='m bridges' candidate_pids=[61, 62]
+2026-06-04 00:24:14,117 [WARNING] injury_merge_alias_ambiguous: key='a. wiggins' candidate_pids=[475, 17896078]
+2026-06-04 00:24:14,117 [WARNING] injury_merge_alias_ambiguous: key='a wiggins' candidate_pids=[475, 17896078]
+2026-06-04 00:24:14,117 [WARNING] injury_merge_alias_ambiguous: key='j. williams' candidate_pids=[38017703, 47738533]
+2026-06-04 00:24:14,117 [WARNING] injury_merge_alias_ambiguous: key='j williams' candidate_pids=[38017703, 47738533]
+2026-06-04 00:24:14,118 [WARNING] injury_merge_alias_ambiguous: key='j. champagnie' candidate_pids=[17896039, 38017649]
+2026-06-04 00:24:14,118 [WARNING] injury_merge_alias_ambiguous: key='j champagnie' candidate_pids=[17896039, 38017649]
+2026-06-04 00:24:14,119 [INFO] injury_merge_summary: total_nba_report_names=1 matched_exact=1 matched_initial_last_name=0 unmatched=0 ambiguous_dropped=0 unmapped_team_initial_last_blocked=0 alias_map_ambiguous=78
+2026-06-04 00:24:14,120 [INFO]   25 players marked inactive (BDL + NBA official)
+2026-06-04 00:24:14,120 [INFO] Fetching prop lines...
+2026-06-04 00:24:14,551 [INFO]   92 prop lines
+2026-06-04 00:24:14,725 [INFO] Minutes CDF calibrator loaded.
+PREDICT_DEREK_LIVE_ARGS_PASS
+  target_date=2026-06-03 game_id=21716134 snapshot_type=close_lock snapshot_run_id=derek-snapshot-close_lock-21716134-20260604T002400
+PREDICT_LINEUP_CONTEXT_FEATURE_INTEGRATION_PENDING
+  blocker: 'lineup parquet missing required columns (player_id/starter); got []'

@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — June 3, 2026
 
-Generated 2026-06-03T22:35:13Z.
+Generated 2026-06-04T00:24:55Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Knicks @ Spurs | Available | Scheduled | Scheduled |
+| Knicks @ Spurs | Available | Available (late but pre-tip) | Available |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
 
@@ -33,8 +33,12 @@ _Game ID `21716134` (used in paths only). Tip time UTC: `2026-06-04T00:30:00Z`._
   - [pmf_driver_decomposition.md](21716134/current_live/pmf_driver_decomposition.md)
   - [lineup_injury_impact_report.md](21716134/current_live/lineup_injury_impact_report.md)
   - [direct_lineup_impact_report.md](21716134/current_live/direct_lineup_impact_report.md)
-- **T-minus-25**: Scheduled
-- **Close-lock**: Scheduled
+- **T-minus-25** (Available (late but pre-tip)):
+  - [snapshot_report.md](21716134/t_minus_25/snapshot_report.md)
+  - [market_comparison.csv](21716134/t_minus_25/market_comparison.csv)
+- **Close-lock** (Available):
+  - [snapshot_report.md](21716134/close_lock/snapshot_report.md)
+  - [market_comparison.csv](21716134/close_lock/market_comparison.csv)
 
 ## PMF variance experience study
 

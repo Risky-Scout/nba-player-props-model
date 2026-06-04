@@ -1,6 +1,6 @@
 # Derek PMF Delivery — June 3, 2026
 
-Generated 2026-06-03T22:35:13Z.
+Generated 2026-06-04T00:24:55Z.
 
 ## What to open first
 
@@ -14,7 +14,7 @@ Generated 2026-06-03T22:35:13Z.
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Knicks @ Spurs | Available | Scheduled | Scheduled |
+| Knicks @ Spurs | Available | Available (late but pre-tip) | Available |
 
 Missed snapshots are documented rather than backfilled. This avoids creating fake pre-tip output after a game has started. Going forward the dispatcher's snapshot state machine prevents silent misses by classifying every (game, snapshot type) pair as one of: Available, Scheduled, Pending dispatch, Available (late but pre-tip), or Missed during setup window.
 

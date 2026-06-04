@@ -1,12 +1,12 @@
 {
   "facts": {
-    "any_target_in_past": false,
-    "any_target_overdue": false,
+    "any_target_in_past": true,
+    "any_target_overdue": true,
     "champion_pointer_contextual_pmf_engine": true,
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-06-03",
-    "now_utc": "2026-06-03T22:35:15Z",
+    "now_utc": "2026-06-04T00:24:57Z",
     "overdue_missing_snapshots": [],
     "overdue_unresolved": [],
     "per_type_lines": [
@@ -16,13 +16,13 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21716134 target_utc=2026-06-04T00:05:00Z now=2026-06-03T22:35:15Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21716134 target_utc=2026-06-04T00:05:00Z now=2026-06-04T00:24:57Z",
+        "outcome": "PASS",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21716134 target_utc=2026-06-04T00:24:00Z now=2026-06-03T22:35:15Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21716134 target_utc=2026-06-04T00:24:00Z now=2026-06-04T00:24:57Z",
+        "outcome": "PASS",
         "type": "CLOSE_LOCK"
       }
     ],
@@ -32,7 +32,7 @@
     "phase13x_reports_missing": [],
     "pl_fail_count": 0,
     "pl_fails": [],
-    "pl_pass_count": 1,
+    "pl_pass_count": 3,
     "pl_passes": [
       {
         "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
@@ -40,6 +40,20 @@
         "issues": [],
         "snapshot_mode": "production_live_current",
         "snapshot_type": "current_live"
+      },
+      {
+        "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+        "game_id": "21716134",
+        "issues": [],
+        "snapshot_mode": "production_live",
+        "snapshot_type": "t_minus_25"
+      },
+      {
+        "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+        "game_id": "21716134",
+        "issues": [],
+        "snapshot_mode": "production_live",
+        "snapshot_type": "close_lock"
       }
     ],
     "predictions_parquet_present": true,
@@ -49,7 +63,7 @@
         "cl_target_utc": "2026-06-04T00:24:00Z",
         "game_id": "21716134",
         "game_start_time": "2026-06-04T00:30:00Z",
-        "t25_overdue": false,
+        "t25_overdue": true,
         "t25_target_utc": "2026-06-04T00:05:00Z"
       }
     ],

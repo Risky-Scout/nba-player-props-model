@@ -1,10 +1,10 @@
 # Derek edge calibration audit — 2026-06-03
 
-- high-edge rows audited: **20**
+- high-edge rows audited: **58**
 - scoring corpus: **11426 rows** across 14 delivery dates
-- thin/limited buckets: **8**
+- thin/limited buckets: **24**
 - review-required buckets: **0**
-- supported buckets: **12**
+- supported buckets: **34**
 
 ## Per-row calibration support
 
@@ -25,6 +25,44 @@
 | Victor Wembanyama | pts | UNDER | 26.5 | EDGE_20_30 | 296 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Victor Wembanyama | reb | UNDER | 11.5 | EDGE_20_30 | 53 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
 | Victor Wembanyama | ast | UNDER | 3.5 | EDGE_10_20 | 219 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Victor Wembanyama | stl | UNDER | 1.5 | EDGE_10_20 | 62 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Karl-Anthony Towns | pts | UNDER | 16.5 | EDGE_10_20 | 1034 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Karl-Anthony Towns | reb | UNDER | 11.5 | EDGE_10_20 | 30 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Karl-Anthony Towns | ast | OVER | 3.5 | EDGE_10_20 | 219 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Karl-Anthony Towns | blk | UNDER | 0.5 | EDGE_20_30 | 24 | nan | nan | +nan | **CALIBRATION_SAMPLE_THIN** |
+| Luke Kornet | reb | UNDER | 2.5 | EDGE_10_20 | 88 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Josh Hart | reb | UNDER | 7.5 | EDGE_10_20 | 297 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Stephon Castle | reb | UNDER | 4.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Stephon Castle | ast | UNDER | 6.5 | EDGE_20_30 | 97 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Devin Vassell | pts | UNDER | 12.5 | EDGE_10_20 | 1034 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Devin Vassell | reb | UNDER | 4.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Devin Vassell | blk | UNDER | 0.5 | EDGE_10_20 | 77 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Mitchell Robinson | blk | UNDER | 0.5 | EDGE_20_30 | 24 | nan | nan | +nan | **CALIBRATION_SAMPLE_THIN** |
+| Julian Champagnie | reb | UNDER | 5.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Dylan Harper | ast | UNDER | 2.5 | EDGE_10_20 | 148 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Keldon Johnson | reb | UNDER | 3.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Victor Wembanyama | pts | UNDER | 26.5 | EDGE_20_30 | 296 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Victor Wembanyama | reb | UNDER | 11.5 | EDGE_30_PLUS | 50 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Victor Wembanyama | ast | UNDER | 2.5 | EDGE_10_20 | 148 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Victor Wembanyama | stl | UNDER | 1.5 | EDGE_10_20 | 62 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Karl-Anthony Towns | pts | UNDER | 16.5 | EDGE_10_20 | 1034 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Karl-Anthony Towns | reb | UNDER | 11.5 | EDGE_10_20 | 30 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Karl-Anthony Towns | ast | OVER | 3.5 | EDGE_10_20 | 219 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Karl-Anthony Towns | blk | UNDER | 0.5 | EDGE_20_30 | 24 | nan | nan | +nan | **CALIBRATION_SAMPLE_THIN** |
+| Luke Kornet | reb | UNDER | 2.5 | EDGE_20_30 | 12 | nan | nan | +nan | **CALIBRATION_SAMPLE_THIN** |
+| Josh Hart | reb | UNDER | 7.5 | EDGE_10_20 | 297 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Stephon Castle | reb | UNDER | 4.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Stephon Castle | ast | UNDER | 6.5 | EDGE_20_30 | 97 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Devin Vassell | pts | UNDER | 12.5 | EDGE_10_20 | 1034 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Devin Vassell | reb | UNDER | 4.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Devin Vassell | blk | UNDER | 0.5 | EDGE_10_20 | 77 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Mitchell Robinson | blk | UNDER | 0.5 | EDGE_20_30 | 24 | nan | nan | +nan | **CALIBRATION_SAMPLE_THIN** |
+| Julian Champagnie | reb | UNDER | 5.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Dylan Harper | ast | UNDER | 2.5 | EDGE_10_20 | 148 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Keldon Johnson | reb | UNDER | 3.5 | EDGE_10_20 | 400 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Victor Wembanyama | pts | UNDER | 26.5 | EDGE_20_30 | 296 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Victor Wembanyama | reb | UNDER | 11.5 | EDGE_20_30 | 53 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
+| Victor Wembanyama | ast | UNDER | 2.5 | EDGE_10_20 | 148 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Victor Wembanyama | stl | UNDER | 1.5 | EDGE_10_20 | 62 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
 | Karl-Anthony Towns | pts | UNDER | 16.5 | EDGE_10_20 | 1034 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Karl-Anthony Towns | reb | UNDER | 11.5 | EDGE_10_20 | 30 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |

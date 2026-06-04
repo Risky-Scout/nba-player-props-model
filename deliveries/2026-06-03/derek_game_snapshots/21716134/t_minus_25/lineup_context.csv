@@ -1,0 +1,14 @@
+player_id,player_name,team,game_id,stat,bdl_lineup_present,current_starter,confirmed_starter,confirmed_bench,lineup_position,lineup_source,lineup_confirmed,role_source,role_bucket_pre_lineup,role_bucket_post_lineup,lineup_context_supplied,lineup_affects_pmf_features
+161,De'Aaron Fox,SAS,21716134,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+261,Luke Kornet,SAS,21716134,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+73,Jalen Brunson,NYK,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+202,Josh Hart,NYK,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+1028025261,Stephon Castle,SAS,21716134,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+3547246,Devin Vassell,SAS,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+399,Mitchell Robinson,NYK,21716134,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+38017649,Julian Champagnie,SAS,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+1057262518,Dylan Harper,SAS,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+666682,Keldon Johnson,SAS,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+61,Mikal Bridges,NYK,21716134,blk,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+56677822,Victor Wembanyama,SAS,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+447,Karl-Anthony Towns,NYK,21716134,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False

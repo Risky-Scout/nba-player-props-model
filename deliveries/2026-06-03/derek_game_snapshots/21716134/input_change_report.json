@@ -1,0 +1,64 @@
+{
+  "close_lock_manifest_summary": {
+    "champion_metadata_verified": true,
+    "champion_model_id": "challenger-2026-06-02",
+    "input_manifest_hash": "5df81567a236b3e7270ed77416a3f54a",
+    "lineup_blocker": "confirmed_lineups_not_available_yet",
+    "lineup_complete": "unavailable",
+    "lineup_confirmed": false,
+    "lineup_hash": "",
+    "pmf_output_hash": "fd33314f5ab1eed4",
+    "pmf_source": "live_snapshot_recomputed",
+    "pmfs_recomputed": true,
+    "snapshot_mode": "production_live",
+    "starters_by_team": {}
+  },
+  "code_commit": "1219dbc6394af5dfcbe98b5e0703c3e75eb2c885",
+  "game_id": "21716134",
+  "generated_at_utc": "2026-06-04T00:24:46+00:00",
+  "input_change_flags": {
+    "injury_availability_changed": false,
+    "lineup_changed": false,
+    "market_changed": true,
+    "pmf_changed": true,
+    "prediction_input_changed": true
+  },
+  "input_hashes": {
+    "close_lock": {
+      "champion_pointer_hash": "88306bee22b8e32f005e975e59b6f189",
+      "injury_availability_hash": "0fd83d151f267a34ac29d7aa909450af",
+      "lineup_hash": "",
+      "market_hash": "ffe437fcfc703c89802731fa1b88b1b1",
+      "pmf_output_hash": "fd33314f5ab1eed4",
+      "prediction_input_hash": "5df81567a236b3e7270ed77416a3f54a"
+    },
+    "t_minus_25": {
+      "champion_pointer_hash": "88306bee22b8e32f005e975e59b6f189",
+      "injury_availability_hash": "0fd83d151f267a34ac29d7aa909450af",
+      "lineup_hash": "",
+      "market_hash": "260a2f6a5b1dd9b34a80226c04dfeabc",
+      "pmf_output_hash": "e50d9833f08d1cf2",
+      "prediction_input_hash": "733f5fd2450a738192f5b12358d2c3d4"
+    }
+  },
+  "rows_inputs_changed_pmf_unchanged": [],
+  "rows_market_changed_pmf_unchanged": [],
+  "rows_pmf_changed_inputs_unchanged": [],
+  "schema_version": "1.0",
+  "t_minus_25_manifest_summary": {
+    "champion_metadata_verified": true,
+    "champion_model_id": "challenger-2026-06-02",
+    "input_manifest_hash": "733f5fd2450a738192f5b12358d2c3d4",
+    "lineup_blocker": "confirmed_lineups_not_available_yet",
+    "lineup_complete": "unavailable",
+    "lineup_confirmed": false,
+    "lineup_hash": "",
+    "pmf_output_hash": "e50d9833f08d1cf2",
+    "pmf_source": "live_snapshot_recomputed",
+    "pmfs_recomputed": true,
+    "snapshot_mode": "production_live",
+    "starters_by_team": {}
+  },
+  "top_edge_movers": [],
+  "top_model_over_prob_movers": []
+}
