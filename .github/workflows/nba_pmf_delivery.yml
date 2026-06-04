@@ -762,6 +762,12 @@ jobs:
             --run-date "$D" \
             || echo "::warning::build_m6_3_stat_role_calibration_report.py failed — matrix may be stale"
 
+          # Run playoff vs regular-season calibration drift evaluation.
+          # Outputs reports/playoff_calibration_summary.json and CSVs.
+          PYTHONPATH=src python3 scripts/evaluate_playoff_calibration.py \
+            --output-dir reports/ \
+            || echo "::warning::evaluate_playoff_calibration.py failed — calibration report may be stale"
+
       - name: Write fresh delivery model pointer
         if: steps.phase8_idempotency.outputs.skip != 'true'
         run: |
@@ -797,6 +803,11 @@ jobs:
           git add artifacts/docs/m6_3_stat_role_calibration_matrix_*.csv \
                   artifacts/docs/m6_3_stat_role_calibration_report_*.meta.json \
                   artifacts/docs/m6_3_stat_role_calibration_report_*.md \
+                  2>/dev/null || true
+          # Playoff calibration drift reports (updated every training run)
+          git add reports/playoff_calibration_summary.json \
+                  reports/playoff_calibration_by_stat.csv \
+                  reports/playoff_calibration_by_role.csv \
                   2>/dev/null || true
 
           # Same freshness ownership rule as model-chain commit above.

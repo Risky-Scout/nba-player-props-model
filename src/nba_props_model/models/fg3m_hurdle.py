@@ -33,7 +33,7 @@ import pandas as pd
 import joblib
 from pathlib import Path
 from scipy.stats import binom, poisson
-from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import cross_val_predict
 from sklearn.preprocessing import StandardScaler
@@ -196,9 +196,11 @@ class FG3MHurdleModel:
         X = extract_features(df, VOLUME_GATE_FEATURES)
         Xs = self.volume_gate_scaler.fit_transform(X)
 
-        base = GradientBoostingClassifier(
-            n_estimators=400, max_depth=3,
-            learning_rate=0.04, subsample=0.8,
+        # HistGradientBoostingClassifier uses C extensions (not Cython loss objects)
+        # so pickled models are stable across sklearn patch versions.
+        base = HistGradientBoostingClassifier(
+            max_iter=400, max_depth=4,
+            learning_rate=0.04,
             random_state=42,
         )
         self.volume_gate_model = CalibratedClassifierCV(base, cv=5, method='isotonic')
@@ -206,8 +208,8 @@ class FG3MHurdleModel:
 
         # OOF calibration check
         oof = cross_val_predict(
-            GradientBoostingClassifier(n_estimators=400, max_depth=3,
-                                       learning_rate=0.04, random_state=42),
+            HistGradientBoostingClassifier(max_iter=400, max_depth=4,
+                                           learning_rate=0.04, random_state=42),
             Xs, y_gate, cv=5, method='predict_proba',
         )[:, 1]
         logger.info(f"  OOF mean P(meaningful_3pa): {oof.mean():.3f} "
@@ -366,12 +368,43 @@ class FG3MHurdleModel:
 
     # ── Persistence ───────────────────────────────────────────────────────────
     def save(self, path: str):
-        joblib.dump(self, path)
-        logger.info(f"Saved → {path}")
+        """Save the model with sklearn version metadata for compatibility checking."""
+        import sklearn
+        payload = {
+            "model": self,
+            "_sklearn_version": sklearn.__version__,
+            "_python_major_minor": f"{__import__('sys').version_info.major}.{__import__('sys').version_info.minor}",
+        }
+        joblib.dump(payload, path)
+        logger.info(f"Saved → {path}  (sklearn={sklearn.__version__})")
 
     @classmethod
     def load(cls, path: str) -> 'FG3MHurdleModel':
-        return joblib.load(path)
+        """Load model; raises informative error on sklearn version mismatch."""
+        import sklearn
+        current_ver = sklearn.__version__
+        try:
+            payload = joblib.load(path)
+        except Exception as exc:
+            raise type(exc)(
+                f"fg3m_hurdle.pkl load failed — likely sklearn version mismatch. "
+                f"Current sklearn={current_ver}. "
+                f"Rebuild with: PYTHONPATH=src python3 src/nba_props_model/models/fg3m_hurdle.py "
+                f"Original error: {exc}"
+            ) from exc
+
+        # Support both new dict format and legacy direct-object format
+        if isinstance(payload, dict) and "model" in payload:
+            saved_ver = payload.get("_sklearn_version", "unknown")
+            if saved_ver != current_ver:
+                logger.warning(
+                    f"  fg3m_hurdle.pkl was built with sklearn={saved_ver}, "
+                    f"current={current_ver}. Using loaded model — "
+                    f"rebuild if predictions look wrong."
+                )
+            return payload["model"]
+        # Legacy: payload IS the FG3MHurdleModel directly
+        return payload
 
 
 # ── TOV / sparse calibration helper (unchanged) ───────────────────────────────
