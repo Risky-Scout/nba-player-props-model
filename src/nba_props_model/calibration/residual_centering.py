@@ -33,7 +33,7 @@ from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import StandardScaler
@@ -218,12 +218,13 @@ class ResidualCenterer:
             scaler = StandardScaler()
             X_scaled = scaler.fit_transform(X)
 
-            # Try GBR first; fall back to Ridge if too few samples
+            # RandomForestRegressor: pure numpy serialization, no Cython loss objects.
+            # Stable across all Python/sklearn versions — permanent cross-version fix.
             if len(X) >= 50:
-                model = GradientBoostingRegressor(
-                    n_estimators=100, max_depth=3,
-                    learning_rate=0.05, subsample=0.8,
-                    random_state=42
+                model = RandomForestRegressor(
+                    n_estimators=100, max_depth=4,
+                    min_samples_leaf=5,
+                    random_state=42, n_jobs=-1
                 )
             else:
                 model = Ridge(alpha=10.0)
