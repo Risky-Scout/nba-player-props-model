@@ -1,0 +1,33 @@
+{
+  "market_eval_oof_opening_lines_available": false,
+  "lift_baseline": "neutral_0p5",
+  "run_date": "2026-06-04",
+  "training_table": "/home/runner/work/nba-player-props-model/nba-player-props-model/data/training_table.parquet",
+  "require_market_eval": true,
+  "allow_baseline_only": false,
+  "market_eval_status": "not_proven_no_eligible_dates",
+  "event_market_eval_ran": false,
+  "strict_contract_result": "blocked_provisional",
+  "market_superiority_claim_allowed": false,
+  "promotion_status": "MARKET_SUPERIORITY_CONTRACT_BLOCKED",
+  "n_event_market_rows": null,
+  "n_matched_rows": null,
+  "n_scored_rows": null,
+  "dates_used": null,
+  "required_stats_missing_in_event_rows": null,
+  "global_market_superiority_claim_allowed": false,
+  "eligible_market_subset_superiority_claim_allowed": false,
+  "model_only_calibration_claim_allowed": false,
+  "calibration_constant_prob_summary": {
+    "n_constant_prob_groups": 0,
+    "constant_prob_groups_by_stat": {},
+    "constant_prob_groups_by_role": {},
+    "largest_constant_prob_group_n": 0,
+    "constant_prob_fold_keys": []
+  },
+  "event_market_eval_attempted": true,
+  "eligible_for_event_market_backtest_dates": 0,
+  "market_superiority_status": "not_proven",
+  "market_superiority_block_reason": "no_eligible_event_market_backtest_dates",
+  "claim_allowed": false
+}
