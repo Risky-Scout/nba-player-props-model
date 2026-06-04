@@ -1,0 +1,8 @@
+{
+  "delivery_date": "2026-06-03",
+  "status": "delivery_build_failed",
+  "reason": "fg3m_hurdle_pkl_sklearn_version_mismatch",
+  "games_played": true,
+  "note": "Delivery build failed due to fg3m_hurdle.pkl incompatibility. wizard_of_odds artifacts were never produced. After-game scoring valid-skipped.",
+  "generated_at_utc": "2026-06-04T20:47:56+00:00"
+}
