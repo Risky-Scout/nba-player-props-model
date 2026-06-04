@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-06-03",
   "calibrator_type": "phase8-role-bucket",
-  "code_commit": "578300879f80e657e2b273c4840f174e8f8ead10",
+  "code_commit": "1d7edbeed2866d941ce0b6a3078453bbcf2f6b67",
   "details": {
     "calibration_window": {
       "fold_days": 28,
@@ -26,7 +26,7 @@
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-03/pmf_cal_role_fg3m.pkl",
-        "sha256_prefix": "d525472473590429",
+        "sha256_prefix": "9d70f0306e74d841",
         "stat": "fg3m"
       },
       {
@@ -134,7 +134,7 @@
     }
   },
   "dry_run": false,
-  "finished_at_utc": "2026-06-04T10:57:12+00:00",
+  "finished_at_utc": "2026-06-04T16:13:14+00:00",
   "notes": "Phase 13A dry-run inherits champion calibrators by reference. The rolling validation window is reported but no recompute is performed. Walk-forward only \u2014 no future leakage.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -144,10 +144,10 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-03",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260604T105635"
+    "training_run_id": "nightly-20260604T161228"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-06-04T10:57:12+00:00",
+  "started_at_utc": "2026-06-04T16:13:14+00:00",
   "status": "ok",
   "warnings": []
 }

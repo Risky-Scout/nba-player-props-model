@@ -2,10 +2,10 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-06-04T10:57:21+00:00 |
+| Generated (UTC) | 2026-06-04T16:13:25+00:00 |
 | Promote | no |
 | Reason | gate_failed:market_logloss_non_inferior_or_better |
-| Champion model_version | challenger-2026-06-02 |
+| Champion model_version | challenger-2026-06-03 |
 | Challenger dry_run | False |
 | PMF validity issues | 0 |
 | Gates passed | 18 |
@@ -13,11 +13,11 @@
 
 ## Gates passed
 
-- nll_improves_or_non_worse: challenger=1.7129 champion=1.7129 delta=+0 (tol=0.017129032387714817)
-- rps_improves_or_non_worse: challenger=0.935398 champion=0.935398 delta=+0 (tol=0.00935398376946529)
-- calibration_error_improves: challenger=0.310671 champion=0.310671 delta=+0 (tol=0.0)
-- p0_error_improves_or_non_worse: challenger=0.310671 champion=0.310671 delta=+0 (tol=0.005)
-- mean_bias_does_not_worsen: challenger=0.0160479 champion=0.0160479 delta=+0 (tol=0.05)
+- nll_improves_or_non_worse: challenger=1.70963 champion=1.70963 delta=+0 (tol=0.017096347391233575)
+- rps_improves_or_non_worse: challenger=0.935445 champion=0.935445 delta=+0 (tol=0.009354446551171479)
+- calibration_error_improves: challenger=0.310748 champion=0.310748 delta=+0 (tol=0.0)
+- p0_error_improves_or_non_worse: challenger=0.310748 champion=0.310748 delta=+0 (tol=0.005)
+- mean_bias_does_not_worsen: challenger=0.0157288 champion=0.0157288 delta=+0 (tol=0.05)
 - tov_does_not_regress: challenger=1.28105 champion=1.28105 delta=+0 (tol=0.02562092273401159)
 - starter_core_role_buckets_do_not_regress: worst_core_nll_delta=0.0
 - bench_fringe_role_buckets_do_not_regress_materially: worst_bench_nll_delta=0.0
