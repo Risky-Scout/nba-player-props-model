@@ -1139,11 +1139,13 @@ def main() -> None:
 
     per_fold_results: list[dict[str, list[dict]]] = []
     fold_bounds: list[tuple[pd.Timestamp, pd.Timestamp]] = []
+    _fold_dirs: list[Path] = []  # track for fg3m promotion after all folds
     for i, (fs, fe) in enumerate(folds, 1):
         fold_start = fs
         fold_end = fe
         fold_dir = temp_root / f"fold_{i:02d}_{fold_start.date()}"
         fold_bounds.append((fold_start, fold_end))
+        _fold_dirs.append(fold_dir)
         logger.info(f"---- fold {i}/{len(folds)} [{fold_start.date()} -> {fold_end.date()}]")
 
         originals = _swap_model_dir(fold_dir)
@@ -1492,6 +1494,27 @@ def _fit_final_calibrators_and_emit_report(
 
     elapsed = time.time() - start
     logger.info(f"Done in {elapsed/60:.1f} min")
+
+    # Promote the last fold's fg3m_hurdle.pkl to the production MODEL_DIR so
+    # build_stat_grid_pmfs.py and predict.py can load a fresh, version-
+    # compatible artifact after every Phase 8 calibration run.
+    _promoted = False
+    for _fold_dir in sorted(_fold_dirs, reverse=True):
+        _src = _fold_dir / "fg3m_hurdle.pkl"
+        if _src.exists():
+            import shutil as _shutil
+            _dst = MODEL_DIR / "fg3m_hurdle.pkl"
+            _shutil.copy2(_src, _dst)
+            logger.info(
+                f"Promoted fg3m_hurdle.pkl: {_src} → {_dst}"
+            )
+            _promoted = True
+            break
+    if not _promoted:
+        logger.warning(
+            "fg3m_hurdle.pkl not promoted — no fold artifact found. "
+            "Production pkl may be stale."
+        )
 
 
 if __name__ == "__main__":

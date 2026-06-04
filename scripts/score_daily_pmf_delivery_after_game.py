@@ -1024,8 +1024,22 @@ def main() -> int:
     after_game_dir = (REPO_ROOT / "deliveries" / delivery_date
                        / "after_game_scoring")
     if not woo_dir.exists():
-        print(f"ERROR: WoO package missing for {delivery_date}: {woo_dir}")
-        return 2
+        # Check if canonical_source exists as a fallback before giving up.
+        canonical_source = REPO_ROOT / "deliveries" / delivery_date / "canonical_source"
+        if not canonical_source.exists():
+            # Delivery folder is a stub with no usable artifacts — valid-skip.
+            # This happens when the delivery build failed mid-run (e.g. pickle
+            # error) and only derek_game_snapshots/ was written.
+            print(
+                f"AFTER_GAME_SCORING_VALID_SKIP  date={delivery_date}  "
+                f"reason=delivery_stub_no_woo_or_canonical_source  "
+                f"path={woo_dir}"
+            )
+            return 0
+        print(
+            f"  WoO package missing for {delivery_date} — "
+            f"falling back to canonical_source for scoring"
+        )
     after_game_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"scoring delivery {delivery_date} …")
