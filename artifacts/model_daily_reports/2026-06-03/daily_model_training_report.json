@@ -1,0 +1,265 @@
+{
+  "after_game_scoring": {
+    "blocker": "no after-game scoring summary found for as_of_date=2026-06-03",
+    "outcome": "pending"
+  },
+  "as_of_date": "2026-06-03",
+  "calibration_metrics_pending": {
+    "blocker": "PMF NLL / RPS / ECE / p0 calibration / mean bias / tail calibration are reported once nightly post-game scoring produces realized outcomes. The Phase 13S/13T after-game scoring writes DEREK_LIVE_SNAPSHOT_SCORING_PENDING when outcomes are not yet available."
+  },
+  "champion": {
+    "calibrated_through_date": "2026-06-03",
+    "calibration_manifest_path": "artifacts/models/challengers/2026-05-22/calibration_manifest.json",
+    "champion_model_id": "challenger-2026-06-03",
+    "contextual_pmf_engine": true,
+    "direct_lineup_pmf_driver": true,
+    "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+    "no_leakage_manifest_path": "artifacts/models/challengers/2026-06-03_direct_lineup_contextual/no_leakage_manifest.json",
+    "promotion_decision_id": "phase13s-promotion-2026-06-03_direct_lineup_contextual-20260604T140201",
+    "promotion_decision_path": "artifacts/models/challengers/2026-06-03_direct_lineup_contextual/promotion_decision.json",
+    "train_manifest_path": "artifacts/models/challengers/2026-06-03_direct_lineup_contextual/train_manifest.json",
+    "trained_through_date": "2026-06-03",
+    "training_run_id": "nightly-20260523T042740",
+    "validation_report_path": "artifacts/phase13s/validation_gates_report.json"
+  },
+  "generated_at_utc": "2026-06-04T18:29:10+00:00Z",
+  "metrics_per_target": {
+    "ast": {
+      "baseline_mse": 0.009591251202760546,
+      "challenger_mse": 0.009392383301151958,
+      "coef_l2_norm": 0.25562265460997563,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "ast",
+      "rel_improvement": 0.02073430227240324
+    },
+    "blk": {
+      "baseline_mse": 0.0025067681407220134,
+      "challenger_mse": 0.0025068759333238704,
+      "coef_l2_norm": 0.0055264517461433476,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "blk",
+      "rel_improvement": -4.3000627024878466e-05
+    },
+    "fg3m": {
+      "baseline_mse": 0.0050872228209134646,
+      "challenger_mse": 0.005085038193923557,
+      "coef_l2_norm": 0.017718148079930666,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "fg3m",
+      "rel_improvement": 0.00042943410713732594
+    },
+    "minutes": {
+      "baseline_mse": 57.77991526555019,
+      "challenger_mse": 48.97461598311326,
+      "coef_l2_norm": 6.468793946782461,
+      "n_test": 16426,
+      "n_train": 65704,
+      "name": "minutes",
+      "rel_improvement": 0.1523937728528803
+    },
+    "pts": {
+      "baseline_mse": 0.09316193665003526,
+      "challenger_mse": 0.0928348917671863,
+      "coef_l2_norm": 0.11563820993578178,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "pts",
+      "rel_improvement": 0.003510498972101772
+    },
+    "reb": {
+      "baseline_mse": 0.023293600494523104,
+      "challenger_mse": 0.023300412905610125,
+      "coef_l2_norm": 0.031047943197078046,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "reb",
+      "rel_improvement": -0.0002924584839781308
+    },
+    "stl": {
+      "baseline_mse": 0.004052057511246172,
+      "challenger_mse": 0.004051154147899091,
+      "coef_l2_norm": 0.01739222147614551,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "stl",
+      "rel_improvement": 0.0002229394189429744
+    },
+    "tov": {
+      "baseline_mse": 0.007198563521821322,
+      "challenger_mse": 0.007191852953318376,
+      "coef_l2_norm": 0.026464198725359055,
+      "n_test": 15971,
+      "n_train": 63882,
+      "name": "tov",
+      "rel_improvement": 0.0009322093890821573
+    }
+  },
+  "no_leakage": {
+    "no_leakage_manifest": {
+      "asof_cutoff_rule": "Phase 13S features are pre-game knowable: current_starter / confirmed_* are derived from PREVIOUS game's min (lagged); starter_proxy_lagged uses 10-game lagged minutes; team-aggregate composition features are computed from teammates whose previous game's min >= 1 (pre-game knowable expected-to-play set); injury / availability / vacated-opportunity features are joined as-of from the upstream live_context parquet.",
+      "calibrated_through_date": "2026-06-03",
+      "generated_at_utc": "2026-06-04T14:01:56+00:00",
+      "no_leakage_verified": true,
+      "no_same_game_performance_predictors": true,
+      "starter_proxy_safe_for_training": true,
+      "starter_proxy_used": true,
+      "trained_through_date": "2026-06-03"
+    },
+    "phase13s_no_leakage_report": {
+      "checked_dirs": [
+        "artifacts/models/challengers/2026-04-30_direct_lineup_contextual"
+      ],
+      "facts": {
+        "2026-04-30_direct_lineup_contextual/calibrated_through_date": "2026-04-30",
+        "2026-04-30_direct_lineup_contextual/feature_files_checked": 8,
+        "2026-04-30_direct_lineup_contextual/leakage_columns_seen": [],
+        "2026-04-30_direct_lineup_contextual/starter_proxy_safe_for_training": true,
+        "2026-04-30_direct_lineup_contextual/starter_proxy_used": true,
+        "2026-04-30_direct_lineup_contextual/trained_through_date": "2026-04-30"
+      },
+      "issues": [],
+      "schema_version": "1.0"
+    }
+  },
+  "promotion_status": {
+    "active_champion_model_id": "challenger-2026-06-03",
+    "champion_pointer_swapped_to_today": true,
+    "decision_promote_field": true,
+    "expected_today_challenger_id": "challenger-2026-06-03",
+    "manifest_promoted_field": true,
+    "promoted": true,
+    "promotion_decision": {
+      "code_commit": "9ac2ff48cc7c6843390ae1a537992ecfc420c40d",
+      "contextual_challenger_dir": "artifacts/models/challengers/2026-06-03_direct_lineup_contextual",
+      "decided_at_utc": "2026-06-04T14:02:01+00:00",
+      "decision_id": "phase13s-promotion-2026-06-03_direct_lineup_contextual-20260604T140201",
+      "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+      "no_leakage_report": "artifacts/phase13s/no_leakage_report.json",
+      "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260604T140201p0000/champion_pointer.previous.json",
+      "promoted": true,
+      "schema_version": "1.0",
+      "sensitivity_report": "artifacts/phase13s/direct_lineup_pmf_sensitivity.json",
+      "validation_gates_report": "artifacts/phase13s/validation_gates_report.json"
+    },
+    "promotion_decision_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-06-03/promotion_decision.json",
+    "promotion_manifest": {
+      "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+      "code_commit": "9ac2ff48cc7c6843390ae1a537992ecfc420c40d",
+      "decision_id": "phase13s-promotion-2026-06-03_direct_lineup_contextual-20260604T140201",
+      "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+      "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260604T140201p0000/champion_pointer.previous.json",
+      "promoted": true,
+      "promoted_at_utc": "2026-06-04T14:02:01+00:00",
+      "schema_version": "1.0"
+    },
+    "promotion_manifest_path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/nightly_training/2026-06-03/promotion_manifest.json",
+    "promotion_reason": null
+  },
+  "rolling_benchmark": {
+    "blocker": "no rolling Derek benchmark found for as_of_date=2026-06-03",
+    "outcome": "pending"
+  },
+  "schema_version": "1.0",
+  "sensitivity": {
+    "case_results": {
+      "case_1_direct_lineup": {
+        "abs_diff_minutes_delta": 2.8569507698959917,
+        "feature_vector_hash_post": "c6ef2fe8edb7777a",
+        "feature_vector_hash_pre": "9c834bc334605ad9",
+        "feature_vectors_changed": true,
+        "minutes_delta_post": 3.9246101550977954,
+        "minutes_delta_pre": 1.0676593852018037,
+        "pmf_mean_post": 33.924610155097795,
+        "pmf_mean_pre": 31.067659385201804,
+        "pmf_mean_shift": 2.8569507698959917
+      },
+      "case_2_lineup_composition": {
+        "abs_diff_minutes_delta": 2.4511298398661854,
+        "minutes_delta_a": 3.969769591266317,
+        "minutes_delta_b": 1.5186397514001317,
+        "team_lineup_num_high_usage_players_a": 1.0,
+        "team_lineup_num_high_usage_players_b": 3.0
+      },
+      "case_3_actionability": {
+        "injury_lineup_conflict": true,
+        "is_actionable": false,
+        "is_confirmed_out": true
+      },
+      "case_4_teammate_out": {
+        "abs_diff_minutes_delta": 0.00010795232668137089,
+        "minutes_delta_loaded": 3.9696616389396358,
+        "minutes_delta_quiet": 3.969769591266317
+      },
+      "case_5_market_only": {
+        "delta_hash_m1": "3297fe279984ab68",
+        "delta_hash_m2": "3297fe279984ab68",
+        "feature_vectors_equal": true
+      },
+      "case_6_no_change": {
+        "delta_hash_a": "3297fe279984ab68",
+        "delta_hash_b": "3297fe279984ab68",
+        "feature_vectors_equal": true
+      }
+    },
+    "issues_per_case": {
+      "case_1_direct_lineup": [],
+      "case_2_lineup_composition": [],
+      "case_3_actionability": [],
+      "case_4_teammate_out": [],
+      "case_5_market_only": [],
+      "case_6_no_change": []
+    }
+  },
+  "validation_gates": {
+    "any_positive_improvement": true,
+    "issues": [],
+    "minutes_min_rel_improvement": 0.05,
+    "report": {
+      "any_positive_improvement": true,
+      "facts": {
+        "2026-04-30_direct_lineup_contextual": {
+          "ast": {
+            "n_test": 15770,
+            "rel_improvement": 0.020951211268793356
+          },
+          "blk": {
+            "n_test": 15770,
+            "rel_improvement": -0.00010826154372129418
+          },
+          "fg3m": {
+            "n_test": 15770,
+            "rel_improvement": 0.00047792356564259775
+          },
+          "minutes": {
+            "n_test": 16225,
+            "rel_improvement": 0.15338268139668557
+          },
+          "pts": {
+            "n_test": 15770,
+            "rel_improvement": 0.0034132370524082986
+          },
+          "reb": {
+            "n_test": 15770,
+            "rel_improvement": -0.0003605558227151181
+          },
+          "stl": {
+            "n_test": 15770,
+            "rel_improvement": 0.00021675126731470355
+          },
+          "tov": {
+            "n_test": 15770,
+            "rel_improvement": 0.0007844250298021201
+          }
+        }
+      },
+      "issues": [],
+      "minutes_min_rel_improvement": 0.05,
+      "safe_noninferiority_threshold": -0.005,
+      "schema_version": "1.0"
+    },
+    "safe_noninferiority_threshold": -0.005
+  }
+}
