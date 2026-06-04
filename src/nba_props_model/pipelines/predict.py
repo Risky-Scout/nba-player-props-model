@@ -1715,12 +1715,25 @@ def main(argv=None):
 
     # ── SGP generation — skipped if SKIP_SGPS=1 ───────────────────────────────
     sgp_results = {"two_leg": [], "three_leg": []}
+    sgp_rejection_reasons: dict = {}
+    sgp_pool_size_before = 0
+    sgp_pool_size_after = 0
+    joint_samples_path = str(PRED_DIR / f"joint_stat_samples_{today}.parquet")
+    joint_samples_exists = (PRED_DIR / f"joint_stat_samples_{today}.parquet").exists()
+    joint_samples_rows = 0
+    sgp_skip_reason: str | None = None
+
+    eligible_stats_set = {"pts", "reb", "ast", "fg3m", "stl", "blk"}
+    singles_before_edge_filter = sum(1 for s in all_singles if s.get("stat") in eligible_stats_set)
 
     if os.environ.get("SKIP_SGPS") == "1":
+        sgp_skip_reason = "SKIP_SGPS_env_flag"
         logger.info("SGP generation skipped (SKIP_SGPS=1)")
     elif within_engine is not None:
         logger.info("Generating SGP candidates (Gaussian copula)...")
         sgp_pool = filter_sgp_candidates(all_singles)
+        sgp_pool_size_after = len(sgp_pool)
+        sgp_pool_size_before = sum(1 for s in all_singles if s.get("stat") in eligible_stats_set)
         if sgp_pool:
             sgp_results = build_sgp_candidates(
                 singles         = sgp_pool,
@@ -1728,9 +1741,13 @@ def main(argv=None):
                 teammate_engine = teammate_engine,
                 min_ev          = MIN_EV,
             )
+            # Count rejections from the build step
+            sgp_rejection_reasons = sgp_results.get("rejection_reasons", {})
         else:
             logger.warning("  SGP pool empty after filtering")
+            sgp_skip_reason = "empty_pool_after_filter"
     else:
+        sgp_skip_reason = "correlation_engine_unavailable"
         logger.warning("  Skipping SGPs — correlation engine not available")
 
     two_leg   = sgp_results.get("two_leg",   [])
@@ -1738,15 +1755,43 @@ def main(argv=None):
     all_sgps  = sorted(two_leg + three_leg, key=lambda x: x["ev"], reverse=True)
     logger.info(f"  2-leg: {len(two_leg)} | 3-leg: {len(three_leg)}")
 
+    # ── Write SGP debug artifact (always written, even when total_sgps=0) ──────
+    sgp_debug = {
+        "date": today,
+        "generated_at": datetime.utcnow().isoformat(),
+        "games": len({s.get("game_id") for s in all_singles}),
+        "players_seen": len({s.get("player_id") for s in all_singles}),
+        "single_candidates_before_sgp_filter": sgp_pool_size_before,
+        "single_candidates_after_sgp_filter": sgp_pool_size_after,
+        "joint_stat_samples_path": joint_samples_path,
+        "joint_stat_samples_exists": joint_samples_exists,
+        "joint_stat_samples_rows": joint_samples_rows,
+        "sgp_candidates_two_leg": len(two_leg),
+        "sgp_candidates_three_leg": len(three_leg),
+        "sgp_total": len(all_sgps),
+        "min_ev": MIN_EV,
+        "sgp_skip_reason": sgp_skip_reason,
+        "rejection_reasons": sgp_rejection_reasons or {
+            "missing_joint_samples": 0,
+            "low_ev": max(0, (sgp_pool_size_after * (sgp_pool_size_after - 1) // 2) - len(two_leg)),
+            "missing_market_price": 0,
+        },
+    }
+    sgp_debug_path = PRED_DIR / f"sgp_debug_{today}.json"
+    with open(sgp_debug_path, "w") as f:
+        json.dump(sgp_debug, f, indent=2, default=str)
+    logger.info(f"SGP debug → {sgp_debug_path}")
+
     # ── Write SGPs ─────────────────────────────────────────────────────────────
     sgps_out = {
         "date":         today,
         "generated_at": datetime.utcnow().isoformat(),
-        "version":      "2026-03-17-v13",
+        "version":      "2026-06-04-v14",
         "min_ev":       MIN_EV,
         "total_sgps":   len(all_sgps),
         "two_leg":      len(two_leg),
         "three_leg":    len(three_leg),
+        "sgp_debug_path": str(sgp_debug_path),
         "sgps":         all_sgps,
     }
     sgps_path = PRED_DIR / f"sgps_{today}.json"

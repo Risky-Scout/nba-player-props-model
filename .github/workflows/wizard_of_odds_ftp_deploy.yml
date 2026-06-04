@@ -71,6 +71,13 @@ on:
         default: "false"
         type: choice
         options: ["false", "true"]
+  push:
+    branches:
+      - main
+    paths:
+      - "public_export/wizard_of_odds/**"
+      - "predictions/_template_nba_props.html"
+      - "predictions/_template_nba_pmf_research.html"
   workflow_run:
     workflows: ["NBA Player Props — Production Pipeline"]
     types: [completed]
@@ -92,6 +99,7 @@ jobs:
     timeout-minutes: 20
     if: |
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'push' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'cancelled')
     steps:
       - uses: actions/checkout@v5

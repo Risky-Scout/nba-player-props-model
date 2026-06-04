@@ -1,0 +1,15 @@
+n,status,stat,context,mean_predicted_prob,observed_hit_rate,calibration_error,mean_absolute_error_stat,mean_signed_error_stat,brier_score,bias_direction
+0,insufficient_sample,pts,regular_season,,,,,,,
+12939,ok,pts,playoff,0.5235,0.4601,0.0634,0.144,0.144,0.2501,within_tolerance
+0,insufficient_sample,reb,regular_season,,,,,,,
+8223,ok,reb,playoff,0.4951,0.4694,0.0257,0.004,-0.004,0.2441,within_tolerance
+0,insufficient_sample,ast,regular_season,,,,,,,
+5746,ok,ast,playoff,0.4764,0.4394,0.0369,0.224,-0.224,0.2329,within_tolerance
+0,insufficient_sample,fg3m,regular_season,,,,,,,
+5917,ok,fg3m,playoff,0.3488,0.4286,0.0798,0.108,-0.108,0.2381,within_tolerance
+0,insufficient_sample,stl,regular_season,,,,,,,
+1724,ok,stl,playoff,0.3622,0.4693,0.107,0.273,-0.273,0.2848,within_tolerance
+0,insufficient_sample,blk,regular_season,,,,,,,
+1484,ok,blk,playoff,0.2616,0.3598,0.0982,0.006,-0.006,0.2663,within_tolerance
+0,insufficient_sample,tov,regular_season,,,,,,,
+28,insufficient_sample,tov,playoff,,,,,,,
