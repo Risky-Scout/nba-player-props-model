@@ -447,9 +447,42 @@ def load_keyed_current_market_signal(
             meta["market_eval_blocker"] = "canonical_diagnostic_fallback_not_primary_market_evidence"
             eval_avail = False
         elif primary_no_snap:
-            meta["market_eval_blocker"] = "missing_snapshot_timestamp"
-            eval_avail = False
-            mrows_fresh = False
+            # all_props is the keyed eligibility source but lacks snapshot_time_utc.
+            # Scan secondary market sources for market-evaluation metadata so that
+            # a valid wizard_of_odds market_comparison can still set market_eval_available=True.
+            secondary_paths = [
+                ("wizard_market_comparison", repo_root / "deliveries" / slate_date / "wizard_of_odds" / "market_comparison.parquet"),
+            ]
+            if current_run_market_comparison_path is not None:
+                secondary_paths.insert(0, ("wizard_market_comparison_current_run", current_run_market_comparison_path))
+            _supplemental_eval_set = False
+            for _sec_name, _sec_path in secondary_paths:
+                _sec_df = try_read_parquet(_sec_path) if _sec_path.is_file() else None
+                if _sec_df is None or _sec_df.empty:
+                    continue
+                _sec_df = _normalize_odds_aliases(_sec_df)
+                # Ensure slate_date column present (market_comparison may not have it)
+                if "slate_date" not in _sec_df.columns:
+                    _sec_df = _sec_df.copy()
+                    _sec_df["slate_date"] = slate_date
+                _sec_fresh, _sec_reason = _snapshot_fresh_for_slate(_sec_df, slate_date)
+                if _sec_fresh and _market_eval_ready(_sec_df):
+                    meta["market_eval_blocker"] = "none"
+                    eval_avail = True
+                    mrows_fresh = True
+                    meta["market_eval_candidates"].append({
+                        "name": _sec_name + "_supplemental_eval",
+                        "path": str(_sec_path),
+                        "tier": "secondary",
+                        "accepted": True,
+                        "rejection_reason": None,
+                    })
+                    _supplemental_eval_set = True
+                    break
+            if not _supplemental_eval_set:
+                meta["market_eval_blocker"] = "missing_snapshot_timestamp"
+                eval_avail = False
+                mrows_fresh = False
         elif _market_eval_ready(df) and freshness_ok:
             eval_avail = True
             meta["market_eval_blocker"] = "none"

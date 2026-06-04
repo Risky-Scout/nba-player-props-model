@@ -318,21 +318,31 @@ def market_efficiency(
 # ── EV and Kelly ───────────────────────────────────────────────────────────────
 
 def american_to_decimal(odds: int) -> float:
+    """True decimal odds including stake return.
+    +105 → 2.05  (win $105 profit + $1 stake returned = $2.05 per $1 bet)
+    -110 → 1.909 (win $0.909 profit + $1 stake returned = $1.909 per $1 bet)
+    """
     if odds >= 100:
-        return odds / 100.0
+        return 1.0 + odds / 100.0
     else:
-        return 100.0 / abs(odds)
+        return 1.0 + 100.0 / abs(odds)
 
 
 def ev_from_prob(prob: float, american_odds: int) -> float:
-    profit = american_to_decimal(american_odds)
-    return float(prob * profit - (1.0 - prob) * 1.0)
+    """Expected value per $1 stake.
+    EV = prob × decimal_odds - 1.0
+    """
+    decimal = american_to_decimal(american_odds)
+    return float(prob * decimal - 1.0)
 
 
 def kelly_fraction(prob: float, american_odds: int,
                    fraction: float = 0.25, max_units: float = 2.0) -> float:
-    b = american_to_decimal(american_odds)
+    decimal = american_to_decimal(american_odds)
+    b = decimal - 1.0  # net profit per $1 stake
     q = 1.0 - prob
+    if b <= 0:
+        return 0.0
     full_kelly = (b * prob - q) / b
     if full_kelly <= 0:
         return 0.0
