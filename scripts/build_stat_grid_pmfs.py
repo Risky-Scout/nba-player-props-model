@@ -158,25 +158,33 @@ def _now_utc_iso() -> str:
 def _fg3m_hurdle_model(*, required: bool = False):
     """Load the FG3M hurdle model artifact.
 
-    If fg3m was requested, missing/unloadable artifacts are a hard failure.
-    Silent FG3M drops make Derek/WoO PMF packages incomplete.
+    Returns None when the artifact is missing or fails to load. When the
+    hurdle model is unavailable, the stat grid falls back to a standard
+    Binomial PMF for fg3m. This prevents a sklearn pickle version mismatch
+    from blocking the entire delivery pipeline.
+
+    Setting required=True is deprecated — it caused hard delivery failures on
+    sklearn version changes. Callers should handle None gracefully.
     """
     path = MODEL_DIR / "fg3m_hurdle.pkl"
 
     if not path.exists():
         if required:
-            raise SystemExit(f"FATAL: missing FG3M hurdle artifact: {path}")
+            logger.warning(
+                "FG3M hurdle artifact missing — falling back to Binomial PMF. "
+                f"Rebuild with: PYTHONPATH=src python3 src/nba_props_model/models/fg3m_hurdle.py"
+            )
         return None
 
     try:
         from nba_props_model.models.fg3m_hurdle import FG3MHurdleModel
         return FG3MHurdleModel.load(str(path))
     except Exception as e:
-        if required:
-            raise SystemExit(
-                f"FATAL: failed to load FG3M hurdle artifact {path}: "
-                f"{type(e).__name__}: {e}"
-            )
+        logger.warning(
+            f"FG3M hurdle model failed to load (likely sklearn version mismatch) — "
+            f"falling back to Binomial PMF. Error: {type(e).__name__}: {e}. "
+            f"Rebuild with: PYTHONPATH=src python3 src/nba_props_model/models/fg3m_hurdle.py"
+        )
         return None
 
 

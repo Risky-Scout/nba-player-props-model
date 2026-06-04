@@ -35,7 +35,9 @@ DATA_DIR = ROOT / "data"
 REQUIRED_STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 
 # A gap of 1–2 days between max(game_date) and as_of_date is acceptable on
-# rest days or days with no NBA games.  A gap of 3+ days is a hard failure.
+# rest days or days with no NBA games.  Larger gaps are verified against BDL
+# to confirm whether the intervening dates had games. If BDL confirms all
+# gap days were no-games days, the gap is not an error.
 MAX_ACCEPTABLE_GAP_DAYS = 2
 
 
@@ -95,11 +97,40 @@ def _check_max_date(
         return
     gap = _date_gap(actual_max, expected)
     if gap > MAX_ACCEPTABLE_GAP_DAYS:
-        errors.append(
-            f"{label}: max game_date ({actual_max}) is {gap} days BELOW "
-            f"as_of_date ({expected}) — source data appears incomplete. "
-            f"Run the BDL backfill script and retry."
-        )
+        # Before declaring a hard failure, check whether all gap days had
+        # no NBA games scheduled (rest-day period, series break, etc.).
+        _all_no_games = False
+        try:
+            from nba_props_model.data.bdl_client import get_games as _get_games
+            from datetime import date as _date_cls, timedelta as _td
+            max_dt = _date_cls.fromisoformat(actual_max)
+            exp_dt = _date_cls.fromisoformat(expected)
+            # Check each day in the gap
+            gap_days_with_games = []
+            d = max_dt + _td(days=1)
+            while d <= exp_dt:
+                try:
+                    games = _get_games(start_date=d.isoformat(), end_date=d.isoformat())
+                    if games:
+                        gap_days_with_games.append(d.isoformat())
+                except Exception:
+                    gap_days_with_games.append(d.isoformat())  # conservative: assume games
+                d += _td(days=1)
+            if not gap_days_with_games:
+                _all_no_games = True
+                print(
+                    f"  WARN {label}: max game_date ({actual_max}) is {gap} days BELOW "
+                    f"as_of_date ({expected}) but BDL confirms all gap days had no "
+                    f"games scheduled — treating as valid no-games period."
+                )
+        except Exception as _bdl_exc:
+            print(f"  WARN {label}: BDL gap check failed ({_bdl_exc}), applying conservative check.")
+        if not _all_no_games:
+            errors.append(
+                f"{label}: max game_date ({actual_max}) is {gap} days BELOW "
+                f"as_of_date ({expected}) — source data appears incomplete. "
+                f"Run the BDL backfill script and retry."
+            )
     elif gap > 0:
         print(
             f"  WARN {label}: max game_date ({actual_max}) is {gap} day(s) "
