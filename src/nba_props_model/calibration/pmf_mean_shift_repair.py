@@ -215,9 +215,9 @@ def apply_mean_shift_manifest_to_pmf(
     m_rep = pmf_mean(rep)
     if not math.isfinite(m_raw) or not math.isfinite(m_rep):
         return dict(raw), key, method, False, "non_finite_mean"
-    # mean_too_low repair should increase mean when applied (positive shift / gamma>1)
-    if m_rep <= m_raw + 1e-9:
-        return dict(raw), key, method, False, "mean_not_moved_up"
+    # Accept corrections in either direction, but require the mean actually moved.
+    if abs(m_rep - m_raw) < 1e-9:
+        return dict(raw), key, method, False, "mean_unchanged"
     return rep, key, method, True, None
 
 
@@ -229,13 +229,13 @@ def load_mean_shift_manifest(path: Path | str) -> dict[str, Any]:
 def delta_grid_for_stat(stat: str) -> list[float]:
     st = str(stat).lower()
     if st in ("fg3m", "stl", "blk", "tov", "stocks"):
-        return [-0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0]
+        return [-1.5, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.5]
     if st in ("reb", "ast"):
-        return [-0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75]
-    return [-1.5, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.5]
+        return [-1.5, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.5]
+    return [-3.0, -2.0, -1.5, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0]
 
 
-GAMMA_GRID = [0.92, 0.96, 0.98, 1.0, 1.02, 1.04, 1.06, 1.08, 1.10, 1.12, 1.15]
+GAMMA_GRID = [0.80, 0.85, 0.88, 0.90, 0.92, 0.94, 0.96, 0.98, 1.0, 1.02, 1.04, 1.06, 1.08, 1.10, 1.12, 1.15, 1.20]
 ALPHA_GRID = [0.2, 0.35, 0.5, 0.65, 0.8]
 
 

@@ -124,6 +124,8 @@ def main() -> int:
     ap.add_argument("--min-n", type=int, default=800)
     ap.add_argument("--shrink-k", type=float, default=3000.0)
     ap.add_argument("--require-improvement", action="store_true", default=True)
+    ap.add_argument("--start-date", default=None,
+                    help="ISO date string (YYYY-MM-DD); only use OOF rows on or after this date.")
     args = ap.parse_args()
 
     p = Path(args.oof)
@@ -136,6 +138,12 @@ def main() -> int:
     if df.empty:
         print("SPARSE_HURDLE_FIT_SKIP no sparse stat rows", file=sys.stderr)
         return 3
+
+    if args.start_date:
+        df = df[df["game_date"].astype(str) >= str(args.start_date)]
+        if df.empty:
+            print(f"SPARSE_HURDLE_FIT_SKIP no rows on or after {args.start_date}", file=sys.stderr)
+            return 2
 
     df = df.copy()
     df["stat"] = df["stat"].astype(str).str.lower()
