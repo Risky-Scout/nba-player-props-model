@@ -733,6 +733,73 @@ jobs:
           PYTHONPATH=src python3 scripts/fit_combo_pmf_calibrators.py \
             --oof data/oof_combo_pmfs.parquet
 
+          # ── TASK 4: Safety net — evaluate calibrators and refit combo stats ──
+          # Runs after calibrate_pmf --aggregate-mode overwrites pmf_cal_role_*.pkl.
+          # evaluate_new_calibrators_oof monitors calibration quality each run.
+          python3 scripts/evaluate_new_calibrators_oof.py \
+            || echo "::warning::Calibrator OOF evaluation failed — using calibrate_pmf output as-is"
+
+          # Refit combo stats pa/pr/ra/pra (calibrate_pmf only covers single stats).
+          python3 scripts/refit_pmf_calibrators_from_oof.py \
+            --oof data/oof_stat_pmf_predictions.parquet \
+            --oof-combo data/oof_combo_pmfs.parquet \
+            --stats pa,pr,ra,pra \
+            --fold-days 28 \
+            --min-train-days 56 \
+            || echo "::warning::Combo calibrator refit failed — using fit_combo_pmf_calibrators output"
+
+          # ── TASK 2: Sparse stat hurdle recalibration — playoff-window aware ──
+          # Must run after calibrate_pmf generates fresh OOF data.
+          PHASE8_DATE="${{ needs.resolve_context.outputs.delivery_date }}"
+          DELIVERY_YEAR=$(date -d "$PHASE8_DATE" +%Y 2>/dev/null || python3 -c "print('$PHASE8_DATE'[:4])")
+          DELIVERY_MONTH=$(date -d "$PHASE8_DATE" +%-m 2>/dev/null || python3 -c "print(int('$PHASE8_DATE'[5:7]))")
+          # Playoff window: April 15 through June 30
+          if [ "$DELIVERY_MONTH" -ge 4 ] && [ "$DELIVERY_MONTH" -le 6 ]; then
+            PLAYOFF_START="${DELIVERY_YEAR}-04-19"
+            echo "Playoff window detected (month=$DELIVERY_MONTH) — refitting sparse hurdle from $PLAYOFF_START"
+            python3 scripts/fit_sparse_stat_hurdle_recalibration.py \
+              --oof data/oof_stat_pmf_predictions.parquet \
+              --start-date "$PLAYOFF_START" \
+              --min-n 200 \
+              --shrink-k 500 \
+              || echo "::warning::Sparse hurdle playoff refit failed — using committed offsets"
+          else
+            echo "Regular season (month=$DELIVERY_MONTH) — refitting sparse hurdle on full OOF"
+            python3 scripts/fit_sparse_stat_hurdle_recalibration.py \
+              --oof data/oof_stat_pmf_predictions.parquet \
+              || echo "::warning::Sparse hurdle regular season refit failed — using committed offsets"
+          fi
+
+          # ── TASK 3: PMF mean shift repair pipeline ──
+          # Builds fresh event loss rows for recent window, then fits mean shift manifest.
+          D_LABEL="$PHASE8_DATE"
+          WINDOW_START=$(date -d "$D_LABEL - 42 days" +%Y-%m-%d 2>/dev/null \
+            || python3 -c "from datetime import date, timedelta; d=date.fromisoformat('$D_LABEL'); print((d - timedelta(days=42)).isoformat())")
+          python3 scripts/build_event_market_loss_rows.py \
+            --start-date "$WINDOW_START" \
+            --end-date "$D_LABEL" \
+            --include-ineligible \
+            || echo "::warning::Event market loss rows build failed — mean shift manifest may be stale"
+
+          LEDGER_DIR="artifacts/model_diagnostics/market_superiority_repair_${D_LABEL}"
+          if python3 scripts/build_stat_role_market_superiority_report.py \
+              --date "$D_LABEL" \
+              --include-ineligible \
+              --min-scored-rows 50 \
+              --min-market-joined-rows 50 \
+              2>/dev/null; then
+            if [ -f "${LEDGER_DIR}/repair_ledger.csv" ]; then
+              python3 scripts/fit_pmf_mean_shift_repair.py \
+                --label "$D_LABEL" \
+                --ledger "${LEDGER_DIR}/repair_ledger.csv" \
+                || echo "::warning::PMF mean shift repair fit failed"
+            else
+              echo "::warning::Repair ledger not found at ${LEDGER_DIR}/repair_ledger.csv — skipping mean shift fit"
+            fi
+          else
+            echo "::warning::Market superiority report failed — mean shift manifest not updated"
+          fi
+
       - name: Run diagnostics and market-eval gates (no unexplained NaNs)
         if: steps.phase8_idempotency.outputs.skip != 'true'
         env:
@@ -791,6 +858,8 @@ jobs:
             artifacts/models/pmf_cal_meta.json \
             artifacts/docs \
             artifacts/model_diagnostics \
+            artifacts/models/sparse_hurdle_offsets.json \
+            artifacts/models/pmf_mean_shift_repair_*.json \
             data/oof_pmfs.parquet \
             data/oof_combo_pmfs.parquet \
             data/oof_combo_pmfs.manifest.json \
