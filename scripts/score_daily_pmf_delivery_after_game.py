@@ -1018,6 +1018,16 @@ def main() -> int:
                           "from the morning snapshot")
     args = ap.parse_args()
 
+    # No-game day guard: if player_game_stats has no rows for this date, valid-skip
+    _pgs_path = REPO_ROOT / "data" / "player_game_stats.parquet"
+    if _pgs_path.exists():
+        import pandas as _pd
+        _pgs_df = _pd.read_parquet(_pgs_path, columns=["game_date"])
+        _pgs_df["game_date"] = _pgs_df["game_date"].astype(str).str[:10]
+        if _pgs_df[_pgs_df["game_date"] == args.date].empty:
+            print(f"SCORE_DAILY_PMF_VALID_SKIP  reason=no_game_stats_for_date  date={args.date}")
+            sys.exit(0)
+
     delivery_date = args.date
     woo_dir = REPO_ROOT / "deliveries" / delivery_date / "wizard_of_odds"
     derek_dir = REPO_ROOT / "deliveries" / delivery_date / "pmf_model_review_package"

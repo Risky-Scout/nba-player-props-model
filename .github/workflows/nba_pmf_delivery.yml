@@ -733,6 +733,103 @@ jobs:
           PYTHONPATH=src python3 scripts/fit_combo_pmf_calibrators.py \
             --oof data/oof_combo_pmfs.parquet
 
+          # ── Self-healing calibration loop with recency weighting ──
+          # Runs after calibrate_pmf --aggregate-mode overwrites pmf_cal_role_*.pkl.
+          PHASE8_DATE="${{ needs.resolve_context.outputs.delivery_date }}"
+          DELIVERY_YEAR=$(date -d "$PHASE8_DATE" +%Y 2>/dev/null || python3 -c "print('$PHASE8_DATE'[:4])")
+          DELIVERY_MONTH=$(date -d "$PHASE8_DATE" +%-m 2>/dev/null || python3 -c "print(int('$PHASE8_DATE'[5:7]))")
+          # Use shorter halflife during playoffs for faster adaptation to distribution shifts
+          if [ "$DELIVERY_MONTH" -ge 4 ] && [ "$DELIVERY_MONTH" -le 6 ]; then
+            HALFLIFE=14
+          else
+            HALFLIFE=28
+          fi
+          echo "Calibration halflife: ${HALFLIFE} days (month=$DELIVERY_MONTH)"
+
+          # Round 1: evaluate calibration quality
+          python3 scripts/evaluate_new_calibrators_oof.py \
+            || echo "::warning::Calibrator OOF evaluation failed — using calibrate_pmf output as-is"
+
+          # Refit combo stats pa/pr/ra/pra with recency weighting (calibrate_pmf only covers single stats)
+          python3 scripts/refit_pmf_calibrators_from_oof.py \
+            --oof data/oof_stat_pmf_predictions.parquet \
+            --oof-combo data/oof_combo_pmfs.parquet \
+            --stats pa,pr,ra,pra \
+            --fold-days 28 \
+            --min-train-days 56 \
+            --halflife-days "$HALFLIFE" \
+            || echo "::warning::Combo calibrator refit failed — using fit_combo_pmf_calibrators output"
+
+          # Round 2: if calibration needs improvement, re-run all single stats with tighter parameters
+          CAL_STATUS=$(python3 -c 'import json,pathlib; f=pathlib.Path("reports/calibration_gate_status.json"); print(json.loads(f.read_text()).get("overall_status","ok") if f.exists() else "ok")' 2>/dev/null || echo "ok")
+          if [ "$CAL_STATUS" = "needs_recal" ]; then
+            echo "Calibration needs improvement — targeted refit with halflife-days=$HALFLIFE"
+            python3 scripts/refit_pmf_calibrators_from_oof.py \
+              --oof data/oof_stat_pmf_predictions.parquet \
+              --fold-days 14 \
+              --min-train-days 42 \
+              --halflife-days "$HALFLIFE" \
+              || echo "::warning::Targeted single-stat refit failed — keeping round-1 calibrators"
+            python3 scripts/evaluate_new_calibrators_oof.py \
+              || echo "::warning::Round-2 calibrator evaluation failed"
+          else
+            echo "Calibration status=$CAL_STATUS — no additional refit needed"
+          fi
+          # ── Sparse stat hurdle recalibration — playoff-window aware ──
+          # Playoff window: April 15 through June 30
+          if [ "$DELIVERY_MONTH" -ge 4 ] && [ "$DELIVERY_MONTH" -le 6 ]; then
+            PLAYOFF_START=$(python3 -c 'import sys,pathlib; sys.path.insert(0,"scripts"); from evaluate_playoff_calibration import _detect_playoff_start; print(_detect_playoff_start(pathlib.Path("data/player_game_stats.parquet"), '"$DELIVERY_YEAR"'))' 2>/dev/null || echo "${DELIVERY_YEAR}-04-19")
+            echo "Playoff window detected (month=$DELIVERY_MONTH) — refitting sparse hurdle from $PLAYOFF_START"
+            python3 scripts/fit_sparse_stat_hurdle_recalibration.py \
+              --oof data/oof_stat_pmf_predictions.parquet \
+              --start-date "$PLAYOFF_START" \
+              --min-n 200 \
+              --shrink-k 500 \
+              || echo "::warning::Sparse hurdle playoff refit failed — using committed offsets"
+          else
+            echo "Regular season (month=$DELIVERY_MONTH) — refitting sparse hurdle on full OOF"
+            python3 scripts/fit_sparse_stat_hurdle_recalibration.py \
+              --oof data/oof_stat_pmf_predictions.parquet \
+              || echo "::warning::Sparse hurdle regular season refit failed — using committed offsets"
+          fi
+
+          # ── TASK 3: PMF mean shift repair pipeline ──
+          # Builds fresh event loss rows for recent window, then fits mean shift manifest.
+          D_LABEL="$PHASE8_DATE"
+          WINDOW_START=$(date -d "$D_LABEL - 42 days" +%Y-%m-%d 2>/dev/null \
+            || python3 -c "from datetime import date, timedelta; d=date.fromisoformat('$D_LABEL'); print((d - timedelta(days=42)).isoformat())")
+          python3 scripts/build_event_market_loss_rows.py \
+            --start-date "$WINDOW_START" \
+            --end-date "$D_LABEL" \
+            --include-ineligible \
+            || echo "::warning::Event market loss rows build failed — mean shift manifest may be stale"
+
+          LEDGER_DIR="artifacts/model_diagnostics/market_superiority_repair_${D_LABEL}"
+          if python3 scripts/build_stat_role_market_superiority_report.py \
+              --date "$D_LABEL" \
+              --include-ineligible \
+              --min-scored-rows 50 \
+              --min-market-joined-rows 50 \
+              2>/dev/null; then
+            if [ -f "${LEDGER_DIR}/repair_ledger.csv" ]; then
+              python3 scripts/fit_pmf_mean_shift_repair.py \
+                --label "$D_LABEL" \
+                --ledger "${LEDGER_DIR}/repair_ledger.csv" \
+                || echo "::warning::PMF mean shift repair fit failed"
+            else
+              echo "::warning::Repair ledger not found at ${LEDGER_DIR}/repair_ledger.csv — skipping mean shift fit"
+            fi
+          else
+            echo "::warning::Market superiority report failed — mean shift manifest not updated"
+          fi
+
+          # Auto-select and stage the latest mean shift manifest
+          LATEST_MANIFEST=$(python3 scripts/resolve_mean_shift_manifest_path.py 2>/dev/null || echo "")
+          if [ -n "$LATEST_MANIFEST" ]; then
+            echo "Latest mean shift manifest: $LATEST_MANIFEST"
+            git add "$LATEST_MANIFEST" 2>/dev/null || true
+          fi
+
       - name: Run diagnostics and market-eval gates (no unexplained NaNs)
         if: steps.phase8_idempotency.outputs.skip != 'true'
         env:
@@ -791,6 +888,8 @@ jobs:
             artifacts/models/pmf_cal_meta.json \
             artifacts/docs \
             artifacts/model_diagnostics \
+            artifacts/models/sparse_hurdle_offsets.json \
+            artifacts/models/pmf_mean_shift_repair_*.json \
             data/oof_pmfs.parquet \
             data/oof_combo_pmfs.parquet \
             data/oof_combo_pmfs.manifest.json \
@@ -808,6 +907,7 @@ jobs:
           git add reports/playoff_calibration_summary.json \
                   reports/playoff_calibration_by_stat.csv \
                   reports/playoff_calibration_by_role.csv \
+                  reports/new_calibrator_oof_evaluation.csv \
                   2>/dev/null || true
 
           # Same freshness ownership rule as model-chain commit above.

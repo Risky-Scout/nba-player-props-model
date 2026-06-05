@@ -283,7 +283,11 @@ def main() -> int:
         raise SystemExit("FATAL: no usable loss rows")
 
     targets = led[
-        (led["dominant_failure"].astype(str) == "mean_too_low")
+        (led["dominant_failure"].astype(str).isin([
+            "mean_too_low",
+            "mean_too_high",
+            "model_prob_too_high_or_overconfident_side",
+        ]))
         | led["allowed_repair_family"].astype(str).str.contains("pmf_mean_shift", na=False)
     ]
 

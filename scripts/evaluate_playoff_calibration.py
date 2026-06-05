@@ -25,7 +25,35 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-_PLAYOFF_START = "2026-04-19"  # first playoff game date this season
+
+def _detect_playoff_start(pgs_path: "Path", current_year: int) -> str:
+    """Detect first playoff game date from player_game_stats. Falls back to Apr 19."""
+    fallback = f"{current_year}-04-19"
+    try:
+        import pandas as _pd
+        if not pgs_path.exists():
+            return fallback
+        _cols = list(_pd.read_parquet(pgs_path, columns=[]).columns)
+        _read = ["game_date"] + (["is_playoff"] if "is_playoff" in _cols else [])
+        _pgs = _pd.read_parquet(pgs_path, columns=_read)
+        _pgs["game_date"] = _pgs["game_date"].astype(str).str[:10]
+        _pgs = _pgs[_pgs["game_date"] >= f"{current_year - 1}-10-01"]
+        if "is_playoff" in _pgs.columns:
+            _po = _pgs[_pgs["is_playoff"].astype(str).isin(["True", "1", "true"])]
+            if not _po.empty:
+                return sorted(_po["game_date"].unique())[0]
+        _apr = [d for d in sorted(_pgs["game_date"].unique()) if d >= f"{current_year}-04-13"]
+        if _apr:
+            return _apr[0]
+    except Exception:
+        pass
+    return fallback
+
+
+_PLAYOFF_START = _detect_playoff_start(
+    REPO_ROOT / "data" / "player_game_stats.parquet",
+    datetime.now(timezone.utc).year,
+)
 
 
 def _utc_iso() -> str:
