@@ -1,8 +1,7 @@
 # Derek production-live E2E — 2026-06-05
 
-- outcome: **pending**
-- reason: all_targets_in_future
-- now_utc: 2026-06-05T20:14:17Z
-- predictions_parquet_present: True
+- outcome: **pass**
+- production_live snapshots passing: **1**
+- now_utc: 2026-06-05T21:54:23Z
 - schedule_size: 1
-- any_target_in_past: False
+- pass: 21716135/current_live
