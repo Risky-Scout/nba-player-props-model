@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-06-05T11:07:17+00:00",
+  "generated_at_utc": "2026-06-05T15:45:39+00:00",
   "from_date": "2026-05-29",
   "to_date": "2026-06-04",
   "status": "PASS",
@@ -25,5 +25,5 @@
       "min": 0
     }
   },
-  "refresh_stdout_tail": "  existing parquet: 84502 rows, latest game_date=2026-06-03\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-29 \u2192 2026-06-04\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-29 \u2192 2026-06-04\n    got 39 raw records in 0.4s\n    39 rows after schema map / min>=1 filter\n\n  incoming rows: 39\n    distinct game_dates: ['2026-05-30', '2026-06-03']\n    distinct game_ids:   2\n    distinct players:    29\n\n  merge summary:\n    rows kept (no key conflict):     84463\n    rows replaced (key conflict):    39\n    rows added (new keys):           0\n    final row count:                 84502\n\nwrote data/player_game_stats.parquet  (2026-06-05T11:07:17Z)\n"
+  "refresh_stdout_tail": "  existing parquet: 84502 rows, latest game_date=2026-06-03\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-05-29 \u2192 2026-06-04\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-05-29 \u2192 2026-06-04\n    got 39 raw records in 0.1s\n    39 rows after schema map / min>=1 filter\n\n  incoming rows: 39\n    distinct game_dates: ['2026-05-30', '2026-06-03']\n    distinct game_ids:   2\n    distinct players:    29\n\n  merge summary:\n    rows kept (no key conflict):     84463\n    rows replaced (key conflict):    39\n    rows added (new keys):           0\n    final row count:                 84502\n\nwrote data/player_game_stats.parquet  (2026-06-05T15:45:38Z)\n"
 }
