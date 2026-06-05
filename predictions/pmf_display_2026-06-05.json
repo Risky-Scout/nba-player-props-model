@@ -1,0 +1,306 @@
+{
+  "date": "2026-06-05",
+  "generated_at": "2026-06-05T16:45:12.311994",
+  "props": [
+    {
+      "player_name": "Karl-Anthony Towns",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6998,
+      "market_prob": 0.4149,
+      "ev": 0.6444,
+      "edge": 0.2849,
+      "fair_odds_over": 233,
+      "fair_odds_under": -233,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -150,
+        "under_odds": 135,
+        "best_odds": 135
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6998,
+          "fair_odds": -233,
+          "display_prob": "70.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1906,
+          "fair_odds": 425,
+          "display_prob": "19.1%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0805,
+          "fair_odds": 1142,
+          "display_prob": "8.1%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0207,
+          "fair_odds": 4731,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0085,
+          "fair_odds": 11665,
+          "display_prob": "0.9%"
+        }
+      ]
+    },
+    {
+      "player_name": "Victor Wembanyama",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 11.5,
+      "model_prob": 0.7606,
+      "market_prob": 0.4783,
+      "ev": 0.5212,
+      "edge": 0.2823,
+      "fair_odds_over": 318,
+      "fair_odds_under": -318,
+      "pmf_median": 9,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "betrivers",
+        "over_odds": -120,
+        "under_odds": 100,
+        "best_odds": 100
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0112,
+          "fair_odds": 8829,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0185,
+          "fair_odds": 5305,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0257,
+          "fair_odds": 3791,
+          "display_prob": "2.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0354,
+          "fair_odds": 2725,
+          "display_prob": "3.5%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.053,
+          "fair_odds": 1787,
+          "display_prob": "5.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.052,
+          "fair_odds": 1823,
+          "display_prob": "5.2%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0838,
+          "fair_odds": 1093,
+          "display_prob": "8.4%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0885,
+          "fair_odds": 1030,
+          "display_prob": "8.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0946,
+          "fair_odds": 957,
+          "display_prob": "9.5%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.1019,
+          "fair_odds": 881,
+          "display_prob": "10.2%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.1073,
+          "fair_odds": 832,
+          "display_prob": "10.7%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0888,
+          "fair_odds": 1026,
+          "display_prob": "8.9%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0638,
+          "fair_odds": 1467,
+          "display_prob": "6.4%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.055,
+          "fair_odds": 1718,
+          "display_prob": "5.5%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0357,
+          "fair_odds": 2701,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0273,
+          "fair_odds": 3563,
+          "display_prob": "2.7%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0167,
+          "fair_odds": 5888,
+          "display_prob": "1.7%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0141,
+          "fair_odds": 6992,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0123,
+          "fair_odds": 8030,
+          "display_prob": "1.2%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Landry Shamet",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "UNDER",
+      "line": 1.5,
+      "model_prob": 0.6795,
+      "market_prob": 0.4457,
+      "ev": 0.4948,
+      "edge": 0.2338,
+      "fair_odds_over": 212,
+      "fair_odds_under": -212,
+      "pmf_median": 1,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -130,
+        "under_odds": 120,
+        "best_odds": 120
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.227,
+          "fair_odds": 341,
+          "display_prob": "22.7%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.4524,
+          "fair_odds": 121,
+          "display_prob": "45.2%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2333,
+          "fair_odds": 329,
+          "display_prob": "23.3%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0873,
+          "fair_odds": 1045,
+          "display_prob": "8.7%"
+        }
+      ]
+    },
+    {
+      "player_name": "Karl-Anthony Towns",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "stl",
+      "stat_display": "Steals",
+      "side": "UNDER",
+      "line": 0.5,
+      "model_prob": 0.6716,
+      "market_prob": 0.4498,
+      "ev": 0.444,
+      "edge": 0.2218,
+      "fair_odds_over": 205,
+      "fair_odds_under": -205,
+      "pmf_median": 0,
+      "line_vs_median": 0.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": -132,
+        "under_odds": 115,
+        "best_odds": 115
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.6716,
+          "fair_odds": -205,
+          "display_prob": "67.2%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.1873,
+          "fair_odds": 434,
+          "display_prob": "18.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0661,
+          "fair_odds": 1413,
+          "display_prob": "6.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0541,
+          "fair_odds": 1748,
+          "display_prob": "5.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0207,
+          "fair_odds": 4731,
+          "display_prob": "2.1%"
+        }
+      ]
+    }
+  ]
+}
