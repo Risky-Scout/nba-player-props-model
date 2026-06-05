@@ -1,7 +1,7 @@
 {
   "fair_odds_board": {
-    "fair_over_odds_null_count": 956,
-    "fair_under_odds_null_count": 956,
-    "zero_or_one_prob_count": 951
+    "fair_over_odds_null_count": 922,
+    "fair_under_odds_null_count": 922,
+    "zero_or_one_prob_count": 917
   }
 }
