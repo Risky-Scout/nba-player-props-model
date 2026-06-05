@@ -3,10 +3,10 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `wizard_of_odds/full_pmfs_outcome_level.csv`
-- Original rows: `10315`
+- Original rows: `10312`
 - Original columns: `24`
-- Original bytes: `5841720`
-- Current CSV preview rows: `994`
+- Original bytes: `5819139`
+- Current CSV preview rows: `998`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `full_pmfs_outcome_level.parquet`
 - CSV parts folder: `full_pmfs_outcome_level_csv_parts/`
@@ -15,20 +15,20 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 | part | rows | bytes |
 |---|---:|---:|
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_000.csv` | 594 | 324709 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_001.csv` | 594 | 325563 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_002.csv` | 594 | 326582 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_003.csv` | 594 | 328983 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_004.csv` | 594 | 328030 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_005.csv` | 594 | 326743 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_006.csv` | 594 | 326845 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_007.csv` | 594 | 329061 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_008.csv` | 594 | 338571 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_009.csv` | 594 | 347126 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_010.csv` | 594 | 339440 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_011.csv` | 594 | 343401 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_012.csv` | 594 | 348908 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_013.csv` | 594 | 325267 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_014.csv` | 594 | 330814 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_015.csv` | 594 | 332000 |
-| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_016.csv` | 811 | 474642 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_000.csv` | 597 | 325615 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_001.csv` | 597 | 326489 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_002.csv` | 597 | 326889 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_003.csv` | 597 | 329688 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_004.csv` | 597 | 328722 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_005.csv` | 597 | 327341 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_006.csv` | 597 | 327666 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_007.csv` | 597 | 329948 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_008.csv` | 597 | 332472 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_009.csv` | 597 | 347040 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_010.csv` | 597 | 338685 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_011.csv` | 597 | 343425 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_012.csv` | 597 | 350789 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_013.csv` | 597 | 337051 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_014.csv` | 597 | 332527 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_015.csv` | 597 | 331311 |
+| `full_pmfs_outcome_level_csv_parts/full_pmfs_outcome_level_part_016.csv` | 760 | 438468 |
