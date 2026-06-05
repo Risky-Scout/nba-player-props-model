@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-06-05T15:55:56Z",
+  "generated_at_utc": "2026-06-05T17:27:36Z",
   "reports": [
     {
       "date": "2026-06-05",
       "delivery_dir": "deliveries/2026-06-05",
       "write": true,
-      "generated_at_utc": "2026-06-05T15:55:51Z",
-      "files_checked": 41,
+      "generated_at_utc": "2026-06-05T17:27:28Z",
+      "files_checked": 137,
       "files_changed": 37,
       "columns_removed_total": 283,
       "changes": [
@@ -108,7 +108,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_forward_feed/latest_available_snapshot.csv",
-          "rows": 2676,
+          "rows": 2679,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -122,7 +122,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_forward_feed/latest_available_snapshot.parquet",
-          "rows": 2676,
+          "rows": 2679,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -136,7 +136,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_forward_feed/morning_snapshot.csv",
-          "rows": 2676,
+          "rows": 2679,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -150,7 +150,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_forward_feed/morning_snapshot.jsonl",
-          "rows": 2676,
+          "rows": 2679,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -164,7 +164,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_forward_feed/morning_snapshot.parquet",
-          "rows": 2676,
+          "rows": 2679,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -224,7 +224,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_game_snapshots/21716135/morning/market_comparison.csv",
-          "rows": 2726,
+          "rows": 2729,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -235,7 +235,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_game_snapshots/21716135/morning/market_comparison.parquet",
-          "rows": 2726,
+          "rows": 2729,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -246,7 +246,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_game_snapshots/21716135/morning/outcome_level_probabilities.csv",
-          "rows": 6481,
+          "rows": 6371,
           "cols_before": 12,
           "cols_after": 11,
           "preserved_columns": [],
@@ -256,7 +256,7 @@
         },
         {
           "file": "deliveries/2026-06-05/derek_game_snapshots/21716135/morning/outcome_level_probabilities.parquet",
-          "rows": 6481,
+          "rows": 6371,
           "cols_before": 12,
           "cols_after": 11,
           "preserved_columns": [],
@@ -378,7 +378,7 @@
         },
         {
           "file": "deliveries/2026-06-05/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv",
-          "rows": 10312,
+          "rows": 10315,
           "cols_before": 25,
           "cols_after": 24,
           "preserved_columns": [],
@@ -388,7 +388,7 @@
         },
         {
           "file": "deliveries/2026-06-05/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.parquet",
-          "rows": 10312,
+          "rows": 10315,
           "cols_before": 25,
           "cols_after": 24,
           "preserved_columns": [],
@@ -518,7 +518,7 @@
         },
         {
           "file": "deliveries/2026-06-05/wizard_of_odds/full_pmfs_outcome_level.csv",
-          "rows": 10312,
+          "rows": 10315,
           "cols_before": 25,
           "cols_after": 24,
           "preserved_columns": [],
@@ -528,7 +528,7 @@
         },
         {
           "file": "deliveries/2026-06-05/wizard_of_odds/full_pmfs_outcome_level.parquet",
-          "rows": 10312,
+          "rows": 10315,
           "cols_before": 25,
           "cols_after": 24,
           "preserved_columns": [],
@@ -584,7 +584,7 @@
         },
         {
           "file": "deliveries/2026-06-05/wizard_of_odds/market_comparison.csv",
-          "rows": 2726,
+          "rows": 2729,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -595,7 +595,7 @@
         },
         {
           "file": "deliveries/2026-06-05/wizard_of_odds/market_comparison.parquet",
-          "rows": 2726,
+          "rows": 2729,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -606,7 +606,7 @@
         },
         {
           "file": "deliveries/2026-06-05/wizard_of_odds/publishable_edges.csv",
-          "rows": 2178,
+          "rows": 2160,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -617,7 +617,7 @@
         },
         {
           "file": "deliveries/2026-06-05/wizard_of_odds/publishable_edges.parquet",
-          "rows": 2178,
+          "rows": 2160,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -630,7 +630,7 @@
       "errors": []
     }
   ],
-  "files_checked": 41,
+  "files_checked": 137,
   "files_changed": 37,
   "columns_removed_total": 283,
   "errors": []

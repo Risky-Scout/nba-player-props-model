@@ -8,16 +8,16 @@
     "minutes_eligible_rows": 16,
     "canonical_rows": 192,
     "review_rows": 192,
-    "market_rows": 2726,
-    "derek_rows": 2676,
+    "market_rows": 2729,
+    "derek_rows": 2679,
     "proof_gates": {
       "minutes_universe": "schema+uniqueness+null/range checks (NO deep-bench gate)",
       "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
     }
   },
-  "checked_at_utc": "2026-06-05T15:56:08Z",
-  "selected_injury_report": "Injury-Report_2026-06-05_11_00AM",
-  "selected_injury_report_time": "2026-06-05T11:00:00-04:00",
+  "checked_at_utc": "2026-06-05T17:27:48Z",
+  "selected_injury_report": "Injury-Report_2026-06-05_01_00PM",
+  "selected_injury_report_time": "2026-06-05T13:00:00-04:00",
   "injury_report_fallback_used": true,
   "failed_injury_report_candidates": [
     {
@@ -31,19 +31,15 @@
     {
       "report": "Injury-Report_2026-06-05_03_00PM",
       "reason": "future_report_time_or_not_yet_available"
-    },
-    {
-      "report": "Injury-Report_2026-06-05_01_00PM",
-      "reason": "future_report_time_or_not_yet_available"
     }
   ],
   "injury_freshness_status": "fallback_used",
-  "fetched_at_utc": "2026-06-05T15:54:22Z",
-  "market_eval_available": false,
+  "fetched_at_utc": "2026-06-05T17:25:58Z",
+  "market_eval_available": true,
   "market_rows_keyed": true,
-  "market_rows_fresh": false,
-  "market_superiority_claim_allowed": false,
-  "market_eval_blocker": "missing_snapshot_timestamp",
+  "market_rows_fresh": true,
+  "market_superiority_claim_allowed": true,
+  "market_eval_blocker": "none",
   "date": "2026-06-05",
   "run_mode": "woo_morning_monetization",
   "canonical_model_only_path": "deliveries/2026-06-05/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
