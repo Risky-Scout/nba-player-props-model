@@ -115,6 +115,8 @@ def main() -> int:
                     help="Path to single-stat OOF parquet")
     ap.add_argument("--oof-combo", default=None,
                     help="Path to combo-stat OOF parquet (pa, pr, ra, pra, stocks)")
+    ap.add_argument("--halflife-days", type=int, default=None,
+                    help="Recency halflife in days. Weights: exp(-ln(2)/halflife * days_ago). None=uniform.")
     args = ap.parse_args()
 
     target_stats = [s.strip().lower() for s in args.stats.split(",") if s.strip()]
@@ -147,13 +149,34 @@ def main() -> int:
         print("FATAL: no stats with usable data", file=sys.stderr)
         return 1
 
+    # Compute recency weights if halflife-days specified
+    per_stat_weights = None
+    if args.halflife_days:
+        per_stat_weights = {}
+        # Build a combined df of all dates from per_stat_inputs to find global max date
+        all_dates: list[str] = []
+        for stat, inputs in per_stat_inputs.items():
+            all_dates.extend(inputs[2].tolist())  # dates array is inputs[2]
+        if all_dates:
+            max_date = np.datetime64(max(str(d)[:10] for d in all_dates))
+            for stat, inputs in per_stat_inputs.items():
+                dates_arr = inputs[2]
+                days_ago = (max_date - np.array([str(d)[:10] for d in dates_arr], dtype="datetime64[D]")).astype(int)
+                weights = np.exp(-np.log(2) / args.halflife_days * days_ago.astype(float))
+                weights = np.clip(weights, 1e-6, 1.0)
+                per_stat_weights[stat] = weights
+        print(f"Recency weighting: halflife={args.halflife_days} days, "
+              f"stats={sorted(per_stat_weights.keys())}")
+
     print(f"\nFitting {len(per_stat_inputs)} stats with "
-          f"fold_days={args.fold_days}, min_train_days={args.min_train_days}...")
+          f"fold_days={args.fold_days}, min_train_days={args.min_train_days}, "
+          f"halflife_days={args.halflife_days}...")
 
     meta = fit_all(
         per_stat_inputs,
         fold_days=args.fold_days,
         min_train_days=args.min_train_days,
+        per_stat_weights=per_stat_weights,
     )
 
     print("\nResults:")

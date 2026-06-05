@@ -393,6 +393,7 @@ def _fit_calibrator_no_save(
     fold_days: int = 28,
     min_train_days: int = 180,
     rng: Optional[np.random.Generator] = None,
+    row_weights: Optional[np.ndarray] = None,
 ) -> Optional[PMFCalibrator]:
     """Fit the walk-forward isotonic calibrator for a single stat.
 
@@ -448,7 +449,7 @@ def _fit_calibrator_no_save(
     ])
     w_fit = np.concatenate([
         np.asarray([1000.0, 1000.0], dtype=float),
-        np.ones_like(np.asarray(u_sorted, dtype=float)),
+        row_weights[u_sorted_idx] if row_weights is not None else np.ones_like(np.asarray(u_sorted, dtype=float)),
         np.asarray([1000.0, 1000.0], dtype=float),
     ])
     order = np.argsort(u_fit)
@@ -471,6 +472,7 @@ def fit_calibrator(
     fold_days: int = 28,
     min_train_days: int = 180,
     rng: Optional[np.random.Generator] = None,
+    row_weights: Optional[np.ndarray] = None,
 ) -> Optional[PMFCalibrator]:
     """Fit and persist the walk-forward isotonic calibrator for a stat
     to artifacts/models/pmf_cal_{stat}.pkl. Thin wrapper around
@@ -479,6 +481,7 @@ def fit_calibrator(
     cal = _fit_calibrator_no_save(
         stat=stat, pmfs=pmfs, outcomes=outcomes, dates=dates,
         fold_days=fold_days, min_train_days=min_train_days, rng=rng,
+        row_weights=row_weights,
     )
     if cal is not None:
         joblib.dump(cal, MODEL_DIR / f"pmf_cal_{stat}.pkl")
@@ -494,6 +497,7 @@ def fit_role_aware_calibrator(
     fold_days: int = 28,
     min_train_days: int = 180,
     rng: Optional[np.random.Generator] = None,
+    row_weights: Optional[np.ndarray] = None,
 ) -> Optional[RoleAwarePMFCalibrator]:
     """Fit a role-aware PMF calibrator: one global isotonic plus one
     isotonic per role bucket meeting ROLE_MIN_ROWS. Buckets below the
@@ -508,6 +512,7 @@ def fit_role_aware_calibrator(
     global_cal = _fit_calibrator_no_save(
         stat=stat, pmfs=pmfs, outcomes=outcomes, dates=dates,
         fold_days=fold_days, min_train_days=min_train_days, rng=rng,
+        row_weights=row_weights,
     )
     if global_cal is None:
         return None
@@ -533,9 +538,11 @@ def fit_role_aware_calibrator(
             )
             continue
         idx = np.where(role_buckets_arr == bucket_key)[0]
+        bucket_row_weights = row_weights[idx] if row_weights is not None else None
         bucket_cal = _fit_calibrator_no_save(
             stat=stat, pmfs=pmfs[idx], outcomes=outcomes[idx], dates=dates_arr[idx],
             fold_days=fold_days, min_train_days=min_train_days, rng=rng,
+            row_weights=bucket_row_weights,
         )
         if bucket_cal is not None:
             bucket_calibrators[bucket_key] = bucket_cal
@@ -584,6 +591,7 @@ def fit_all(
     fold_days: int = 28,
     min_train_days: int = 180,
     rng: Optional[np.random.Generator] = None,
+    per_stat_weights: Optional[dict] = None,
 ) -> dict[str, dict]:
     """Fit one calibrator per stat and write a meta JSON summary.
 
@@ -602,10 +610,12 @@ def fit_all(
     for stat, inputs in per_stat_inputs.items():
         if len(inputs) == 4:
             pmfs, outcomes, dates, role_buckets = inputs
+            stat_row_weights = per_stat_weights.get(stat) if per_stat_weights else None
             cal = fit_role_aware_calibrator(
                 stat=stat, pmfs=pmfs, outcomes=outcomes, dates=dates,
                 role_buckets=role_buckets,
                 fold_days=fold_days, min_train_days=min_train_days, rng=rng,
+                row_weights=stat_row_weights,
             )
             if cal is None:
                 meta["stats"][stat] = {
@@ -638,9 +648,11 @@ def fit_all(
             }
         elif len(inputs) == 3:
             pmfs, outcomes, dates = inputs
+            stat_row_weights = per_stat_weights.get(stat) if per_stat_weights else None
             cal = fit_calibrator(
                 stat=stat, pmfs=pmfs, outcomes=outcomes, dates=dates,
                 fold_days=fold_days, min_train_days=min_train_days, rng=rng,
+                row_weights=stat_row_weights,
             )
             if cal is None:
                 meta["stats"][stat] = {
