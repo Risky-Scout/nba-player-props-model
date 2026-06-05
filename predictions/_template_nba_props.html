@@ -883,14 +883,24 @@ async function main() {
   const data = window.EMBEDDED_DATA;
   const today = todayET();
   // Fresh = data exists, has a rows array, AND its date matches today
-  // (in ET). Anything else triggers the static fallback path so the
-  // page never silently shows stale data without a banner.
-  const dataIsFresh = !!(data && Array.isArray(data.rows) && data.date === today);
-  if (!dataIsFresh) {
+  // (in ET). Stale data (different date) is still shown with a banner
+  // so users see the best available predictions rather than a blank page.
+  const hasData = !!(data && Array.isArray(data.rows) && data.rows.length > 0);
+  const dataIsFresh = !!(hasData && data.date === today);
+  if (!hasData) {
     document.getElementById('rows-tbody').innerHTML =
       '<tr><td colspan="9" class="empty-state">Slate not yet embedded for today — checking static fallback (./nba_props_today.json)…</td></tr>';
     await tryStaticFallback();
     return;
+  }
+  if (!dataIsFresh) {
+    // Show a banner noting the data is from a different date but still render
+    // the best available predictions rather than hiding them entirely.
+    const banner = document.getElementById('static-banner');
+    if (banner) {
+      banner.textContent = `Showing predictions from ${data.date} — today's slate (${today}) not yet available. Refresh after 11 AM ET for today's lines.`;
+      banner.hidden = false;
+    }
   }
   STATE.data = data;
   render();
