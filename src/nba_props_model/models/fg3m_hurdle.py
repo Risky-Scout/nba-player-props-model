@@ -33,7 +33,7 @@ import pandas as pd
 import joblib
 from pathlib import Path
 from scipy.stats import binom, poisson
-from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import cross_val_predict
 from sklearn.preprocessing import StandardScaler
@@ -196,20 +196,21 @@ class FG3MHurdleModel:
         X = extract_features(df, VOLUME_GATE_FEATURES)
         Xs = self.volume_gate_scaler.fit_transform(X)
 
-        # HistGradientBoostingClassifier uses C extensions (not Cython loss objects)
-        # so pickled models are stable across sklearn patch versions.
-        base = HistGradientBoostingClassifier(
-            max_iter=400, max_depth=4,
-            learning_rate=0.04,
-            random_state=42,
+        # RandomForestClassifier: pure numpy array serialization, zero Cython
+        # dependencies. Pickles are stable across ALL Python versions (3.11, 3.12+)
+        # and ALL sklearn patch versions. This is the permanent cross-version fix.
+        base = RandomForestClassifier(
+            n_estimators=400, max_depth=6,
+            min_samples_leaf=10,
+            random_state=42, n_jobs=-1,
         )
         self.volume_gate_model = CalibratedClassifierCV(base, cv=5, method='isotonic')
         self.volume_gate_model.fit(Xs, y_gate)
 
         # OOF calibration check
         oof = cross_val_predict(
-            HistGradientBoostingClassifier(max_iter=400, max_depth=4,
-                                           learning_rate=0.04, random_state=42),
+            RandomForestClassifier(n_estimators=400, max_depth=6,
+                                   min_samples_leaf=10, random_state=42, n_jobs=-1),
             Xs, y_gate, cv=5, method='predict_proba',
         )[:, 1]
         logger.info(f"  OOF mean P(meaningful_3pa): {oof.mean():.3f} "
