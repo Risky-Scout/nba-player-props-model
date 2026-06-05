@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import json
 import math
 import sys
@@ -115,6 +116,11 @@ def _apply_one(pmf: np.ndarray, params: dict) -> np.ndarray:
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--start-date", default=None,
+                    help="ISO date (YYYY-MM-DD); only evaluate on OOF rows on or after this date.")
+    args = ap.parse_args()
+
     if not OUT.exists():
         print("SPARSE_HURDLE_VERIFY_FAIL missing offsets", file=sys.stderr)
         return 1
@@ -128,6 +134,13 @@ def main() -> int:
         return 2
 
     df = pd.read_parquet(oof_path)
+    df = df[df["stat"].astype(str).str.lower().isin(SPARSE)].copy()
+
+    if args.start_date:
+        df = df[df["game_date"].astype(str) >= str(args.start_date)]
+        if df.empty:
+            print(f"SPARSE_HURDLE_VERIFY_FAIL no rows on or after {args.start_date}", file=sys.stderr)
+            return 2
     df = df[df["stat"].astype(str).str.lower().isin(SPARSE)].copy()
     df["stat"] = df["stat"].astype(str).str.lower()
     df["role_bucket"] = df["role_bucket"].astype(str).str.lower()
