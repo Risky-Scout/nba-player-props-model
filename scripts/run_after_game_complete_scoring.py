@@ -35,7 +35,25 @@ def build_complete_actuals(date: str) -> Path:
     df = df[df["game_date"].eq(date)].copy()
 
     if df.empty:
-        raise SystemExit(f"FAIL: no BDL player_game_stats rows for {date}")
+        # Before failing, verify BDL actually had games on this date.
+        # On genuine no-game / rest days, zero rows is expected and correct.
+        _no_games = False
+        try:
+            from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
+            games = get_games(start_date=date, end_date=date)
+            if len(games) == 0:
+                _no_games = True
+                print(
+                    f"AFTER_GAME_SCORING_VALID_SKIP  date={date}  "
+                    f"reason=no_games_on_bdl_schedule",
+                    flush=True,
+                )
+        except Exception as exc:
+            print(f"  WARN: BDL games check failed ({exc}); applying conservative check.", flush=True)
+        if not _no_games:
+            raise SystemExit(f"FAIL: no BDL player_game_stats rows for {date}")
+        # No games scheduled — return None so caller valid-skips cleanly.
+        return None
 
     if "turnover" in df.columns and "tov" not in df.columns:
         df["tov"] = df["turnover"]
@@ -139,6 +157,11 @@ def main():
     ])
 
     outcomes = build_complete_actuals(date)
+
+    # No games on this date — valid-skip the scorer entirely.
+    if outcomes is None:
+        print(f"AFTER_GAME_SCORING_VALID_SKIP  date={date}  reason=no_games_no_rows", flush=True)
+        return 0
 
     scorer_cmd = [
         sys.executable,
