@@ -1,6 +1,6 @@
 # Predictions enrichment — 2026-06-05
 
-- generated_at_utc: 2026-06-05T23:04:25+00:00Z
+- generated_at_utc: 2026-06-06T00:22:14+00:00Z
 - pre_hash: `a13ccc7e9f983247`
 - post_hash: `fa80c4120a8385c9`
 - pre_rows: 45

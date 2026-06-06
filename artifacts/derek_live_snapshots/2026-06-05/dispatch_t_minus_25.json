@@ -1,26 +1,26 @@
 {
-  "code_commit": "e87c4795de7d6a0b415e843bc726f4ea3ff16af7",
+  "code_commit": "663e323d3740d940c4328001fca0b4cd783e8280",
   "decisions": [
     {
-      "decision": "skipped_not_due",
-      "detail": "now < target - 5min; will fire during the cron window starting at 2026-06-06T00:10:00+00:00",
+      "action": "fire_late_but_pre_tip",
+      "decision": "fired_ok",
       "game_id": "21716135",
-      "now_utc": "2026-06-05T23:04:29Z",
       "snapshot_dir": "deliveries/2026-06-05/derek_game_snapshots/21716135/t_minus_25",
-      "state": "NOT_DUE",
+      "state": "LATE_BUT_PRE_TIP",
+      "tail": "  snapshot_dir=deliveries/2026-06-05/derek_game_snapshots/21716135/t_minus_25",
       "target_utc": "2026-06-06T00:15:00Z"
     }
   ],
   "delivery_date": "2026-06-05",
-  "eligible_rows": 0,
-  "now_utc": "2026-06-05T23:04:29Z",
+  "eligible_rows": 1,
+  "now_utc": "2026-06-06T00:22:18Z",
   "schedule_rows": 1,
   "schema_version": "1.0",
   "snapshot_type": "t_minus_25",
   "summary": {
     "failures": 0,
-    "fired": 0,
+    "fired": 1,
     "skipped_already_run": 0,
-    "skipped_window": 1
+    "skipped_window": 0
   }
 }

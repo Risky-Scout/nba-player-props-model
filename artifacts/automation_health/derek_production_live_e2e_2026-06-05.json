@@ -1,12 +1,12 @@
 {
   "facts": {
-    "any_target_in_past": false,
+    "any_target_in_past": true,
     "any_target_overdue": false,
     "champion_pointer_contextual_pmf_engine": true,
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-06-05",
-    "now_utc": "2026-06-05T23:04:51Z",
+    "now_utc": "2026-06-06T00:23:28Z",
     "overdue_missing_snapshots": [],
     "overdue_unresolved": [],
     "per_type_lines": [
@@ -16,12 +16,12 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21716135 target_utc=2026-06-06T00:15:00Z now=2026-06-05T23:04:51Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21716135 target_utc=2026-06-06T00:15:00Z now=2026-06-06T00:23:28Z",
+        "outcome": "PASS",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21716135 target_utc=2026-06-06T00:34:00Z now=2026-06-05T23:04:51Z",
+        "detail": "game=21716135 target_utc=2026-06-06T00:34:00Z now=2026-06-06T00:23:28Z",
         "outcome": "PENDING_NOT_DUE",
         "type": "CLOSE_LOCK"
       }
@@ -32,7 +32,7 @@
     "phase13x_reports_missing": [],
     "pl_fail_count": 0,
     "pl_fails": [],
-    "pl_pass_count": 1,
+    "pl_pass_count": 2,
     "pl_passes": [
       {
         "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
@@ -40,6 +40,13 @@
         "issues": [],
         "snapshot_mode": "production_live_current",
         "snapshot_type": "current_live"
+      },
+      {
+        "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+        "game_id": "21716135",
+        "issues": [],
+        "snapshot_mode": "production_live",
+        "snapshot_type": "t_minus_25"
       }
     ],
     "predictions_parquet_present": true,
