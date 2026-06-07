@@ -220,6 +220,10 @@ def main(argv: list[str] | None = None) -> int:
             add_check("rows_on_target_date_above_floor", False, f"rows_on_target_date=0")
             findings["fail_code"] = "PREVIOUS_DAY_SOURCE_COMPLETENESS_FAILED_ZERO_ROWS"
             return _emit(findings, out_dir, refresh_seen)
+        # BDL confirmed no games — skip the floor check and pass cleanly.
+        findings["passed"] = True
+        print("PREVIOUS_DAY_SOURCE_COMPLETENESS_PASS")
+        return _emit(findings, out_dir, refresh_seen)
 
     if rows_target < COMPLETE_FLOOR_ROWS:
         add_check(
