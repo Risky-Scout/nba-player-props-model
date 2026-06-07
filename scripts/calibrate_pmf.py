@@ -1033,6 +1033,7 @@ def main() -> None:
                 start=start,
                 fold_days=args.fold_days,
                 oof_output_dir=agg_oof_dir,
+                fold_dirs=[],  # aggregate mode has no per-fold temp dirs
             )
         finally:
             if agg_swap_originals is not None:
@@ -1270,6 +1271,7 @@ def main() -> None:
             start=start,
             fold_days=args.fold_days,
             oof_output_dir=final_oof_dir,
+            fold_dirs=_fold_dirs,
         )
     finally:
         if final_swap_originals is not None:
@@ -1284,6 +1286,7 @@ def _fit_final_calibrators_and_emit_report(
     start: float,
     fold_days: int,
     oof_output_dir: Path | None = None,
+    fold_dirs: list[Path] | None = None,
 ) -> None:
     # Determine whether per-fold results uniformly carry pmf_active.
     # This single flag drives BOTH the OOF parquet emission (omit the
@@ -1499,7 +1502,7 @@ def _fit_final_calibrators_and_emit_report(
     # build_stat_grid_pmfs.py and predict.py can load a fresh, version-
     # compatible artifact after every Phase 8 calibration run.
     _promoted = False
-    for _fold_dir in sorted(_fold_dirs, reverse=True):
+    for _fold_dir in sorted(fold_dirs or [], reverse=True):
         _src = _fold_dir / "fg3m_hurdle.pkl"
         if _src.exists():
             import shutil as _shutil
