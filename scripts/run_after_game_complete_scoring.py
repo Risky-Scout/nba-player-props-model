@@ -160,6 +160,19 @@ def main():
 
     # No games on this date — valid-skip the scorer entirely.
     if outcomes is None:
+        # Write no_games_status.json so verify_after_game_scoring_package_consistency.py
+        # can detect this is a valid no-game day and skip its checks cleanly.
+        import json as _json
+        no_games_dir = Path("deliveries") / date / "after_game_scoring"
+        no_games_dir.mkdir(parents=True, exist_ok=True)
+        (no_games_dir / "no_games_status.json").write_text(
+            _json.dumps({
+                "date": date,
+                "status": "no_games_scheduled",
+                "reason": "BDL confirms 0 games on this date — valid no-game day",
+            }, indent=2) + "\n",
+            encoding="utf-8",
+        )
         print(f"AFTER_GAME_SCORING_VALID_SKIP  date={date}  reason=no_games_no_rows", flush=True)
         return 0
 
