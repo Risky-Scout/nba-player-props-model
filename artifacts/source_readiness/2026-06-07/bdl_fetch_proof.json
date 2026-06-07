@@ -1,0 +1,22 @@
+{
+  "delivery_date": "2026-06-07",
+  "checked_at_utc": "2026-06-07T06:45:27Z",
+  "bdl_key_present": true,
+  "local_snapshot": {
+    "present": false,
+    "rows": 0,
+    "files": [],
+    "oldest_age_hours": null,
+    "newest_age_hours": null
+  },
+  "live_fetch": {
+    "attempted": false,
+    "ok": false,
+    "rows": 0,
+    "error": null
+  },
+  "max_age_hours": 6.0,
+  "state": "bdl_snapshot_missing",
+  "morning_projected_mode_allowed": true,
+  "note": "Morning projected mode does not require confirmed BDL lineups, but the M8.9 eligibility gate must run upstream so empty BDL never permits a full-roster PMF publish."
+}
