@@ -1,0 +1,177 @@
+{
+  "calibrated_through_date": "2026-06-06",
+  "calibration_run_id": "nightly-20260523T042740",
+  "champion_artifact_dir": "artifacts/models",
+  "champion_model_id": "challenger-2026-06-06",
+  "champion_pointer_hash": "3a8577f27e69192c059ac5d9a973c290",
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "count_diagnostics": {
+    "fair_odds_board": {
+      "fair_over_odds_null_count": 650,
+      "fair_under_odds_null_count": 650,
+      "zero_or_one_prob_count": 647
+    }
+  },
+  "delivery_date": "2026-06-08",
+  "finality_blocker_codes": [
+    "lineup_unconfirmed"
+  ],
+  "finality_blockers": [
+    {
+      "code": "lineup_unconfirmed",
+      "detail": "No confirmed-lineup rows were present. This is acceptable for morning/provisional outputs but not final lock outputs.",
+      "required_to_resolve": "Regenerate near lock after official lineups are available."
+    }
+  ],
+  "finality_status": "provisional",
+  "freshness_manifest": {
+    "availability_freshness_status": "fresh",
+    "books_seen": [
+      "betmgm",
+      "betparx",
+      "betrivers",
+      "bovada",
+      "draftkings",
+      "espnbet",
+      "fanatics",
+      "fanduel",
+      "fliff",
+      "hardrockbet",
+      "hardrockbet_az",
+      "hardrockbet_fl",
+      "rebet",
+      "williamhill_us"
+    ],
+    "built_at_utc": "2026-06-08T18:02:24Z",
+    "finals_finality_status": "finals_pending",
+    "odds_status": "ok",
+    "overall_status": "ready",
+    "path": "data/freshness_manifest/2026-06-08.json",
+    "predictions_mtime_utc": "2026-06-08T18:01:29.010874Z",
+    "regions_requested": [
+      "us",
+      "us2"
+    ],
+    "role_freshness_status_rollup": {
+      "derived_from_projected_minutes": 144
+    },
+    "tov_status": "missing_from_prediction_source"
+  },
+  "metadata_stamped_at_utc": "2026-06-08T18:04:01+00:00",
+  "model_source": "champion_pointer",
+  "model_version": "9ee5dc2c#phase10c",
+  "no_challenger_artifacts_used": true,
+  "no_odds_fetch": false,
+  "output_generated_at_utc": "2026-06-08T18:04:01+00:00",
+  "phase8_blend_policy": "monotone_inactive_global_v1",
+  "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
+  "pipeline_run_id": "0d62783a-fb04-463b-98f6-a76f889fb7e1",
+  "promotion_decision_id": "phase13s-promotion-2026-06-06_direct_lineup_contextual-20260607T102655",
+  "quality_rollup": {
+    "calibration_confidence": {
+      "high": 132,
+      "medium": 12
+    },
+    "injury_freshness_status": {
+      "fallback_used": 144
+    },
+    "lineup_freshness_status": {
+      "projected": 144
+    },
+    "market_coverage_status": {
+      "full": 144
+    },
+    "pmf_sum_error_max": 6.661338147750939e-16,
+    "pmf_valid_ok_pct": 1.0,
+    "role_freshness_status": {
+      "derived_from_projected_minutes": 144
+    }
+  },
+  "row_counts": {
+    "fair_odds_board": 3084,
+    "full_pmfs_wide": 144,
+    "market_comparison": 2338,
+    "publishable_edges": 1929
+  },
+  "snapshot_time_utc": "2026-06-08T18:03:37Z",
+  "snapshot_type": "morning",
+  "sources": {
+    "availability_table": {
+      "freshness_status": "fresh",
+      "mtime_utc": "2026-06-08T18:01:20.612741Z",
+      "path": "data/player_availability_asof.parquet"
+    },
+    "model_only_parquet": {
+      "auto_built_from_predictions": false,
+      "mtime_utc": "2026-06-08T18:03:35.927712Z",
+      "path": "deliveries/2026-06-08/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
+      "sha256": "1bb733184f995a6fffb229cb9473fd281ece0eeb4d5baa1f4f700563ad7b592a"
+    },
+    "odds_snapshot": {
+      "books_seen": [
+        "betmgm",
+        "betparx",
+        "betrivers",
+        "bovada",
+        "draftkings",
+        "espnbet",
+        "fanatics",
+        "fanduel",
+        "fliff",
+        "hardrockbet",
+        "hardrockbet_az",
+        "hardrockbet_fl",
+        "rebet",
+        "williamhill_us"
+      ],
+      "coverage_status": "full",
+      "fetch_status": "consumed_from_disk",
+      "mtime_utc": "2026-06-08T18:02:24.319714Z",
+      "path": "data/odds_api/processed/2026-06-08/odds_pairs_live_slate_morning_7am_2026-06-08T180220Z.parquet"
+    },
+    "predictions_parquet": {
+      "mtime_utc": "2026-06-08T18:01:29.010874Z",
+      "path": "predictions/all_props_2026-06-08.parquet"
+    }
+  },
+  "stamp_code_commit": "9ee5dc2c7f7c75a0eb491bcfe8d764975ef6e8a6",
+  "target_stats": {
+    "expected": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "tov",
+      "stl",
+      "blk",
+      "stocks",
+      "pa",
+      "pr",
+      "ra",
+      "pra"
+    ],
+    "extra_relative_to_supported": [],
+    "in_delivery": [
+      "ast",
+      "blk",
+      "fg3m",
+      "pa",
+      "pr",
+      "pra",
+      "pts",
+      "ra",
+      "reb",
+      "stl",
+      "stocks",
+      "tov"
+    ],
+    "missing": []
+  },
+  "tov_overlay": "off",
+  "tov_overlay_reason": "Phase 10D/10D.2 overlay failed independent validation; see docs/phase11_tov_structural_refit_plan.md",
+  "tov_status": "present",
+  "trained_through_date": "2026-06-06",
+  "training_run_id": "nightly-20260523T042740",
+  "validation_run_id": "nightly-20260523T042740",
+  "warnings": []
+}
