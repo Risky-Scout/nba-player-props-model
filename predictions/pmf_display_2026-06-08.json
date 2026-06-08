@@ -1,0 +1,630 @@
+{
+  "date": "2026-06-08",
+  "generated_at": "2026-06-08T17:38:27.827924",
+  "props": [
+    {
+      "player_name": "Keldon Johnson",
+      "game": "San Antonio Spurs @ New York Knicks",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.7688,
+      "market_prob": 0.5042,
+      "ev": 0.4373,
+      "edge": 0.2646,
+      "fair_odds_over": -332,
+      "fair_odds_under": 332,
+      "pmf_median": 1,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -115,
+        "under_odds": -111,
+        "best_odds": -115
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2312,
+          "fair_odds": 333,
+          "display_prob": "23.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3662,
+          "fair_odds": 173,
+          "display_prob": "36.6%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2462,
+          "fair_odds": 306,
+          "display_prob": "24.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.092,
+          "fair_odds": 987,
+          "display_prob": "9.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0643,
+          "fair_odds": 1455,
+          "display_prob": "6.4%"
+        }
+      ]
+    },
+    {
+      "player_name": "Victor Wembanyama",
+      "game": "San Antonio Spurs @ New York Knicks",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 3.5,
+      "model_prob": 0.8093,
+      "market_prob": 0.5355,
+      "ev": 0.4319,
+      "edge": 0.2738,
+      "fair_odds_over": 424,
+      "fair_odds_under": -424,
+      "pmf_median": 2,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "betparx",
+        "over_odds": 104,
+        "under_odds": -130,
+        "best_odds": -130
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1375,
+          "fair_odds": 627,
+          "display_prob": "13.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.2429,
+          "fair_odds": 312,
+          "display_prob": "24.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2191,
+          "fair_odds": 356,
+          "display_prob": "21.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.2098,
+          "fair_odds": 377,
+          "display_prob": "21.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1054,
+          "fair_odds": 849,
+          "display_prob": "10.5%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0853,
+          "fair_odds": 1072,
+          "display_prob": "8.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Victor Wembanyama",
+      "game": "San Antonio Spurs @ New York Knicks",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "UNDER",
+      "line": 27.5,
+      "model_prob": 0.7324,
+      "market_prob": 0.5077,
+      "ev": 0.3863,
+      "edge": 0.2247,
+      "fair_odds_over": 274,
+      "fair_odds_under": -274,
+      "pmf_median": 22,
+      "line_vs_median": 5.5,
+      "affiliate": {
+        "vendor": "fanatics",
+        "over_odds": -105,
+        "under_odds": -112,
+        "best_odds": -112
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0056,
+          "fair_odds": 17757,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0071,
+          "fair_odds": 13985,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0068,
+          "fair_odds": 14606,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0073,
+          "fair_odds": 13599,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.009,
+          "fair_odds": 11011,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0106,
+          "fair_odds": 9334,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0112,
+          "fair_odds": 8829,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.013,
+          "fair_odds": 7592,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0144,
+          "fair_odds": 6844,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.0119,
+          "fair_odds": 8303,
+          "display_prob": "1.2%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.016,
+          "fair_odds": 6150,
+          "display_prob": "1.6%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0172,
+          "fair_odds": 5714,
+          "display_prob": "1.7%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0254,
+          "fair_odds": 3837,
+          "display_prob": "2.5%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0246,
+          "fair_odds": 3965,
+          "display_prob": "2.5%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0297,
+          "fair_odds": 3267,
+          "display_prob": "3.0%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0295,
+          "fair_odds": 3290,
+          "display_prob": "2.9%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.035,
+          "fair_odds": 2757,
+          "display_prob": "3.5%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0337,
+          "fair_odds": 2867,
+          "display_prob": "3.4%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.041,
+          "fair_odds": 2339,
+          "display_prob": "4.1%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0387,
+          "fair_odds": 2484,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0424,
+          "fair_odds": 2258,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0406,
+          "fair_odds": 2363,
+          "display_prob": "4.1%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.042,
+          "fair_odds": 2281,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.0479,
+          "fair_odds": 1988,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.0477,
+          "fair_odds": 1996,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 25,
+          "probability": 0.0503,
+          "fair_odds": 1888,
+          "display_prob": "5.0%"
+        },
+        {
+          "outcome": 26,
+          "probability": 0.0409,
+          "fair_odds": 2345,
+          "display_prob": "4.1%"
+        },
+        {
+          "outcome": 27,
+          "probability": 0.033,
+          "fair_odds": 2930,
+          "display_prob": "3.3%"
+        },
+        {
+          "outcome": 28,
+          "probability": 0.0314,
+          "fair_odds": 3085,
+          "display_prob": "3.1%"
+        },
+        {
+          "outcome": 29,
+          "probability": 0.0285,
+          "fair_odds": 3409,
+          "display_prob": "2.9%"
+        },
+        {
+          "outcome": 30,
+          "probability": 0.0315,
+          "fair_odds": 3075,
+          "display_prob": "3.1%"
+        },
+        {
+          "outcome": 31,
+          "probability": 0.0238,
+          "fair_odds": 4102,
+          "display_prob": "2.4%"
+        },
+        {
+          "outcome": 32,
+          "probability": 0.02,
+          "fair_odds": 4900,
+          "display_prob": "2.0%"
+        },
+        {
+          "outcome": 33,
+          "probability": 0.0179,
+          "fair_odds": 5487,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 34,
+          "probability": 0.0184,
+          "fair_odds": 5335,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 35,
+          "probability": 0.015,
+          "fair_odds": 6567,
+          "display_prob": "1.5%"
+        },
+        {
+          "outcome": 36,
+          "probability": 0.0108,
+          "fair_odds": 9159,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 37,
+          "probability": 0.0092,
+          "fair_odds": 10770,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 38,
+          "probability": 0.0104,
+          "fair_odds": 9515,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 39,
+          "probability": 0.0079,
+          "fair_odds": 12558,
+          "display_prob": "0.8%"
+        },
+        {
+          "outcome": 40,
+          "probability": 0.0062,
+          "fair_odds": 16029,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 41,
+          "probability": 0.0053,
+          "fair_odds": 18768,
+          "display_prob": "0.5%"
+        }
+      ]
+    },
+    {
+      "player_name": "Karl-Anthony Towns",
+      "game": "San Antonio Spurs @ New York Knicks",
+      "stat": "pts",
+      "stat_display": "Points",
+      "side": "UNDER",
+      "line": 17.5,
+      "model_prob": 0.6626,
+      "market_prob": 0.4761,
+      "ev": 0.3121,
+      "edge": 0.1865,
+      "fair_odds_over": 196,
+      "fair_odds_under": -196,
+      "pmf_median": 14,
+      "line_vs_median": 3.5,
+      "affiliate": {
+        "vendor": "betway",
+        "over_odds": -125,
+        "under_odds": -102,
+        "best_odds": -102
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.0105,
+          "fair_odds": 9424,
+          "display_prob": "1.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0126,
+          "fair_odds": 7837,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0147,
+          "fair_odds": 6703,
+          "display_prob": "1.5%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0168,
+          "fair_odds": 5852,
+          "display_prob": "1.7%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.021,
+          "fair_odds": 4662,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0208,
+          "fair_odds": 4708,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0278,
+          "fair_odds": 3497,
+          "display_prob": "2.8%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0381,
+          "fair_odds": 2525,
+          "display_prob": "3.8%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.0393,
+          "fair_odds": 2445,
+          "display_prob": "3.9%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.043,
+          "fair_odds": 2226,
+          "display_prob": "4.3%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.0461,
+          "fair_odds": 2069,
+          "display_prob": "4.6%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0562,
+          "fair_odds": 1679,
+          "display_prob": "5.6%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0523,
+          "fair_odds": 1812,
+          "display_prob": "5.2%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0481,
+          "fair_odds": 1979,
+          "display_prob": "4.8%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0543,
+          "fair_odds": 1742,
+          "display_prob": "5.4%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0548,
+          "fair_odds": 1725,
+          "display_prob": "5.5%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0522,
+          "fair_odds": 1816,
+          "display_prob": "5.2%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.054,
+          "fair_odds": 1752,
+          "display_prob": "5.4%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0444,
+          "fair_odds": 2152,
+          "display_prob": "4.4%"
+        },
+        {
+          "outcome": 19,
+          "probability": 0.0356,
+          "fair_odds": 2709,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 20,
+          "probability": 0.0358,
+          "fair_odds": 2693,
+          "display_prob": "3.6%"
+        },
+        {
+          "outcome": 21,
+          "probability": 0.0342,
+          "fair_odds": 2824,
+          "display_prob": "3.4%"
+        },
+        {
+          "outcome": 22,
+          "probability": 0.0269,
+          "fair_odds": 3617,
+          "display_prob": "2.7%"
+        },
+        {
+          "outcome": 23,
+          "probability": 0.0238,
+          "fair_odds": 4102,
+          "display_prob": "2.4%"
+        },
+        {
+          "outcome": 24,
+          "probability": 0.0205,
+          "fair_odds": 4778,
+          "display_prob": "2.1%"
+        },
+        {
+          "outcome": 25,
+          "probability": 0.0184,
+          "fair_odds": 5335,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 26,
+          "probability": 0.0178,
+          "fair_odds": 5518,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 27,
+          "probability": 0.0133,
+          "fair_odds": 7419,
+          "display_prob": "1.3%"
+        },
+        {
+          "outcome": 28,
+          "probability": 0.0095,
+          "fair_odds": 10426,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 29,
+          "probability": 0.0095,
+          "fair_odds": 10426,
+          "display_prob": "0.9%"
+        },
+        {
+          "outcome": 30,
+          "probability": 0.0096,
+          "fair_odds": 10317,
+          "display_prob": "1.0%"
+        },
+        {
+          "outcome": 31,
+          "probability": 0.0065,
+          "fair_odds": 15285,
+          "display_prob": "0.7%"
+        },
+        {
+          "outcome": 32,
+          "probability": 0.0058,
+          "fair_odds": 17141,
+          "display_prob": "0.6%"
+        },
+        {
+          "outcome": 33,
+          "probability": 0.0053,
+          "fair_odds": 18768,
+          "display_prob": "0.5%"
+        },
+        {
+          "outcome": 34,
+          "probability": 0.0054,
+          "fair_odds": 18419,
+          "display_prob": "0.5%"
+        }
+      ]
+    }
+  ]
+}
