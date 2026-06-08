@@ -26,7 +26,7 @@
     "status": "pending_pre_tipoff_run"
   },
   "market_comparison_source": "deliveries/2026-06-08/wizard_of_odds/market_comparison.parquet",
-  "metadata_stamped_at_utc": "2026-06-08T19:42:45+00:00",
+  "metadata_stamped_at_utc": "2026-06-08T20:24:55+00:00",
   "model_source": "champion_pointer",
   "model_source_contract": "stat_grid_canonical_market_comparison",
   "morning": {
@@ -50,7 +50,7 @@
     "tov_rows": 12
   },
   "no_challenger_artifacts_used": true,
-  "output_generated_at_utc": "2026-06-08T19:42:45+00:00",
+  "output_generated_at_utc": "2026-06-08T20:24:55+00:00",
   "promotion_decision_id": "phase13s-promotion-2026-06-06_direct_lineup_contextual-20260607T102655",
   "rules": {
     "market_source": "market_comparison.parquet (reference-only)",
@@ -257,7 +257,7 @@
     ]
   },
   "snapshot": "morning",
-  "stamp_code_commit": "82b7458d494eb1ac048a8b70106b3d0464310d97",
+  "stamp_code_commit": "2a55ede2cc8378dc60a0cb1254548e6f9ed9f014",
   "stat_grid_source": "predictions/stat_grid_2026-06-08.parquet",
   "trained_through_date": "2026-06-06",
   "training_run_id": "nightly-20260523T042740",
