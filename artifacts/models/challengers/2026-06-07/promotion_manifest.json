@@ -1,6 +1,6 @@
 {
-  "code_commit": "e94f3e068519c7c17a78fd161ee122a301ca743e",
-  "decided_at_utc": "2026-06-08T12:24:35+00:00",
+  "code_commit": "fd434136aad62534ffc35dc72ebeee4f25c396e6",
+  "decided_at_utc": "2026-06-08T17:04:52+00:00",
   "decision_seen": {
     "as_of_date": "2026-06-07",
     "calibration_blend_policy": "stat_role_guarded_expanded_v1",
@@ -238,7 +238,7 @@
         "rps": 0.5485165660229925
       }
     },
-    "code_commit": "e94f3e068519c7c17a78fd161ee122a301ca743e",
+    "code_commit": "fd434136aad62534ffc35dc72ebeee4f25c396e6",
     "gates_failed": [
       "no_severe_market_stat_bucket_regression"
     ],
@@ -264,7 +264,7 @@
       "market_logloss_non_inferior_or_better",
       "market_brier_non_inferior_or_better"
     ],
-    "generated_at_utc": "2026-06-08T12:24:33+00:00",
+    "generated_at_utc": "2026-06-08T17:04:51+00:00",
     "m6_3_matrix_summary": {
       "detail": "valid",
       "expected_role_buckets": [
@@ -493,7 +493,7 @@
           "stat": "reb"
         }
       ],
-      "code_commit": "e94f3e068519c7c17a78fd161ee122a301ca743e",
+      "code_commit": "fd434136aad62534ffc35dc72ebeee4f25c396e6",
       "dates_included": [
         "2026-06-05",
         "2026-05-30",
@@ -528,7 +528,7 @@
       ],
       "delta_brier": 0.0015019138293587016,
       "delta_logloss": 0.00412407433622323,
-      "generated_at_utc": "2026-06-08T12:24:25+00:00",
+      "generated_at_utc": "2026-06-08T17:04:40+00:00",
       "market_brier": 0.2213243323227763,
       "market_logloss": 0.6320078684123581,
       "min_bucket_rows": 50,
@@ -1245,7 +1245,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-07",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260608T122345"
+    "training_run_id": "nightly-20260608T170350"
   },
   "promoted": false,
   "reason": "contextual_regression_blocked: existing champion pointer has feature_set_id='phase13s_direct_lineup_injury_pmf_driver_v1' (contextual/direct-lineup) but the new challenger train_manifest has feature_set_id='' \u2014 refusing to replace a contextual champion with a non-contextual pointer. Promote the contextual challenger first.",
