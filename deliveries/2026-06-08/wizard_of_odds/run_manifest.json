@@ -7,9 +7,9 @@
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "count_diagnostics": {
     "fair_odds_board": {
-      "fair_over_odds_null_count": 680,
-      "fair_under_odds_null_count": 680,
-      "zero_or_one_prob_count": 676
+      "fair_over_odds_null_count": 684,
+      "fair_under_odds_null_count": 684,
+      "zero_or_one_prob_count": 681
     }
   },
   "delivery_date": "2026-06-08",
@@ -42,12 +42,12 @@
       "rebet",
       "williamhill_us"
     ],
-    "built_at_utc": "2026-06-08T18:08:27Z",
+    "built_at_utc": "2026-06-08T19:41:14Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "ready",
     "path": "data/freshness_manifest/2026-06-08.json",
-    "predictions_mtime_utc": "2026-06-08T18:07:31.893701Z",
+    "predictions_mtime_utc": "2026-06-08T19:40:17.019267Z",
     "regions_requested": [
       "us",
       "us2"
@@ -57,15 +57,15 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-06-08T18:09:56+00:00",
+  "metadata_stamped_at_utc": "2026-06-08T19:42:45+00:00",
   "model_source": "champion_pointer",
-  "model_version": "2a5a7aa6#phase10c",
+  "model_version": "82b7458d#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-06-08T18:09:56+00:00",
+  "output_generated_at_utc": "2026-06-08T19:42:45+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "pipeline_run_id": "aee6c857-fb14-421c-ba7b-ccfe21506524",
+  "pipeline_run_id": "5fa5cd3e-aa15-45ab-94c6-4869f69fe972",
   "promotion_decision_id": "phase13s-promotion-2026-06-06_direct_lineup_contextual-20260607T102655",
   "quality_rollup": {
     "calibration_confidence": {
@@ -81,7 +81,7 @@
     "market_coverage_status": {
       "full": 144
     },
-    "pmf_sum_error_max": 5.551115123125783e-16,
+    "pmf_sum_error_max": 8.881784197001252e-16,
     "pmf_valid_ok_pct": 1.0,
     "role_freshness_status": {
       "derived_from_projected_minutes": 144
@@ -90,22 +90,22 @@
   "row_counts": {
     "fair_odds_board": 3084,
     "full_pmfs_wide": 144,
-    "market_comparison": 2351,
-    "publishable_edges": 1905
+    "market_comparison": 2355,
+    "publishable_edges": 1920
   },
-  "snapshot_time_utc": "2026-06-08T18:09:34Z",
+  "snapshot_time_utc": "2026-06-08T19:42:22Z",
   "snapshot_type": "morning",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-06-08T18:07:27.890606Z",
+      "mtime_utc": "2026-06-08T19:40:12.791323Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-06-08T18:09:32.647521Z",
+      "mtime_utc": "2026-06-08T19:42:20.708595Z",
       "path": "deliveries/2026-06-08/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "b074669103cf4845705c413fd500d241bc5d65644f9cbeb1f93a813d46c0df9e"
+      "sha256": "d58111d6680870321dad85668aa944f0ace0661b1f94c69277760c294f9fb87c"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -126,15 +126,15 @@
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-06-08T18:08:27.471006Z",
-      "path": "data/odds_api/processed/2026-06-08/odds_pairs_live_slate_morning_7am_2026-06-08T180824Z.parquet"
+      "mtime_utc": "2026-06-08T19:41:14.360498Z",
+      "path": "data/odds_api/processed/2026-06-08/odds_pairs_live_slate_morning_7am_2026-06-08T194110Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-06-08T18:07:31.893701Z",
+      "mtime_utc": "2026-06-08T19:40:17.019267Z",
       "path": "predictions/all_props_2026-06-08.parquet"
     }
   },
-  "stamp_code_commit": "2a5a7aa63e528bf6c501988d54377dcecdfae578",
+  "stamp_code_commit": "82b7458d494eb1ac048a8b70106b3d0464310d97",
   "target_stats": {
     "expected": [
       "pts",

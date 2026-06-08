@@ -3,10 +3,10 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `derek_forward_feed/morning_snapshot.csv`
-- Original rows: `2291`
+- Original rows: `2302`
 - Original columns: `88`
-- Original bytes: `5821345`
-- Current CSV preview rows: `215`
+- Original bytes: `5753777`
+- Current CSV preview rows: `212`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `morning_snapshot.parquet`
 - CSV parts folder: `morning_snapshot_csv_parts/`
@@ -15,21 +15,20 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 | part | rows | bytes |
 |---|---:|---:|
-| `morning_snapshot_csv_parts/morning_snapshot_part_000.csv` | 128 | 246071 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_001.csv` | 128 | 360559 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_002.csv` | 128 | 388894 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_003.csv` | 128 | 297045 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_004.csv` | 128 | 389091 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_005.csv` | 128 | 258216 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_006.csv` | 128 | 304350 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_007.csv` | 128 | 288020 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_008.csv` | 128 | 324173 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_009.csv` | 128 | 311907 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_010.csv` | 128 | 227733 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_011.csv` | 128 | 332912 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_012.csv` | 128 | 314111 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_013.csv` | 128 | 249246 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_014.csv` | 128 | 455086 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_015.csv` | 128 | 322740 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_016.csv` | 121 | 334395 |
-| `morning_snapshot_csv_parts/morning_snapshot_part_017.csv` | 122 | 336527 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_000.csv` | 127 | 258434 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_001.csv` | 127 | 362561 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_002.csv` | 127 | 340269 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_003.csv` | 127 | 323938 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_004.csv` | 127 | 366112 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_005.csv` | 127 | 249682 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_006.csv` | 127 | 332568 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_007.csv` | 127 | 286018 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_008.csv` | 127 | 305667 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_009.csv` | 127 | 317064 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_010.csv` | 127 | 238404 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_011.csv` | 127 | 345157 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_012.csv` | 254 | 504463 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_013.csv` | 127 | 462885 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_014.csv` | 127 | 258197 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_015.csv` | 127 | 357356 |
+| `morning_snapshot_csv_parts/morning_snapshot_part_016.csv` | 143 | 363298 |
