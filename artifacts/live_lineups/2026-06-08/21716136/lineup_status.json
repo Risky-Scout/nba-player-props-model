@@ -1,0 +1,22 @@
+{
+  "bdl_fetch_error": null,
+  "bdl_fetch_status": "confirmed_lineups_not_available_yet",
+  "bdl_http_status": 200,
+  "bench_count_by_team": {},
+  "bench_players": [],
+  "delivery_date": "2026-06-08",
+  "fetched_at_utc": "2026-06-08T22:52:51Z",
+  "game_id": "21716136",
+  "game_start_time_utc": "2026-06-09T00:40:00Z",
+  "lineup_blocker": "confirmed_lineups_not_available_yet",
+  "lineup_complete": "unavailable",
+  "lineup_confirmed": false,
+  "lineup_hash": "",
+  "schema_version": "1.1",
+  "source": "balldontlie_v1_lineups",
+  "starter_count_by_team": {},
+  "starters": [],
+  "teams_present": [],
+  "total_rows": 0,
+  "unmapped_players": []
+}

@@ -1,0 +1,51 @@
+{
+  "bench_changed_from_projection": 30,
+  "confirmed_benches": 30,
+  "confirmed_starters": 0,
+  "contextual_blocker": "",
+  "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+  "is_phase13s_direct_driver": true,
+  "minutes_delta_abs_max": 14.444956706797905,
+  "minutes_delta_abs_mean": 14.444956706797901,
+  "minutes_projection_conflicts": 0,
+  "rate_delta_summary": {
+    "ast": {
+      "abs_max": 0.008609458721291926,
+      "abs_mean": 0.008609458721291926,
+      "n": 30
+    },
+    "blk": {
+      "abs_max": 0.000573234218937663,
+      "abs_mean": 0.0005732342189376631,
+      "n": 30
+    },
+    "fg3m": {
+      "abs_max": 0.0014904021730912979,
+      "abs_mean": 0.001490402173091298,
+      "n": 30
+    },
+    "pts": {
+      "abs_max": 0.028985128461804933,
+      "abs_mean": 0.02898512846180493,
+      "n": 30
+    },
+    "reb": {
+      "abs_max": 0.007993480883504274,
+      "abs_mean": 0.007993480883504272,
+      "n": 30
+    },
+    "stl": {
+      "abs_max": 0.0020182973106028044,
+      "abs_mean": 0.002018297310602804,
+      "n": 30
+    },
+    "tov": {
+      "abs_max": 0.0047828455360207755,
+      "abs_mean": 0.004782845536020775,
+      "n": 30
+    }
+  },
+  "rows_scored": 30,
+  "schema_version": "1.0",
+  "starter_changed_from_projection": 0
+}
