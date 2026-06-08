@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-06-08T18:04:07Z",
+  "generated_at_utc": "2026-06-08T18:10:04Z",
   "reports": [
     {
       "date": "2026-06-08",
       "delivery_dir": "deliveries/2026-06-08",
       "write": true,
-      "generated_at_utc": "2026-06-08T18:04:02Z",
-      "files_checked": 41,
+      "generated_at_utc": "2026-06-08T18:09:57Z",
+      "files_checked": 121,
       "files_changed": 37,
       "columns_removed_total": 283,
       "changes": [
@@ -108,7 +108,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_forward_feed/latest_available_snapshot.csv",
-          "rows": 2278,
+          "rows": 2291,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -122,7 +122,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_forward_feed/latest_available_snapshot.parquet",
-          "rows": 2278,
+          "rows": 2291,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -136,7 +136,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_forward_feed/morning_snapshot.csv",
-          "rows": 2278,
+          "rows": 2291,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -150,7 +150,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_forward_feed/morning_snapshot.jsonl",
-          "rows": 2278,
+          "rows": 2291,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -164,7 +164,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_forward_feed/morning_snapshot.parquet",
-          "rows": 2278,
+          "rows": 2291,
           "cols_before": 93,
           "cols_after": 88,
           "preserved_columns": [],
@@ -224,7 +224,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_game_snapshots/21716136/morning/market_comparison.csv",
-          "rows": 2338,
+          "rows": 2351,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -235,7 +235,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_game_snapshots/21716136/morning/market_comparison.parquet",
-          "rows": 2338,
+          "rows": 2351,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -246,7 +246,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_game_snapshots/21716136/morning/outcome_level_probabilities.csv",
-          "rows": 5052,
+          "rows": 4915,
           "cols_before": 12,
           "cols_after": 11,
           "preserved_columns": [],
@@ -256,7 +256,7 @@
         },
         {
           "file": "deliveries/2026-06-08/derek_game_snapshots/21716136/morning/outcome_level_probabilities.parquet",
-          "rows": 5052,
+          "rows": 4915,
           "cols_before": 12,
           "cols_after": 11,
           "preserved_columns": [],
@@ -584,7 +584,7 @@
         },
         {
           "file": "deliveries/2026-06-08/wizard_of_odds/market_comparison.csv",
-          "rows": 2338,
+          "rows": 2351,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -595,7 +595,7 @@
         },
         {
           "file": "deliveries/2026-06-08/wizard_of_odds/market_comparison.parquet",
-          "rows": 2338,
+          "rows": 2351,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -606,7 +606,7 @@
         },
         {
           "file": "deliveries/2026-06-08/wizard_of_odds/publishable_edges.csv",
-          "rows": 1929,
+          "rows": 1905,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -617,7 +617,7 @@
         },
         {
           "file": "deliveries/2026-06-08/wizard_of_odds/publishable_edges.parquet",
-          "rows": 1929,
+          "rows": 1905,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -630,7 +630,7 @@
       "errors": []
     }
   ],
-  "files_checked": 41,
+  "files_checked": 121,
   "files_changed": 37,
   "columns_removed_total": 283,
   "errors": []
