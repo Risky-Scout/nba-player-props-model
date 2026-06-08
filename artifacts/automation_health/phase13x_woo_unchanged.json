@@ -1,7 +1,5 @@
 {
   "changed_files": [
-    "artifacts/automation_health/derek_edge_root_cause_2026-06-08.json",
-    "artifacts/automation_health/derek_edge_root_cause_2026-06-08.md",
     "artifacts/automation_health/derek_live_api_readiness.json",
     "artifacts/automation_health/derek_live_api_readiness.md",
     "artifacts/automation_health/derek_live_champion_ready_2026-06-08.json",
@@ -13,7 +11,6 @@
     "artifacts/derek_live_snapshots/2026-06-08/dispatch_current_live.json",
     "artifacts/derek_live_snapshots/2026-06-08/dispatch_t_minus_25.json",
     "artifacts/live_schedule/2026-06-08/game_start_time_resolution_report.md",
-    "artifacts/live_schedule/2026-06-08/game_start_times.csv",
     "artifacts/live_schedule/2026-06-08/game_start_times.json",
     "artifacts/live_schedule/2026-06-08/prediction_game_time_enrichment.json",
     "artifacts/live_schedule/2026-06-08/prediction_game_time_enrichment.md",
