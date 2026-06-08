@@ -184,6 +184,43 @@ def main(argv: list[str] | None = None) -> int:
     findings["metrics"]["rolling_7day_median_rows"] = median7
     findings["metrics"]["rolling_7day_dates"] = [d.isoformat() for d in seven_dates]
 
+    # ── Early BDL no-game check ─────────────────────────────────────────────
+    # On rest days / no-game days, rows_target == 0 is expected and correct.
+    # Short-circuit ALL downstream checks before they can add failed entries.
+    # (max_game_date_covers_target would fail on rest days and _emit()
+    # recomputes passed from all checks, so any failed check blocks training.)
+    if rows_target == 0:
+        _bdl_no_game = False
+        try:
+            from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
+            _games = get_games(start_date=target.isoformat(), end_date=target.isoformat())
+            if len(_games) == 0:
+                _bdl_no_game = True
+        except Exception:
+            pass
+        if _bdl_no_game:
+            import json as _json
+            _manifest = {
+                "target_date": target.isoformat(),
+                "yesterday_in_et": findings.get("yesterday_in_et", target.isoformat()),
+                "passed": True,
+                "fail_code": None,
+                "no_games_confirmed_by_bdl": True,
+                "checks": [{"name": "bdl_no_games_confirmed", "passed": True,
+                             "detail": f"BDL confirms 0 games scheduled on {target} — valid rest day"}],
+                "metrics": findings.get("metrics", {}),
+            }
+            out_dir.mkdir(parents=True, exist_ok=True)
+            (out_dir / "source_completeness_manifest.json").write_text(
+                _json.dumps(_manifest, indent=2) + "\n", encoding="utf-8"
+            )
+            print(
+                f"PREVIOUS_DAY_SOURCE_COMPLETENESS_PASS  "
+                f"target={target}  reason=bdl_confirmed_no_games"
+            )
+            return 0
+        # BDL check failed or games exist but rows=0 — fall through to normal checks
+
     add_check(
         "max_game_date_covers_target",
         max_date >= target.isoformat(),
@@ -196,33 +233,8 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if rows_target == 0:
-        # Before flagging as missing data, check whether BDL had any games
-        # on the target date.  Genuine rest days / off-nights produce 0 rows
-        # legitimately and must not block training.
-        _no_games = False
-        try:
-            from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
-            games_on_target = get_games(start_date=target.isoformat(), end_date=target.isoformat())
-            if len(games_on_target) == 0:
-                _no_games = True
-                add_check(
-                    "rows_on_target_date_above_floor",
-                    True,
-                    f"rows_on_target_date=0 but BDL confirms no games on {target} — valid no-games day",
-                )
-        except Exception as exc:
-            add_check(
-                "rows_on_target_date_above_floor",
-                False,
-                f"rows_on_target_date=0 and BDL games check failed ({exc}) — treating as missing data",
-            )
-        if not _no_games:
-            add_check("rows_on_target_date_above_floor", False, f"rows_on_target_date=0")
-            findings["fail_code"] = "PREVIOUS_DAY_SOURCE_COMPLETENESS_FAILED_ZERO_ROWS"
-            return _emit(findings, out_dir, refresh_seen)
-        # BDL confirmed no games — skip the floor check and pass cleanly.
-        findings["passed"] = True
-        print("PREVIOUS_DAY_SOURCE_COMPLETENESS_PASS")
+        add_check("rows_on_target_date_above_floor", False, f"rows_on_target_date=0")
+        findings["fail_code"] = "PREVIOUS_DAY_SOURCE_COMPLETENESS_FAILED_ZERO_ROWS"
         return _emit(findings, out_dir, refresh_seen)
 
     if rows_target < COMPLETE_FLOOR_ROWS:
