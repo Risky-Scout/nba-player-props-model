@@ -1,6 +1,6 @@
 # Delivery Empty Column Hygiene — 2026-06-08
 
-- files checked: `124`
+- files checked: `88`
 - files changed: `24`
 - columns removed total: `222`
 - errors: `0`
@@ -162,14 +162,14 @@
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-08/wizard_of_odds/publishable_edges.csv`
-- rows: `1925`
+- rows: `1891`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-08/wizard_of_odds/publishable_edges.parquet`
-- rows: `1925`
+- rows: `1891`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``

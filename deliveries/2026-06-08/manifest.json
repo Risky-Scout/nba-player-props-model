@@ -15,22 +15,18 @@
       "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
     }
   },
-  "checked_at_utc": "2026-06-08T20:25:10Z",
-  "selected_injury_report": "Injury-Report_2026-06-08_04_00PM",
-  "selected_injury_report_time": "2026-06-08T16:00:00-04:00",
+  "checked_at_utc": "2026-06-08T21:43:10Z",
+  "selected_injury_report": "Injury-Report_2026-06-08_05_00PM",
+  "selected_injury_report_time": "2026-06-08T17:00:00-04:00",
   "injury_report_fallback_used": true,
   "failed_injury_report_candidates": [
     {
       "report": "Injury-Report_2026-06-08_07_00PM",
       "reason": "future_report_time_or_not_yet_available"
-    },
-    {
-      "report": "Injury-Report_2026-06-08_05_00PM",
-      "reason": "future_report_time_or_not_yet_available"
     }
   ],
   "injury_freshness_status": "fallback_used",
-  "fetched_at_utc": "2026-06-08T20:23:49Z",
+  "fetched_at_utc": "2026-06-08T21:41:49Z",
   "market_eval_available": true,
   "market_rows_keyed": true,
   "market_rows_fresh": true,

@@ -1,12 +1,12 @@
 {
-  "generated_at_utc": "2026-06-08T20:25:02Z",
+  "generated_at_utc": "2026-06-08T21:43:01Z",
   "reports": [
     {
       "date": "2026-06-08",
       "delivery_dir": "deliveries/2026-06-08",
       "write": true,
-      "generated_at_utc": "2026-06-08T20:24:55Z",
-      "files_checked": 124,
+      "generated_at_utc": "2026-06-08T21:42:56Z",
+      "files_checked": 88,
       "files_changed": 24,
       "columns_removed_total": 222,
       "changes": [
@@ -428,7 +428,7 @@
         },
         {
           "file": "deliveries/2026-06-08/wizard_of_odds/publishable_edges.csv",
-          "rows": 1925,
+          "rows": 1891,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -439,7 +439,7 @@
         },
         {
           "file": "deliveries/2026-06-08/wizard_of_odds/publishable_edges.parquet",
-          "rows": 1925,
+          "rows": 1891,
           "cols_before": 70,
           "cols_after": 68,
           "preserved_columns": [],
@@ -452,7 +452,7 @@
       "errors": []
     }
   ],
-  "files_checked": 124,
+  "files_checked": 88,
   "files_changed": 24,
   "columns_removed_total": 222,
   "errors": []
