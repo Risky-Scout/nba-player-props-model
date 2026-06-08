@@ -4,46 +4,811 @@ GitHub may refuse to render large CSV files. This file is intentionally small.
 
 ---
 
+## `derek_game_snapshots/21716136/current_live/contextual_feature_audit.csv`
+
+- bytes: `4,092`
+- rows: `12`
+- columns: `41`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716136
+Landry Shamet,414,NYK,21716136
+Jalen Brunson,73,NYK,21716136
+Josh Hart,202,NYK,21716136
+Stephon Castle,1028025261,SAS,21716136
+Devin Vassell,3547246,SAS,21716136
+Julian Champagnie,38017649,SAS,21716136
+Dylan Harper,1057262518,SAS,21716136
+Keldon Johnson,666682,SAS,21716136
+Mikal Bridges,61,NYK,21716136
+Victor Wembanyama,56677822,SAS,21716136
+Karl-Anthony Towns,447,NYK,21716136
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/contextual_feature_audit.parquet`
+
+- bytes: `29,787`
+- rows: `12`
+- columns: `41`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716136
+Landry Shamet,414,NYK,21716136
+Jalen Brunson,73,NYK,21716136
+Josh Hart,202,NYK,21716136
+Stephon Castle,1028025261,SAS,21716136
+Devin Vassell,3547246,SAS,21716136
+Julian Champagnie,38017649,SAS,21716136
+Dylan Harper,1057262518,SAS,21716136
+Keldon Johnson,666682,SAS,21716136
+Mikal Bridges,61,NYK,21716136
+Victor Wembanyama,56677822,SAS,21716136
+Karl-Anthony Towns,447,NYK,21716136
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/derek_live_predictions.parquet`
+
+- bytes: `37,945`
+- rows: `30`
+- columns: `47`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1506
+De'Aaron Fox,161,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5,-0.1342
+Landry Shamet,414,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,8.5,-0.1017
+Jalen Brunson,73,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,26.5,-0.0505
+Josh Hart,202,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,8.5,-0.1172
+Josh Hart,202,NYK,SAS,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.5,-0.1085
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.1475
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,0.1312
+Devin Vassell,3547246,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,13.5,-0.1138
+Devin Vassell,3547246,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1147
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,10.5,-0.1163
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5,-0.069
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.0446
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,13.5,-0.1324
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,5.5,-0.0757
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,3.5,-0.1999
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.5,0.0047
+Keldon Johnson,666682,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5,-0.0994
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.257
+Mikal Bridges,61,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.0751
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1483
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,27.5,-0.2279
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.5,-0.2223
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,-0.1647
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.096
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,-0.3004
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,17.5,-0.1634
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.5,-0.0765
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.066
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,-0.1557
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/full_pmf_wide.csv`
+
+- bytes: `35,964`
+- rows: `30`
+- columns: `93`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1506
+De'Aaron Fox,161,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5,-0.1342
+Landry Shamet,414,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,8.5,-0.1017
+Jalen Brunson,73,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,26.5,-0.0505
+Josh Hart,202,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,8.5,-0.1172
+Josh Hart,202,NYK,SAS,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.5,-0.1085
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.1475
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,0.1312
+Devin Vassell,3547246,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,13.5,-0.1138
+Devin Vassell,3547246,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1147
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,10.5,-0.1163
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5,-0.069
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.0446
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,13.5,-0.1324
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,5.5,-0.0757
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,3.5,-0.1999
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.5,0.0047
+Keldon Johnson,666682,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5,-0.0994
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.257
+Mikal Bridges,61,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.0751
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1483
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,27.5,-0.2279
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.5,-0.2223
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,-0.1647
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.096
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,-0.3004
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,17.5,-0.1634
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.5,-0.0765
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.066
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,-0.1557
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/full_pmf_wide.parquet`
+
+- bytes: `71,552`
+- rows: `30`
+- columns: `93`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1506
+De'Aaron Fox,161,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5,-0.1342
+Landry Shamet,414,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,8.5,-0.1017
+Jalen Brunson,73,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,26.5,-0.0505
+Josh Hart,202,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,8.5,-0.1172
+Josh Hart,202,NYK,SAS,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.5,-0.1085
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.1475
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,0.1312
+Devin Vassell,3547246,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,13.5,-0.1138
+Devin Vassell,3547246,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1147
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,10.5,-0.1163
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5,-0.069
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.0446
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,13.5,-0.1324
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,5.5,-0.0757
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,3.5,-0.1999
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.5,0.0047
+Keldon Johnson,666682,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5,-0.0994
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.257
+Mikal Bridges,61,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.0751
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1483
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,27.5,-0.2279
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.5,-0.2223
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,-0.1647
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.096
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,-0.3004
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,17.5,-0.1634
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.5,-0.0765
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.066
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,-0.1557
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/game_context.csv`
+
+- bytes: `502`
+- rows: `12`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id
+De'Aaron Fox,161,SAS,NYK,21716136
+Landry Shamet,414,NYK,SAS,21716136
+Jalen Brunson,73,NYK,SAS,21716136
+Josh Hart,202,NYK,SAS,21716136
+Stephon Castle,1028025261,SAS,NYK,21716136
+Devin Vassell,3547246,SAS,NYK,21716136
+Julian Champagnie,38017649,SAS,NYK,21716136
+Dylan Harper,1057262518,SAS,NYK,21716136
+Keldon Johnson,666682,SAS,NYK,21716136
+Mikal Bridges,61,NYK,SAS,21716136
+Victor Wembanyama,56677822,SAS,NYK,21716136
+Karl-Anthony Towns,447,NYK,SAS,21716136
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/game_context.parquet`
+
+- bytes: `3,582`
+- rows: `12`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id
+De'Aaron Fox,161,SAS,NYK,21716136
+Landry Shamet,414,NYK,SAS,21716136
+Jalen Brunson,73,NYK,SAS,21716136
+Josh Hart,202,NYK,SAS,21716136
+Stephon Castle,1028025261,SAS,NYK,21716136
+Devin Vassell,3547246,SAS,NYK,21716136
+Julian Champagnie,38017649,SAS,NYK,21716136
+Dylan Harper,1057262518,SAS,NYK,21716136
+Keldon Johnson,666682,SAS,NYK,21716136
+Mikal Bridges,61,NYK,SAS,21716136
+Victor Wembanyama,56677822,SAS,NYK,21716136
+Karl-Anthony Towns,447,NYK,SAS,21716136
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/injury_availability_context.csv`
+
+- bytes: `497`
+- rows: `12`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716136
+Landry Shamet,414,NYK,21716136
+Jalen Brunson,73,NYK,21716136
+Josh Hart,202,NYK,21716136
+Stephon Castle,1028025261,SAS,21716136
+Devin Vassell,3547246,SAS,21716136
+Julian Champagnie,38017649,SAS,21716136
+Dylan Harper,1057262518,SAS,21716136
+Keldon Johnson,666682,SAS,21716136
+Mikal Bridges,61,NYK,21716136
+Victor Wembanyama,56677822,SAS,21716136
+Karl-Anthony Towns,447,NYK,21716136
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/injury_availability_context.parquet`
+
+- bytes: `3,784`
+- rows: `12`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716136
+Landry Shamet,414,NYK,21716136
+Jalen Brunson,73,NYK,21716136
+Josh Hart,202,NYK,21716136
+Stephon Castle,1028025261,SAS,21716136
+Devin Vassell,3547246,SAS,21716136
+Julian Champagnie,38017649,SAS,21716136
+Dylan Harper,1057262518,SAS,21716136
+Keldon Johnson,666682,SAS,21716136
+Mikal Bridges,61,NYK,21716136
+Victor Wembanyama,56677822,SAS,21716136
+Karl-Anthony Towns,447,NYK,21716136
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/lineup_context.csv`
+
+- bytes: `1,344`
+- rows: `12`
+- columns: `13`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat
+De'Aaron Fox,161,SAS,21716136,reb
+Landry Shamet,414,NYK,21716136,pts
+Jalen Brunson,73,NYK,21716136,pts
+Josh Hart,202,NYK,21716136,reb
+Stephon Castle,1028025261,SAS,21716136,ast
+Devin Vassell,3547246,SAS,21716136,pts
+Julian Champagnie,38017649,SAS,21716136,pts
+Dylan Harper,1057262518,SAS,21716136,pts
+Keldon Johnson,666682,SAS,21716136,reb
+Mikal Bridges,61,NYK,21716136,reb
+Victor Wembanyama,56677822,SAS,21716136,pts
+Karl-Anthony Towns,447,NYK,21716136,pts
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/lineup_context.parquet`
+
+- bytes: `8,352`
+- rows: `12`
+- columns: `13`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat
+De'Aaron Fox,161,SAS,21716136,reb
+Landry Shamet,414,NYK,21716136,pts
+Jalen Brunson,73,NYK,21716136,pts
+Josh Hart,202,NYK,21716136,reb
+Stephon Castle,1028025261,SAS,21716136,ast
+Devin Vassell,3547246,SAS,21716136,pts
+Julian Champagnie,38017649,SAS,21716136,pts
+Dylan Harper,1057262518,SAS,21716136,pts
+Keldon Johnson,666682,SAS,21716136,reb
+Mikal Bridges,61,NYK,21716136,reb
+Victor Wembanyama,56677822,SAS,21716136,pts
+Karl-Anthony Towns,447,NYK,21716136,pts
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/market_comparison.csv`
+
+- bytes: `43,741`
+- rows: `30`
+- columns: `111`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,pmf_mean,p0,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.3701,0.0588,3.5,0.1506
+De'Aaron Fox,161,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.8388,0.0442,5.5,-0.1342
+Landry Shamet,414,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,7.7013,0.0824,8.5,-0.1017
+Jalen Brunson,73,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,24.8439,0.005,26.5,-0.0505
+Josh Hart,202,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,7.3203,0.0222,8.5,-0.1172
+Josh Hart,202,NYK,SAS,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.043,0.0713,4.5,-0.1085
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.0815,0.037,6.5,-0.1475
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.4083,0.2451,0.5,0.1312
+Devin Vassell,3547246,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.561,0.0201,13.5,-0.1138
+Devin Vassell,3547246,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.0441,0.2049,2.5,-0.1147
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,9.3506,0.0282,10.5,-0.1163
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.0375,0.0423,5.5,-0.069
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.2614,0.0906,2.5,-0.0446
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,11.5294,0.0233,13.5,-0.1324
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.9297,0.0473,5.5,-0.0757
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,2.2396,0.1989,3.5,-0.1999
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.9772,0.3582,0.5,0.0047
+Keldon Johnson,666682,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5384,0.1842,2.5,-0.0994
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,1.3919,0.2312,0.5,0.257
+Mikal Bridges,61,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.9464,0.069,3.5,0.0751
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.0749,0.3006,1.5,-0.1483
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,22.0014,0.0054,27.5,-0.2279
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,9.1419,0.0142,11.5,-0.2223
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.313,0.1497,3.5,-0.1647
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.1489,0.3989,1.5,-0.096
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.1586,0.1375,3.5,-0.3004
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,14.9229,0.0104,17.5,-0.1634
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,10.4819,0.0117,11.5,-0.0765
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.1409,0.2871,1.5,-0.066
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.8369,0.6089,0.5,-0.1557
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/market_comparison.parquet`
+
+- bytes: `85,868`
+- rows: `30`
+- columns: `111`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,pmf_mean,p0,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.370092147435897,0.0588,3.5,0.1506
+De'Aaron Fox,161,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.83877755511022,0.0442,5.5,-0.1342
+Landry Shamet,414,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,7.70133386821783,0.0824,8.5,-0.1017
+Jalen Brunson,73,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,24.843894588613963,0.005,26.5,-0.0505
+Josh Hart,202,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,7.320284341209451,0.0222,8.5,-0.1172
+Josh Hart,202,NYK,SAS,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.04296875,0.0713,4.5,-0.1085
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.081497797356828,0.037,6.5,-0.1475
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.408340834083408,0.2451,0.5,0.1312
+Devin Vassell,3547246,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.56096826034552,0.0201,13.5,-0.1138
+Devin Vassell,3547246,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.044135308246598,0.2049,2.5,-0.1147
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,9.35058279742765,0.0282,10.5,-0.1163
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.037474949899798,0.0423,5.5,-0.069
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.2614261426142614,0.0906,2.5,-0.0446
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,11.529364521634374,0.0233,13.5,-0.1324
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.92970862120757,0.0473,5.5,-0.0757
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,2.2396114949434263,0.1989,3.5,-0.1999
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.9772022797720229,0.3582,0.5,0.0047
+Keldon Johnson,666682,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.538376753507013,0.1842,2.5,-0.0994
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,1.391939193919392,0.2312,0.5,0.257
+Mikal Bridges,61,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.9464142628205123,0.069,3.5,0.0751
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.074907490749075,0.3006,1.5,-0.1483
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,22.00140731805387,0.0054,27.5,-0.2279
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,9.141912869303955,0.0142,11.5,-0.2223
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.312975570684822,0.1497,3.5,-0.1647
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.1489,0.3989,1.5,-0.096
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.1586,0.1375,3.5,-0.3004
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,14.922868061142397,0.0104,17.5,-0.1634
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,10.48186736125025,0.0117,11.5,-0.0765
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.1409,0.2871,1.5,-0.066
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.8369163083691631,0.6089,0.5,-0.1557
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/outcome_level_probabilities.csv`
+
+- bytes: `99,489`
+- rows: `541`
+- columns: `18`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,game_id,stat,k,p_k,line,snapshot_type
+De'Aaron Fox,161,21716136,reb,0,0.0589,3.5,current_live
+De'Aaron Fox,161,21716136,reb,1,0.0907,3.5,current_live
+De'Aaron Fox,161,21716136,reb,2,0.1264,3.5,current_live
+De'Aaron Fox,161,21716136,reb,3,0.1266,3.5,current_live
+De'Aaron Fox,161,21716136,reb,4,0.1511,3.5,current_live
+De'Aaron Fox,161,21716136,reb,5,0.1244,3.5,current_live
+De'Aaron Fox,161,21716136,reb,6,0.1031,3.5,current_live
+De'Aaron Fox,161,21716136,reb,7,0.0954,3.5,current_live
+De'Aaron Fox,161,21716136,reb,8,0.0548,3.5,current_live
+De'Aaron Fox,161,21716136,reb,9,0.0292,3.5,current_live
+De'Aaron Fox,161,21716136,reb,10,0.0168,3.5,current_live
+De'Aaron Fox,161,21716136,reb,11,0.0122,3.5,current_live
+De'Aaron Fox,161,21716136,reb,12,0.0054,3.5,current_live
+De'Aaron Fox,161,21716136,reb,13,0.0035,3.5,current_live
+De'Aaron Fox,161,21716136,reb,14,0.0014,3.5,current_live
+De'Aaron Fox,161,21716136,ast,0,0.0443,5.5,current_live
+De'Aaron Fox,161,21716136,ast,1,0.0667,5.5,current_live
+De'Aaron Fox,161,21716136,ast,2,0.0834,5.5,current_live
+De'Aaron Fox,161,21716136,ast,3,0.1293,5.5,current_live
+De'Aaron Fox,161,21716136,ast,4,0.1542,5.5,current_live
+De'Aaron Fox,161,21716136,ast,5,0.1398,5.5,current_live
+De'Aaron Fox,161,21716136,ast,6,0.1285,5.5,current_live
+De'Aaron Fox,161,21716136,ast,7,0.0883,5.5,current_live
+De'Aaron Fox,161,21716136,ast,8,0.0737,5.5,current_live
+De'Aaron Fox,161,21716136,ast,9,0.0408,5.5,current_live
+De'Aaron Fox,161,21716136,ast,10,0.0255,5.5,current_live
+De'Aaron Fox,161,21716136,ast,11,0.013,5.5,current_live
+De'Aaron Fox,161,21716136,ast,12,0.0075,5.5,current_live
+De'Aaron Fox,161,21716136,ast,13,0.0034,5.5,current_live
+De'Aaron Fox,161,21716136,ast,14,0.0017,5.5,current_live
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/outcome_level_probabilities.parquet`
+
+- bytes: `18,075`
+- rows: `541`
+- columns: `18`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,game_id,stat,k,p_k,line,snapshot_type
+De'Aaron Fox,161,21716136,reb,0,0.058894230769230775,3.5,current_live
+De'Aaron Fox,161,21716136,reb,1,0.09074519230769232,3.5,current_live
+De'Aaron Fox,161,21716136,reb,2,0.1264022435897436,3.5,current_live
+De'Aaron Fox,161,21716136,reb,3,0.12660256410256412,3.5,current_live
+De'Aaron Fox,161,21716136,reb,4,0.15114182692307696,3.5,current_live
+De'Aaron Fox,161,21716136,reb,5,0.12439903846153849,3.5,current_live
+De'Aaron Fox,161,21716136,reb,6,0.10306490384615387,3.5,current_live
+De'Aaron Fox,161,21716136,reb,7,0.09535256410256412,3.5,current_live
+De'Aaron Fox,161,21716136,reb,8,0.05478766025641026,3.5,current_live
+De'Aaron Fox,161,21716136,reb,9,0.029246794871794875,3.5,current_live
+De'Aaron Fox,161,21716136,reb,10,0.01682692307692308,3.5,current_live
+De'Aaron Fox,161,21716136,reb,11,0.012219551282051285,3.5,current_live
+De'Aaron Fox,161,21716136,reb,12,0.005408653846153847,3.5,current_live
+De'Aaron Fox,161,21716136,reb,13,0.003505608974358975,3.5,current_live
+De'Aaron Fox,161,21716136,reb,14,0.00140224358974359,3.5,current_live
+De'Aaron Fox,161,21716136,ast,0,0.044288577154308624,5.5,current_live
+De'Aaron Fox,161,21716136,ast,1,0.06673346693386775,5.5,current_live
+De'Aaron Fox,161,21716136,ast,2,0.08336673346693388,5.5,current_live
+De'Aaron Fox,161,21716136,ast,3,0.12925851703406815,5.5,current_live
+De'Aaron Fox,161,21716136,ast,4,0.15420841683366737,5.5,current_live
+De'Aaron Fox,161,21716136,ast,5,0.1397795591182365,5.5,current_live
+De'Aaron Fox,161,21716136,ast,6,0.12845691382765534,5.5,current_live
+De'Aaron Fox,161,21716136,ast,7,0.08827655310621244,5.5,current_live
+De'Aaron Fox,161,21716136,ast,8,0.07374749498997997,5.5,current_live
+De'Aaron Fox,161,21716136,ast,9,0.04078156312625251,5.5,current_live
+De'Aaron Fox,161,21716136,ast,10,0.025450901803607217,5.5,current_live
+De'Aaron Fox,161,21716136,ast,11,0.013026052104208418,5.5,current_live
+De'Aaron Fox,161,21716136,ast,12,0.007515030060120241,5.5,current_live
+De'Aaron Fox,161,21716136,ast,13,0.003406813627254509,5.5,current_live
+De'Aaron Fox,161,21716136,ast,14,0.0017034068136272545,5.5,current_live
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/pmf_driver_decomposition.csv`
+
+- bytes: `2,619`
+- rows: `12`
+- columns: `21`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat,line
+De'Aaron Fox,161,SAS,21716136,reb,3.5
+Landry Shamet,414,NYK,21716136,pts,8.5
+Jalen Brunson,73,NYK,21716136,pts,26.5
+Josh Hart,202,NYK,21716136,reb,8.5
+Stephon Castle,1028025261,SAS,21716136,ast,6.5
+Devin Vassell,3547246,SAS,21716136,pts,13.5
+Julian Champagnie,38017649,SAS,21716136,pts,10.5
+Dylan Harper,1057262518,SAS,21716136,pts,13.5
+Keldon Johnson,666682,SAS,21716136,reb,2.5
+Mikal Bridges,61,NYK,21716136,reb,3.5
+Victor Wembanyama,56677822,SAS,21716136,pts,27.5
+Karl-Anthony Towns,447,NYK,21716136,pts,17.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/pmf_driver_decomposition.parquet`
+
+- bytes: `14,376`
+- rows: `12`
+- columns: `21`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat,line
+De'Aaron Fox,161,SAS,21716136,reb,3.5
+Landry Shamet,414,NYK,21716136,pts,8.5
+Jalen Brunson,73,NYK,21716136,pts,26.5
+Josh Hart,202,NYK,21716136,reb,8.5
+Stephon Castle,1028025261,SAS,21716136,ast,6.5
+Devin Vassell,3547246,SAS,21716136,pts,13.5
+Julian Champagnie,38017649,SAS,21716136,pts,10.5
+Dylan Harper,1057262518,SAS,21716136,pts,13.5
+Keldon Johnson,666682,SAS,21716136,reb,2.5
+Mikal Bridges,61,NYK,21716136,reb,3.5
+Victor Wembanyama,56677822,SAS,21716136,pts,27.5
+Karl-Anthony Towns,447,NYK,21716136,pts,17.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/prediction_input_audit.csv`
+
+- bytes: `2,134`
+- rows: `30`
+- columns: `8`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716136,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716136,ast,5.5
+Landry Shamet,414,NYK,SAS,21716136,pts,8.5
+Jalen Brunson,73,NYK,SAS,21716136,pts,26.5
+Josh Hart,202,NYK,SAS,21716136,reb,8.5
+Josh Hart,202,NYK,SAS,21716136,ast,4.5
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716136,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716136,ast,2.5
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,10.5
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,5.5
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,2.5
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,13.5
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,0.5
+Keldon Johnson,666682,SAS,NYK,21716136,reb,2.5
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,0.5
+Mikal Bridges,61,NYK,SAS,21716136,reb,3.5
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,27.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,11.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,3.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,3.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,17.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,11.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,1.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,0.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/prediction_input_audit.parquet`
+
+- bytes: `5,335`
+- rows: `30`
+- columns: `8`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716136,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716136,ast,5.5
+Landry Shamet,414,NYK,SAS,21716136,pts,8.5
+Jalen Brunson,73,NYK,SAS,21716136,pts,26.5
+Josh Hart,202,NYK,SAS,21716136,reb,8.5
+Josh Hart,202,NYK,SAS,21716136,ast,4.5
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716136,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716136,ast,2.5
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,10.5
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,5.5
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,2.5
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,13.5
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,0.5
+Keldon Johnson,666682,SAS,NYK,21716136,reb,2.5
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,0.5
+Mikal Bridges,61,NYK,SAS,21716136,reb,3.5
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,27.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,11.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,3.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,3.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,17.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,11.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,1.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,0.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/prop_summary.csv`
+
+- bytes: `1,582`
+- rows: `30`
+- columns: `7`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716136,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716136,ast,5.5
+Landry Shamet,414,NYK,SAS,21716136,pts,8.5
+Jalen Brunson,73,NYK,SAS,21716136,pts,26.5
+Josh Hart,202,NYK,SAS,21716136,reb,8.5
+Josh Hart,202,NYK,SAS,21716136,ast,4.5
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716136,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716136,ast,2.5
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,10.5
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,5.5
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,2.5
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,13.5
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,0.5
+Keldon Johnson,666682,SAS,NYK,21716136,reb,2.5
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,0.5
+Mikal Bridges,61,NYK,SAS,21716136,reb,3.5
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,27.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,11.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,3.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,3.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,17.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,11.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,1.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,0.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716136/current_live/prop_summary.parquet`
+
+- bytes: `4,744`
+- rows: `30`
+- columns: `7`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716136,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716136,ast,5.5
+Landry Shamet,414,NYK,SAS,21716136,pts,8.5
+Jalen Brunson,73,NYK,SAS,21716136,pts,26.5
+Josh Hart,202,NYK,SAS,21716136,reb,8.5
+Josh Hart,202,NYK,SAS,21716136,ast,4.5
+Stephon Castle,1028025261,SAS,NYK,21716136,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716136,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716136,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716136,ast,2.5
+Julian Champagnie,38017649,SAS,NYK,21716136,pts,10.5
+Julian Champagnie,38017649,SAS,NYK,21716136,reb,5.5
+Julian Champagnie,38017649,SAS,NYK,21716136,fg3m,2.5
+Dylan Harper,1057262518,SAS,NYK,21716136,pts,13.5
+Dylan Harper,1057262518,SAS,NYK,21716136,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716136,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716136,fg3m,0.5
+Keldon Johnson,666682,SAS,NYK,21716136,reb,2.5
+Keldon Johnson,666682,SAS,NYK,21716136,fg3m,0.5
+Mikal Bridges,61,NYK,SAS,21716136,reb,3.5
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,pts,27.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,reb,11.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,ast,3.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,stl,1.5
+Victor Wembanyama,56677822,SAS,NYK,21716136,blk,3.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,pts,17.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,reb,11.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,fg3m,1.5
+Karl-Anthony Towns,447,NYK,SAS,21716136,stl,0.5
+
+```
+
+---
+
 ## `derek_game_snapshots/21716136/morning/full_pmf_wide.csv`
 
-- bytes: `281,396`
+- bytes: `287,086`
 - rows: `144`
-- columns: `69`
+- columns: `70`
 
 Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,4.1641,4.1641,4,4,0.0071,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,3.2459,3.2459,3,4,0.0138,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,1.0973,1.0973,1,0,0.3963,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,1.1536,1.1536,1,1,0.1173,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,0.8079,0.8079,0,0,0.6235,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,0.3336,0.3336,0,0,0.774,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,1.1373,1.1373,1,0,0.4826,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,17.9425,17.9425,18,18,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,18.8607,18.8607,19,19,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,7.41,7.41,7,7,0.0001,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,22.1066,22.1066,22,22,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,27.0861,27.0861,27,28,0.0001,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,3.8372,3.8372,4,4,0.0068,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,6.5761,6.5761,7,7,0.0049,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,1.9861,1.9861,2,0,0.397,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,1.4786,1.4786,1,1,0.1161,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,0.6529,0.6529,0,0,0.6463,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,0.3044,0.3044,0,0,0.7609,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,0.963,0.963,1,0,0.4917,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,33.6622,33.6622,34,34,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,30.9234,30.9234,31,32,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,10.4133,10.4133,10,10,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,37.4995,37.4995,38,38,0.0,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,16.9011,16.9011,17,18,0.0018,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,4.5646,4.5646,4,4,0.0056,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,5.1908,5.1908,5,5,0.0059,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,1.4095,1.4095,1,0,0.3968,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,1.5164,1.5164,2,2,0.1143,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,0.5899,0.5899,0,0,0.6327,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,4.1533,4.1533,4,4,0.0071,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,3.2197,3.2197,3,3,0.014,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,1.0973,1.0973,1,0,0.3963,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,1.1393,1.1393,1,1,0.1189,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,0.8079,0.8079,0,0,0.6235,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,0.3336,0.3336,0,0,0.774,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,1.1373,1.1373,1,0,0.4826,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,17.9204,17.9204,18,18,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,18.854,18.854,19,19,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,7.373,7.373,7,7,0.0001,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.438,33.4249,0.05,22.0737,22.0737,22,22,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,27.0745,27.0745,27,28,0.0001,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,3.8116,3.8116,4,4,0.007,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,6.6106,6.6106,7,6,0.0048,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,1.9861,1.9861,2,0,0.397,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,1.4866,1.4866,1,1,0.1133,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,0.6529,0.6529,0,0,0.6463,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.9712,36.068,0.05,0.3044,0.3044,0,0,0.7609,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,0.963,0.963,1,0,0.4917,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,33.6851,33.6851,34,35,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,30.886,30.886,31,32,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,10.4221,10.4221,10,10,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.9712,36.068,0.05,37.4966,37.4966,38,38,0.0,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,17.0545,17.0545,17,18,0.0013,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,4.6076,4.6076,5,4,0.0054,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,5.1975,5.1975,5,5,0.006,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,1.4095,1.4095,1,0,0.3968,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,1.5038,1.5038,1,1,0.1155,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.0015,34.3368,0.05,0.5899,0.5899,0,0,0.6327,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
 
 ```
 
@@ -51,44 +816,44 @@ De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf
 
 ## `derek_game_snapshots/21716136/morning/full_pmf_wide.parquet`
 
-- bytes: `173,449`
+- bytes: `171,194`
 - rows: `144`
-- columns: `69`
+- columns: `70`
 
 Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377155,15,15,0.0023603392542138404,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,4.164103096000567,4.164103096000567,4,4,0.007122682089380689,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,3.2459184607544795,3.2459184607544795,3,4,0.013779387854698963,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,1.0973305154254185,1.0973305154254183,1,0,0.3963349828331995,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,1.1535843832016408,1.153584383201641,1,1,0.1172973683261184,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,0.807898489341815,0.8078984893418149,0,0,0.6235279118251958,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,0.33356259623826034,0.33356259623826034,0,0,0.7740380201679007,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,1.1373020178595679,1.1373020178595676,1,0,0.48263431038859994,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,17.94246562913156,17.94246562913155,18,18,3.252403005248343e-05,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,18.86065026437767,18.86065026437767,19,19,1.6811946130851103e-05,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,7.410021556755037,7.410021556755038,7,7,9.814619907529414e-05,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,22.10656872513216,22.106568725132156,22,22,2.3165832632930279e-07,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,27.086141323944734,27.08614132394472,27,28,8.109514309237e-05,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,3.837248869670173,3.837248869670174,4,4,0.006806492347197195,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,6.576100535449093,6.576100535449091,7,7,0.004885525465531858,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,1.98606520729651,1.9860652072965097,2,0,0.39695100841442077,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,1.4785705614498053,1.4785705614498057,1,1,0.11611306910202672,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,0.6529189907218549,0.6529189907218549,0,0,0.6462984937750073,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,0.30444055918887425,0.30444055918887425,0,0,0.7608500923819775,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,0.9629754032920785,0.9629754032920788,1,0,0.49173626869504716,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,33.6622418593938,33.662241859393795,34,34,3.961923867087235e-07,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,30.92339019361488,30.923390193614885,31,32,5.519734708530781e-07,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,10.413349405119256,10.41334940511925,10,10,3.3253291693179615e-05,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Jalen Brunson,73,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,37.49949072906397,37.49949072906396,38,38,2.696680448150719e-09,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,16.90110144519181,16.901101445191816,17,18,0.0017568344136248341,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,4.5646134139059615,4.5646134139059615,4,4,0.005603114395266425,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,5.190843023652564,5.190843023652563,5,5,0.005864443813548639,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,1.4094861277852613,1.409486127785261,1,0,0.39680859532850826,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,1.5164155326943978,1.5164155326943973,2,2,0.1143366226189216,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,0.5898894640052346,0.5898894640052346,0,0,0.6326921317949522,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.70071426649782,15,15,0.0023717097946503386,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,4.153281051901045,4.153281051901045,4,4,0.007061611882382426,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,3.2197294618790506,3.2197294618790506,3,3,0.014030913639987624,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,1.0973305154254185,1.0973305154254183,1,0,0.3963349828331995,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,1.139327008930856,1.139327008930856,1,1,0.11885498137342292,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,0.8078984893418149,0.8078984893418147,0,0,0.623527911825196,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,0.33356259623826034,0.33356259623826034,0,0,0.7740380201679007,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,1.137302017859568,1.137302017859568,1,0,0.48263431038860005,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,17.920443728376796,17.920443728376785,18,18,3.327725530785174e-05,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,18.853995318398795,18.8539953183988,19,19,1.6748094067465632e-05,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,7.373010513780088,7.3730105137800885,7,7,9.908086648081832e-05,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,30.43802343603572,33.42492678412381,0.050000000000000044,22.07372478027782,22.073724780277814,22,22,2.3499106149499952e-07,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,27.07446523793174,27.074465237931726,27,28,7.352836850588927e-05,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,3.811552576808661,3.811552576808661,4,4,0.006972078597201647,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,6.610595493048416,6.6105954930484145,7,6,0.004834488956102641,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,1.98606520729651,1.9860652072965097,2,0,0.39695100841442077,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,1.4866075594779007,1.486607559477901,1,1,0.1132964024458426,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,0.6529189907218552,0.6529189907218552,0,0,0.6462984937750074,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,blk,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.97117745967532,36.068001041442216,0.050000000000000044,0.30444055918887425,0.30444055918887425,0,0,0.7608500923819775,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,"stat_grid:component_convolution_mean_coherent_v1+components[stl:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,blk:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,0.962975403292079,0.9629754032920791,1,0,0.4917362686950473,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,33.68506073098014,33.68506073098013,34,35,3.5547208550196706e-07,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,30.8860178147404,30.886017814740388,31,32,5.126455643470663e-07,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,ra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,10.42214806985707,10.422148069857071,10,10,3.370643697925098e-05,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Jalen Brunson,73,NYK,SAS,21716136,pra,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,32.97117745967532,36.068001041442216,0.050000000000000044,37.49661330778876,37.496613307788735,38,38,2.4783793192308996e-09,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,17.054483918489815,17.054483918489815,17,18,0.0012683755474865385,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,4.607616471556697,4.607616471556697,5,4,0.00541441007308604,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,5.197525629290567,5.197525629290567,5,5,0.005952049830284089,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,stat_grid:fg3m_hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,1.4094861277852613,1.4094861277852613,1,0,0.3968085953285083,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,1.5038078323521198,1.5038078323521193,1,1,0.11554585116105569,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,31.001485586550007,34.33683051748481,0.050000000000000044,0.5898894640052345,0.5898894640052346,0,0,0.6326921317949522,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
 
 ```
 
@@ -96,44 +861,44 @@ De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,stat_grid:hurdle_v1+role_aware_pmf
 
 ## `derek_game_snapshots/21716136/morning/market_comparison.csv`
 
-- bytes: `2,162,675`
-- rows: `2,353`
-- columns: `68`
+- bytes: `2,247,810`
+- rows: `2,352`
+- columns: `69`
 
 Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,17.5,17.5,fanduel,0.2918,270,-400,0.2525,0.0392,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,16.5,16.5,fanduel,0.3456,200,-280,0.3115,0.0342,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,15.5,15.5,fanduel,0.4128,162,-220,0.357,0.0558,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,14.5,14.5,fanduel,0.5083,124,-166,0.417,0.0913,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,fanduel,0.5748,-108,-122,0.4858,0.089,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,12.5,12.5,fanduel,0.6334,-146,110,0.5548,0.0786,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,11.5,11.5,fanduel,0.6869,-200,148,0.6231,0.0637,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,10.5,10.5,fanduel,0.7412,-270,194,0.6821,0.0591,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,9.5,9.5,fanduel,0.7992,-390,265,0.7439,0.0553,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,8.5,8.5,fanduel,0.8387,-580,360,0.7969,0.0418,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,7.5,7.5,fanduel,0.8767,-900,490,0.8415,0.0351,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,williamhill_us,0.5748,-120,-112,0.508,0.0668,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,17.5,17.5,bovada,0.2918,200,-275,0.3125,-0.0207,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,16.5,16.5,bovada,0.3456,155,-210,0.3666,-0.021,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,15.5,15.5,bovada,0.4128,120,-160,0.4248,-0.0121,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,14.5,14.5,bovada,0.5083,-105,-125,0.4797,0.0286,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,bovada,0.5748,-135,105,0.5408,0.034,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,12.5,12.5,bovada,0.6334,-180,135,0.6017,0.0317,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,11.5,11.5,bovada,0.6869,-245,180,0.6654,0.0215,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,betmgm,0.5748,-105,-125,0.4797,0.0951,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,14.5,14.5,betrivers,0.5083,120,-167,0.4209,0.0874,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,betrivers,0.5748,-110,-124,0.4862,0.0886,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,12.5,12.5,betrivers,0.6334,-148,108,0.5538,0.0796,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,draftkings,0.5748,-127,-101,0.5268,0.0479,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,fanduel,0.5748,-106,-120,0.4854,0.0893,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,hardrockbet_az,0.5748,-120,-110,0.5101,0.0646,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,hardrockbet,0.5748,-120,-110,0.5101,0.0646,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,rebet,0.5748,-123,-103,0.5209,0.0539,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,13.5,13.5,hardrockbet_fl,0.5748,-120,-110,0.5101,0.0646,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.6965,14.6965,15,15,0.0024,12.5,12.5,espnbet,0.6334,-150,115,0.5633,0.0701,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,15.5,15.5,fanduel,0.4157,162,-220,0.357,0.0587,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,14.5,14.5,fanduel,0.5094,120,-160,0.4248,0.0846,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,fanduel,0.575,-112,-118,0.4939,0.081,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,12.5,12.5,fanduel,0.6324,-152,114,0.5635,0.069,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,11.5,11.5,fanduel,0.6852,-210,154,0.6324,0.0528,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,10.5,10.5,fanduel,0.7379,-290,205,0.694,0.0439,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,9.5,9.5,fanduel,0.7944,-420,280,0.7543,0.0401,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,8.5,8.5,fanduel,0.8368,-650,390,0.8094,0.0274,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,16.5,16.5,fanduel,0.3483,200,-280,0.3115,0.0368,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,17.5,17.5,fanduel,0.292,260,-380,0.2597,0.0323,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,williamhill_us,0.575,-127,-105,0.5221,0.0529,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,15.5,15.5,bovada,0.4157,120,-160,0.4248,-0.0091,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,14.5,14.5,bovada,0.5094,-105,-125,0.4797,0.0297,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,bovada,0.575,-135,105,0.5408,0.0342,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,12.5,12.5,bovada,0.6324,-180,135,0.6017,0.0307,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,11.5,11.5,bovada,0.6852,-245,180,0.6654,0.0199,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,16.5,16.5,bovada,0.3483,155,-210,0.3666,-0.0184,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,17.5,17.5,bovada,0.292,200,-275,0.3125,-0.0205,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,betmgm,0.575,-111,-118,0.4929,0.0821,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,betrivers,0.575,-107,-127,0.4802,0.0947,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,12.5,12.5,betrivers,0.6324,-143,106,0.548,0.0845,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,14.5,14.5,draftkings,0.5094,100,-127,0.4719,0.0375,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,fanduel,0.575,-111,-115,0.4958,0.0791,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,hardrockbet_az,0.575,-120,-110,0.5101,0.0648,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,hardrockbet,0.575,-120,-110,0.5101,0.0648,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,14.5,14.5,rebet,0.5094,100,-127,0.4719,0.0375,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,hardrockbet_fl,0.575,-120,-110,0.5101,0.0648,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,12.5,12.5,espnbet,0.6324,-160,120,0.5752,0.0573,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,13.5,13.5,espnbet,0.575,-110,-120,0.4899,0.0851,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.438,33.4249,0.05,14.7007,14.7007,15,15,0.0024,14.5,14.5,espnbet,0.5094,120,-160,0.4248,0.0846,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
 
 ```
 
@@ -141,44 +906,44 @@ Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pm
 
 ## `derek_game_snapshots/21716136/morning/market_comparison.parquet`
 
-- bytes: `126,973`
-- rows: `2,353`
-- columns: `68`
+- bytes: `128,019`
+- rows: `2,352`
+- columns: `69`
 
 Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,17.5,17.5,fanduel,0.29175353747555655,270,-400,0.2525252525252525,0.03922828495030389,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,16.5,16.5,fanduel,0.3456275395508795,200,-280,0.31147540983606553,0.03415212971481374,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,15.5,15.5,fanduel,0.41278302455159077,162,-220,0.35698348951361003,0.05579953503798046,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,14.5,14.5,fanduel,0.5083094268020181,124,-166,0.4170324846356453,0.09127694216637255,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,fanduel,0.5747666931933191,-108,-122,0.48581617766250607,0.08895051553081301,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,12.5,12.5,fanduel,0.6334257638464995,-146,110,0.5548317046688382,0.07859405917766127,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,11.5,11.5,fanduel,0.6868621730041974,-200,148,0.6231155778894473,0.06374659511475,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,10.5,10.5,fanduel,0.7411557422019875,-270,194,0.6820759580683966,0.05907978413359083,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,9.5,9.5,fanduel,0.7992043042063813,-390,265,0.7439247452312516,0.055279558975129595,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,8.5,8.5,fanduel,0.8387140065026838,-580,360,0.7968936678614098,0.04182033864127377,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,7.5,7.5,fanduel,0.8766567236765382,-900,490,0.8415213946117275,0.03513532906481054,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,williamhill_us,0.5747666931933191,-120,-112,0.5079872204472844,0.06677947274603468,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,17.5,17.5,bovada,0.29175353747555655,200,-275,0.3125,-0.02074646252444362,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,16.5,16.5,bovada,0.3456275395508795,155,-210,0.3666469544648137,-0.021019414913934442,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,15.5,15.5,bovada,0.41278302455159077,120,-160,0.4248366013071895,-0.012053576755598983,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,14.5,14.5,bovada,0.5083094268020181,-105,-125,0.4796954314720812,0.028613995329936637,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,bovada,0.5747666931933191,-135,105,0.5407914020517831,0.03397529114153597,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,12.5,12.5,bovada,0.6334257638464995,-180,135,0.6017069701280228,0.031718793718476745,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,11.5,11.5,bovada,0.6868621730041974,-245,180,0.6653734238603297,0.021488749143867558,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,betmgm,0.5747666931933191,-105,-125,0.4796954314720812,0.09507126172123787,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,14.5,14.5,betrivers,0.5083094268020181,120,-167,0.4208701134930643,0.08743931330895355,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,betrivers,0.5747666931933191,-110,-124,0.4861878453038673,0.08857884788945175,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,12.5,12.5,betrivers,0.6334257638464995,-148,108,0.5538284398388026,0.07959732400769692,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,draftkings,0.5747666931933191,-127,-101,0.5268295703141123,0.04793712287920682,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,fanduel,0.5747666931933191,-106,-120,0.48542880932556204,0.08933788386775704,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,hardrockbet_az,0.5747666931933191,-120,-110,0.5101214574898786,0.0646452357034405,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,hardrockbet,0.5747666931933191,-120,-110,0.5101214574898786,0.0646452357034405,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,rebet,0.5747666931933191,-123,-103,0.520860277858901,0.05390641533441809,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,13.5,13.5,hardrockbet_fl,0.5747666931933191,-120,-110,0.5101214574898786,0.0646452357034405,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.696547168377148,14.696547168377148,15,15,0.0023603392542138404,12.5,12.5,espnbet,0.6334257638464995,-150,115,0.5633187772925764,0.07010698655392311,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T21:47:16Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,15.5,15.5,fanduel,0.4157135980572443,162,-220,0.35698348951361003,0.058730108543634196,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,14.5,14.5,fanduel,0.5094427084824357,120,-160,0.4248366013071895,0.08460610717524619,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,fanduel,0.5749597281699909,-112,-118,0.4939310568053083,0.08102867136468245,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,12.5,12.5,fanduel,0.6324387864854701,-152,114,0.563470066518847,0.06896871996662313,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,11.5,11.5,fanduel,0.685228025408754,-210,154,0.6324401233104102,0.05278790209834372,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,10.5,10.5,fanduel,0.7378828937625308,-290,205,0.6939976461357396,0.043885247626791135,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,9.5,9.5,fanduel,0.7943813691110273,-420,280,0.7542533081285445,0.04012806098248278,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,8.5,8.5,fanduel,0.836780570781727,-650,390,0.8094027954256671,0.027377775356059897,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,16.5,16.5,fanduel,0.34827467381671845,200,-280,0.31147540983606553,0.03679926398065292,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,17.5,17.5,fanduel,0.29200356951120693,260,-380,0.25974025974025977,0.03226330977094721,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,williamhill_us,0.5749597281699909,-127,-105,0.5220573491076799,0.05290237906231088,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,15.5,15.5,bovada,0.4157135980572443,120,-160,0.4248366013071895,-0.00912300324994525,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,14.5,14.5,bovada,0.5094427084824357,-105,-125,0.4796954314720812,0.029747277010354456,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,bovada,0.5749597281699909,-135,105,0.5407914020517831,0.03416832611820764,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,12.5,12.5,bovada,0.6324387864854701,-180,135,0.6017069701280228,0.030731816357447372,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,11.5,11.5,bovada,0.685228025408754,-245,180,0.6653734238603297,0.019854601548424222,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,16.5,16.5,bovada,0.34827467381671845,155,-210,0.3666469544648137,-0.018372280648095263,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,17.5,17.5,bovada,0.29200356951120693,200,-275,0.3125,-0.020496430488793016,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,betmgm,0.5749597281699909,-111,-118,0.4928711096627016,0.08208861850728916,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,betrivers,0.5749597281699909,-107,-127,0.4802285578710111,0.09473117029897965,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,12.5,12.5,betrivers,0.6324387864854701,-143,106,0.5479742549946055,0.08446453149086464,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,14.5,14.5,draftkings,0.5094427084824357,100,-127,0.47193347193347185,0.03750923654896382,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,fanduel,0.5749597281699909,-111,-115,0.4958445875753168,0.07911514059467395,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,hardrockbet_az,0.5749597281699909,-120,-110,0.5101214574898786,0.06483827068011216,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,hardrockbet,0.5749597281699909,-120,-110,0.5101214574898786,0.06483827068011216,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,14.5,14.5,rebet,0.5094427084824357,100,-127,0.47193347193347185,0.03750923654896382,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,hardrockbet_fl,0.5749597281699909,-120,-110,0.5101214574898786,0.06483827068011216,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,12.5,12.5,espnbet,0.6324387864854701,-160,120,0.5751633986928104,0.05727538779265973,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,13.5,13.5,espnbet,0.5749597281699909,-110,-120,0.48987854251012153,0.08508118565986922,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.43802343603572,33.42492678412381,0.050000000000000044,14.700714266497819,14.700714266497819,15,15,0.0023717097946503386,14.5,14.5,espnbet,0.5094427084824357,120,-160,0.4248366013071895,0.08460610717524619,latest_valid_report_selected,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-08T23:43:42Z
 
 ```
 
@@ -186,44 +951,44 @@ Mikal Bridges,61,NYK,SAS,21716136,pts,starter,stat_grid:pmf_sim_v1+role_aware_pm
 
 ## `derek_game_snapshots/21716136/morning/outcome_level_probabilities.csv`
 
-- bytes: `406,093`
-- rows: `4,880`
+- bytes: `481,011`
+- rows: `4,893`
 - columns: `11`
 
 Compact first 30 rows:
 
 ```csv
 player_name,player_id,game_id,stat,role_bucket,k,p_k,injury_freshness_status,lineup_freshness_status
-Mikal Bridges,61,21716136,pts,starter,0,0.0024,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,1,0.0026,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,2,0.0058,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,3,0.0095,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,4,0.017,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,5,0.0207,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,6,0.0314,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,7,0.034,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,8,0.0379,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,9,0.0395,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,10,0.058,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,11,0.0543,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,12,0.0534,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,13,0.0587,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,14,0.0665,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,15,0.0955,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,16,0.0672,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,17,0.0539,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,18,0.0517,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,19,0.0411,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,20,0.0435,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,21,0.0399,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,22,0.0166,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,23,0.0161,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,24,0.0199,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,25,0.0097,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,26,0.009,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,27,0.0092,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,28,0.0038,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,29,0.0078,fallback_used,projected
+Mikal Bridges,61,21716136,pts,starter,0,0.0024,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,1,0.0027,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,2,0.0061,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,3,0.0118,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,4,0.0148,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,5,0.0232,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,6,0.0324,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,7,0.0311,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,8,0.0387,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,9,0.0424,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,10,0.0565,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,11,0.0527,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,12,0.0528,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,13,0.0575,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,14,0.0655,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,15,0.0937,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,16,0.0674,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,17,0.0563,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,18,0.0511,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,19,0.0395,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,20,0.0451,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,21,0.0378,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,22,0.0184,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,23,0.0161,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,24,0.0169,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,25,0.0136,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,26,0.009,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,27,0.0075,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,28,0.0055,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,29,0.0078,latest_valid_report_selected,projected
 
 ```
 
@@ -231,44 +996,44 @@ Mikal Bridges,61,21716136,pts,starter,29,0.0078,fallback_used,projected
 
 ## `derek_game_snapshots/21716136/morning/outcome_level_probabilities.parquet`
 
-- bytes: `57,743`
-- rows: `4,880`
+- bytes: `57,913`
+- rows: `4,893`
 - columns: `11`
 
 Compact first 30 rows:
 
 ```csv
 player_name,player_id,game_id,stat,role_bucket,k,p_k,injury_freshness_status,lineup_freshness_status
-Mikal Bridges,61,21716136,pts,starter,0,0.002360339254213841,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,1,0.0026310247713708,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,2,0.005793366917335677,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,3,0.009541294292961475,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,4,0.01695076013401398,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,5,0.020698015952900963,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,6,0.031399920593374035,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,7,0.03396855440729127,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,8,0.037942717173854425,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,9,0.03950970229630241,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,10,0.058048562004393775,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,11,0.054293569197790166,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,12,0.05343640915769791,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,13,0.05865907065318031,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,14,0.06645726639130126,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,15,0.09552640225042734,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,16,0.06715548500071128,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,17,0.0538740020753229,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,18,0.05170510438440215,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,19,0.04106853145691802,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,20,0.043495371274135324,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,21,0.03988166604444377,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,22,0.016624808770004475,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,23,0.016050803876097926,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,24,0.019855283939538268,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,25,0.009709964602660414,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,26,0.009038518601897699,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,27,0.009170857468219724,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,28,0.0038196215687975404,fallback_used,projected
-Mikal Bridges,61,21716136,pts,starter,29,0.007838900699996203,fallback_used,projected
+Mikal Bridges,61,21716136,pts,starter,0,0.002371709794650338,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,1,0.002662407536434192,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,2,0.00609821590749926,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,3,0.011799251177681007,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,4,0.014820548950408787,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,5,0.02319696954934912,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,6,0.03244646044264081,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,7,0.031141573841797016,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,8,0.038682292017812585,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,9,0.042399201670699646,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,10,0.05649847534849655,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,11,0.05265486835377678,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,12,0.05278923892328371,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,13,0.057479058315479385,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,14,0.06551701968755508,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,15,0.09372911042519148,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,16,0.06743892424052579,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,17,0.05627110430551142,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,18,0.05111709752544763,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,19,0.03951320736755628,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,20,0.04513514399375934,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,21,0.03779965858932782,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,22,0.01841364517305991,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,23,0.01608605098485294,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,24,0.016868443555679766,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,25,0.013562567524078225,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,26,0.00903988664187622,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,27,0.00745325970222836,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,28,0.005534613085197335,latest_valid_report_selected,projected
+Mikal Bridges,61,21716136,pts,starter,29,0.007757494424591459,latest_valid_report_selected,projected
 
 ```
 
@@ -276,7 +1041,7 @@ Mikal Bridges,61,21716136,pts,starter,29,0.007838900699996203,fallback_used,proj
 
 ## `derek_game_snapshots/21716136/morning/prop_summary.csv`
 
-- bytes: `20,855`
+- bytes: `23,015`
 - rows: `144`
 - columns: `19`
 
@@ -284,36 +1049,36 @@ Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_mean,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,injury_freshness_status,lineup_freshness_status
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,14.6965,13.5,13.5,betmgm,0.5748,-105.0,-125.0,0.4797,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,reb,starter,4.1641,3.5,3.5,betmgm,0.6655,100.0,-135.0,0.4653,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,ast,starter,3.2459,2.5,2.5,betmgm,0.681,-160.0,120.0,0.5752,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,1.0973,1.5,1.5,betmgm,0.3348,110.0,-150.0,0.4425,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,tov,starter,1.1536,,,,,,,,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,stl,starter,0.8079,1.5,1.5,betparx,0.215,150.0,-205.0,0.3731,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,blk,starter,0.3336,0.5,0.5,betmgm,0.226,140.0,-190.0,0.3887,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,1.1373,1.5,1.5,betparx,0.2963,-129.0,-104.0,0.5249,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,pa,starter,17.9425,16.5,16.5,betmgm,0.582,-105.0,-125.0,0.4797,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,pr,starter,18.8607,17.5,17.5,bovada,0.5741,-110.0,-120.0,0.4899,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,ra,starter,7.41,6.5,6.5,betmgm,0.6576,-110.0,-120.0,0.4899,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,pra,starter,22.1066,20.5,20.5,betparx,0.5856,102.0,-136.0,0.4621,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pts,starter,27.0861,26.5,26.5,betmgm,0.554,-125.0,-105.0,0.5203,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,reb,starter,3.8372,3.5,3.5,betparx,0.5827,133.0,-180.0,0.4003,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,ast,starter,6.5761,5.5,5.5,betparx,0.6972,-141.0,107.0,0.5477,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,1.9861,2.5,2.5,betmgm,0.371,115.0,-155.0,0.4335,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,tov,starter,1.4786,,,,,,,,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,stl,starter,0.6529,0.5,0.5,betparx,0.3537,-177.0,130.0,0.5951,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,blk,starter,0.3044,0.5,0.5,betmgm,0.2391,475.0,-1000.0,0.1606,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,0.963,,,,,,,,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pa,starter,33.6622,32.5,32.5,betmgm,0.5683,-120.0,-110.0,0.5101,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pr,starter,30.9234,29.5,29.5,betmgm,0.5865,-115.0,-115.0,0.5,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,ra,starter,10.4133,9.5,9.5,betmgm,0.6426,105.0,-140.0,0.4554,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pra,starter,37.4995,36.5,36.5,betparx,0.5566,104.0,-139.0,0.4574,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,16.9011,14.5,14.5,betmgm,0.6521,-115.0,-115.0,0.5,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,4.5646,3.5,3.5,betmgm,0.745,100.0,-135.0,0.4653,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,5.1908,5.5,5.5,betmgm,0.4267,-150.0,110.0,0.5575,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,1.4095,1.5,1.5,betmgm,0.4219,125.0,-165.0,0.4165,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,1.5164,,,,,,,,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,0.5899,0.5,0.5,bovada,0.3673,-230.0,170.0,0.653,fallback_used,projected
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,14.7007,13.5,13.5,betmgm,0.575,-111.0,-118.0,0.4929,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,reb,starter,4.1533,3.5,3.5,betmgm,0.6618,100.0,-135.0,0.4653,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,ast,starter,3.2197,2.5,2.5,betmgm,0.6758,-160.0,120.0,0.5752,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,1.0973,1.5,1.5,betmgm,0.3348,110.0,-150.0,0.4425,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,tov,starter,1.1393,,,,,,,,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,stl,starter,0.8079,1.5,1.5,betparx,0.215,155.0,-210.0,0.3666,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,blk,starter,0.3336,0.5,0.5,betmgm,0.226,135.0,-190.0,0.3938,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,1.1373,1.5,1.5,betparx,0.2963,-127.0,-105.0,0.5221,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,pa,starter,17.9204,16.5,16.5,betmgm,0.5803,-105.0,-130.0,0.4754,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,pr,starter,18.854,17.5,17.5,bovada,0.5735,-115.0,-115.0,0.5,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,ra,starter,7.373,6.5,6.5,betmgm,0.6511,-110.0,-120.0,0.4899,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,pra,starter,22.0737,20.5,20.5,betparx,0.5831,102.0,-136.0,0.4621,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pts,starter,27.0745,26.5,26.5,betmgm,0.5542,-125.0,-105.0,0.5203,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,reb,starter,3.8116,3.5,3.5,betparx,0.5717,133.0,-180.0,0.4003,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,ast,starter,6.6106,5.5,5.5,betparx,0.7125,-143.0,108.0,0.5504,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,1.9861,2.5,2.5,betmgm,0.371,115.0,-155.0,0.4335,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,tov,starter,1.4866,,,,,,,,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,stl,starter,0.6529,0.5,0.5,betparx,0.3537,-175.0,130.0,0.5941,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,blk,starter,0.3044,0.5,0.5,betmgm,0.2391,475.0,-1000.0,0.1606,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,0.963,,,,,,,,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pa,starter,33.6851,32.5,32.5,betmgm,0.5703,-125.0,-105.0,0.5203,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pr,starter,30.886,29.5,29.5,betmgm,0.5852,-115.0,-115.0,0.5,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,ra,starter,10.4221,9.5,9.5,betmgm,0.6455,105.0,-140.0,0.4554,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pra,starter,37.4966,35.5,35.5,betparx,0.606,-114.0,-117.0,0.497,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,17.0545,14.5,14.5,betmgm,0.6724,-115.0,-115.0,0.5,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,4.6076,3.5,3.5,betmgm,0.7466,100.0,-135.0,0.4653,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,5.1975,5.5,5.5,betmgm,0.4287,-125.0,-105.0,0.5203,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,1.4095,1.5,1.5,betmgm,0.4219,125.0,-165.0,0.4165,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,1.5038,,,,,,,,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,0.5899,0.5,0.5,betparx,0.3673,-250.0,185.0,0.6706,latest_valid_report_selected,projected
 
 ```
 
@@ -321,7 +1086,7 @@ De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,0.5899,0.5,0.5,bovada,0.3673,-230.
 
 ## `derek_game_snapshots/21716136/morning/prop_summary.parquet`
 
-- bytes: `16,466`
+- bytes: `16,541`
 - rows: `144`
 - columns: `19`
 
@@ -329,35 +1094,35 @@ Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_mean,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,injury_freshness_status,lineup_freshness_status
-Mikal Bridges,61,NYK,SAS,21716136,pts,starter,14.696547168377155,13.5,13.5,betmgm,0.5747666931933191,-105.0,-125.0,0.4796954314720812,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,reb,starter,4.164103096000567,3.5,3.5,betmgm,0.6654781323112501,100.0,-135.0,0.4653465346534653,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,ast,starter,3.2459184607544795,2.5,2.5,betmgm,0.681038317869316,-160.0,120.0,0.5751633986928104,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,1.0973305154254183,1.5,1.5,betmgm,0.3347946261427721,110.0,-150.0,0.4424778761061947,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,tov,starter,1.153584383201641,,,,,,,,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,stl,starter,0.8078984893418149,1.5,1.5,betparx,0.21502066340161138,150.0,-205.0,0.3730886850152905,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,blk,starter,0.33356259623826034,0.5,0.5,betmgm,0.22596197983209937,140.0,-190.0,0.38873994638069703,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,1.1373020178595676,1.5,1.5,betparx,0.29633691832606135,-129.0,-104.0,0.5249341737812177,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,pa,starter,17.94246562913155,16.5,16.5,betmgm,0.5819656881440788,-105.0,-125.0,0.4796954314720812,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,pr,starter,18.86065026437767,17.5,17.5,bovada,0.5741235000465615,-110.0,-120.0,0.48987854251012153,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,ra,starter,7.410021556755038,6.5,6.5,betmgm,0.6576171367582095,-110.0,-120.0,0.48987854251012153,fallback_used,projected
-Mikal Bridges,61,NYK,SAS,21716136,pra,starter,22.106568725132156,20.5,20.5,betparx,0.5856480890357387,102.0,-136.0,0.46209273182957394,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pts,starter,27.08614132394472,26.5,26.5,betmgm,0.5539520284678714,-125.0,-105.0,0.5203045685279188,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,reb,starter,3.837248869670174,3.5,3.5,betparx,0.5827216280786234,133.0,-180.0,0.40034315127251924,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,ast,starter,6.576100535449091,5.5,5.5,betparx,0.6971830984414131,-141.0,107.0,0.5477320922551466,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,1.9860652072965097,2.5,2.5,betmgm,0.37098365353928486,115.0,-155.0,0.43348916277093075,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,tov,starter,1.4785705614498057,,,,,,,,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,stl,starter,0.6529189907218549,0.5,0.5,betparx,0.3537015062249927,-177.0,130.0,0.5950884373629587,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,blk,starter,0.30444055918887425,0.5,0.5,betmgm,0.2391499076180225,475.0,-1000.0,0.16058394160583941,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,0.9629754032920788,,,,,,,,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pa,starter,33.662241859393795,32.5,32.5,betmgm,0.5682777735563708,-120.0,-110.0,0.5101214574898786,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pr,starter,30.923390193614885,29.5,29.5,betmgm,0.5864677227842858,-115.0,-115.0,0.5,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,ra,starter,10.41334940511925,9.5,9.5,betmgm,0.6425557217413271,105.0,-140.0,0.4554079696394686,fallback_used,projected
-Jalen Brunson,73,NYK,SAS,21716136,pra,starter,37.49949072906396,36.5,36.5,betparx,0.5566423692773824,104.0,-139.0,0.45736374770361293,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,16.901101445191816,14.5,14.5,betmgm,0.6521227178593237,-115.0,-115.0,0.5,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,4.5646134139059615,3.5,3.5,betmgm,0.7450128557257838,100.0,-135.0,0.4653465346534653,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,5.190843023652563,5.5,5.5,betmgm,0.4266745694823756,-150.0,110.0,0.5575221238938053,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,1.409486127785261,1.5,1.5,betmgm,0.42187780769185373,125.0,-165.0,0.4165029469548134,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,1.5164155326943973,,,,,,,,fallback_used,projected
-De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,0.5898894640052346,0.5,0.5,bovada,0.36730786820504785,-230.0,170.0,0.6529968454258674,fallback_used,projected
+Mikal Bridges,61,NYK,SAS,21716136,pts,starter,14.70071426649782,13.5,13.5,betmgm,0.5749597281699909,-111.0,-118.0,0.4928711096627016,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,reb,starter,4.153281051901045,3.5,3.5,betmgm,0.6617737654668412,100.0,-135.0,0.4653465346534653,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,ast,starter,3.2197294618790506,2.5,2.5,betmgm,0.6757914069103628,-160.0,120.0,0.5751633986928104,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,fg3m,starter,1.0973305154254183,1.5,1.5,betmgm,0.3347946261427721,110.0,-150.0,0.4424778761061947,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,tov,starter,1.139327008930856,,,,,,,,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,stl,starter,0.8078984893418147,1.5,1.5,betparx,0.21502066340161136,155.0,-210.0,0.3666469544648137,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,blk,starter,0.33356259623826034,0.5,0.5,betmgm,0.22596197983209937,135.0,-190.0,0.3937542430414121,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,stocks,starter,1.137302017859568,1.5,1.5,betparx,0.2963369183260614,-127.0,-105.0,0.5220573491076799,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,pa,starter,17.920443728376785,16.5,16.5,betmgm,0.5802990906468282,-105.0,-130.0,0.4753937007874017,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,pr,starter,18.8539953183988,17.5,17.5,bovada,0.5734955003423368,-115.0,-115.0,0.5,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,ra,starter,7.3730105137800885,6.5,6.5,betmgm,0.6511278419311965,-110.0,-120.0,0.48987854251012153,latest_valid_report_selected,projected
+Mikal Bridges,61,NYK,SAS,21716136,pra,starter,22.073724780277814,20.5,20.5,betparx,0.5830825849562601,102.0,-136.0,0.46209273182957394,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pts,starter,27.074465237931726,26.5,26.5,betmgm,0.5541599455549537,-125.0,-105.0,0.5203045685279188,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,reb,starter,3.811552576808661,3.5,3.5,betparx,0.5717427258409282,133.0,-180.0,0.40034315127251924,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,ast,starter,6.6105954930484145,5.5,5.5,betparx,0.7124596993146193,-143.0,108.0,0.5503663681444749,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,fg3m,starter,1.9860652072965097,2.5,2.5,betmgm,0.37098365353928486,115.0,-155.0,0.43348916277093075,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,tov,starter,1.486607559477901,,,,,,,,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,stl,starter,0.6529189907218552,0.5,0.5,betparx,0.3537015062249928,-175.0,130.0,0.5940959409594095,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,blk,starter,0.30444055918887425,0.5,0.5,betmgm,0.2391499076180225,475.0,-1000.0,0.16058394160583941,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,stocks,starter,0.9629754032920791,,,,,,,,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pa,starter,33.68506073098013,32.5,32.5,betmgm,0.570342983228567,-125.0,-105.0,0.5203045685279188,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pr,starter,30.886017814740388,29.5,29.5,betmgm,0.5852369432532993,-115.0,-115.0,0.5,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,ra,starter,10.422148069857071,9.5,9.5,betmgm,0.645547780258048,105.0,-140.0,0.4554079696394686,latest_valid_report_selected,projected
+Jalen Brunson,73,NYK,SAS,21716136,pra,starter,37.496613307788735,35.5,35.5,betparx,0.6060002557850189,-114.0,-117.0,0.4969864995178399,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,pts,starter,17.054483918489815,14.5,14.5,betmgm,0.6724227190779515,-115.0,-115.0,0.5,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,reb,starter,4.607616471556697,3.5,3.5,betmgm,0.7466133413726206,100.0,-135.0,0.4653465346534653,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,ast,starter,5.197525629290567,5.5,5.5,betmgm,0.42871489033219995,-125.0,-105.0,0.5203045685279188,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,fg3m,starter,1.4094861277852613,1.5,1.5,betmgm,0.4218778076918537,125.0,-165.0,0.4165029469548134,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,tov,starter,1.5038078323521193,,,,,,,,latest_valid_report_selected,projected
+De'Aaron Fox,161,SAS,NYK,21716136,stl,starter,0.5898894640052346,0.5,0.5,betparx,0.3673078682050478,-250.0,185.0,0.6705882352941177,latest_valid_report_selected,projected
 
 ```

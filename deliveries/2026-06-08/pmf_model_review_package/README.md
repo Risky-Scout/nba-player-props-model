@@ -7,9 +7,9 @@
 - props: **144**
 - books: **14**
 - market coverage: **full**
-- injury freshness: **fallback_used**
+- injury freshness: **latest_valid_report_selected**
 - role provenance: `derived_from_projected_minutes`: 144
-- model: `c6cc74a6#phase10c`
+- model: `103e32c8#phase10c`
 
 ### Caveats
 
