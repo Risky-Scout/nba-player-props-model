@@ -3,99 +3,99 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "80baaf959509588c1068738ab22d2295b7603fd0",
+    "code_commit": "91734a1a5486d61b3754fa9d452ac476053c78a3",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
       "by_line_bucket": {},
       "by_role_bucket": {
         "bench": {
-          "n": 1442,
-          "nll": 1.5082137250016836,
-          "p0_err": 0.3781064016764915
+          "n": 525,
+          "nll": 1.6420993451063362,
+          "p0_err": 0.379413374164373
         },
         "core": {
-          "n": 1127,
-          "nll": 1.9242528740102327,
-          "p0_err": 0.2694210437933988
+          "n": 525,
+          "nll": 1.8711344846782219,
+          "p0_err": 0.27780023674463966
         },
         "fringe": {
-          "n": 889,
-          "nll": 1.2652302563717206,
-          "p0_err": 0.37973731160564755
+          "n": 476,
+          "nll": 1.3839919122237876,
+          "p0_err": 0.3953733256469268
         },
         "inactive_risk": {
-          "n": 693,
-          "nll": 1.4303835506463507,
-          "p0_err": 0.3603361831447957
+          "n": 392,
+          "nll": 1.5091516496857595,
+          "p0_err": 0.36886507278566383
         },
         "rotation": {
-          "n": 1120,
-          "nll": 1.7566926299853,
-          "p0_err": 0.32748198275516655
+          "n": 623,
+          "nll": 1.8546664949006177,
+          "p0_err": 0.33799720598585636
         },
         "starter": {
-          "n": 1946,
-          "nll": 2.009977126256628,
-          "p0_err": 0.22596044453862807
+          "n": 903,
+          "nll": 2.0447886135233504,
+          "p0_err": 0.2262342364687565
         }
       },
       "by_stat": {
         "ast": {
           "calibrator_present": true,
-          "mean_bias": -0.047595174409484915,
-          "nll": 1.547818208088251,
-          "p0_err": 0.3129101407788619,
-          "rows_scored": 1031,
-          "rps": 0.7444992521856096
+          "mean_bias": -0.032386465758564534,
+          "nll": 1.548729350076722,
+          "p0_err": 0.3198297883267741,
+          "rows_scored": 492,
+          "rps": 0.7457390327195867
         },
         "blk": {
           "calibrator_present": true,
-          "mean_bias": 0.04115537612935182,
-          "nll": 0.7357989141137233,
-          "p0_err": 0.3162767256044726,
-          "rows_scored": 1031,
-          "rps": 0.2607014700422839
+          "mean_bias": 0.01634477278176615,
+          "nll": 0.6987395016207302,
+          "p0_err": 0.30746163079994526,
+          "rows_scored": 492,
+          "rps": 0.24583292189684736
         },
         "fg3m": {
           "calibrator_present": true,
-          "mean_bias": 0.033774825246331665,
-          "nll": 2.5152422085307404,
-          "p0_err": 0.3090943907602114,
-          "rows_scored": 1031,
-          "rps": 0.5495294200823333
+          "mean_bias": -0.03449007069283094,
+          "nll": 2.8184212143890033,
+          "p0_err": 0.3286756531011366,
+          "rows_scored": 492,
+          "rps": 0.5694527107045662
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": -0.14811766224845332,
-          "nll": 2.793248057156608,
-          "p0_err": 0.2057684735241638,
-          "rows_scored": 1031,
-          "rps": 2.824063249116764
+          "mean_bias": -0.1368269213360518,
+          "nll": 2.8085550783008637,
+          "p0_err": 0.21456870595202437,
+          "rows_scored": 492,
+          "rps": 2.8650058098664117
         },
         "reb": {
           "calibrator_present": true,
-          "mean_bias": -0.019915317248689605,
-          "nll": 2.0216889191717864,
-          "p0_err": 0.2341809736156775,
-          "rows_scored": 1031,
-          "rps": 1.2052008332958501
+          "mean_bias": -0.046954579772459634,
+          "nll": 2.0205556891587944,
+          "p0_err": 0.23710978237514688,
+          "rows_scored": 492,
+          "rps": 1.1936697420103102
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": 0.02302193805347472,
-          "nll": 1.0726007301018128,
-          "p0_err": 0.40674264823760226,
-          "rows_scored": 1031,
-          "rps": 0.4157424635953945
+          "mean_bias": 0.01502502051599039,
+          "nll": 1.1962793486943366,
+          "p0_err": 0.41038749441443134,
+          "rows_scored": 492,
+          "rps": 0.4241061662945231
         },
         "tov": {
           "calibrator_present": true,
-          "mean_bias": 0.007574558114192617,
-          "nll": 1.2810461367005794,
-          "p0_err": 0.39025966228733566,
-          "rows_scored": 1031,
-          "rps": 0.5483758975017998
+          "mean_bias": -0.012719619160396895,
+          "nll": 1.300420431310164,
+          "p0_err": 0.4028850997614865,
+          "rows_scored": 492,
+          "rps": 0.5688688576947746
         }
       },
       "clv": null,
@@ -103,23 +103,23 @@
       "edge_buckets": null,
       "holdout_window": {
         "end": "2026-06-08",
-        "rows": 7217,
-        "start": "2026-04-28"
+        "rows": 3444,
+        "start": "2026-05-11"
       },
       "market_comparison": null,
-      "mean_error": -0.015728779480468146,
+      "mean_error": -0.03314398048893532,
       "median_error": null,
       "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-08",
-      "nll": 1.7096347391233573,
-      "p0_calibration": 0.3107475735440465,
+      "nll": 1.7702429447929446,
+      "p0_calibration": 0.31727402210442074,
       "pmf_validity_issues": [],
-      "rows_scored_total": 7217,
-      "rps": 0.9354446551171479,
+      "rows_scored_total": 3444,
+      "rps": 0.9446678915981457,
       "tov": {
-        "mean_bias": 0.007574558114192617,
-        "nll": 1.2810461367005794,
-        "p0_error": 0.39025966228733566,
-        "rps": 0.5483758975017998
+        "mean_bias": -0.012719619160396895,
+        "nll": 1.300420431310164,
+        "p0_error": 0.4028850997614865,
+        "rps": 0.5688688576947746
       }
     },
     "model_version": "challenger-2026-06-08"
@@ -132,92 +132,92 @@
       "by_line_bucket": {},
       "by_role_bucket": {
         "bench": {
-          "n": 1442,
-          "nll": 1.5283740671236028,
-          "p0_err": 0.39011552382606135
+          "n": 525,
+          "nll": 1.6420993451063362,
+          "p0_err": 0.379413374164373
         },
         "core": {
-          "n": 1127,
-          "nll": 1.951774083119683,
-          "p0_err": 0.272038738789127
+          "n": 525,
+          "nll": 1.8711344846782219,
+          "p0_err": 0.27780023674463966
         },
         "fringe": {
-          "n": 889,
-          "nll": 1.2837899518849671,
-          "p0_err": 0.39171422920612037
+          "n": 476,
+          "nll": 1.3839919122237876,
+          "p0_err": 0.3953733256469268
         },
         "inactive_risk": {
-          "n": 693,
-          "nll": 1.4523391616281962,
-          "p0_err": 0.37419041653389307
+          "n": 392,
+          "nll": 1.5091516496857595,
+          "p0_err": 0.36886507278566383
         },
         "rotation": {
-          "n": 1120,
-          "nll": 1.7784313335193473,
-          "p0_err": 0.3362329801371595
+          "n": 623,
+          "nll": 1.8546664949006177,
+          "p0_err": 0.33799720598585636
         },
         "starter": {
-          "n": 1946,
-          "nll": 2.033786085485282,
-          "p0_err": 0.22727230634189238
+          "n": 903,
+          "nll": 2.0447886135233504,
+          "p0_err": 0.2262342364687565
         }
       },
       "by_stat": {
         "ast": {
           "calibrator_present": true,
-          "mean_bias": -0.06972054202502799,
-          "nll": 1.5667978491019214,
-          "p0_err": 0.321494129750654,
-          "rows_scored": 1031,
-          "rps": 0.7535902634508478
+          "mean_bias": -0.032386465758564534,
+          "nll": 1.548729350076722,
+          "p0_err": 0.3198297883267741,
+          "rows_scored": 492,
+          "rps": 0.7457390327195867
         },
         "blk": {
           "calibrator_present": true,
-          "mean_bias": 0.20644772985303678,
-          "nll": 0.7878877433035973,
-          "p0_err": 0.34918672298530073,
-          "rows_scored": 1031,
-          "rps": 0.27558577631851566
+          "mean_bias": 0.01634477278176615,
+          "nll": 0.6987395016207302,
+          "p0_err": 0.30746163079994526,
+          "rows_scored": 492,
+          "rps": 0.24583292189684736
         },
         "fg3m": {
           "calibrator_present": true,
-          "mean_bias": 0.00018426630386304563,
-          "nll": 2.5070797919902748,
-          "p0_err": 0.311925962340814,
-          "rows_scored": 1031,
-          "rps": 0.5450463327838719
+          "mean_bias": -0.03449007069283094,
+          "nll": 2.8184212143890033,
+          "p0_err": 0.3286756531011366,
+          "rows_scored": 492,
+          "rps": 0.5694527107045662
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": 0.08099005618981986,
-          "nll": 2.8244913067252893,
-          "p0_err": 0.20497070856754737,
-          "rows_scored": 1031,
-          "rps": 2.8332127312502307
+          "mean_bias": -0.1368269213360518,
+          "nll": 2.8085550783008637,
+          "p0_err": 0.21456870595202437,
+          "rows_scored": 492,
+          "rps": 2.8650058098664117
         },
         "reb": {
           "calibrator_present": true,
-          "mean_bias": 0.08821022069449205,
-          "nll": 2.036892929831227,
-          "p0_err": 0.23306838656148407,
-          "rows_scored": 1031,
-          "rps": 1.2116864210891174
+          "mean_bias": -0.046954579772459634,
+          "nll": 2.0205556891587944,
+          "p0_err": 0.23710978237514688,
+          "rows_scored": 492,
+          "rps": 1.1936697420103102
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": 0.2047238976668504,
-          "nll": 1.118144658875007,
-          "p0_err": 0.42187363885936113,
-          "rows_scored": 1031,
-          "rps": 0.43129891544322324
+          "mean_bias": 0.01502502051599039,
+          "nll": 1.1962793486943366,
+          "p0_err": 0.41038749441443134,
+          "rows_scored": 492,
+          "rps": 0.4241061662945231
         },
         "tov": {
           "calibrator_present": true,
-          "mean_bias": 0.04006673378485847,
-          "nll": 1.2837454084347697,
-          "p0_err": 0.38399354335937574,
-          "rows_scored": 1031,
-          "rps": 0.5485165660229925
+          "mean_bias": -0.012719619160396895,
+          "nll": 1.300420431310164,
+          "p0_err": 0.4028850997614865,
+          "rows_scored": 492,
+          "rps": 0.5688688576947746
         }
       },
       "clv": null,
@@ -225,28 +225,28 @@
       "edge_buckets": null,
       "holdout_window": {
         "end": "2026-06-08",
-        "rows": 7217,
-        "start": "2026-04-28"
+        "rows": 3444,
+        "start": "2026-05-11"
       },
       "market_comparison": null,
-      "mean_error": 0.07870033749541322,
+      "mean_error": -0.03314398048893532,
       "median_error": null,
       "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models",
-      "nll": 1.7321485268945835,
-      "p0_calibration": 0.318073298917791,
+      "nll": 1.7702429447929446,
+      "p0_calibration": 0.31727402210442074,
       "pmf_validity_issues": [],
-      "rows_scored_total": 7217,
-      "rps": 0.9427052866226856,
+      "rows_scored_total": 3444,
+      "rps": 0.9446678915981457,
       "tov": {
-        "mean_bias": 0.04006673378485847,
-        "nll": 1.2837454084347697,
-        "p0_error": 0.38399354335937574,
-        "rps": 0.5485165660229925
+        "mean_bias": -0.012719619160396895,
+        "nll": 1.300420431310164,
+        "p0_error": 0.4028850997614865,
+        "rps": 0.5688688576947746
       }
     },
-    "model_version": "challenger-2026-06-06"
+    "model_version": "challenger-2026-06-08"
   },
-  "code_commit": "80baaf959509588c1068738ab22d2295b7603fd0",
+  "code_commit": "91734a1a5486d61b3754fa9d452ac476053c78a3",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -261,39 +261,39 @@
   ],
   "gates_passed": [
     {
-      "detail": "challenger=1.70963 champion=1.73215 delta=-0.0225138 (tol=0.017321485268945835)",
+      "detail": "challenger=1.77024 champion=1.77024 delta=+0 (tol=0.017702429447929446)",
       "name": "nll_improves_or_non_worse"
     },
     {
-      "detail": "challenger=0.935445 champion=0.942705 delta=-0.00726063 (tol=0.009427052866226856)",
+      "detail": "challenger=0.944668 champion=0.944668 delta=+0 (tol=0.009446678915981457)",
       "name": "rps_improves_or_non_worse"
     },
     {
-      "detail": "challenger=0.310748 champion=0.318073 delta=-0.00732573 (tol=0.0)",
+      "detail": "challenger=0.317274 champion=0.317274 delta=+0 (tol=0.0)",
       "name": "calibration_error_improves"
     },
     {
-      "detail": "challenger=0.310748 champion=0.318073 delta=-0.00732573 (tol=0.005)",
+      "detail": "challenger=0.317274 champion=0.317274 delta=+0 (tol=0.005)",
       "name": "p0_error_improves_or_non_worse"
     },
     {
-      "detail": "challenger=0.0157288 champion=0.0787003 delta=-0.0629716 (tol=0.05)",
+      "detail": "challenger=0.033144 champion=0.033144 delta=+0 (tol=0.05)",
       "name": "mean_bias_does_not_worsen"
     },
     {
-      "detail": "challenger=1.28105 champion=1.28375 delta=-0.00269927 (tol=0.025674908168695394)",
+      "detail": "challenger=1.30042 champion=1.30042 delta=+0 (tol=0.02600840862620328)",
       "name": "tov_does_not_regress"
     },
     {
-      "detail": "worst_core_nll_delta=-0.023808959228654114",
+      "detail": "worst_core_nll_delta=0.0",
       "name": "starter_core_role_buckets_do_not_regress"
     },
     {
-      "detail": "worst_bench_nll_delta=-0.018559695513246544",
+      "detail": "worst_bench_nll_delta=0.0",
       "name": "bench_fringe_role_buckets_do_not_regress_materially"
     },
     {
-      "detail": "worst_stat=fg3m delta=0.008162416540465678",
+      "detail": "worst_stat=pts delta=0.0",
       "name": "no_severe_stat_bucket_regression"
     },
     {
@@ -325,7 +325,7 @@
       "name": "m6_3_stat_role_matrix_valid"
     },
     {
-      "detail": "review_cells=8 guarded_cells=8",
+      "detail": "review_cells=16 guarded_cells=16",
       "name": "m6_3_review_cells_guarded"
     },
     {
@@ -341,7 +341,7 @@
       "name": "market_brier_non_inferior_or_better"
     }
   ],
-  "generated_at_utc": "2026-06-09T10:55:50+00:00",
+  "generated_at_utc": "2026-06-09T15:51:38+00:00",
   "m6_3_matrix_summary": {
     "detail": "valid",
     "expected_role_buckets": [
@@ -369,12 +369,12 @@
     ],
     "extra_cells": [],
     "forbidden_stats_present": [],
-    "guarded_fallback_cells_count": 8,
+    "guarded_fallback_cells_count": 16,
     "issues": [],
     "m6_3_report_pass": true,
     "market_eval_available": false,
-    "matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-04.csv",
-    "meta_path": "artifacts/docs/m6_3_stat_role_calibration_report_2026-06-04.meta.json",
+    "matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-09.csv",
+    "meta_path": "artifacts/docs/m6_3_stat_role_calibration_report_2026-06-09.meta.json",
     "missing_cells": [],
     "needs_more_data_cells_count": 0,
     "observed_role_buckets": [
@@ -399,84 +399,149 @@
       "stocks",
       "tov"
     ],
-    "review_cells_count": 8,
+    "review_cells_count": 16,
     "rows": 72,
     "schema_version": "m7_m6_3_matrix_summary_v1",
     "status_counts": {
-      "PASS": 64,
-      "REVIEW": 8
+      "PASS": 56,
+      "REVIEW": 16
     },
     "valid": true
   },
   "m6_3_needs_more_data_cells": [],
   "m6_3_review_cells": [
     {
-      "delta_nll_cal_minus_raw": "0.017435472440100686",
-      "n": "593",
+      "delta_nll_cal_minus_raw": "0.0222458997138526",
+      "n": "601",
       "nll_threshold": "0.005",
       "role_bucket": "inactive_risk",
       "stat": "pts",
       "status": "REVIEW"
     },
     {
-      "delta_nll_cal_minus_raw": "0.01317629430722489",
-      "n": "607",
+      "delta_nll_cal_minus_raw": "0.00879241224967986",
+      "n": "624",
       "nll_threshold": "0.005",
       "role_bucket": "fringe",
       "stat": "pts",
       "status": "REVIEW"
     },
     {
-      "delta_nll_cal_minus_raw": "0.007804351606277571",
-      "n": "1379",
+      "delta_nll_cal_minus_raw": "0.006469844974787753",
+      "n": "2110",
       "nll_threshold": "0.005",
-      "role_bucket": "bench",
-      "stat": "pts",
+      "role_bucket": "core",
+      "stat": "stl",
       "status": "REVIEW"
     },
     {
-      "delta_nll_cal_minus_raw": "0.006401716443731886",
-      "n": "1379",
+      "caveats": "sparse_p0_worsened_+0.017",
+      "delta_nll_cal_minus_raw": "0.009041202949869986",
+      "n": "601",
+      "nll_threshold": "0.005",
+      "role_bucket": "inactive_risk",
+      "stat": "blk",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.005217056062604253",
+      "n": "1392",
       "nll_threshold": "0.005",
       "role_bucket": "bench",
       "stat": "blk",
       "status": "REVIEW"
     },
     {
-      "caveats": "sparse_p0_worsened_+0.017",
-      "delta_nll_cal_minus_raw": "0.005377040160119528",
-      "n": "1940",
+      "caveats": "sparse_p0_worsened_+0.015",
+      "delta_nll_cal_minus_raw": "0.008197961262446318",
+      "n": "1960",
       "nll_threshold": "0.005",
       "role_bucket": "rotation",
       "stat": "blk",
       "status": "REVIEW"
     },
     {
-      "delta_nll_cal_minus_raw": "0.011221551948116693",
-      "n": "2098",
+      "delta_nll_cal_minus_raw": "0.006039196835886607",
+      "n": "2110",
       "nll_threshold": "0.005",
       "role_bucket": "core",
       "stat": "blk",
       "status": "REVIEW"
     },
     {
-      "delta_nll_cal_minus_raw": "0.01029034548126262",
-      "n": "607",
+      "delta_nll_cal_minus_raw": "0.0037949436605440034",
+      "n": "1372",
+      "nll_threshold": "0.003",
+      "role_bucket": "starter",
+      "stat": "blk",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.012667205894892675",
+      "n": "601",
+      "nll_threshold": "0.005",
+      "role_bucket": "inactive_risk",
+      "stat": "pa",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.00960376570313004",
+      "n": "624",
+      "nll_threshold": "0.005",
+      "role_bucket": "fringe",
+      "stat": "pa",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.018180003662038313",
+      "n": "601",
+      "nll_threshold": "0.005",
+      "role_bucket": "inactive_risk",
+      "stat": "pr",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.01530785592824424",
+      "n": "624",
       "nll_threshold": "0.005",
       "role_bucket": "fringe",
       "stat": "pr",
       "status": "REVIEW"
     },
     {
-      "delta_nll_cal_minus_raw": "0.011988290896723708",
-      "n": "607",
+      "delta_nll_cal_minus_raw": "0.015111346530823244",
+      "n": "1392",
+      "nll_threshold": "0.005",
+      "role_bucket": "bench",
+      "stat": "pr",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.030783801486705897",
+      "n": "601",
+      "nll_threshold": "0.005",
+      "role_bucket": "inactive_risk",
+      "stat": "ra",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.030194690403777535",
+      "n": "601",
+      "nll_threshold": "0.005",
+      "role_bucket": "inactive_risk",
+      "stat": "pra",
+      "status": "REVIEW"
+    },
+    {
+      "delta_nll_cal_minus_raw": "0.023425973809571676",
+      "n": "624",
       "nll_threshold": "0.005",
       "role_bucket": "fringe",
       "stat": "pra",
       "status": "REVIEW"
     }
   ],
-  "m6_3_stat_role_matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-04.csv",
+  "m6_3_stat_role_matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-09.csv",
   "market_benchmark": {
     "as_of_date": "2026-06-08",
     "by_edge_bucket": [],
@@ -572,7 +637,7 @@
         "stat": "reb"
       }
     ],
-    "code_commit": "80baaf959509588c1068738ab22d2295b7603fd0",
+    "code_commit": "91734a1a5486d61b3754fa9d452ac476053c78a3",
     "dates_included": [
       "2026-06-08",
       "2026-06-05",
@@ -607,7 +672,7 @@
     ],
     "delta_brier": 0.0015019138293587016,
     "delta_logloss": 0.00412407433622323,
-    "generated_at_utc": "2026-06-09T10:55:39+00:00",
+    "generated_at_utc": "2026-06-09T15:51:33+00:00",
     "market_brier": 0.2213243323227763,
     "market_logloss": 0.6320078684123581,
     "min_bucket_rows": 50,
@@ -716,12 +781,12 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-08",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260609T105452"
+    "training_run_id": "nightly-20260609T155054"
   },
   "pmf_validity": {
     "checked_files": 1,
     "issues": [],
-    "rows_checked": 55671,
+    "rows_checked": 56413,
     "source": "artifacts/models/challengers/2026-06-08",
     "stats_seen": []
   },
@@ -730,65 +795,130 @@
   "stat_role_guarded_policy": {
     "guarded_fallback_required_cells": [
       {
-        "delta_nll_cal_minus_raw": "0.017435472440100686",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "0.0222458997138526",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "pts",
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.01317629430722489",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "0.00879241224967986",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "pts",
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.007804351606277571",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "0.006469844974787753",
+        "n": "2110",
         "nll_threshold": "0.005",
-        "role_bucket": "bench",
-        "stat": "pts",
+        "role_bucket": "core",
+        "stat": "stl",
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.006401716443731886",
-        "n": "1379",
+        "caveats": "sparse_p0_worsened_+0.017",
+        "delta_nll_cal_minus_raw": "0.009041202949869986",
+        "n": "601",
+        "nll_threshold": "0.005",
+        "role_bucket": "inactive_risk",
+        "stat": "blk",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.005217056062604253",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "blk",
         "status": "REVIEW"
       },
       {
-        "caveats": "sparse_p0_worsened_+0.017",
-        "delta_nll_cal_minus_raw": "0.005377040160119528",
-        "n": "1940",
+        "caveats": "sparse_p0_worsened_+0.015",
+        "delta_nll_cal_minus_raw": "0.008197961262446318",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "blk",
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.011221551948116693",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "0.006039196835886607",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "blk",
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.01029034548126262",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "0.0037949436605440034",
+        "n": "1372",
+        "nll_threshold": "0.003",
+        "role_bucket": "starter",
+        "stat": "blk",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.012667205894892675",
+        "n": "601",
+        "nll_threshold": "0.005",
+        "role_bucket": "inactive_risk",
+        "stat": "pa",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.00960376570313004",
+        "n": "624",
+        "nll_threshold": "0.005",
+        "role_bucket": "fringe",
+        "stat": "pa",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.018180003662038313",
+        "n": "601",
+        "nll_threshold": "0.005",
+        "role_bucket": "inactive_risk",
+        "stat": "pr",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.01530785592824424",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "pr",
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.011988290896723708",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "0.015111346530823244",
+        "n": "1392",
+        "nll_threshold": "0.005",
+        "role_bucket": "bench",
+        "stat": "pr",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.030783801486705897",
+        "n": "601",
+        "nll_threshold": "0.005",
+        "role_bucket": "inactive_risk",
+        "stat": "ra",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.030194690403777535",
+        "n": "601",
+        "nll_threshold": "0.005",
+        "role_bucket": "inactive_risk",
+        "stat": "pra",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.023425973809571676",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "pra",
@@ -801,513 +931,448 @@
     "review_status_handling": "REVIEW cells are not promotion blockers if explicitly listed for guarded fallback.",
     "role_aware_allowed_cells": [
       {
-        "delta_nll_cal_minus_raw": "-0.008312818522161702",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.0011073580283680329",
+        "n": "1392",
+        "nll_threshold": "0.005",
+        "role_bucket": "bench",
+        "stat": "pts",
+        "status": "PASS"
+      },
+      {
+        "delta_nll_cal_minus_raw": "-0.002875225008304394",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "pts",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.001845923744128175",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "0.0030516956492969705",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "pts",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.021826927776907645",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.023473833672554623",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "pts",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.017818387578188766",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "-0.02311592899737347",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "reb",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.003687266264371214",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.007497076888357768",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "reb",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.013014182948416053",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.016889539584594715",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "reb",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.045505576249784685",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.04027379220838645",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "reb",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.05972547454840216",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.056165386337521994",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "reb",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.058113297570872025",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.057144593832461954",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "reb",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.01158117903415845",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "-0.011811456674325926",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "ast",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.010941210310203564",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.01336808267316325",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "ast",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.037140444243253024",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.039158359507099894",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "ast",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.06395138486866658",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.059243143246795915",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "ast",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.0604258704423295",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.05307430059892981",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "ast",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.056790442850620515",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.06542418455444521",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "ast",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.017940260851656564",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "-0.023111389940898786",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "fg3m",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.03792599356321702",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.033543558741825574",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "fg3m",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.035638819012028033",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.035848349519944644",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "fg3m",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.03602731895278666",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.03642576851682833",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "fg3m",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.05457276924710541",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.05403369430337435",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "fg3m",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.0601853690910219",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.05112913968403099",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "fg3m",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.026841428426087832",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "-0.03244770318283807",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "tov",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.010869526254433937",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.017832650968165997",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "tov",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.036339609171375686",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.04021831587377567",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "tov",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.050376594482538284",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.042553830686507865",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "tov",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.05118936608479108",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.051057488043129595",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "tov",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.0705301463908099",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.07205623979088083",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "tov",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.0015645082452174774",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "-0.000990618303766455",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "stl",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.004193584181135801",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.0003980309786437708",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "stl",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.0015535390185287268",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.00031649045792703223",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "stl",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.004010209106197982",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "0.0026221269575945616",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "stl",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.0027151604737616353",
-        "n": "2098",
-        "nll_threshold": "0.005",
-        "role_bucket": "core",
-        "stat": "stl",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "0.001999524995593749",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "0.002917124844959984",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "stl",
         "status": "PASS"
       },
       {
-        "caveats": "sparse_p0_worsened_+0.016",
-        "delta_nll_cal_minus_raw": "0.002687383559714762",
-        "n": "593",
-        "nll_threshold": "0.005",
-        "role_bucket": "inactive_risk",
-        "stat": "blk",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "-0.0058693633362768005",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.008345093129109027",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "blk",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.0020079453920535117",
-        "n": "1336",
-        "nll_threshold": "0.003",
-        "role_bucket": "starter",
-        "stat": "blk",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "0.0019274981523296209",
-        "n": "593",
+        "delta_nll_cal_minus_raw": "0.001541415150401404",
+        "n": "601",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
         "stat": "stocks",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.00017492414007436174",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "-0.0006440865999172152",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "stocks",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.0015878385020897667",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.0002885107576042767",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "stocks",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.0007335397533974053",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "0.000324851655183922",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "stocks",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.0011924434137846607",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "0.001708007806959122",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "stocks",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "0.001136876924012764",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "0.0007915354122780549",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "stocks",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.04218407486752529",
-        "n": "593",
-        "nll_threshold": "0.005",
-        "role_bucket": "inactive_risk",
-        "stat": "pa",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "0.0035614291823677924",
-        "n": "607",
-        "nll_threshold": "0.005",
-        "role_bucket": "fringe",
-        "stat": "pa",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "-0.02021353500654266",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "0.004401014115349433",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "pa",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.032278217423587385",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.017586109233302505",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "pa",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.03175355530831281",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.023369441331024365",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "pa",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.04900380170233021",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.055880885145421555",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "pa",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.04420564389109982",
-        "n": "593",
-        "nll_threshold": "0.005",
-        "role_bucket": "inactive_risk",
-        "stat": "pr",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "-0.014483841463796221",
-        "n": "1379",
-        "nll_threshold": "0.005",
-        "role_bucket": "bench",
-        "stat": "pr",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "-0.02734229869705862",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.01664091841391535",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "pr",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.032907000823367394",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.02870889824299372",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "pr",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.04001504759859964",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.04511932919683881",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "pr",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.041096037738462154",
-        "n": "593",
-        "nll_threshold": "0.005",
-        "role_bucket": "inactive_risk",
-        "stat": "ra",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "-0.0014408450088150282",
-        "n": "607",
+        "delta_nll_cal_minus_raw": "0.0024099098659333684",
+        "n": "624",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
         "stat": "ra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.01761896706697419",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "-0.006282835952304833",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "ra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.05354999413144901",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.04674896332297962",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "ra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.055515727074237464",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.0647535172748337",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "ra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.06536273233481849",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.06961915971858712",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "ra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.04462779064729361",
-        "n": "593",
-        "nll_threshold": "0.005",
-        "role_bucket": "inactive_risk",
-        "stat": "pra",
-        "status": "PASS"
-      },
-      {
-        "delta_nll_cal_minus_raw": "-0.01729000878681841",
-        "n": "1379",
+        "delta_nll_cal_minus_raw": "0.0034958378047820204",
+        "n": "1392",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
         "stat": "pra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.03730990931241962",
-        "n": "1940",
+        "delta_nll_cal_minus_raw": "-0.026340896028732352",
+        "n": "1960",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
         "stat": "pra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.04323720236410411",
-        "n": "2098",
+        "delta_nll_cal_minus_raw": "-0.04065146529732422",
+        "n": "2110",
         "nll_threshold": "0.005",
         "role_bucket": "core",
         "stat": "pra",
         "status": "PASS"
       },
       {
-        "delta_nll_cal_minus_raw": "-0.058463158603039744",
-        "n": "1336",
+        "delta_nll_cal_minus_raw": "-0.06832026304594319",
+        "n": "1372",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
         "stat": "pra",
