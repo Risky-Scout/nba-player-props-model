@@ -41,7 +41,7 @@
       "passed": true
     }
   ],
-  "code_commit": "d78b7bcfd7de2a88fb2eb2f43edb3750b2fcdfa4",
+  "code_commit": "fc1b0e841ee8981a62e00ac679f68f0b841a0c65",
   "delivery_date": "2026-06-09",
   "facts": {
     "calibrated_through_date": "2026-06-06",
@@ -50,7 +50,7 @@
     "delivery_date_minus_one_utc": "2026-06-08",
     "trained_through_date": "2026-06-06"
   },
-  "generated_at_utc": "2026-06-09T04:22:56+00:00",
+  "generated_at_utc": "2026-06-09T08:09:49+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
