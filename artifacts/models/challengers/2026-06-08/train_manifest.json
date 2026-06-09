@@ -1,0 +1,106 @@
+{
+  "as_of_date": "2026-06-08",
+  "challenger_artifacts": {
+    "calibrate_pmf_cmd": [
+      "python3",
+      "scripts/calibrate_pmf.py",
+      "--core-props-only",
+      "--aggregate-mode",
+      "--aggregate-oofs",
+      "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-08/aggregate_input",
+      "--output-dir",
+      "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-08"
+    ],
+    "calibrate_pmf_elapsed_seconds": 36.3,
+    "calibrate_pmf_log": "artifacts/models/challengers/2026-06-08/calibrate_pmf.log",
+    "challenger_kind": "real-aggregate-mode-from-rolling-oof",
+    "files": [
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_ast.pkl",
+        "sha256": "a127a2bb8b82c0c4b10fec300529726a5f71c13dba622a58a32516ada1f2d32a"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_blk.pkl",
+        "sha256": "a83b24da3cbf6a941b443e3f2943714214a49b889548dd56fb0e5f7c525b7498"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_fg3m.pkl",
+        "sha256": "9d70f0306e74d8412cb6303249ce65c31424a4bcbe8d475aa6308af3866aa70d"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_pts.pkl",
+        "sha256": "9f1ff4cb3aeeeb13d6e9ed9c2e21f6ae2e6c258c36c4c5fe613b51be6670b3e0"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_reb.pkl",
+        "sha256": "12de829ff6a318434f8cc0fd38770d9f8f177f7f46f36a03eeba08a5610b43fe"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_stl.pkl",
+        "sha256": "07182d0af75569ab1f3c185f3b7c294ca03f8ce242ad9ab54e15c0a075ebec5d"
+      },
+      {
+        "path": "artifacts/models/challengers/2026-06-08/pmf_cal_role_tov.pkl",
+        "sha256": "a18f3c588c2f80dc71188fb1c1d7bb3efb7aa394125743bac76b1ad7203cd437"
+      }
+    ],
+    "fold_aggregate_input": "artifacts/models/challengers/2026-06-08/aggregate_input/fold_aggregate.parquet",
+    "fold_aggregate_sha256": "6fd3ae2d4c8313c55a3e840cc9f1f5e6354263eaef8b4808033693e0422e7793",
+    "model_dir_reference": "artifacts/models/challengers/2026-06-08",
+    "oof_pmfs_parquet": "artifacts/models/challengers/2026-06-08/oof_pmfs.parquet",
+    "pmf_cal_meta_json": null,
+    "training_table_sha256": null,
+    "training_table_snapshot": null
+  },
+  "code_commit": "80baaf959509588c1068738ab22d2295b7603fd0",
+  "dry_run": false,
+  "finished_at_utc": "2026-06-09T10:55:37+00:00",
+  "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
+  "phase10d_overlays_in_use": false,
+  "phase13g": {
+    "data_complete_for_target_date": null,
+    "resolved_training_cutoff_date": "2026-06-08",
+    "stale_fallback_target_date": null,
+    "stale_fallback_used": false,
+    "target_date_et": "2026-06-08",
+    "target_policy": "manual_override",
+    "training_run_id": "nightly-20260609T105452"
+  },
+  "pointer_seen": {
+    "calibrator_version": "phase8-role-bucket",
+    "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
+    "model_version": "challenger-2026-06-06"
+  },
+  "schema_version": "1.0",
+  "started_at_utc": "2026-06-09T10:55:00+00:00",
+  "stats_trained": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk"
+  ],
+  "status": "ok",
+  "training_summary": {
+    "aggregate_oof_future_rows_excluded": null,
+    "aggregate_oof_rows_after_cutoff": 55671,
+    "aggregate_oof_rows_pre_cutoff": 55671,
+    "calibrate_pmf_elapsed_seconds": 36.3,
+    "future_rows_excluded": 0,
+    "max_date": "2026-06-08",
+    "min_date": "2023-10-24",
+    "model_version": "challenger-2026-06-08",
+    "stats_with_columns": [
+      "pts",
+      "reb",
+      "ast",
+      "fg3m",
+      "stl",
+      "blk"
+    ],
+    "training_row_count": 84541
+  },
+  "warnings": []
+}
