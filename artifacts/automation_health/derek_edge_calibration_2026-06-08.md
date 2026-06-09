@@ -1,8 +1,8 @@
 # Derek edge calibration audit — 2026-06-08
 
-- high-edge rows audited: **20**
+- high-edge rows audited: **21**
 - scoring corpus: **11797 rows** across 15 delivery dates
-- thin/limited buckets: **5**
+- thin/limited buckets: **6**
 - review-required buckets: **0**
 - supported buckets: **15**
 
@@ -21,7 +21,8 @@
 | Devin Vassell | ast | UNDER | 2.5 | EDGE_10_20 | 162 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Julian Champagnie | pts | UNDER | 10.5 | EDGE_10_20 | 237 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Dylan Harper | pts | UNDER | 13.5 | EDGE_10_20 | 1061 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
-| Dylan Harper | ast | UNDER | 3.5 | EDGE_10_20 | 219 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Dylan Harper | ast | UNDER | 3.5 | EDGE_20_30 | 161 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
+| Keldon Johnson | reb | UNDER | 2.5 | EDGE_10_20 | 89 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
 | Keldon Johnson | fg3m | OVER | 0.5 | EDGE_20_30 | 48 | nan | nan | +nan | **CALIBRATION_SAMPLE_LIMITED** |
 | Mikal Bridges | fg3m | UNDER | 1.5 | EDGE_10_20 | 297 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |
 | Victor Wembanyama | pts | UNDER | 27.5 | EDGE_20_30 | 297 | nan | nan | +nan | **CALIBRATION_SUPPORTED** |

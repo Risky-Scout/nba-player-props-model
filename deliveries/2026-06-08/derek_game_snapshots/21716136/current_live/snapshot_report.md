@@ -36,7 +36,7 @@ Sort: largest |raw_edge| first. `edge_publish_status` is the gate that determine
 | Keldon Johnson | fg3m | OVER | 0.500 | 0.769 | 0.512 | +0.257 | +0.431 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 48 |
 | Victor Wembanyama | pts | UNDER | 27.500 | 0.734 | 0.506 | +0.232 | +0.400 | PUBLISH_BLOCKER | CALIBRATION_SUPPORTED | 297 |
 | Victor Wembanyama | reb | UNDER | 11.500 | 0.712 | 0.490 | +0.224 | +0.410 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 53 |
-| Dylan Harper | ast | UNDER | 3.500 | 0.777 | 0.578 | +0.201 | +0.279 | WATCHLIST_NOT_CONFIRMED_LINEUP | CALIBRATION_SUPPORTED | 219 |
+| Dylan Harper | ast | UNDER | 3.500 | 0.777 | 0.578 | +0.201 | +0.279 | REVIEW_LARGE_EDGE | CALIBRATION_SUPPORTED | 161 |
 | Karl-Anthony Towns | pts | UNDER | 17.500 | 0.663 | 0.500 | +0.167 | +0.301 | PUBLISH_BLOCKER | CALIBRATION_SUPPORTED | 1061 |
 | Victor Wembanyama | ast | UNDER | 3.500 | 0.774 | 0.609 | +0.166 | +0.211 | WATCHLIST_NOT_CONFIRMED_LINEUP | CALIBRATION_SUPPORTED | 219 |
 | Karl-Anthony Towns | stl | UNDER | 0.500 | 0.609 | 0.453 | +0.156 | +0.279 | WATCHLIST_NOT_CONFIRMED_LINEUP | CALIBRATION_SAMPLE_LIMITED | 83 |
