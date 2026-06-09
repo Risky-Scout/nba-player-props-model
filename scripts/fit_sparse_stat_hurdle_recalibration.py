@@ -166,6 +166,27 @@ def main() -> int:
     for s, g in cal_df[cal_df["outcome"] > 0].groupby("stat"):
         stat_pos_mean[s] = float(g["outcome"].mean())
 
+    # Market-calibrated p0 floor for sparse stats.
+    # These bounds ensure the nightly refit never drifts above the market-implied
+    # zero-rate, keeping STL/BLK/STOCKS competitive with market odds.
+    # Derived from June 2026 Finals market prices; should be re-evaluated each season.
+    MARKET_P0_CEILING = {
+        "stl":    0.500,   # market P(over 0.5 line) ~0.50+ → p0 must be <= 0.50
+        "blk":    0.650,   # market P(over 0.5 line) ~0.35+ → p0 must be <= 0.65
+        "stocks": 0.560,   # market P(over 0.5 line) ~0.44+ → p0 must be <= 0.56
+        "fg3m":   0.520,   # fg3m zero-rate ceiling
+        "tov":    0.420,   # tov zero-rate ceiling
+    }
+    # If empirical p0 exceeds the market ceiling, use the market ceiling as the target.
+    for s in list(stat_p0.keys()):
+        ceiling = MARKET_P0_CEILING.get(s)
+        if ceiling is not None and stat_p0[s] > ceiling:
+            print(
+                f"  MARKET_FLOOR: {s} empirical_p0={stat_p0[s]:.4f} exceeds ceiling "
+                f"{ceiling:.4f} — using ceiling as p0_target to stay market-competitive"
+            )
+            stat_p0[s] = ceiling
+
     cells: dict[str, dict] = {}
     by_stat: dict[str, dict] = {}
     # Conservative defaults.
@@ -193,6 +214,11 @@ def main() -> int:
         n = float(len(g))
         k = float(args.shrink_k)
         p0_tgt = float((n * p0_emp + k * p0_stat) / (n + k))
+        # Apply market ceiling at cell level too — never allow cell p0 to exceed
+        # the stat-level ceiling (which is already market-calibrated above).
+        cell_ceiling = MARKET_P0_CEILING.get(stat)
+        if cell_ceiling is not None and p0_tgt > cell_ceiling:
+            p0_tgt = cell_ceiling
 
         pos_g = g[g["outcome"] > 0]
         if len(pos_g) >= max(200, args.min_n // 4):
