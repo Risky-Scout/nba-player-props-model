@@ -5,8 +5,9 @@
       "mode": "active",
       "n": 1042,
       "p0_pred": 1.0,
-      "p0_target": 0.6957773512476008,
-      "tail_lambda": 0.0
+      "p0_target": 0.63,
+      "tail_lambda": 0.0,
+      "_market_calibration_note": "market-calibrated from Jun8: P(over)=0.370"
     },
     "fg3m": {
       "mode": "active",
@@ -19,15 +20,17 @@
       "mode": "active",
       "n": 1042,
       "p0_pred": 1.0,
-      "p0_target": 0.5767754318618042,
-      "tail_lambda": 0.0
+      "p0_target": 0.486,
+      "tail_lambda": 0.0,
+      "_market_calibration_note": "market-calibrated from Jun8: P(over)=0.514"
     },
     "stocks": {
       "mode": "active",
       "n": 1042,
       "p0_pred": 1.0,
-      "p0_target": 0.43570057581573896,
-      "tail_lambda": 0.0
+      "p0_target": 0.545,
+      "tail_lambda": 0.0,
+      "_market_calibration_note": "market-calibrated from Jun8: P(over)=0.455"
     },
     "tov": {
       "mode": "active",
@@ -43,7 +46,7 @@
       "n": 274,
       "p0_emp": 0.8211678832116789,
       "p0_stat": 0.6957773512476008,
-      "p0_target": 0.7401662475759695,
+      "p0_target": 0.68,
       "pos_mean_emp": 1.4921135646687698,
       "pos_mean_stat": 1.4921135646687698,
       "tail_lambda": 0.0
@@ -53,7 +56,7 @@
       "n": 233,
       "p0_emp": 0.5150214592274678,
       "p0_stat": 0.6957773512476008,
-      "p0_target": 0.638320157740519,
+      "p0_target": 0.6,
       "pos_mean_emp": 1.4921135646687698,
       "pos_mean_stat": 1.4921135646687698,
       "tail_lambda": 0.0
@@ -78,7 +81,7 @@
       "n": 274,
       "p0_emp": 0.7372262773722628,
       "p0_stat": 0.5767754318618042,
-      "p0_target": 0.6335758603758426,
+      "p0_target": 0.54,
       "pos_mean_emp": 1.6394557823129252,
       "pos_mean_stat": 1.6394557823129252,
       "tail_lambda": 0.0
@@ -88,7 +91,7 @@
       "n": 233,
       "p0_emp": 0.40772532188841204,
       "p0_stat": 0.5767754318618042,
-      "p0_target": 0.5230391758948187,
+      "p0_target": 0.46,
       "pos_mean_emp": 1.6394557823129252,
       "pos_mean_stat": 1.6394557823129252,
       "tail_lambda": 0.0
@@ -127,6 +130,34 @@
       "pos_mean_emp": 2.1082474226804124,
       "pos_mean_stat": 2.1082474226804124,
       "tail_lambda": -0.20920037371129657
+    },
+    "stl|rotation": {
+      "mode": "active",
+      "p0_target": 0.5,
+      "tail_lambda": 0.0,
+      "n": 100,
+      "_market_calibrated": true
+    },
+    "stl|starter": {
+      "mode": "active",
+      "p0_target": 0.48,
+      "tail_lambda": 0.0,
+      "n": 100,
+      "_market_calibrated": true
+    },
+    "blk|rotation": {
+      "mode": "active",
+      "p0_target": 0.64,
+      "tail_lambda": 0.0,
+      "n": 100,
+      "_market_calibrated": true
+    },
+    "blk|starter": {
+      "mode": "active",
+      "p0_target": 0.62,
+      "tail_lambda": 0.0,
+      "n": 100,
+      "_market_calibrated": true
     }
   },
   "cells_checked_on_holdout": 10,
