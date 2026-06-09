@@ -1,0 +1,15 @@
+{
+  "as_of_date": "2026-05-20",
+  "schema_version": "m8_6q_v2",
+  "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
+  "forbidden_columns_check": "no_market_full_pmf_columns",
+  "odds_snapshot_family": null,
+  "odds_snapshot_path": null,
+  "odds_snapshot_type": null,
+  "odds_snapshot_substr_used": "auto",
+  "odds_snapshot_rank": null,
+  "odds_snapshot_is_historical": false,
+  "odds_snapshot_lock_offset_minutes": null,
+  "rows": 0,
+  "join_status": "no_odds_pairs_file"
+}

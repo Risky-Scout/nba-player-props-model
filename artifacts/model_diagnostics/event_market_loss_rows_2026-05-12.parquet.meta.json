@@ -3,22 +3,13 @@
   "schema_version": "m8_6q_v2",
   "m8_6q_delta_sign_convention": "model_minus_market (negative=model_better)",
   "forbidden_columns_check": "no_market_full_pmf_columns",
-  "rows": 774,
-  "matched_rows": 466,
-  "scored_rows_all_fields_nonnull": 466,
-  "odds_rows": 774,
-  "market_overlap_ratio": 0.602067,
-  "insufficient_market_overlap": false,
-  "scoring_blocker_counts": {
-    "none": 466,
-    "market_join_failed": 308
-  },
-  "odds_pairs_source": "data/odds_api/processed/2026-05-12/odds_pairs_live_slate_close_or_lock_2026-05-12T212007Z.parquet",
-  "oof_single_rows": 153664,
-  "oof_combo_rows": 96040,
-  "model_source_mode": "oof_date_slice",
-  "box_score_rows_for_as_of_date": 27,
-  "box_score_actual_lookup_keys": 324,
-  "pmf_col_single": "pmf",
-  "pmf_col_combo": "pmf"
+  "odds_snapshot_family": null,
+  "odds_snapshot_path": null,
+  "odds_snapshot_type": null,
+  "odds_snapshot_substr_used": "auto",
+  "odds_snapshot_rank": null,
+  "odds_snapshot_is_historical": false,
+  "odds_snapshot_lock_offset_minutes": null,
+  "rows": 0,
+  "join_status": "no_odds_pairs_file"
 }
