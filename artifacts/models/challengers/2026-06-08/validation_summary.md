@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-06-09T15:51:38+00:00 |
+| Generated (UTC) | 2026-06-09T18:05:30+00:00 |
 | Promote | no |
 | Reason | gate_failed:no_severe_market_stat_bucket_regression |
 | Champion model_version | challenger-2026-06-08 |
