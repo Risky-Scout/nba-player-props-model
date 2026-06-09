@@ -1,0 +1,2 @@
+game_id,snapshot_type,snapshot_dir,matched_rows,mean_nll,median_p_realized,present
+21716136,current_live,deliveries/2026-06-08/derek_game_snapshots/21716136/current_live,30,2.299608691232062,0.10025,True
