@@ -3,10 +3,10 @@
 This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 - Original relative path: `wizard_of_odds/publishable_edges.csv`
-- Original rows: `2109`
+- Original rows: `2108`
 - Original columns: `68`
-- Original bytes: `1930579`
-- Current CSV preview rows: `598`
+- Original bytes: `1930896`
+- Current CSV preview rows: `597`
 - Max allowed CSV bytes: `524288`
 - Full machine-readable parquet: `publishable_edges.parquet`
 - CSV parts folder: `publishable_edges_csv_parts/`
@@ -15,7 +15,7 @@ This CSV was larger than the GitHub CSV rendering limit used by this repository.
 
 | part | rows | bytes |
 |---|---:|---:|
-| `publishable_edges_csv_parts/publishable_edges_part_000.csv` | 557 | 481606 |
-| `publishable_edges_csv_parts/publishable_edges_part_001.csv` | 557 | 498978 |
-| `publishable_edges_csv_parts/publishable_edges_part_002.csv` | 557 | 481350 |
-| `publishable_edges_csv_parts/publishable_edges_part_003.csv` | 438 | 406475 |
+| `publishable_edges_csv_parts/publishable_edges_part_000.csv` | 546 | 476515 |
+| `publishable_edges_csv_parts/publishable_edges_part_001.csv` | 546 | 483674 |
+| `publishable_edges_csv_parts/publishable_edges_part_002.csv` | 546 | 477452 |
+| `publishable_edges_csv_parts/publishable_edges_part_003.csv` | 470 | 430637 |
