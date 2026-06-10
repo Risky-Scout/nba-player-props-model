@@ -176,6 +176,7 @@ def main() -> int:
         "stocks": 0.560,   # market P(over 0.5 line) ~0.44+ → p0 must be <= 0.56
         "fg3m":   0.520,   # fg3m zero-rate ceiling
         "tov":    0.420,   # tov zero-rate ceiling
+        "ast":    0.260,   # prevents zero-assist over-prediction; P(ast>0 in NBA) >74%
     }
     # If empirical p0 exceeds the market ceiling, use the market ceiling as the target.
     for s in list(stat_p0.keys()):
