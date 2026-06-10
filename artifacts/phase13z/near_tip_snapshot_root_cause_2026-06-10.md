@@ -1,13 +1,13 @@
 # Near-tip snapshot root-cause audit — 2026-06-10
 
-Generated 2026-06-10T21:17:36Z.
+Generated 2026-06-10T23:06:10Z.
 
 ## Per-(matchup, snapshot) state
 
 | Away | Home | Matchup | Snapshot | Tip Time UTC | Target Time UTC | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| Spurs | Knicks | Spurs @ Knicks | T-minus-25 | `` | `` | Pending dispatch |
-| Spurs | Knicks | Spurs @ Knicks | Close-lock | `` | `` | Pending dispatch |
+| Spurs | Knicks | Spurs @ Knicks | T-minus-25 | `2026-06-11T00:40:00Z` | `2026-06-11T00:15:00Z` | Scheduled |
+| Spurs | Knicks | Spurs @ Knicks | Close-lock | `2026-06-11T00:40:00Z` | `2026-06-11T00:35:00Z` | Scheduled |
 
 ## Why missed snapshots are documented, not backfilled
 

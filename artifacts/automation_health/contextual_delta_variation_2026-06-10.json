@@ -1,6 +1,76 @@
 {
+  "bug_count": 0,
   "delivery_date": "2026-06-10",
-  "outcome": "pending",
+  "outcome": "pass",
   "schema_version": "1.0",
-  "snapshots": []
+  "snapshot_count": 1,
+  "snapshots": [
+    {
+      "feature_audit_varying_cols": [],
+      "feature_variation": "constant",
+      "game_id": "21716137",
+      "lineup_confirmed": false,
+      "minutes_delta_max": 14.44336901446135,
+      "minutes_delta_mean": 14.443369014461352,
+      "minutes_delta_min": 14.44336901446135,
+      "minutes_delta_std": 1.8387040139585255e-15,
+      "minutes_delta_unique": 1,
+      "rate_delta_summary": {
+        "ast": {
+          "max": 0.008635459400597775,
+          "mean": 0.008635459400597774,
+          "min": 0.008635459400597775,
+          "std": 1.7956093886313725e-18,
+          "unique": 1
+        },
+        "blk": {
+          "max": -0.0005941013418854614,
+          "mean": -0.0005941013418854615,
+          "min": -0.0005941013418854614,
+          "std": 1.1222558678946078e-19,
+          "unique": 1
+        },
+        "fg3m": {
+          "max": -0.0014756861075898887,
+          "mean": -0.0014756861075898887,
+          "min": -0.0014756861075898887,
+          "std": 0.0,
+          "unique": 1
+        },
+        "pts": {
+          "max": 0.02897289327366713,
+          "mean": 0.028972893273667137,
+          "min": 0.02897289327366713,
+          "std": 7.18243755452549e-18,
+          "unique": 1
+        },
+        "reb": {
+          "max": 0.008018918950995057,
+          "mean": 0.008018918950995059,
+          "min": 0.008018918950995057,
+          "std": 1.7956093886313725e-18,
+          "unique": 1
+        },
+        "stl": {
+          "max": 0.0020225504894796948,
+          "mean": 0.0020225504894796948,
+          "min": 0.0020225504894796948,
+          "std": 0.0,
+          "unique": 1
+        },
+        "tov": {
+          "max": 0.004796264632817122,
+          "mean": 0.004796264632817122,
+          "min": 0.004796264632817122,
+          "std": 0.0,
+          "unique": 1
+        }
+      },
+      "reason": "no per-player feature variation visible in this snapshot \u2014 constant contextual_minutes_delta is the honest baseline; lineup_confirmed=False, BDL_lineup_rows=0",
+      "rows": 15,
+      "snap_dir": "deliveries/2026-06-10/derek_game_snapshots/21716137/current_live",
+      "snapshot_type": "current_live",
+      "verdict": "expected_baseline"
+    }
+  ]
 }

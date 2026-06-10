@@ -1,0 +1,16 @@
+player_id,player_name,team,game_id,stat,bdl_lineup_present,current_starter,confirmed_starter,confirmed_bench,lineup_position,lineup_source,lineup_confirmed,role_source,role_bucket_pre_lineup,role_bucket_post_lineup,lineup_context_supplied,lineup_affects_pmf_features
+399,Mitchell Robinson,NYK,21716137,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+18,OG Anunoby,NYK,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+414,Landry Shamet,NYK,21716137,stl,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+161,De'Aaron Fox,SAS,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+1028025261,Stephon Castle,SAS,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+1057262518,Dylan Harper,SAS,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+666682,Keldon Johnson,SAS,21716137,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+61,Mikal Bridges,NYK,21716137,reb,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+56677822,Victor Wembanyama,SAS,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+447,Karl-Anthony Towns,NYK,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+73,Jalen Brunson,NYK,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+202,Josh Hart,NYK,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+17896033,Miles McBride,NYK,21716137,fg3m,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+3547246,Devin Vassell,SAS,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
+38017649,Julian Champagnie,SAS,21716137,pts,False,0.0,0.0,1.0,,,1,projected_minutes,,,True,False
