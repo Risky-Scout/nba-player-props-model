@@ -3,7 +3,7 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "ccabfadb2ff3380ec53b60eca4942de707446c53",
+    "code_commit": "447e21db8d51d04f03202bae9c731343141cbafe",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -244,9 +244,9 @@
         "rps": 0.5688688576947746
       }
     },
-    "model_version": "challenger-2026-06-08"
+    "model_version": "challenger-2026-06-09"
   },
-  "code_commit": "ccabfadb2ff3380ec53b60eca4942de707446c53",
+  "code_commit": "447e21db8d51d04f03202bae9c731343141cbafe",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -329,7 +329,7 @@
       "name": "m6_3_review_cells_guarded"
     }
   ],
-  "generated_at_utc": "2026-06-10T18:27:03+00:00",
+  "generated_at_utc": "2026-06-10T21:21:30+00:00",
   "m6_3_matrix_summary": {
     "detail": "valid",
     "expected_role_buckets": [
@@ -361,8 +361,8 @@
     "issues": [],
     "m6_3_report_pass": true,
     "market_eval_available": false,
-    "matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-09.csv",
-    "meta_path": "artifacts/docs/m6_3_stat_role_calibration_report_2026-06-09.meta.json",
+    "matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-10.csv",
+    "meta_path": "artifacts/docs/m6_3_stat_role_calibration_report_2026-06-10.meta.json",
     "missing_cells": [],
     "needs_more_data_cells_count": 0,
     "observed_role_buckets": [
@@ -529,7 +529,7 @@
       "status": "REVIEW"
     }
   ],
-  "m6_3_stat_role_matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-09.csv",
+  "m6_3_stat_role_matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-10.csv",
   "market_benchmark": null,
   "market_benchmark_manifest_path": null,
   "market_gates_failed": [
@@ -544,7 +544,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-09",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260610T182605"
+    "training_run_id": "nightly-20260610T212045"
   },
   "pmf_validity": {
     "checked_files": 1,

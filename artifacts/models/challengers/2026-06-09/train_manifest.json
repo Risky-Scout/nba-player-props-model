@@ -11,7 +11,7 @@
       "--output-dir",
       "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-09"
     ],
-    "calibrate_pmf_elapsed_seconds": 37.3,
+    "calibrate_pmf_elapsed_seconds": 27.3,
     "calibrate_pmf_log": "artifacts/models/challengers/2026-06-09/calibrate_pmf.log",
     "challenger_kind": "real-aggregate-mode-from-rolling-oof",
     "files": [
@@ -52,9 +52,9 @@
     "training_table_sha256": null,
     "training_table_snapshot": null
   },
-  "code_commit": "ccabfadb2ff3380ec53b60eca4942de707446c53",
+  "code_commit": "447e21db8d51d04f03202bae9c731343141cbafe",
   "dry_run": false,
-  "finished_at_utc": "2026-06-10T18:26:55+00:00",
+  "finished_at_utc": "2026-06-10T21:21:23+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -64,15 +64,15 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-09",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260610T182605"
+    "training_run_id": "nightly-20260610T212045"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
     "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
-    "model_version": "challenger-2026-06-08"
+    "model_version": "challenger-2026-06-09"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-06-10T18:26:17+00:00",
+  "started_at_utc": "2026-06-10T21:20:56+00:00",
   "stats_trained": [
     "pts",
     "reb",
@@ -87,7 +87,7 @@
     "aggregate_oof_future_rows_excluded": null,
     "aggregate_oof_rows_after_cutoff": 56413,
     "aggregate_oof_rows_pre_cutoff": 56413,
-    "calibrate_pmf_elapsed_seconds": 37.3,
+    "calibrate_pmf_elapsed_seconds": 27.3,
     "future_rows_excluded": 0,
     "max_date": "2026-06-08",
     "min_date": "2023-10-24",
