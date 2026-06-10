@@ -15,9 +15,9 @@
       "minutes_eligible_and_publication": "schema + deep-bench gate + player_game_eligible==True"
     }
   },
-  "checked_at_utc": "2026-06-10T21:35:58Z",
-  "selected_injury_report": "Injury-Report_2026-06-10_05_00PM",
-  "selected_injury_report_time": "2026-06-10T17:00:00-04:00",
+  "checked_at_utc": "2026-06-10T22:02:35Z",
+  "selected_injury_report": "Injury-Report_2026-06-10_06_00PM",
+  "selected_injury_report_time": "2026-06-10T18:00:00-04:00",
   "injury_report_fallback_used": true,
   "failed_injury_report_candidates": [
     {
@@ -26,14 +26,14 @@
     }
   ],
   "injury_freshness_status": "fallback_used",
-  "fetched_at_utc": "2026-06-10T21:33:02Z",
+  "fetched_at_utc": "2026-06-10T22:00:56Z",
   "market_eval_available": true,
   "market_rows_keyed": true,
   "market_rows_fresh": true,
   "market_superiority_claim_allowed": true,
   "market_eval_blocker": "none",
   "date": "2026-06-10",
-  "run_mode": "woo_morning_monetization",
+  "run_mode": "woo_afternoon_refresh",
   "canonical_model_only_path": "deliveries/2026-06-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
   "all_props_model_only_path": "deliveries/2026-06-10/canonical_source/all_props_model_only.parquet",
   "market_comparison_path": "deliveries/2026-06-10/wizard_of_odds/market_comparison.parquet",
