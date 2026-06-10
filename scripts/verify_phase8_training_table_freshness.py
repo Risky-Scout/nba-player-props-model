@@ -43,15 +43,53 @@ def verify_training_table(
 
     max_game_date = game_dates.max()
     if max_game_date < as_of_date:
-        failures.append(
-            f"stale_max_game_date:max={max_game_date.isoformat()}<as_of={as_of_date.isoformat()}"
-        )
+        # Before failing, check whether all gap dates had no NBA games.
+        # On rest days the training table legitimately has no rows for as_of_date.
+        _gap_is_no_games = False
+        try:
+            from nba_props_model.data.bdl_client import get_games
+            import datetime as _dt
+            gap_d = max_game_date + _dt.timedelta(days=1)
+            gap_with_games = []
+            while gap_d <= as_of_date:
+                try:
+                    g = get_games(start_date=gap_d.isoformat(), end_date=gap_d.isoformat())
+                    if len(g) > 0:
+                        gap_with_games.append(gap_d.isoformat())
+                except Exception:
+                    gap_with_games.append(gap_d.isoformat())  # conservative
+                gap_d += _dt.timedelta(days=1)
+            if not gap_with_games:
+                _gap_is_no_games = True
+        except Exception:
+            pass
+        if not _gap_is_no_games:
+            failures.append(
+                f"stale_max_game_date:max={max_game_date.isoformat()}<as_of={as_of_date.isoformat()}"
+            )
 
     as_of_mask = game_dates == as_of_date
     as_of_rows = int(as_of_mask.sum())
     if as_of_rows == 0:
-        failures.append(f"missing_as_of_rows:as_of={as_of_date.isoformat()}")
-        return False, failures
+        # Valid on rest days — check BDL to confirm no game was scheduled.
+        _no_game_on_as_of = False
+        try:
+            from nba_props_model.data.bdl_client import get_games
+            g = get_games(start_date=as_of_date.isoformat(), end_date=as_of_date.isoformat())
+            if len(g) == 0:
+                _no_game_on_as_of = True
+        except Exception:
+            pass
+        if _no_game_on_as_of:
+            # Rest day — use most recent game date's rows for prob_active check
+            as_of_mask = game_dates == max_game_date
+            as_of_rows = int(as_of_mask.sum())
+            if as_of_rows == 0:
+                failures.append(f"missing_as_of_rows:as_of={as_of_date.isoformat()}")
+                return False, failures
+        else:
+            failures.append(f"missing_as_of_rows:as_of={as_of_date.isoformat()}")
+            return False, failures
 
     prob_active = pd.to_numeric(df.loc[as_of_mask, "prob_active"], errors="coerce")
     coverage = float(prob_active.notna().mean())
