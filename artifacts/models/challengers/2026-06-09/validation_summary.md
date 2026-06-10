@@ -2,7 +2,7 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-06-10T14:59:36+00:00 |
+| Generated (UTC) | 2026-06-10T16:33:46+00:00 |
 | Promote | no |
 | Reason | gate_failed:market_benchmark_available |
 | Champion model_version | challenger-2026-06-08 |
