@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-06-10T11:18:01+00:00",
+  "generated_at_utc": "2026-06-10T14:58:31+00:00",
   "from_date": "2026-06-03",
   "to_date": "2026-06-09",
   "status": "PASS",
@@ -25,5 +25,5 @@
       "min": 0
     }
   },
-  "refresh_stdout_tail": "  existing parquet: 84541 rows, latest game_date=2026-06-08\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-06-03 \u2192 2026-06-09\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-06-03 \u2192 2026-06-09\n    got 59 raw records in 0.5s\n    59 rows after schema map / min>=1 filter\n\n  incoming rows: 59\n    distinct game_dates: ['2026-06-03', '2026-06-05', '2026-06-08']\n    distinct game_ids:   3\n    distinct players:    21\n\n  merge summary:\n    rows kept (no key conflict):     84482\n    rows replaced (key conflict):    59\n    rows added (new keys):           0\n    final row count:                 84541\n\nwrote data/player_game_stats.parquet  (2026-06-10T11:18:01Z)\n"
+  "refresh_stdout_tail": "  existing parquet: 84541 rows, latest game_date=2026-06-08\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-06-03 \u2192 2026-06-09\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-06-03 \u2192 2026-06-09\n    got 59 raw records in 0.3s\n    59 rows after schema map / min>=1 filter\n\n  incoming rows: 59\n    distinct game_dates: ['2026-06-03', '2026-06-05', '2026-06-08']\n    distinct game_ids:   3\n    distinct players:    21\n\n  merge summary:\n    rows kept (no key conflict):     84482\n    rows replaced (key conflict):    59\n    rows added (new keys):           0\n    final row count:                 84541\n\nwrote data/player_game_stats.parquet  (2026-06-10T14:58:31Z)\n"
 }
