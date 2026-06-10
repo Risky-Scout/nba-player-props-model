@@ -44,23 +44,40 @@ def verify_training_table(
     max_game_date = game_dates.max()
     if max_game_date < as_of_date:
         # Before failing, check whether all gap dates had no NBA games.
-        # On rest days the training table legitimately has no rows for as_of_date.
+        # Use player_game_stats.parquet (on disk, no API key needed) to verify:
+        # if there are no game rows for the gap dates, it's a legitimate rest day.
         _gap_is_no_games = False
         try:
-            from nba_props_model.data.bdl_client import get_games
-            import datetime as _dt
-            gap_d = max_game_date + _dt.timedelta(days=1)
-            gap_with_games = []
-            while gap_d <= as_of_date:
-                try:
-                    g = get_games(start_date=gap_d.isoformat(), end_date=gap_d.isoformat())
-                    if len(g) > 0:
+            pgs_path = training_table.parent / "player_game_stats.parquet"
+            if pgs_path.exists():
+                pgs = pd.read_parquet(pgs_path, columns=["game_date"])
+                pgs_dates = pd.to_datetime(pgs["game_date"], errors="coerce").dt.date
+                gap_d = max_game_date + dt.timedelta(days=1)
+                gap_with_games = []
+                while gap_d <= as_of_date:
+                    if (pgs_dates == gap_d).any():
                         gap_with_games.append(gap_d.isoformat())
+                    gap_d += dt.timedelta(days=1)
+                if not gap_with_games:
+                    _gap_is_no_games = True
+            else:
+                # No player_game_stats — try BDL as fallback (requires API key)
+                try:
+                    from nba_props_model.data.bdl_client import get_games
+                    gap_d = max_game_date + dt.timedelta(days=1)
+                    gap_with_games = []
+                    while gap_d <= as_of_date:
+                        try:
+                            g = get_games(start_date=gap_d.isoformat(), end_date=gap_d.isoformat())
+                            if len(g) > 0:
+                                gap_with_games.append(gap_d.isoformat())
+                        except Exception:
+                            gap_with_games.append(gap_d.isoformat())
+                        gap_d += dt.timedelta(days=1)
+                    if not gap_with_games:
+                        _gap_is_no_games = True
                 except Exception:
-                    gap_with_games.append(gap_d.isoformat())  # conservative
-                gap_d += _dt.timedelta(days=1)
-            if not gap_with_games:
-                _gap_is_no_games = True
+                    pass
         except Exception:
             pass
         if not _gap_is_no_games:
@@ -71,13 +88,24 @@ def verify_training_table(
     as_of_mask = game_dates == as_of_date
     as_of_rows = int(as_of_mask.sum())
     if as_of_rows == 0:
-        # Valid on rest days — check BDL to confirm no game was scheduled.
+        # Valid on rest days — check player_game_stats for game activity on as_of_date.
         _no_game_on_as_of = False
         try:
-            from nba_props_model.data.bdl_client import get_games
-            g = get_games(start_date=as_of_date.isoformat(), end_date=as_of_date.isoformat())
-            if len(g) == 0:
-                _no_game_on_as_of = True
+            pgs_path = training_table.parent / "player_game_stats.parquet"
+            if pgs_path.exists():
+                pgs = pd.read_parquet(pgs_path, columns=["game_date"])
+                pgs_dates = pd.to_datetime(pgs["game_date"], errors="coerce").dt.date
+                if not (pgs_dates == as_of_date).any():
+                    _no_game_on_as_of = True
+            else:
+                # Fallback to BDL if no player_game_stats
+                try:
+                    from nba_props_model.data.bdl_client import get_games
+                    g = get_games(start_date=as_of_date.isoformat(), end_date=as_of_date.isoformat())
+                    if len(g) == 0:
+                        _no_game_on_as_of = True
+                except Exception:
+                    pass
         except Exception:
             pass
         if _no_game_on_as_of:
