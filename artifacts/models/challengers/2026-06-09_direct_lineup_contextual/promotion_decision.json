@@ -1,0 +1,13 @@
+{
+  "code_commit": "e3c014fc0b8d4f3757916938a7eae2cb5ff3ead0",
+  "contextual_challenger_dir": "artifacts/models/challengers/2026-06-09_direct_lineup_contextual",
+  "decided_at_utc": "2026-06-10T20:26:36+00:00",
+  "decision_id": "phase13s-promotion-2026-06-09_direct_lineup_contextual-20260610T202636",
+  "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+  "no_leakage_report": "artifacts/phase13s/no_leakage_report.json",
+  "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260610T202636p0000/champion_pointer.previous.json",
+  "promoted": true,
+  "schema_version": "1.0",
+  "sensitivity_report": "artifacts/phase13s/direct_lineup_pmf_sensitivity.json",
+  "validation_gates_report": "artifacts/phase13s/validation_gates_report.json"
+}
