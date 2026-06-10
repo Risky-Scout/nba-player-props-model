@@ -235,7 +235,7 @@
       "rps": 0.5688688576947746
     }
   },
-  "code_commit": "46b3a858301fb2323300d7f075024bbd6a9fb20c",
+  "code_commit": "ccabfadb2ff3380ec53b60eca4942de707446c53",
   "gates_failed": [
     "market_benchmark_available"
   ],
@@ -258,7 +258,7 @@
     "m6_3_stat_role_matrix_valid",
     "m6_3_review_cells_guarded"
   ],
-  "generated_at_utc": "2026-06-10T16:33:46+00:00",
+  "generated_at_utc": "2026-06-10T18:27:03+00:00",
   "m6_3_matrix_summary": {
     "detail": "valid",
     "expected_role_buckets": [
@@ -470,7 +470,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-09",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260610T163247"
+    "training_run_id": "nightly-20260610T182605"
   },
   "promote": false,
   "reason": "gate_failed:market_benchmark_available",
