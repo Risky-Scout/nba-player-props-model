@@ -1,8 +1,8 @@
 # Game start time resolution — 2026-06-10
 
-- generated_at_utc: 2026-06-10T06:42:21+00:00Z
-- predictions_unique_games: 0
-- resolved: **0**
+- generated_at_utc: 2026-06-10T18:38:50+00:00Z
+- predictions_unique_games: 1
+- resolved: **1**
 - unresolved: **0**
 - ODDS_API_KEY present: True
 - BDL_API_KEY present: True
@@ -14,3 +14,4 @@
 
 | game_id | team | opponent | resolved_utc | source | confidence | blocker |
 | --- | --- | --- | --- | --- | --- | --- |
+| 21716137 | NYK | SAS | `2026-06-11T00:40:00Z` | odds_api_live_events | high |  |
