@@ -7,9 +7,9 @@
   "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
   "count_diagnostics": {
     "fair_odds_board": {
-      "fair_over_odds_null_count": 742,
-      "fair_under_odds_null_count": 742,
-      "zero_or_one_prob_count": 739
+      "fair_over_odds_null_count": 812,
+      "fair_under_odds_null_count": 812,
+      "zero_or_one_prob_count": 800
     }
   },
   "delivery_date": "2026-06-10",
@@ -42,12 +42,12 @@
       "rebet",
       "williamhill_us"
     ],
-    "built_at_utc": "2026-06-10T18:09:44Z",
+    "built_at_utc": "2026-06-10T20:19:48Z",
     "finals_finality_status": "finals_pending",
     "odds_status": "ok",
     "overall_status": "ready",
     "path": "data/freshness_manifest/2026-06-10.json",
-    "predictions_mtime_utc": "2026-06-10T18:09:21.997896Z",
+    "predictions_mtime_utc": "2026-06-10T20:18:52.240140Z",
     "regions_requested": [
       "us",
       "us2"
@@ -57,15 +57,15 @@
     },
     "tov_status": "missing_from_prediction_source"
   },
-  "metadata_stamped_at_utc": "2026-06-10T18:11:51+00:00",
+  "metadata_stamped_at_utc": "2026-06-10T20:21:24+00:00",
   "model_source": "champion_pointer",
-  "model_version": "e4168dab#phase10c",
+  "model_version": "d88cb54e#phase10c",
   "no_challenger_artifacts_used": true,
   "no_odds_fetch": false,
-  "output_generated_at_utc": "2026-06-10T18:11:51+00:00",
+  "output_generated_at_utc": "2026-06-10T20:21:24+00:00",
   "phase8_blend_policy": "monotone_inactive_global_v1",
   "phase8_calibration_source": "phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1",
-  "pipeline_run_id": "aa2e5ca5-17c7-41eb-a448-2f4c40b8c44f",
+  "pipeline_run_id": "5bee3fc8-d48d-48c1-a179-c9659b343f54",
   "promotion_decision_id": "phase13s-promotion-2026-06-08_direct_lineup_contextual-20260609T144443",
   "quality_rollup": {
     "calibration_confidence": {
@@ -81,7 +81,7 @@
     "market_coverage_status": {
       "full": 180
     },
-    "pmf_sum_error_max": 1.1102230246251565e-15,
+    "pmf_sum_error_max": 6.661338147750939e-16,
     "pmf_valid_ok_pct": 1.0,
     "role_freshness_status": {
       "derived_from_projected_minutes": 180
@@ -90,22 +90,22 @@
   "row_counts": {
     "fair_odds_board": 3855,
     "full_pmfs_wide": 180,
-    "market_comparison": 2740,
-    "publishable_edges": 2137
+    "market_comparison": 2761,
+    "publishable_edges": 2099
   },
-  "snapshot_time_utc": "2026-06-10T18:10:57Z",
-  "snapshot_type": "morning",
+  "snapshot_time_utc": "2026-06-10T20:21:08Z",
+  "snapshot_type": "pre_close",
   "sources": {
     "availability_table": {
       "freshness_status": "fresh",
-      "mtime_utc": "2026-06-10T18:08:04.471404Z",
+      "mtime_utc": "2026-06-10T20:18:47.937052Z",
       "path": "data/player_availability_asof.parquet"
     },
     "model_only_parquet": {
       "auto_built_from_predictions": false,
-      "mtime_utc": "2026-06-10T18:10:56.700513Z",
+      "mtime_utc": "2026-06-10T20:21:06.853740Z",
       "path": "deliveries/2026-06-10/canonical_source/player_prop_pmfs_tonight_MODEL_ONLY.parquet",
-      "sha256": "95d5d20b838a371417de94c0906bf85913dc379647b08f656228246dc4b84ef7"
+      "sha256": "7ef50c894eec869aec2c75cbf936cb46edd0235788fb7c83e4f64ca99e0dfaf0"
     },
     "odds_snapshot": {
       "books_seen": [
@@ -126,15 +126,15 @@
       ],
       "coverage_status": "full",
       "fetch_status": "consumed_from_disk",
-      "mtime_utc": "2026-06-10T18:09:43.993042Z",
-      "path": "data/odds_api/processed/2026-06-10/odds_pairs_live_slate_morning_7am_2026-06-10T180940Z.parquet"
+      "mtime_utc": "2026-06-10T20:19:47.862218Z",
+      "path": "data/odds_api/processed/2026-06-10/odds_pairs_live_slate_close_or_lock_2026-06-10T201944Z.parquet"
     },
     "predictions_parquet": {
-      "mtime_utc": "2026-06-10T18:09:21.997896Z",
+      "mtime_utc": "2026-06-10T20:18:52.240140Z",
       "path": "predictions/all_props_2026-06-10.parquet"
     }
   },
-  "stamp_code_commit": "e4168dabe48e24aec1361336f47d68390894c6b6",
+  "stamp_code_commit": "d88cb54e5b84de3f3987b4b11a4e84f6515724ca",
   "target_stats": {
     "expected": [
       "pts",

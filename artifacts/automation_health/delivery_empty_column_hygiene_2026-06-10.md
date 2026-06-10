@@ -1,8 +1,8 @@
 # Delivery Empty Column Hygiene — 2026-06-10
 
-- files checked: `41`
-- files changed: `37`
-- columns removed total: `283`
+- files checked: `145`
+- files changed: `24`
+- columns removed total: `222`
 - errors: `0`
 
 ## 2026-06-10
@@ -35,97 +35,6 @@
 - preserved columns: ``
 - removed columns: `game_start_et, role_mixture_enabled, role_mixture_weights_json, role_entropy, role_bucket_confidence, mp_bucket, usage_bucket, lineup_last_updated_utc, projected_minutes, minutes_q10, minutes_q90, line, market_fair_over_prob, market_source, market_offered_odds`
 
-### `deliveries/2026-06-10/derek_forward_feed/latest_available_snapshot.csv`
-- rows: `2688`
-- cols before: `93`
-- cols after: `88`
-- preserved columns: ``
-- removed columns: `game_start_time_utc, minutes_source, minutes_model_version, availability_freshness_status, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_forward_feed/latest_available_snapshot.parquet`
-- rows: `2688`
-- cols before: `93`
-- cols after: `88`
-- preserved columns: ``
-- removed columns: `game_start_time_utc, minutes_source, minutes_model_version, availability_freshness_status, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_forward_feed/morning_snapshot.csv`
-- rows: `2688`
-- cols before: `93`
-- cols after: `88`
-- preserved columns: ``
-- removed columns: `game_start_time_utc, minutes_source, minutes_model_version, availability_freshness_status, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_forward_feed/morning_snapshot.jsonl`
-- rows: `2688`
-- cols before: `93`
-- cols after: `88`
-- preserved columns: ``
-- removed columns: `game_start_time_utc, minutes_source, minutes_model_version, availability_freshness_status, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_forward_feed/morning_snapshot.parquet`
-- rows: `2688`
-- cols before: `93`
-- cols after: `88`
-- preserved columns: ``
-- removed columns: `game_start_time_utc, minutes_source, minutes_model_version, availability_freshness_status, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/full_pmf_wide.csv`
-- rows: `180`
-- cols before: `83`
-- cols after: `69`
-- preserved columns: ``
-- removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/full_pmf_wide.parquet`
-- rows: `180`
-- cols before: `83`
-- cols after: `69`
-- preserved columns: ``
-- removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/market_comparison.csv`
-- rows: `2740`
-- cols before: `70`
-- cols after: `68`
-- preserved columns: ``
-- removed columns: `game_start_time, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/market_comparison.parquet`
-- rows: `2740`
-- cols before: `70`
-- cols after: `68`
-- preserved columns: ``
-- removed columns: `game_start_time, lineup_last_updated_utc`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/outcome_level_probabilities.csv`
-- rows: `6452`
-- cols before: `12`
-- cols after: `11`
-- preserved columns: ``
-- removed columns: `line`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/outcome_level_probabilities.parquet`
-- rows: `6452`
-- cols before: `12`
-- cols after: `11`
-- preserved columns: ``
-- removed columns: `line`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/prop_summary.csv`
-- rows: `180`
-- cols before: `20`
-- cols after: `19`
-- preserved columns: ``
-- removed columns: `edge`
-
-### `deliveries/2026-06-10/derek_game_snapshots/21716137/morning/prop_summary.parquet`
-- rows: `180`
-- cols before: `20`
-- cols after: `19`
-- preserved columns: ``
-- removed columns: `edge`
-
 ### `deliveries/2026-06-10/pmf_model_review_package/04_PROP_SUMMARY.csv`
 - rows: `180`
 - cols before: `50`
@@ -155,14 +64,14 @@
 - removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, model_p_over, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-10/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv`
-- rows: `9720`
+- rows: `9699`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
 - removed columns: `game_start_time`
 
 ### `deliveries/2026-06-10/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.parquet`
-- rows: `9720`
+- rows: `9699`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
@@ -211,14 +120,14 @@
 - removed columns: `game_start_time, book, market_over_odds, market_under_odds, market_no_vig_over_prob, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-10/wizard_of_odds/full_pmfs_outcome_level.csv`
-- rows: `9720`
+- rows: `9699`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
 - removed columns: `game_start_time`
 
 ### `deliveries/2026-06-10/wizard_of_odds/full_pmfs_outcome_level.parquet`
-- rows: `9720`
+- rows: `9699`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
@@ -239,28 +148,28 @@
 - removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-10/wizard_of_odds/market_comparison.csv`
-- rows: `2740`
+- rows: `2761`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-10/wizard_of_odds/market_comparison.parquet`
-- rows: `2740`
+- rows: `2761`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-10/wizard_of_odds/publishable_edges.csv`
-- rows: `2137`
+- rows: `2099`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-10/wizard_of_odds/publishable_edges.parquet`
-- rows: `2137`
+- rows: `2099`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``
