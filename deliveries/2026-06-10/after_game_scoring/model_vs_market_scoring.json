@@ -1,0 +1,36 @@
+{
+  "date": "2026-06-10",
+  "status": "pass",
+  "source": "rebuilt_from_delivery_market_pmf_actuals",
+  "rows": 326,
+  "non_push_rows": 326,
+  "push_rows": 0,
+  "stats": {
+    "ast": 29,
+    "blk": 16,
+    "fg3m": 34,
+    "pa": 34,
+    "pr": 27,
+    "pra": 35,
+    "pts": 73,
+    "ra": 11,
+    "reb": 39,
+    "stl": 17,
+    "stocks": 11
+  },
+  "books": {
+    "fanduel": 94,
+    "bovada": 47,
+    "espnbet": 29,
+    "betparx": 20,
+    "draftkings": 19,
+    "hardrockbet_fl": 19,
+    "hardrockbet": 19,
+    "hardrockbet_az": 19,
+    "fliff": 17,
+    "betmgm": 15,
+    "betrivers": 14,
+    "rebet": 8,
+    "williamhill_us": 6
+  }
+}

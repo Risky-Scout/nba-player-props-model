@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-06-10T23:29:54Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-06-11T11:22:08Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -43,7 +43,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-06-07** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-06-08** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 144 | 3084 | 2352 | 1918 | `full` | `fresh` | `present` | `morning_present` | 2299 | `pending_pre_tipoff_run` | 2299 | `scored` | `103e32c8#phase10c` |
 | **2026-06-09** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
-| **2026-06-10** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2775 | 2161 | `full` | `fresh` | `present` | `morning_present` | 2721 | `pending_pre_tipoff_run` | 2721 | `n/a` | `5f8521df#phase10c` |
+| **2026-06-10** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2775 | 2161 | `full` | `fresh` | `present` | `morning_present` | 2721 | `pending_pre_tipoff_run` | 2721 | `scored` | `5f8521df#phase10c` |
 
 ## Per-date links
 
@@ -1520,15 +1520,15 @@ _lineup_unconfirmed_
 - [publishable_edges.csv](2026-06-10/wizard_of_odds/publishable_edges.csv)
 - [run_manifest.json](2026-06-10/wizard_of_odds/run_manifest.json)
 
-**After-game scoring** (`n/a`)
+**After-game scoring** (`scored`)
 
-- ~~after_game_summary.md~~
-- ~~after_game_scoring.csv~~
-- ~~calibration_by_stat.csv~~
-- ~~calibration_by_role_bucket.csv~~
+- [after_game_summary.md](2026-06-10/after_game_scoring/after_game_summary.md)
+- [after_game_scoring.csv](2026-06-10/after_game_scoring/after_game_scoring.csv)
+- [calibration_by_stat.csv](2026-06-10/after_game_scoring/calibration_by_stat.csv)
+- [calibration_by_role_bucket.csv](2026-06-10/after_game_scoring/calibration_by_role_bucket.csv)
 - ~~clv_by_stat.csv~~
 - ~~clv_by_book.csv~~
-- ~~after_game_status.json~~
+- [after_game_status.json](2026-06-10/after_game_scoring/after_game_status.json)
 
 
 ## Schedule (Phase 12D-amend)
