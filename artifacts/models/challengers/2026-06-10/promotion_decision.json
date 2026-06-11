@@ -39,7 +39,7 @@
     "by_stat": {
       "ast": {
         "calibrator_present": true,
-        "mean_bias": -0.07393608434574074,
+        "mean_bias": -0.0739360843457407,
         "nll": 1.5604738422194038,
         "p0_err": 0.3132334998925055,
         "rows_scored": 439,
@@ -63,7 +63,7 @@
       },
       "pts": {
         "calibrator_present": true,
-        "mean_bias": -0.14933493026092984,
+        "mean_bias": -0.1493349302609297,
         "nll": 2.8379200293731945,
         "p0_err": 0.2048422513786737,
         "rows_scored": 439,
@@ -71,7 +71,7 @@
       },
       "reb": {
         "calibrator_present": true,
-        "mean_bias": -0.09370783996965522,
+        "mean_bias": -0.09370783996965527,
         "nll": 2.027082138392678,
         "p0_err": 0.2330312697546892,
         "rows_scored": 439,
@@ -79,7 +79,7 @@
       },
       "stl": {
         "calibrator_present": true,
-        "mean_bias": 0.011710077577219357,
+        "mean_bias": 0.01171007757721936,
         "nll": 1.2253075699753067,
         "p0_err": 0.4189124440483987,
         "rows_scored": 439,
@@ -103,7 +103,7 @@
       "start": "2026-05-13"
     },
     "market_comparison": null,
-    "mean_error": -0.054952136303848584,
+    "mean_error": -0.05495213630384856,
     "median_error": null,
     "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-10",
     "nll": 1.7960875619944774,
@@ -156,7 +156,7 @@
     "by_stat": {
       "ast": {
         "calibrator_present": true,
-        "mean_bias": -0.07393608434574074,
+        "mean_bias": -0.0739360843457407,
         "nll": 1.5604738422194038,
         "p0_err": 0.3132334998925055,
         "rows_scored": 439,
@@ -180,7 +180,7 @@
       },
       "pts": {
         "calibrator_present": true,
-        "mean_bias": -0.14933493026092984,
+        "mean_bias": -0.1493349302609297,
         "nll": 2.8379200293731945,
         "p0_err": 0.2048422513786737,
         "rows_scored": 439,
@@ -188,7 +188,7 @@
       },
       "reb": {
         "calibrator_present": true,
-        "mean_bias": -0.09370783996965522,
+        "mean_bias": -0.09370783996965527,
         "nll": 2.027082138392678,
         "p0_err": 0.2330312697546892,
         "rows_scored": 439,
@@ -196,7 +196,7 @@
       },
       "stl": {
         "calibrator_present": true,
-        "mean_bias": 0.011710077577219357,
+        "mean_bias": 0.01171007757721936,
         "nll": 1.2253075699753067,
         "p0_err": 0.4189124440483987,
         "rows_scored": 439,
@@ -220,7 +220,7 @@
       "start": "2026-05-13"
     },
     "market_comparison": null,
-    "mean_error": -0.054952136303848584,
+    "mean_error": -0.05495213630384856,
     "median_error": null,
     "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models",
     "nll": 1.7960875619944774,
@@ -235,7 +235,7 @@
       "rps": 0.5744562662821336
     }
   },
-  "code_commit": "2ccb4d091605591bb3779051123be1f1d626d5b6",
+  "code_commit": "b09a486173fddcc94d8fd26e4462a4263ec724b5",
   "gates_failed": [
     "market_benchmark_available"
   ],
@@ -258,7 +258,7 @@
     "m6_3_stat_role_matrix_valid",
     "m6_3_review_cells_guarded"
   ],
-  "generated_at_utc": "2026-06-11T17:04:00+00:00",
+  "generated_at_utc": "2026-06-11T18:44:48+00:00",
   "m6_3_matrix_summary": {
     "detail": "valid",
     "expected_role_buckets": [
@@ -488,7 +488,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-10",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260611T170316"
+    "training_run_id": "nightly-20260611T184403"
   },
   "promote": false,
   "reason": "gate_failed:market_benchmark_available",
