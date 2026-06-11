@@ -1,26 +1,26 @@
 {
-  "code_commit": "d55bcdc39466981212e51eb31759e83a1ec45f9f",
+  "code_commit": "7122d68710e1ff87513cd478f91f050a7b3087f7",
   "decisions": [
     {
-      "action": "fire_due_window",
-      "decision": "fired_ok",
+      "decision": "skipped_already_tipped",
+      "detail": "snapshot_manifest.json present",
       "game_id": "21716137",
+      "now_utc": "2026-06-11T01:41:25Z",
       "snapshot_dir": "deliveries/2026-06-10/derek_game_snapshots/21716137/current_live",
-      "state": "DUE_WINDOW",
-      "tail": "  snapshot_dir=deliveries/2026-06-10/derek_game_snapshots/21716137/current_live",
-      "target_utc": "2026-06-11T00:40:00Z"
+      "state": "EXISTS",
+      "target_utc": "2026-06-11T00:43:00Z"
     }
   ],
   "delivery_date": "2026-06-10",
-  "eligible_rows": 1,
-  "now_utc": "2026-06-10T23:04:19Z",
+  "eligible_rows": 0,
+  "now_utc": "2026-06-11T01:41:25Z",
   "schedule_rows": 1,
   "schema_version": "1.0",
   "snapshot_type": "current_live",
   "summary": {
     "failures": 0,
-    "fired": 1,
+    "fired": 0,
     "skipped_already_run": 0,
-    "skipped_window": 0
+    "skipped_window": 1
   }
 }

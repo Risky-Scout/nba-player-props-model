@@ -1,12 +1,12 @@
 {
   "facts": {
-    "any_target_in_past": false,
-    "any_target_overdue": false,
+    "any_target_in_past": true,
+    "any_target_overdue": true,
     "champion_pointer_contextual_pmf_engine": true,
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-06-10",
-    "now_utc": "2026-06-10T23:06:13Z",
+    "now_utc": "2026-06-11T01:41:50Z",
     "overdue_missing_snapshots": [],
     "overdue_unresolved": [],
     "per_type_lines": [
@@ -16,13 +16,13 @@
         "type": "CURRENT_LIVE"
       },
       {
-        "detail": "game=21716137 target_utc=2026-06-11T00:15:00Z now=2026-06-10T23:06:13Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21716137 target_utc=2026-06-11T00:18:00Z now=2026-06-11T01:41:50Z  missed_snapshot_manifest.json present",
+        "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "T_MINUS_25"
       },
       {
-        "detail": "game=21716137 target_utc=2026-06-11T00:34:00Z now=2026-06-10T23:06:13Z",
-        "outcome": "PENDING_NOT_DUE",
+        "detail": "game=21716137 target_utc=2026-06-11T00:37:00Z now=2026-06-11T01:41:50Z  missed_snapshot_manifest.json present",
+        "outcome": "MISSED_POST_TIP_DOCUMENTED",
         "type": "CLOSE_LOCK"
       }
     ],
@@ -45,12 +45,12 @@
     "predictions_parquet_present": true,
     "schedule_eval": [
       {
-        "cl_overdue": false,
-        "cl_target_utc": "2026-06-11T00:34:00Z",
+        "cl_overdue": true,
+        "cl_target_utc": "2026-06-11T00:37:00Z",
         "game_id": "21716137",
-        "game_start_time": "2026-06-11T00:40:00Z",
-        "t25_overdue": false,
-        "t25_target_utc": "2026-06-11T00:15:00Z"
+        "game_start_time": "2026-06-11T00:43:00Z",
+        "t25_overdue": true,
+        "t25_target_utc": "2026-06-11T00:18:00Z"
       }
     ],
     "schedule_size": 1

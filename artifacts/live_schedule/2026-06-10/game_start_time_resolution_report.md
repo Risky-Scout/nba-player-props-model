@@ -1,6 +1,6 @@
 # Game start time resolution — 2026-06-10
 
-- generated_at_utc: 2026-06-10T23:04:14+00:00Z
+- generated_at_utc: 2026-06-11T01:41:20+00:00Z
 - predictions_unique_games: 1
 - resolved: **1**
 - unresolved: **0**
@@ -14,4 +14,4 @@
 
 | game_id | team | opponent | resolved_utc | source | confidence | blocker |
 | --- | --- | --- | --- | --- | --- | --- |
-| 21716137 | NYK | SAS | `2026-06-11T00:40:00Z` | odds_api_live_events | high |  |
+| 21716137 | NYK | SAS | `2026-06-11T00:43:00Z` | odds_api_live_events | high |  |

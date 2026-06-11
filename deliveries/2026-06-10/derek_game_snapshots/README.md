@@ -1,12 +1,12 @@
 # Derek PMF Snapshots — June 10, 2026
 
-Generated 2026-06-10T23:06:10Z.
+Generated 2026-06-11T01:41:47Z.
 
 ## Snapshot status
 
 | Matchup | Current-live | T-minus-25 | Close-lock |
 | --- | --- | --- | --- |
-| Spurs @ Knicks | Available | Scheduled | Scheduled |
+| Spurs @ Knicks | Available | Missed during setup window; documented, not backfilled | Missed during setup window; documented, not backfilled |
 
 Each subfolder is `<game_id>/<snapshot_type>/`. Visible labels use team names; the numeric `game_id` is preserved in file paths and technical manifests for the audit trail.
 
@@ -33,8 +33,10 @@ _Game ID `21716137` (used in paths only). Tip time UTC: `2026-06-11T00:40:00Z`._
   - [pmf_driver_decomposition.md](21716137/current_live/pmf_driver_decomposition.md)
   - [lineup_injury_impact_report.md](21716137/current_live/lineup_injury_impact_report.md)
   - [direct_lineup_impact_report.md](21716137/current_live/direct_lineup_impact_report.md)
-- **T-minus-25**: Scheduled
-- **Close-lock**: Scheduled
+- **T-minus-25** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21716137/t_minus_25/missed_snapshot_report.md)
+- **Close-lock** (Missed during setup window; documented, not backfilled):
+  - [missed_snapshot_report.md](21716137/close_lock/missed_snapshot_report.md)
 
 ## PMF variance experience study
 

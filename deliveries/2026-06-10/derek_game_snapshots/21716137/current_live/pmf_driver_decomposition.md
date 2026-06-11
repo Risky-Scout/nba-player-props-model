@@ -6,23 +6,23 @@ Per-row contextual deltas from the Phase 13S direct-lineup engine. Constant delt
 
 ## Per-player contextual deltas (top 30)
 
-| player_name | team | exp_mp_contextual | contextual_minutes_delta | contextual_pmf_mean_baseline | contextual_pmf_mean_post |
-| --- | --- | --- | --- | --- | --- |
-| Mitchell Robinson | NYK | 14.443 | 14.443 | nan | nan |
-| OG Anunoby | NYK | 14.443 | 14.443 | nan | nan |
-| Landry Shamet | NYK | 14.443 | 14.443 | nan | nan |
-| De'Aaron Fox | SAS | 14.443 | 14.443 | nan | nan |
-| Stephon Castle | SAS | 14.443 | 14.443 | nan | nan |
-| Dylan Harper | SAS | 14.443 | 14.443 | nan | nan |
-| Keldon Johnson | SAS | 14.443 | 14.443 | nan | nan |
-| Mikal Bridges | NYK | 14.443 | 14.443 | nan | nan |
-| Victor Wembanyama | SAS | 14.443 | 14.443 | nan | nan |
-| Karl-Anthony Towns | NYK | 14.443 | 14.443 | nan | nan |
-| Jalen Brunson | NYK | 14.443 | 14.443 | nan | nan |
-| Josh Hart | NYK | 14.443 | 14.443 | nan | nan |
-| Miles McBride | NYK | 14.443 | 14.443 | nan | nan |
-| Devin Vassell | SAS | 14.443 | 14.443 | nan | nan |
-| Julian Champagnie | SAS | 14.443 | 14.443 | nan | nan |
+| player_name | team | exp_mp_contextual | contextual_minutes_delta |
+| --- | --- | --- | --- |
+| Mitchell Robinson | NYK | 14.443 | 14.443 |
+| OG Anunoby | NYK | 14.443 | 14.443 |
+| Landry Shamet | NYK | 14.443 | 14.443 |
+| De'Aaron Fox | SAS | 14.443 | 14.443 |
+| Stephon Castle | SAS | 14.443 | 14.443 |
+| Dylan Harper | SAS | 14.443 | 14.443 |
+| Keldon Johnson | SAS | 14.443 | 14.443 |
+| Mikal Bridges | NYK | 14.443 | 14.443 |
+| Victor Wembanyama | SAS | 14.443 | 14.443 |
+| Karl-Anthony Towns | NYK | 14.443 | 14.443 |
+| Jalen Brunson | NYK | 14.443 | 14.443 |
+| Josh Hart | NYK | 14.443 | 14.443 |
+| Miles McBride | NYK | 14.443 | 14.443 |
+| Devin Vassell | SAS | 14.443 | 14.443 |
+| Julian Champagnie | SAS | 14.443 | 14.443 |
 
 ## Technical audit details
 

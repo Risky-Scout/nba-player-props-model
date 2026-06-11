@@ -22,7 +22,7 @@
       "row_count": 35,
       "rows": [
         {
-          "abs_edge_recorded": 0.0532,
+          "abs_edge_recorded": 0.05423474992113164,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -49,7 +49,7 @@
           "pmf_variance": 9.787549064974945,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0532,
+          "raw_edge": 0.05423474992113164,
           "raw_edge_recomputed": 0.05423474992113164,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -58,7 +58,7 @@
           "under_odds": -110
         },
         {
-          "abs_edge_recorded": 0.1386,
+          "abs_edge_recorded": 0.1385759245946161,
           "book": "betparx",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -85,7 +85,7 @@
           "pmf_variance": 0.57913271,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1386,
+          "raw_edge": 0.1385759245946161,
           "raw_edge_recomputed": 0.1385759245946161,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -94,7 +94,7 @@
           "under_odds": -157
         },
         {
-          "abs_edge_recorded": 0.0889,
+          "abs_edge_recorded": 0.08892941453595449,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -121,7 +121,7 @@
           "pmf_variance": 0.6775299100000001,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0889,
+          "raw_edge": 0.08892941453595449,
           "raw_edge_recomputed": 0.08892941453595449,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -130,7 +130,7 @@
           "under_odds": -118
         },
         {
-          "abs_edge_recorded": 0.0936,
+          "abs_edge_recorded": 0.09561281225333562,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -157,7 +157,7 @@
           "pmf_variance": 48.16633280514975,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0936,
+          "raw_edge": 0.09561281225333562,
           "raw_edge_recomputed": 0.09561281225333562,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -166,7 +166,7 @@
           "under_odds": -110
         },
         {
-          "abs_edge_recorded": 0.1322,
+          "abs_edge_recorded": 0.13221103845019766,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -193,7 +193,7 @@
           "pmf_variance": 1.254464600375429,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1322,
+          "raw_edge": 0.13221103845019766,
           "raw_edge_recomputed": 0.13221103845019766,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -202,7 +202,7 @@
           "under_odds": -168
         },
         {
-          "abs_edge_recorded": 0.0593,
+          "abs_edge_recorded": 0.05933895189069949,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -229,7 +229,7 @@
           "pmf_variance": 0.64050236,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0593,
+          "raw_edge": 0.05933895189069949,
           "raw_edge_recomputed": 0.05933895189069949,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -238,7 +238,7 @@
           "under_odds": -134
         },
         {
-          "abs_edge_recorded": 0.0431,
+          "abs_edge_recorded": 0.04170126133066443,
           "book": "betmgm",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -265,7 +265,7 @@
           "pmf_variance": 55.910350185028086,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0431,
+          "raw_edge": 0.04170126133066443,
           "raw_edge_recomputed": 0.04170126133066443,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -274,7 +274,7 @@
           "under_odds": -101
         },
         {
-          "abs_edge_recorded": 0.1426,
+          "abs_edge_recorded": 0.14181268858202184,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -301,7 +301,7 @@
           "pmf_variance": 6.597890077113759,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1426,
+          "raw_edge": 0.14181268858202184,
           "raw_edge_recomputed": 0.14181268858202184,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -310,7 +310,7 @@
           "under_odds": -125
         },
         {
-          "abs_edge_recorded": 0.0902,
+          "abs_edge_recorded": 0.09135082015910723,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -337,7 +337,7 @@
           "pmf_variance": 8.11091904699763,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0902,
+          "raw_edge": 0.09135082015910723,
           "raw_edge_recomputed": 0.09135082015910723,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -346,7 +346,7 @@
           "under_odds": -155
         },
         {
-          "abs_edge_recorded": 0.0319,
+          "abs_edge_recorded": 0.03387204038085101,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -373,7 +373,7 @@
           "pmf_variance": 54.32109765696455,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0319,
+          "raw_edge": 0.03387204038085101,
           "raw_edge_recomputed": 0.03387204038085101,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -382,7 +382,7 @@
           "under_odds": -109
         },
         {
-          "abs_edge_recorded": 0.1959,
+          "abs_edge_recorded": 0.1969368968925035,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -409,7 +409,7 @@
           "pmf_variance": 7.268061550724749,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1959,
+          "raw_edge": 0.1969368968925035,
           "raw_edge_recomputed": 0.1969368968925035,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -418,7 +418,7 @@
           "under_odds": -108
         },
         {
-          "abs_edge_recorded": 0.0497,
+          "abs_edge_recorded": 0.04971984080965686,
           "book": "betparx",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -445,7 +445,7 @@
           "pmf_variance": 1.0316879900000002,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0497,
+          "raw_edge": 0.04971984080965686,
           "raw_edge_recomputed": 0.04971984080965686,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -454,7 +454,7 @@
           "under_odds": 162
         },
         {
-          "abs_edge_recorded": 0.1037,
+          "abs_edge_recorded": 0.10576728020180692,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -481,7 +481,7 @@
           "pmf_variance": 44.01804389782291,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1037,
+          "raw_edge": 0.10576728020180692,
           "raw_edge_recomputed": 0.10576728020180692,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -490,7 +490,7 @@
           "under_odds": -111
         },
         {
-          "abs_edge_recorded": 0.1898,
+          "abs_edge_recorded": 0.19092294395924309,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -517,7 +517,7 @@
           "pmf_variance": 9.00258293879181,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1898,
+          "raw_edge": 0.19092294395924309,
           "raw_edge_recomputed": 0.19092294395924309,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -526,7 +526,7 @@
           "under_odds": 115
         },
         {
-          "abs_edge_recorded": 0.1327,
+          "abs_edge_recorded": 0.13346399593231184,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -553,7 +553,7 @@
           "pmf_variance": 3.9340991979755175,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1327,
+          "raw_edge": 0.13346399593231184,
           "raw_edge_recomputed": 0.13346399593231184,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -562,7 +562,7 @@
           "under_odds": -146
         },
         {
-          "abs_edge_recorded": 0.1268,
+          "abs_edge_recorded": 0.12779573376005038,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -589,7 +589,7 @@
           "pmf_variance": 3.983777390009376,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1268,
+          "raw_edge": 0.12779573376005038,
           "raw_edge_recomputed": 0.12779573376005038,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -598,7 +598,7 @@
           "under_odds": 115
         },
         {
-          "abs_edge_recorded": 0.2975,
+          "abs_edge_recorded": 0.29751564986737405,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup_with_large_edge",
           "edge_publish_status": "REVIEW_LARGE_EDGE",
@@ -625,7 +625,7 @@
           "pmf_variance": 1.27565551,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2975,
+          "raw_edge": 0.29751564986737405,
           "raw_edge_recomputed": 0.29751564986737405,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -634,7 +634,7 @@
           "under_odds": -110
         },
         {
-          "abs_edge_recorded": 0.1371,
+          "abs_edge_recorded": 0.13714029060563715,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -661,7 +661,7 @@
           "pmf_variance": 0.41106144817902135,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1371,
+          "raw_edge": 0.13714029060563715,
           "raw_edge_recomputed": 0.13714029060563715,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -670,7 +670,7 @@
           "under_odds": -190
         },
         {
-          "abs_edge_recorded": 0.0775,
+          "abs_edge_recorded": 0.07677089973792334,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -697,7 +697,7 @@
           "pmf_variance": 5.71608418622039,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0775,
+          "raw_edge": 0.07677089973792334,
           "raw_edge_recomputed": 0.07677089973792334,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -706,7 +706,7 @@
           "under_odds": -110
         },
         {
-          "abs_edge_recorded": 0.0857,
+          "abs_edge_recorded": 0.08665867688279899,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -733,7 +733,7 @@
           "pmf_variance": 3.607237663137822,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0857,
+          "raw_edge": 0.08665867688279899,
           "raw_edge_recomputed": 0.08665867688279899,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -742,7 +742,7 @@
           "under_odds": 117
         },
         {
-          "abs_edge_recorded": 0.1402,
+          "abs_edge_recorded": 0.14023088071348933,
           "book": "caesars",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -769,7 +769,7 @@
           "pmf_variance": 0.79034896,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1402,
+          "raw_edge": 0.14023088071348933,
           "raw_edge_recomputed": 0.14023088071348933,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -778,7 +778,7 @@
           "under_odds": -140
         },
         {
-          "abs_edge_recorded": 0.2116,
+          "abs_edge_recorded": 0.21465000036902127,
           "book": "fanduel",
           "edge_publish_reason": "calculation_bug",
           "edge_publish_status": "PUBLISH_BLOCKER",
@@ -807,7 +807,7 @@
           "pmf_variance": 83.08310954031835,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2116,
+          "raw_edge": 0.21465000036902127,
           "raw_edge_recomputed": 0.21465000036902127,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -816,7 +816,7 @@
           "under_odds": -115
         },
         {
-          "abs_edge_recorded": 0.2496,
+          "abs_edge_recorded": 0.2514344322759299,
           "book": "caesars",
           "edge_publish_reason": "current_live_unconfirmed_lineup_with_large_edge",
           "edge_publish_status": "REVIEW_LARGE_EDGE",
@@ -843,7 +843,7 @@
           "pmf_variance": 15.139904743733466,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2496,
+          "raw_edge": 0.2514344322759299,
           "raw_edge_recomputed": 0.2514344322759299,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -852,7 +852,7 @@
           "under_odds": -124
         },
         {
-          "abs_edge_recorded": 0.1275,
+          "abs_edge_recorded": 0.12830496524900792,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -879,7 +879,7 @@
           "pmf_variance": 3.3342344413472893,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1275,
+          "raw_edge": 0.12830496524900792,
           "raw_edge_recomputed": 0.12830496524900792,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -888,7 +888,7 @@
           "under_odds": -150
         },
         {
-          "abs_edge_recorded": 0.1646,
+          "abs_edge_recorded": 0.16714339483858864,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -915,7 +915,7 @@
           "pmf_variance": 47.81200691018943,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1646,
+          "raw_edge": 0.16714339483858864,
           "raw_edge_recomputed": 0.16714339483858864,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -924,7 +924,7 @@
           "under_odds": -122
         },
         {
-          "abs_edge_recorded": 0.0716,
+          "abs_edge_recorded": 0.07312177591831182,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -951,7 +951,7 @@
           "pmf_variance": 19.94487158490962,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0716,
+          "raw_edge": 0.07312177591831182,
           "raw_edge_recomputed": 0.07312177591831182,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -960,7 +960,7 @@
           "under_odds": -130
         },
         {
-          "abs_edge_recorded": 0.0901,
+          "abs_edge_recorded": 0.09280272094874775,
           "book": "betway",
           "edge_publish_reason": "calculation_bug",
           "edge_publish_status": "PUBLISH_BLOCKER",
@@ -989,7 +989,7 @@
           "pmf_variance": 93.46729328447611,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0901,
+          "raw_edge": 0.09280272094874775,
           "raw_edge_recomputed": 0.09280272094874775,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -998,7 +998,7 @@
           "under_odds": -112
         },
         {
-          "abs_edge_recorded": 0.162,
+          "abs_edge_recorded": 0.1620931649331352,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1025,7 +1025,7 @@
           "pmf_variance": 1.6859185600000002,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.162,
+          "raw_edge": 0.1620931649331352,
           "raw_edge_recomputed": 0.1620931649331352,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1034,7 +1034,7 @@
           "under_odds": -137
         },
         {
-          "abs_edge_recorded": 0.0422,
+          "abs_edge_recorded": 0.04403968517725909,
           "book": "fanatics",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1061,7 +1061,7 @@
           "pmf_variance": 39.528822247242545,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0422,
+          "raw_edge": 0.04403968517725909,
           "raw_edge_recomputed": 0.04403968517725909,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1070,7 +1070,7 @@
           "under_odds": -109
         },
         {
-          "abs_edge_recorded": 0.1537,
+          "abs_edge_recorded": 0.15499159622313513,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1097,7 +1097,7 @@
           "pmf_variance": 13.749903373882033,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1537,
+          "raw_edge": 0.15499159622313513,
           "raw_edge_recomputed": 0.15499159622313513,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1106,7 +1106,7 @@
           "under_odds": -107
         },
         {
-          "abs_edge_recorded": 0.0934,
+          "abs_edge_recorded": 0.09424063253772674,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1133,7 +1133,7 @@
           "pmf_variance": 5.700888353649043,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0934,
+          "raw_edge": 0.09424063253772674,
           "raw_edge_recomputed": 0.09424063253772674,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1142,7 +1142,7 @@
           "under_odds": 100
         },
         {
-          "abs_edge_recorded": 0.0988,
+          "abs_edge_recorded": 0.0988308128544424,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1169,7 +1169,7 @@
           "pmf_variance": 1.27565244,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0988,
+          "raw_edge": 0.0988308128544424,
           "raw_edge_recomputed": 0.0988308128544424,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1178,7 +1178,7 @@
           "under_odds": -152
         },
         {
-          "abs_edge_recorded": 0.2267,
+          "abs_edge_recorded": 0.22675087308132436,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup_with_large_edge",
           "edge_publish_status": "REVIEW_LARGE_EDGE",
@@ -1205,7 +1205,7 @@
           "pmf_variance": 1.2594316010854667,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2267,
+          "raw_edge": 0.22675087308132436,
           "raw_edge_recomputed": 0.22675087308132436,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -1214,7 +1214,7 @@
           "under_odds": 142
         },
         {
-          "abs_edge_recorded": 0.1484,
+          "abs_edge_recorded": 0.14972379459834917,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1241,7 +1241,7 @@
           "pmf_variance": 34.38586167455325,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1484,
+          "raw_edge": 0.14972379459834917,
           "raw_edge_recomputed": 0.14972379459834917,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1250,7 +1250,7 @@
           "under_odds": -112
         },
         {
-          "abs_edge_recorded": 0.0353,
+          "abs_edge_recorded": 0.03691330329343068,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1277,7 +1277,7 @@
           "pmf_variance": 38.47252716517897,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0353,
+          "raw_edge": 0.03691330329343068,
           "raw_edge_recomputed": 0.03691330329343068,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1304,7 +1304,7 @@
       },
       "top_25_edges": [
         {
-          "abs_edge_recorded": 0.2975,
+          "abs_edge_recorded": 0.29751564986737405,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup_with_large_edge",
           "edge_publish_status": "REVIEW_LARGE_EDGE",
@@ -1331,7 +1331,7 @@
           "pmf_variance": 1.27565551,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2975,
+          "raw_edge": 0.29751564986737405,
           "raw_edge_recomputed": 0.29751564986737405,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -1340,7 +1340,7 @@
           "under_odds": -110
         },
         {
-          "abs_edge_recorded": 0.2496,
+          "abs_edge_recorded": 0.2514344322759299,
           "book": "caesars",
           "edge_publish_reason": "current_live_unconfirmed_lineup_with_large_edge",
           "edge_publish_status": "REVIEW_LARGE_EDGE",
@@ -1367,7 +1367,7 @@
           "pmf_variance": 15.139904743733466,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2496,
+          "raw_edge": 0.2514344322759299,
           "raw_edge_recomputed": 0.2514344322759299,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1376,7 +1376,7 @@
           "under_odds": -124
         },
         {
-          "abs_edge_recorded": 0.2267,
+          "abs_edge_recorded": 0.22675087308132436,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup_with_large_edge",
           "edge_publish_status": "REVIEW_LARGE_EDGE",
@@ -1403,7 +1403,7 @@
           "pmf_variance": 1.2594316010854667,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2267,
+          "raw_edge": 0.22675087308132436,
           "raw_edge_recomputed": 0.22675087308132436,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -1412,7 +1412,7 @@
           "under_odds": 142
         },
         {
-          "abs_edge_recorded": 0.2116,
+          "abs_edge_recorded": 0.21465000036902127,
           "book": "fanduel",
           "edge_publish_reason": "calculation_bug",
           "edge_publish_status": "PUBLISH_BLOCKER",
@@ -1441,7 +1441,7 @@
           "pmf_variance": 83.08310954031835,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.2116,
+          "raw_edge": 0.21465000036902127,
           "raw_edge_recomputed": 0.21465000036902127,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1450,7 +1450,7 @@
           "under_odds": -115
         },
         {
-          "abs_edge_recorded": 0.1959,
+          "abs_edge_recorded": 0.1969368968925035,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1477,7 +1477,7 @@
           "pmf_variance": 7.268061550724749,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1959,
+          "raw_edge": 0.1969368968925035,
           "raw_edge_recomputed": 0.1969368968925035,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1486,7 +1486,7 @@
           "under_odds": -108
         },
         {
-          "abs_edge_recorded": 0.1898,
+          "abs_edge_recorded": 0.19092294395924309,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1513,7 +1513,7 @@
           "pmf_variance": 9.00258293879181,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1898,
+          "raw_edge": 0.19092294395924309,
           "raw_edge_recomputed": 0.19092294395924309,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1522,7 +1522,7 @@
           "under_odds": 115
         },
         {
-          "abs_edge_recorded": 0.1646,
+          "abs_edge_recorded": 0.16714339483858864,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1549,7 +1549,7 @@
           "pmf_variance": 47.81200691018943,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1646,
+          "raw_edge": 0.16714339483858864,
           "raw_edge_recomputed": 0.16714339483858864,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1558,7 +1558,7 @@
           "under_odds": -122
         },
         {
-          "abs_edge_recorded": 0.162,
+          "abs_edge_recorded": 0.1620931649331352,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1585,7 +1585,7 @@
           "pmf_variance": 1.6859185600000002,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.162,
+          "raw_edge": 0.1620931649331352,
           "raw_edge_recomputed": 0.1620931649331352,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1594,7 +1594,7 @@
           "under_odds": -137
         },
         {
-          "abs_edge_recorded": 0.1537,
+          "abs_edge_recorded": 0.15499159622313513,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1621,7 +1621,7 @@
           "pmf_variance": 13.749903373882033,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1537,
+          "raw_edge": 0.15499159622313513,
           "raw_edge_recomputed": 0.15499159622313513,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1630,7 +1630,7 @@
           "under_odds": -107
         },
         {
-          "abs_edge_recorded": 0.1484,
+          "abs_edge_recorded": 0.14972379459834917,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1657,7 +1657,7 @@
           "pmf_variance": 34.38586167455325,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1484,
+          "raw_edge": 0.14972379459834917,
           "raw_edge_recomputed": 0.14972379459834917,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1666,7 +1666,7 @@
           "under_odds": -112
         },
         {
-          "abs_edge_recorded": 0.1426,
+          "abs_edge_recorded": 0.14181268858202184,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1693,7 +1693,7 @@
           "pmf_variance": 6.597890077113759,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1426,
+          "raw_edge": 0.14181268858202184,
           "raw_edge_recomputed": 0.14181268858202184,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "OVER",
@@ -1702,7 +1702,7 @@
           "under_odds": -125
         },
         {
-          "abs_edge_recorded": 0.1402,
+          "abs_edge_recorded": 0.14023088071348933,
           "book": "caesars",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1729,7 +1729,7 @@
           "pmf_variance": 0.79034896,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1402,
+          "raw_edge": 0.14023088071348933,
           "raw_edge_recomputed": 0.14023088071348933,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1738,7 +1738,7 @@
           "under_odds": -140
         },
         {
-          "abs_edge_recorded": 0.1386,
+          "abs_edge_recorded": 0.1385759245946161,
           "book": "betparx",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1765,7 +1765,7 @@
           "pmf_variance": 0.57913271,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1386,
+          "raw_edge": 0.1385759245946161,
           "raw_edge_recomputed": 0.1385759245946161,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1774,7 +1774,7 @@
           "under_odds": -157
         },
         {
-          "abs_edge_recorded": 0.1371,
+          "abs_edge_recorded": 0.13714029060563715,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1801,7 +1801,7 @@
           "pmf_variance": 0.41106144817902135,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1371,
+          "raw_edge": 0.13714029060563715,
           "raw_edge_recomputed": 0.13714029060563715,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1810,7 +1810,7 @@
           "under_odds": -190
         },
         {
-          "abs_edge_recorded": 0.1327,
+          "abs_edge_recorded": 0.13346399593231184,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1837,7 +1837,7 @@
           "pmf_variance": 3.9340991979755175,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1327,
+          "raw_edge": 0.13346399593231184,
           "raw_edge_recomputed": 0.13346399593231184,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1846,7 +1846,7 @@
           "under_odds": -146
         },
         {
-          "abs_edge_recorded": 0.1322,
+          "abs_edge_recorded": 0.13221103845019766,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1873,7 +1873,7 @@
           "pmf_variance": 1.254464600375429,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1322,
+          "raw_edge": 0.13221103845019766,
           "raw_edge_recomputed": 0.13221103845019766,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1882,7 +1882,7 @@
           "under_odds": -168
         },
         {
-          "abs_edge_recorded": 0.1275,
+          "abs_edge_recorded": 0.12830496524900792,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1909,7 +1909,7 @@
           "pmf_variance": 3.3342344413472893,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1275,
+          "raw_edge": 0.12830496524900792,
           "raw_edge_recomputed": 0.12830496524900792,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1918,7 +1918,7 @@
           "under_odds": -150
         },
         {
-          "abs_edge_recorded": 0.1268,
+          "abs_edge_recorded": 0.12779573376005038,
           "book": "betway",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1945,7 +1945,7 @@
           "pmf_variance": 3.983777390009376,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1268,
+          "raw_edge": 0.12779573376005038,
           "raw_edge_recomputed": 0.12779573376005038,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1954,7 +1954,7 @@
           "under_odds": 115
         },
         {
-          "abs_edge_recorded": 0.1037,
+          "abs_edge_recorded": 0.10576728020180692,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -1981,7 +1981,7 @@
           "pmf_variance": 44.01804389782291,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.1037,
+          "raw_edge": 0.10576728020180692,
           "raw_edge_recomputed": 0.10576728020180692,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -1990,7 +1990,7 @@
           "under_odds": -111
         },
         {
-          "abs_edge_recorded": 0.0988,
+          "abs_edge_recorded": 0.0988308128544424,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -2017,7 +2017,7 @@
           "pmf_variance": 1.27565244,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0988,
+          "raw_edge": 0.0988308128544424,
           "raw_edge_recomputed": 0.0988308128544424,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -2026,7 +2026,7 @@
           "under_odds": -152
         },
         {
-          "abs_edge_recorded": 0.0936,
+          "abs_edge_recorded": 0.09561281225333562,
           "book": "fanduel",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -2053,7 +2053,7 @@
           "pmf_variance": 48.16633280514975,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0936,
+          "raw_edge": 0.09561281225333562,
           "raw_edge_recomputed": 0.09561281225333562,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -2062,7 +2062,7 @@
           "under_odds": -110
         },
         {
-          "abs_edge_recorded": 0.0934,
+          "abs_edge_recorded": 0.09424063253772674,
           "book": "betrivers",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -2089,7 +2089,7 @@
           "pmf_variance": 5.700888353649043,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0934,
+          "raw_edge": 0.09424063253772674,
           "raw_edge_recomputed": 0.09424063253772674,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -2098,43 +2098,7 @@
           "under_odds": 100
         },
         {
-          "abs_edge_recorded": 0.0902,
-          "book": "fanduel",
-          "edge_publish_reason": "current_live_unconfirmed_lineup",
-          "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
-          "ev": 0.1005,
-          "ev_recomputed_pushexc": 0.10237670595533482,
-          "ev_recomputed_pushinc": 0.10221290322580628,
-          "issues": [],
-          "large_edge_bucket": "EDGE_LT_10",
-          "line": 6.5,
-          "line_vs_median": 1.5,
-          "lineup_confirmed": false,
-          "market_prob": 0.5787,
-          "market_prob_recomputed": 0.5787212952255081,
-          "model_prob": 0.669,
-          "model_prob_recomputed": 0.6700721153846153,
-          "over_odds": 126,
-          "p0": 0.0348,
-          "player_name": "De'Aaron Fox",
-          "pmf_max_k": 15,
-          "pmf_mean": 5.247095352564102,
-          "pmf_median": 5,
-          "pmf_n_support": 16,
-          "pmf_sum": 0.9984,
-          "pmf_variance": 8.11091904699763,
-          "push_line": false,
-          "push_prob": 0.0,
-          "raw_edge": 0.0902,
-          "raw_edge_recomputed": 0.09135082015910723,
-          "root_cause_label": "unconfirmed_lineup_baseline",
-          "side": "UNDER",
-          "snapshot_type": "current_live",
-          "stat": "ast",
-          "under_odds": -155
-        },
-        {
-          "abs_edge_recorded": 0.0901,
+          "abs_edge_recorded": 0.09280272094874775,
           "book": "betway",
           "edge_publish_reason": "calculation_bug",
           "edge_publish_status": "PUBLISH_BLOCKER",
@@ -2163,7 +2127,7 @@
           "pmf_variance": 93.46729328447611,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0901,
+          "raw_edge": 0.09280272094874775,
           "raw_edge_recomputed": 0.09280272094874775,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
@@ -2172,7 +2136,43 @@
           "under_odds": -112
         },
         {
-          "abs_edge_recorded": 0.0889,
+          "abs_edge_recorded": 0.09135082015910723,
+          "book": "fanduel",
+          "edge_publish_reason": "current_live_unconfirmed_lineup",
+          "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
+          "ev": 0.1005,
+          "ev_recomputed_pushexc": 0.10237670595533482,
+          "ev_recomputed_pushinc": 0.10221290322580628,
+          "issues": [],
+          "large_edge_bucket": "EDGE_LT_10",
+          "line": 6.5,
+          "line_vs_median": 1.5,
+          "lineup_confirmed": false,
+          "market_prob": 0.5787,
+          "market_prob_recomputed": 0.5787212952255081,
+          "model_prob": 0.669,
+          "model_prob_recomputed": 0.6700721153846153,
+          "over_odds": 126,
+          "p0": 0.0348,
+          "player_name": "De'Aaron Fox",
+          "pmf_max_k": 15,
+          "pmf_mean": 5.247095352564102,
+          "pmf_median": 5,
+          "pmf_n_support": 16,
+          "pmf_sum": 0.9984,
+          "pmf_variance": 8.11091904699763,
+          "push_line": false,
+          "push_prob": 0.0,
+          "raw_edge": 0.09135082015910723,
+          "raw_edge_recomputed": 0.09135082015910723,
+          "root_cause_label": "unconfirmed_lineup_baseline",
+          "side": "UNDER",
+          "snapshot_type": "current_live",
+          "stat": "ast",
+          "under_odds": -155
+        },
+        {
+          "abs_edge_recorded": 0.08892941453595449,
           "book": "draftkings",
           "edge_publish_reason": "current_live_unconfirmed_lineup",
           "edge_publish_status": "WATCHLIST_NOT_CONFIRMED_LINEUP",
@@ -2199,7 +2199,7 @@
           "pmf_variance": 0.6775299100000001,
           "push_line": false,
           "push_prob": 0.0,
-          "raw_edge": 0.0889,
+          "raw_edge": 0.08892941453595449,
           "raw_edge_recomputed": 0.08892941453595449,
           "root_cause_label": "unconfirmed_lineup_baseline",
           "side": "UNDER",
