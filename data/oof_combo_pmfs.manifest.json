@@ -3,8 +3,8 @@
   "input": "data/oof_pmfs.parquet",
   "output": "data/oof_combo_pmfs.parquet",
   "source_oof_path": "data/oof_pmfs.parquet",
-  "rows": 40295,
-  "player_games": 8059,
+  "rows": 40400,
+  "player_games": 8080,
   "combos_canonical": [
     "stocks",
     "pa",
@@ -22,27 +22,27 @@
   "combo_pmf_version": "combo_oof_pmf_v1",
   "dataset_status": "fresh_oof_v1",
   "oof_window_start": "2026-03-04",
-  "oof_window_end": "2026-06-08",
-  "training_cutoff_date": "2026-06-08",
-  "as_of_date": "2026-06-09",
-  "days_since_oof_window_end": 1,
+  "oof_window_end": "2026-06-10",
+  "training_cutoff_date": "2026-06-10",
+  "as_of_date": "2026-06-10",
+  "days_since_oof_window_end": 0,
   "path_building_warning": "",
   "production_promoted": false,
   "final_calibration_ready": false,
   "staleness_warn_days": 7,
   "method_counts": {
-    "prior_actual_corr_gaussian_copula_v1": 38690,
+    "prior_actual_corr_gaussian_copula_v1": 38795,
     "independence_cold_start_v1": 1605
   },
   "n_draws_default": 20000,
   "min_prior_rows_for_copula": 200,
-  "n_copula_dates": 410,
+  "n_copula_dates": 415,
   "n_cold_start_dates": 10,
   "calibrated": false,
   "calibration_status": "pending_m6_stat_role_calibration",
   "pmf_validity_rate": 1.0,
   "pmf_sum_error_max": 2.220446049250313e-16,
-  "generated_at_utc": "2026-06-10T20:08:47+00:00",
+  "generated_at_utc": "2026-06-11T15:23:44+00:00",
   "available_base_stats": [
     "ast",
     "blk",
@@ -83,28 +83,28 @@
   "combos_built": [
     {
       "combo": "stocks",
-      "rows": 8059
+      "rows": 8080
     },
     {
       "combo": "pa",
-      "rows": 8059
+      "rows": 8080
     },
     {
       "combo": "pr",
-      "rows": 8059
+      "rows": 8080
     },
     {
       "combo": "ra",
-      "rows": 8059
+      "rows": 8080
     },
     {
       "combo": "pra",
-      "rows": 8059
+      "rows": 8080
     }
   ],
   "combos_skipped": [],
   "skip_reasons": {},
-  "n_rows_written": 40295,
+  "n_rows_written": 40400,
   "status": "ok",
   "note": "M5C foundation. Combo OOF dataset for downstream M6 role-aware calibrator fitting. Combo rows are calibrated=False / calibration_status=pending_m6_stat_role_calibration. NOT yet wired into production delivery; M7+ handles production wiring."
 }
