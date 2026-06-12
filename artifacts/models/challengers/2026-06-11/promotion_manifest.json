@@ -1,6 +1,6 @@
 {
-  "code_commit": "983fb25654a3a6a1038a546ec320ae8aecef7367",
-  "decided_at_utc": "2026-06-12T11:23:58+00:00",
+  "code_commit": "b051b2547ce23ff5edacadce5bbcfb3adf6e230b",
+  "decided_at_utc": "2026-06-12T15:59:28+00:00",
   "decision_seen": {
     "as_of_date": "2026-06-11",
     "calibration_blend_policy": "stat_role_guarded_expanded_v1",
@@ -10,51 +10,51 @@
       "by_role_bucket": {
         "bench": {
           "n": 448,
-          "nll": 1.6070096557839155,
-          "p0_err": 0.36921961105148365
+          "nll": 1.6031392626349354,
+          "p0_err": 0.36906128089671053
         },
         "core": {
           "n": 462,
-          "nll": 1.890257361731485,
-          "p0_err": 0.27942069918417145
+          "nll": 1.900039357282566,
+          "p0_err": 0.2808914103580056
         },
         "fringe": {
           "n": 420,
-          "nll": 1.4267886870777482,
-          "p0_err": 0.39276629280800435
+          "nll": 1.428053027946411,
+          "p0_err": 0.39316911444175295
         },
         "inactive_risk": {
           "n": 364,
-          "nll": 1.5558437185988603,
-          "p0_err": 0.370981248289968
+          "nll": 1.5489167913279185,
+          "p0_err": 0.3681160130706744
         },
         "rotation": {
           "n": 553,
-          "nll": 1.8905927205924389,
-          "p0_err": 0.3388215369728456
+          "nll": 1.9005842013524397,
+          "p0_err": 0.3421202982365492
         },
         "starter": {
           "n": 826,
-          "nll": 2.07634590129253,
-          "p0_err": 0.22555045671072627
+          "nll": 2.1109293519632764,
+          "p0_err": 0.225035782443666
         }
       },
       "by_stat": {
         "ast": {
           "calibrator_present": true,
-          "mean_bias": -0.07393608434574074,
-          "nll": 1.5604738422194038,
-          "p0_err": 0.3132334998925055,
+          "mean_bias": -0.08666580410302274,
+          "nll": 1.5539450181553336,
+          "p0_err": 0.31341906849528794,
           "rows_scored": 439,
-          "rps": 0.7432908171796839
+          "rps": 0.7377946963567265
         },
         "blk": {
           "calibrator_present": true,
-          "mean_bias": 0.015763071006741562,
-          "nll": 0.694557625669272,
-          "p0_err": 0.3065572938824812,
+          "mean_bias": 0.0074795771136260715,
+          "nll": 0.7112606993837859,
+          "p0_err": 0.3113226966668068,
           "rows_scored": 439,
-          "rps": 0.2445170914286038
+          "rps": 0.24970254186684546
         },
         "fg3m": {
           "calibrator_present": true,
@@ -66,35 +66,35 @@
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": -0.14933493026092984,
-          "nll": 2.8379200293731945,
-          "p0_err": 0.2048422513786737,
+          "mean_bias": -0.1413783452340351,
+          "nll": 2.8520859393890423,
+          "p0_err": 0.20470352108516615,
           "rows_scored": 439,
-          "rps": 2.8610354522250616
+          "rps": 2.878410364804795
         },
         "reb": {
           "calibrator_present": true,
-          "mean_bias": -0.09370783996965522,
-          "nll": 2.027082138392678,
-          "p0_err": 0.2330312697546892,
+          "mean_bias": -0.08820149887060406,
+          "nll": 2.0328287515603707,
+          "p0_err": 0.23389856738754003,
           "rows_scored": 439,
-          "rps": 1.1744878287670804
+          "rps": 1.1804112754026328
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": 0.011710077577219357,
-          "nll": 1.2253075699753067,
-          "p0_err": 0.4189124440483987,
+          "mean_bias": 0.02040817115863629,
+          "nll": 1.27346151069119,
+          "p0_err": 0.4162556529775948,
           "rows_scored": 439,
-          "rps": 0.4332707685665119
+          "rps": 0.432905303427456
         },
         "tov": {
           "calibrator_present": true,
-          "mean_bias": -0.021872976812089797,
-          "nll": 1.3032396043271954,
-          "p0_err": 0.40239635163146337,
+          "mean_bias": -0.021987451262113423,
+          "nll": 1.3044662861449485,
+          "p0_err": 0.4019564517060235,
           "rows_scored": 439,
-          "rps": 0.5744562662821336
+          "rps": 0.5736896038659096
         }
       },
       "clv": null,
@@ -106,19 +106,19 @@
         "start": "2026-05-13"
       },
       "market_comparison": null,
-      "mean_error": -0.054952136303848584,
+      "mean_error": -0.05480451750285691,
       "median_error": null,
       "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11",
-      "nll": 1.7960875619944774,
-      "p0_calibration": 0.3150584944094063,
+      "nll": 1.8074400470469947,
+      "p0_calibration": 0.31542747265657883,
       "pmf_validity_issues": [],
       "rows_scored_total": 3073,
-      "rps": 0.9465969374563324,
+      "rps": 0.9497191604956595,
       "tov": {
-        "mean_bias": -0.021872976812089797,
-        "nll": 1.3032396043271954,
-        "p0_error": 0.40239635163146337,
-        "rps": 0.5744562662821336
+        "mean_bias": -0.021987451262113423,
+        "nll": 1.3044662861449485,
+        "p0_error": 0.4019564517060235,
+        "rps": 0.5736896038659096
       }
     },
     "champion_metrics": {
@@ -127,51 +127,51 @@
       "by_role_bucket": {
         "bench": {
           "n": 448,
-          "nll": 1.6070096557839155,
-          "p0_err": 0.36921961105148365
+          "nll": 1.6031392626349354,
+          "p0_err": 0.36906128089671053
         },
         "core": {
           "n": 462,
-          "nll": 1.890257361731485,
-          "p0_err": 0.27942069918417145
+          "nll": 1.900039357282566,
+          "p0_err": 0.2808914103580056
         },
         "fringe": {
           "n": 420,
-          "nll": 1.4267886870777482,
-          "p0_err": 0.39276629280800435
+          "nll": 1.428053027946411,
+          "p0_err": 0.39316911444175295
         },
         "inactive_risk": {
           "n": 364,
-          "nll": 1.5558437185988603,
-          "p0_err": 0.370981248289968
+          "nll": 1.5489167913279185,
+          "p0_err": 0.3681160130706744
         },
         "rotation": {
           "n": 553,
-          "nll": 1.8905927205924389,
-          "p0_err": 0.3388215369728456
+          "nll": 1.9005842013524397,
+          "p0_err": 0.3421202982365492
         },
         "starter": {
           "n": 826,
-          "nll": 2.07634590129253,
-          "p0_err": 0.22555045671072627
+          "nll": 2.1109293519632764,
+          "p0_err": 0.225035782443666
         }
       },
       "by_stat": {
         "ast": {
           "calibrator_present": true,
-          "mean_bias": -0.07393608434574074,
-          "nll": 1.5604738422194038,
-          "p0_err": 0.3132334998925055,
+          "mean_bias": -0.08666580410302274,
+          "nll": 1.5539450181553336,
+          "p0_err": 0.31341906849528794,
           "rows_scored": 439,
-          "rps": 0.7432908171796839
+          "rps": 0.7377946963567265
         },
         "blk": {
           "calibrator_present": true,
-          "mean_bias": 0.015763071006741562,
-          "nll": 0.694557625669272,
-          "p0_err": 0.3065572938824812,
+          "mean_bias": 0.0074795771136260715,
+          "nll": 0.7112606993837859,
+          "p0_err": 0.3113226966668068,
           "rows_scored": 439,
-          "rps": 0.2445170914286038
+          "rps": 0.24970254186684546
         },
         "fg3m": {
           "calibrator_present": true,
@@ -183,35 +183,35 @@
         },
         "pts": {
           "calibrator_present": true,
-          "mean_bias": -0.14933493026092984,
-          "nll": 2.8379200293731945,
-          "p0_err": 0.2048422513786737,
+          "mean_bias": -0.1413783452340351,
+          "nll": 2.8520859393890423,
+          "p0_err": 0.20470352108516615,
           "rows_scored": 439,
-          "rps": 2.8610354522250616
+          "rps": 2.878410364804795
         },
         "reb": {
           "calibrator_present": true,
-          "mean_bias": -0.09370783996965522,
-          "nll": 2.027082138392678,
-          "p0_err": 0.2330312697546892,
+          "mean_bias": -0.08820149887060406,
+          "nll": 2.0328287515603707,
+          "p0_err": 0.23389856738754003,
           "rows_scored": 439,
-          "rps": 1.1744878287670804
+          "rps": 1.1804112754026328
         },
         "stl": {
           "calibrator_present": true,
-          "mean_bias": 0.011710077577219357,
-          "nll": 1.2253075699753067,
-          "p0_err": 0.4189124440483987,
+          "mean_bias": 0.02040817115863629,
+          "nll": 1.27346151069119,
+          "p0_err": 0.4162556529775948,
           "rows_scored": 439,
-          "rps": 0.4332707685665119
+          "rps": 0.432905303427456
         },
         "tov": {
           "calibrator_present": true,
-          "mean_bias": -0.021872976812089797,
-          "nll": 1.3032396043271954,
-          "p0_err": 0.40239635163146337,
+          "mean_bias": -0.021987451262113423,
+          "nll": 1.3044662861449485,
+          "p0_err": 0.4019564517060235,
           "rows_scored": 439,
-          "rps": 0.5744562662821336
+          "rps": 0.5736896038659096
         }
       },
       "clv": null,
@@ -223,22 +223,22 @@
         "start": "2026-05-13"
       },
       "market_comparison": null,
-      "mean_error": -0.054952136303848584,
+      "mean_error": -0.05480451750285691,
       "median_error": null,
       "model_dir": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models",
-      "nll": 1.7960875619944774,
-      "p0_calibration": 0.3150584944094063,
+      "nll": 1.8074400470469947,
+      "p0_calibration": 0.31542747265657883,
       "pmf_validity_issues": [],
       "rows_scored_total": 3073,
-      "rps": 0.9465969374563324,
+      "rps": 0.9497191604956595,
       "tov": {
-        "mean_bias": -0.021872976812089797,
-        "nll": 1.3032396043271954,
-        "p0_error": 0.40239635163146337,
-        "rps": 0.5744562662821336
+        "mean_bias": -0.021987451262113423,
+        "nll": 1.3044662861449485,
+        "p0_error": 0.4019564517060235,
+        "rps": 0.5736896038659096
       }
     },
-    "code_commit": "983fb25654a3a6a1038a546ec320ae8aecef7367",
+    "code_commit": "b051b2547ce23ff5edacadce5bbcfb3adf6e230b",
     "gates_failed": [
       "market_benchmark_available"
     ],
@@ -261,7 +261,7 @@
       "m6_3_stat_role_matrix_valid",
       "m6_3_review_cells_guarded"
     ],
-    "generated_at_utc": "2026-06-12T11:23:56+00:00",
+    "generated_at_utc": "2026-06-12T15:59:27+00:00",
     "m6_3_matrix_summary": {
       "detail": "valid",
       "expected_role_buckets": [
@@ -289,12 +289,12 @@
       ],
       "extra_cells": [],
       "forbidden_stats_present": [],
-      "guarded_fallback_cells_count": 18,
+      "guarded_fallback_cells_count": 17,
       "issues": [],
       "m6_3_report_pass": true,
       "market_eval_available": false,
-      "matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-11.csv",
-      "meta_path": "artifacts/docs/m6_3_stat_role_calibration_report_2026-06-11.meta.json",
+      "matrix_path": "artifacts/docs/m6_3_stat_role_calibration_matrix_2026-06-12.csv",
+      "meta_path": "artifacts/docs/m6_3_stat_role_calibration_report_2026-06-12.meta.json",
       "missing_cells": [],
       "needs_more_data_cells_count": 0,
       "observed_role_buckets": [
@@ -319,18 +319,18 @@
         "stocks",
         "tov"
       ],
-      "review_cells_count": 18,
+      "review_cells_count": 17,
       "rows": 72,
       "schema_version": "m7_m6_3_matrix_summary_v1",
       "status_counts": {
-        "PASS": 54,
-        "REVIEW": 18
+        "PASS": 55,
+        "REVIEW": 17
       },
       "valid": true
     },
     "m6_3_review_cells": [
       {
-        "delta_nll_cal_minus_raw": "0.010562150488540478",
+        "delta_nll_cal_minus_raw": "0.01881580402952787",
         "n": "603",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
@@ -338,7 +338,15 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.005500562309079804",
+        "delta_nll_cal_minus_raw": "0.013773345958890015",
+        "n": "628",
+        "nll_threshold": "0.005",
+        "role_bucket": "fringe",
+        "stat": "pts",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.011661921493565597",
         "n": "1395",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
@@ -346,8 +354,15 @@
         "status": "REVIEW"
       },
       {
-        "caveats": "sparse_p0_worsened_+0.016",
-        "delta_nll_cal_minus_raw": "0.010601996648373468",
+        "delta_nll_cal_minus_raw": "0.007850021909925897",
+        "n": "603",
+        "nll_threshold": "0.005",
+        "role_bucket": "inactive_risk",
+        "stat": "stl",
+        "status": "REVIEW"
+      },
+      {
+        "delta_nll_cal_minus_raw": "0.0065003813312407566",
         "n": "1961",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
@@ -355,16 +370,7 @@
         "status": "REVIEW"
       },
       {
-        "caveats": "sparse_p0_worsened_+0.033",
-        "delta_nll_cal_minus_raw": "0.009765252500735233",
-        "n": "2113",
-        "nll_threshold": "0.005",
-        "role_bucket": "core",
-        "stat": "stl",
-        "status": "REVIEW"
-      },
-      {
-        "delta_nll_cal_minus_raw": "0.007468312181713621",
+        "delta_nll_cal_minus_raw": "0.005089896595810384",
         "n": "1380",
         "nll_threshold": "0.003",
         "role_bucket": "starter",
@@ -372,17 +378,8 @@
         "status": "REVIEW"
       },
       {
-        "caveats": "sparse_p0_worsened_+0.015",
-        "delta_nll_cal_minus_raw": "0.005200968354753255",
-        "n": "603",
-        "nll_threshold": "0.005",
-        "role_bucket": "inactive_risk",
-        "stat": "blk",
-        "status": "REVIEW"
-      },
-      {
-        "caveats": "sparse_p0_worsened_+0.015",
-        "delta_nll_cal_minus_raw": "0.008078516378198675",
+        "caveats": "sparse_p0_worsened_+0.023",
+        "delta_nll_cal_minus_raw": "0.009084654997352781",
         "n": "1961",
         "nll_threshold": "0.005",
         "role_bucket": "rotation",
@@ -390,7 +387,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.007533951922779614",
+        "delta_nll_cal_minus_raw": "0.005425453220885723",
         "n": "2113",
         "nll_threshold": "0.005",
         "role_bucket": "core",
@@ -398,7 +395,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.013721001866410454",
+        "delta_nll_cal_minus_raw": "0.015563575655605622",
         "n": "603",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
@@ -406,7 +403,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.016696524345347186",
+        "delta_nll_cal_minus_raw": "0.015554426871090765",
         "n": "628",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
@@ -414,7 +411,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.01931855865386778",
+        "delta_nll_cal_minus_raw": "0.011323118640540475",
         "n": "603",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
@@ -422,7 +419,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.015517631435542523",
+        "delta_nll_cal_minus_raw": "0.01160961378207892",
         "n": "628",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
@@ -430,15 +427,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.012710590711986658",
-        "n": "1395",
-        "nll_threshold": "0.005",
-        "role_bucket": "bench",
-        "stat": "pr",
-        "status": "REVIEW"
-      },
-      {
-        "delta_nll_cal_minus_raw": "0.03270026339130716",
+        "delta_nll_cal_minus_raw": "0.03349959846960937",
         "n": "603",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
@@ -446,7 +435,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.007256527690978398",
+        "delta_nll_cal_minus_raw": "0.010797189212237157",
         "n": "628",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
@@ -454,7 +443,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.033757938108788466",
+        "delta_nll_cal_minus_raw": "0.027986877324827297",
         "n": "603",
         "nll_threshold": "0.005",
         "role_bucket": "inactive_risk",
@@ -462,7 +451,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.026600612142883673",
+        "delta_nll_cal_minus_raw": "0.01949181979719139",
         "n": "628",
         "nll_threshold": "0.005",
         "role_bucket": "fringe",
@@ -470,7 +459,7 @@
         "status": "REVIEW"
       },
       {
-        "delta_nll_cal_minus_raw": "0.013246346028921163",
+        "delta_nll_cal_minus_raw": "0.01112873739984055",
         "n": "1395",
         "nll_threshold": "0.005",
         "role_bucket": "bench",
@@ -490,7 +479,7 @@
     "stat_role_guarded_policy": {
       "guarded_fallback_required_cells": [
         {
-          "delta_nll_cal_minus_raw": "0.010562150488540478",
+          "delta_nll_cal_minus_raw": "0.01881580402952787",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -498,7 +487,15 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.005500562309079804",
+          "delta_nll_cal_minus_raw": "0.013773345958890015",
+          "n": "628",
+          "nll_threshold": "0.005",
+          "role_bucket": "fringe",
+          "stat": "pts",
+          "status": "REVIEW"
+        },
+        {
+          "delta_nll_cal_minus_raw": "0.011661921493565597",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -506,8 +503,15 @@
           "status": "REVIEW"
         },
         {
-          "caveats": "sparse_p0_worsened_+0.016",
-          "delta_nll_cal_minus_raw": "0.010601996648373468",
+          "delta_nll_cal_minus_raw": "0.007850021909925897",
+          "n": "603",
+          "nll_threshold": "0.005",
+          "role_bucket": "inactive_risk",
+          "stat": "stl",
+          "status": "REVIEW"
+        },
+        {
+          "delta_nll_cal_minus_raw": "0.0065003813312407566",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -515,16 +519,7 @@
           "status": "REVIEW"
         },
         {
-          "caveats": "sparse_p0_worsened_+0.033",
-          "delta_nll_cal_minus_raw": "0.009765252500735233",
-          "n": "2113",
-          "nll_threshold": "0.005",
-          "role_bucket": "core",
-          "stat": "stl",
-          "status": "REVIEW"
-        },
-        {
-          "delta_nll_cal_minus_raw": "0.007468312181713621",
+          "delta_nll_cal_minus_raw": "0.005089896595810384",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -532,17 +527,8 @@
           "status": "REVIEW"
         },
         {
-          "caveats": "sparse_p0_worsened_+0.015",
-          "delta_nll_cal_minus_raw": "0.005200968354753255",
-          "n": "603",
-          "nll_threshold": "0.005",
-          "role_bucket": "inactive_risk",
-          "stat": "blk",
-          "status": "REVIEW"
-        },
-        {
-          "caveats": "sparse_p0_worsened_+0.015",
-          "delta_nll_cal_minus_raw": "0.008078516378198675",
+          "caveats": "sparse_p0_worsened_+0.023",
+          "delta_nll_cal_minus_raw": "0.009084654997352781",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -550,7 +536,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.007533951922779614",
+          "delta_nll_cal_minus_raw": "0.005425453220885723",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -558,7 +544,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.013721001866410454",
+          "delta_nll_cal_minus_raw": "0.015563575655605622",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -566,7 +552,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.016696524345347186",
+          "delta_nll_cal_minus_raw": "0.015554426871090765",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -574,7 +560,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.01931855865386778",
+          "delta_nll_cal_minus_raw": "0.011323118640540475",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -582,7 +568,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.015517631435542523",
+          "delta_nll_cal_minus_raw": "0.01160961378207892",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -590,15 +576,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.012710590711986658",
-          "n": "1395",
-          "nll_threshold": "0.005",
-          "role_bucket": "bench",
-          "stat": "pr",
-          "status": "REVIEW"
-        },
-        {
-          "delta_nll_cal_minus_raw": "0.03270026339130716",
+          "delta_nll_cal_minus_raw": "0.03349959846960937",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -606,7 +584,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.007256527690978398",
+          "delta_nll_cal_minus_raw": "0.010797189212237157",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -614,7 +592,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.033757938108788466",
+          "delta_nll_cal_minus_raw": "0.027986877324827297",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -622,7 +600,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.026600612142883673",
+          "delta_nll_cal_minus_raw": "0.01949181979719139",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -630,7 +608,7 @@
           "status": "REVIEW"
         },
         {
-          "delta_nll_cal_minus_raw": "0.013246346028921163",
+          "delta_nll_cal_minus_raw": "0.01112873739984055",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -644,15 +622,7 @@
       "review_status_handling": "REVIEW cells are not promotion blockers if explicitly listed for guarded fallback.",
       "role_aware_allowed_cells": [
         {
-          "delta_nll_cal_minus_raw": "0.004864493487555688",
-          "n": "628",
-          "nll_threshold": "0.005",
-          "role_bucket": "fringe",
-          "stat": "pts",
-          "status": "PASS"
-        },
-        {
-          "delta_nll_cal_minus_raw": "-0.007932029459190915",
+          "delta_nll_cal_minus_raw": "-0.004925326040325473",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -660,7 +630,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.0013115076256888791",
+          "delta_nll_cal_minus_raw": "0.0019809276366626882",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -668,7 +638,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.025957885209902276",
+          "delta_nll_cal_minus_raw": "-0.016342447473367994",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -676,7 +646,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.018298680690304936",
+          "delta_nll_cal_minus_raw": "-0.022292306465271805",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -684,7 +654,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.01420158679023853",
+          "delta_nll_cal_minus_raw": "-0.013044150081601202",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -692,7 +662,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.015354135642269284",
+          "delta_nll_cal_minus_raw": "-0.012034251069504176",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -700,7 +670,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.04245587891494562",
+          "delta_nll_cal_minus_raw": "-0.042768719448982306",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -708,7 +678,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.05705213780263607",
+          "delta_nll_cal_minus_raw": "-0.05849330024210264",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -716,7 +686,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.05562520992499209",
+          "delta_nll_cal_minus_raw": "-0.05444244360281436",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -724,7 +694,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.013396034818285552",
+          "delta_nll_cal_minus_raw": "-0.016345237326756523",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -732,7 +702,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.01330213488373122",
+          "delta_nll_cal_minus_raw": "-0.014310155830691507",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -740,7 +710,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.038552834688093895",
+          "delta_nll_cal_minus_raw": "-0.037947181776076366",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -748,7 +718,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.06005905706801129",
+          "delta_nll_cal_minus_raw": "-0.061017778792094246",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -756,7 +726,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.05126525432088358",
+          "delta_nll_cal_minus_raw": "-0.05376660164657454",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -764,7 +734,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.05631689736475742",
+          "delta_nll_cal_minus_raw": "-0.05858639510363828",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -820,7 +790,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.017212231988503746",
+          "delta_nll_cal_minus_raw": "-0.015030084134791899",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -828,7 +798,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.01199029699169829",
+          "delta_nll_cal_minus_raw": "-0.009958192944583999",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -836,7 +806,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.037534336634181376",
+          "delta_nll_cal_minus_raw": "-0.035208034990954484",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -844,7 +814,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.04558988003015685",
+          "delta_nll_cal_minus_raw": "-0.04587569957072457",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -852,7 +822,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.05997494830162409",
+          "delta_nll_cal_minus_raw": "-0.0608507983205564",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -860,7 +830,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.07292505062392052",
+          "delta_nll_cal_minus_raw": "-0.07013060183197117",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -868,31 +838,41 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.0020811244181994093",
+          "delta_nll_cal_minus_raw": "0.00228801510343446",
+          "n": "628",
+          "nll_threshold": "0.005",
+          "role_bucket": "fringe",
+          "stat": "stl",
+          "status": "PASS"
+        },
+        {
+          "delta_nll_cal_minus_raw": "-0.0009315993407145173",
+          "n": "1395",
+          "nll_threshold": "0.005",
+          "role_bucket": "bench",
+          "stat": "stl",
+          "status": "PASS"
+        },
+        {
+          "caveats": "sparse_p0_worsened_+0.036",
+          "delta_nll_cal_minus_raw": "0.004828097456416547",
+          "n": "2113",
+          "nll_threshold": "0.005",
+          "role_bucket": "core",
+          "stat": "stl",
+          "status": "PASS"
+        },
+        {
+          "caveats": "sparse_p0_worsened_+0.014",
+          "delta_nll_cal_minus_raw": "0.004903313157440081",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
-          "stat": "stl",
+          "stat": "blk",
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.0030328637000803793",
-          "n": "628",
-          "nll_threshold": "0.005",
-          "role_bucket": "fringe",
-          "stat": "stl",
-          "status": "PASS"
-        },
-        {
-          "delta_nll_cal_minus_raw": "-0.002726150532700755",
-          "n": "1395",
-          "nll_threshold": "0.005",
-          "role_bucket": "bench",
-          "stat": "stl",
-          "status": "PASS"
-        },
-        {
-          "delta_nll_cal_minus_raw": "-0.004818572027196988",
+          "delta_nll_cal_minus_raw": "-0.005660343782347144",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -900,7 +880,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.003861383399992091",
+          "delta_nll_cal_minus_raw": "0.0007698248167937738",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -908,8 +888,7 @@
           "status": "PASS"
         },
         {
-          "caveats": "sparse_p0_worsened_+0.010",
-          "delta_nll_cal_minus_raw": "-0.0017038523721504273",
+          "delta_nll_cal_minus_raw": "-0.0010183766593914179",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -917,7 +896,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.0023582347645700885",
+          "delta_nll_cal_minus_raw": "0.003586950891849794",
           "n": "603",
           "nll_threshold": "0.005",
           "role_bucket": "inactive_risk",
@@ -925,7 +904,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.0003684496136285853",
+          "delta_nll_cal_minus_raw": "0.0008135296717642904",
           "n": "628",
           "nll_threshold": "0.005",
           "role_bucket": "fringe",
@@ -933,7 +912,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.0012319923330854632",
+          "delta_nll_cal_minus_raw": "-0.0035360992510873324",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -941,7 +920,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.0006296558676048836",
+          "delta_nll_cal_minus_raw": "0.00024329049646754086",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -949,7 +928,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.002345197233339258",
+          "delta_nll_cal_minus_raw": "0.000791840609041472",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -957,7 +936,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.0024710978111703863",
+          "delta_nll_cal_minus_raw": "-1.8337386000100153e-05",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -965,7 +944,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "0.0015217559353302157",
+          "delta_nll_cal_minus_raw": "0.003081369971762893",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -973,7 +952,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.020637401002520317",
+          "delta_nll_cal_minus_raw": "-0.022871563765118896",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -981,7 +960,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.027564113763320908",
+          "delta_nll_cal_minus_raw": "-0.02511373923525717",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -989,7 +968,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.06158230792685382",
+          "delta_nll_cal_minus_raw": "-0.059851631344475464",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -997,7 +976,15 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.017479582735664412",
+          "delta_nll_cal_minus_raw": "0.002948298187176235",
+          "n": "1395",
+          "nll_threshold": "0.005",
+          "role_bucket": "bench",
+          "stat": "pr",
+          "status": "PASS"
+        },
+        {
+          "delta_nll_cal_minus_raw": "-0.016741855489049495",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -1005,7 +992,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.026761172564234936",
+          "delta_nll_cal_minus_raw": "-0.02882313532773839",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -1013,7 +1000,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.048634391705468794",
+          "delta_nll_cal_minus_raw": "-0.05024347002195828",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -1021,7 +1008,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.007218702669505639",
+          "delta_nll_cal_minus_raw": "-0.005876260007827039",
           "n": "1395",
           "nll_threshold": "0.005",
           "role_bucket": "bench",
@@ -1029,7 +1016,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.04920558989262025",
+          "delta_nll_cal_minus_raw": "-0.04823195926168511",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -1037,7 +1024,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.06450193391681935",
+          "delta_nll_cal_minus_raw": "-0.06584896647298111",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -1045,7 +1032,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.06775531779025723",
+          "delta_nll_cal_minus_raw": "-0.06827027418096066",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -1053,7 +1040,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.026369833217627647",
+          "delta_nll_cal_minus_raw": "-0.028375979844426524",
           "n": "1961",
           "nll_threshold": "0.005",
           "role_bucket": "rotation",
@@ -1061,7 +1048,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.04483650449190746",
+          "delta_nll_cal_minus_raw": "-0.04549847705493493",
           "n": "2113",
           "nll_threshold": "0.005",
           "role_bucket": "core",
@@ -1069,7 +1056,7 @@
           "status": "PASS"
         },
         {
-          "delta_nll_cal_minus_raw": "-0.07088534362873222",
+          "delta_nll_cal_minus_raw": "-0.06780733278437845",
           "n": "1380",
           "nll_threshold": "0.003",
           "role_bucket": "starter",
@@ -1109,7 +1096,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-11",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260612T112311"
+    "training_run_id": "nightly-20260612T155842"
   },
   "promoted": false,
   "reason": "contextual_regression_blocked: existing champion pointer has feature_set_id='phase13s_direct_lineup_injury_pmf_driver_v1' (contextual/direct-lineup) but the new challenger train_manifest has feature_set_id='' \u2014 refusing to replace a contextual champion with a non-contextual pointer. Promote the contextual challenger first.",
