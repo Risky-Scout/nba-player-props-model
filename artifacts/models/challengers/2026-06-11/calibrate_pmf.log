@@ -1,33 +1,33 @@
 $ python3 scripts/calibrate_pmf.py --core-props-only --aggregate-mode --aggregate-oofs /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11/aggregate_input --output-dir /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11
 
-2026-06-12 17:55:13,655 [INFO] CLI args: fold_index=None max_folds=999 core_props_only=True val_rows_limit=None aggregate_mode=True
-2026-06-12 17:55:13,655 [INFO] CLI args: pmf_draws=3000
-2026-06-12 17:55:13,655 [INFO] CLI args: allowed_stats=['ast', 'fg3m', 'pts', 'reb', 'tov']
-2026-06-12 17:55:13,655 [INFO] ============================================================
-2026-06-12 17:55:13,655 [INFO] PMF calibration — walk-forward OOF refits
-2026-06-12 17:55:13,655 [INFO] ============================================================
-2026-06-12 17:55:13,721 [INFO] Aggregate mode: loaded 1 fold files (56,560 rows total)
-2026-06-12 17:55:14,751 [INFO] OOF PMF universe persisted to /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11/oof_pmfs.parquet (56,560 rows)
-2026-06-12 17:55:14,799 [INFO] OOF aggregation:
-2026-06-12 17:55:14,799 [INFO]   ast: n=8,080  domain=26
-2026-06-12 17:55:14,799 [INFO]   blk: n=8,080  domain=11
-2026-06-12 17:55:14,799 [INFO]   fg3m: n=8,080  domain=16
-2026-06-12 17:55:14,800 [INFO]   pts: n=8,080  domain=81
-2026-06-12 17:55:14,800 [INFO]   reb: n=8,080  domain=31
-2026-06-12 17:55:14,800 [INFO]   stl: n=8,080  domain=11
-2026-06-12 17:55:14,800 [INFO]   tov: n=8,080  domain=13
-2026-06-12 17:55:39,779 [INFO] Augmented pmf_cal_meta.json: calibration_target=active_conditioned_prop_live, pmf_active_available=true
-2026-06-12 17:55:39,780 [INFO] Final calibrators fitted for stats: ast, blk, fg3m, pts, reb, stl, tov
-2026-06-12 17:55:39,780 [INFO] ============================================================
-2026-06-12 17:55:39,780 [INFO] Per-stat calibration results
-2026-06-12 17:55:39,780 [INFO] ============================================================
-2026-06-12 17:55:39,780 [INFO]      ast  n_train= 1,078  PIT raw mean=0.550  std=0.257  -> cal mean=0.508  std=0.279
-2026-06-12 17:55:39,780 [INFO]      blk  n_train= 1,078  PIT raw mean=0.504  std=0.289  -> cal mean=0.512  std=0.294
-2026-06-12 17:55:39,780 [INFO]     fg3m  n_train= 1,078  PIT raw mean=0.471  std=0.328  -> cal mean=0.485  std=0.316
-2026-06-12 17:55:39,780 [INFO]      pts  n_train= 1,078  PIT raw mean=0.541  std=0.285  -> cal mean=0.519  std=0.294
-2026-06-12 17:55:39,780 [INFO]      reb  n_train= 1,078  PIT raw mean=0.552  std=0.256  -> cal mean=0.524  std=0.281
-2026-06-12 17:55:39,780 [INFO]      stl  n_train= 1,078  PIT raw mean=0.491  std=0.288  -> cal mean=0.489  std=0.291
-2026-06-12 17:55:39,780 [INFO]      tov  n_train= 1,078  PIT raw mean=0.540  std=0.260  -> cal mean=0.527  std=0.275
-2026-06-12 17:55:39,780 [INFO] Wrote /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11/pmf_calibration_run.md
-2026-06-12 17:55:39,780 [INFO] Done in 0.4 min
-2026-06-12 17:55:39,780 [WARNING] fg3m_hurdle.pkl not promoted — no fold artifact found. Production pkl may be stale.
+2026-06-12 20:44:26,644 [INFO] CLI args: fold_index=None max_folds=999 core_props_only=True val_rows_limit=None aggregate_mode=True
+2026-06-12 20:44:26,644 [INFO] CLI args: pmf_draws=3000
+2026-06-12 20:44:26,644 [INFO] CLI args: allowed_stats=['ast', 'fg3m', 'pts', 'reb', 'tov']
+2026-06-12 20:44:26,644 [INFO] ============================================================
+2026-06-12 20:44:26,644 [INFO] PMF calibration — walk-forward OOF refits
+2026-06-12 20:44:26,644 [INFO] ============================================================
+2026-06-12 20:44:26,717 [INFO] Aggregate mode: loaded 1 fold files (56,560 rows total)
+2026-06-12 20:44:27,710 [INFO] OOF PMF universe persisted to /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11/oof_pmfs.parquet (56,560 rows)
+2026-06-12 20:44:27,759 [INFO] OOF aggregation:
+2026-06-12 20:44:27,759 [INFO]   ast: n=8,080  domain=26
+2026-06-12 20:44:27,759 [INFO]   blk: n=8,080  domain=11
+2026-06-12 20:44:27,759 [INFO]   fg3m: n=8,080  domain=16
+2026-06-12 20:44:27,759 [INFO]   pts: n=8,080  domain=81
+2026-06-12 20:44:27,759 [INFO]   reb: n=8,080  domain=31
+2026-06-12 20:44:27,759 [INFO]   stl: n=8,080  domain=11
+2026-06-12 20:44:27,759 [INFO]   tov: n=8,080  domain=13
+2026-06-12 20:45:01,528 [INFO] Augmented pmf_cal_meta.json: calibration_target=active_conditioned_prop_live, pmf_active_available=true
+2026-06-12 20:45:01,528 [INFO] Final calibrators fitted for stats: ast, blk, fg3m, pts, reb, stl, tov
+2026-06-12 20:45:01,528 [INFO] ============================================================
+2026-06-12 20:45:01,528 [INFO] Per-stat calibration results
+2026-06-12 20:45:01,528 [INFO] ============================================================
+2026-06-12 20:45:01,528 [INFO]      ast  n_train= 1,078  PIT raw mean=0.550  std=0.257  -> cal mean=0.508  std=0.279
+2026-06-12 20:45:01,528 [INFO]      blk  n_train= 1,078  PIT raw mean=0.504  std=0.289  -> cal mean=0.512  std=0.294
+2026-06-12 20:45:01,528 [INFO]     fg3m  n_train= 1,078  PIT raw mean=0.471  std=0.328  -> cal mean=0.485  std=0.316
+2026-06-12 20:45:01,528 [INFO]      pts  n_train= 1,078  PIT raw mean=0.541  std=0.285  -> cal mean=0.519  std=0.294
+2026-06-12 20:45:01,528 [INFO]      reb  n_train= 1,078  PIT raw mean=0.552  std=0.256  -> cal mean=0.524  std=0.281
+2026-06-12 20:45:01,528 [INFO]      stl  n_train= 1,078  PIT raw mean=0.491  std=0.288  -> cal mean=0.489  std=0.291
+2026-06-12 20:45:01,528 [INFO]      tov  n_train= 1,078  PIT raw mean=0.540  std=0.260  -> cal mean=0.527  std=0.275
+2026-06-12 20:45:01,528 [INFO] Wrote /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-11/pmf_calibration_run.md
+2026-06-12 20:45:01,528 [INFO] Done in 0.6 min
+2026-06-12 20:45:01,528 [WARNING] fg3m_hurdle.pkl not promoted — no fold artifact found. Production pkl may be stale.
