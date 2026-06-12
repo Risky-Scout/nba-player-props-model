@@ -1,22 +1,22 @@
 {
-  "as_of_date": "2026-06-10",
-  "base_model_version": "challenger-2026-06-10",
-  "calibrated_through_date": "2026-06-10",
-  "challenger_dir": "artifacts/models/challengers/2026-06-10",
-  "code_commit": "810c75f26d4a039084b7e609574e2283b5bc4d6d",
+  "as_of_date": "2026-06-11",
+  "base_model_version": "challenger-2026-06-11",
+  "calibrated_through_date": "2026-06-11",
+  "challenger_dir": "artifacts/models/challengers/2026-06-11",
+  "code_commit": "e1a7ad6a84a5c2e333da01dc23add780b84782db",
   "description": "Freshest trained-and-calibrated base model. Market gates are diagnostics only \u2014 this pointer advances on freshness + leakage + PMF validity checks.",
   "market_quality_status": "market_underperforming:market_benchmark_available",
   "model_dir": "artifacts/models",
   "pointer_type": "fresh_delivery",
   "previous_pointer": {
-    "base_model_version": "challenger-2026-06-09",
-    "trained_through_date": "2026-06-09"
+    "base_model_version": "challenger-2026-06-10",
+    "trained_through_date": "2026-06-10"
   },
   "promotion_eligible": false,
   "schema_version": "1.0",
   "soft_gate_failures": [
     "market_benchmark_available"
   ],
-  "trained_through_date": "2026-06-10",
-  "written_at_utc": "2026-06-11T15:35:36+00:00"
+  "trained_through_date": "2026-06-11",
+  "written_at_utc": "2026-06-12T14:07:44+00:00"
 }
