@@ -1,6 +1,6 @@
 # Wizard of Odds — 2026-06-13
 
-## Run status — 2026-06-13 — snapshot `morning`
+## Run status — 2026-06-13 — snapshot `pre_close`
 
 **PROVISIONAL** — safe to use, with the caveats below
 
@@ -9,7 +9,7 @@
 - market coverage: **full**
 - injury freshness: **fallback_used**
 - role provenance: `derived_from_projected_minutes`: 192
-- model: `f97ea983#phase10c`
+- model: `011ba5f1#phase10c`
 
 ### Caveats
 
@@ -43,8 +43,8 @@ Full detail (including the `required_to_resolve` field for each blocker) is in `
 - **availability_freshness_status**: `fresh`
 - **role_freshness_status (rollup)**: `{'derived_from_projected_minutes': 192}`
 - **tov_status**: `present`
-- **row counts**: fair_odds_board=4112, full_pmfs_wide=192, market_comparison=2822, publishable_edges=2299
-- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 938, 'fair_under_odds_null_count': 938, 'zero_or_one_prob_count': 928}`
+- **row counts**: fair_odds_board=4112, full_pmfs_wide=192, market_comparison=2821, publishable_edges=2286
+- **fair_odds_board diagnostics**: `{'fair_over_odds_null_count': 931, 'fair_under_odds_null_count': 931, 'zero_or_one_prob_count': 924}`
 - **after-game scoring**: `pending_outcomes` — scoring runner has not yet been invoked for this delivery
 
 ## Hard rules echoed in this package
