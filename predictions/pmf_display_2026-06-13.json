@@ -1,0 +1,312 @@
+{
+  "date": "2026-06-13",
+  "generated_at": "2026-06-13T15:57:19.168593",
+  "props": [
+    {
+      "player_name": "Victor Wembanyama",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "blk",
+      "stat_display": "Blocks",
+      "side": "UNDER",
+      "line": 3.5,
+      "model_prob": 0.836,
+      "market_prob": 0.5122,
+      "ev": 0.6321,
+      "edge": 0.3238,
+      "fair_odds_over": 510,
+      "fair_odds_under": -510,
+      "pmf_median": 2,
+      "line_vs_median": 1.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": 105,
+        "under_odds": -105,
+        "best_odds": -105
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.1483,
+          "fair_odds": 574,
+          "display_prob": "14.8%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.24,
+          "fair_odds": 317,
+          "display_prob": "24.0%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2773,
+          "fair_odds": 261,
+          "display_prob": "27.7%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1704,
+          "fair_odds": 487,
+          "display_prob": "17.0%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.1232,
+          "fair_odds": 712,
+          "display_prob": "12.3%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0408,
+          "fair_odds": 2351,
+          "display_prob": "4.1%"
+        }
+      ]
+    },
+    {
+      "player_name": "Keldon Johnson",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.7889,
+      "market_prob": 0.5052,
+      "ev": 0.4749,
+      "edge": 0.2837,
+      "fair_odds_over": -374,
+      "fair_odds_under": 374,
+      "pmf_median": 1,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "draftkings",
+        "over_odds": -115,
+        "under_odds": -110,
+        "best_odds": -115
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2111,
+          "fair_odds": 374,
+          "display_prob": "21.1%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3531,
+          "fair_odds": 183,
+          "display_prob": "35.3%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2787,
+          "fair_odds": 259,
+          "display_prob": "27.9%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0936,
+          "fair_odds": 968,
+          "display_prob": "9.4%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0635,
+          "fair_odds": 1475,
+          "display_prob": "6.3%"
+        }
+      ]
+    },
+    {
+      "player_name": "Miles McBride",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "fg3m",
+      "stat_display": "Threes",
+      "side": "OVER",
+      "line": 0.5,
+      "model_prob": 0.7899,
+      "market_prob": 0.5157,
+      "ev": 0.4481,
+      "edge": 0.2742,
+      "fair_odds_over": -376,
+      "fair_odds_under": 376,
+      "pmf_median": 1,
+      "line_vs_median": -0.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": -120,
+        "under_odds": -105,
+        "best_odds": -120
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.2101,
+          "fair_odds": 376,
+          "display_prob": "21.0%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.3589,
+          "fair_odds": 179,
+          "display_prob": "35.9%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.2457,
+          "fair_odds": 307,
+          "display_prob": "24.6%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.1058,
+          "fair_odds": 845,
+          "display_prob": "10.6%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0795,
+          "fair_odds": 1158,
+          "display_prob": "8.0%"
+        }
+      ]
+    },
+    {
+      "player_name": "Victor Wembanyama",
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "reb",
+      "stat_display": "Rebounds",
+      "side": "UNDER",
+      "line": 11.5,
+      "model_prob": 0.7647,
+      "market_prob": 0.5188,
+      "ev": 0.4183,
+      "edge": 0.2459,
+      "fair_odds_over": 325,
+      "fair_odds_under": -325,
+      "pmf_median": 9,
+      "line_vs_median": 2.5,
+      "affiliate": {
+        "vendor": "betmgm",
+        "over_odds": 100,
+        "under_odds": -117,
+        "best_odds": -117
+      },
+      "outcome_table": [
+        {
+          "outcome": 0,
+          "probability": 0.014,
+          "fair_odds": 7043,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 1,
+          "probability": 0.0171,
+          "fair_odds": 5748,
+          "display_prob": "1.7%"
+        },
+        {
+          "outcome": 2,
+          "probability": 0.0241,
+          "fair_odds": 4049,
+          "display_prob": "2.4%"
+        },
+        {
+          "outcome": 3,
+          "probability": 0.0324,
+          "fair_odds": 2986,
+          "display_prob": "3.2%"
+        },
+        {
+          "outcome": 4,
+          "probability": 0.0409,
+          "fair_odds": 2345,
+          "display_prob": "4.1%"
+        },
+        {
+          "outcome": 5,
+          "probability": 0.0569,
+          "fair_odds": 1657,
+          "display_prob": "5.7%"
+        },
+        {
+          "outcome": 6,
+          "probability": 0.0719,
+          "fair_odds": 1291,
+          "display_prob": "7.2%"
+        },
+        {
+          "outcome": 7,
+          "probability": 0.0763,
+          "fair_odds": 1211,
+          "display_prob": "7.6%"
+        },
+        {
+          "outcome": 8,
+          "probability": 0.1085,
+          "fair_odds": 822,
+          "display_prob": "10.8%"
+        },
+        {
+          "outcome": 9,
+          "probability": 0.1157,
+          "fair_odds": 764,
+          "display_prob": "11.6%"
+        },
+        {
+          "outcome": 10,
+          "probability": 0.1208,
+          "fair_odds": 728,
+          "display_prob": "12.1%"
+        },
+        {
+          "outcome": 11,
+          "probability": 0.0862,
+          "fair_odds": 1060,
+          "display_prob": "8.6%"
+        },
+        {
+          "outcome": 12,
+          "probability": 0.0562,
+          "fair_odds": 1679,
+          "display_prob": "5.6%"
+        },
+        {
+          "outcome": 13,
+          "probability": 0.0588,
+          "fair_odds": 1601,
+          "display_prob": "5.9%"
+        },
+        {
+          "outcome": 14,
+          "probability": 0.0421,
+          "fair_odds": 2275,
+          "display_prob": "4.2%"
+        },
+        {
+          "outcome": 15,
+          "probability": 0.0241,
+          "fair_odds": 4049,
+          "display_prob": "2.4%"
+        },
+        {
+          "outcome": 16,
+          "probability": 0.0183,
+          "fair_odds": 5364,
+          "display_prob": "1.8%"
+        },
+        {
+          "outcome": 17,
+          "probability": 0.0136,
+          "fair_odds": 7253,
+          "display_prob": "1.4%"
+        },
+        {
+          "outcome": 18,
+          "probability": 0.0121,
+          "fair_odds": 8164,
+          "display_prob": "1.2%"
+        }
+      ]
+    }
+  ]
+}
