@@ -5,5 +5,5 @@
 - snapshot_type: `morning`
 - source: `deliveries/2026-06-13/wizard_of_odds/full_pmfs_wide.parquet`
 - rows: **192**
-- market_rows: **2824**
+- market_rows: **2822**
 - stats: `['ast', 'blk', 'fg3m', 'pa', 'pr', 'pra', 'pts', 'ra', 'reb', 'stl', 'stocks', 'tov']`
