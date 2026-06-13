@@ -17,11 +17,11 @@
     "files": [
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_ast.pkl",
-        "sha256": "f87ad0162cafa95a93b5847529eb4e1124e918b27ff1d143a488bf1707b269fa"
+        "sha256": "f9f8e75a3582ee04b05d00b74c8880eb951912c9cda0eb88ede2531673295945"
       },
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_blk.pkl",
-        "sha256": "c976b6b3ec3f7181a0911fdf217015e60b0fc551b57543fa1ad6e619f1cdfdfa"
+        "sha256": "7395e09325893d8e85026b4d96a34d8677c703da2032b30d3ef3e966727988cd"
       },
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_fg3m.pkl",
@@ -29,32 +29,32 @@
       },
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_pts.pkl",
-        "sha256": "d5d83a0f45792d6ae6b202a990316e8a5efd327af26877fead4f8b993c383039"
+        "sha256": "30784d41acf1cddd1d199ee8a574e28e7b3fad9b39d1587552e4505bf5caf980"
       },
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_reb.pkl",
-        "sha256": "a94f33cc6387e978573e760016b0338fcd50db5142fb07370998f7cf2251b70f"
+        "sha256": "8fc0b58a78c4754f091ba80801c23efb18a0e80276343536e07777b916ad2779"
       },
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_stl.pkl",
-        "sha256": "4ba004ed756f26f31955aa37bfacb0563817aca25845d112aaea5222aa2141a4"
+        "sha256": "8799aae0119194355a297a18aac7d8ca04ea042b740d39c6cb906c2dbecb5500"
       },
       {
         "path": "artifacts/models/challengers/2026-06-12/pmf_cal_role_tov.pkl",
-        "sha256": "9237970549d2e6a041353b3b1bec5006da51e3a4ecb4635bbfc488bc2839d92b"
+        "sha256": "f8b362b1041ce53faccd5c919eaae3c642aa8f6b82dd5ecd6da0f40045a653bb"
       }
     ],
     "fold_aggregate_input": "artifacts/models/challengers/2026-06-12/aggregate_input/fold_aggregate.parquet",
-    "fold_aggregate_sha256": "9df837c467abbc695065828e0366c644123fb0753ec1524cf4927718eef78b8c",
+    "fold_aggregate_sha256": "f9b7d6af3374276ee6b65a746a8f8cfa34191bb9178d36d487055c212f23047f",
     "model_dir_reference": "artifacts/models/challengers/2026-06-12",
     "oof_pmfs_parquet": "artifacts/models/challengers/2026-06-12/oof_pmfs.parquet",
     "pmf_cal_meta_json": null,
     "training_table_sha256": null,
     "training_table_snapshot": null
   },
-  "code_commit": "f9b406fad9d693f4ece69580662fe1423515bf24",
+  "code_commit": "221ba3f3570e9b3a069df26287bb9973aa41d87d",
   "dry_run": false,
-  "finished_at_utc": "2026-06-13T10:22:12+00:00",
+  "finished_at_utc": "2026-06-13T14:50:30+00:00",
   "notes": "Phase 13A: dry-run challenger snapshots the current champion so the automation pipeline (readiness \u2192 train \u2192 calibrate \u2192 validate \u2192 promote) can be exercised end-to-end without retraining. Full training will be enabled via --no-dry-run once the leakage-safe training driver is wired.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -64,15 +64,15 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-12",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260613T102134"
+    "training_run_id": "nightly-20260613T144952"
   },
   "pointer_seen": {
     "calibrator_version": "phase8-role-bucket",
     "code_commit": "1b057af9df36a3da4a86db0ba9d16dffa6eea970",
-    "model_version": "challenger-2026-06-11"
+    "model_version": "challenger-2026-06-12"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-06-13T10:21:44+00:00",
+  "started_at_utc": "2026-06-13T14:50:02+00:00",
   "stats_trained": [
     "pts",
     "reb",
