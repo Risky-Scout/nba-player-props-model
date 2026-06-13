@@ -1,18 +1,26 @@
 {
-  "code_commit": "c36cd9946b194ad1a3485d99d7410c17a0849575",
-  "decisions": [],
+  "code_commit": "42536193ede6b9571781e5f876694e09339adf67",
+  "decisions": [
+    {
+      "decision": "skipped_not_due",
+      "detail": "now < target - 5min; will fire during the cron window starting at 2026-06-14T00:10:00+00:00",
+      "game_id": "21716138",
+      "now_utc": "2026-06-13T17:42:47Z",
+      "snapshot_dir": "deliveries/2026-06-13/derek_game_snapshots/21716138/t_minus_25",
+      "state": "NOT_DUE",
+      "target_utc": "2026-06-14T00:15:00Z"
+    }
+  ],
   "delivery_date": "2026-06-13",
   "eligible_rows": 0,
-  "note": "no schedule loaded \u2014 predictions/all_props_2026-06-13.parquet slate_status=predictions_parquet_missing. Dispatcher exits cleanly with no work.",
-  "now_utc": "2026-06-13T08:17:20Z",
-  "schedule_rows": 0,
+  "now_utc": "2026-06-13T17:42:47Z",
+  "schedule_rows": 1,
   "schema_version": "1.0",
-  "slate_status": "predictions_parquet_missing",
   "snapshot_type": "t_minus_25",
   "summary": {
     "failures": 0,
     "fired": 0,
     "skipped_already_run": 0,
-    "skipped_window": 0
+    "skipped_window": 1
   }
 }

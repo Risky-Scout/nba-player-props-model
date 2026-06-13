@@ -1,8 +1,8 @@
 # Derek production-live E2E — 2026-06-13
 
 - outcome: **pending**
-- reason: no_predictions_parquet
-- now_utc: 2026-06-13T08:17:32Z
-- predictions_parquet_present: False
-- schedule_size: 0
+- reason: all_targets_in_future
+- now_utc: 2026-06-13T17:43:09Z
+- predictions_parquet_present: True
+- schedule_size: 1
 - any_target_in_past: False
