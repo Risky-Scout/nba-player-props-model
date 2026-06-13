@@ -2,6 +2,7 @@
   "delivery_date": "2026-06-13",
   "derek_game_folders": {
     "21716138": [
+      "current_live",
       "morning"
     ]
   },
@@ -21,7 +22,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-06-13T21:51:54Z",
+  "now_utc": "2026-06-13T22:56:12Z",
   "predictions_parquet_present": true,
   "schema_version": "1.0",
   "telemetry": {
