@@ -1,6 +1,6 @@
 # Delivery Empty Column Hygiene — 2026-06-13
 
-- files checked: `41`
+- files checked: `138`
 - files changed: `37`
 - columns removed total: `283`
 - errors: `0`
@@ -99,14 +99,14 @@
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-13/derek_game_snapshots/21716138/morning/outcome_level_probabilities.csv`
-- rows: `6353`
+- rows: `6393`
 - cols before: `12`
 - cols after: `11`
 - preserved columns: ``
 - removed columns: `line`
 
 ### `deliveries/2026-06-13/derek_game_snapshots/21716138/morning/outcome_level_probabilities.parquet`
-- rows: `6353`
+- rows: `6393`
 - cols before: `12`
 - cols after: `11`
 - preserved columns: ``
@@ -155,14 +155,14 @@
 - removed columns: `game_start_time, line, book, market_over_odds, market_under_odds, market_no_vig_over_prob, minutes_source, minutes_model_version, model_p_over, p_over, market_line, fair_over_odds_american, fair_under_odds_american, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-13/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.csv`
-- rows: `10342`
+- rows: `10351`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
 - removed columns: `game_start_time`
 
 ### `deliveries/2026-06-13/pmf_model_review_package/06_OUTCOME_LEVEL_PROBABILITIES.parquet`
-- rows: `10342`
+- rows: `10351`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
@@ -211,14 +211,14 @@
 - removed columns: `game_start_time, book, market_over_odds, market_under_odds, market_no_vig_over_prob, edge, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-13/wizard_of_odds/full_pmfs_outcome_level.csv`
-- rows: `10342`
+- rows: `10351`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
 - removed columns: `game_start_time`
 
 ### `deliveries/2026-06-13/wizard_of_odds/full_pmfs_outcome_level.parquet`
-- rows: `10342`
+- rows: `10351`
 - cols before: `25`
 - cols after: `24`
 - preserved columns: ``
@@ -253,14 +253,14 @@
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-13/wizard_of_odds/publishable_edges.csv`
-- rows: `2301`
+- rows: `2298`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``
 - removed columns: `game_start_time, lineup_last_updated_utc`
 
 ### `deliveries/2026-06-13/wizard_of_odds/publishable_edges.parquet`
-- rows: `2301`
+- rows: `2298`
 - cols before: `70`
 - cols after: `68`
 - preserved columns: ``

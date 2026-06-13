@@ -1,7 +1,7 @@
 {
   "date": "2026-06-13",
-  "generated_at": "2026-06-13T14:12:06",
-  "count": 42,
+  "generated_at": "2026-06-13T15:02:06",
+  "count": 41,
   "games": 1,
   "props": [
     {
@@ -15,9 +15,9 @@
       "commence_time": null,
       "over_odds": 116.0,
       "under_odds": -125.0,
-      "model_prob_over": 0.6122,
-      "model_prob_under": 0.38780000000000003,
-      "ev_over": 0.3224,
+      "model_prob_over": 0.6054,
+      "model_prob_under": 0.39459999999999995,
+      "ev_over": 0.3076,
       "ev_under": null,
       "projection": 4.0,
       "q_preds": {
@@ -65,8 +65,40 @@
         "0.8": 2.0,
         "0.9": 3.0
       },
-      "book_key": "betway",
+      "book_key": "betparx",
       "market_prob_over": 0.3588
+    },
+    {
+      "player_id": 17896097,
+      "player": "Jose Alvarado",
+      "game_id": 21716138,
+      "game": "New York Knicks @ San Antonio Spurs",
+      "stat": "fg3m",
+      "side": "OVER",
+      "line": 0.5,
+      "commence_time": null,
+      "over_odds": -132.0,
+      "under_odds": 107.0,
+      "model_prob_over": 0.6152,
+      "model_prob_under": 0.38480000000000003,
+      "ev_over": 0.0812,
+      "ev_under": null,
+      "projection": 1.0,
+      "q_preds": {
+        "0.1": 0.0,
+        "0.2": 0.0,
+        "0.25": 0.0,
+        "0.33": 0.0,
+        "0.4": 1.0,
+        "0.5": 1.0,
+        "0.6": 1.0,
+        "0.67": 1.0,
+        "0.75": 2.0,
+        "0.8": 2.0,
+        "0.9": 2.0
+      },
+      "book_key": "fanduel",
+      "market_prob_over": 0.5408
     },
     {
       "player_id": 17896097,
@@ -78,11 +110,11 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": 125.0,
-      "under_odds": -152.0,
+      "under_odds": -153.0,
       "model_prob_over": 0.2187,
       "model_prob_under": 0.7813,
       "ev_over": null,
-      "ev_under": 0.2953,
+      "ev_under": 0.2919,
       "projection": 0.0,
       "q_preds": {
         "0.1": 0.0,
@@ -98,7 +130,7 @@
         "0.9": 1.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.4242
+      "market_prob_over": 0.4236
     },
     {
       "player_id": 414,
@@ -109,11 +141,11 @@
       "side": "OVER",
       "line": 1.5,
       "commence_time": null,
-      "over_odds": -106.0,
-      "under_odds": -113.0,
+      "over_odds": -103.0,
+      "under_odds": -110.0,
       "model_prob_over": 0.6371,
       "model_prob_under": 0.3629,
-      "ev_over": 0.2382,
+      "ev_over": 0.2557,
       "ev_under": null,
       "projection": 2.0,
       "q_preds": {
@@ -130,7 +162,7 @@
         "0.9": 4.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.4924
+      "market_prob_over": 0.492
     },
     {
       "player_id": 414,
@@ -174,7 +206,7 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": -107.0,
-      "under_odds": -111.0,
+      "under_odds": -110.0,
       "model_prob_over": 0.7899,
       "model_prob_under": 0.21009999999999995,
       "ev_over": 0.5281,
@@ -194,7 +226,7 @@
         "0.9": 3.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.4956
+      "market_prob_over": 0.4967
     },
     {
       "player_id": 73,
@@ -206,11 +238,11 @@
       "line": 27.5,
       "commence_time": null,
       "over_odds": -111.0,
-      "under_odds": -110.0,
-      "model_prob_over": 0.4436,
-      "model_prob_under": 0.5564,
+      "under_odds": -108.0,
+      "model_prob_over": 0.4437,
+      "model_prob_under": 0.5563,
       "ev_over": null,
-      "ev_under": 0.0622,
+      "ev_under": 0.0713,
       "projection": 26.0,
       "q_preds": {
         "0.1": 14.0,
@@ -226,7 +258,7 @@
         "0.9": 38.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.5011
+      "market_prob_over": 0.5033000000000001
     },
     {
       "player_id": 73,
@@ -238,10 +270,10 @@
       "line": 3.5,
       "commence_time": null,
       "over_odds": 128.0,
-      "under_odds": -152.0,
-      "model_prob_over": 0.5587,
-      "model_prob_under": 0.4413,
-      "ev_over": 0.2738,
+      "under_odds": -158.0,
+      "model_prob_over": 0.5602,
+      "model_prob_under": 0.43979999999999997,
+      "ev_over": 0.2772,
       "ev_under": null,
       "projection": 4.0,
       "q_preds": {
@@ -258,7 +290,7 @@
         "0.9": 7.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.421
+      "market_prob_over": 0.4173
     },
     {
       "player_id": 73,
@@ -301,12 +333,12 @@
       "side": "UNDER",
       "line": 8.5,
       "commence_time": null,
-      "over_odds": -104.0,
-      "under_odds": -118.0,
-      "model_prob_over": 0.361,
-      "model_prob_under": 0.639,
+      "over_odds": 100.0,
+      "under_odds": -114.0,
+      "model_prob_over": 0.35740000000000005,
+      "model_prob_under": 0.6426,
       "ev_over": null,
-      "ev_under": 0.1806,
+      "ev_under": 0.2064,
       "projection": 7.0,
       "q_preds": {
         "0.1": 3.0,
@@ -321,8 +353,8 @@
         "0.8": 10.0,
         "0.9": 12.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.485
+      "book_key": "betmgm",
+      "market_prob_over": 0.48419999999999996
     },
     {
       "player_id": 202,
@@ -335,10 +367,10 @@
       "commence_time": null,
       "over_odds": -117.0,
       "under_odds": 116.0,
-      "model_prob_over": 0.41559999999999997,
-      "model_prob_under": 0.5844,
+      "model_prob_over": 0.41690000000000005,
+      "model_prob_under": 0.5831,
       "ev_over": null,
-      "ev_under": 0.2622,
+      "ev_under": 0.2595,
       "projection": 4.0,
       "q_preds": {
         "0.1": 1.0,
@@ -398,11 +430,11 @@
       "line": 1.5,
       "commence_time": null,
       "over_odds": 163.0,
-      "under_odds": -170.0,
+      "under_odds": -175.0,
       "model_prob_over": 0.2409,
       "model_prob_under": 0.7591,
       "ev_over": null,
-      "ev_under": 0.2056,
+      "ev_under": 0.1928,
       "projection": 1.0,
       "q_preds": {
         "0.1": 0.0,
@@ -418,7 +450,7 @@
         "0.9": 3.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.37649999999999995
+      "market_prob_over": 0.374
     },
     {
       "player_id": 1028025261,
@@ -431,10 +463,10 @@
       "commence_time": null,
       "over_odds": 100.0,
       "under_odds": -113.0,
-      "model_prob_over": 0.30100000000000005,
-      "model_prob_under": 0.699,
+      "model_prob_over": 0.30179999999999996,
+      "model_prob_under": 0.6982,
       "ev_over": null,
-      "ev_under": 0.3176,
+      "ev_under": 0.316,
       "projection": 5.0,
       "q_preds": {
         "0.1": 1.0,
@@ -461,11 +493,11 @@
       "side": "OVER",
       "line": 0.5,
       "commence_time": null,
-      "over_odds": -190.0,
-      "under_odds": 174.0,
+      "over_odds": -200.0,
+      "under_odds": 180.0,
       "model_prob_over": 0.7168,
       "model_prob_under": 0.2832,
-      "ev_over": 0.094,
+      "ev_over": 0.0752,
       "ev_under": null,
       "projection": 1.0,
       "q_preds": {
@@ -482,7 +514,7 @@
         "0.9": 3.0
       },
       "book_key": "betway",
-      "market_prob_over": 0.6422
+      "market_prob_over": 0.6512
     },
     {
       "player_id": 3547246,
@@ -493,28 +525,28 @@
       "side": "UNDER",
       "line": 12.5,
       "commence_time": null,
-      "over_odds": -130.0,
+      "over_odds": -128.0,
       "under_odds": 102.0,
-      "model_prob_over": 0.38039999999999996,
-      "model_prob_under": 0.6196,
+      "model_prob_over": 0.3758,
+      "model_prob_under": 0.6242,
       "ev_over": null,
-      "ev_under": 0.2516,
-      "projection": 11.0,
+      "ev_under": 0.2609,
+      "projection": 10.0,
       "q_preds": {
         "0.1": 4.0,
         "0.2": 6.0,
-        "0.25": 7.0,
+        "0.25": 6.0,
         "0.33": 8.0,
         "0.4": 9.0,
-        "0.5": 11.0,
+        "0.5": 10.0,
         "0.6": 12.0,
         "0.67": 13.0,
         "0.75": 15.0,
         "0.8": 16.0,
         "0.9": 19.0
       },
-      "book_key": "betmgm",
-      "market_prob_over": 0.5331
+      "book_key": "fanduel",
+      "market_prob_over": 0.5314
     },
     {
       "player_id": 3547246,
@@ -527,10 +559,10 @@
       "commence_time": null,
       "over_odds": 116.0,
       "under_odds": -125.0,
-      "model_prob_over": 0.42510000000000003,
-      "model_prob_under": 0.5749,
+      "model_prob_over": 0.4242,
+      "model_prob_under": 0.5758,
       "ev_over": null,
-      "ev_under": 0.0348,
+      "ev_under": 0.0364,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -557,7 +589,7 @@
       "side": "UNDER",
       "line": 2.5,
       "commence_time": null,
-      "over_odds": 114.0,
+      "over_odds": 116.0,
       "under_odds": -125.0,
       "model_prob_over": 0.3206,
       "model_prob_under": 0.6794,
@@ -577,40 +609,8 @@
         "0.8": 3.0,
         "0.9": 4.0
       },
-      "book_key": "caesars",
-      "market_prob_over": 0.4569
-    },
-    {
-      "player_id": 399,
-      "player": "Mitchell Robinson",
-      "game_id": 21716138,
-      "game": "New York Knicks @ San Antonio Spurs",
-      "stat": "reb",
-      "side": "UNDER",
-      "line": 4.5,
-      "commence_time": null,
-      "over_odds": -104.0,
-      "under_odds": -105.0,
-      "model_prob_over": 0.46530000000000005,
-      "model_prob_under": 0.5347,
-      "ev_over": null,
-      "ev_under": 0.0438,
-      "projection": 4.0,
-      "q_preds": {
-        "0.1": 1.0,
-        "0.2": 2.0,
-        "0.25": 2.0,
-        "0.33": 3.0,
-        "0.4": 3.0,
-        "0.5": 4.0,
-        "0.6": 5.0,
-        "0.67": 6.0,
-        "0.75": 6.0,
-        "0.8": 7.0,
-        "0.9": 9.0
-      },
       "book_key": "fanduel",
-      "market_prob_over": 0.4988
+      "market_prob_over": 0.4545
     },
     {
       "player_id": 399,
@@ -622,11 +622,11 @@
       "line": 0.5,
       "commence_time": null,
       "over_odds": 132.0,
-      "under_odds": -165.0,
+      "under_odds": -168.0,
       "model_prob_over": 0.3224,
       "model_prob_under": 0.6776,
       "ev_over": null,
-      "ev_under": 0.0882,
+      "ev_under": 0.0809,
       "projection": 0.0,
       "q_preds": {
         "0.1": 0.0,
@@ -642,7 +642,7 @@
         "0.9": 1.0
       },
       "book_key": "betparx",
-      "market_prob_over": 0.4091
+      "market_prob_over": 0.4074
     },
     {
       "player_id": 399,
@@ -677,38 +677,6 @@
       "market_prob_over": 0.4721
     },
     {
-      "player_id": 38017649,
-      "player": "Julian Champagnie",
-      "game_id": 21716138,
-      "game": "New York Knicks @ San Antonio Spurs",
-      "stat": "reb",
-      "side": "UNDER",
-      "line": 4.5,
-      "commence_time": null,
-      "over_odds": -114.0,
-      "under_odds": 103.0,
-      "model_prob_over": 0.4685,
-      "model_prob_under": 0.5315,
-      "ev_over": null,
-      "ev_under": 0.079,
-      "projection": 4.0,
-      "q_preds": {
-        "0.1": 1.0,
-        "0.2": 2.0,
-        "0.25": 3.0,
-        "0.33": 3.0,
-        "0.4": 4.0,
-        "0.5": 4.0,
-        "0.6": 5.0,
-        "0.67": 6.0,
-        "0.75": 6.0,
-        "0.8": 7.0,
-        "0.9": 9.0
-      },
-      "book_key": "fanduel",
-      "market_prob_over": 0.5196000000000001
-    },
-    {
       "player_id": 18,
       "player": "OG Anunoby",
       "game_id": 21716138,
@@ -718,11 +686,11 @@
       "line": 18.5,
       "commence_time": null,
       "over_odds": -110.0,
-      "under_odds": -105.0,
-      "model_prob_over": 0.3015,
-      "model_prob_under": 0.6985,
+      "under_odds": -110.0,
+      "model_prob_over": 0.2976,
+      "model_prob_under": 0.7024,
       "ev_over": null,
-      "ev_under": 0.3637,
+      "ev_under": 0.3409,
       "projection": 15.0,
       "q_preds": {
         "0.1": 7.0,
@@ -735,10 +703,10 @@
         "0.67": 18.0,
         "0.75": 20.0,
         "0.8": 21.0,
-        "0.9": 25.0
+        "0.9": 24.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.5056
+      "market_prob_over": 0.5
     },
     {
       "player_id": 18,
@@ -750,11 +718,11 @@
       "line": 2.5,
       "commence_time": null,
       "over_odds": 105.0,
-      "under_odds": -110.0,
+      "under_odds": -112.0,
       "model_prob_over": 0.33940000000000003,
       "model_prob_under": 0.6606,
       "ev_over": null,
-      "ev_under": 0.2611,
+      "ev_under": 0.2504,
       "projection": 2.0,
       "q_preds": {
         "0.1": 1.0,
@@ -770,7 +738,7 @@
         "0.9": 4.0
       },
       "book_key": "betway",
-      "market_prob_over": 0.48219999999999996
+      "market_prob_over": 0.48009999999999997
     },
     {
       "player_id": 18,
@@ -811,14 +779,14 @@
       "game": "New York Knicks @ San Antonio Spurs",
       "stat": "pts",
       "side": "UNDER",
-      "line": 15.5,
+      "line": 14.5,
       "commence_time": null,
-      "over_odds": 104.0,
-      "under_odds": -127.0,
-      "model_prob_over": 0.2733,
-      "model_prob_under": 0.7267,
+      "over_odds": -127.0,
+      "under_odds": 100.0,
+      "model_prob_over": 0.31000000000000005,
+      "model_prob_under": 0.69,
       "ev_over": null,
-      "ev_under": 0.2989,
+      "ev_under": 0.3801,
       "projection": 11.0,
       "q_preds": {
         "0.1": 4.0,
@@ -833,8 +801,8 @@
         "0.8": 18.0,
         "0.9": 21.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.46699999999999997
+      "book_key": "betrivers",
+      "market_prob_over": 0.5281
     },
     {
       "player_id": 1057262518,
@@ -845,12 +813,12 @@
       "side": "UNDER",
       "line": 5.5,
       "commence_time": null,
-      "over_odds": -140.0,
-      "under_odds": 115.0,
-      "model_prob_over": 0.36439999999999995,
-      "model_prob_under": 0.6356,
+      "over_odds": -122.0,
+      "under_odds": 110.0,
+      "model_prob_over": 0.36040000000000005,
+      "model_prob_under": 0.6396,
       "ev_over": null,
-      "ev_under": 0.3666,
+      "ev_under": 0.3431,
       "projection": 4.0,
       "q_preds": {
         "0.1": 1.0,
@@ -865,8 +833,8 @@
         "0.8": 7.0,
         "0.9": 9.0
       },
-      "book_key": "betmgm",
-      "market_prob_over": 0.5564
+      "book_key": "fanduel",
+      "market_prob_over": 0.5358
     },
     {
       "player_id": 1057262518,
@@ -877,12 +845,12 @@
       "side": "UNDER",
       "line": 3.5,
       "commence_time": null,
-      "over_odds": 135.0,
+      "over_odds": 136.0,
       "under_odds": -145.0,
-      "model_prob_over": 0.28680000000000005,
-      "model_prob_under": 0.7132,
+      "model_prob_over": 0.26249999999999996,
+      "model_prob_under": 0.7375,
       "ev_over": null,
-      "ev_under": 0.205,
+      "ev_under": 0.2461,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -897,8 +865,8 @@
         "0.8": 4.0,
         "0.9": 5.0
       },
-      "book_key": "betparx",
-      "market_prob_over": 0.4183
+      "book_key": "fanduel",
+      "market_prob_over": 0.4172
     },
     {
       "player_id": 1057262518,
@@ -943,10 +911,10 @@
       "commence_time": null,
       "over_odds": -138.0,
       "under_odds": 120.0,
-      "model_prob_over": 0.44530000000000003,
-      "model_prob_under": 0.5547,
+      "model_prob_over": 0.4524,
+      "model_prob_under": 0.5476,
       "ev_over": null,
-      "ev_under": 0.2203,
+      "ev_under": 0.2047,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -973,11 +941,11 @@
       "side": "OVER",
       "line": 0.5,
       "commence_time": null,
-      "over_odds": -115.0,
-      "under_odds": -110.0,
+      "over_odds": -114.0,
+      "under_odds": 100.0,
       "model_prob_over": 0.7889,
       "model_prob_under": 0.21109999999999995,
-      "ev_over": 0.4749,
+      "ev_over": 0.481,
       "ev_under": null,
       "projection": 1.0,
       "q_preds": {
@@ -994,7 +962,7 @@
         "0.9": 3.0
       },
       "book_key": "draftkings",
-      "market_prob_over": 0.5052
+      "market_prob_over": 0.5158
     },
     {
       "player_id": 666682,
@@ -1037,12 +1005,12 @@
       "side": "UNDER",
       "line": 2.5,
       "commence_time": null,
-      "over_odds": -132.0,
+      "over_odds": -130.0,
       "under_odds": 115.0,
-      "model_prob_over": 0.45640000000000003,
-      "model_prob_under": 0.5436,
+      "model_prob_over": 0.4505,
+      "model_prob_under": 0.5495,
       "ev_over": null,
-      "ev_under": 0.1687,
+      "ev_under": 0.1814,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -1057,8 +1025,8 @@
         "0.8": 4.0,
         "0.9": 5.0
       },
-      "book_key": "draftkings",
-      "market_prob_over": 0.5502
+      "book_key": "betway",
+      "market_prob_over": 0.5486
     },
     {
       "player_id": 61,
@@ -1134,11 +1102,11 @@
       "line": 27.5,
       "commence_time": null,
       "over_odds": -118.0,
-      "under_odds": 100.0,
-      "model_prob_over": 0.28979999999999995,
-      "model_prob_under": 0.7102,
+      "under_odds": -102.0,
+      "model_prob_over": 0.28779999999999994,
+      "model_prob_under": 0.7122,
       "ev_over": null,
-      "ev_under": 0.4204,
+      "ev_under": 0.4104,
       "projection": 23.0,
       "q_preds": {
         "0.1": 11.0,
@@ -1154,7 +1122,7 @@
         "0.9": 34.0
       },
       "book_key": "betmgm",
-      "market_prob_over": 0.5198
+      "market_prob_over": 0.5174000000000001
     },
     {
       "player_id": 56677822,
@@ -1167,10 +1135,10 @@
       "commence_time": null,
       "over_odds": 110.0,
       "under_odds": -122.0,
-      "model_prob_over": 0.23009999999999997,
-      "model_prob_under": 0.7699,
+      "model_prob_over": 0.23070000000000002,
+      "model_prob_under": 0.7693,
       "ev_over": null,
-      "ev_under": 0.401,
+      "ev_under": 0.3999,
       "projection": 9.0,
       "q_preds": {
         "0.1": 4.0,
@@ -1197,12 +1165,12 @@
       "side": "UNDER",
       "line": 3.5,
       "commence_time": null,
-      "over_odds": 116.0,
+      "over_odds": 120.0,
       "under_odds": -143.0,
-      "model_prob_over": 0.3066,
-      "model_prob_under": 0.6934,
+      "model_prob_over": 0.3014,
+      "model_prob_under": 0.6986,
       "ev_over": null,
-      "ev_under": 0.1782,
+      "ev_under": 0.1871,
       "projection": 2.0,
       "q_preds": {
         "0.1": 0.0,
@@ -1217,8 +1185,8 @@
         "0.8": 4.0,
         "0.9": 5.0
       },
-      "book_key": "fanduel",
-      "market_prob_over": 0.4403
+      "book_key": "betway",
+      "market_prob_over": 0.43579999999999997
     },
     {
       "player_id": 56677822,
@@ -1295,10 +1263,10 @@
       "commence_time": null,
       "over_odds": -102.0,
       "under_odds": 100.0,
-      "model_prob_over": 0.3287,
-      "model_prob_under": 0.6713,
+      "model_prob_over": 0.32930000000000004,
+      "model_prob_under": 0.6707,
       "ev_over": null,
-      "ev_under": 0.3425,
+      "ev_under": 0.3414,
       "projection": 14.0,
       "q_preds": {
         "0.1": 5.0,
@@ -1326,11 +1294,11 @@
       "line": 11.5,
       "commence_time": null,
       "over_odds": 110.0,
-      "under_odds": -125.0,
-      "model_prob_over": 0.32930000000000004,
-      "model_prob_under": 0.6707,
+      "under_odds": -130.0,
+      "model_prob_over": 0.32620000000000005,
+      "model_prob_under": 0.6738,
       "ev_over": null,
-      "ev_under": 0.2073,
+      "ev_under": 0.1922,
       "projection": 10.0,
       "q_preds": {
         "0.1": 4.0,
@@ -1346,7 +1314,7 @@
         "0.9": 15.0
       },
       "book_key": "fanduel",
-      "market_prob_over": 0.4615
+      "market_prob_over": 0.45730000000000004
     }
   ],
   "upstream_statuses": {

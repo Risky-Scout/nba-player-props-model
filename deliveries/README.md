@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-06-13T14:14:36Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-06-13T15:04:35Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -46,7 +46,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-06-10** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 180 | 3855 | 2775 | 2161 | `full` | `fresh` | `present` | `morning_present` | 2721 | `pending_pre_tipoff_run` | 2721 | `scored` | `5f8521df#phase10c` |
 | **2026-06-11** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-06-12** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
-| **2026-06-13** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2820 | 2301 | `full` | `fresh` | `present` | `morning_present` | 2771 | `pending_pre_tipoff_run` | 2771 | `n/a` | `e5b85d9c#phase10c` |
+| **2026-06-13** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2820 | 2298 | `full` | `fresh` | `present` | `morning_present` | 2771 | `pending_pre_tipoff_run` | 2771 | `n/a` | `cc9217b5#phase10c` |
 
 ## Per-date links
 
