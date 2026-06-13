@@ -1,0 +1,32 @@
+{
+  "derek_live_predictions_parquet": "deliveries/2026-06-13/derek_game_snapshots/21716138/current_live/derek_live_predictions.parquet",
+  "game_id": "21716138",
+  "lineup_affects_pmf_features": false,
+  "lineup_context_supplied": true,
+  "lineup_integration_summary": {
+    "lineup_blocker": "lineup parquet missing required columns (player_id/starter); got []",
+    "lineup_feature_columns_added": [
+      "bdl_lineup_present",
+      "current_starter",
+      "confirmed_starter",
+      "confirmed_bench",
+      "lineup_position",
+      "lineup_source",
+      "lineup_confirmed",
+      "role_source",
+      "role_bucket_pre_lineup",
+      "role_bucket_post_lineup",
+      "lineup_context_supplied",
+      "lineup_affects_pmf_features"
+    ],
+    "lineup_rows_joined": 0,
+    "minutes_projection_conflict_count": 0,
+    "role_bucket_changed_count": 0,
+    "starter_flag_changed_count": 0
+  },
+  "row_count": 41,
+  "schema_version": "1.0",
+  "snapshot_run_id": "derek-snapshot-current_live-21716138-20260613T215157",
+  "snapshot_type": "current_live",
+  "target_date": "2026-06-13"
+}
