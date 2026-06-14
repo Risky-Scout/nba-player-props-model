@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-06-13",
   "calibrator_type": "phase8-role-bucket",
-  "code_commit": "226614760c4c65846c547b8367b835a56c4adc9c",
+  "code_commit": "f053a02826c73993484a356109b28b42368c3c43",
   "details": {
     "calibration_window": {
       "fold_days": 28,
@@ -16,37 +16,37 @@
     "calibrator_pickles": [
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_ast.pkl",
-        "sha256_prefix": "f9f8e75a3582ee04",
+        "sha256_prefix": "24271159562eab60",
         "stat": "ast"
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_blk.pkl",
-        "sha256_prefix": "7395e09325893d8e",
+        "sha256_prefix": "f05068bb44f98e30",
         "stat": "blk"
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_fg3m.pkl",
-        "sha256_prefix": "aa01b7fdf9368f84",
+        "sha256_prefix": "f580e1c9e2e518b1",
         "stat": "fg3m"
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_pts.pkl",
-        "sha256_prefix": "30784d41acf1cddd",
+        "sha256_prefix": "b477ce2f923d9e2d",
         "stat": "pts"
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_reb.pkl",
-        "sha256_prefix": "8fc0b58a78c4754f",
+        "sha256_prefix": "071a5084feb7ecd5",
         "stat": "reb"
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_stl.pkl",
-        "sha256_prefix": "8799aae011919435",
+        "sha256_prefix": "a3252f5bb054fc79",
         "stat": "stl"
       },
       {
         "path": "/home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/models/challengers/2026-06-13/pmf_cal_role_tov.pkl",
-        "sha256_prefix": "f8b362b1041ce53f",
+        "sha256_prefix": "52edf50fb8ddce68",
         "stat": "tov"
       }
     ],
@@ -134,7 +134,7 @@
     }
   },
   "dry_run": false,
-  "finished_at_utc": "2026-06-14T10:48:50+00:00",
+  "finished_at_utc": "2026-06-14T15:06:49+00:00",
   "notes": "Phase 13A dry-run inherits champion calibrators by reference. The rolling validation window is reported but no recompute is performed. Walk-forward only \u2014 no future leakage.",
   "phase10d_overlays_in_use": false,
   "phase13g": {
@@ -144,10 +144,10 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-13",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260614T104812"
+    "training_run_id": "nightly-20260614T150610"
   },
   "schema_version": "1.0",
-  "started_at_utc": "2026-06-14T10:48:50+00:00",
+  "started_at_utc": "2026-06-14T15:06:48+00:00",
   "status": "ok",
   "warnings": []
 }
