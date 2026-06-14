@@ -1,0 +1,105 @@
+{
+  "date": "2026-06-14",
+  "dates_used": [
+    "2026-06-14"
+  ],
+  "date_range": null,
+  "dates_file_mode": false,
+  "dates_fingerprint": null,
+  "global_market_superiority_claim_allowed": false,
+  "eligible_market_subset_superiority_claim_allowed": false,
+  "model_only_calibration_claim_allowed": false,
+  "required_stats_total": 12,
+  "required_stats_with_event_market_coverage": [],
+  "required_stats_without_event_market_coverage": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "no_offered_market_stats": [],
+  "not_requested_market_stats": [],
+  "parser_dropped_market_stats": [],
+  "join_failed_market_stats": [],
+  "insufficient_sample_stats": [],
+  "eligible_segments_total": 0,
+  "eligible_segments_passed": 0,
+  "eligible_segments_failed": 0,
+  "blocked_segments_total": 12,
+  "blocked_segment_reasons": {
+    "insufficient_scored_rows": 12
+  },
+  "claim_blockers": [
+    {
+      "kind": "stats_absent_from_event_market_loss_rows",
+      "stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "ra",
+        "pra"
+      ]
+    },
+    {
+      "kind": "stats_without_matched_market_join",
+      "stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "ra",
+        "pra"
+      ]
+    },
+    {
+      "kind": "no_eligible_stat_role_segments",
+      "detail": "need n_scored>=50 and n_market_joined>=50"
+    }
+  ],
+  "n_segments_total": 12,
+  "n_segments_passed": 0,
+  "n_segments_failed": 12,
+  "required_stats_missing_in_event_rows": [
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "tov",
+    "stl",
+    "blk",
+    "stocks",
+    "pa",
+    "pr",
+    "ra",
+    "pra"
+  ],
+  "min_scored_rows": 50,
+  "min_market_joined_rows": 50,
+  "event_calibration_applied": false,
+  "event_calibration_version": null,
+  "event_calibration_stage": null,
+  "event_calibration_source": null,
+  "market_pmf_used": false,
+  "market_prob_used_as_training_label": false
+}
