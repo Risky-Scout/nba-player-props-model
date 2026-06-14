@@ -129,15 +129,155 @@
       "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
       "name": "21716138/current_live/availability_source_recorded",
       "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "21716138/t_minus_25/required_outputs_present",
+      "passed": true
+    },
+    {
+      "detail": "expected=25min  observed=25.0min",
+      "name": "21716138/t_minus_25/snapshot_target_offset_ok",
+      "passed": true
+    },
+    {
+      "detail": "started=2026-06-14T00:20:17Z finished=2026-06-14T00:21:02Z",
+      "name": "21716138/t_minus_25/run_timestamps_recorded",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live'",
+      "name": "21716138/t_minus_25/snapshot_mode_valid",
+      "passed": true
+    },
+    {
+      "detail": "snapshot_mode='production_live' allow_backfill_test=False",
+      "name": "21716138/t_minus_25/snapshot_mode_matches_allow_backfill_test",
+      "passed": true
+    },
+    {
+      "detail": "pmfs_recomputed=True pmf_source='live_snapshot_recomputed'",
+      "name": "21716138/t_minus_25/production_live_pmfs_recomputed",
+      "passed": true
+    },
+    {
+      "detail": "predict.py invocation proof must be recorded",
+      "name": "21716138/t_minus_25/production_live_predict_invocation_proof",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21716138/t_minus_25/champion_metadata_verified",
+      "passed": true
+    },
+    {
+      "detail": "value=True",
+      "name": "21716138/t_minus_25/no_leakage_champion_cutoff_verified",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_retrained=False",
+      "name": "21716138/t_minus_25/live_snapshot_did_not_retrain",
+      "passed": true
+    },
+    {
+      "detail": "live_snapshot_recalibrated=False",
+      "name": "21716138/t_minus_25/live_snapshot_did_not_recalibrate",
+      "passed": true
+    },
+    {
+      "detail": "value='derek-snapshot-t_minus_25-21716138-20260614T002017'",
+      "name": "21716138/t_minus_25/manifest_field_present:prediction_run_id",
+      "passed": true
+    },
+    {
+      "detail": "value='529a0677769ee887f6e319c5d1bdab486b7df9c1'",
+      "name": "21716138/t_minus_25/manifest_field_present:prediction_code_commit",
+      "passed": true
+    },
+    {
+      "detail": "value='2026-06-14T00:21:01Z'",
+      "name": "21716138/t_minus_25/manifest_field_present:pmf_generated_at_utc",
+      "passed": true
+    },
+    {
+      "detail": "value='595309c0ef04e8b0'",
+      "name": "21716138/t_minus_25/manifest_field_present:pmf_output_hash",
+      "passed": true
+    },
+    {
+      "detail": "pmf_generated_at=2026-06-14T00:21:01Z started=2026-06-14T00:20:17Z",
+      "name": "21716138/t_minus_25/pmf_generated_during_run_window",
+      "passed": true
+    },
+    {
+      "detail": "rows=42",
+      "name": "21716138/t_minus_25/pmf_row_count_positive",
+      "passed": true
+    },
+    {
+      "detail": "sample_n=5 issues=[]",
+      "name": "21716138/t_minus_25/pmf_validity_sample",
+      "passed": true
+    },
+    {
+      "detail": "rows=42",
+      "name": "21716138/t_minus_25/market_comparison_present",
+      "passed": true
+    },
+    {
+      "detail": "manifest_champion='challenger-2026-06-12' pointer='challenger-2026-06-12'",
+      "name": "21716138/t_minus_25/champion_metadata_matches_pointer",
+      "passed": true
+    },
+    {
+      "detail": "lineup_confirmed=False blocker='confirmed_lineups_not_available_yet'",
+      "name": "21716138/t_minus_25/lineup_blocker_documented_when_unconfirmed",
+      "passed": true
+    },
+    {
+      "detail": "lineup_feature_blocker must be documented when lineup_affects_pmf_features=false",
+      "name": "21716138/t_minus_25/lineup_feature_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "lineup_blocker='confirmed_lineups_not_available_yet'",
+      "name": "21716138/t_minus_25/lineup_blocker_documented",
+      "passed": true
+    },
+    {
+      "detail": "=True",
+      "name": "21716138/t_minus_25/no_post_tip_data_used",
+      "passed": true
+    },
+    {
+      "detail": "contextual_pmf_engine=True; no_challenger_artifacts_used=False",
+      "name": "21716138/t_minus_25/contextual_pmf_engine_recorded",
+      "passed": true
+    },
+    {
+      "detail": "injury_source='data/nba_injury_reports.parquet (downstream of predict.py)'",
+      "name": "21716138/t_minus_25/injury_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "availability_source='data/player_availability_asof.parquet (BDL availability snapshot)'",
+      "name": "21716138/t_minus_25/availability_source_recorded",
+      "passed": true
+    },
+    {
+      "detail": "lineup_feature_blocker='lineup parquet missing required columns (player_id/starter); got []'",
+      "name": "21716138/t_minus_25/lineup_feature_blocker_explains_false",
+      "passed": true
     }
   ],
-  "code_commit": "ba6ac83ec25bed3178c2ea1ca8ce0125c0523b56",
+  "code_commit": "529a0677769ee887f6e319c5d1bdab486b7df9c1",
   "delivery_date": "2026-06-13",
   "facts": {
     "game_count": 1,
     "mode_counts": {
       "backfill_demo": 0,
-      "production_live": 0,
+      "production_live": 1,
       "production_live_current": 1,
       "unknown": 0
     },
@@ -145,12 +285,16 @@
       {
         "label": "21716138/current_live",
         "missing": []
+      },
+      {
+        "label": "21716138/t_minus_25",
+        "missing": []
       }
     ],
-    "recomputed_snapshot_count": 1,
-    "snapshot_count": 1
+    "recomputed_snapshot_count": 2,
+    "snapshot_count": 2
   },
-  "generated_at_utc": "2026-06-13T22:56:29+00:00",
+  "generated_at_utc": "2026-06-14T00:21:16+00:00",
   "passed": true,
   "schema_version": "1.0"
 }

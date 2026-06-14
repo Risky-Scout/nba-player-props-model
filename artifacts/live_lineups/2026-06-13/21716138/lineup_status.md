@@ -1,7 +1,7 @@
 # BDL Lineup Status — game 21716138 (2026-06-13)
 
 - source: `balldontlie_v1_lineups`
-- fetched_at_utc: `2026-06-13T21:52:00Z`
+- fetched_at_utc: `2026-06-14T00:20:19Z`
 - lineup_confirmed: **False**
 - lineup_complete: **unavailable**
 - lineup_blocker: 'confirmed_lineups_not_available_yet'

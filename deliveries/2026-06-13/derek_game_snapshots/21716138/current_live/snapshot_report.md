@@ -33,7 +33,7 @@ Sort: largest |raw_edge| first. `edge_publish_status` is the gate that determine
 | player_name | stat | side | line | model_prob | market_prob | raw_edge | ev | edge_publish_status | calibration_support_status | calibration_bucket_n |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Victor Wembanyama | blk | UNDER | 3.500 | 0.836 | 0.523 | +0.313 | +0.563 | PUBLISH_BLOCKER | CALIBRATION_SAMPLE_THIN | 17 |
-| Keldon Johnson | fg3m | OVER | 0.500 | 0.789 | 0.492 | +0.297 | +0.555 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 48 |
+| Keldon Johnson | fg3m | OVER | 0.500 | 0.789 | 0.492 | +0.297 | +0.555 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 30 |
 | Victor Wembanyama | reb | UNDER | 11.500 | 0.770 | 0.492 | +0.279 | +0.489 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 53 |
 | Miles McBride | fg3m | OVER | 0.500 | 0.790 | 0.535 | +0.255 | +0.422 | REVIEW_LARGE_EDGE | CALIBRATION_SAMPLE_LIMITED | 48 |
 | Victor Wembanyama | pts | UNDER | 28.500 | 0.747 | 0.500 | +0.250 | +0.464 | PUBLISH_BLOCKER | CALIBRATION_SUPPORTED | 297 |
