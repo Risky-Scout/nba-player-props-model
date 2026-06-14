@@ -4,6 +4,51 @@ GitHub may refuse to render large CSV files. This file is intentionally small.
 
 ---
 
+## `derek_game_snapshots/21716138/current_live/after_game_scoring.csv`
+
+- bytes: `2,551`
+- rows: `41`
+- columns: `8`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,stat,line
+De'Aaron Fox,161,reb,3.5
+De'Aaron Fox,161,ast,6.5
+De'Aaron Fox,161,stl,1.5
+Jose Alvarado,17896097,fg3m,0.5
+Jose Alvarado,17896097,stl,0.5
+Landry Shamet,414,fg3m,1.5
+Landry Shamet,414,stl,0.5
+Miles McBride,17896033,fg3m,0.5
+Jalen Brunson,73,pts,28.5
+Jalen Brunson,73,reb,3.5
+Jalen Brunson,73,fg3m,2.5
+Josh Hart,202,reb,8.5
+Josh Hart,202,ast,4.5
+Josh Hart,202,fg3m,1.5
+Josh Hart,202,stl,1.5
+Stephon Castle,1028025261,ast,6.5
+Devin Vassell,3547246,pts,13.5
+Devin Vassell,3547246,ast,2.5
+Devin Vassell,3547246,fg3m,2.5
+Mitchell Robinson,399,stl,0.5
+Mitchell Robinson,399,blk,0.5
+OG Anunoby,18,pts,17.5
+OG Anunoby,18,fg3m,2.5
+OG Anunoby,18,stl,1.5
+Dylan Harper,1057262518,pts,14.5
+Dylan Harper,1057262518,reb,5.5
+Dylan Harper,1057262518,ast,3.5
+Dylan Harper,1057262518,blk,0.5
+Keldon Johnson,666682,reb,2.5
+Keldon Johnson,666682,fg3m,0.5
+
+```
+
+---
+
 ## `derek_game_snapshots/21716138/current_live/contextual_feature_audit.csv`
 
 - bytes: `4,828`
@@ -381,7 +426,7 @@ Karl-Anthony Towns,447,NYK,21716138,pts
 
 ## `derek_game_snapshots/21716138/current_live/market_comparison.csv`
 
-- bytes: `56,637`
+- bytes: `61,208`
 - rows: `41`
 - columns: `111`
 
@@ -389,35 +434,35 @@ Compact first 30 rows:
 
 ```csv
 player_name,player_id,team,opponent,game_id,stat,cal_source,pmf_mean,p0,line,edge_over
-De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.3964,0.0624,3.5,0.1454
-De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.5439,0.0356,6.5,-0.0666
-De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.0424,0.3686,1.5,-0.1313
+De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.396396396396398,0.0624,3.5,0.1454
+De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.54389828811693,0.0356,6.5,-0.0666
+De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.0423957604239575,0.3686,1.5,-0.1313
 Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.9506,0.3848,0.5,0.0889
 Jose Alvarado,17896097,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.2756,0.7813,0.5,-0.2018
-Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,2.0799,0.0889,1.5,0.1445
+Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,2.0799079907990805,0.0889,1.5,0.1445
 Landry Shamet,414,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,0.4734,0.643,0.5,-0.1071
 Miles McBride,17896033,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,1.4857,0.2101,0.5,0.255
-Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,25.9167,0.0043,28.5,-0.0967
-Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.8584,0.0669,3.5,0.127
-Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.1089,0.1055,2.5,-0.0875
-Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,7.4196,0.0197,8.5,-0.1253
-Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.0161,0.0609,4.5,-0.1148
+Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,25.91670853009143,0.0043,28.5,-0.0967
+Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.858445201362452,0.0669,3.5,0.127
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.108889111088891,0.1055,2.5,-0.0875
+Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,7.419555199358844,0.0197,8.5,-0.1253
+Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.016120957244417,0.0609,4.5,-0.1148
 Josh Hart,202,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.8152,0.1498,1.5,0.1251
-Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.963,0.4346,1.5,-0.1331
-Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.0836,0.0436,6.5,-0.1826
-Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.0969,0.022,13.5,-0.1855
-Devin Vassell,3547246,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.318,0.1664,2.5,-0.031
-Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.9957,0.1017,2.5,-0.1758
+Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9629962996299628,0.4346,1.5,-0.1331
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.083633814102562,0.0436,6.5,-0.1826
+Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.096890672016048,0.022,13.5,-0.1855
+Devin Vassell,3547246,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.3180180180180177,0.1664,2.5,-0.031
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.9956995699569955,0.1017,2.5,-0.1758
 Mitchell Robinson,399,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.4046,0.6776,0.5,-0.0809
-Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.8737,0.3996,0.5,0.1231
-OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,15.4227,0.007,17.5,-0.1693
+Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.8737126287371264,0.3996,0.5,0.1231
+OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,15.42274872000803,0.007,17.5,-0.1693
 OG Anunoby,18,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.0325,0.0965,2.5,-0.1347
-OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9653,0.3989,1.5,-0.1671
-Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,11.8143,0.017,14.5,-0.2118
-Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.8197,0.0443,5.5,-0.1741
-Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,2.4649,0.1702,3.5,-0.1605
-Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.19,0.8336,0.5,-0.1055
-Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5016,0.1911,2.5,-0.1074
+OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9653000000000002,0.3989,1.5,-0.1671
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,11.814261357938015,0.017,14.5,-0.2118
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.819665565234807,0.0443,5.5,-0.1741
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,2.4648832782286347,0.1702,3.5,-0.1605
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.19001900190019,0.8336,0.5,-0.1055
+Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5016025641025643,0.1911,2.5,-0.1074
 Keldon Johnson,666682,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,1.4453,0.2111,0.5,0.2969
 
 ```
@@ -426,7 +471,7 @@ Keldon Johnson,666682,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inact
 
 ## `derek_game_snapshots/21716138/current_live/market_comparison.parquet`
 
-- bytes: `88,806`
+- bytes: `88,814`
 - rows: `41`
 - columns: `111`
 
@@ -891,8 +936,8 @@ Jalen Brunson,73,NYK,SAS,21716138,stl,starter,stat_grid:hurdle_v1+role_aware_pmf
 
 ## `derek_game_snapshots/21716138/morning/market_comparison.csv`
 
-- bytes: `2,653,138`
-- rows: `2,837`
+- bytes: `524,009`
+- rows: `589`
 - columns: `69`
 
 Compact first 30 rows:
@@ -974,6 +1019,276 @@ OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_c
 OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.010982920291184,35.36755462857424,0.050000000000000044,16.47540383850598,16.47540383850598,16,17,0.0006657112896958961,16.5,16.5,betrivers,0.4704432855027731,-155,114,0.5653656042270325,-0.09492231872425938,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
 OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.010982920291184,35.36755462857424,0.050000000000000044,16.47540383850598,16.47540383850598,16,17,0.0006657112896958961,17.5,17.5,draftkings,0.37204556153633334,-110,-115,0.4947698744769875,-0.12272431294065417,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
 OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.010982920291184,35.36755462857424,0.050000000000000044,16.47540383850598,16.47540383850598,16,17,0.0006657112896958961,17.5,17.5,hardrockbet_az,0.37204556153633334,-125,-105,0.5203045685279188,-0.1482590069915855,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/morning/market_comparison_csv_parts/market_comparison_part_000.csv`
+
+- bytes: `488,647`
+- rows: `555`
+- columns: `69`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,fanduel,0.372,-108,-120,0.4877,-0.1156,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,24.5,24.5,fanduel,0.0705,450,-750,0.1709,-0.1003,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,23.5,23.5,fanduel,0.095,360,-580,0.2031,-0.1081,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,22.5,22.5,fanduel,0.1177,280,-420,0.2457,-0.128,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,21.5,21.5,fanduel,0.16,225,-320,0.2877,-0.1277,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,20.5,20.5,fanduel,0.2101,182,-250,0.3318,-0.1216,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,19.5,19.5,fanduel,0.2584,146,-198,0.3796,-0.1212,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,18.5,18.5,fanduel,0.3126,116,-154,0.433,-0.1204,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,fanduel,0.372,-110,-122,0.488,-0.116,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,16.5,16.5,fanduel,0.4704,-140,106,0.5458,-0.0754,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,15.5,15.5,fanduel,0.5667,-186,138,0.6075,-0.0408,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,14.5,14.5,fanduel,0.6373,-235,178,0.661,-0.0238,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,13.5,13.5,fanduel,0.7177,-320,225,0.7123,0.0054,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,12.5,12.5,fanduel,0.7785,-440,290,0.7606,0.0179,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,11.5,11.5,fanduel,0.8374,-600,370,0.8011,0.0363,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,10.5,10.5,fanduel,0.8778,-900,490,0.8415,0.0363,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,williamhill_us,0.372,-112,-121,0.4911,-0.119,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,20.5,20.5,bovada,0.2101,185,-250,0.3294,-0.1193,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,19.5,19.5,bovada,0.2584,150,-200,0.375,-0.1166,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,18.5,18.5,bovada,0.3126,120,-160,0.4248,-0.1123,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,bovada,0.372,-105,-125,0.4797,-0.1076,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,16.5,16.5,bovada,0.4704,-130,100,0.5306,-0.0602,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,15.5,15.5,bovada,0.5667,-170,130,0.5915,-0.0248,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,14.5,14.5,bovada,0.6373,-230,170,0.653,-0.0157,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,betmgm,0.372,-105,-125,0.4797,-0.1076,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,18.5,18.5,betrivers,0.3126,106,-143,0.452,-0.1395,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,betrivers,0.372,-121,-113,0.5079,-0.1358,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,16.5,16.5,betrivers,0.4704,-155,114,0.5654,-0.0949,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,draftkings,0.372,-110,-115,0.4948,-0.1227,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+OG Anunoby,18,NYK,SAS,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,32.011,35.3676,0.05,16.4754,16.4754,16,17,0.0007,17.5,17.5,hardrockbet_az,0.372,-125,-105,0.5203,-0.1483,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/morning/market_comparison_csv_parts/market_comparison_part_001.csv`
+
+- bytes: `518,962`
+- rows: `555`
+- columns: `69`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,34.5,34.5,bovada,0.4844,-130,100,0.5306,-0.0462,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,33.5,33.5,bovada,0.5456,-160,120,0.5752,-0.0296,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,33.5,33.5,betmgm,0.5456,-125,-105,0.5203,0.0253,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,35.5,35.5,draftkings,0.424,-108,-122,0.4858,-0.0618,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,34.5,34.5,hardrockbet_az,0.4844,-120,-110,0.5101,-0.0257,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,34.5,34.5,hardrockbet,0.4844,-120,-110,0.5101,-0.0257,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,34.5,34.5,hardrockbet_fl,0.4844,-115,-115,0.5,-0.0156,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,34.5,34.5,espnbet,0.4844,-120,-110,0.5101,-0.0257,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pa,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,34.3194,34.3194,34,34,0.0,34.5,34.5,fliff,0.4844,-125,-115,0.5095,-0.025,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,31.5,31.5,fanduel,0.5438,-106,-120,0.4854,0.0584,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,23.5,23.5,fanduel,0.8895,-650,390,0.8094,0.0801,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,22.5,22.5,fanduel,0.9119,-850,470,0.8361,0.0759,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,24.5,24.5,fanduel,0.8634,-470,310,0.7717,0.0917,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,25.5,25.5,fanduel,0.832,-390,265,0.7439,0.0881,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,27.5,27.5,fanduel,0.7529,-250,182,0.6682,0.0847,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,40.5,40.5,fanduel,0.1175,470,-850,0.1639,-0.0464,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,39.5,39.5,fanduel,0.1448,390,-650,0.1906,-0.0458,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,38.5,38.5,fanduel,0.1795,320,-500,0.2222,-0.0427,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,37.5,37.5,fanduel,0.2185,280,-420,0.2457,-0.0273,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,36.5,36.5,fanduel,0.261,235,-340,0.2787,-0.0177,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,35.5,35.5,fanduel,0.3075,198,-275,0.3139,-0.0065,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,34.5,34.5,fanduel,0.3588,168,-230,0.3487,0.0101,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,33.5,33.5,fanduel,0.4146,138,-186,0.3925,0.0221,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,32.5,32.5,fanduel,0.4791,114,-152,0.4365,0.0426,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,31.5,31.5,fanduel,0.5438,-108,-122,0.4858,0.058,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,30.5,30.5,fanduel,0.6022,-132,100,0.5323,0.0699,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,29.5,29.5,fanduel,0.6563,-160,120,0.5752,0.0811,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,28.5,28.5,fanduel,0.7065,-200,148,0.6231,0.0834,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,26.5,26.5,fanduel,0.7948,-310,220,0.7076,0.0872,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Jalen Brunson,73,NYK,SAS,21716138,pr,starter,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,33.855,36.7394,0.05,32.246,32.246,32,32,0.0,32.5,32.5,bovada,0.4791,-105,-125,0.4797,-0.0006,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/morning/market_comparison_csv_parts/market_comparison_part_002.csv`
+
+- bytes: `495,751`
+- rows: `555`
+- columns: `69`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,5.5,5.5,bovada,0.3535,165,-220,0.3544,-0.0009,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,bovada,0.5033,-115,-115,0.5,0.0033,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,3.5,3.5,bovada,0.6493,-240,175,0.66,-0.0107,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,hardrockbet_az,0.5033,-115,-115,0.5,0.0033,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,hardrockbet,0.5033,-115,-115,0.5,0.0033,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,hardrockbet_fl,0.5033,-115,-115,0.5,0.0033,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,rebet,0.5033,-106,-120,0.4854,0.0179,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,betparx,0.5033,-120,-112,0.508,-0.0047,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,fliff,0.5033,-120,-120,0.5,0.0033,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,5.5,5.5,espnbet,0.3535,150,-200,0.375,-0.0215,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,4.5,4.5,espnbet,0.5033,-105,-125,0.4797,0.0236,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,reb,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,4.5967,4.5967,5,5,0.0876,3.5,3.5,espnbet,0.6493,-190,140,0.6113,0.038,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,bovada,0.5122,190,-260,0.3232,0.189,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,draftkings,0.5122,198,-268,0.3154,0.1968,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,hardrockbet_az,0.5122,185,-240,0.332,0.1802,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,rebet,0.5122,174,-228,0.3443,0.1679,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,hardrockbet_fl,0.5122,185,-240,0.332,0.1802,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,hardrockbet,0.5122,185,-240,0.332,0.1802,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,ast,bench,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.5785,0.5785,1,0,0.4878,0.5,0.5,fliff,0.5122,180,-270,0.3286,0.1836,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,stl,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.3163,0.3163,0,0,0.7048,0.5,0.5,draftkings,0.2952,128,-171,0.4101,-0.1149,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,stl,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.3163,0.3163,0,0,0.7048,0.5,0.5,bovada,0.2952,125,-165,0.4165,-0.1213,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,stl,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.3163,0.3163,0,0,0.7048,0.5,0.5,hardrockbet,0.2952,120,-175,0.4167,-0.1215,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,stl,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.3163,0.3163,0,0,0.7048,0.5,0.5,hardrockbet_fl,0.2952,120,-175,0.4167,-0.1215,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,stl,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.3163,0.3163,0,0,0.7048,0.5,0.5,hardrockbet_az,0.2952,120,-175,0.4167,-0.1215,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,stl,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.3163,0.3163,0,0,0.7048,0.5,0.5,betparx,0.2952,130,-177,0.4049,-0.1097,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,blk,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.2847,0.2847,0,0,0.8082,0.5,0.5,bovada,0.1918,100,-130,0.4694,-0.2776,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,blk,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.2847,0.2847,0,0,0.8082,0.5,0.5,draftkings,0.1918,-101,-132,0.469,-0.2772,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,blk,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.2847,0.2847,0,0,0.8082,0.5,0.5,hardrockbet_az,0.1918,-105,-135,0.4713,-0.2796,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,blk,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.2847,0.2847,0,0,0.8082,0.5,0.5,hardrockbet_fl,0.1918,-105,-135,0.4713,-0.2796,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Mitchell Robinson,399,NYK,SAS,21716138,blk,bench,stat_grid:hurdle_v1+role_aware_pmf_cal_v1:bench+monotone_pit_cdf_v1+sparse_hurdle_guarded,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,14.4662,13.023,0.05,0.2847,0.2847,0,0,0.8082,0.5,0.5,betparx,0.1918,-109,-121,0.4878,-0.2961,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/morning/market_comparison_csv_parts/market_comparison_part_003.csv`
+
+- bytes: `493,384`
+- rows: `555`
+- columns: `69`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,14.5,14.5,hardrockbet_fl,0.271,-105,-125,0.4797,-0.2087,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,12.5,12.5,espnbet,0.4044,-170,130,0.5915,-0.1871,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,13.5,13.5,espnbet,0.3369,-125,-105,0.5203,-0.1834,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,14.5,14.5,espnbet,0.271,100,-130,0.4694,-0.1983,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,14.5,14.5,betparx,0.271,-103,-130,0.473,-0.202,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,13.5,13.5,betparx,0.3369,-136,102,0.5379,-0.201,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,pts,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,11.7404,11.7404,12,12,0.0022,13.5,13.5,fliff,0.3369,-130,-110,0.519,-0.1821,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,williamhill_us,0.6041,-150,112,0.5599,0.0442,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,fanduel,0.6041,-132,104,0.5372,0.0669,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,7.5,7.5,fanduel,0.0813,540,-1000,0.1467,-0.0654,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,6.5,6.5,fanduel,0.1639,290,-440,0.2394,-0.0754,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,5.5,5.5,fanduel,0.3301,158,-215,0.3622,-0.0321,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,fanduel,0.6041,-136,102,0.5379,0.0662,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,3.5,3.5,fanduel,0.8189,-310,220,0.7076,0.1114,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,betmgm,0.6041,-155,115,0.5665,0.0376,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,betrivers,0.6041,-152,112,0.5612,0.0429,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,draftkings,0.6041,-159,121,0.5757,0.0284,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,5.5,5.5,bovada,0.3301,120,-160,0.4248,-0.0947,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,bovada,0.6041,-160,120,0.5752,0.0289,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,hardrockbet_az,0.6041,-145,115,0.5599,0.0442,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,hardrockbet,0.6041,-145,115,0.5599,0.0442,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,hardrockbet_fl,0.6041,-145,115,0.5599,0.0442,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,rebet,0.6041,-141,111,0.5525,0.0516,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,5.5,5.5,espnbet,0.3301,125,-165,0.4165,-0.0864,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,espnbet,0.6041,-145,110,0.5541,0.05,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,3.5,3.5,espnbet,0.8189,-325,225,0.7131,0.1058,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,betparx,0.6041,-152,114,0.5635,0.0406,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,4.9425,4.9425,5,5,0.0056,4.5,4.5,fliff,0.6041,-160,110,0.5638,0.0403,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,2.4832,2.4832,3,3,0.0265,2.5,2.5,bovada,0.5035,110,-145,0.4459,0.0576,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Devin Vassell,3547246,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,30.592,34.2326,0.05,2.4832,2.4832,3,3,0.0265,1.5,1.5,bovada,0.8217,-275,200,0.6875,0.1342,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/morning/market_comparison_csv_parts/market_comparison_part_004.csv`
+
+- bytes: `507,717`
+- rows: `555`
+- columns: `69`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,13.5,13.5,fanduel,0.0511,225,-320,0.2877,-0.2366,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,12.5,12.5,fanduel,0.1204,148,-200,0.3769,-0.2565,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,fanduel,0.1933,-108,-122,0.4858,-0.2925,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,10.5,10.5,fanduel,0.3115,-192,142,0.6141,-0.3026,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,9.5,9.5,fanduel,0.5056,-320,225,0.7123,-0.2067,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,8.5,8.5,fanduel,0.6918,-470,310,0.7717,-0.0799,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,williamhill_us,0.1933,-114,-117,0.497,-0.3037,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,fanduel,0.1933,-106,-120,0.4854,-0.2921,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,12.5,12.5,betmgm,0.1204,105,-145,0.4518,-0.3314,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,betrivers,0.1933,-117,-117,0.5,-0.3067,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,draftkings,0.1933,-117,-112,0.5051,-0.3118,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,13.5,13.5,bovada,0.0511,190,-260,0.3232,-0.2721,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,12.5,12.5,bovada,0.1204,125,-165,0.4165,-0.2961,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,bovada,0.1933,-120,-110,0.5101,-0.3168,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,10.5,10.5,bovada,0.3115,-185,140,0.6091,-0.2975,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,hardrockbet_az,0.1933,-120,-110,0.5101,-0.3168,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,hardrockbet,0.1933,-120,-110,0.5101,-0.3168,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,hardrockbet_fl,0.1933,-120,-110,0.5101,-0.3168,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,rebet,0.1933,-113,-113,0.5,-0.3067,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,betparx,0.1933,-115,-115,0.5,-0.3067,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,fliff,0.1933,-125,-115,0.5095,-0.3162,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,10.5,10.5,espnbet,0.3115,-170,130,0.5915,-0.28,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,11.5,11.5,espnbet,0.1933,-105,-125,0.4797,-0.2864,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,reb,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,9.5652,9.5652,10,10,0.0018,12.5,12.5,espnbet,0.1204,135,-180,0.3983,-0.2779,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,2.8777,2.8777,3,3,0.0121,3.5,3.5,williamhill_us,0.3077,110,-145,0.4459,-0.1382,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,2.8777,2.8777,3,3,0.0121,3.5,3.5,bovada,0.3077,110,-145,0.4459,-0.1382,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,2.8777,2.8777,3,3,0.0121,2.5,2.5,bovada,0.6118,-220,165,0.6456,-0.0338,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,2.8777,2.8777,3,3,0.0121,3.5,3.5,betmgm,0.3077,105,-140,0.4554,-0.1477,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,2.8777,2.8777,3,3,0.0121,3.5,3.5,betrivers,0.3077,107,-148,0.4474,-0.1397,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Victor Wembanyama,56677822,SAS,NYK,21716138,ast,starter,stat_grid:pmf_sim_v1+role_aware_pmf_cal_v1:starter+monotone_pit_cdf_v1,phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,role_aware_pmf_cal_v1,33.0583,36.2251,0.05,2.8777,2.8777,3,3,0.0121,3.5,3.5,draftkings,0.3077,112,-147,0.4421,-0.1344,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/morning/market_comparison_csv_parts/market_comparison_part_005.csv`
+
+- bytes: `67,850`
+- rows: `62`
+- columns: `69`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,role_bucket,pmf_source,calibration_source,cal_source,minutes_mean,minutes_q50,p_inactive_used,mean,pmf_mean,median,mode,p0,line,market_line,book,p_over,market_over_odds,market_under_odds,market_no_vig_over_prob,edge,injury_freshness_status,injury_context_source,expected_lineup_status,official_lineup_status,lineup_source,lineup_freshness_status,snapshot_type,snapshot_time_utc
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,bovada,0.2961,-120,-110,0.5101,-0.2141,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,20.5,20.5,bovada,0.3472,-150,115,0.5633,-0.2161,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,draftkings,0.2961,-116,-113,0.5031,-0.207,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,hardrockbet_az,0.2961,-115,-115,0.5,-0.2039,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,hardrockbet,0.2961,-115,-115,0.5,-0.2039,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,hardrockbet_fl,0.2961,-115,-115,0.5,-0.2039,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,espnbet,0.2961,-105,-125,0.4797,-0.1836,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pr,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,18.3992,18.3992,18,17,0.0001,21.5,21.5,fliff,0.2961,-115,-125,0.4905,-0.1945,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,12.5,12.5,fanduel,0.0351,450,-800,0.1698,-0.1347,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,11.5,11.5,fanduel,0.0748,290,-440,0.2394,-0.1645,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,10.5,10.5,fanduel,0.1464,194,-270,0.3179,-0.1716,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,9.5,9.5,fanduel,0.2588,124,-166,0.417,-0.1583,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,8.5,8.5,fanduel,0.4063,-136,102,0.5379,-0.1316,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,7.5,7.5,fanduel,0.5717,-240,174,0.6592,-0.0875,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,6.5,6.5,fanduel,0.7281,-440,290,0.7606,-0.0325,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,5.5,5.5,fanduel,0.8518,-900,490,0.8415,0.0103,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,8.5,8.5,fanduel,0.4063,-132,104,0.5372,-0.1309,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,9.5,9.5,draftkings,0.2588,103,-136,0.4609,-0.2021,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,7.5,7.5,bovada,0.5717,-250,185,0.6706,-0.0989,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,9.5,9.5,bovada,0.2588,105,-135,0.4592,-0.2004,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,8.5,8.5,bovada,0.4063,-150,115,0.5633,-0.157,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,9.5,9.5,hardrockbet_az,0.2588,105,-140,0.4554,-0.1966,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,9.5,9.5,hardrockbet,0.2588,105,-140,0.4554,-0.1966,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,9.5,9.5,hardrockbet_fl,0.2588,105,-140,0.4554,-0.1966,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,8.5,8.5,fliff,0.4063,-150,100,0.5455,-0.1392,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,ra,core,"stat_grid:component_convolution_mean_coherent_v1+components[reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,7.9889,7.9889,8,8,0.0005,8.5,8.5,espnbet,0.4063,-145,110,0.5541,-0.1479,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pra,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,21.1212,21.1212,21,20,0.0,32.5,32.5,fanduel,0.046,470,-850,0.1639,-0.1179,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pra,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,21.1212,21.1212,21,20,0.0,31.5,31.5,fanduel,0.0621,390,-650,0.1906,-0.1285,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pra,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,21.1212,21.1212,21,20,0.0,30.5,30.5,fanduel,0.0819,320,-490,0.2228,-0.1409,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
+Dylan Harper,1057262518,SAS,NYK,21716138,pra,core,"stat_grid:component_convolution_mean_coherent_v1+components[pts:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,reb:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1,ast:pmf_sim_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+prior_combo[joint_sampler_v1+joint_combo_pmf_v1+role_aware_pmf_cal_v1:core+monotone_pit_cdf_v1]+stat_grid_final_component_convolution_mean_coherent_v1",phase8_role_aware_pmf_cal_v1+monotone_inactive_global_v1,phase8_pmf_cal,24.9137,26.5139,0.05,21.1212,21.1212,21,20,0.0,29.5,29.5,fanduel,0.1056,270,-400,0.2525,-0.1469,fallback_used,bdl_plus_nba_official,projected,not_available_yet,bdl_lineup_freshness_manifest,projected,morning,2026-06-13T22:59:51Z
 
 ```
 
@@ -1154,5 +1469,862 @@ Jalen Brunson,73,NYK,SAS,21716138,ast,starter,6.157415571801393,6.5,6.5,betmgm,0
 Jalen Brunson,73,NYK,SAS,21716138,fg3m,starter,2.333560242774647,2.5,2.5,betmgm,0.401951790723046,100.0,-135.0,0.4653465346534653,fallback_used,projected
 Jalen Brunson,73,NYK,SAS,21716138,tov,starter,1.5666563627425727,,,,,,,,fallback_used,projected
 Jalen Brunson,73,NYK,SAS,21716138,stl,starter,0.7884867653535839,0.5,0.5,betparx,0.48807049199856695,-220.0,160.0,0.641255605381166,fallback_used,projected
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/after_game_scoring.csv`
+
+- bytes: `2,618`
+- rows: `42`
+- columns: `8`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,stat,line
+De'Aaron Fox,161,reb,3.5
+De'Aaron Fox,161,ast,6.5
+De'Aaron Fox,161,stl,1.5
+Jose Alvarado,17896097,fg3m,0.5
+Jose Alvarado,17896097,stl,0.5
+Landry Shamet,414,fg3m,1.5
+Landry Shamet,414,stl,0.5
+Miles McBride,17896033,fg3m,0.5
+Jalen Brunson,73,pts,28.5
+Jalen Brunson,73,reb,3.5
+Jalen Brunson,73,fg3m,2.5
+Josh Hart,202,reb,8.5
+Josh Hart,202,ast,4.5
+Josh Hart,202,fg3m,1.5
+Josh Hart,202,stl,1.5
+Stephon Castle,1028025261,pts,16.5
+Stephon Castle,1028025261,ast,6.5
+Stephon Castle,1028025261,stl,0.5
+Devin Vassell,3547246,pts,13.5
+Devin Vassell,3547246,fg3m,2.5
+Mitchell Robinson,399,stl,0.5
+Mitchell Robinson,399,blk,0.5
+OG Anunoby,18,pts,17.5
+OG Anunoby,18,fg3m,2.5
+OG Anunoby,18,stl,1.5
+Dylan Harper,1057262518,pts,15.5
+Dylan Harper,1057262518,reb,5.5
+Dylan Harper,1057262518,ast,3.5
+Dylan Harper,1057262518,blk,0.5
+Keldon Johnson,666682,reb,2.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/contextual_feature_audit.csv`
+
+- bytes: `3,568`
+- rows: `15`
+- columns: `41`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716138
+Jose Alvarado,17896097,NYK,21716138
+Landry Shamet,414,NYK,21716138
+Miles McBride,17896033,NYK,21716138
+Jalen Brunson,73,NYK,21716138
+Josh Hart,202,NYK,21716138
+Stephon Castle,1028025261,SAS,21716138
+Devin Vassell,3547246,SAS,21716138
+Mitchell Robinson,399,NYK,21716138
+OG Anunoby,18,NYK,21716138
+Dylan Harper,1057262518,SAS,21716138
+Keldon Johnson,666682,SAS,21716138
+Mikal Bridges,61,NYK,21716138
+Victor Wembanyama,56677822,SAS,21716138
+Karl-Anthony Towns,447,NYK,21716138
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/contextual_feature_audit.parquet`
+
+- bytes: `29,845`
+- rows: `15`
+- columns: `41`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716138
+Jose Alvarado,17896097,NYK,21716138
+Landry Shamet,414,NYK,21716138
+Miles McBride,17896033,NYK,21716138
+Jalen Brunson,73,NYK,21716138
+Josh Hart,202,NYK,21716138
+Stephon Castle,1028025261,SAS,21716138
+Devin Vassell,3547246,SAS,21716138
+Mitchell Robinson,399,NYK,21716138
+OG Anunoby,18,NYK,21716138
+Dylan Harper,1057262518,SAS,21716138
+Keldon Johnson,666682,SAS,21716138
+Mikal Bridges,61,NYK,21716138
+Victor Wembanyama,56677822,SAS,21716138
+Karl-Anthony Towns,447,NYK,21716138
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/derek_live_predictions.parquet`
+
+- bytes: `40,086`
+- rows: `42`
+- columns: `47`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1529
+De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.0671
+De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1296
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.0838
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,-0.2024
+Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,1.5,0.1579
+Landry Shamet,414,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,0.5,-0.0953
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.2725
+Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,28.5,-0.0878
+Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1325
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.0842
+Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,8.5,-0.1251
+Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.5,-0.1057
+Josh Hart,202,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,0.1251
+Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1338
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,16.5,-0.0409
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.1623
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,0.0827
+Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,13.5,-0.1818
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1709
+Mitchell Robinson,399,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,-0.0845
+Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.1258
+OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,17.5,-0.164
+OG Anunoby,18,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1336
+OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1665
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,15.5,-0.2194
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,5.5,-0.1825
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,3.5,-0.1605
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.5,-0.1055
+Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5,-0.0958
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/full_pmf_wide.csv`
+
+- bytes: `47,201`
+- rows: `42`
+- columns: `93`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1529
+De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.0671
+De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1296
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.0838
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,-0.2024
+Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,1.5,0.1579
+Landry Shamet,414,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,0.5,-0.0953
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.2725
+Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,28.5,-0.0878
+Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1325
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.0842
+Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,8.5,-0.1251
+Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.5,-0.1057
+Josh Hart,202,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,0.1251
+Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1338
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,16.5,-0.0409
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.1623
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,0.0827
+Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,13.5,-0.1818
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1709
+Mitchell Robinson,399,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,-0.0845
+Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.1258
+OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,17.5,-0.164
+OG Anunoby,18,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1336
+OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1665
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,15.5,-0.2194
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,5.5,-0.1825
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,3.5,-0.1605
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.5,-0.1055
+Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5,-0.0958
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/full_pmf_wide.parquet`
+
+- bytes: `73,689`
+- rows: `42`
+- columns: `93`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1529
+De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.0671
+De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1296
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.0838
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,-0.2024
+Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,1.5,0.1579
+Landry Shamet,414,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,0.5,-0.0953
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.2725
+Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,28.5,-0.0878
+Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.5,0.1325
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.0842
+Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,8.5,-0.1251
+Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.5,-0.1057
+Josh Hart,202,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,0.1251
+Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1338
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,16.5,-0.0409
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,6.5,-0.1623
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.5,0.0827
+Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,13.5,-0.1818
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1709
+Mitchell Robinson,399,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,-0.0845
+Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.5,0.1258
+OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,17.5,-0.164
+OG Anunoby,18,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.5,-0.1336
+OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.5,-0.1665
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,15.5,-0.2194
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,5.5,-0.1825
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,3.5,-0.1605
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.5,-0.1055
+Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5,-0.0958
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/game_context.csv`
+
+- bytes: `608`
+- rows: `15`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id
+De'Aaron Fox,161,SAS,NYK,21716138
+Jose Alvarado,17896097,NYK,SAS,21716138
+Landry Shamet,414,NYK,SAS,21716138
+Miles McBride,17896033,NYK,SAS,21716138
+Jalen Brunson,73,NYK,SAS,21716138
+Josh Hart,202,NYK,SAS,21716138
+Stephon Castle,1028025261,SAS,NYK,21716138
+Devin Vassell,3547246,SAS,NYK,21716138
+Mitchell Robinson,399,NYK,SAS,21716138
+OG Anunoby,18,NYK,SAS,21716138
+Dylan Harper,1057262518,SAS,NYK,21716138
+Keldon Johnson,666682,SAS,NYK,21716138
+Mikal Bridges,61,NYK,SAS,21716138
+Victor Wembanyama,56677822,SAS,NYK,21716138
+Karl-Anthony Towns,447,NYK,SAS,21716138
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/game_context.parquet`
+
+- bytes: `3,640`
+- rows: `15`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id
+De'Aaron Fox,161,SAS,NYK,21716138
+Jose Alvarado,17896097,NYK,SAS,21716138
+Landry Shamet,414,NYK,SAS,21716138
+Miles McBride,17896033,NYK,SAS,21716138
+Jalen Brunson,73,NYK,SAS,21716138
+Josh Hart,202,NYK,SAS,21716138
+Stephon Castle,1028025261,SAS,NYK,21716138
+Devin Vassell,3547246,SAS,NYK,21716138
+Mitchell Robinson,399,NYK,SAS,21716138
+OG Anunoby,18,NYK,SAS,21716138
+Dylan Harper,1057262518,SAS,NYK,21716138
+Keldon Johnson,666682,SAS,NYK,21716138
+Mikal Bridges,61,NYK,SAS,21716138
+Victor Wembanyama,56677822,SAS,NYK,21716138
+Karl-Anthony Towns,447,NYK,SAS,21716138
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/injury_availability_context.csv`
+
+- bytes: `597`
+- rows: `15`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716138
+Jose Alvarado,17896097,NYK,21716138
+Landry Shamet,414,NYK,21716138
+Miles McBride,17896033,NYK,21716138
+Jalen Brunson,73,NYK,21716138
+Josh Hart,202,NYK,21716138
+Stephon Castle,1028025261,SAS,21716138
+Devin Vassell,3547246,SAS,21716138
+Mitchell Robinson,399,NYK,21716138
+OG Anunoby,18,NYK,21716138
+Dylan Harper,1057262518,SAS,21716138
+Keldon Johnson,666682,SAS,21716138
+Mikal Bridges,61,NYK,21716138
+Victor Wembanyama,56677822,SAS,21716138
+Karl-Anthony Towns,447,NYK,21716138
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/injury_availability_context.parquet`
+
+- bytes: `3,842`
+- rows: `15`
+- columns: `5`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id
+De'Aaron Fox,161,SAS,21716138
+Jose Alvarado,17896097,NYK,21716138
+Landry Shamet,414,NYK,21716138
+Miles McBride,17896033,NYK,21716138
+Jalen Brunson,73,NYK,21716138
+Josh Hart,202,NYK,21716138
+Stephon Castle,1028025261,SAS,21716138
+Devin Vassell,3547246,SAS,21716138
+Mitchell Robinson,399,NYK,21716138
+OG Anunoby,18,NYK,21716138
+Dylan Harper,1057262518,SAS,21716138
+Keldon Johnson,666682,SAS,21716138
+Mikal Bridges,61,NYK,21716138
+Victor Wembanyama,56677822,SAS,21716138
+Karl-Anthony Towns,447,NYK,21716138
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/lineup_context.csv`
+
+- bytes: `1,492`
+- rows: `15`
+- columns: `13`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat
+De'Aaron Fox,161,SAS,21716138,reb
+Jose Alvarado,17896097,NYK,21716138,fg3m
+Landry Shamet,414,NYK,21716138,fg3m
+Miles McBride,17896033,NYK,21716138,fg3m
+Jalen Brunson,73,NYK,21716138,pts
+Josh Hart,202,NYK,21716138,reb
+Stephon Castle,1028025261,SAS,21716138,pts
+Devin Vassell,3547246,SAS,21716138,pts
+Mitchell Robinson,399,NYK,21716138,stl
+OG Anunoby,18,NYK,21716138,pts
+Dylan Harper,1057262518,SAS,21716138,pts
+Keldon Johnson,666682,SAS,21716138,reb
+Mikal Bridges,61,NYK,21716138,ast
+Victor Wembanyama,56677822,SAS,21716138,pts
+Karl-Anthony Towns,447,NYK,21716138,pts
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/lineup_context.parquet`
+
+- bytes: `8,426`
+- rows: `15`
+- columns: `13`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat
+De'Aaron Fox,161,SAS,21716138,reb
+Jose Alvarado,17896097,NYK,21716138,fg3m
+Landry Shamet,414,NYK,21716138,fg3m
+Miles McBride,17896033,NYK,21716138,fg3m
+Jalen Brunson,73,NYK,21716138,pts
+Josh Hart,202,NYK,21716138,reb
+Stephon Castle,1028025261,SAS,21716138,pts
+Devin Vassell,3547246,SAS,21716138,pts
+Mitchell Robinson,399,NYK,21716138,stl
+OG Anunoby,18,NYK,21716138,pts
+Dylan Harper,1057262518,SAS,21716138,pts
+Keldon Johnson,666682,SAS,21716138,reb
+Mikal Bridges,61,NYK,21716138,ast
+Victor Wembanyama,56677822,SAS,21716138,pts
+Karl-Anthony Towns,447,NYK,21716138,pts
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/market_comparison.csv`
+
+- bytes: `60,668`
+- rows: `42`
+- columns: `111`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,pmf_mean,p0,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.414314314314315,0.0587,3.5,0.1529
+De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.564141110442976,0.0359,6.5,-0.0671
+De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.0423957604239575,0.3686,1.5,-0.1296
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.9506,0.3848,0.5,0.0838
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.2756,0.7813,0.5,-0.2024
+Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,2.0799079907990805,0.0889,1.5,0.1579
+Landry Shamet,414,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,0.4734,0.643,0.5,-0.0953
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,1.4857,0.2101,0.5,0.2725
+Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,25.96763168476077,0.0044,28.5,-0.0878
+Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.864991993594876,0.065,3.5,0.1325
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.108889111088891,0.1055,2.5,-0.0842
+Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,7.418252855139252,0.0188,8.5,-0.1251
+Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.005607850991389,0.0576,4.5,-0.1057
+Josh Hart,202,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.8152,0.1498,1.5,0.1251
+Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9629962996299628,0.4346,1.5,-0.1338
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,15.757423756019262,0.0097,16.5,-0.0409
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.09325853951718,0.043,6.5,-0.1623
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.14021402140214,0.2832,0.5,0.0827
+Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.081344032096286,0.0223,13.5,-0.1818
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.9956995699569955,0.1017,2.5,-0.1709
+Mitchell Robinson,399,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.4046,0.6776,0.5,-0.0845
+Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.8737126287371264,0.3996,0.5,0.1258
+OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,15.37922729553437,0.0087,17.5,-0.164
+OG Anunoby,18,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.0325,0.0965,2.5,-0.1336
+OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9653000000000002,0.3989,1.5,-0.1665
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,11.781905813836731,0.0186,15.5,-0.2194
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.7855854049719335,0.0443,5.5,-0.1825
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,2.4981483335001498,0.1698,3.5,-0.1605
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.19001900190019,0.8336,0.5,-0.1055
+Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5029556156697725,0.1887,2.5,-0.0958
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/market_comparison.parquet`
+
+- bytes: `88,877`
+- rows: `42`
+- columns: `111`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,cal_source,pmf_mean,p0,line,edge_over
+De'Aaron Fox,161,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.414314314314315,0.0587,3.5,0.1529
+De'Aaron Fox,161,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.564141110442976,0.0359,6.5,-0.0671
+De'Aaron Fox,161,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.0423957604239575,0.3686,1.5,-0.1296
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.9506,0.3848,0.5,0.0838
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.2756,0.7813,0.5,-0.2024
+Landry Shamet,414,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,2.0799079907990805,0.0889,1.5,0.1579
+Landry Shamet,414,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:rotation,0.47340000000000004,0.643,0.5,-0.0953
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,1.4857,0.2101,0.5,0.2725
+Jalen Brunson,73,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,25.96763168476077,0.0044,28.5,-0.0878
+Jalen Brunson,73,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,3.8649919935948756,0.065,3.5,0.1325
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.108889111088891,0.1055,2.5,-0.0842
+Josh Hart,202,NYK,SAS,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,7.418252855139252,0.0188,8.5,-0.1251
+Josh Hart,202,NYK,SAS,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,4.005607850991389,0.0576,4.5,-0.1057
+Josh Hart,202,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.8151999999999997,0.1498,1.5,0.1251
+Josh Hart,202,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9629962996299629,0.4346,1.5,-0.1338
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,15.757423756019262,0.0097,16.5,-0.0409
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,5.09325853951718,0.043,6.5,-0.1623
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.1402140214021401,0.2832,0.5,0.0827
+Devin Vassell,3547246,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,11.081344032096286,0.0223,13.5,-0.1818
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,1.9956995699569955,0.1017,2.5,-0.1709
+Mitchell Robinson,399,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.40460000000000007,0.6776,0.5,-0.0845
+Mitchell Robinson,399,NYK,SAS,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,0.8737126287371264,0.3996,0.5,0.1258
+OG Anunoby,18,NYK,SAS,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,15.37922729553437,0.0087,17.5,-0.164
+OG Anunoby,18,NYK,SAS,21716138,fg3m,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,2.0325,0.0965,2.5,-0.1336
+OG Anunoby,18,NYK,SAS,21716138,stl,role_aware_pmf_cal_v1:monotone_inactive_global_v1:starter,0.9653000000000002,0.3989,1.5,-0.1665
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,11.781905813836731,0.0186,15.5,-0.2194
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,4.7855854049719335,0.0443,5.5,-0.1825
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,2.4981483335001498,0.1698,3.5,-0.1605
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,role_aware_pmf_cal_v1:monotone_inactive_global_v1:core,0.19001900190019,0.8336,0.5,-0.1055
+Keldon Johnson,666682,SAS,NYK,21716138,reb,role_aware_pmf_cal_v1:monotone_inactive_global_v1:bench,2.5029556156697725,0.1887,2.5,-0.0958
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/outcome_level_probabilities.csv`
+
+- bytes: `113,428`
+- rows: `596`
+- columns: `18`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,game_id,stat,k,p_k,line,snapshot_type
+De'Aaron Fox,161,21716138,reb,0,0.0587587587587587,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,1,0.0793793793793793,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,2,0.1091091091091091,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,3,0.141041041041041,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,4,0.1291291291291291,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,5,0.1698698698698698,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,6,0.1108108108108108,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,7,0.0824824824824824,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,8,0.054054054054054,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,9,0.0286286286286286,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,10,0.0184184184184184,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,11,0.0124124124124124,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,12,0.0031031031031031,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,13,0.0018018018018018,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,14,0.001001001001001,3.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,0,0.035979154139106,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,1,0.0518139907797153,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,2,0.0579274403688113,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,3,0.0995189416716777,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,4,0.1209661254760473,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,5,0.1426137502505512,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,6,0.1155542192824213,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,7,0.132992583684105,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,8,0.0937061535377831,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,9,0.0609340549208258,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,10,0.0358789336540388,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,11,0.0254560032070555,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,12,0.0138304269392663,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,13,0.007516536380036,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,14,0.0035077169773501,6.5,t_minus_25
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/outcome_level_probabilities.parquet`
+
+- bytes: `19,416`
+- rows: `596`
+- columns: `18`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,game_id,stat,k,p_k,line,snapshot_type
+De'Aaron Fox,161,21716138,reb,0,0.05875875875875876,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,1,0.07937937937937938,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,2,0.1091091091091091,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,3,0.14104104104104104,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,4,0.12912912912912913,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,5,0.16986986986986985,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,6,0.11081081081081082,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,7,0.08248248248248248,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,8,0.05405405405405405,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,9,0.028628628628628628,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,10,0.018418418418418417,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,11,0.012412412412412413,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,12,0.003103103103103103,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,13,0.0018018018018018018,3.5,t_minus_25
+De'Aaron Fox,161,21716138,reb,14,0.001001001001001001,3.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,0,0.03597915413910604,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,1,0.05181399077971538,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,2,0.05792744036881139,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,3,0.0995189416716777,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,4,0.12096612547604732,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,5,0.14261375025055123,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,6,0.11555421928242134,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,7,0.13299258368410505,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,8,0.09370615353778314,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,9,0.06093405492082582,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,10,0.03587893365403889,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,11,0.025456003207055523,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,12,0.013830426939266387,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,13,0.00751653638003608,6.5,t_minus_25
+De'Aaron Fox,161,21716138,ast,14,0.003507716977350171,6.5,t_minus_25
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/pmf_driver_decomposition.csv`
+
+- bytes: `4,547`
+- rows: `15`
+- columns: `21`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat,line
+De'Aaron Fox,161,SAS,21716138,reb,3.5
+Jose Alvarado,17896097,NYK,21716138,fg3m,0.5
+Landry Shamet,414,NYK,21716138,fg3m,1.5
+Miles McBride,17896033,NYK,21716138,fg3m,0.5
+Jalen Brunson,73,NYK,21716138,pts,28.5
+Josh Hart,202,NYK,21716138,reb,8.5
+Stephon Castle,1028025261,SAS,21716138,pts,16.5
+Devin Vassell,3547246,SAS,21716138,pts,13.5
+Mitchell Robinson,399,NYK,21716138,stl,0.5
+OG Anunoby,18,NYK,21716138,pts,17.5
+Dylan Harper,1057262518,SAS,21716138,pts,15.5
+Keldon Johnson,666682,SAS,21716138,reb,2.5
+Mikal Bridges,61,NYK,21716138,ast,2.5
+Victor Wembanyama,56677822,SAS,21716138,pts,28.5
+Karl-Anthony Towns,447,NYK,21716138,pts,16.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/pmf_driver_decomposition.parquet`
+
+- bytes: `14,457`
+- rows: `15`
+- columns: `21`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,game_id,stat,line
+De'Aaron Fox,161,SAS,21716138,reb,3.5
+Jose Alvarado,17896097,NYK,21716138,fg3m,0.5
+Landry Shamet,414,NYK,21716138,fg3m,1.5
+Miles McBride,17896033,NYK,21716138,fg3m,0.5
+Jalen Brunson,73,NYK,21716138,pts,28.5
+Josh Hart,202,NYK,21716138,reb,8.5
+Stephon Castle,1028025261,SAS,21716138,pts,16.5
+Devin Vassell,3547246,SAS,21716138,pts,13.5
+Mitchell Robinson,399,NYK,21716138,stl,0.5
+OG Anunoby,18,NYK,21716138,pts,17.5
+Dylan Harper,1057262518,SAS,21716138,pts,15.5
+Keldon Johnson,666682,SAS,21716138,reb,2.5
+Mikal Bridges,61,NYK,21716138,ast,2.5
+Victor Wembanyama,56677822,SAS,21716138,pts,28.5
+Karl-Anthony Towns,447,NYK,21716138,pts,16.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/prediction_input_audit.csv`
+
+- bytes: `2,755`
+- rows: `42`
+- columns: `8`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716138,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716138,ast,6.5
+De'Aaron Fox,161,SAS,NYK,21716138,stl,1.5
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,0.5
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,0.5
+Landry Shamet,414,NYK,SAS,21716138,fg3m,1.5
+Landry Shamet,414,NYK,SAS,21716138,stl,0.5
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,0.5
+Jalen Brunson,73,NYK,SAS,21716138,pts,28.5
+Jalen Brunson,73,NYK,SAS,21716138,reb,3.5
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,2.5
+Josh Hart,202,NYK,SAS,21716138,reb,8.5
+Josh Hart,202,NYK,SAS,21716138,ast,4.5
+Josh Hart,202,NYK,SAS,21716138,fg3m,1.5
+Josh Hart,202,NYK,SAS,21716138,stl,1.5
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,16.5
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716138,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,2.5
+Mitchell Robinson,399,NYK,SAS,21716138,stl,0.5
+Mitchell Robinson,399,NYK,SAS,21716138,blk,0.5
+OG Anunoby,18,NYK,SAS,21716138,pts,17.5
+OG Anunoby,18,NYK,SAS,21716138,fg3m,2.5
+OG Anunoby,18,NYK,SAS,21716138,stl,1.5
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,15.5
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,0.5
+Keldon Johnson,666682,SAS,NYK,21716138,reb,2.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/prediction_input_audit.parquet`
+
+- bytes: `5,426`
+- rows: `42`
+- columns: `8`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716138,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716138,ast,6.5
+De'Aaron Fox,161,SAS,NYK,21716138,stl,1.5
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,0.5
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,0.5
+Landry Shamet,414,NYK,SAS,21716138,fg3m,1.5
+Landry Shamet,414,NYK,SAS,21716138,stl,0.5
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,0.5
+Jalen Brunson,73,NYK,SAS,21716138,pts,28.5
+Jalen Brunson,73,NYK,SAS,21716138,reb,3.5
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,2.5
+Josh Hart,202,NYK,SAS,21716138,reb,8.5
+Josh Hart,202,NYK,SAS,21716138,ast,4.5
+Josh Hart,202,NYK,SAS,21716138,fg3m,1.5
+Josh Hart,202,NYK,SAS,21716138,stl,1.5
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,16.5
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716138,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,2.5
+Mitchell Robinson,399,NYK,SAS,21716138,stl,0.5
+Mitchell Robinson,399,NYK,SAS,21716138,blk,0.5
+OG Anunoby,18,NYK,SAS,21716138,pts,17.5
+OG Anunoby,18,NYK,SAS,21716138,fg3m,2.5
+OG Anunoby,18,NYK,SAS,21716138,stl,1.5
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,15.5
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,0.5
+Keldon Johnson,666682,SAS,NYK,21716138,reb,2.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/prop_summary.csv`
+
+- bytes: `1,987`
+- rows: `42`
+- columns: `7`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716138,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716138,ast,6.5
+De'Aaron Fox,161,SAS,NYK,21716138,stl,1.5
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,0.5
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,0.5
+Landry Shamet,414,NYK,SAS,21716138,fg3m,1.5
+Landry Shamet,414,NYK,SAS,21716138,stl,0.5
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,0.5
+Jalen Brunson,73,NYK,SAS,21716138,pts,28.5
+Jalen Brunson,73,NYK,SAS,21716138,reb,3.5
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,2.5
+Josh Hart,202,NYK,SAS,21716138,reb,8.5
+Josh Hart,202,NYK,SAS,21716138,ast,4.5
+Josh Hart,202,NYK,SAS,21716138,fg3m,1.5
+Josh Hart,202,NYK,SAS,21716138,stl,1.5
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,16.5
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716138,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,2.5
+Mitchell Robinson,399,NYK,SAS,21716138,stl,0.5
+Mitchell Robinson,399,NYK,SAS,21716138,blk,0.5
+OG Anunoby,18,NYK,SAS,21716138,pts,17.5
+OG Anunoby,18,NYK,SAS,21716138,fg3m,2.5
+OG Anunoby,18,NYK,SAS,21716138,stl,1.5
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,15.5
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,0.5
+Keldon Johnson,666682,SAS,NYK,21716138,reb,2.5
+
+```
+
+---
+
+## `derek_game_snapshots/21716138/t_minus_25/prop_summary.parquet`
+
+- bytes: `4,835`
+- rows: `42`
+- columns: `7`
+
+Compact first 30 rows:
+
+```csv
+player_name,player_id,team,opponent,game_id,stat,line
+De'Aaron Fox,161,SAS,NYK,21716138,reb,3.5
+De'Aaron Fox,161,SAS,NYK,21716138,ast,6.5
+De'Aaron Fox,161,SAS,NYK,21716138,stl,1.5
+Jose Alvarado,17896097,NYK,SAS,21716138,fg3m,0.5
+Jose Alvarado,17896097,NYK,SAS,21716138,stl,0.5
+Landry Shamet,414,NYK,SAS,21716138,fg3m,1.5
+Landry Shamet,414,NYK,SAS,21716138,stl,0.5
+Miles McBride,17896033,NYK,SAS,21716138,fg3m,0.5
+Jalen Brunson,73,NYK,SAS,21716138,pts,28.5
+Jalen Brunson,73,NYK,SAS,21716138,reb,3.5
+Jalen Brunson,73,NYK,SAS,21716138,fg3m,2.5
+Josh Hart,202,NYK,SAS,21716138,reb,8.5
+Josh Hart,202,NYK,SAS,21716138,ast,4.5
+Josh Hart,202,NYK,SAS,21716138,fg3m,1.5
+Josh Hart,202,NYK,SAS,21716138,stl,1.5
+Stephon Castle,1028025261,SAS,NYK,21716138,pts,16.5
+Stephon Castle,1028025261,SAS,NYK,21716138,ast,6.5
+Stephon Castle,1028025261,SAS,NYK,21716138,stl,0.5
+Devin Vassell,3547246,SAS,NYK,21716138,pts,13.5
+Devin Vassell,3547246,SAS,NYK,21716138,fg3m,2.5
+Mitchell Robinson,399,NYK,SAS,21716138,stl,0.5
+Mitchell Robinson,399,NYK,SAS,21716138,blk,0.5
+OG Anunoby,18,NYK,SAS,21716138,pts,17.5
+OG Anunoby,18,NYK,SAS,21716138,fg3m,2.5
+OG Anunoby,18,NYK,SAS,21716138,stl,1.5
+Dylan Harper,1057262518,SAS,NYK,21716138,pts,15.5
+Dylan Harper,1057262518,SAS,NYK,21716138,reb,5.5
+Dylan Harper,1057262518,SAS,NYK,21716138,ast,3.5
+Dylan Harper,1057262518,SAS,NYK,21716138,blk,0.5
+Keldon Johnson,666682,SAS,NYK,21716138,reb,2.5
+
+```
+
+---
+
+## `derek_game_snapshots/aggregate_snapshot_scoring.csv`
+
+- bytes: `319`
+- rows: `2`
+- columns: `7`
+
+Compact first 30 rows:
+
+```csv
+game_id,snapshot_type
+21716138,current_live
+21716138,t_minus_25
 
 ```

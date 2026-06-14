@@ -173,5 +173,15 @@
   "trained_through_date": "2026-06-12",
   "training_run_id": "nightly-20260523T042740",
   "validation_run_id": "nightly-20260523T042740",
-  "warnings": []
+  "warnings": [],
+  "after_game": {
+    "status": "scored",
+    "scored_at_utc": "2026-06-14T10:14:40Z",
+    "n_scored_pmf_rows": 192,
+    "n_scored_market_rows": 2837,
+    "n_clv_rows": 0,
+    "nll_mean": 2.358725491308437,
+    "rps_mean": 0.0749469417670616,
+    "abs_mean_error": 3.0337420773507127
+  }
 }

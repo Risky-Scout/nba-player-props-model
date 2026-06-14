@@ -1,8 +1,31 @@
 {
-  "blocker": "no rows in player_game_stats.parquet for game_date=2026-06-13",
-  "code_commit": "529a0677769ee887f6e319c5d1bdab486b7df9c1",
+  "by_game": {
+    "21716138": {
+      "current_live": {
+        "blocker": "",
+        "matched_rows": 41,
+        "mean_nll": 2.072818481098172,
+        "median_p_realized": 0.145,
+        "present": true,
+        "snapshot_dir": "deliveries/2026-06-13/derek_game_snapshots/21716138/current_live"
+      },
+      "t_minus_25": {
+        "blocker": "",
+        "matched_rows": 42,
+        "mean_nll": 2.091663673521334,
+        "median_p_realized": 0.14255,
+        "present": true,
+        "snapshot_dir": "deliveries/2026-06-13/derek_game_snapshots/21716138/t_minus_25"
+      }
+    }
+  },
+  "code_commit": "47261c711aca5cd9f0115140bb78234fc8d7c791",
   "delivery_date": "2026-06-13",
-  "generated_at_utc": "2026-06-14T00:21:29+00:00",
+  "generated_at_utc": "2026-06-14T10:14:41+00:00",
   "schema_version": "1.0",
-  "status": "pending_outcomes"
+  "status": "scored",
+  "summary": {
+    "mean_nll": 2.082241077309753,
+    "snapshots_scored": 2
+  }
 }

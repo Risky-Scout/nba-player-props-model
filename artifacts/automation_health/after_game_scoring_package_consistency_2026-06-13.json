@@ -1,0 +1,157 @@
+{
+  "checks": [
+    {
+      "detail": "deliveries/2026-06-13/after_game_scoring/after_game_scoring.{parquet,csv}",
+      "name": "after_game_scoring_artifact_exists",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-06-13/after_game_scoring/after_game_summary.md",
+      "name": "after_game_summary_md_exists",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-06-13/wizard_of_odds/after_game_clv_and_scoring.md",
+      "name": "woo_after_game_clv_and_scoring_md_exists",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-06-13/pmf_model_review_package/run_manifest.json",
+      "name": "pmf_model_review_package_run_manifest_exists",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "model_performance_md_not_stale_when_scored",
+      "passed": true
+    },
+    {
+      "detail": "ok",
+      "name": "pmf_review_manifest_matches_champion_pointer",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-06-13/after_game_scoring/expected_target_stats_coverage.json",
+      "name": "expected_target_stats_coverage_exists",
+      "passed": true
+    },
+    {
+      "detail": "all_accounted=True missing_undocumented=[]",
+      "name": "expected_stats_scored_or_documented_blocked",
+      "passed": true
+    },
+    {
+      "detail": "deliveries/2026-06-13/after_game_scoring/model_vs_market_scoring.json",
+      "name": "model_vs_market_scoring_exists",
+      "passed": true
+    },
+    {
+      "detail": "found in MODEL_PERFORMANCE_AND_CALIBRATION.md or after_game_summary.md",
+      "name": "model_vs_market_section_visible",
+      "passed": true
+    },
+    {
+      "detail": "all expected prediction files present",
+      "name": "no_prediction_files_destroyed",
+      "passed": true
+    },
+    {
+      "detail": "champion_model_id='challenger-2026-06-12'",
+      "name": "woo_manifest_matches_champion_pointer",
+      "passed": true
+    },
+    {
+      "detail": "champion_model_id='challenger-2026-06-12'",
+      "name": "derek_manifest_matches_champion_pointer",
+      "passed": true
+    }
+  ],
+  "code_commit": "47261c711aca5cd9f0115140bb78234fc8d7c791",
+  "delivery_date": "2026-06-13",
+  "facts": {
+    "champion_pointer": {
+      "calibrated_through_date": "2026-06-12",
+      "champion_model_id": "challenger-2026-06-12",
+      "champion_pointer_hash": "c3e0cd0d8ee518d1f67493a78ec112f9",
+      "trained_through_date": "2026-06-12"
+    },
+    "expected_target_stats_coverage": {
+      "all_accounted": true,
+      "all_actually_scored": true,
+      "documented_blocked_target_stats": [],
+      "expected_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "pra"
+      ],
+      "missing_target_stats": [],
+      "scored_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "pra"
+      ]
+    },
+    "lineup_phase_executed_today": false,
+    "model_vs_market": {
+      "minimum_sample_passed": null,
+      "overall": null,
+      "rows_paired": null,
+      "rows_total": null
+    },
+    "pmf_review_manifest": {
+      "after_game_status": "scored",
+      "calibrated_through_date": "2026-06-12",
+      "champion_model_id": "challenger-2026-06-12",
+      "champion_pointer_hash": "c3e0cd0d8ee518d1f67493a78ec112f9",
+      "expected_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "pra"
+      ],
+      "missing_target_stats": [],
+      "scored_target_stats": [
+        "pts",
+        "reb",
+        "ast",
+        "fg3m",
+        "tov",
+        "stl",
+        "blk",
+        "stocks",
+        "pa",
+        "pr",
+        "pra"
+      ],
+      "scoring_status": "scored",
+      "trained_through_date": "2026-06-12"
+    },
+    "prediction_files_missing": []
+  },
+  "generated_at_utc": "2026-06-14T10:14:44+00:00",
+  "passed": true,
+  "schema_version": "1.0"
+}
