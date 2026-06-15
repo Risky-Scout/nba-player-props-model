@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-06-14T10:14:57Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-06-15T13:00:48Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -47,6 +47,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-06-11** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-06-12** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-06-13** | `PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS` | 192 | 4112 | 2837 | 2283 | `full` | `fresh` | `present` | `morning_present` | 2788 | `pending_pre_tipoff_run` | 2788 | `scored` | `1751c17d#phase10c` |
+| **2026-06-14** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 
 ## Per-date links
 
@@ -1609,6 +1610,22 @@ _lineup_unconfirmed_
 - ~~clv_by_stat.csv~~
 - ~~clv_by_book.csv~~
 - [after_game_status.json](2026-06-13/after_game_scoring/after_game_status.json)
+
+### 2026-06-14 — `NOT_DELIVERABLE_READY`
+
+_predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship_
+
+**After-game scoring** (`n/a`)
+
+- ~~after_game_summary.md~~
+- ~~after_game_scoring.csv~~
+- ~~calibration_by_stat.csv~~
+- ~~calibration_by_role_bucket.csv~~
+- ~~clv_by_stat.csv~~
+- ~~clv_by_book.csv~~
+- ~~after_game_status.json~~
+
+_No wizard_of_odds/ package on disk for this date._
 
 
 ## Schedule (Phase 12D-amend)
