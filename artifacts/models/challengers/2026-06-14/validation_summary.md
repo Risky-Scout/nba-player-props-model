@@ -2,10 +2,10 @@
 
 | Field | Value |
 | --- | --- |
-| Generated (UTC) | 2026-06-15T13:42:30+00:00 |
+| Generated (UTC) | 2026-06-15T17:49:58+00:00 |
 | Promote | no |
 | Reason | gate_failed:market_benchmark_available |
-| Champion model_version | challenger-2026-06-13 |
+| Champion model_version | challenger-2026-06-14 |
 | Challenger dry_run | False |
 | PMF validity issues | 0 |
 | Gates passed | 17 |
