@@ -3,7 +3,7 @@
   "calibration_blend_policy": "stat_role_guarded_expanded_v1",
   "challenger": {
     "calibrator_version": "phase8-role-bucket",
-    "code_commit": "763de3d8eb64c247dce680baf68995f8d5be1694",
+    "code_commit": "1bbda7ea73b3c058bad4e0e9320a1e1ddd3d81a1",
     "dry_run": false,
     "metrics": {
       "brier_logloss_at_market": null,
@@ -246,7 +246,7 @@
     },
     "model_version": "challenger-2026-06-15"
   },
-  "code_commit": "763de3d8eb64c247dce680baf68995f8d5be1694",
+  "code_commit": "1bbda7ea73b3c058bad4e0e9320a1e1ddd3d81a1",
   "derek_compatibility": {
     "canonical_builder_present": true,
     "derek_script_present": true,
@@ -329,7 +329,7 @@
       "name": "m6_3_review_cells_guarded"
     }
   ],
-  "generated_at_utc": "2026-06-16T21:36:30+00:00",
+  "generated_at_utc": "2026-06-16T23:12:00+00:00",
   "m6_3_matrix_summary": {
     "detail": "valid",
     "expected_role_buckets": [
@@ -543,7 +543,7 @@
     "stale_fallback_used": false,
     "target_date_et": "2026-06-15",
     "target_policy": "manual_override",
-    "training_run_id": "nightly-20260616T213545"
+    "training_run_id": "nightly-20260616T231104"
   },
   "pmf_validity": {
     "checked_files": 1,
