@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-06-18T11:45:21+00:00",
+  "generated_at_utc": "2026-06-18T16:17:36+00:00",
   "from_date": "2026-06-11",
   "to_date": "2026-06-17",
   "status": "PASS",
@@ -25,5 +25,5 @@
       "min": 0
     }
   },
-  "refresh_stdout_tail": "  existing parquet: 84583 rows, latest game_date=2026-06-13\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-06-11 \u2192 2026-06-17\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-06-11 \u2192 2026-06-17\n    got 21 raw records in 0.5s\n    21 rows after schema map / min>=1 filter\n\n  incoming rows: 21\n    distinct game_dates: ['2026-06-13']\n    distinct game_ids:   1\n    distinct players:    21\n\n  merge summary:\n    rows kept (no key conflict):     84562\n    rows replaced (key conflict):    21\n    rows added (new keys):           0\n    final row count:                 84583\n\nwrote data/player_game_stats.parquet  (2026-06-18T11:45:21Z)\n"
+  "refresh_stdout_tail": "  existing parquet: 84583 rows, latest game_date=2026-06-13\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-06-11 \u2192 2026-06-17\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-06-11 \u2192 2026-06-17\n    got 21 raw records in 0.5s\n    21 rows after schema map / min>=1 filter\n\n  incoming rows: 21\n    distinct game_dates: ['2026-06-13']\n    distinct game_ids:   1\n    distinct players:    21\n\n  merge summary:\n    rows kept (no key conflict):     84562\n    rows replaced (key conflict):    21\n    rows added (new keys):           0\n    final row count:                 84583\n\nwrote data/player_game_stats.parquet  (2026-06-18T16:17:36Z)\n"
 }
