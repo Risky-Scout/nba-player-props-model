@@ -1,0 +1,12 @@
+{
+  "code_commit": "afe9362a5dc74bff88ee8e42e32878c83f219cad",
+  "contextual_challenger_dir": "artifacts/models/challengers/2026-06-17_contextual",
+  "decided_at_utc": "2026-06-18T11:49:50+00:00",
+  "decision_id": "contextual-promotion-2026-06-17_contextual-20260618T114950",
+  "feature_set_id": "phase13q_contextual_pmf_engine_v1",
+  "no_leakage_report": "artifacts/phase13p/no_leakage_report.json",
+  "previous_pointer_backup": "artifacts/models/champion/v_phase13r_20260618T114950p0000/champion_pointer.previous.json",
+  "promoted": true,
+  "schema_version": "1.0",
+  "validation_gates_report": "artifacts/phase13p/validation_gates_report.json"
+}
