@@ -1,0 +1,8 @@
+{
+  "asof_cutoff_rule": "all features are pre-game knowable: lagged player rates (prior games only), injury/availability as-of, vacated opportunity from upstream asof builder, starter_proxy_lagged from prior-game minutes, rest_days / b2b / three-in-four / season_game_number / is_home / opponent_team_id_hash from schedule (pre-game knowable).",
+  "calibrated_through_date": "2026-06-21",
+  "generated_at_utc": "2026-06-22T13:25:05+00:00",
+  "no_leakage_verified": true,
+  "no_same_game_performance_predictors": true,
+  "trained_through_date": "2026-06-21"
+}
