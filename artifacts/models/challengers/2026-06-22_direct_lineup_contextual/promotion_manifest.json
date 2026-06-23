@@ -1,0 +1,10 @@
+{
+  "champion_pointer_path": "artifacts/models/registry/champion_pointer.json",
+  "code_commit": "6788860f4a15413c312a1a243176f1d69aa086eb",
+  "decision_id": "phase13s-promotion-2026-06-22_direct_lineup_contextual-20260623T110139",
+  "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+  "previous_pointer_backup": "artifacts/models/champion/v_phase13s_20260623T110139p0000/champion_pointer.previous.json",
+  "promoted": true,
+  "promoted_at_utc": "2026-06-23T11:01:39+00:00",
+  "schema_version": "1.0"
+}
