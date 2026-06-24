@@ -1,13 +1,13 @@
 {
   "checks": [],
-  "code_commit": "9d07ae750b73008c2d103b53d9e6e6e648f65325",
+  "code_commit": "2bff9abe69f97bfb935e9241950a75498b19b44b",
   "delivery_date": "2026-06-24",
   "facts": {
     "pending_reason": "no_predictions_parquet",
     "predictions_parquet_present": false,
     "slate_games": 0
   },
-  "generated_at_utc": "2026-06-24T05:48:29+00:00",
+  "generated_at_utc": "2026-06-24T20:09:11+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
