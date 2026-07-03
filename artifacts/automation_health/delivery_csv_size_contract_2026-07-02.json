@@ -1,0 +1,12 @@
+{
+  "date": "2026-07-02",
+  "max_bytes": 524288,
+  "write": true,
+  "preserve": [
+    "derek_forward_feed/derek_unique_props_summary.csv"
+  ],
+  "records": [],
+  "oversized_after": [],
+  "pass": true,
+  "failures": []
+}
