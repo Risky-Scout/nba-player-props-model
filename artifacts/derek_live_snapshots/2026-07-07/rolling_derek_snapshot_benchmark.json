@@ -1,0 +1,59 @@
+{
+  "as_of_date": "2026-07-07",
+  "by_snapshot_type": {
+    "current_live": {
+      "market_logloss_vs_over": null,
+      "mean_nll": 2.1465808218974503,
+      "model_logloss_vs_over": null,
+      "rows": 76
+    },
+    "t_minus_25": {
+      "market_logloss_vs_over": null,
+      "mean_nll": 2.091663673521334,
+      "model_logloss_vs_over": null,
+      "rows": 42
+    }
+  },
+  "code_commit": "c72b05fd7c0ff66455148dc61043821dcb30ef7d",
+  "dates_included": [
+    "2026-06-10",
+    "2026-06-13"
+  ],
+  "dates_missing": [
+    "2026-06-11",
+    "2026-06-12",
+    "2026-06-14",
+    "2026-06-15",
+    "2026-06-16",
+    "2026-06-17",
+    "2026-06-18",
+    "2026-06-19",
+    "2026-06-20",
+    "2026-06-21",
+    "2026-06-22",
+    "2026-06-23",
+    "2026-06-24",
+    "2026-06-25",
+    "2026-06-26",
+    "2026-06-27",
+    "2026-06-28",
+    "2026-06-29",
+    "2026-06-30",
+    "2026-07-01",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-04",
+    "2026-07-05",
+    "2026-07-06",
+    "2026-07-07"
+  ],
+  "generated_at_utc": "2026-07-07T05:14:09+00:00",
+  "minimum_sample_passed": false,
+  "rows_by_snapshot_type": {
+    "close_lock": 0,
+    "t_minus_25": 42
+  },
+  "rows_total": 118,
+  "schema_version": "1.0",
+  "window_days": 28
+}
