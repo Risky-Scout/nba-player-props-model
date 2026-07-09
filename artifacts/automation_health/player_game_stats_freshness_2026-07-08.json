@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-07-09T17:42:10+00:00",
+  "generated_at_utc": "2026-07-09T20:33:42+00:00",
   "from_date": "2026-07-02",
   "to_date": "2026-07-08",
   "status": "PASS",
@@ -25,5 +25,5 @@
       "min": 0
     }
   },
-  "refresh_stdout_tail": "  existing parquet: 84583 rows, latest game_date=2026-06-13\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-07-02 \u2192 2026-07-08\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-07-02 \u2192 2026-07-08\n    got 0 raw records in 0.3s\n    0 rows after schema map / min>=1 filter\n  NO_GAMES_VALID_SKIP: BDL reports 0 games for 2026-07-02 \u2192 2026-07-08; no stat rows expected.\n"
+  "refresh_stdout_tail": "  existing parquet: 84583 rows, latest game_date=2026-06-13\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-07-02 \u2192 2026-07-08\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-07-02 \u2192 2026-07-08\n    got 0 raw records in 0.4s\n    0 rows after schema map / min>=1 filter\n  NO_GAMES_VALID_SKIP: BDL reports 0 games for 2026-07-02 \u2192 2026-07-08; no stat rows expected.\n"
 }
