@@ -1,0 +1,20 @@
+{
+  "delivery_date": "2026-07-20",
+  "generated_at_utc": "2026-07-20T04:59:26+00:00Z",
+  "records": [],
+  "schema_version": "1.0",
+  "telemetry": {
+    "bdl_api_key_present": true,
+    "bdl_live_games": 0,
+    "delivery_date": "2026-07-20",
+    "from_predictions_count": 0,
+    "odds_api_cached_events": 0,
+    "odds_api_key_present": true,
+    "odds_api_live_events": 0,
+    "pmf_display_matchups_parsed": 0,
+    "predictions_present": false,
+    "predictions_rows": 0,
+    "predictions_unique_games": 0,
+    "resolution_blocker": "predictions/all_props_<date>.parquet missing or has no game_id"
+  }
+}
