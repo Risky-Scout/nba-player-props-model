@@ -2,7 +2,7 @@
 
 - outcome: **pending**
 - reason: no_predictions_parquet
-- now_utc: 2026-07-20T04:59:47Z
+- now_utc: 2026-07-20T18:14:03Z
 - predictions_parquet_present: False
 - schedule_size: 0
 - any_target_in_past: False
