@@ -1,6 +1,6 @@
 # Derek Live Champion Model Readiness — 2026-07-21
 
-- generated_at_utc: 2026-07-21T07:22:01+00:00
+- generated_at_utc: 2026-07-21T17:47:24+00:00
 - passed: **True**
 
 ## Checks
@@ -9,21 +9,21 @@
 | --- | --- | --- |
 | champion_pointer_present | yes | artifacts/models/registry/champion_pointer.json |
 | champion_pointer_rich_fields_present | yes | all rich fields present |
-| trained_through_date_no_later_than_yesterday | yes | trained_through=2026-07-19 yesterday=2026-07-20 |
-| calibrated_through_date_no_later_than_yesterday | yes | calibrated_through=2026-07-19 yesterday=2026-07-20 |
-| calibrated_through_ge_trained_through | yes | trained=2026-07-19 calibrated=2026-07-19 |
+| trained_through_date_no_later_than_yesterday | yes | trained_through=2026-07-20 yesterday=2026-07-20 |
+| calibrated_through_date_no_later_than_yesterday | yes | calibrated_through=2026-07-20 yesterday=2026-07-20 |
+| calibrated_through_ge_trained_through | yes | trained=2026-07-20 calibrated=2026-07-20 |
 | pointer_flag:leakage_checks_passed | yes | value=True |
 | pointer_flag:no_future_rows_verified | yes | value=True |
-| champion_not_dry_run_or_synthetic | yes | promotion_decision_id='phase13s-promotion-2026-07-19_direct_lineup_contextual-20260720T103936' |
+| champion_not_dry_run_or_synthetic | yes | promotion_decision_id='phase13s-promotion-2026-07-20_direct_lineup_contextual-20260721T101317' |
 
 ## Facts
 
 ```json
 {
-  "calibrated_through_date": "2026-07-19",
-  "champion_model_id": "challenger-2026-07-19",
-  "champion_pointer_hash": "d92053911ce8c74a3a5b06a7ddb1a345",
+  "calibrated_through_date": "2026-07-20",
+  "champion_model_id": "challenger-2026-07-20",
+  "champion_pointer_hash": "c554ffbfbf4ab9e23348c007b0febf17",
   "delivery_date_minus_one_utc": "2026-07-20",
-  "trained_through_date": "2026-07-19"
+  "trained_through_date": "2026-07-20"
 }
 ```
