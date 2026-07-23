@@ -6,7 +6,7 @@
     "champion_pointer_direct_lineup_pmf_driver": true,
     "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
     "delivery_date": "2026-07-23",
-    "now_utc": "2026-07-23T07:28:02Z",
+    "now_utc": "2026-07-23T17:43:07Z",
     "pending_reason": "no_predictions_parquet",
     "predictions_parquet_present": false,
     "schedule_eval": [],
