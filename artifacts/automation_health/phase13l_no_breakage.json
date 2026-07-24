@@ -421,15 +421,15 @@
       "passed": true
     }
   ],
-  "code_commit": "3d6a13d336427c5c7f704e5904d4db9a7f946ba6",
+  "code_commit": "de9764fa9e9cf079760cb72dbbeed81c3ca0f7d5",
   "facts": {
     "champion_pointer": {
-      "champion_model_id": "challenger-2026-07-22",
-      "champion_pointer_hash": "fcbe5207faca86f9c5cc8e2e6c3ea212",
+      "champion_model_id": "challenger-2026-07-23",
+      "champion_pointer_hash": "ceedd8d0e658d9392e74f238da6574ff",
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-07-24T07:19:59+00:00",
+  "generated_at_utc": "2026-07-24T17:48:20+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
