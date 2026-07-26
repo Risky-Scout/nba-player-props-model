@@ -1,0 +1,30 @@
+{
+  "challenger_dir": "artifacts/models/challengers/2026-07-25_direct_lineup_contextual",
+  "code_commit": "31fa37e061fc2d03f0aab9fe235fc1e78679a572",
+  "direct_lineup_pmf_driver": true,
+  "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+  "fitted_targets": [
+    "minutes",
+    "pts",
+    "reb",
+    "ast",
+    "tov",
+    "stl",
+    "blk",
+    "fg3m"
+  ],
+  "game_context_features_enabled": true,
+  "injury_availability_features_enabled": true,
+  "lineup_composition_features_enabled": true,
+  "lineup_context_upstream_of_pmf": true,
+  "no_leakage_verified": true,
+  "official_lineup_features_enabled": true,
+  "promoted_at_utc": null,
+  "trained_through_date": "2026-07-25",
+  "trained_with_direct_lineup_features": true,
+  "trained_with_game_context_features": true,
+  "trained_with_injury_features": true,
+  "trained_with_lineup_composition_features": true,
+  "trained_with_vacated_opportunity_features": true,
+  "vacated_opportunity_features_enabled": true
+}
