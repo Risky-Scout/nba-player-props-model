@@ -1,6 +1,6 @@
 # Daily model training / recalibration report — 2026-07-25
 
-- generated_at_utc: 2026-07-27T01:26:10+00:00Z
+- generated_at_utc: 2026-07-27T05:31:24+00:00Z
 
 ## Headline
 
