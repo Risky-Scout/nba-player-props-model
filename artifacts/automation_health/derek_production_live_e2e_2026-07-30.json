@@ -1,0 +1,17 @@
+{
+  "facts": {
+    "any_target_in_past": false,
+    "any_target_overdue": false,
+    "champion_pointer_contextual_pmf_engine": true,
+    "champion_pointer_direct_lineup_pmf_driver": true,
+    "champion_pointer_feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
+    "delivery_date": "2026-07-30",
+    "now_utc": "2026-07-30T04:15:21Z",
+    "pending_reason": "no_predictions_parquet",
+    "predictions_parquet_present": false,
+    "schedule_eval": [],
+    "schedule_size": 0
+  },
+  "outcome": "pending",
+  "schema_version": "1.0"
+}
