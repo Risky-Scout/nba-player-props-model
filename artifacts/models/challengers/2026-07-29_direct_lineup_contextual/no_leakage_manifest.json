@@ -1,0 +1,10 @@
+{
+  "asof_cutoff_rule": "Phase 13S features are pre-game knowable: current_starter / confirmed_* are derived from PREVIOUS game's min (lagged); starter_proxy_lagged uses 10-game lagged minutes; team-aggregate composition features are computed from teammates whose previous game's min >= 1 (pre-game knowable expected-to-play set); injury / availability / vacated-opportunity features are joined as-of from the upstream live_context parquet.",
+  "calibrated_through_date": "2026-07-29",
+  "generated_at_utc": "2026-07-30T10:13:02+00:00",
+  "no_leakage_verified": true,
+  "no_same_game_performance_predictors": true,
+  "starter_proxy_safe_for_training": true,
+  "starter_proxy_used": true,
+  "trained_through_date": "2026-07-29"
+}

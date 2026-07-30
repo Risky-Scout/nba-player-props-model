@@ -1,0 +1,16 @@
+{
+  "challenger_dir": "artifacts/models/challengers/2026-07-29_live_context",
+  "code_commit": "dc85ddf32062e206eca4087ef3ffddd977c822a7",
+  "feature_set_id": "phase13p_lineup_injury_driver_v1",
+  "fitted_targets": [
+    "minutes",
+    "pts",
+    "reb",
+    "ast",
+    "tov",
+    "stl",
+    "blk",
+    "fg3m"
+  ],
+  "promoted_at_utc": null
+}
