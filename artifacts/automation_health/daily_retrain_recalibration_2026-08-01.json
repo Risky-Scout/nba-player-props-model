@@ -10,10 +10,7 @@
     },
     "direct_lineup_pmf_driver": true,
     "feature_set_id": "phase13s_direct_lineup_injury_pmf_driver_v1",
-    "issues": [
-      "daily_model_training_report.md missing at /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/model_daily_reports/2026-08-01/daily_model_training_report.md",
-      "daily_model_training_report.json missing at /home/runner/work/nba-player-props-model/nba-player-props-model/artifacts/model_daily_reports/2026-08-01/daily_model_training_report.json"
-    ],
+    "issues": [],
     "no_leakage_manifest": {
       "asof_cutoff_rule_recorded": true,
       "no_leakage_verified": true,
@@ -48,6 +45,6 @@
       "safe_noninferiority_threshold": -0.005
     }
   },
-  "outcome": "fail",
+  "outcome": "pass",
   "schema_version": "1.0"
 }
