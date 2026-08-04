@@ -1,7 +1,7 @@
 # Rolling Derek snapshot benchmark — as-of 2026-08-04
 
 - window_days: 28
-- generated_at_utc: 2026-08-04T21:03:23+00:00
+- generated_at_utc: 2026-08-04T22:23:19+00:00
 - dates_included: 0
 - dates_missing: 28
 - rows_total: 0
