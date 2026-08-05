@@ -1,6 +1,6 @@
 # Derek slate completeness — 2026-08-05
 
-- now_utc: 2026-08-05T04:33:51Z
+- now_utc: 2026-08-05T07:27:17Z
 - predictions_parquet_present: False
 - games_in_real_slate: **0**
 - games_in_predictions: **0**
