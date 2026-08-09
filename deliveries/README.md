@@ -1,5 +1,5 @@
 # Deliveries
-_Index regenerated 2026-08-08T07:41:09Z by `scripts/build_deliveries_index.py`._
+_Index regenerated 2026-08-09T07:44:39Z by `scripts/build_deliveries_index.py`._
 
 Each row links to the per-date Derek (`pmf_model_review_package/`), Wizard of Odds (`wizard_of_odds/`), and after-game (`after_game_scoring/`) packages.
 
@@ -102,6 +102,7 @@ Classification key: **FINAL_DELIVERABLE_READY** · **PROVISIONAL_DELIVERABLE_REA
 | **2026-08-05** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-08-06** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 | **2026-08-07** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
+| **2026-08-08** | `NOT_DELIVERABLE_READY` | — | — | — | — | `—` | `—` | `—` | `absent` | — | `—` | — | `n/a` | `—` |
 
 ## Per-date links
 
@@ -2530,6 +2531,22 @@ _predictions/all_props_{date}.parquet missing — predict.py must run before thi
 _No wizard_of_odds/ package on disk for this date._
 
 ### 2026-08-07 — `NOT_DELIVERABLE_READY`
+
+_predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship_
+
+**After-game scoring** (`n/a`)
+
+- ~~after_game_summary.md~~
+- ~~after_game_scoring.csv~~
+- ~~calibration_by_stat.csv~~
+- ~~calibration_by_role_bucket.csv~~
+- ~~clv_by_stat.csv~~
+- ~~clv_by_book.csv~~
+- ~~after_game_status.json~~
+
+_No wizard_of_odds/ package on disk for this date._
+
+### 2026-08-08 — `NOT_DELIVERABLE_READY`
 
 _predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship_
 
