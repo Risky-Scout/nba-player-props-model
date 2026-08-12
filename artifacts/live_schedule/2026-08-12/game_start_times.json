@@ -1,6 +1,6 @@
 {
   "delivery_date": "2026-08-12",
-  "generated_at_utc": "2026-08-12T18:29:30+00:00Z",
+  "generated_at_utc": "2026-08-12T19:21:01+00:00Z",
   "records": [],
   "schema_version": "1.0",
   "telemetry": {
@@ -10,7 +10,7 @@
     "from_predictions_count": 0,
     "odds_api_cached_events": 0,
     "odds_api_key_present": true,
-    "odds_api_live_events": 26,
+    "odds_api_live_events": 31,
     "pmf_display_matchups_parsed": 0,
     "predictions_present": false,
     "predictions_rows": 0,
