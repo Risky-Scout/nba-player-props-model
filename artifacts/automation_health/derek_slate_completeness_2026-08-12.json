@@ -11,7 +11,7 @@
   "games_missing_from_predictions": [],
   "games_with_no_props": [],
   "games_with_null_start_time": [],
-  "now_utc": "2026-08-12T17:06:56Z",
+  "now_utc": "2026-08-12T18:29:33Z",
   "predictions_parquet_present": false,
   "schema_version": "1.0",
   "telemetry": {
@@ -21,7 +21,7 @@
     "from_predictions_count": 0,
     "odds_api_cached_events": 0,
     "odds_api_key_present": true,
-    "odds_api_live_events": 22,
+    "odds_api_live_events": 26,
     "pmf_display_matchups_parsed": 0,
     "predictions_present": false,
     "predictions_rows": 0,
