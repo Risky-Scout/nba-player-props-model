@@ -1,7 +1,7 @@
 {
   "as_of_date": "2026-08-15",
   "by_snapshot_type": {},
-  "code_commit": "ee3b46e27783a14a530edb1ae87929f0c14e9028",
+  "code_commit": "6f45474e8798f1b81fc2c6cea506e1dcfc42881a",
   "dates_included": [],
   "dates_missing": [
     "2026-07-19",
@@ -33,7 +33,7 @@
     "2026-08-14",
     "2026-08-15"
   ],
-  "generated_at_utc": "2026-08-15T17:33:23+00:00",
+  "generated_at_utc": "2026-08-15T17:55:39+00:00",
   "minimum_sample_passed": false,
   "rows_by_snapshot_type": {
     "close_lock": 0,
