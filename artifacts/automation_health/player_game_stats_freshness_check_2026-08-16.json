@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-08-17T08:17:11+00:00",
+  "required_through_date": "2026-08-16",
+  "max_game_date": "2026-06-13",
+  "min_game_date": "2023-10-24",
+  "rows_total": 84583,
+  "rows_for_required_date": 0,
+  "duplicate_key_rows": 0,
+  "null_core_stats_on_required_date": {},
+  "schema_columns_present": [
+    "player_id",
+    "player_name",
+    "game_id",
+    "game_date",
+    "season",
+    "team_id",
+    "min",
+    "pts",
+    "reb",
+    "ast",
+    "fg3m",
+    "stl",
+    "blk",
+    "turnover"
+  ],
+  "schema_columns_missing": [],
+  "failures": []
+}
