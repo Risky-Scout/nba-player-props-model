@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-08-23T07:51:14+00:00",
+  "from_date": "2026-08-16",
+  "to_date": "2026-08-22",
+  "status": "PASS",
+  "rows_added": 0,
+  "summary": {
+    "rows_total": 84583,
+    "min_game_date": "2023-10-24",
+    "max_game_date": "2026-06-13",
+    "duplicate_key_rows": 0,
+    "null_counts": {
+      "player_id": 0,
+      "player_name": 0,
+      "game_id": 0,
+      "game_date": 0,
+      "pts": 0,
+      "reb": 0,
+      "ast": 0,
+      "fg3m": 0,
+      "stl": 0,
+      "blk": 0,
+      "turnover": 0,
+      "min": 0
+    }
+  },
+  "refresh_stdout_tail": "  existing parquet: 84583 rows, latest game_date=2026-06-13\n================================================================\nrefresh_bdl_player_game_stats \u2014 2026-08-16 \u2192 2026-08-22\n  parquet=data/player_game_stats.parquet\n  dry_run=False  season_filter=None\n================================================================\n  fetching BDL /nba/v1/stats 2026-08-16 \u2192 2026-08-22\n    got 0 raw records in 0.3s\n    0 rows after schema map / min>=1 filter\n  NO_GAMES_VALID_SKIP: BDL reports 0 games for 2026-08-16 \u2192 2026-08-22; no stat rows expected.\n"
+}
