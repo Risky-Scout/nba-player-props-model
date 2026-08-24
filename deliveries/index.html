@@ -10,7 +10,7 @@ td.right{text-align:right}
 .cls-no{background:#ffe0e0}
 code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
 .callout{background:#fff8d6;border-left:4px solid #d4a900;padding:0.5rem 0.9rem;margin:0.8rem 0}
-</style></head><body><h1>NBA PMF deliveries</h1><p>Index regenerated 2026-08-23T06:57:00Z by <code>scripts/build_deliveries_index.py</code>.</p>
+</style></head><body><h1>NBA PMF deliveries</h1><p>Index regenerated 2026-08-24T06:58:15Z by <code>scripts/build_deliveries_index.py</code>.</p>
 <table>
 <tr><th>date</th><th>classification</th><th>props</th><th>fair_odds</th><th>market_comparison</th><th>publishable_edges</th><th>coverage</th><th>injury_fresh</th><th>tov_status</th><th>forward_feed</th><th>morning_rows</th><th>lineup_status</th><th>latest_rows</th><th>after_game</th><th>model_version</th></tr>
 <tr class="cls-prov"><td><b>2026-04-27</b></td><td><code>PROVISIONAL_DELIVERABLE_READY_WITH_WARNINGS</code></td><td class=right>158</td><td class=right>3229</td><td class=right>346</td><td class=right>312</td><td><code>full</code></td><td><code>very_stale</code></td><td><code>present</code></td><td><code>morning_present</code></td><td class=right>464</td><td><code>pending_lineup_snapshot</code></td><td class=right>464</td><td><code>pending_outcomes</code></td><td><code>113c7b5#phase10c</code></td></tr>
@@ -123,6 +123,7 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
 <tr class="cls-no"><td><b>2026-08-20</b></td><td><code>NOT_DELIVERABLE_READY</code></td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>absent</code></td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td class=right>&mdash;</td><td><code>n/a</code></td><td><code>&mdash;</code></td></tr>
 <tr class="cls-no"><td><b>2026-08-21</b></td><td><code>NOT_DELIVERABLE_READY</code></td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>absent</code></td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td class=right>&mdash;</td><td><code>n/a</code></td><td><code>&mdash;</code></td></tr>
 <tr class="cls-no"><td><b>2026-08-22</b></td><td><code>NOT_DELIVERABLE_READY</code></td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>absent</code></td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td class=right>&mdash;</td><td><code>n/a</code></td><td><code>&mdash;</code></td></tr>
+<tr class="cls-no"><td><b>2026-08-23</b></td><td><code>NOT_DELIVERABLE_READY</code></td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>&mdash;</code></td><td><code>absent</code></td><td class=right>&mdash;</td><td><code>&mdash;</code></td><td class=right>&mdash;</td><td><code>n/a</code></td><td><code>&mdash;</code></td></tr>
 </table>
 <div class="callout">All PMFs are model-only. TOV PMFs (when emitted) come from Phase 8 calibrators — no Phase 10D / 10D.2 overlay is wired into production.</div>
 <div class="callout"><b>Schedule (Phase 12D-amend):</b> Derek and WoO run on separate clocks. <b>WoO monetization</b> (public): <code>woo_morning_monetization</code> 15:00&nbsp;UTC (11&nbsp;AM&nbsp;ET) plus <code>woo_afternoon_refresh</code> at 18:00 and 20:00&nbsp;UTC (<code>finality_status_public=PROVISIONAL_EARLY_MARKET</code>). <b>Derek evaluation</b>: <code>derek_pre_tipoff_refresh</code> first snapshot at 22:25&nbsp;UTC (6:25&nbsp;PM ET, earliest tipoff &minus;&nbsp;35&nbsp;min default), refreshing every 15&nbsp;min through 03:10&nbsp;UTC, with a late <code>close_lock</code> at 03:25&nbsp;UTC and <code>after_game</code> scoring at 06:30&nbsp;UTC. Affiliate URLs in the public feed are never fabricated; see <code>docs/wizardofodds_public_export_runbook.md</code>.</div>
@@ -542,6 +543,9 @@ code{background:#f3f3f3;padding:0.05em 0.3em;border-radius:3px;font-size:0.9em}
 <p><i>predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship</i></p>
 <p><b>After-game</b> (<code>n/a</code>) </p>
 <h2>2026-08-22 — <code>NOT_DELIVERABLE_READY</code></h2>
+<p><i>predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship</i></p>
+<p><b>After-game</b> (<code>n/a</code>) </p>
+<h2>2026-08-23 — <code>NOT_DELIVERABLE_READY</code></h2>
 <p><i>predictions/all_props_{date}.parquet missing — predict.py must run before this date can ship</i></p>
 <p><b>After-game</b> (<code>n/a</code>) </p>
 </body></html>
