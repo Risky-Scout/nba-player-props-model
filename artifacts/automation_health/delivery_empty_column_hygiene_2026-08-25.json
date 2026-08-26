@@ -1,0 +1,20 @@
+{
+  "generated_at_utc": "2026-08-26T06:57:37Z",
+  "reports": [
+    {
+      "date": "2026-08-25",
+      "delivery_dir": "deliveries/2026-08-25",
+      "write": true,
+      "generated_at_utc": "2026-08-26T06:57:37Z",
+      "files_checked": 0,
+      "files_changed": 0,
+      "columns_removed_total": 0,
+      "changes": [],
+      "errors": []
+    }
+  ],
+  "files_checked": 0,
+  "files_changed": 0,
+  "columns_removed_total": 0,
+  "errors": []
+}
