@@ -11,17 +11,17 @@
       "passed": true
     },
     {
-      "detail": "trained_through=2026-08-24 yesterday=2026-08-25",
+      "detail": "trained_through=2026-08-25 yesterday=2026-08-25",
       "name": "trained_through_date_no_later_than_yesterday",
       "passed": true
     },
     {
-      "detail": "calibrated_through=2026-08-24 yesterday=2026-08-25",
+      "detail": "calibrated_through=2026-08-25 yesterday=2026-08-25",
       "name": "calibrated_through_date_no_later_than_yesterday",
       "passed": true
     },
     {
-      "detail": "trained=2026-08-24 calibrated=2026-08-24",
+      "detail": "trained=2026-08-25 calibrated=2026-08-25",
       "name": "calibrated_through_ge_trained_through",
       "passed": true
     },
@@ -36,21 +36,21 @@
       "passed": true
     },
     {
-      "detail": "promotion_decision_id='phase13s-promotion-2026-08-24_direct_lineup_contextual-20260825T083245'",
+      "detail": "promotion_decision_id='phase13s-promotion-2026-08-25_direct_lineup_contextual-20260826T075920'",
       "name": "champion_not_dry_run_or_synthetic",
       "passed": true
     }
   ],
-  "code_commit": "7ef0c6d8b4d9e0f643cd29c53f27b84e20a8042f",
+  "code_commit": "3930634556cb293c37db6c7dcb223f53f90b022d",
   "delivery_date": "2026-08-26",
   "facts": {
-    "calibrated_through_date": "2026-08-24",
-    "champion_model_id": "challenger-2026-08-24",
-    "champion_pointer_hash": "e3e279e79a6107026175a53813e1eb13",
+    "calibrated_through_date": "2026-08-25",
+    "champion_model_id": "challenger-2026-08-25",
+    "champion_pointer_hash": "56acaafd7776a74e51497d29c5b9f653",
     "delivery_date_minus_one_utc": "2026-08-25",
-    "trained_through_date": "2026-08-24"
+    "trained_through_date": "2026-08-25"
   },
-  "generated_at_utc": "2026-08-26T05:10:13+00:00",
+  "generated_at_utc": "2026-08-26T16:35:26+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
