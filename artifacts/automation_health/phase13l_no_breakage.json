@@ -421,7 +421,7 @@
       "passed": true
     }
   ],
-  "code_commit": "26923004c986cc5dd7a8046dcf827b9f26a1493a",
+  "code_commit": "7d5db1be149ef3f4588487ac876d2468c136b07a",
   "facts": {
     "champion_pointer": {
       "champion_model_id": "challenger-2026-08-25",
@@ -429,7 +429,7 @@
       "schema_version": "1.1"
     }
   },
-  "generated_at_utc": "2026-08-26T23:52:17+00:00",
+  "generated_at_utc": "2026-08-27T01:04:21+00:00",
   "passed": true,
   "schema_version": "1.0"
 }
