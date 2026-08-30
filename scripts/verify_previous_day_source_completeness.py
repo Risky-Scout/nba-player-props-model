@@ -233,9 +233,30 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if rows_target == 0:
-        add_check("rows_on_target_date_above_floor", False, f"rows_on_target_date=0")
-        findings["fail_code"] = "PREVIOUS_DAY_SOURCE_COMPLETENESS_FAILED_ZERO_ROWS"
-        return _emit(findings, out_dir, refresh_seen)
+        # Before flagging as missing data, check whether BDL had any games
+        # on the target date.  Genuine rest days / off-nights produce 0 rows
+        # legitimately and must not block training.
+        _no_games = False
+        try:
+            from nba_props_model.data.bdl_client import get_games  # noqa: WPS433
+            games_on_target = get_games(start_date=target.isoformat(), end_date=target.isoformat())
+            if len(games_on_target) == 0:
+                _no_games = True
+                add_check(
+                    "rows_on_target_date_above_floor",
+                    True,
+                    f"rows_on_target_date=0 but BDL confirms no games on {target} — valid no-games day",
+                )
+        except Exception as exc:
+            add_check(
+                "rows_on_target_date_above_floor",
+                False,
+                f"rows_on_target_date=0 and BDL games check failed ({exc}) — treating as missing data",
+            )
+        if not _no_games:
+            add_check("rows_on_target_date_above_floor", False, f"rows_on_target_date=0")
+            findings["fail_code"] = "PREVIOUS_DAY_SOURCE_COMPLETENESS_FAILED_ZERO_ROWS"
+            return _emit(findings, out_dir, refresh_seen)
 
     if rows_target < COMPLETE_FLOOR_ROWS:
         add_check(
