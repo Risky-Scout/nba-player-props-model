@@ -1,10 +1,10 @@
 {
-  "code_commit": "bb98e0e7c05a91653db959cb5e20cabbdd0396b4",
+  "code_commit": "e211571c1f240659e581866a1ac875eef3db2181",
   "decisions": [],
   "delivery_date": "2026-08-29",
   "eligible_rows": 0,
   "note": "no schedule loaded \u2014 predictions/all_props_2026-08-29.parquet slate_status=predictions_parquet_missing. Dispatcher exits cleanly with no work.",
-  "now_utc": "2026-08-30T02:01:04Z",
+  "now_utc": "2026-08-30T02:31:19Z",
   "schedule_rows": 0,
   "schema_version": "1.0",
   "slate_status": "predictions_parquet_missing",
