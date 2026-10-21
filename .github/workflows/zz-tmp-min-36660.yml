@@ -1,8 +1,0 @@
-name: zz-tmp-min-36660
-on:
-  workflow_dispatch:
-jobs:
-  hi:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo hello-36660
